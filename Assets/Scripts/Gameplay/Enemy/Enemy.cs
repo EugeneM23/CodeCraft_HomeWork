@@ -2,31 +2,25 @@ using UnityEngine;
 
 namespace Gameplay
 {
+    [RequireComponent(typeof(EnemyAI))]
     public sealed class Enemy : Character
     {
-        private EnemyPool _pool;
+        [SerializeField] private EnemyAI _enemyAI;
+
         private Transform _attackTarget;
+        private EnemyPool _pool;
 
-        protected void OnEnable()
-        {
-            _currentHealth = _health;
-            GetComponent<EnemyAI>().OnShoot += Shoot;
-        }
+        protected void OnEnable() => _enemyAI.OnShoot += Shoot;
 
-        private void OnDisable() =>
-            GetComponent<EnemyAI>().OnShoot -= Shoot;
+        private void OnDisable() => _enemyAI.OnShoot -= Shoot;
 
-        public override void Move(Vector3 direction) =>
-            transform.position = Vector3.MoveTowards(transform.position, direction, _speed * Time.deltaTime);
+        public override void Shoot() => _weapon.Shoot(_attackTarget.position - transform.position);
 
-        public override void Shoot() =>
-            _gun.Shoot(_attackTarget.position - transform.position);
-
-        protected override void OnDeath() =>
-            _pool.Return(this);
+        protected override void OnDeath() => _pool.Return(this);
 
         public void SetTarget(Transform target) => _attackTarget = target;
 
-        public void SetPull(EnemyPool pool) => _pool = pool;
+        public void SetEnemyPull(EnemyPool pool) => _pool = pool;
+
     }
 }

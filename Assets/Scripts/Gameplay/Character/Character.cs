@@ -1,3 +1,6 @@
+using System;
+using Unity.Collections.LowLevel.Unsafe;
+using UnityEditor.Connect;
 using UnityEngine;
 
 namespace Gameplay
@@ -5,22 +8,13 @@ namespace Gameplay
     public abstract class Character : MonoBehaviour, IDamageable
     {
         [SerializeField] protected int _health;
-        [SerializeField] protected float _speed;
-        [SerializeField] protected Weapon _gun;
-        [SerializeField] private Rigidbody2D _rigidbody;
+        [SerializeField] private MoveComponent _moveComponent;
+        [SerializeField] protected Weapon _weapon;
 
-        protected int _currentHealth;
+        protected abstract void OnDeath();
+        public virtual void Shoot() => _weapon.Shoot(Vector3.up);
 
-        public void SetBulletPoolToGun(BulletPool pool) =>
-            _gun.SetPool(pool);
-
-        public virtual void Shoot() =>
-            _gun.Shoot(Vector3.up);
-
-        public virtual void Move(Vector3 direction)
-        {
-            transform.Translate(direction * _speed * Time.deltaTime);
-        }
+        public virtual void Move(Vector3 direction) => _moveComponent.Move(direction);
 
         public virtual void TakeDamage(int damage)
         {
@@ -29,6 +23,8 @@ namespace Gameplay
                 OnDeath();
         }
 
-        protected abstract void OnDeath();
+        public void SetBulletPoolToWeapon(BulletPool pool) => _weapon.SetPool(pool);
+
+        public void SetWeaponData(WeaponData testData) => _weapon.SetWeaponData(testData);
     }
 }

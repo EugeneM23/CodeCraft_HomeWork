@@ -7,12 +7,16 @@ namespace Gameplay
     {
         [SerializeField] private SpriteRenderer spriteRenderer;
         [SerializeField] private Rigidbody2D _rigidbody2D;
+        [SerializeField] private MoveComponent _moveComponent;
 
-        private int _damage;
-        private DefaultPool<Bullet> _pool;
         private bool _collisionEnable = true;
+        private DefaultPool<Bullet> _pool;
+        private Vector3 _moveDirection;
+        private int _damage;
 
         private void OnEnable() => _collisionEnable = true;
+
+        private void Update() => _moveComponent.Move(_moveDirection);
 
         public void Construct(int damage, Color color, PhysicsLayer physicsLayer)
         {
@@ -25,22 +29,19 @@ namespace Gameplay
         {
             if (!_collisionEnable) return;
 
-            if (collision.gameObject.TryGetComponent<IDamageable>(out IDamageable unit))
+            if (collision.gameObject.TryGetComponent(out IDamageable unit))
             {
                 _collisionEnable = false;
                 unit.TakeDamage(_damage);
-                
+
                 Destroy();
             }
         }
 
-        public void Destroy()
-        {
-            _pool.Return(this);
-        }
-
-        public void SetVelocity(Vector3 fireDirection) => _rigidbody2D.velocity = fireDirection;
+        public void Destroy() => _pool.Return(this);
 
         public void SetPull(DefaultPool<Bullet> pool) => _pool = pool;
+
+        public void SetMoveDirection(Vector3 moveDirection) => _moveDirection = moveDirection;
     }
 }

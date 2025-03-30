@@ -6,6 +6,7 @@ namespace Modules.Pools
 {
     public abstract class DefaultPool<T> : MonoBehaviour where T : MonoBehaviour
     {
+        
         [SerializeField] private T _prefab;
 
         public ObjectPool<T> Pool { get; private set; }
@@ -50,6 +51,6 @@ namespace Modules.Pools
             Pool.Release(obj);
         }
 
-        protected abstract void OnCreate(T obj);
+        protected abstract void OnCreate(T enemy);
     }
 }

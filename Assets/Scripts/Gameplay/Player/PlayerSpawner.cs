@@ -8,13 +8,14 @@ namespace Gameplay
         [SerializeField] private PlayerInputController _inputController;
         [SerializeField] private Transform _playerSpawnPoint;
         [SerializeField] private BulletPool _bulletPool;
+        [SerializeField] private WeaponData _testData;
 
         private void Awake() => SpawnPlayer();
 
         private void SpawnPlayer()
         {
-            var player = CreatePlayer();
-            player.SetBulletPoolToGun(_bulletPool);
+            Player player = CreatePlayer();
+
             _inputController.OnShoot += player.Shoot;
             _inputController.OnMove += player.Move;
         }
@@ -22,6 +23,9 @@ namespace Gameplay
         private Player CreatePlayer()
         {
             Player player = Instantiate(_player, _playerSpawnPoint.position, Quaternion.identity);
+            player.SetBulletPoolToWeapon(_bulletPool);
+            player.SetWeaponData(_testData);
+
             return player;
         }
     }

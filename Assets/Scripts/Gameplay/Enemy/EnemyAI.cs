@@ -8,7 +8,6 @@ namespace Gameplay
     {
         public event Action OnShoot;
 
-        private Transform _attackTarget;
         private Vector3 _moveTarget;
 
         private Enemy _enemy;
@@ -29,20 +28,17 @@ namespace Gameplay
                 MoveToAttackPosition();
         }
 
-        private void Shoot()
-        {
-            OnShoot?.Invoke();
-        }
+        private void Shoot() => OnShoot?.Invoke();
 
         private void MoveToAttackPosition()
         {
-            if (transform.position == _moveTarget)
+            if (Vector3.Distance(_moveTarget, transform.position) < 0.1f)
             {
                 _isFirePosition = true;
                 return;
             }
 
-            _enemy.Move(_moveTarget);
+            _enemy.Move(_moveTarget - transform.position);
         }
 
         private Vector3 GetMoveTarget()

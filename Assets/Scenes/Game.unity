@@ -301,7 +301,7 @@ Transform:
   m_GameObject: {fileID: 866646690}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -3.5, z: 0}
+  m_LocalPosition: {x: 0, y: -4.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -904,6 +904,7 @@ MonoBehaviour:
   _inputController: {fileID: 3951702117947426123}
   _playerSpawnPoint: {fileID: 866646691}
   _bulletPool: {fileID: 3951702117947426127}
+  _testData: {fileID: 11400000, guid: 24b446cd420574f23ad6726ff33b8a44, type: 2}
 --- !u!114 &3951702117947426125
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -921,6 +922,10 @@ MonoBehaviour:
   _spawnPoints: {fileID: 231830465523707628}
   _enemyPool: {fileID: 3951702117947426126}
   _bulletPool: {fileID: 3951702117947426127}
+  testData: {fileID: 0}
+  _maxEnemies: 10
+  _maxSpawnTime: 3
+  _minSpawnTime: 0
 --- !u!114 &3951702117947426126
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -934,6 +939,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _prefab: {fileID: 102605417607457000, guid: 87fe189881a524806800482ac8eaaa83, type: 3}
+  _enemyWeapon: {fileID: 7220121139433570236, guid: 23ad4ac1355d6474c93338a00e8ee1b5,
+    type: 3}
+  _bulletPool: {fileID: 3951702117947426127}
 --- !u!114 &3951702117947426127
 MonoBehaviour:
   m_ObjectHideFlags: 0

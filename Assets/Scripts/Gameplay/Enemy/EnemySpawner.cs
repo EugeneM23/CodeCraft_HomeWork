@@ -8,32 +8,30 @@ namespace Gameplay
     {
         [SerializeField] private Enemy[] _enemies;
         [SerializeField] private Transform _spawnPoints;
-        [SerializeField] private DefaultPool<Enemy> _enemyPool;
+        [SerializeField] private EnemyPool _enemyPool;
+        [SerializeField] private BulletPool _bulletPool;
+        [SerializeField] private WeaponData testData;
 
-        private Transform _player;
-        public BulletPool _bulletPool;
+        [SerializeField] private int _maxEnemies = 10;
+        [SerializeField] private float _maxSpawnTime = 3;
+        [SerializeField] private float _minSpawnTime = 0;
 
         private IEnumerator Start()
         {
-            _player = GameObject.FindGameObjectWithTag("Player").transform;
-
             while (true)
             {
-                yield return new WaitForSeconds(Random.Range(0f, 1f));
+                yield return new WaitForSeconds(Random.Range(_minSpawnTime, _maxSpawnTime));
 
-                if (_enemyPool.Pool.CountActive <= _spawnPoints.childCount)
-                    SpawnEnemy(_enemies[0]);
+                if (_enemyPool.Pool.CountActive <= _maxEnemies)
+                    SpawnEnemy();
             }
         }
 
-        private void SpawnEnemy(Enemy enemy)
+        private void SpawnEnemy()
         {
             Enemy spawnEnemy = _enemyPool.Rent();
-            spawnEnemy.SetBulletPoolToGun(_bulletPool);
             int spawnIndex = Random.Range(0, _spawnPoints.childCount);
-
             spawnEnemy.transform.position = _spawnPoints.transform.GetChild(spawnIndex).position;
-            spawnEnemy.SetTarget(_player);
         }
     }
 }
