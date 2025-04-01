@@ -4,7 +4,7 @@ namespace Gameplay
 {
     public class BulletPool : DefaultPool<Bullet>
     {
-        protected override void OnCreate(Bullet enemy) => enemy.SetPull(this);
+        protected override void OnCreate(Bullet bullet) => bullet.SetDespawnCallBack(Return);
 
         private void Update()
         {

@@ -181,6 +181,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _speed: 5
+  smoothingFactor: 0.55
 --- !u!114 &1238746009428240670
 MonoBehaviour:
   m_ObjectHideFlags: 0

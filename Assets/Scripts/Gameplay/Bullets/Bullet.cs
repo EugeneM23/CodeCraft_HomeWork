@@ -1,3 +1,4 @@
+using System;
 using Modules.Pools;
 using UnityEngine;
 
@@ -5,12 +6,13 @@ namespace Gameplay
 {
     public class Bullet : MonoBehaviour
     {
+        private Action<Bullet> OnDespawn;
+
         [SerializeField] private SpriteRenderer spriteRenderer;
         [SerializeField] private Rigidbody2D _rigidbody2D;
         [SerializeField] private MoveComponent _moveComponent;
 
         private bool _collisionEnable = true;
-        private DefaultPool<Bullet> _pool;
         private Vector3 _moveDirection;
         private int _damage;
 
@@ -38,9 +40,9 @@ namespace Gameplay
             }
         }
 
-        public void Destroy() => _pool.Return(this);
+        public void Destroy() => OnDespawn?.Invoke(this);
 
-        public void SetPull(DefaultPool<Bullet> pool) => _pool = pool;
+        public void SetDespawnCallBack(Action<Bullet> callback) => OnDespawn = callback;
 
         public void SetMoveDirection(Vector3 moveDirection) => _moveDirection = moveDirection;
     }
