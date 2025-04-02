@@ -9,6 +9,6 @@ namespace Gameplay
         [field: SerializeField] public Color BulletColor { get; private set; }
         [field: SerializeField] public PhysicsLayer PhysicsLayer { get; private set; }
         [field: SerializeField] public float FireRate { get; private set; }
-        [field: SerializeField] public GameObject BulletType { get;  set; }
+        [field: SerializeField] public GameObject BulletPrefab { get;  set; }
     }
 }

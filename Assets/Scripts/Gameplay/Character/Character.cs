@@ -5,25 +5,29 @@ using UnityEngine;
 
 namespace Gameplay
 {
-    public abstract class Character : MonoBehaviour, IDamageable
+    public class Character : MonoBehaviour, IDamageable
     {
+        public event Action OnDath;
         [SerializeField] protected int _health;
         [SerializeField] private MoveComponent _moveComponent;
         [SerializeField] protected Weapon _weapon;
 
-        protected abstract void OnDeath();
-        public virtual void Shoot() => _weapon.Shoot(Vector3.up);
+        public void Shoot()
+        {
+            _weapon.Shoot(Vector3.up);
+        }
 
-        public virtual void Move(Vector3 direction) => _moveComponent.Move(direction);
+        public void Move(Vector3 direction)
+        {
+            _moveComponent.Move(direction);
+        }
 
-        public virtual void TakeDamage(int damage)
+        public void TakeDamage(int damage)
         {
             _health -= damage;
             if (_health <= 0)
-                OnDeath();
+                OnDath?.Invoke();
         }
-
-        //public void SetBulletPoolToWeapon(BulletPool pool) => _weapon.SetPool(pool);
 
         public void SetWeaponData(WeaponData testData) => _weapon.SetWeaponData(testData);
     }

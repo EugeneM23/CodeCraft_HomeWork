@@ -10,12 +10,12 @@ namespace Gameplay
 
         private Vector3 _moveTarget;
 
-        private Enemy _enemy;
+        private Character _enemy;
         private bool _isFirePosition;
 
         private void OnEnable()
         {
-            _enemy = GetComponent<Enemy>();
+            _enemy = GetComponent<Character>();
             _isFirePosition = false;
             _moveTarget = GetMoveTarget();
         }

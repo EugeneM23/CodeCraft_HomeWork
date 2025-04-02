@@ -19,8 +19,6 @@ namespace Gameplay
 
         public void Shoot(Vector3 fireDirection)
         {
-            Debug.Log(_wd.FireRate);
-
             if (!_canFire)
                 return;
 
@@ -30,7 +28,7 @@ namespace Gameplay
 
         private void SetupBullet(Vector3 fireDirection)
         {
-            Bullet go = PoolManager.Instance.Rent<Bullet>(_wd.BulletType);
+            Bullet go = PrefabPool.Instance.Spawn<Bullet>(_wd.BulletPrefab);
 
             Bullet bullet = go.GetComponent<Bullet>();
             bullet.SetMoveDirection(fireDirection);

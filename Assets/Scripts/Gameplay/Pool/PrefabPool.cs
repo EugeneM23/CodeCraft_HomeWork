@@ -4,18 +4,18 @@ using UnityEngine;
 
 namespace NewPool
 {
-    public class PoolManager : MonoBehaviour
+    public class PrefabPool : MonoBehaviour
     {
-        private static PoolManager _instance;
+        private static PrefabPool _instance;
 
-        public static PoolManager Instance
+        public static PrefabPool Instance
         {
             get
             {
                 if (_instance == null)
                 {
                     GameObject obj = new GameObject("PoolManager");
-                    _instance = obj.AddComponent<PoolManager>();
+                    _instance = obj.AddComponent<PrefabPool>();
                     DontDestroyOnLoad(obj);
                 }
 
@@ -25,7 +25,7 @@ namespace NewPool
 
         private Dictionary<string, Queue<GameObject>> _pools = new();
 
-        public T Rent<T>(GameObject prefab) where T : MonoBehaviour, IDespawned
+        public T Spawn<T>(GameObject prefab) where T : MonoBehaviour, IDespawned
         {
             string key = prefab.name;
 
@@ -50,12 +50,12 @@ namespace NewPool
             go.name = prefab.name; 
             
             IDespawned component = go.GetComponent<IDespawned>();
-            component.SetDespawnCallBack(Despawn);
+            component.SetDespawnCallBack(DeSpawn);
             
             return go;
         }
 
-        public void Despawn(GameObject gameObject)
+        public void DeSpawn(GameObject gameObject)
         {
             string key = gameObject.name;
 
