@@ -12,7 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3607af5c0b00442f814a1f2b9d387504, type: 3}
   m_Name: PlayerWeaponData_01
   m_EditorClassIdentifier: 
-  Damage: 1
-  BulletColor: {r: 0.08211875, g: 1, b: 0, a: 1}
-  PhysicsLayer: 14
-  FireRate: 0.4
+  <Damage>k__BackingField: 1
+  <BulletColor>k__BackingField: {r: 1, g: 0, b: 0, a: 1}
+  <PhysicsLayer>k__BackingField: 14
+  <FireRate>k__BackingField: 0.1
+  <BulletType>k__BackingField: {fileID: 2743036428890533592, guid: 5fe72886874b4e445b06cf777ca4920d,
+    type: 3}

@@ -1,4 +1,5 @@
 using System.Collections;
+using NewPool;
 using UnityEngine;
 
 namespace Gameplay
@@ -7,14 +8,19 @@ namespace Gameplay
     {
         [SerializeField] private WeaponData _wd;
         [SerializeField] private Transform _firePoint;
-        [SerializeField] private BulletPool BulletPool;
+
 
         private bool _canFire = true;
 
-        public void OnEnable() => _canFire = true;
+        public void OnEnable()
+        {
+            _canFire = true;
+        }
 
         public void Shoot(Vector3 fireDirection)
         {
+            Debug.Log(_wd.FireRate);
+
             if (!_canFire)
                 return;
 
@@ -24,13 +30,13 @@ namespace Gameplay
 
         private void SetupBullet(Vector3 fireDirection)
         {
-            Bullet bullet = BulletPool.Rent();
+            Bullet go = PoolManager.Instance.Rent<Bullet>(_wd.BulletType);
+
+            Bullet bullet = go.GetComponent<Bullet>();
             bullet.SetMoveDirection(fireDirection);
             bullet.gameObject.transform.position = _firePoint.position;
             bullet.Construct(_wd.Damage, _wd.BulletColor, _wd.PhysicsLayer);
         }
-
-        public void SetPool(BulletPool pool) => BulletPool = pool;
 
         public void SetWeaponData(WeaponData data) => _wd = data;
 

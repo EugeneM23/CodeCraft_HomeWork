@@ -13,7 +13,6 @@ GameObject:
   - component: {fileID: 5568771391735819375}
   - component: {fileID: 659620479434099170}
   - component: {fileID: 102605417607457000}
-  - component: {fileID: 5291584570761726713}
   - component: {fileID: 1238746009428240670}
   m_Layer: 11
   m_Name: Enemy
@@ -165,23 +164,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _health: 5
-  _moveComponent: {fileID: 5291584570761726713}
+  _moveComponent:
+    _transform: {fileID: 3470145497817149085}
+    _speed: 5
   _weapon: {fileID: 3168817167969488658}
   _enemyAI: {fileID: 1238746009428240670}
---- !u!114 &5291584570761726713
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 559606060570185700}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 83b5313b28ce43b3901e677d0c2eef21, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _speed: 5
-  smoothingFactor: 0.55
 --- !u!114 &1238746009428240670
 MonoBehaviour:
   m_ObjectHideFlags: 0

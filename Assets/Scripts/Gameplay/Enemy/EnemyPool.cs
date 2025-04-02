@@ -1,11 +1,11 @@
-using System;
+/*using System;
 using Modules.Pools;
 using UnityEngine;
 using UnityEngine.Serialization;
 
 namespace Gameplay
 {
-    public class EnemyPool : DefaultPool<Enemy>
+    public class EnemyPool 
     {
         [SerializeField] private Weapon _enemyWeapon;
         [SerializeField] private BulletPool _bulletPool;
@@ -21,4 +21,4 @@ namespace Gameplay
             enemy.SetTarget(_player);
         }
     }
-}
+}*/

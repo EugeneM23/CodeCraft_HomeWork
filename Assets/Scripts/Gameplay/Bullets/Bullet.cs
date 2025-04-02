@@ -1,12 +1,11 @@
 using System;
-using Modules.Pools;
 using UnityEngine;
 
 namespace Gameplay
 {
-    public class Bullet : MonoBehaviour
+    public class Bullet : MonoBehaviour, IDespawned, NewPool.IDespawned
     {
-        private Action<Bullet> OnDespawn;
+        private Action<GameObject> OnDespawn;
 
         [SerializeField] private SpriteRenderer spriteRenderer;
         [SerializeField] private Rigidbody2D _rigidbody2D;
@@ -38,12 +37,25 @@ namespace Gameplay
 
                 Destroy();
             }
+
+            Destroy();
         }
 
-        public void Destroy() => OnDespawn?.Invoke(this);
-
-        public void SetDespawnCallBack(Action<Bullet> callback) => OnDespawn = callback;
-
         public void SetMoveDirection(Vector3 moveDirection) => _moveDirection = moveDirection;
+
+        public void Destroy()
+        {
+            OnDespawn?.Invoke(this.gameObject);
+        }
+
+        public void SetDespawnCallBack(Action<GameObject> callback)
+        {
+            OnDespawn = callback;
+        }
+    }
+
+    public interface IDespawned
+    {
+        public void SetDespawnCallBack(Action<GameObject> callback);
     }
 }

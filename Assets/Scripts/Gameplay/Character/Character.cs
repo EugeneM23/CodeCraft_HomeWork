@@ -23,7 +23,7 @@ namespace Gameplay
                 OnDeath();
         }
 
-        public void SetBulletPoolToWeapon(BulletPool pool) => _weapon.SetPool(pool);
+        //public void SetBulletPoolToWeapon(BulletPool pool) => _weapon.SetPool(pool);
 
         public void SetWeaponData(WeaponData testData) => _weapon.SetWeaponData(testData);
     }

@@ -1,12 +1,11 @@
 using System.Collections;
-using Modules.Pools;
 using UnityEngine;
 
 namespace Gameplay
 {
     public class EnemySpawner : MonoBehaviour
     {
-        [SerializeField] private Enemy[] _enemies;
+        /*[SerializeField] private Enemy[] _enemies;
         [SerializeField] private Transform _spawnPoints;
         [SerializeField] private EnemyPool _enemyPool;
         [SerializeField] private BulletPool _bulletPool;
@@ -32,6 +31,6 @@ namespace Gameplay
             Enemy spawnEnemy = _enemyPool.Rent();
             int spawnIndex = Random.Range(0, _spawnPoints.childCount);
             spawnEnemy.transform.position = _spawnPoints.transform.GetChild(spawnIndex).position;
-        }
+        }*/
     }
 }

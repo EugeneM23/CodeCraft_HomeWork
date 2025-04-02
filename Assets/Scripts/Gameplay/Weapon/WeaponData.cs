@@ -5,9 +5,10 @@ namespace Gameplay
     [CreateAssetMenu(fileName = "NewWeapon", menuName = "Weapons/Weapon Data")]
     public class WeaponData : ScriptableObject
     {
-        [SerializeField] public int Damage;
-        [SerializeField] public Color BulletColor;
-        [SerializeField] public PhysicsLayer PhysicsLayer;
-        [SerializeField] public float FireRate;
+        [field: SerializeField] public int Damage { get; private set; }
+        [field: SerializeField] public Color BulletColor { get; private set; }
+        [field: SerializeField] public PhysicsLayer PhysicsLayer { get; private set; }
+        [field: SerializeField] public float FireRate { get; private set; }
+        [field: SerializeField] public GameObject BulletType { get;  set; }
     }
 }
