@@ -23,11 +23,11 @@ namespace NewPool
             }
         }
 
-        private Dictionary<Type, Queue<GameObject>> _pools = new();
+        private Dictionary<string, Queue<GameObject>> _pools = new();
 
         public T Rent<T>(GameObject prefab) where T : MonoBehaviour, IDespawned
         {
-            Type key = prefab.GetComponent<IDespawned>().GetType();
+            string key = prefab.name;
 
             if (!_pools.ContainsKey(key))
             {
@@ -37,7 +37,7 @@ namespace NewPool
             if (_pools[key].Count > 0)
             {
                 GameObject obj = _pools[key].Dequeue();
-                obj.SetActive(true); // Включаем объект перед возвратом
+                obj.SetActive(true);
                 return obj.GetComponent<T>();
             }
 
@@ -46,15 +46,18 @@ namespace NewPool
 
         private GameObject CreateObject(GameObject prefab)
         {
-            var go = Instantiate(prefab);
-            var asd = go.GetComponent<IDespawned>();
-            asd.SetDespawnCallBack(Despawn);
+            GameObject go = Instantiate(prefab);
+            go.name = prefab.name; 
+            
+            IDespawned component = go.GetComponent<IDespawned>();
+            component.SetDespawnCallBack(Despawn);
+            
             return go;
         }
 
         public void Despawn(GameObject gameObject)
         {
-            Type key = gameObject.GetComponent<IDespawned>().GetType();
+            string key = gameObject.name;
 
             if (!_pools.ContainsKey(key))
             {
