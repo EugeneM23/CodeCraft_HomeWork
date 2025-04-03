@@ -16,7 +16,7 @@ namespace Gameplay
             _prefabPoll = new PrefabPool();
         }
 
-        public T GetBullet<T>(GameObject prefab) where T : MonoBehaviour, IDespawned
+        /*public T GetBullet<T>(GameObject prefab) where T : MonoBehaviour, IDespawned
         {
             T bullet = _prefabPoll.Spawn<T>(prefab);
             _activeObjects.Add(bullet.gameObject);
@@ -24,7 +24,7 @@ namespace Gameplay
             bullet.DeSpawn += RemoveBulletFromActivList;
 
             return bullet;
-        }
+        }*/
 
         private void RemoveBulletFromActivList(GameObject bullet)
         {
@@ -34,7 +34,6 @@ namespace Gameplay
 
         private void FixedUpdate()
         {
-            Debug.Log(_activeObjects.Count);
             for (int i = 0; i < _activeObjects.Count; i++)
             {
                 if (!levelBounds.InBounds(_activeObjects[i].transform.position))
@@ -42,6 +41,17 @@ namespace Gameplay
                     _activeObjects[i].GetComponent<IDespawned>().Destroy();
                 }
             }
+        }
+
+        public void SpawnBullet(BulletInfo info, Vector3 firePointPosition, Vector3 fireDirection)
+        {
+            Bullet bullet = _prefabPoll.Spawn<Bullet>(info.BulletPrefab);
+            _activeObjects.Add(bullet.gameObject);
+            bullet.GetComponent<IDespawned>().DeSpawn += RemoveBulletFromActivList;
+            
+            bullet.SetMoveDirection(fireDirection);
+            bullet.SetPosition(firePointPosition);
+            bullet.Construct(info.Damage, info.BulletColor, info.PhysicsLayer, info.BulletSpeed);
         }
     }
 }

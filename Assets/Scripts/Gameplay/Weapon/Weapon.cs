@@ -28,12 +28,7 @@ namespace Gameplay
 
         private void SetupBullet(Vector3 fireDirection)
         {
-            Bullet go = _bulletManager.GetBullet<Bullet>(_wd.BulletPrefab);
-
-            Bullet bullet = go.GetComponent<Bullet>();
-            bullet.SetMoveDirection(fireDirection);
-            bullet.SetPosition(_firePoint.position);
-            bullet.Construct(_wd.Damage, _wd.BulletColor, _wd.PhysicsLayer);
+            _bulletManager.SpawnBullet(_wd._bulletInfo, _firePoint.position, fireDirection);
         }
 
         public void SetWeaponData(WeaponData data) => _wd = data;

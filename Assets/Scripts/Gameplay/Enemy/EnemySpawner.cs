@@ -1,15 +1,16 @@
-using System;
 using System.Collections;
 using Modules.PrefabPool;
 using UnityEngine;
-using Random = UnityEngine.Random;
+using UnityEngine.Serialization;
 
 namespace Gameplay
 {
     public class EnemySpawner : MonoBehaviour
     {
+        [SerializeField] private LevePointsManager _leveSpawnPoints;
+        [SerializeField] private LevePointsManager _levelAttackPoints;
+
         [SerializeField] private Character[] _enemies;
-        [SerializeField] private Transform _spawnPoints;
         [SerializeField] private Bulletmanager _bulletManager;
 
         [SerializeField] private int _maxEnemies = 10;
@@ -17,6 +18,7 @@ namespace Gameplay
         [SerializeField] private float _minSpawnTime = 0;
 
         private PrefabPool _prefabPoll;
+        private Transform _player;
 
         private void Awake()
         {
@@ -25,6 +27,7 @@ namespace Gameplay
 
         private IEnumerator Start()
         {
+            _player = GameObject.FindGameObjectWithTag("Player").transform;
             while (true)
             {
                 yield return new WaitForSeconds(Random.Range(_minSpawnTime, _maxSpawnTime));
@@ -38,11 +41,25 @@ namespace Gameplay
         {
             int randomIndex = Random.Range(0, _enemies.Length);
             Character spawnEnemy = _prefabPoll.Spawn<Character>(_enemies[randomIndex].gameObject);
-            spawnEnemy.SetBulletManager(_bulletManager);
-            spawnEnemy.GetComponent<EnemyAI>().OnShoot += spawnEnemy.Shoot;
 
-            int spawnIndex = Random.Range(0, _spawnPoints.childCount);
-            spawnEnemy.transform.position = _spawnPoints.transform.GetChild(spawnIndex).position;
+            SetupEnemy(spawnEnemy);
+            SetSpawnPosition(spawnEnemy);
         }
+
+        private void SetSpawnPosition(Character spawnEnemy)
+        {
+            spawnEnemy.SetPosition(_leveSpawnPoints.GetPoint());
+        }
+
+        private void SetupEnemy(Character spawnEnemy)
+        {
+            spawnEnemy.SetBulletManagerToWeapon(_bulletManager);
+            spawnEnemy.GetComponent<EnemyAI>().SetAttackPointmanager(_levelAttackPoints);
+            spawnEnemy.GetComponent<EnemyAI>().SetAttackTarget(_player);
+        }
+    }
+
+    internal class LevelSpawnPointManager : MonoBehaviour
+    {
     }
 }

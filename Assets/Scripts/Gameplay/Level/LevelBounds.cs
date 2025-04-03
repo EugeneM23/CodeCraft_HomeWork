@@ -19,15 +19,5 @@ namespace Gameplay
             
             return x && y;
         }
-
-        public static LevelBounds Bounds;
-
-        private void Awake()
-        {
-            if (Bounds == null) 
-                Bounds = this;
-            else
-                Destroy(gameObject);
-        }
     }
 }

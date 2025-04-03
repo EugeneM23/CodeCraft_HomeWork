@@ -13,5 +13,10 @@ namespace Gameplay
         {
             _transform.position += direction.normalized * _speed * Time.deltaTime;
         }
+
+        public void SetSpeed(float speed)
+        {
+            _speed = speed;
+        }
     }
 }

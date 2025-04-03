@@ -1,22 +1,18 @@
+using System;
 using System.Linq;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Gameplay
 {
-    public class LevelAttackPoints : MonoBehaviour
+    public class LevePointsManager : MonoBehaviour
     {
         private Transform[] _allPoints;
-        public static LevelAttackPoints Instance;
         public int Count => _allPoints.Length;
 
-        void Start()
+        private void Awake()
         {
             GetAllAttackPointsFromParent();
-
-            if (Instance == null)
-                Instance = this;
-            else
-                Destroy(gameObject);
         }
 
         private void GetAllAttackPointsFromParent()
@@ -27,12 +23,13 @@ namespace Gameplay
                 .ToArray();
         }
 
-        public Transform GetAttackPoint(int index)
+        public Vector3 GetPoint()
         {
-            if (index < _allPoints.Length)
-                return _allPoints[index];
+            if (_allPoints.Length == 0)
+                throw new InvalidOperationException();
 
-            return null;
+            int rand = Random.Range(0, _allPoints.Length);
+            return _allPoints[rand].position;
         }
     }
 }

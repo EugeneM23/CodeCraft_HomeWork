@@ -5,7 +5,7 @@ namespace Gameplay
 {
     public class PlayerInput : MonoBehaviour
     {
-        public event Action OnShoot;
+        public event Action<Vector3> OnShoot;
         public event Action<Vector3> OnMove;
 
         private void Update()
@@ -13,7 +13,7 @@ namespace Gameplay
             OnMove?.Invoke(new Vector3(Input.GetAxis("Horizontal"), 0, 0));
 
             if (Input.GetKey(KeyCode.Space))
-                OnShoot?.Invoke();
+                OnShoot?.Invoke(Vector3.up);
         }
     }
 }

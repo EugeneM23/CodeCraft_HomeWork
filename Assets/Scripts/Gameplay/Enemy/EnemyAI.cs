@@ -6,18 +6,18 @@ namespace Gameplay
 {
     public sealed class EnemyAI : MonoBehaviour
     {
-        public event Action OnShoot;
+        public event Action<Vector3> OnShoot;
 
+        private LevePointsManager _attackPoints;
         private Vector3 _moveTarget;
-
         private Character _enemy;
         private bool _isFirePosition;
+        private Transform _attackTarget;
 
         private void OnEnable()
         {
             _enemy = GetComponent<Character>();
             _isFirePosition = false;
-            _moveTarget = GetMoveTarget();
         }
 
         private void Update()
@@ -28,11 +28,18 @@ namespace Gameplay
                 MoveToAttackPosition();
         }
 
-        private void Shoot() => OnShoot?.Invoke();
+        private void Shoot()
+        {
+            var direction = _attackTarget.position - transform.position;
+            _enemy.Shoot(direction);
+        }
 
         private void MoveToAttackPosition()
         {
-            if (Vector3.Distance(_moveTarget, transform.position) < 0.1f)
+            if (_moveTarget == Vector3.zero)
+                _moveTarget = _attackPoints.GetPoint();
+
+            if (Vector3.Distance(_moveTarget, transform.position) < 0.5f)
             {
                 _isFirePosition = true;
                 return;
@@ -41,14 +48,14 @@ namespace Gameplay
             _enemy.Move(_moveTarget - transform.position);
         }
 
-        private Vector3 GetMoveTarget()
+        public void SetAttackTarget(Transform target)
         {
-            LevelAttackPoints attckPoints = LevelAttackPoints.Instance;
+            _attackTarget = target;
+        }
 
-            int rand = Random.Range(0, LevelAttackPoints.Instance.Count);
-            Vector3 moveTarget = attckPoints.GetAttackPoint(rand).transform.position;
-
-            return moveTarget;
+        public void SetAttackPointmanager(LevePointsManager levePointsManager)
+        {
+            _attackPoints = levePointsManager;
         }
     }
 }

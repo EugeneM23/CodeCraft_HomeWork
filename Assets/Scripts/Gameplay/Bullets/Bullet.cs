@@ -20,11 +20,12 @@ namespace Gameplay
 
         private void Update() => _moveComponent.Move(_moveDirection);
 
-        public void Construct(int damage, Color color, PhysicsLayer physicsLayer)
+        public void Construct(int damage, Color color, PhysicsLayer physicsLayer, float speed)
         {
             _damage = damage;
             spriteRenderer.color = color;
             gameObject.layer = (int)physicsLayer;
+            _moveComponent.SetSpeed(speed);
         }
 
         private void OnCollisionEnter2D(Collision2D collision)
@@ -35,8 +36,6 @@ namespace Gameplay
             {
                 _collisionEnable = false;
                 unit.TakeDamage(_damage);
-
-                Destroy();
             }
 
             Destroy();
