@@ -9,7 +9,7 @@ namespace Gameplay
         [SerializeField] private PlayerInput _input;
         [SerializeField] private Transform _playerSpawnPoint;
         [SerializeField] private Bulletmanager _bulletManager;
-        [FormerlySerializedAs("plaerWeaponRepository")] [FormerlySerializedAs("weaponRepository")] [FormerlySerializedAs("_weaponHandler")] [SerializeField] private PlayerWeaponRepository playerWeaponRepository;
+        [SerializeField] private PlayerWeaponRepository playerWeaponRepository;
 
         private void Awake()
         {
@@ -19,14 +19,16 @@ namespace Gameplay
         private void SpawnPlayer()
         {
             Character player = CreatePlayer();
-            
-            playerWeaponRepository.SetPlayer(player);
-            player.SetBulletManagerToWeapon(_bulletManager);
-            
+
             var playerShootController = new PlayerShootController(_input, player);
             var playerMoveController = new PlayerMoveController(_input, player);
             var playerDeathObserver = new PlayerDeathObserver(player);
             var playerWeaponSwitchController = new PlayerWeaponSwitchController(_input, playerWeaponRepository);
+            var playerMoveCondition = new PlayerOnScreeenCondition();
+
+            playerWeaponRepository.SetPlayer(player);
+            player.SetBulletManagerToWeapon(_bulletManager);
+            player.SetMoveOnScreeenCondition(playerMoveCondition);
         }
 
         private Character CreatePlayer()

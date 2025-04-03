@@ -13,10 +13,12 @@ namespace Gameplay
 
         private void Update()
         {
-            OnMove?.Invoke(new Vector3(Input.GetAxis("Horizontal"), 0, 0));
+            if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.D))
+            {
+                OnMove?.Invoke(new Vector3(Input.GetAxis("Horizontal"), 0, 0));
+            }
 
             Fire();
-            
             WeaponSwitch();
         }
 
