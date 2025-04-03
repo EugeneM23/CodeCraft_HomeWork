@@ -1,27 +1,10 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace NewPool
+namespace Modules.PrefabPool
 {
-    public class PrefabPool : MonoBehaviour
+    public class PrefabPool 
     {
-        private static PrefabPool _instance;
-
-        public static PrefabPool Instance
-        {
-            get
-            {
-                if (_instance == null)
-                {
-                    GameObject obj = new GameObject("PoolManager");
-                    _instance = obj.AddComponent<PrefabPool>();
-                    DontDestroyOnLoad(obj);
-                }
-
-                return _instance;
-            }
-        }
 
         private Dictionary<string, Queue<GameObject>> _pools = new();
 
@@ -46,12 +29,12 @@ namespace NewPool
 
         private GameObject CreateObject(GameObject prefab)
         {
-            GameObject go = Instantiate(prefab);
-            go.name = prefab.name; 
-            
+            GameObject go = Object.Instantiate(prefab);
+            go.name = prefab.name;
+
             IDespawned component = go.GetComponent<IDespawned>();
             component.SetDespawnCallBack(DeSpawn);
-            
+
             return go;
         }
 

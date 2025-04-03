@@ -1,9 +1,10 @@
 using System;
+using Modules.PrefabPool;
 using UnityEngine;
 
 namespace Gameplay
 {
-    public class Bullet : MonoBehaviour, IDespawned, NewPool.IDespawned
+    public class Bullet : MonoBehaviour, IDespawned
     {
         private Action<GameObject> OnDespawn;
 
@@ -41,7 +42,14 @@ namespace Gameplay
             Destroy();
         }
 
-        public void SetMoveDirection(Vector3 moveDirection) => _moveDirection = moveDirection;
+        public void SetPosition(Vector3 position)
+        {
+            transform.position = position;
+        }
+        public void SetMoveDirection(Vector3 moveDirection)
+        {
+            _moveDirection = moveDirection;
+        }
 
         public void Destroy()
         {
@@ -52,10 +60,5 @@ namespace Gameplay
         {
             OnDespawn = callback;
         }
-    }
-
-    public interface IDespawned
-    {
-        public void SetDespawnCallBack(Action<GameObject> callback);
     }
 }

@@ -1,5 +1,5 @@
 using System.Collections;
-using NewPool;
+using Modules.PrefabPool;
 using UnityEngine;
 
 namespace Gameplay
@@ -8,7 +8,6 @@ namespace Gameplay
     {
         [SerializeField] private WeaponData _wd;
         [SerializeField] private Transform _firePoint;
-
 
         private bool _canFire = true;
 
@@ -32,7 +31,7 @@ namespace Gameplay
 
             Bullet bullet = go.GetComponent<Bullet>();
             bullet.SetMoveDirection(fireDirection);
-            bullet.gameObject.transform.position = _firePoint.position;
+            bullet.SetPosition(_firePoint.position);
             bullet.Construct(_wd.Damage, _wd.BulletColor, _wd.PhysicsLayer);
         }
 

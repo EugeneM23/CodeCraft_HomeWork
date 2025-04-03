@@ -1,14 +1,13 @@
 using System.Collections;
+using Modules.PrefabPool;
 using UnityEngine;
 
 namespace Gameplay
 {
     public class EnemySpawner : MonoBehaviour
     {
-        /*[SerializeField] private Enemy[] _enemies;
+        [SerializeField] private Character[] _enemies;
         [SerializeField] private Transform _spawnPoints;
-        [SerializeField] private EnemyPool _enemyPool;
-        [SerializeField] private BulletPool _bulletPool;
         [SerializeField] private WeaponData testData;
 
         [SerializeField] private int _maxEnemies = 10;
@@ -21,16 +20,19 @@ namespace Gameplay
             {
                 yield return new WaitForSeconds(Random.Range(_minSpawnTime, _maxSpawnTime));
 
-                if (_enemyPool.Pool.CountActive <= _maxEnemies)
-                    SpawnEnemy();
+                /*if (_enemyPool.Pool.CountActive <= _maxEnemies)
+                    SpawnEnemy();*/
+                
+                SpawnEnemy();
             }
         }
 
         private void SpawnEnemy()
         {
-            Enemy spawnEnemy = _enemyPool.Rent();
+            int randomIndex = Random.Range(0, _enemies.Length);
+            Character spawnEnemy = PrefabPool.Instance.Spawn<Character>(_enemies[randomIndex].gameObject);
             int spawnIndex = Random.Range(0, _spawnPoints.childCount);
             spawnEnemy.transform.position = _spawnPoints.transform.GetChild(spawnIndex).position;
-        }*/
+        }
     }
 }

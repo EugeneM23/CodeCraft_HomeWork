@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Gameplay
 {
     [Serializable]
-    public class MoveComponent 
+    public class MoveComponent
     {
         [SerializeField] private Transform _transform;
         [SerializeField] private float _speed = 5;

@@ -1,16 +1,16 @@
 using System;
-using Unity.Collections.LowLevel.Unsafe;
-using UnityEditor.Connect;
+using Modules.PrefabPool;
 using UnityEngine;
 
 namespace Gameplay
 {
-    public class Character : MonoBehaviour, IDamageable
+    public class Character : MonoBehaviour, IDamageable, IDespawned
     {
-        public event Action OnDath;
-        [SerializeField] protected int _health;
+        public Action<GameObject> OnDespawn;
+        
+        [SerializeField] private HealthComponent _healthComponent;
         [SerializeField] private MoveComponent _moveComponent;
-        [SerializeField] protected Weapon _weapon;
+        [SerializeField] private Weapon _weapon;
 
         public void Shoot()
         {
@@ -24,11 +24,14 @@ namespace Gameplay
 
         public void TakeDamage(int damage)
         {
-            _health -= damage;
-            if (_health <= 0)
-                OnDath?.Invoke();
+            _healthComponent.TakeDamage(damage, OnDespawn, this.gameObject);
         }
 
         public void SetWeaponData(WeaponData testData) => _weapon.SetWeaponData(testData);
+
+        public void SetDespawnCallBack(Action<GameObject> callback)
+        {
+            OnDespawn = callback;
+        }
     }
 }

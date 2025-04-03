@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace NewPool
+namespace Modules.PrefabPool
 {
     public interface IDespawned
     {
