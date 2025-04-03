@@ -6,6 +6,8 @@ namespace Gameplay
 {
     public class Character : MonoBehaviour, IDamageable, IDespawned
     {
+        public event Action<IDespawned> BackToPool;
+
         public Action<GameObject> OnDespawn;
         
         [SerializeField] private HealthComponent _healthComponent;
@@ -28,6 +30,7 @@ namespace Gameplay
         }
 
         public void SetWeaponData(WeaponData testData) => _weapon.SetWeaponData(testData);
+
 
         public void SetDespawnCallBack(Action<GameObject> callback)
         {

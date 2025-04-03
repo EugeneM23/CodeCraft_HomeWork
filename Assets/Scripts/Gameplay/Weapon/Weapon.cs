@@ -8,7 +8,7 @@ namespace Gameplay
     {
         [SerializeField] private WeaponData _wd;
         [SerializeField] private Transform _firePoint;
-
+        [SerializeField] private Bulletmanager _bulletManager;
         private bool _canFire = true;
 
         public void OnEnable()
@@ -27,7 +27,7 @@ namespace Gameplay
 
         private void SetupBullet(Vector3 fireDirection)
         {
-            Bullet go = PrefabPool.Instance.Spawn<Bullet>(_wd.BulletPrefab);
+            Bullet go = _bulletManager.GetBullet<Bullet>(_wd.BulletPrefab);
 
             Bullet bullet = go.GetComponent<Bullet>();
             bullet.SetMoveDirection(fireDirection);

@@ -7,6 +7,8 @@ namespace Gameplay
     public class Bullet : MonoBehaviour, IDespawned
     {
         private Action<GameObject> OnDespawn;
+        public event Action<IDespawned> BackToPool;
+
 
         [SerializeField] private SpriteRenderer spriteRenderer;
         [SerializeField] private Rigidbody2D _rigidbody2D;
@@ -54,7 +56,9 @@ namespace Gameplay
         public void Destroy()
         {
             OnDespawn?.Invoke(this.gameObject);
+            BackToPool?.Invoke(this);
         }
+
 
         public void SetDespawnCallBack(Action<GameObject> callback)
         {

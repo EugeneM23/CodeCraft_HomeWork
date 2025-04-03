@@ -6,7 +6,7 @@ namespace Gameplay
 {
     public class EnemySpawner : MonoBehaviour
     {
-        [SerializeField] private Character[] _enemies;
+        /*[SerializeField] private Character[] _enemies;
         [SerializeField] private Transform _spawnPoints;
         [SerializeField] private WeaponData testData;
 
@@ -21,7 +21,7 @@ namespace Gameplay
                 yield return new WaitForSeconds(Random.Range(_minSpawnTime, _maxSpawnTime));
 
                 /*if (_enemyPool.Pool.CountActive <= _maxEnemies)
-                    SpawnEnemy();*/
+                    SpawnEnemy();#1#
                 
                 SpawnEnemy();
             }
@@ -33,6 +33,6 @@ namespace Gameplay
             Character spawnEnemy = PrefabPool.Instance.Spawn<Character>(_enemies[randomIndex].gameObject);
             int spawnIndex = Random.Range(0, _spawnPoints.childCount);
             spawnEnemy.transform.position = _spawnPoints.transform.GetChild(spawnIndex).position;
-        }
+        }*/
     }
 }
