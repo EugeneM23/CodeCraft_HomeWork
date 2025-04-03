@@ -6,10 +6,8 @@ namespace Gameplay
 {
     public class Character : MonoBehaviour, IDamageable, IDespawned
     {
-        public event Action<IDespawned> BackToPool;
+        public event Action<GameObject> DeSpawn;
 
-        public Action<GameObject> OnDespawn;
-        
         [SerializeField] private HealthComponent _healthComponent;
         [SerializeField] private MoveComponent _moveComponent;
         [SerializeField] private Weapon _weapon;
@@ -26,15 +24,16 @@ namespace Gameplay
 
         public void TakeDamage(int damage)
         {
-            _healthComponent.TakeDamage(damage, OnDespawn, this.gameObject);
+            _healthComponent.TakeDamage(damage,this);
         }
 
         public void SetWeaponData(WeaponData testData) => _weapon.SetWeaponData(testData);
 
-
-        public void SetDespawnCallBack(Action<GameObject> callback)
+        public void SetBulletManager(Bulletmanager bulletManager)
         {
-            OnDespawn = callback;
+            _weapon.SetBulletManager(bulletManager);
         }
+
+        public void Destroy() => DeSpawn?.Invoke(gameObject);
     }
 }

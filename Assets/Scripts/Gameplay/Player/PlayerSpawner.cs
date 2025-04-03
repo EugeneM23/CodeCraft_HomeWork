@@ -9,6 +9,7 @@ namespace Gameplay
         [SerializeField] private PlayerInput _input;
         [SerializeField] private Transform _playerSpawnPoint;
         [SerializeField] private WeaponData _testData;
+        [SerializeField] private Bulletmanager _bulletManager;
 
         private void Awake()
         {
@@ -26,6 +27,7 @@ namespace Gameplay
         {
             Character player = Instantiate(_playerPrefab, _playerSpawnPoint.position, Quaternion.identity);
             player.SetWeaponData(_testData);
+            player.SetBulletManager(_bulletManager);
 
             return player;
         }

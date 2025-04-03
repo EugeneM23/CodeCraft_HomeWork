@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Modules.PrefabPool;
 using UnityEngine;
@@ -7,8 +6,10 @@ namespace Gameplay
 {
     public class Bulletmanager : MonoBehaviour
     {
+        [SerializeField] private LevelBounds levelBounds;
+
         private PrefabPool _prefabPoll;
-        private List<IDespawned> _activeObjects = new List<IDespawned>();
+        private List<GameObject> _activeObjects = new List<GameObject>();
 
         private void Awake()
         {
@@ -18,22 +19,29 @@ namespace Gameplay
         public T GetBullet<T>(GameObject prefab) where T : MonoBehaviour, IDespawned
         {
             T bullet = _prefabPoll.Spawn<T>(prefab);
-            _activeObjects.Add(bullet);
+            _activeObjects.Add(bullet.gameObject);
 
-            bullet.BackToPool += asd;
+            bullet.DeSpawn += RemoveBulletFromActivList;
 
             return bullet;
         }
 
-        private void asd(IDespawned bullet)
+        private void RemoveBulletFromActivList(GameObject bullet)
         {
             _activeObjects.Remove(bullet);
-            bullet.BackToPool -= asd;
+            bullet.GetComponent<IDespawned>().DeSpawn -= RemoveBulletFromActivList;
         }
 
         private void FixedUpdate()
         {
             Debug.Log(_activeObjects.Count);
+            for (int i = 0; i < _activeObjects.Count; i++)
+            {
+                if (!levelBounds.InBounds(_activeObjects[i].transform.position))
+                {
+                    _activeObjects[i].GetComponent<IDespawned>().Destroy();
+                }
+            }
         }
     }
 }

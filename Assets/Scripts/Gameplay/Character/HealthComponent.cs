@@ -1,4 +1,5 @@
 using System;
+using Modules.PrefabPool;
 using UnityEngine;
 
 namespace Gameplay
@@ -8,11 +9,11 @@ namespace Gameplay
     {
         [SerializeField] private int _health;
 
-        public void TakeDamage(int damage, Action<GameObject> onDespawn, GameObject gameObject)
+        public void TakeDamage(int damage, IDespawned component)
         {
             _health -= damage;
             if (_health <= 0)
-                onDespawn?.Invoke(gameObject);
+                component.Destroy();
         }
     }
 }

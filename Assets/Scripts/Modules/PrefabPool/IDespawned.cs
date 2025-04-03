@@ -5,7 +5,8 @@ namespace Modules.PrefabPool
 {
     public interface IDespawned
     {
-        public event Action<IDespawned> BackToPool;
-        void SetDespawnCallBack(System.Action<GameObject> callback);
+        public event Action<GameObject> DeSpawn;
+        
+        public void Destroy();
     }
 }
