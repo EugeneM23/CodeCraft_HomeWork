@@ -10,11 +10,6 @@ namespace Gameplay
             _input = input;
             _player = player;
 
-            Subscription();
-        }
-
-        private void Subscription()
-        {
             _input.OnMove += _player.Move;
         }
     }

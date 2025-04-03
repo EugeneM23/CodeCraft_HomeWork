@@ -27,9 +27,9 @@ namespace Gameplay
             _healthComponent.TakeDamage(damage,this);
         }
 
-        public void SetWeaponData(WeaponData testData)
+        public void SetWeaponData(WeaponData wd)
         {
-            _weapon.SetWeaponData(testData);
+            _weapon.SetWeaponData(wd);
         }
 
         public void SetBulletManagerToWeapon(Bulletmanager bulletManager)
@@ -37,11 +37,14 @@ namespace Gameplay
             _weapon.SetBulletManager(bulletManager);
         }
 
-        public void Destroy() => DeSpawn?.Invoke(gameObject);
-
         public void SetPosition(Vector3 position)
         {
             transform.position = position;
+        }
+
+        public void Destroy()
+        {
+            DeSpawn?.Invoke(gameObject);
         }
     }
 }

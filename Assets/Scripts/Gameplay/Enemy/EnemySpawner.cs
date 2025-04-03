@@ -9,8 +9,7 @@ namespace Gameplay
     {
         [SerializeField] private LevePointsManager _leveSpawnPoints;
         [SerializeField] private LevePointsManager _levelAttackPoints;
-
-        [SerializeField] private Character[] _enemies;
+        [SerializeField] private EnemyRepository enemyRepository;
         [SerializeField] private Bulletmanager _bulletManager;
 
         [SerializeField] private int _maxEnemies = 10;
@@ -39,8 +38,7 @@ namespace Gameplay
 
         private void SpawnEnemy()
         {
-            int randomIndex = Random.Range(0, _enemies.Length);
-            Character spawnEnemy = _prefabPoll.Spawn<Character>(_enemies[randomIndex].gameObject);
+            Character spawnEnemy = _prefabPoll.Spawn<Character>(enemyRepository.GetEnemy());
 
             SetupEnemy(spawnEnemy);
             SetSpawnPosition(spawnEnemy);
@@ -57,9 +55,5 @@ namespace Gameplay
             spawnEnemy.GetComponent<EnemyAI>().SetAttackPointmanager(_levelAttackPoints);
             spawnEnemy.GetComponent<EnemyAI>().SetAttackTarget(_player);
         }
-    }
-
-    internal class LevelSpawnPointManager : MonoBehaviour
-    {
     }
 }

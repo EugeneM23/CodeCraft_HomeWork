@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3607af5c0b00442f814a1f2b9d387504, type: 3}
-  m_Name: EnemyWeaponData_01
+  m_Name: PlayerWeaponData_02
   m_EditorClassIdentifier: 
-  <FireRate>k__BackingField: 1
+  <FireRate>k__BackingField: 0.1
   <_bulletInfo>k__BackingField:
-    <Damage>k__BackingField: 1
-    <BulletColor>k__BackingField: {r: 1, g: 0, b: 0, a: 1}
-    <PhysicsLayer>k__BackingField: 13
+    <Damage>k__BackingField: 5
+    <BulletColor>k__BackingField: {r: 1, g: 0, b: 0.36811924, a: 1}
+    <PhysicsLayer>k__BackingField: 14
     <BulletPrefab>k__BackingField: {fileID: 2743036428890533592, guid: 5fe72886874b4e445b06cf777ca4920d,
       type: 3}
-    <BulletSpeed>k__BackingField: 3
+    <BulletSpeed>k__BackingField: 10

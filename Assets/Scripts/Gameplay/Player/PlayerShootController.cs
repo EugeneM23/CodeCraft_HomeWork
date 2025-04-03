@@ -10,9 +10,7 @@ namespace Gameplay
             _input = input;
             _player = player;
 
-            Subscription();
+            _input.OnShoot += _player.Shoot;
         }
-
-        private void Subscription() => _input.OnShoot += _player.Shoot;
     }
 }

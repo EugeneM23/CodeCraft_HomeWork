@@ -1,13 +1,10 @@
 using System;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 namespace Gameplay
 {
     public sealed class EnemyAI : MonoBehaviour
     {
-        public event Action<Vector3> OnShoot;
-
         private LevePointsManager _attackPoints;
         private Vector3 _moveTarget;
         private Character _enemy;
