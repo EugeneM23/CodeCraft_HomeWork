@@ -2,7 +2,8 @@ using UnityEngine;
 
 namespace Gameplay
 {
-    internal class EnemyRepository : MonoBehaviour
+    [CreateAssetMenu(fileName = "EnemyCatalog_", menuName = "Enemy/EnemyCatalog")]
+    internal class EnemyCatalog : ScriptableObject
     {
         [SerializeField] private Character[] _enemies;
 

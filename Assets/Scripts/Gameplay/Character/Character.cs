@@ -1,5 +1,5 @@
 using System;
-using Modules.PrefabPool;
+using Modules.Pooling;
 using UnityEngine;
 
 namespace Gameplay
@@ -12,7 +12,7 @@ namespace Gameplay
         [SerializeField] private MoveComponent _moveComponent;
         [SerializeField] private Weapon _weapon;
 
-        private ImoveCondition _moveCondition;
+        private IMoveCondition _moveCondition;
 
         public void Move(Vector3 direction)
         {
@@ -20,39 +20,25 @@ namespace Gameplay
                 _moveComponent.Move(direction);
         }
 
-        public void Shoot(Vector3 direction)
-        {
+        public void Shoot(Vector3 direction) =>
             _weapon.Shoot(direction);
-        }
 
-        public void TakeDamage(int damage)
-        {
+        public void TakeDamage(int damage) =>
             _healthComponent.TakeDamage(damage, this);
-        }
 
-        public void SetWeaponData(WeaponData wd)
-        {
+        public void SetWeaponData(WeaponData wd) =>
             _weapon.SetWeaponData(wd);
-        }
 
-        public void SetBulletManagerToWeapon(Bulletmanager bulletManager)
-        {
+        public void SetBulletManager(BulletManager bulletManager) =>
             _weapon.SetBulletManager(bulletManager);
-        }
 
-        public void SetPosition(Vector3 position)
-        {
+        public void SetPosition(Vector3 position) =>
             transform.position = position;
-        }
 
-        public void Destroy()
-        {
+        public void Destroy() =>
             DeSpawn?.Invoke(gameObject);
-        }
 
-        public void SetMoveOnScreeenCondition(ImoveCondition condition)
-        {
+        public void SetMoveCondition(IMoveCondition condition) =>
             _moveCondition = condition;
-        }
     }
 }

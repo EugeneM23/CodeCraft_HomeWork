@@ -5,7 +5,6 @@ namespace Gameplay
 {
     public class PlayerInput : MonoBehaviour
     {
-        private static int count;
         public event Action<Vector3> OnShoot;
         public event Action<Vector3> OnMove;
         public event Action OnNextWeapon;
@@ -13,10 +12,8 @@ namespace Gameplay
 
         private void Update()
         {
-            if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.D))
-            {
+            if (Input.GetAxis("Horizontal") != 0) 
                 OnMove?.Invoke(new Vector3(Input.GetAxis("Horizontal"), 0, 0));
-            }
 
             Fire();
             WeaponSwitch();
@@ -28,14 +25,14 @@ namespace Gameplay
                 OnShoot?.Invoke(Vector3.up);
         }
 
-        private  void WeaponSwitch()
+        private void WeaponSwitch()
         {
             float scroll = Input.GetAxis("Mouse ScrollWheel");
 
             if (scroll > 0f)
                 OnNextWeapon?.Invoke();
-            
-            if (scroll < 0f) 
+
+            if (scroll < 0f)
                 OnPreviousWepon?.Invoke();
         }
     }

@@ -1,17 +1,23 @@
+using System;
+using UnityEngine;
+
 namespace Gameplay
 {
-    public class PlayerWeaponSwitchController
+    public class PlayerWeaponSwitchController : MonoBehaviour
     {
-        private PlayerInput _playerInput;
-        private PlayerWeaponRepository playerWeaponRepository;
+        [SerializeField] private PlayerInput _playerInput;
+        [SerializeField] private PlayerWeaponCatalog playerWeaponCatalog;
 
-        public PlayerWeaponSwitchController(PlayerInput playerInput, PlayerWeaponRepository playerWeaponRepository)
+        private void OnEnable()
         {
-            _playerInput = playerInput;
-            this.playerWeaponRepository = playerWeaponRepository;
+            _playerInput.OnNextWeapon += this.playerWeaponCatalog.SetNexWeapon;
+            _playerInput.OnPreviousWepon += this.playerWeaponCatalog.PreviousWepon;
+        }
 
-            _playerInput.OnNextWeapon += this.playerWeaponRepository.SetNexWeapon;
-            _playerInput.OnPreviousWepon += this.playerWeaponRepository.PreviousWepon;
+        private void OnDisable()
+        {
+            _playerInput.OnNextWeapon -= this.playerWeaponCatalog.SetNexWeapon;
+            _playerInput.OnPreviousWepon -= this.playerWeaponCatalog.PreviousWepon;
         }
     }
 }

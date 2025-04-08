@@ -890,12 +890,19 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3951702117947426122}
+  - component: {fileID: 3951702117947426126}
+  - component: {fileID: 3951702117947426128}
+  - component: {fileID: 3951702117947426125}
+  - component: {fileID: 3951702117947426129}
+  - component: {fileID: 3951702117947426135}
+  - component: {fileID: 3951702117947426134}
+  - component: {fileID: 3951702117947426133}
   - component: {fileID: 3951702117947426124}
   - component: {fileID: 3951702117947426123}
-  - component: {fileID: 3951702117947426125}
-  - component: {fileID: 3951702117947426126}
+  - component: {fileID: 3951702117947426132}
+  - component: {fileID: 3951702117947426131}
   - component: {fileID: 3951702117947426127}
-  - component: {fileID: 3951702117947426128}
+  - component: {fileID: 3951702117947426130}
   m_Layer: 0
   m_Name: '[System]'
   m_TagString: Untagged
@@ -950,7 +957,9 @@ MonoBehaviour:
   _input: {fileID: 3951702117947426123}
   _playerSpawnPoint: {fileID: 866646691}
   _bulletManager: {fileID: 3951702117947426126}
-  playerWeaponRepository: {fileID: 3951702117947426127}
+  playerWeaponCatalog: {fileID: 3951702117947426127}
+  _camera: {fileID: 519420031}
+  _characterProvider: {fileID: 3951702117947426130}
 --- !u!114 &3951702117947426125
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -965,11 +974,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _leveSpawnPoints: {fileID: 4914023371208914564}
   _levelAttackPoints: {fileID: 9048567252472711236}
-  enemyRepository: {fileID: 3951702117947426128}
+  _enemyCatalog: {fileID: 11400000, guid: 1e5f9d984170f487289650c0f92aebda, type: 2}
   _bulletManager: {fileID: 3951702117947426126}
-  _maxEnemies: 10
-  _maxSpawnTime: 3
-  _minSpawnTime: 0
+  _prefabPoll: {fileID: 3951702117947426128}
+  _characterProvider: {fileID: 3951702117947426130}
 --- !u!114 &3951702117947426126
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -983,6 +991,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   levelBounds: {fileID: 5855314139872829261}
+  _prefabPool: {fileID: 3951702117947426128}
 --- !u!114 &3951702117947426127
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1008,13 +1017,105 @@ MonoBehaviour:
   m_GameObject: {fileID: 3951702117947426121}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ab8a3d6a8d0f401a9948d15b5bdc315f, type: 3}
+  m_Script: {fileID: 11500000, guid: 0e65fbf57c644ed989c4f637fb67019c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _enemies:
-  - {fileID: 6005808975439034268, guid: 87fe189881a524806800482ac8eaaa83, type: 3}
-  - {fileID: 6005808975439034268, guid: 0d2ac81e2e3e441efb3bff586b3fe842, type: 3}
-  - {fileID: 6005808975439034268, guid: daa0b2742538d475b83557056da08d98, type: 3}
+--- !u!114 &3951702117947426129
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3951702117947426121}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f5184e12cde9461a81b6fcf08b2ca0e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _manager: {fileID: 3951702117947426125}
+  _minSpawnTime: 0
+  _maxSpawnTime: 3
+--- !u!114 &3951702117947426130
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3951702117947426121}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0e3c79fb86c46bda36d6bfea2123421, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &3951702117947426131
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3951702117947426121}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6bce877bb019497bb24d7c49752fa3e3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _characterProvider: {fileID: 3951702117947426130}
+--- !u!114 &3951702117947426132
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3951702117947426121}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2965a07864f74d5883d3bb0aeb95a57f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _playerInput: {fileID: 3951702117947426123}
+  playerWeaponCatalog: {fileID: 3951702117947426127}
+--- !u!114 &3951702117947426133
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3951702117947426121}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2965a07864f74d5883d3bb0aeb95a57f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _playerInput: {fileID: 3951702117947426123}
+  playerWeaponCatalog: {fileID: 3951702117947426127}
+--- !u!114 &3951702117947426134
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3951702117947426121}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2a2acd2803146b083106417af7e3cb4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _input: {fileID: 3951702117947426123}
+  _characterProvider: {fileID: 3951702117947426130}
+--- !u!114 &3951702117947426135
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3951702117947426121}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 49544f561afc40cca5cbe43dd9adb317, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _input: {fileID: 3951702117947426123}
+  _characterProvider: {fileID: 3951702117947426130}
 --- !u!4 &4582573935964482175
 Transform:
   m_ObjectHideFlags: 0

@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Gameplay
 {
-    public class PlayerWeaponRepository : MonoBehaviour
+    public class PlayerWeaponCatalog : MonoBehaviour
     {
         [SerializeField] private WeaponData[] _weapons;
         
@@ -31,14 +31,8 @@ namespace Gameplay
             _player.SetWeaponData(_weapons[_currentWeapon]);
         }
 
-        public void SetPlayer(Character player)
-        {
-            _player = player;
-        }
+        public void SetPlayer(Character player) => _player = player;
 
-        private void PrintWeaponName()
-        {
-            Debug.Log(_weapons[_currentWeapon].name);
-        }
+        private void PrintWeaponName() => Debug.Log(_weapons[_currentWeapon].name);
     }
 }

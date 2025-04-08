@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Modules.PrefabPool
+namespace Modules.Pooling
 {
     public interface IDespawned
     {

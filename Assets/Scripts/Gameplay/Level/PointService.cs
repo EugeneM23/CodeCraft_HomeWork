@@ -5,17 +5,11 @@ using Random = UnityEngine.Random;
 
 namespace Gameplay
 {
-    public class LevePointsManager : MonoBehaviour
+    public class PointService : MonoBehaviour
     {
         private Transform[] _allPoints;
-        public int Count => _allPoints.Length;
 
         private void Awake()
-        {
-            GetAllAttackPointsFromParent();
-        }
-
-        private void GetAllAttackPointsFromParent()
         {
             _allPoints = gameObject.transform
                 .Cast<Transform>()
@@ -23,7 +17,7 @@ namespace Gameplay
                 .ToArray();
         }
 
-        public Vector3 GetPoint()
+        public Vector3 NextPoint()
         {
             if (_allPoints.Length == 0)
                 throw new InvalidOperationException();

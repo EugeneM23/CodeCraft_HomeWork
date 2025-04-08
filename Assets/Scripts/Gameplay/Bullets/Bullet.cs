@@ -1,5 +1,5 @@
 using System;
-using Modules.PrefabPool;
+using Modules.Pooling;
 using UnityEngine;
 
 namespace Gameplay
@@ -9,7 +9,6 @@ namespace Gameplay
         public event Action<GameObject> DeSpawn;
 
         [SerializeField] private SpriteRenderer spriteRenderer;
-        [SerializeField] private Rigidbody2D _rigidbody2D;
         [SerializeField] private MoveComponent _moveComponent;
 
         private bool _collisionEnable = true;
@@ -41,19 +40,10 @@ namespace Gameplay
             Destroy();
         }
 
-        public void SetPosition(Vector3 position)
-        {
-            transform.position = position;
-        }
+        public void SetPosition(Vector3 position) => transform.position = position;
 
-        public void SetMoveDirection(Vector3 moveDirection)
-        {
-            _moveDirection = moveDirection;
-        }
+        public void SetMoveDirection(Vector3 moveDirection) => _moveDirection = moveDirection;
 
-        public void Destroy()
-        {
-            DeSpawn?.Invoke(gameObject);
-        }
+        public void Destroy() => DeSpawn?.Invoke(gameObject);
     }
 }

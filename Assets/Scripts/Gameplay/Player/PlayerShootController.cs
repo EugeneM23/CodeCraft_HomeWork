@@ -1,16 +1,15 @@
+using System;
+using UnityEngine;
+
 namespace Gameplay
 {
-    public class PlayerShootController
+    public class PlayerShootController : MonoBehaviour
     {
-        private readonly PlayerInput _input;
-        private readonly Character _player;
+        [SerializeField] private PlayerInput _input;
+        [SerializeField] private PlayerCharacterProvider _characterProvider;
 
-        public PlayerShootController(PlayerInput input, Character player)
-        {
-            _input = input;
-            _player = player;
+        private void OnEnable() => _input.OnShoot += _characterProvider.Character.Shoot;
 
-            _input.OnShoot += _player.Shoot;
-        }
+        private void OnDisable() => _input.OnShoot -= _characterProvider.Character.Shoot;
     }
 }

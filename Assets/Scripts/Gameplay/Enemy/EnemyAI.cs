@@ -1,12 +1,11 @@
-using System;
 using UnityEngine;
 
 namespace Gameplay
 {
     public sealed class EnemyAI : MonoBehaviour
     {
-        private LevePointsManager _attackPoints;
-        private Vector3 _moveTarget;
+        private const float STOPING_DISTANCE = 0.5f;
+        private Vector3 _destination;
         private Character _enemy;
         private bool _isFirePosition;
         private Transform _attackTarget;
@@ -22,7 +21,7 @@ namespace Gameplay
             if (_isFirePosition)
                 Shoot();
             else
-                MoveToAttackPosition();
+                MoveToPosition();
         }
 
         private void Shoot()
@@ -31,28 +30,19 @@ namespace Gameplay
             _enemy.Shoot(direction);
         }
 
-        private void MoveToAttackPosition()
+        private void MoveToPosition()
         {
-            if (_moveTarget == Vector3.zero)
-                _moveTarget = _attackPoints.GetPoint();
-
-            if (Vector3.Distance(_moveTarget, transform.position) < 0.5f)
+            if (Vector3.Distance(_destination, transform.position) < STOPING_DISTANCE)
             {
                 _isFirePosition = true;
                 return;
             }
 
-            _enemy.Move(_moveTarget - transform.position);
+            _enemy.Move(_destination - transform.position);
         }
 
-        public void SetAttackTarget(Transform target)
-        {
-            _attackTarget = target;
-        }
+        public void SetAttackTarget(Transform target) => _attackTarget = target;
 
-        public void SetAttackPointmanager(LevePointsManager levePointsManager)
-        {
-            _attackPoints = levePointsManager;
-        }
+        public void SetDestination(Vector3 destination) => _destination = destination;
     }
 }

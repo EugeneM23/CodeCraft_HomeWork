@@ -1,16 +1,15 @@
+using System;
+using UnityEngine;
+
 namespace Gameplay
 {
-    public class PlayerMoveController
+    public class PlayerMoveController : MonoBehaviour
     {
-        private readonly PlayerInput _input;
-        private readonly Character _player;
+        [SerializeField] private PlayerInput _input;
+        [SerializeField] private PlayerCharacterProvider _characterProvider;
 
-        public PlayerMoveController(PlayerInput input, Character player)
-        {
-            _input = input;
-            _player = player;
+        private void OnEnable() => _input.OnMove += _characterProvider.Character.Move;
 
-            _input.OnMove += _player.Move;
-        }
+        private void OnDisable() => _input.OnMove -= _characterProvider.Character.Move;
     }
 }

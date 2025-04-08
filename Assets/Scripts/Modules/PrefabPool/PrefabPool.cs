@@ -1,24 +1,23 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Modules.PrefabPool
+namespace Modules.Pooling
 {
-    public class PrefabPool
+    public class PrefabPool : MonoBehaviour
     {
         private Dictionary<string, Queue<GameObject>> _pools = new();
 
-        public T Spawn<T>(GameObject prefab) where T : MonoBehaviour, IDespawned
+        public T Spawn<T>(GameObject prefab) where T : MonoBehaviour
         {
             string key = prefab.name;
 
-            if (!_pools.ContainsKey(key)) 
+            if (!_pools.ContainsKey(key))
                 _pools[key] = new Queue<GameObject>();
 
             if (_pools[key].Count > 0)
             {
                 GameObject obj = _pools[key].Dequeue();
                 obj.SetActive(true);
-                obj.GetComponent<T>().DeSpawn += DeSpawn;
 
                 return obj.GetComponent<T>();
             }
@@ -31,16 +30,12 @@ namespace Modules.PrefabPool
             GameObject go = Object.Instantiate(prefab);
             go.name = prefab.name;
 
-            IDespawned component = go.GetComponent<IDespawned>();
-            component.DeSpawn += DeSpawn;
             return go;
         }
 
         public void DeSpawn(GameObject gameObject)
         {
-            gameObject.GetComponent<IDespawned>().DeSpawn -= DeSpawn;
             string key = gameObject.name;
-
 
             gameObject.SetActive(false);
             _pools[key].Enqueue(gameObject);

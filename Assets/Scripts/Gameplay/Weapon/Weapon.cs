@@ -8,7 +8,7 @@ namespace Gameplay
         [SerializeField] private WeaponData _wd;
         [SerializeField] private Transform _firePoint;
 
-        private Bulletmanager _bulletManager;
+        private BulletManager _bulletManager;
         private bool _canFire = true;
 
         public void OnEnable()
@@ -32,7 +32,7 @@ namespace Gameplay
 
         public void SetWeaponData(WeaponData data) => _wd = data;
 
-        public void SetBulletManager(Bulletmanager bulletManager)
+        public void SetBulletManager(BulletManager bulletManager)
         {
             _bulletManager = bulletManager;
         }

@@ -1,5 +1,5 @@
 using System;
-using Modules.PrefabPool;
+using Modules.Pooling;
 using UnityEngine;
 
 namespace Gameplay
