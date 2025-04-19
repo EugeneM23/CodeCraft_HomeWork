@@ -25,9 +25,13 @@ namespace Inventories
                 int count = 0;
 
                 for (int i = 0; i < _items.GetLength(0); i++)
-                for (int j = 0; j < _items.GetLength(1); j++)
-                    if (_items[i, j] != null)
-                        count++;
+                {
+                    for (int j = 0; j < _items.GetLength(1); j++)
+                    {
+                        if (_items[i, j] != null)
+                            count++;
+                    }
+                }
 
                 return count;
             }
@@ -37,29 +41,42 @@ namespace Inventories
 
         public Inventory(in int width, in int height)
         {
+            if (width <= 0 || height <= 0)
+                throw new ArgumentOutOfRangeException();
+            
             _items = new Item[width, height];
         }
 
-        public Inventory(
-            in int width,
-            in int height,
-            params KeyValuePair<Item, Vector2Int>[] items
-        ) : this(width, height) => throw new NotImplementedException();
+        public Inventory(in int width, in int height, params KeyValuePair<Item, Vector2Int>[] items) :
+            this(width, height)
+        {
+            if (items == null)
+                throw new ArgumentNullException("items");
 
-        public Inventory(in int width, in int height, params Item[] items) : this(width, height) =>
-            throw new NotImplementedException();
+            foreach (var item in items)
+            {
+            }
+        }
 
-        public Inventory(
-            in int width,
-            in int height,
-            in IEnumerable<KeyValuePair<Item, Vector2Int>> items
-        ) : this(width, height) => throw new NotImplementedException();
+        public Inventory(in int width, in int height, params Item[] items) :
+            this(width, height)
+        {
+            if (items == null)
+                throw new ArgumentNullException("items");
+        }
 
-        public Inventory(
-            in int width,
-            in int height,
-            in IEnumerable<Item> items
-        ) : this(width, height) => throw new NotImplementedException();
+        public Inventory(in int width, in int height, in IEnumerable<KeyValuePair<Item, Vector2Int>> items) :
+            this(width, height)
+        {
+            if (items == null)
+                throw new ArgumentNullException("items");
+        }
+
+        public Inventory(in int width, in int height, in IEnumerable<Item> items) : this(width, height)
+        {
+            if (items == null)
+                throw new ArgumentNullException("items");
+        }
 
         /// <summary>
         /// Checks for adding an item on a specified position
