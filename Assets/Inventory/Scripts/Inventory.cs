@@ -28,13 +28,13 @@ namespace Inventories
                 {
                     for (int j = 0; j < _items.GetLength(1); j++)
                     {
-                        if (_items[i, j] != null)
-                            count++;
+                        if (_items[i, j] != null) count++;
                     }
                 }
 
                 return count;
             }
+            set { }
         }
 
         private Item[,] _items;
@@ -43,7 +43,7 @@ namespace Inventories
         {
             if (width <= 0 || height <= 0)
                 throw new ArgumentOutOfRangeException();
-            
+
             _items = new Item[width, height];
         }
 
@@ -54,7 +54,14 @@ namespace Inventories
                 throw new ArgumentNullException("items");
 
             foreach (var item in items)
+                AddItem(item.Key, item.Value);
+
+            for (int i = 0; i < _items.GetLength(0); i++)
             {
+                for (int j = 0; j < _items.GetLength(1); j++)
+                {
+                    Debug.Log((_items[i, j] == null) + "-------" + i + " " + j);
+                }
             }
         }
 
@@ -82,16 +89,85 @@ namespace Inventories
         /// Checks for adding an item on a specified position
         /// </summary>
         public bool CanAddItem(in Item item, in Vector2Int position)
-            => throw new NotImplementedException();
+        {
+            if (item == null)
+                return false;
+
+            if (IsItemOutOfBounds(item, position) || IsItemAlreadyExists(item) || Intersects(item, position))
+                return false;
+
+            if (Count == 0 && !IsItemOutOfBounds(item, position))
+                return true;
+
+            return true;
+        }
+
+        private bool Intersects(Item item, Vector2Int position)
+        {
+            Vector2Int itemBounds = GetItemBounds(item, position);
+
+            for (int i = position.x; i < itemBounds.x; i++)
+            {
+                for (int j = position.y; j < itemBounds.y; j++)
+                    if (_items[i, j] != null)
+                        return true;
+            }
+
+            return false;
+        }
+
+        private Vector2Int GetItemBounds(Item item, Vector2Int position)
+        {
+            int x = item.Size.x + position.x;
+            int y = item.Size.y + position.y;
+
+            return new Vector2Int(x, y);
+        }
+
+        private bool IsItemAlreadyExists(Item item)
+        {
+            foreach (Item existingItem in _items)
+                if (existingItem == item)
+                    return true;
+
+            return false;
+        }
+
+        private bool IsItemOutOfBounds(Item item, in Vector2Int position)
+        {
+            Vector2Int bounds = GetItemBounds(item, position);
+
+            if (bounds.x > _items.GetLength(0) || bounds.y > _items.GetLength(1))
+                return true;
+
+            return false;
+        }
 
         public bool CanAddItem(in Item item, in int posX, in int posY)
-            => throw new NotImplementedException();
+        {
+            return false;
+        }
 
         /// <summary>
         /// Adds an item on a specified position if not exists
         /// </summary>
         public bool AddItem(in Item item, in Vector2Int position)
-            => throw new NotImplementedException();
+        {
+            int x = item.Size.x + position.x;
+            int y = item.Size.y + position.y;
+
+            for (int i = position.x; i < x; i++)
+            {
+                for (int j = position.y; j < y; j++)
+                {
+                    _items[i, j] = item;
+                }
+            }
+
+            Count++;
+            OnAdded?.Invoke(item, position);
+            return true;
+        }
 
         public bool AddItem(in Item item, in int posX, in int posY)
             => throw new NotImplementedException();

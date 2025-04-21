@@ -96,26 +96,19 @@ namespace Inventories
 
             yield return new TestCaseData(
                 new Inventory(width: 5, height: 5,
-                    new KeyValuePair<Item, Vector2Int>(new Item("X", 2, 2), new Vector2Int(3, 3))
-                ),
+                    new KeyValuePair<Item, Vector2Int>(new Item("X", 2, 2), new Vector2Int(3, 3))),
                 new Item("A", new Vector2Int(3, 3)),
                 new Vector2Int(1, 1)
             ).Returns(false).SetName("Intersects");
 
             var item = new Item("X", 1, 1);
             yield return new TestCaseData(
-                new Inventory(width: 5, height: 5,
-                    new KeyValuePair<Item, Vector2Int>(item, new Vector2Int(3, 3))
-                ),
-                item,
-                new Vector2Int(0, 0)
+                new Inventory(width: 5, height: 5, new KeyValuePair<Item, Vector2Int>(item, new Vector2Int(3, 3))),
+                item, new Vector2Int(0, 0)
             ).Returns(false).SetName("Already Exists");
 
-            yield return new TestCaseData(
-                new Inventory(width: 5, height: 5),
-                null,
-                new Vector2Int(0, 0)
-            ).Returns(false).SetName("Item is null");
+            yield return new TestCaseData(new Inventory(width: 5, height: 5), null, new Vector2Int(0, 0)).Returns(false)
+                .SetName("Item is null");
         }
 
         [TestCaseSource(nameof(AddOnSpecifiedPositionSuccessfulCases))]
