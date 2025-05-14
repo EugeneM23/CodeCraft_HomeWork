@@ -207,6 +207,7 @@ namespace Inventories
         {
             //Arrange:
             Item addedItem = null;
+            
             Vector2Int addedPosition = Vector2Int.zero;
 
             inventory.OnAdded += (i, p) =>
