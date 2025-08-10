@@ -1236,8 +1236,9 @@ MonoBehaviour:
   _coinPrefab: {fileID: 1221131666036007499, guid: f37c023e6b8b06149a4215320dd7e482, type: 3}
   _worldBounds: {fileID: 1431199845}
   _gameUI: {fileID: 1764093826}
-  _maxLevel: 5
-  _acceleration: 2
+  _gameSetings:
+    <MaxLevel>k__BackingField: 3
+    <Acceleration>k__BackingField: 2
 --- !u!1 &1762031140
 GameObject:
   m_ObjectHideFlags: 0
@@ -1384,7 +1385,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1764093825}
   - component: {fileID: 1764093826}
-  - component: {fileID: 1764093827}
   m_Layer: 0
   m_Name: '[UI]'
   m_TagString: Untagged
@@ -1425,44 +1425,6 @@ MonoBehaviour:
   _loseScreen: {fileID: 1338628983}
   _difficultyText: {fileID: 1202478200}
   _score: {fileID: 1914371282}
---- !u!114 &1764093827
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1764093824}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Actions: {fileID: -944628639613478452, guid: 4c2e3534666664a8e8608b3897310a1a, type: 3}
-  m_NotificationBehavior: 2
-  m_UIInputModule: {fileID: 0}
-  m_DeviceLostEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_DeviceRegainedEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_ControlsChangedEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_ActionEvents:
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 037076dc-ed48-4e98-b580-567341796ed7
-    m_ActionName: 'Movement/WASD[/Keyboard/w,/Keyboard/s,/Keyboard/a,/Keyboard/d]'
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 6e430f17-fb23-49b3-b4e7-2853a59c74d7
-    m_ActionName: 'Movement/ARROW[/Keyboard/upArrow,/Keyboard/downArrow,/Keyboard/leftArrow,/Keyboard/rightArrow]'
-  m_NeverAutoSwitchControlSchemes: 0
-  m_DefaultControlScheme: 
-  m_DefaultActionMap: Movement
-  m_SplitScreenIndex: -1
-  m_Camera: {fileID: 0}
 --- !u!1 &1801370839
 GameObject:
   m_ObjectHideFlags: 0
