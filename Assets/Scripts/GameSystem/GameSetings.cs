@@ -1,0 +1,12 @@
+using System;
+using UnityEngine;
+
+namespace Game
+{
+    [Serializable]
+    public class GameSetings
+    {
+        [field: SerializeField] public int MaxLevel { get; private set; }
+        [field: SerializeField] public int Acceleration { get; private set; }
+    }
+}
