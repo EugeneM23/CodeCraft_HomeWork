@@ -26,7 +26,7 @@ namespace Game
             _difficulty.OnStateChanged -= OnDifficultyChange;
         }
 
-        public void OnDifficultyChange()
+        public void OnDifficultyChange() 
         {
             _coinManager.SpawnCoin(_difficulty.Current);
         }

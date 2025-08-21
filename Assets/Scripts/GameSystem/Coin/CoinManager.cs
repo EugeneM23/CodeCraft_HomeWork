@@ -10,6 +10,7 @@ namespace Game
     public class CoinManager : IEnumerable<Coin>
     {
         public event Action OnCoinsEmpty;
+        public event Action<Coin> OnCoinPicked;
 
         private readonly CoinMemoryPool _coinMemoryPool;
         private readonly WorldBounds _worldBounds;
@@ -52,6 +53,24 @@ namespace Game
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+
+        public bool TryPickCoin(Vector2Int position, out Coin coin)
+        {
+            coin = null;
+
+            foreach (Coin item in _coins)
+            {
+                if (position == item.Position)
+                {
+                    coin = item;
+                    OnCoinPicked?.Invoke(coin);
+                    Remove(coin);
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

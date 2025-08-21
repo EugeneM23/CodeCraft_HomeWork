@@ -6,18 +6,18 @@ namespace Game
 {
     public class ScoreController : IInitializable, IDisposable
     {
-        private readonly SnakeCollisionComponent _snakeCollisionComponent;
+        private readonly CoinManager _coinManager;
         private readonly Score _score;
 
-        public ScoreController(SnakeCollisionComponent snakeCollisionComponent, Score score)
+        public ScoreController(Score score, CoinManager coinManager)
         {
-            _snakeCollisionComponent = snakeCollisionComponent;
             _score = score;
+            _coinManager = coinManager;
         }
 
-        public void Initialize() => _snakeCollisionComponent.CoinPicked += UpdateScore;
+        public void Initialize() => _coinManager.OnCoinPicked += UpdateScore;
 
-        public void Dispose() => _snakeCollisionComponent.CoinPicked -= UpdateScore;
+        public void Dispose() => _coinManager.OnCoinPicked -= UpdateScore;
 
         private void UpdateScore(Coin coin)
         {

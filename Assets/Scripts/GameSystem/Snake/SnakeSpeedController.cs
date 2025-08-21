@@ -1,20 +1,20 @@
 using System;
 using Modules;
-using UnityEngine;
 using Zenject;
 
 namespace Game
 {
-    public class SnakeSpeedHandler : IInitializable, IDisposable
+    public class SnakeSpeedController : IInitializable, IDisposable
     {
         private const int START_LEVEL = 1;
+        
         private readonly GameSettings _gameSet;
         private readonly Difficulty _difficulty;
         private readonly Snake _snake;
 
         private int _currentSpeed;
 
-        public SnakeSpeedHandler(Difficulty difficulty, Snake snake, GameSettings gameSet)
+        public SnakeSpeedController(Difficulty difficulty, Snake snake, GameSettings gameSet)
         {
             _difficulty = difficulty;
             _snake = snake;
@@ -34,7 +34,7 @@ namespace Game
 
         private void IncreaseSpeed()
         {
-            if (_difficulty.Current == START_LEVEL)
+            if (_difficulty.Current == START_LEVEL) 
             {
                 _snake.SetSpeed(_gameSet.StartSpeed);
                 return;

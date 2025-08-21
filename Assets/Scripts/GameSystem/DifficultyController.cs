@@ -34,13 +34,8 @@ namespace Game
 
         private void IncreaseDifficulty()
         {
-            if (_difficulty.Current == _difficulty.Max)
-            {
+            if (!_difficulty.Next(out int nextDifficulty)) 
                 _gameCycle.GameWin();
-                return;
-            }
-
-            _difficulty.Next(out int _);
         }
     }
 }

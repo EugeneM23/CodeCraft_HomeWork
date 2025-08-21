@@ -33,11 +33,10 @@ namespace Game
         private void BindSnake()
         {
             Container.BindInterfacesAndSelfTo<Snake>().FromComponentInNewPrefab(_snakePrefab).AsSingle().NonLazy();
-            Container.BindInterfacesAndSelfTo<SnakeCollisionComponent>().AsSingle().NonLazy();
+            Container.BindInterfacesAndSelfTo<SnakeBoundsCollisionController>().AsSingle().NonLazy();
+            Container.BindInterfacesAndSelfTo<SnakeCoinCollisionController>().AsSingle().NonLazy();
             Container.BindInterfacesAndSelfTo<SnakeMoveController>().AsSingle().NonLazy();
-            Container.BindInterfacesAndSelfTo<SnakeExpandHandler>().AsSingle().NonLazy();
-            Container.BindInterfacesAndSelfTo<SnakeDeathHandler>().AsSingle().NonLazy();
-            Container.BindInterfacesAndSelfTo<SnakeSpeedHandler>().AsSingle().NonLazy();
+            Container.BindInterfacesAndSelfTo<SnakeSpeedController>().AsSingle().NonLazy();
             Container.BindInterfacesAndSelfTo<ScoreController>().AsSingle().NonLazy();
         }
 
