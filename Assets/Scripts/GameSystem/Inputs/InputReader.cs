@@ -6,7 +6,7 @@ using Zenject;
 namespace Game
 {
     public class InputReader : IInitializable, GameInput.IMovementActions,
-        IGameOverListener, ILevelStartListener, IGameWinListener
+        IGameOverListener, IGameStartListener, IGameWinListener
     {
         public event Action<Vector2> OnMove;
 
@@ -24,7 +24,7 @@ namespace Game
 
         public void FinishGame() => _gameInput.Movement.Disable();
 
-        public void StartLevel() => _gameInput.Movement.Enable();
+        public void StartGame() => _gameInput.Movement.Enable();
 
         public void WinGame() => _gameInput.Movement.Disable();
     }

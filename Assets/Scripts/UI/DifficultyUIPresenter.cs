@@ -5,12 +5,12 @@ using Zenject;
 
 namespace Game
 {
-    public class DifficultyUIHandler : IInitializable, IDisposable
+    public class DifficultyUIPresenter : IInitializable, IDisposable
     {
         private readonly GameUI _gameUI;
         private readonly Difficulty _difficulty;
 
-        public DifficultyUIHandler(GameUI gameUI, Difficulty difficulty)
+        public DifficultyUIPresenter(GameUI gameUI, Difficulty difficulty)
         {
             _gameUI = gameUI;
             _difficulty = difficulty;
@@ -22,13 +22,14 @@ namespace Game
             _difficulty.OnStateChanged += UpdateDifficulty;
         }
 
+        public void Dispose()
+        {
+            _difficulty.OnStateChanged -= UpdateDifficulty;
+        }
+
         private void UpdateDifficulty()
         {
             _gameUI.SetDifficulty(_difficulty.Current, _difficulty.Max);
-        }
-
-        public void Dispose()
-        {
         }
     }
 }

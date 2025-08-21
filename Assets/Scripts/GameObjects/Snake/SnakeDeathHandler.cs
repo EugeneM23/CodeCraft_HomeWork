@@ -7,20 +7,20 @@ namespace Game
     {
         private readonly SnakeCollisionComponent _snakeCollisionComponent;
         private readonly Snake _snake;
-        private readonly GameManager _gameManager;
+        private readonly GameCycle _gameCycle;
 
-        public SnakeDeathHandler(GameManager gameManager, SnakeCollisionComponent snakeCollisionComponent,
+        public SnakeDeathHandler(GameCycle gameCycle, SnakeCollisionComponent snakeCollisionComponent,
             Snake snake)
         {
-            _gameManager = gameManager;
+            _gameCycle = gameCycle;
             _snakeCollisionComponent = snakeCollisionComponent;
             _snake = snake;
         }
 
         public void Initialize()
         {
-            _snake.OnSelfCollided += _gameManager.GameOver;
-            _snakeCollisionComponent.OnDeath += _gameManager.GameOver;
+            _snake.OnSelfCollided += _gameCycle.GameOver;
+            _snakeCollisionComponent.OnDeath += _gameCycle.GameOver;
         }
     }
 }

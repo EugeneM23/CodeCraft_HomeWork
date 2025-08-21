@@ -1166,6 +1166,7 @@ GameObject:
   - component: {fileID: 1659660777}
   - component: {fileID: 1659660776}
   - component: {fileID: 1659660778}
+  - component: {fileID: 1659660779}
   m_Layer: 0
   m_Name: '[SYSTEM]'
   m_TagString: Untagged
@@ -1187,6 +1188,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _scriptableObjectInstallers: []
   _monoInstallers:
+  - {fileID: 1659660779}
   - {fileID: 1659660778}
   _installerPrefabs: []
   _autoRun: 1
@@ -1235,10 +1237,23 @@ MonoBehaviour:
   _snakePrefab: {fileID: 2910646923811485708, guid: 3d5ed7bf3c4c18e4db3a7c02bb6e8816, type: 3}
   _coinPrefab: {fileID: 1221131666036007499, guid: f37c023e6b8b06149a4215320dd7e482, type: 3}
   _worldBounds: {fileID: 1431199845}
-  _gameUI: {fileID: 1764093826}
-  _gameSetings:
+  gameSettings:
     <MaxLevel>k__BackingField: 3
     <Acceleration>k__BackingField: 2
+    <StartSpeed>k__BackingField: 4
+--- !u!114 &1659660779
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1659660774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ab9ad2558811420ea0e8d5f116824ffe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _gameUI: {fileID: 1764093826}
 --- !u!1 &1762031140
 GameObject:
   m_ObjectHideFlags: 0

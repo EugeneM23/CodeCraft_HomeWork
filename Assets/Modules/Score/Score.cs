@@ -1,5 +1,6 @@
 using System;
 using Sirenix.OdinInspector;
+using Zenject;
 
 namespace Modules
 {
@@ -25,4 +26,6 @@ namespace Modules
             OnStateChanged?.Invoke(_current);
         }
     }
+
+    
 }
