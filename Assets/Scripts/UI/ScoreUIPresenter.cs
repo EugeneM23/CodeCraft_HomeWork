@@ -24,9 +24,9 @@ namespace Game
 
         public void Dispose() => _score.OnStateChanged -= UpdateScore;
 
-        private void UpdateScore(int currentCount)
+        private void UpdateScore(int currentScore)
         {
-            _gameUI.SetScore(currentCount.ToString());
+            _gameUI.SetScore(currentScore.ToString());
         }
     }
 }

@@ -6,29 +6,29 @@ namespace Game
     public class GameCycle : IInitializable
     {
         private readonly List<IGameStartListener> _gameStartListeners;
-        private readonly List<IGameOverListener> _gameFinishListeners;
+        private readonly List<IGameOverListener> _gameOverListeners;
         private readonly List<IGameWinListener> _gameWinListeners;
 
         public GameCycle(
             List<IGameStartListener> gameStartListeners,
-            List<IGameOverListener> gameFinishListeners,
+            List<IGameOverListener> gameOverListeners,
             List<IGameWinListener> gameWinListeners
         )
         {
             _gameStartListeners = gameStartListeners;
-            _gameFinishListeners = gameFinishListeners;
+            _gameOverListeners = gameOverListeners;
             _gameWinListeners = gameWinListeners;
         }
 
-        public void Initialize() => GameStart();
+        public void Initialize() => StartGame();
 
-        private void GameStart()
+        private void StartGame()
         {
             foreach (var listener in _gameStartListeners)
                 listener.StartGame();
         }
 
-        public void GameWin()
+        public void WinGame()
         {
             foreach (var listener in _gameWinListeners)
                 listener.WinGame();
@@ -36,8 +36,8 @@ namespace Game
 
         public void GameOver()
         {
-            foreach (var listener in _gameFinishListeners)
-                listener.FinishGame();
+            foreach (var listener in _gameOverListeners)
+                listener.GameOver();
         }
     }
 }

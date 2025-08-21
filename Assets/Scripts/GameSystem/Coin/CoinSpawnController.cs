@@ -17,16 +17,16 @@ namespace Game
 
         public void Initialize()
         {
-            _difficulty.OnStateChanged += OnDifficultyChange;
+            _difficulty.OnStateChanged += OnDifficultyChanged;
             _coinManager.SpawnCoin(_difficulty.Current);
         }
 
         public void Dispose()
         {
-            _difficulty.OnStateChanged -= OnDifficultyChange;
+            _difficulty.OnStateChanged -= OnDifficultyChanged;
         }
 
-        public void OnDifficultyChange() 
+        public void OnDifficultyChanged() 
         {
             _coinManager.SpawnCoin(_difficulty.Current);
         }

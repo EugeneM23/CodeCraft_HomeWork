@@ -359,12 +359,12 @@ namespace Game
             {
                 if (instance == null || m_Wrapper.m_MovementActionsCallbackInterfaces.Contains(instance)) return;
                 m_Wrapper.m_MovementActionsCallbackInterfaces.Add(instance);
-                @WASD.started += instance.OnWASD;
-                @WASD.performed += instance.OnWASD;
-                @WASD.canceled += instance.OnWASD;
-                @ARROW.started += instance.OnARROW;
-                @ARROW.performed += instance.OnARROW;
-                @ARROW.canceled += instance.OnARROW;
+                @WASD.started += instance.OnWasd;
+                @WASD.performed += instance.OnWasd;
+                @WASD.canceled += instance.OnWasd;
+                @ARROW.started += instance.OnArrow;
+                @ARROW.performed += instance.OnArrow;
+                @ARROW.canceled += instance.OnArrow;
             }
 
             /// <summary>
@@ -376,12 +376,12 @@ namespace Game
             /// <seealso cref="MovementActions" />
             private void UnregisterCallbacks(IMovementActions instance)
             {
-                @WASD.started -= instance.OnWASD;
-                @WASD.performed -= instance.OnWASD;
-                @WASD.canceled -= instance.OnWASD;
-                @ARROW.started -= instance.OnARROW;
-                @ARROW.performed -= instance.OnARROW;
-                @ARROW.canceled -= instance.OnARROW;
+                @WASD.started -= instance.OnWasd;
+                @WASD.performed -= instance.OnWasd;
+                @WASD.canceled -= instance.OnWasd;
+                @ARROW.started -= instance.OnArrow;
+                @ARROW.performed -= instance.OnArrow;
+                @ARROW.canceled -= instance.OnArrow;
             }
 
             /// <summary>
@@ -428,14 +428,14 @@ namespace Game
             /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-            void OnWASD(InputAction.CallbackContext context);
+            void OnWasd(InputAction.CallbackContext context);
             /// <summary>
             /// Method invoked when associated input action "ARROW" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
             /// </summary>
             /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-            void OnARROW(InputAction.CallbackContext context);
+            void OnArrow(InputAction.CallbackContext context);
         }
     }
 }

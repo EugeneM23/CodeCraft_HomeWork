@@ -18,11 +18,10 @@ namespace Game
             _gameInput.Movement.Enable();
         }
 
-        private void Move(Vector2 direction) => OnMove?.Invoke(direction);
-        public void OnWASD(InputAction.CallbackContext context) => Move(context.ReadValue<Vector2>());
-        public void OnARROW(InputAction.CallbackContext context) => Move(context.ReadValue<Vector2>());
+        public void OnWasd(InputAction.CallbackContext context) => OnMove?.Invoke(context.ReadValue<Vector2>());
+        public void OnArrow(InputAction.CallbackContext context) => OnMove?.Invoke(context.ReadValue<Vector2>());
 
-        public void FinishGame() => _gameInput.Movement.Disable();
+        public void GameOver() => _gameInput.Movement.Disable();
 
         public void StartGame() => _gameInput.Movement.Enable();
 

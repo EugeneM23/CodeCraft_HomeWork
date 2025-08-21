@@ -1237,9 +1237,9 @@ MonoBehaviour:
   _snakePrefab: {fileID: 2910646923811485708, guid: 3d5ed7bf3c4c18e4db3a7c02bb6e8816, type: 3}
   _coinPrefab: {fileID: 1221131666036007499, guid: f37c023e6b8b06149a4215320dd7e482, type: 3}
   _worldBounds: {fileID: 1431199845}
-  gameSettings:
+  _gameSettings:
     <MaxLevel>k__BackingField: 3
-    <Acceleration>k__BackingField: 2
+    <Acceleration>k__BackingField: 4
     <StartSpeed>k__BackingField: 4
 --- !u!114 &1659660779
 MonoBehaviour:

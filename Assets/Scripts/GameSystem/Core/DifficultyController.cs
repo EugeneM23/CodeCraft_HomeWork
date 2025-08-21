@@ -1,7 +1,5 @@
 using System;
 using Modules;
-using Mono.Cecil;
-using UnityEngine;
 using Zenject;
 
 namespace Game
@@ -30,12 +28,10 @@ namespace Game
             _coinManager.OnCoinsEmpty -= IncreaseDifficulty;
         }
 
-        public void StartGame() => IncreaseDifficulty();
-
         private void IncreaseDifficulty()
         {
-            if (!_difficulty.Next(out int nextDifficulty)) 
-                _gameCycle.GameWin();
+            if (!_difficulty.Next(out _))
+                _gameCycle.WinGame();
         }
     }
 }

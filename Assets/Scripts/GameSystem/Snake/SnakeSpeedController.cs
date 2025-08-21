@@ -7,23 +7,23 @@ namespace Game
     public class SnakeSpeedController : IInitializable, IDisposable
     {
         private const int START_LEVEL = 1;
-        
-        private readonly GameSettings _gameSet;
+
+        private readonly GameSettings _gameSettings;
         private readonly Difficulty _difficulty;
         private readonly Snake _snake;
 
         private int _currentSpeed;
 
-        public SnakeSpeedController(Difficulty difficulty, Snake snake, GameSettings gameSet)
+        public SnakeSpeedController(Difficulty difficulty, Snake snake, GameSettings gameSettings)
         {
             _difficulty = difficulty;
             _snake = snake;
-            _gameSet = gameSet;
+            _gameSettings = gameSettings;
         }
 
         public void Initialize()
         {
-            _currentSpeed = _gameSet.StartSpeed;
+            _currentSpeed = _gameSettings.StartSpeed;
             _difficulty.OnStateChanged += IncreaseSpeed;
         }
 
@@ -34,13 +34,13 @@ namespace Game
 
         private void IncreaseSpeed()
         {
-            if (_difficulty.Current == START_LEVEL) 
+            if (_difficulty.Current == START_LEVEL)
             {
-                _snake.SetSpeed(_gameSet.StartSpeed);
+                _snake.SetSpeed(_gameSettings.StartSpeed);
                 return;
             }
 
-            _snake.SetSpeed(_currentSpeed += _gameSet.Acceleration);
+            _snake.SetSpeed(_currentSpeed += _gameSettings.Acceleration);
         }
     }
 }

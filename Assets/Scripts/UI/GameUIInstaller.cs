@@ -21,13 +21,10 @@ namespace Game
                 .AsSingle()
                 .NonLazy();
 
-            Container.BindInterfacesAndSelfTo<GameStatePresenter>()
+            Container.BindInterfacesAndSelfTo<GameStateUIPresenter>()
                 .AsSingle()
                 .NonLazy();
 
-            Container.BindInterfacesAndSelfTo<Score>()
-                .AsSingle()
-                .NonLazy();
 
             Container.BindInterfacesAndSelfTo<DifficultyUIPresenter>()
                 .AsSingle()

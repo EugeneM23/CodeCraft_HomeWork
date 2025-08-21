@@ -8,48 +8,64 @@ namespace Game
 {
     public class GameSystemInstaller : MonoInstaller
     {
-        [Header("Prefabs")] [SerializeField] private Snake _snakePrefab;
+        [Header("Prefabs")]
+        [SerializeField] private Snake _snakePrefab;
         [SerializeField] private Coin _coinPrefab;
 
-        [Header("References")] [SerializeField]
-        private WorldBounds _worldBounds;
+        [Header("References")]
+        [SerializeField] private WorldBounds _worldBounds;
 
-        [FormerlySerializedAs("_gameSetings")] [Header("Settings")] [SerializeField]
-        private GameSettings gameSettings;
-
-        private readonly GameUIInstaller _gameUIInstaller;
+        [Header("Settings")]
+        [SerializeField] private GameSettings _gameSettings;
 
         public override void InstallBindings()
         {
-            Container.BindInterfacesAndSelfTo<GameCycle>().AsSingle().NonLazy();
-
             BindSnake();
-            BindSettings();
-            BindWorld();
+            BindCore();
             BindDifficulty();
             BindCoinFeature();
+            BindScore();
         }
 
         private void BindSnake()
         {
-            Container.BindInterfacesAndSelfTo<Snake>().FromComponentInNewPrefab(_snakePrefab).AsSingle().NonLazy();
-            Container.BindInterfacesAndSelfTo<SnakeBoundsCollisionController>().AsSingle().NonLazy();
-            Container.BindInterfacesAndSelfTo<SnakeCoinCollisionController>().AsSingle().NonLazy();
-            Container.BindInterfacesAndSelfTo<SnakeMoveController>().AsSingle().NonLazy();
-            Container.BindInterfacesAndSelfTo<SnakeSpeedController>().AsSingle().NonLazy();
-            Container.BindInterfacesAndSelfTo<ScoreController>().AsSingle().NonLazy();
-        }
+            Container.BindInterfacesAndSelfTo<Snake>()
+                .FromComponentInNewPrefab(_snakePrefab)
+                .AsSingle()
+                .NonLazy();
 
-        private void BindSettings()
-        {
-            Container.Bind<GameSettings>()
-                .FromInstance(gameSettings)
+            Container.BindInterfacesAndSelfTo<SnakeBoundsCollisionController>()
+                .AsSingle()
+                .NonLazy();
+
+            Container.BindInterfacesAndSelfTo<SnakeCoinCollisionController>()
+                .AsSingle()
+                .NonLazy();
+
+            Container.BindInterfacesAndSelfTo<SnakeMoveController>()
+                .AsSingle()
+                .NonLazy();
+
+            Container.BindInterfacesAndSelfTo<SnakeSpeedController>()
+                .AsSingle()
+                .NonLazy();
+
+            Container.BindInterfacesAndSelfTo<SnakeDisposeController>()
                 .AsSingle()
                 .NonLazy();
         }
 
-        private void BindWorld()
+        private void BindCore()
         {
+            Container.BindInterfacesAndSelfTo<GameCycle>()
+                .AsSingle()
+                .NonLazy();
+
+            Container.Bind<GameSettings>()
+                .FromInstance(_gameSettings)
+                .AsSingle()
+                .NonLazy();
+
             Container.Bind<WorldBounds>()
                 .FromInstance(_worldBounds)
                 .AsSingle()
@@ -60,7 +76,7 @@ namespace Game
         {
             Container.BindInterfacesAndSelfTo<Difficulty>()
                 .AsSingle()
-                .WithArguments(gameSettings.MaxLevel)
+                .WithArguments(_gameSettings.MaxLevel)
                 .NonLazy();
 
             Container.BindInterfacesAndSelfTo<DifficultyController>()
@@ -75,11 +91,21 @@ namespace Game
                 .NonLazy();
 
             Container.BindMemoryPool<Coin, CoinMemoryPool>()
-                .WithInitialSize(10)
                 .FromComponentInNewPrefab(_coinPrefab)
                 .UnderTransformGroup("CoinPool");
 
             Container.BindInterfacesAndSelfTo<CoinManager>()
+                .AsSingle()
+                .NonLazy();
+        }
+
+        private void BindScore()
+        {
+            Container.BindInterfacesAndSelfTo<Score>()
+                .AsSingle()
+                .NonLazy();
+
+            Container.BindInterfacesAndSelfTo<ScoreController>()
                 .AsSingle()
                 .NonLazy();
         }
