@@ -4,7 +4,7 @@ using Zenject;
 
 namespace Game.Views
 {
-    public class IncomeViewPresenter : ITickable, IInitializable, IDisposable, IIncomeViewPresenter
+    public class IncomePresenter : ITickable, IInitializable, IDisposable, IIncomeViewPresenter
     {
         private readonly Planet _planet;
 
@@ -14,7 +14,7 @@ namespace Game.Views
 
         private bool _previousState;
 
-        public IncomeViewPresenter(Planet planet) => _planet = planet;
+        public IncomePresenter(Planet planet) => _planet = planet;
 
         public void Initialize() => _planet.OnIncomeTimeChanged += UpdateProgress;
 

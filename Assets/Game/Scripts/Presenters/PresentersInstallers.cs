@@ -1,4 +1,5 @@
 using Game.Views;
+using Game.Views.GameScreeen;
 using UnityEngine;
 using Zenject;
 
@@ -8,13 +9,31 @@ namespace Game.Presenters
         fileName = "PresentersInstallers",
         menuName = "Zenject/New PresentersInstallers"
     )]
-    public sealed class PresentersInstallers : ScriptableObjectInstaller
+      public sealed class PresentersInstallers : ScriptableObjectInstaller
     {
         public override void InstallBindings()
         {
             //TODO:
-            Container.BindInterfacesAndSelfTo<MoneyWidgetViewPresenter>().AsSingle().NonLazy();
-            Container.BindInterfacesAndSelfTo<PlanetPopupViewPresenter>().AsSingle().NonLazy();
+            Container
+                .BindInterfacesAndSelfTo<MoneyWidgetPresenter>()
+                .AsSingle()
+                .NonLazy();
+
+            Container
+                .BindInterfacesAndSelfTo<PlanetPopupPresenter>()
+                .AsSingle()
+                .NonLazy();
+            
+            
+            
+            Container
+                .BindInterfacesAndSelfTo<GameScreenPresenter>()
+                .AsSingle()
+                .NonLazy();
+
+            Container
+                .Bind<PlanetPopupShower>()
+                .AsSingle();
         }
     }
 }

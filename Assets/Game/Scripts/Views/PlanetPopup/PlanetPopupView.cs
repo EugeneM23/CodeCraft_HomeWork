@@ -7,63 +7,49 @@ namespace Game.Views
 {
     public class PlanetPopupView : MonoBehaviour
     {
-        [Header("Planet Info")] 
-        [SerializeField] private Image _icon;
+        [Header("Planet Info")] [SerializeField]
+        private Image _icon;
+
         [SerializeField] private TMP_Text _population;
         [SerializeField] private TMP_Text _level;
         [SerializeField] private TMP_Text _income;
 
-        [Header("Upgrade")] 
-        [SerializeField] private TMP_Text _upgradePrice;
+        [Header("Upgrade")] [SerializeField] private TMP_Text _upgradePrice;
         [SerializeField] private Button _upgradeButton;
 
-        [Header("Controls")] 
-        [SerializeField] private Button _closeButton;
+        [Header("Controls")] [SerializeField] private Button _closeButton;
 
-        private IPlanetPopupViewPresenter _presenter;
+        private IPlanetPopupPresenter  _presenter;
 
         [Inject]
-        private void Construct(IPlanetPopupViewPresenter presenter)
-        {
-            _presenter = presenter;
-            _presenter.OnShow += Show;
-        }
+        private void Construct(IPlanetPopupPresenter presenter) => _presenter = presenter;
 
-        private void OnDestroy() => _presenter.OnShow -= Show;
-
-        private void OnEnable()
+        public void  Show(bool isActive)
         {
             _presenter.OnMoneyChanged += UpdatePriceButton;
             _presenter.OnUpgraded += UpdatePriceButton;
             _presenter.OnUpgraded += UpdatePlanetInformation;
 
-            _closeButton.onClick.AddListener(Hide);
-            _upgradeButton.onClick.AddListener(Upgrade);
+             _closeButton.onClick.AddListener(_presenter.OnCloseClicked);
+            _upgradeButton.onClick.AddListener(_presenter.OnUpgradeClicked);
+
+            gameObject.SetActive(isActive);
+
+            UpdatePlanetInformation();
+            UpdatePriceButton();
         }
 
-        private void OnDisable()
+        private void Hide()
         {
             _presenter.OnMoneyChanged -= UpdatePriceButton;
             _presenter.OnUpgraded -= UpdatePriceButton;
             _presenter.OnUpgraded -= UpdatePlanetInformation;
 
-            _closeButton.onClick.RemoveAllListeners();
-            _upgradeButton.onClick.RemoveAllListeners();
-        }
+            _closeButton.onClick.RemoveListener(_presenter.OnCloseClicked);
+            _upgradeButton.onClick.RemoveListener(_presenter.OnUpgradeClicked);
 
-        private void Upgrade()
-        {
-            _presenter.UpgradePlanet();
+            gameObject.SetActive(false);
         }
-
-        private void Show()
-        {
-            gameObject.SetActive(true);
-            UpdatePlanetInformation();
-            UpdatePriceButton();
-        }
-
-        private void Hide() => gameObject.SetActive(false);
 
         private void UpdatePriceButton()
         {

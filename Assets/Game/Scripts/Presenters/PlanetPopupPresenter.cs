@@ -1,4 +1,5 @@
 using System;
+using Game.Views.GameScreeen;
 using ModestTree;
 using Modules.Money;
 using Modules.Planets;
@@ -7,7 +8,7 @@ using Zenject;
 
 namespace Game.Views
 {
-    public class PlanetPopupViewPresenter : IPlanetPopupViewPresenter, IInitializable, IDisposable
+    public class PlanetPopupPresenter : IPlanetPopupPresenter, IInitializable, IDisposable
     {
         public event Action OnShow;
         public event Action OnMoneyChanged;
@@ -15,6 +16,8 @@ namespace Game.Views
 
         private readonly MoneyStorage _moneyStorage;
         private Planet _currentPlanet;
+
+        private readonly GameScreenPresenter _gameScreenPresenter;
 
         public string UpgradePrice
         {
@@ -43,9 +46,10 @@ namespace Game.Views
             }
         }
 
-        public PlanetPopupViewPresenter(MoneyStorage storage)
+        public PlanetPopupPresenter(MoneyStorage storage, GameScreenPresenter gameScreenPresenter)
         {
             _moneyStorage = storage;
+            _gameScreenPresenter = gameScreenPresenter;
         }
 
         public void Initialize()
@@ -61,18 +65,14 @@ namespace Game.Views
                 _currentPlanet.OnUpgraded -= HandlePlanetUpgraded;
         }
 
-        public void Show(Planet planet)
-        {
-            _currentPlanet = planet;
-            _currentPlanet.OnUpgraded += HandlePlanetUpgraded;
+        public void OnCloseClicked() => _gameScreenPresenter.HidePlanetPopup();
 
-            OnShow?.Invoke();
-        }
+        public void OnUpgradeClicked() => _currentPlanet.Upgrade();
+
+        public void SetPlanet(Planet planet) => _currentPlanet = planet;
 
         private void HandlePlanetUpgraded(int level) => OnUpgraded?.Invoke();
 
         private void HandleMoneyChanged(int newValue, int prevValue) => OnMoneyChanged?.Invoke();
-
-        public void UpgradePlanet() => _currentPlanet.Upgrade();
     }
 }

@@ -4,14 +4,11 @@ using UnityEngine;
 
 namespace Game.Views
 {
-    public interface IPlanetPopupViewPresenter
+    public interface IPlanetPopupPresenter
     {
-        // Events
-        event Action OnShow;
         event Action OnMoneyChanged;
         event Action OnUpgraded;
 
-        // Properties
         string UpgradePrice { get; }
         string Population { get; }
         string Level { get; }
@@ -19,8 +16,8 @@ namespace Game.Views
         Sprite Icon { get; }
         bool CanUpgrade { get; }
 
-        // Methods
-        void Show(Planet planet);
-        void UpgradePlanet();
+        void OnCloseClicked();
+        void OnUpgradeClicked();
+        void SetPlanet(Planet planet);
     }
 }

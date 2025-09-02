@@ -4,7 +4,7 @@ using Zenject;
 
 namespace Game.Views
 {
-    public class PriceViewPresenter : IInitializable, IDisposable, IPriceViewPresenter
+    public class PricePresenter : IInitializable, IDisposable, IPriceViewPresenter
     {
         public event Action OnPlanetUnlocked;
 
@@ -13,7 +13,7 @@ namespace Game.Views
 
         public string Price => _planet.Price.ToString();
 
-        public PriceViewPresenter(Planet planet) => _planet = planet;
+        public PricePresenter(Planet planet) => _planet = planet;
 
         public void Initialize() => _planet.OnUnlocked += OnPlanetUnlock;
 

@@ -1,6 +1,5 @@
 using System;
 using Modules.Planets;
-using UnityEngine;
 using Zenject;
 
 namespace Game.Views
@@ -20,7 +19,7 @@ namespace Game.Views
             _widgetView = widgetView;
         }
 
-        public void Initialize() => _planet.OnIncomeReady += HandleIncomeReady;
+        public void  Initialize() => _planet.OnIncomeReady += HandleIncomeReady;
 
         public void Dispose() => _planet.OnIncomeReady -= HandleIncomeReady;
 

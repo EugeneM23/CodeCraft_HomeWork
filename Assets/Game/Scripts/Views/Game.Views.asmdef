@@ -6,7 +6,6 @@
         "UIComponents",
         "Zenject",
         "dotweenModules",
-        "MoneyStorage",
         "Planets"
     ],
     "includePlatforms": [],

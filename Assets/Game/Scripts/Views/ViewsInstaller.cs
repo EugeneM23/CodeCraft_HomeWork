@@ -24,9 +24,7 @@ namespace Game.Views
                 .AsSingle()
                 .NonLazy();
 
-            Container
-                .Bind<PlanetPopupShower>()
-                .AsSingle();
+            
         }
     }
 }

@@ -7,8 +7,7 @@ namespace Game
 {
     public class PlanetViewInstaller : MonoInstaller
     {
-        [Header("Planet")] 
-        [SerializeField] private PlanetConfig _config;
+        [Header("Planet")] [SerializeField] private PlanetConfig _config;
 
         [SerializeField] private PlanetView _planetViewPrefab;
 
@@ -28,10 +27,6 @@ namespace Game
         public override void InstallBindings()
         {
             BindPlanet();
-            BindPrice();
-            BindLock();
-            BindProgressBar();
-            BindCoin();
         }
 
         private void BindPlanet()
@@ -41,20 +36,20 @@ namespace Game
                 .AsSingle()
                 .WithArguments(_config)
                 .NonLazy();
+            
+            Container
+                .BindInterfacesAndSelfTo<PlanetPresenter>()
+                .AsSingle()
+                .NonLazy();
 
             Container
                 .Bind<PlanetView>()
                 .FromInstance(_planetViewPrefab)
                 .AsSingle()
                 .NonLazy();
-
-            Container
-                .BindInterfacesAndSelfTo<PlanetViewPresenter>()
-                .AsSingle()
-                .NonLazy();
         }
 
-        private void BindPrice()
+        /*private void BindPrice()
         {
             Container
                 .Bind<PriceView>()
@@ -66,9 +61,9 @@ namespace Game
                 .BindInterfacesAndSelfTo<PriceViewPresenter>()
                 .AsSingle()
                 .NonLazy();
-        }
+        }*/
 
-        private void BindLock()
+        /*private void BindLock()
         {
             Container
                 .Bind<LockView>()
@@ -80,9 +75,9 @@ namespace Game
                 .BindInterfacesAndSelfTo<LockViewPresenter>()
                 .AsSingle()
                 .NonLazy();
-        }
+        }*/
 
-        private void BindProgressBar()
+        /*private void BindProgressBar()
         {
             Container
                 .Bind<IncomeView>()
@@ -94,9 +89,9 @@ namespace Game
                 .BindInterfacesAndSelfTo<IncomeViewPresenter>()
                 .AsSingle()
                 .NonLazy();
-        }
+        }*/
 
-        private void BindCoin()
+        /*private void BindCoin()
         {
             Container
                 .BindInterfacesAndSelfTo<CoinViewPresenter>()
@@ -108,6 +103,6 @@ namespace Game
                 .FromInstance(_coinMoveAnimation)
                 .AsSingle()
                 .NonLazy();
-        }
+        }*/
     }
 }

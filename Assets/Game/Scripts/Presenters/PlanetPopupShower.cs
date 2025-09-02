@@ -5,16 +5,16 @@ namespace Game
 {
     public class PlanetPopupShower
     {
-        private readonly IPlanetPopupViewPresenter _presenter;
+        private readonly IPlanetPopupPresenter _presenter;
 
-        public PlanetPopupShower(IPlanetPopupViewPresenter presenter)
+        public PlanetPopupShower(IPlanetPopupPresenter presenter)
         {
             _presenter = presenter;
         }
 
         public void ShowPopup(Planet planet)
         {
-            _presenter.Show(planet);
+            _presenter.SetPlanet(planet);
         }
     }
 }
