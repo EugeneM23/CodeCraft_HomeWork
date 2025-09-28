@@ -145,9 +145,8 @@ GameObject:
   - component: {fileID: 4069365071620109237}
   - component: {fileID: 8193891107021228721}
   - component: {fileID: 648301223005266422}
-  - component: {fileID: 2376661950416542711}
   - component: {fileID: 1136359131593949921}
-  - component: {fileID: 748496384833923907}
+  - component: {fileID: 4750608302101327152}
   m_Layer: 5
   m_Name: Coin
   m_TagString: Untagged
@@ -212,20 +211,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &2376661950416542711
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 320550912344372757}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6876a451b450456099e208f554dd44b1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _coin: {fileID: 648301223005266422}
-  _moveDuration: 1
 --- !u!114 &1136359131593949921
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -240,7 +225,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   radius: 100
   rotationSpeed: 90
---- !u!114 &748496384833923907
+--- !u!114 &4750608302101327152
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -249,7 +234,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 320550912344372757}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c9174c74dc4f4616a02b9f93df975646, type: 3}
+  m_Script: {fileID: 11500000, guid: b2034ae983f044fa49fdc444f75c1d45, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &383599552409175847
@@ -528,9 +513,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 67ed2b78115d4479b09ecfdbfa3ea6a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _price: {fileID: 6850814019076832775}
+  _lockIcon: {fileID: 7085741634984397813}
   _planetIcon: {fileID: 606508972301849034}
-  _lockIcon: {fileID: 991180089803824017}
   _button: {fileID: 5583372068559771244}
+  _income: {fileID: 5564512366540979095}
+  _progressImage: {fileID: 6948507870913343312}
+  _progressText: {fileID: 8019802931863089282}
+  _coin: {fileID: 320550912344372757}
 --- !u!114 &6087031740547708793
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -545,11 +535,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _config: {fileID: 11400000, guid: 15e65e6f39d251d4ba9636b335fd7ff7, type: 2}
   _planetViewPrefab: {fileID: 1366533627675132402}
-  _priceView: {fileID: 3923415896514215074}
-  _lockView: {fileID: 7437233150171655837}
-  _incomeView: {fileID: 8953558060807159245}
-  _coinView: {fileID: 2376661950416542711}
-  _coinMoveAnimation: {fileID: 748496384833923907}
+  _coinMoveAnimation: {fileID: 0}
 --- !u!114 &6882515217988539234
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -591,7 +577,6 @@ GameObject:
   - component: {fileID: 1921716995094703198}
   - component: {fileID: 7366688001666472230}
   - component: {fileID: 5072925286837728165}
-  - component: {fileID: 8953558060807159245}
   m_Layer: 5
   m_Name: Income
   m_TagString: Untagged
@@ -658,20 +643,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 0.2
---- !u!114 &8953558060807159245
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5564512366540979095}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 85b378fcaf854258bbfd193f033b814d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _progressImage: {fileID: 6948507870913343312}
-  _progressText: {fileID: 8019802931863089282}
 --- !u!1 &6740194235726008877
 GameObject:
   m_ObjectHideFlags: 0
@@ -779,7 +750,6 @@ GameObject:
   - component: {fileID: 3033779123653569042}
   - component: {fileID: 6404032390609247133}
   - component: {fileID: 544170752107032563}
-  - component: {fileID: 3923415896514215074}
   m_Layer: 5
   m_Name: Price
   m_TagString: Untagged
@@ -848,19 +818,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_HorizontalFit: 2
   m_VerticalFit: 0
---- !u!114 &3923415896514215074
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6850814019076832775}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 07dcc05ac8ab46159c75cb24bcaa76c6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _priceText: {fileID: 5444377921757551026}
 --- !u!1 &7085741634984397813
 GameObject:
   m_ObjectHideFlags: 0
@@ -872,7 +829,6 @@ GameObject:
   - component: {fileID: 5413275542450533551}
   - component: {fileID: 2155549530964120523}
   - component: {fileID: 991180089803824017}
-  - component: {fileID: 7437233150171655837}
   m_Layer: 5
   m_Name: Lock
   m_TagString: Untagged
@@ -937,19 +893,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &7437233150171655837
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7085741634984397813}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fb366b6fbd4645138a6c91b45c3f57e8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _lockIcon: {fileID: 991180089803824017}
 --- !u!1 &9096694843016638852
 GameObject:
   m_ObjectHideFlags: 0

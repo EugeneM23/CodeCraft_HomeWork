@@ -9,7 +9,7 @@ namespace Game.Presenters
         fileName = "PresentersInstallers",
         menuName = "Zenject/New PresentersInstallers"
     )]
-      public sealed class PresentersInstallers : ScriptableObjectInstaller
+    public sealed class PresentersInstallers : ScriptableObjectInstaller
     {
         public override void InstallBindings()
         {
@@ -23,17 +23,11 @@ namespace Game.Presenters
                 .BindInterfacesAndSelfTo<PlanetPopupPresenter>()
                 .AsSingle()
                 .NonLazy();
-            
-            
-            
+
             Container
                 .BindInterfacesAndSelfTo<GameScreenPresenter>()
                 .AsSingle()
                 .NonLazy();
-
-            Container
-                .Bind<PlanetPopupShower>()
-                .AsSingle();
         }
     }
 }

@@ -1,7 +1,8 @@
+using Game.Views.GameScreeen;
 using UnityEngine;
 using Zenject;
 
-namespace Game.Views.GameScreeen
+namespace Game.Views
 {
     public class GameScreenView : MonoBehaviour
     {
@@ -11,12 +12,14 @@ namespace Game.Views.GameScreeen
 
         private void OnEnable()
         {
-            _presenter.OnPlanetPopupVisible += _planetPopupView.Show;
+            _presenter.OnPlanetPopupShow += _planetPopupView.Show;
+            _presenter.OnPlanetPopupHide += _planetPopupView.Hide;
         }
 
         private void OnDisable()
         {
-            _presenter.OnPlanetPopupVisible -= _planetPopupView.Show;
+            _presenter.OnPlanetPopupShow -= _planetPopupView.Show;
+            _presenter.OnPlanetPopupHide -= _planetPopupView.Hide;
         }
     }
 }

@@ -7,6 +7,7 @@ namespace Game.Views
     {
         [SerializeField] private MoneyWidgetView _moneyWidgetView;
         [SerializeField] private PlanetPopupView _planetPopupView;
+        [SerializeField] private GameScreenView _gameScreenView;
 
         public override void InstallBindings()
         {
@@ -23,8 +24,12 @@ namespace Game.Views
                 .FromInstance(_planetPopupView)
                 .AsSingle()
                 .NonLazy();
-
             
+            Container
+                .Bind<GameScreenView>()
+                .FromInstance(_gameScreenView)
+                .AsSingle()
+                .NonLazy();
         }
     }
 }

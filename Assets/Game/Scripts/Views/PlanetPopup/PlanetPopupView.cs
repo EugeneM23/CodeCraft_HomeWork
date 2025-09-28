@@ -7,39 +7,36 @@ namespace Game.Views
 {
     public class PlanetPopupView : MonoBehaviour
     {
-        [Header("Planet Info")] [SerializeField]
-        private Image _icon;
-
+        [SerializeField] private Image _icon;
         [SerializeField] private TMP_Text _population;
         [SerializeField] private TMP_Text _level;
         [SerializeField] private TMP_Text _income;
+        [SerializeField] private TMP_Text _upgradePrice;
 
-        [Header("Upgrade")] [SerializeField] private TMP_Text _upgradePrice;
         [SerializeField] private Button _upgradeButton;
+        [SerializeField] private Button _closeButton;
 
-        [Header("Controls")] [SerializeField] private Button _closeButton;
-
-        private IPlanetPopupPresenter  _presenter;
+        private IPlanetPopupPresenter _presenter;
 
         [Inject]
         private void Construct(IPlanetPopupPresenter presenter) => _presenter = presenter;
 
-        public void  Show(bool isActive)
+        public void Show()
         {
             _presenter.OnMoneyChanged += UpdatePriceButton;
             _presenter.OnUpgraded += UpdatePriceButton;
             _presenter.OnUpgraded += UpdatePlanetInformation;
 
-             _closeButton.onClick.AddListener(_presenter.OnCloseClicked);
+            _closeButton.onClick.AddListener(_presenter.OnCloseClicked);
             _upgradeButton.onClick.AddListener(_presenter.OnUpgradeClicked);
 
-            gameObject.SetActive(isActive);
+            gameObject.SetActive(true);
 
             UpdatePlanetInformation();
             UpdatePriceButton();
         }
 
-        private void Hide()
+        public void Hide()
         {
             _presenter.OnMoneyChanged -= UpdatePriceButton;
             _presenter.OnUpgraded -= UpdatePriceButton;
