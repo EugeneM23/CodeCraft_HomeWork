@@ -21,8 +21,7 @@ namespace Game.Views
         [SerializeField] private Image _progressImage;
         [SerializeField] private TMP_Text _progressText;
 
-        [Header("Coin")] [SerializeField] private GameObject _coin;
-        [SerializeField] private Button _coinButton;
+        [Header("Coin")] [SerializeField] private Button _coinButton;
         [SerializeField] private float _coinSpeed = 1f;
 
         [Inject] private IPlanetPresenter _presenter;
@@ -74,8 +73,7 @@ namespace Game.Views
             _lockIcon.SetActive(!isUnlocked);
             _price.SetActive(!isUnlocked);
             _income.SetActive(isUnlocked && !_presenter.IsIncomeReady);
-            _coin.SetActive(_presenter.IsIncomeReady);
+            _coinButton.gameObject.SetActive(_presenter.IsIncomeReady);
         }
     }
 }
-
