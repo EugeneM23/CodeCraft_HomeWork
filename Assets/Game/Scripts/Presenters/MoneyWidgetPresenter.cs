@@ -23,10 +23,7 @@ namespace Game
             UpdateCount(_storage.Money, _storage.Money);
         }
 
-        public void Dispose()
-        {
-            _storage.OnMoneyChanged -= UpdateCount;
-        }
+        public void Dispose() => _storage.OnMoneyChanged -= UpdateCount;
 
         public void UpdateCount(int newValue, int prevValue)
         {

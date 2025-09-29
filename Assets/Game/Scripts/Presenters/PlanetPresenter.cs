@@ -9,43 +9,48 @@ namespace Game
 {
     public class PlanetPresenter : IPlanetPresenter, IInitializable, IDisposable
     {
-        public event Action<float, string> OnIncomeTimeChanged;
-        public event Action OnUnlocked;
-        public event Action OnStateChanged;
+        public event Action<float, string> OnIncomeProgressUpdated;
+        public event Action<bool> OnIncomeReady;
+        public event Action OnPlanetUnlocked;
+        public event Action OnPlanetChanged;
 
         public bool IsUnlocked => _planet.IsUnlocked;
         public string Price => _planet.Price.ToString();
         public Sprite Icon => _planet.GetIcon(_planet.IsUnlocked);
         public bool IsIncomeReady => _planet.IsIncomeReady;
+        public Planet Planet => _planet;
 
-        private readonly Planet _planet;
+        private Planet _planet;
         private readonly IGameScreenPresenter _gameScreenPresenter;
         private readonly IPlanetPopupPresenter _planetPopupPresenter;
-        private readonly MoveAnimation _moveAnimation;
-        private readonly MoneyWidgetView _widgetView;
 
-        public PlanetPresenter(Planet planet, IGameScreenPresenter gameScreenPresenter,
-            IPlanetPopupPresenter planetPopupPresenter, MoveAnimation moveAnimation, MoneyWidgetView widgetView)
+        public PlanetPresenter(
+            Planet planet,
+            IGameScreenPresenter gameScreenPresenter,
+            IPlanetPopupPresenter planetPopupPresenter
+        )
         {
             _planet = planet;
             _gameScreenPresenter = gameScreenPresenter;
             _planetPopupPresenter = planetPopupPresenter;
-            _moveAnimation = moveAnimation;
-            _widgetView = widgetView;
         }
 
-        public void Initialize()
+        public void Initialize() => Subscribe();
+
+        public void Dispose() => Unsubscribe();
+
+        private void Subscribe()
         {
             _planet.OnUnlocked += HandlePlanetUnlocked;
-            _planet.OnIncomeReady += HandleIncomeReady;
+            _planet.OnIncomeReady += HandleIncomeChanged;
             _planet.OnGathered += HandleIncomeGathered;
             _planet.OnIncomeTimeChanged += HandleIncomeTimeChanged;
         }
 
-        public void Dispose()
+        private void Unsubscribe()
         {
             _planet.OnUnlocked -= HandlePlanetUnlocked;
-            _planet.OnIncomeReady -= HandleIncomeReady;
+            _planet.OnIncomeReady -= HandleIncomeChanged;
             _planet.OnGathered -= HandleIncomeGathered;
             _planet.OnIncomeTimeChanged -= HandleIncomeTimeChanged;
         }
@@ -60,35 +65,32 @@ namespace Game
             _gameScreenPresenter.ShowPlanetPopup();
         }
 
-        public void OnCoinClicked(float moveSpeed)
+        public void SetPlanet(Planet planet)
         {
-            _moveAnimation.MoveToTarget(
-                _widgetView.CoinTarget.position,
-                moveSpeed,
-                () => _planet.GatherIncome());
+            Unsubscribe();
+            _planet = planet;
+            Subscribe();
+
+            OnPlanetChanged?.Invoke();
         }
 
-        private void HandlePlanetUnlocked()
-        {
-            OnUnlocked?.Invoke();
-            OnStateChanged?.Invoke();
-        }
+        private void HandlePlanetUnlocked() => OnPlanetUnlocked?.Invoke();
 
-        private void HandleIncomeReady(bool _) => OnStateChanged?.Invoke();
+        private void HandleIncomeChanged(bool isReady) => OnIncomeReady?.Invoke(isReady);
 
-        private void HandleIncomeGathered(int _) => OnStateChanged?.Invoke();
+        private void HandleIncomeGathered(int amount) => OnIncomeReady?.Invoke(_planet.IsIncomeReady);
 
         private void HandleIncomeTimeChanged(float timeLeft)
         {
             float progress = _planet.IncomeProgress;
             string timeText = FormatTime(timeLeft);
-            OnIncomeTimeChanged?.Invoke(progress, timeText);
+            OnIncomeProgressUpdated?.Invoke(progress, timeText);
         }
 
         private string FormatTime(float seconds)
         {
             var timeSpan = TimeSpan.FromSeconds(seconds);
-            return $"{timeSpan.Minutes}m : {timeSpan.Seconds}s";
+            return $"{timeSpan.Minutes:D2}m : {timeSpan.Seconds:D2}s";
         }
     }
 }

@@ -1,8 +1,7 @@
-using System;
 using Modules.UI;
+using PlasticPipe.PlasticProtocol.Messages;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.UI;
 using Zenject;
 
@@ -10,70 +9,69 @@ namespace Game.Views
 {
     public class PlanetView : MonoBehaviour
     {
-        [Header("UI Elements")] [SerializeField]
+        [Header("Locked State")] [SerializeField]
         private GameObject _price;
 
+        [SerializeField] private TMP_Text _priceText;
         [SerializeField] private GameObject _lockIcon;
-        [SerializeField] private Image _planetIcon;
+
+        [Header("Planet")] [SerializeField] private Image _planetIcon;
         [SerializeField] private SmartButton _button;
 
         [Header("Income")] [SerializeField] private GameObject _income;
         [SerializeField] private Image _progressImage;
         [SerializeField] private TMP_Text _progressText;
-
-        [Header("Coin")] [SerializeField] private Button _coinButton;
-        [SerializeField] private float _coinSpeed = 1f;
+        [SerializeField] private GameObject _coin;
 
         [Inject] private IPlanetPresenter _presenter;
 
-        private void OnEnable() => BindToPresenter();
-        private void OnDisable() => UnbindFromPresenter();
-
-        private void BindToPresenter()
+        private void OnEnable()
         {
-            if (_presenter == null) return;
-
-            _presenter.OnUnlocked += UpdateView;
-            _presenter.OnStateChanged += UpdateView;
-            _presenter.OnIncomeTimeChanged += UpdateProgress;
+            _presenter.OnPlanetUnlocked += UpdatePlanetState;
+            _presenter.OnPlanetChanged += UpdatePlanetState;
+            _presenter.OnIncomeProgressUpdated += UpdateIncomeProgress;
+            _presenter.OnIncomeReady += UpdateIncomeReadyState;
 
             _button.OnClick += _presenter.OnClick;
             _button.OnHold += _presenter.OnHold;
-            _coinButton.onClick.AddListener(() => _presenter.OnCoinClicked(_coinSpeed));
 
-            UpdateView();
+            UpdatePlanetState();
         }
 
-        private void UnbindFromPresenter()
+        private void OnDisable()
         {
-            if (_presenter == null) return;
-
-            _presenter.OnUnlocked -= UpdateView;
-            _presenter.OnStateChanged -= UpdateView;
-            _presenter.OnIncomeTimeChanged -= UpdateProgress;
+            _presenter.OnPlanetUnlocked -= UpdatePlanetState;
+            _presenter.OnPlanetChanged -= UpdatePlanetState;
+            _presenter.OnIncomeProgressUpdated -= UpdateIncomeProgress;
+            _presenter.OnIncomeReady -= UpdateIncomeReadyState;
 
             _button.OnClick -= _presenter.OnClick;
             _button.OnHold -= _presenter.OnHold;
-            _coinButton.onClick.RemoveAllListeners();
         }
 
-        private void UpdateProgress(float progress, string timeText)
+        private void UpdatePlanetState()
+        {
+            bool isUnlocked = _presenter.IsUnlocked;
+
+            _planetIcon.sprite = _presenter.Icon;
+            _priceText.text = _presenter.Price;
+            
+            _lockIcon.SetActive(!isUnlocked);
+            _price.SetActive(!isUnlocked);
+            _coin.SetActive(isUnlocked && _presenter.IsIncomeReady);
+            _income.SetActive(isUnlocked && !_presenter.IsIncomeReady);
+        }
+
+        private void UpdateIncomeReadyState(bool isReady)
+        {
+            _coin.SetActive(isReady);
+            _income.SetActive(!isReady);
+        }
+
+        private void UpdateIncomeProgress(float progress, string timeText)
         {
             _progressImage.fillAmount = progress;
             _progressText.text = timeText;
-        }
-
-        private void UpdateView()
-        {
-            if (_presenter == null) return;
-
-            _planetIcon.sprite = _presenter.Icon;
-
-            bool isUnlocked = _presenter.IsUnlocked;
-            _lockIcon.SetActive(!isUnlocked);
-            _price.SetActive(!isUnlocked);
-            _income.SetActive(isUnlocked && !_presenter.IsIncomeReady);
-            _coinButton.gameObject.SetActive(_presenter.IsIncomeReady);
         }
     }
 }

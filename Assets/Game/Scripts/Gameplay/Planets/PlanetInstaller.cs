@@ -6,8 +6,7 @@ namespace Game.Gameplay
     //Don't modify
     public sealed class PlanetInstaller : Installer<PlanetCatalog, PlanetInstaller>
     {
-        [Inject]
-        private PlanetCatalog _catalog;
+        [Inject] private PlanetCatalog _catalog;
 
         public override void InstallBindings()
         {

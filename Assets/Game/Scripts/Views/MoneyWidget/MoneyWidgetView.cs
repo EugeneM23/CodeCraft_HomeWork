@@ -13,15 +13,9 @@ namespace Game.Views
 
         [Inject] private readonly IMoneyWidgetPresenter _presenter;
 
-        private void OnEnable()
-        {
-            _presenter.OnMoneyChanged += UpdateCount;
-        }
+        private void OnEnable() => _presenter.OnMoneyChanged += UpdateCount;
 
-        private void OnDisable()
-        {
-            _presenter.OnMoneyChanged -= UpdateCount;
-        }
+        private void OnDisable() => _presenter.OnMoneyChanged -= UpdateCount;
 
         public void UpdateCount(int newValue, int prevValue)
         {

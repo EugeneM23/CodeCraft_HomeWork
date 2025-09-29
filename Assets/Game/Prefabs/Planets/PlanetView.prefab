@@ -148,6 +148,7 @@ GameObject:
   - component: {fileID: 1136359131593949921}
   - component: {fileID: 4750608302101327152}
   - component: {fileID: 6914435529941270561}
+  - component: {fileID: 6250863803325001483}
   m_Layer: 5
   m_Name: Coin
   m_TagString: Untagged
@@ -282,6 +283,20 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &6250863803325001483
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 320550912344372757}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a668284550884be1844936e7af9705da, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _speed: 1
+  _moveAnimation: {fileID: 4750608302101327152}
 --- !u!1 &383599552409175847
 GameObject:
   m_ObjectHideFlags: 0
@@ -559,6 +574,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _price: {fileID: 6850814019076832775}
+  _priceText: {fileID: 5444377921757551026}
   _lockIcon: {fileID: 7085741634984397813}
   _planetIcon: {fileID: 606508972301849034}
   _button: {fileID: 5583372068559771244}
@@ -566,8 +582,6 @@ MonoBehaviour:
   _progressImage: {fileID: 6948507870913343312}
   _progressText: {fileID: 8019802931863089282}
   _coin: {fileID: 320550912344372757}
-  _coinButton: {fileID: 6914435529941270561}
-  _coinSpeed: 1
 --- !u!114 &6087031740547708793
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -582,7 +596,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _config: {fileID: 11400000, guid: 15e65e6f39d251d4ba9636b335fd7ff7, type: 2}
   _planetViewPrefab: {fileID: 1366533627675132402}
-  _coinMoveAnimation: {fileID: 4750608302101327152}
 --- !u!114 &6882515217988539234
 MonoBehaviour:
   m_ObjectHideFlags: 0
