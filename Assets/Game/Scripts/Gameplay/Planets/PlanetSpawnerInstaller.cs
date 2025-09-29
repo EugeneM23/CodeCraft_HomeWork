@@ -7,14 +7,14 @@ namespace Game.Gameplay
     public class PlanetSpawnerInstaller : MonoInstaller
     {
         [SerializeField] private PlanetView _planetPrefab;
-        [SerializeField] private RectTransform _parentTransform;
+        [SerializeField] private GameObject _spawnPoints;
 
         public override void InstallBindings()
         {
             Container
                 .BindInterfacesAndSelfTo<PlanetSpawner>()
                 .AsSingle()
-                .WithArguments(_planetPrefab, _parentTransform)
+                .WithArguments(_planetPrefab, _spawnPoints)
                 .NonLazy();
         }
     }

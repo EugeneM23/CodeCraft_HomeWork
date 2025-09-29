@@ -5,7 +5,7 @@ using Zenject;
 
 namespace Game
 {
-    public class PlanetViewInstaller : MonoInstaller
+    public class PlanetGameObjectInstaller : MonoInstaller
     {
         [SerializeField] private PlanetConfig _config;
         [SerializeField] private PlanetView _planetViewPrefab;
@@ -22,7 +22,6 @@ namespace Game
                 .BindInterfacesAndSelfTo<PlanetPresenter>()
                 .AsSingle()
                 .NonLazy();
-
         }
     }
 }
