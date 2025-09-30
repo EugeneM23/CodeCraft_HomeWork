@@ -1,5 +1,4 @@
 using Modules.UI;
-using PlasticPipe.PlasticProtocol.Messages;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,13 +8,14 @@ namespace Game.Views
 {
     public class PlanetView : MonoBehaviour
     {
-        [Header("Locked State")] [SerializeField]
-        private GameObject _price;
+        [Header("Locked State")] 
+        [SerializeField] private GameObject _price;
 
         [SerializeField] private TMP_Text _priceText;
         [SerializeField] private GameObject _lockIcon;
 
-        [Header("Planet")] [SerializeField] private Image _planetIcon;
+        [Header("Planet")]
+        [SerializeField] private Image _planetIcon;
         [SerializeField] private SmartButton _button;
 
         [Header("Income")] [SerializeField] private GameObject _income;
@@ -30,7 +30,7 @@ namespace Game.Views
             _presenter.OnPlanetUnlocked += UpdatePlanetState;
             _presenter.OnPlanetChanged += UpdatePlanetState;
             _presenter.OnIncomeProgressUpdated += UpdateIncomeProgress;
-            _presenter.OnIncomeReady += UpdateIncomeReadyState;
+            _presenter.OnIncomeReady += UpdateIncomeState;
 
             _button.OnClick += _presenter.OnClick;
             _button.OnHold += _presenter.OnHold;
@@ -43,7 +43,7 @@ namespace Game.Views
             _presenter.OnPlanetUnlocked -= UpdatePlanetState;
             _presenter.OnPlanetChanged -= UpdatePlanetState;
             _presenter.OnIncomeProgressUpdated -= UpdateIncomeProgress;
-            _presenter.OnIncomeReady -= UpdateIncomeReadyState;
+            _presenter.OnIncomeReady -= UpdateIncomeState;
 
             _button.OnClick -= _presenter.OnClick;
             _button.OnHold -= _presenter.OnHold;
@@ -62,7 +62,7 @@ namespace Game.Views
             _income.SetActive(isUnlocked && !_presenter.IsIncomeReady);
         }
 
-        private void UpdateIncomeReadyState(bool isReady)
+        private void UpdateIncomeState(bool isReady)
         {
             _coin.SetActive(isReady);
             _income.SetActive(!isReady);
