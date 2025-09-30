@@ -33,7 +33,7 @@ namespace Game.Gameplay
 
             for (int i = 0; i < spawnPoints.Length && i < _planets.Length; i++)
             {
-                GameObject planet = _container.InstantiatePrefab(_planetPrefab, spawnPoints[i].transform);
+                GameObject planet = _container.InstantiatePrefab(_planetPrefab, _spawnPoints.transform.parent);
                 planet.transform.position = spawnPoints[i].position;
                 planet.transform.localScale *= _scaleFactor;
 

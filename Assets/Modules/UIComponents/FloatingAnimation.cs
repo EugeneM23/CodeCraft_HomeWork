@@ -5,55 +5,26 @@ namespace Modules.UI
 
     public sealed class FloatingAnimation : MonoBehaviour
     {
-        public float radius = 100f;
-        public float rotationSpeed = 90f;
-        private Tweener _tween;
+        [SerializeField] private float floatDistance = 0.5f; // Расстояние покачивания
+        [SerializeField] private float duration = 2f; // Длительность подъема и опускания
 
-        private void Start()
+        private Tween _anim;
+
+        private void Start() => StartFloating();
+        private void OnEnable() => _anim.Play();
+        private void OnDisable() => _anim.Pause();
+
+        private void StartFloating()
         {
-            Vector3 center = transform.parent.position;
-            transform.position = center + Vector3.right * radius;
+            // Начальная позиция объекта
+            Vector3 originalPosition = transform.localPosition;
+            Vector3 floatingPosition = originalPosition + new Vector3(0f, floatDistance, 0f);
 
-            float duration = 360f / rotationSpeed;
-            bool clockwise = Random.Range(0, 2) == 0;
-            float endAngle = clockwise ? 360f : -360f;
-
-            _tween = DOVirtual.Float(0f, endAngle, duration, angle =>
-                {
-                    float radians = angle * Mathf.Deg2Rad;
-                    Vector3 offset = new Vector3(Mathf.Cos(radians) * radius, Mathf.Sin(radians) * radius, 0f);
-                    transform.position = center + offset;
-                })
-                .SetEase(Ease.Linear)
-                .SetLoops(-1, LoopType.Restart)
-                .SetAutoKill(false)
-                .Pause();
-        }
-
-        private void OnEnable()
-        {
-            if (_tween != null)
-            {
-                _tween.Play();
-            }
-            else
-            {
-                StartCoroutine(DelayedStart());
-            }
-        }
-
-        private void OnDisable()
-        {
-            _tween?.Pause();
-        }
-
-        private System.Collections.IEnumerator DelayedStart()
-        {
-            yield return null;
-            if (_tween != null)
-            {
-                _tween.Play();
-            }
+            // Анимация подъема
+            _anim = transform
+                .DOLocalMove(floatingPosition, duration)
+                .SetEase(Ease.InOutSine) // Плавный переход
+                .SetLoops(-1, LoopType.Yoyo); // Бесконечный цикл вверх-вниз
         }
     }
 }
