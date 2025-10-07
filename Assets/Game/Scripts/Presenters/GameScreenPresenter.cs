@@ -1,7 +1,7 @@
 using System;
-using UnityEngine;
+using Game.Views;
 
-namespace Game.Views.GameScreeen
+namespace Game.Presenters
 {
     public class GameScreenPresenter : IGameScreenPresenter
     {

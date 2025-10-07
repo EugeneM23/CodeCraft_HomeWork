@@ -1,11 +1,10 @@
 using System;
 using Game.Views;
-using Game.Views.GameScreeen;
 using Modules.Planets;
 using UnityEngine;
 using Zenject;
 
-namespace Game
+namespace Game.Presenters
 {
     public class PlanetPresenter : IPlanetPresenter, IInitializable, IDisposable
     {
@@ -18,16 +17,15 @@ namespace Game
         public string Price => _planet.Price.ToString();
         public Sprite Icon => _planet.GetIcon(_planet.IsUnlocked);
         public bool IsIncomeReady => _planet.IsIncomeReady;
-        public Planet Planet => _planet;
 
         private Planet _planet;
         private readonly IGameScreenPresenter _gameScreenPresenter;
-        private readonly IPlanetPopupPresenter _planetPopupPresenter;
+        private readonly PlanetPopupPresenter _planetPopupPresenter;
 
         public PlanetPresenter(
             Planet planet,
             IGameScreenPresenter gameScreenPresenter,
-            IPlanetPopupPresenter planetPopupPresenter
+            PlanetPopupPresenter planetPopupPresenter
         )
         {
             _planet = planet;
@@ -55,14 +53,21 @@ namespace Game
             _planet.OnIncomeTimeChanged -= HandleIncomeTimeChanged;
         }
 
-        public void OnClick() => _planet.Unlock();
+        public void OnClick()
+        {
+            _planet.Unlock();
+        }
 
         public void OnHold()
         {
             if (!_planet.IsUnlocked) return;
-
             _planetPopupPresenter.SetPlanet(_planet);
             _gameScreenPresenter.ShowPlanetPopup();
+        }
+
+        public void GatherIncome()
+        {
+            _planet.GatherIncome();
         }
 
         public void SetPlanet(Planet planet)

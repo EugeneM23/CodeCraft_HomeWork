@@ -1,12 +1,11 @@
 using System;
-using Game.Views.GameScreeen;
-using ModestTree;
+using Game.Views;
 using Modules.Money;
 using Modules.Planets;
 using UnityEngine;
 using Zenject;
 
-namespace Game.Views
+namespace Game.Presenters
 {
     public class PlanetPopupPresenter : IPlanetPopupPresenter, IInitializable, IDisposable
     {

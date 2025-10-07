@@ -1,5 +1,4 @@
 using System;
-using Modules.Planets;
 using UnityEngine;
 
 namespace Game.Views
@@ -14,11 +13,10 @@ namespace Game.Views
         bool IsUnlocked { get; }
         Sprite Icon { get; }
         bool IsIncomeReady { get; }
-        Planet Planet { get; }
         string Price { get; }
 
         void OnClick();
         void OnHold();
-        void SetPlanet(Planet item);
+        void GatherIncome();
     }
 }

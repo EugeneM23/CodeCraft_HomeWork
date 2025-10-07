@@ -1,5 +1,3 @@
-using Game.Views;
-using Game.Views.GameScreeen;
 using UnityEngine;
 using Zenject;
 
@@ -15,7 +13,7 @@ namespace Game.Presenters
         {
             //TODO:
             Container
-                .BindInterfacesAndSelfTo<MoneyWidgetPresenter>()
+                .BindInterfacesAndSelfTo<MoneyPresenter>()
                 .AsSingle()
                 .NonLazy();
 
@@ -26,6 +24,11 @@ namespace Game.Presenters
 
             Container
                 .BindInterfacesAndSelfTo<GameScreenPresenter>()
+                .AsSingle()
+                .NonLazy();
+            
+            Container
+                .BindInterfacesAndSelfTo<PlanetCollectionPresenter>()
                 .AsSingle()
                 .NonLazy();
         }

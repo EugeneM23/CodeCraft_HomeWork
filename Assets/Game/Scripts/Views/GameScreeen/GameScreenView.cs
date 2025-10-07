@@ -1,4 +1,3 @@
-using Game.Views.GameScreeen;
 using UnityEngine;
 using Zenject;
 
@@ -17,7 +16,7 @@ namespace Game.Views
         }
 
         private void OnDisable()
-        {
+        { 
             _presenter.OnPlanetPopupShow -= _planetPopupView.Show;
             _presenter.OnPlanetPopupHide -= _planetPopupView.Hide;
         }

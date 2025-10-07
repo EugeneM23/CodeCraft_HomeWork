@@ -1,18 +1,18 @@
 using System;
 using Game.Views;
 using Modules.Money;
-using UnityEngine;
 using Zenject;
 
-namespace Game
+namespace Game.Presenters
 {
-    public class MoneyWidgetPresenter : IMoneyWidgetPresenter, IInitializable, IDisposable
+    public class MoneyPresenter : IMoneyPresenter, IInitializable, IDisposable
     {
         public event Action<int, int> OnMoneyChanged;
+        public string Money => _storage.Money.ToString();
 
         private readonly MoneyStorage _storage;
 
-        public MoneyWidgetPresenter(MoneyStorage storage)
+        public MoneyPresenter(MoneyStorage storage)
         {
             _storage = storage;
         }

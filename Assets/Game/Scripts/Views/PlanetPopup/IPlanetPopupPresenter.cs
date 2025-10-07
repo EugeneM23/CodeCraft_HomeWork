@@ -1,5 +1,4 @@
 using System;
-using Modules.Planets;
 using UnityEngine;
 
 namespace Game.Views
@@ -18,6 +17,5 @@ namespace Game.Views
 
         void OnCloseClicked();
         void OnUpgradeClicked();
-        void SetPlanet(Planet planet);
     }
 }

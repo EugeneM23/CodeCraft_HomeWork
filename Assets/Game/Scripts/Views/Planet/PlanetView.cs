@@ -2,43 +2,46 @@ using Modules.UI;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using Zenject;
 
 namespace Game.Views
 {
     public class PlanetView : MonoBehaviour
     {
-        [Header("Locked State")] 
-        [SerializeField] private GameObject _price;
+        [Header("Locked State")] [SerializeField]
+        private GameObject _price;
 
         [SerializeField] private TMP_Text _priceText;
         [SerializeField] private GameObject _lockIcon;
 
-        [Header("Planet")]
-        [SerializeField] private Image _planetIcon;
+        [Header("Planet")] [SerializeField] private Image _planetIcon;
         [SerializeField] private SmartButton _button;
 
         [Header("Income")] [SerializeField] private GameObject _income;
         [SerializeField] private Image _progressImage;
         [SerializeField] private TMP_Text _progressText;
-        [SerializeField] private GameObject _coin;
+        [SerializeField] private CoinMoveController _coin;
 
-        [Inject] private IPlanetPresenter _presenter;
+        private IPlanetPresenter _presenter;
 
-        private void OnEnable()
+        public void Construct(IPlanetPresenter presenter)
+        {
+            _presenter = presenter;
+            _coin.Construct(presenter);
+        }
+
+        public void Show()
         {
             _presenter.OnPlanetUnlocked += UpdatePlanetState;
             _presenter.OnPlanetChanged += UpdatePlanetState;
             _presenter.OnIncomeProgressUpdated += UpdateIncomeProgress;
             _presenter.OnIncomeReady += UpdateIncomeState;
-
             _button.OnClick += _presenter.OnClick;
             _button.OnHold += _presenter.OnHold;
 
             UpdatePlanetState();
         }
 
-        private void OnDisable()
+        public void Hide()
         {
             _presenter.OnPlanetUnlocked -= UpdatePlanetState;
             _presenter.OnPlanetChanged -= UpdatePlanetState;
@@ -55,16 +58,16 @@ namespace Game.Views
 
             _planetIcon.sprite = _presenter.Icon;
             _priceText.text = _presenter.Price;
-            
+
             _lockIcon.SetActive(!isUnlocked);
             _price.SetActive(!isUnlocked);
-            _coin.SetActive(isUnlocked && _presenter.IsIncomeReady);
+            _coin.gameObject.SetActive(isUnlocked && _presenter.IsIncomeReady);
             _income.SetActive(isUnlocked && !_presenter.IsIncomeReady);
         }
 
         private void UpdateIncomeState(bool isReady)
         {
-            _coin.SetActive(isReady);
+            _coin.gameObject.SetActive(isReady);
             _income.SetActive(!isReady);
         }
 

@@ -5,7 +5,7 @@ namespace Game.Views
 {
     public sealed class ViewsInstaller : MonoInstaller
     {
-        [SerializeField] private MoneyWidgetView _moneyWidgetView;
+        [SerializeField] private MoneyView moneyView;
         [SerializeField] private PlanetPopupView _planetPopupView;
         [SerializeField] private GameScreenView _gameScreenView;
 
@@ -14,8 +14,8 @@ namespace Game.Views
             //TODO:
 
             Container
-                .Bind<MoneyWidgetView>()
-                .FromInstance(_moneyWidgetView)
+                .Bind<MoneyView>()
+                .FromInstance(moneyView)
                 .AsSingle()
                 .NonLazy();
 
@@ -24,7 +24,7 @@ namespace Game.Views
                 .FromInstance(_planetPopupView)
                 .AsSingle()
                 .NonLazy();
-            
+
             Container
                 .Bind<GameScreenView>()
                 .FromInstance(_gameScreenView)

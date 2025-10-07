@@ -1,6 +1,6 @@
 using System;
 
-namespace Game.Views.GameScreeen
+namespace Game.Views
 {
     public interface IGameScreenPresenter
     {

@@ -1,4 +1,3 @@
-using System;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
@@ -6,12 +5,17 @@ using Zenject;
 
 namespace Game.Views
 {
-    public class MoneyWidgetView : MonoBehaviour
+    public class MoneyView : MonoBehaviour
     {
         [SerializeField] private TMP_Text _count;
         [field: SerializeField] public Transform CoinTarget { get; private set; }
 
-        [Inject] private readonly IMoneyWidgetPresenter _presenter;
+        [Inject] private readonly IMoneyPresenter _presenter;
+
+        private void Awake()
+        { 
+            _count.text = _presenter.Money;
+        }
 
         private void OnEnable() => _presenter.OnMoneyChanged += UpdateCount;
 

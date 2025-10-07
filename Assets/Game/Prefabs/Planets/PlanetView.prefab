@@ -519,9 +519,6 @@ GameObject:
   - component: {fileID: 1226517422905731925}
   - component: {fileID: 7486801599208217449}
   - component: {fileID: 1366533627675132402}
-  - component: {fileID: 6087031740547708793}
-  - component: {fileID: 6882515217988539234}
-  - component: {fileID: 5887683661289916412}
   m_Layer: 5
   m_Name: PlanetView
   m_TagString: Untagged
@@ -576,56 +573,13 @@ MonoBehaviour:
   _price: {fileID: 6850814019076832775}
   _priceText: {fileID: 5444377921757551026}
   _lockIcon: {fileID: 7085741634984397813}
+  <Name>k__BackingField: Planet #1
   _planetIcon: {fileID: 606508972301849034}
   _button: {fileID: 5583372068559771244}
   _income: {fileID: 5564512366540979095}
   _progressImage: {fileID: 6948507870913343312}
   _progressText: {fileID: 8019802931863089282}
-  _coin: {fileID: 320550912344372757}
---- !u!114 &6087031740547708793
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1080244410604157239}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1fa7243e28c64faeb986da6587ef18d4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _config: {fileID: 11400000, guid: 15e65e6f39d251d4ba9636b335fd7ff7, type: 2}
-  _planetViewPrefab: {fileID: 1366533627675132402}
---- !u!114 &6882515217988539234
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1080244410604157239}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 08eca9f7688a0a24685b89133b020c8e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _scriptableObjectInstallers: []
-  _monoInstallers:
-  - {fileID: 6087031740547708793}
-  _installerPrefabs: []
-  _autoRun: 1
-  _kernel: {fileID: 0}
---- !u!114 &5887683661289916412
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1080244410604157239}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0bf25629dda3405ca900b373a465fb41, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  _coin: {fileID: 6250863803325001483}
 --- !u!1 &5564512366540979095
 GameObject:
   m_ObjectHideFlags: 0
