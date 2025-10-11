@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 namespace Gameplay
@@ -7,18 +6,18 @@ namespace Gameplay
     {
         private MoveComponent _moveComponent;
         private RotationComponent _rotationComponent;
+        private InputReader _inputReader;
 
-        public void Initialize()
+        public void Construct(MoveComponent moveComponent, RotationComponent rotationComponent, InputReader inputReader)
         {
-            _moveComponent = ServiceLocator.Get<MoveComponent>(PlayerId.MoveComponent);
-            _rotationComponent = ServiceLocator.Get<RotationComponent>(PlayerId.RotationComponent);
-            ServiceLocator.Get<InputReader>(GameID.InpuReader).OnMove += Move;
+            _moveComponent = moveComponent;
+            _rotationComponent = rotationComponent;
+            _inputReader = inputReader;
         }
 
-        private void OnDisable()
-        {
-            ServiceLocator.Get<InputReader>(GameID.InpuReader).OnMove -= Move;
-        }
+        public void Initialize() => _inputReader.OnMove += Move;
+
+        private void OnDisable() => _inputReader.OnMove -= Move;
 
         private void Move(Vector2 direction)
         {
