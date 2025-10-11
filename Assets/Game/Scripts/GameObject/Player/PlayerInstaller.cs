@@ -31,7 +31,8 @@ namespace Game.Scripts.Player
             ServiceLocator.Add(PlayerId.Condition, new CompositCondition());
 
             ServiceLocator.Add(PlayerId.Character, new Gameplay.Player());
-            ServiceLocator.Add(PlayerId.DeathObserver, new DeathObserver(_transform));
+            ServiceLocator.Add(PlayerId.Transfrom, _transform);
+            ServiceLocator.Add(PlayerId.DeathObserver, new DeathObserver());
 
             ServiceLocator.Add(PlayerId.HealthComponent, new HealthComponent(_health));
             ServiceLocator.Add(PlayerId.GravityScale, new GravityScaleComponent(_rigidbody, _gravityScale));

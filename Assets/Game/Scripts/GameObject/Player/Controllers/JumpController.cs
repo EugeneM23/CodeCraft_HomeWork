@@ -2,22 +2,29 @@ namespace Gameplay
 {
     public class JumpController : IInitializeble
     {
+        private InputReader _inputReader;
+        private CollisionComponent _collisionComponent;
+        private JumpComponent _jumpComponent;
+
+        [Inject]
+        private void Construct(InputReader inputReader, CollisionComponent collisionComponent,
+            JumpComponent jumpComponent)
+        {
+            _inputReader = inputReader;
+            _collisionComponent = collisionComponent;
+            _jumpComponent = jumpComponent;
+        }
+
         public void Initialize()
         {
-            ServiceLocator.Get<InputReader>(GameID.InpuReader).OnJump +=
-                ServiceLocator.Get<JumpComponent>(PlayerId.JumpComponent).Jump;
-
-            ServiceLocator.Get<CollisionComponent>(PlayerId.CollisionComponent).OnGrounded +=
-                ServiceLocator.Get<JumpComponent>(PlayerId.JumpComponent).ResetJump;
+            _inputReader.OnJump += _jumpComponent.Jump;
+            _collisionComponent.OnGrounded += _jumpComponent.ResetJump;
         }
 
         private void OnDisable()
         {
-            ServiceLocator.Get<InputReader>(GameID.InpuReader).OnJump -=
-                ServiceLocator.Get<JumpComponent>(PlayerId.JumpComponent).Jump;
-
-            ServiceLocator.Get<CollisionComponent>(PlayerId.CollisionComponent).OnGrounded -=
-                ServiceLocator.Get<JumpComponent>(PlayerId.JumpComponent).ResetJump;
+            _inputReader.OnJump -= _jumpComponent.Jump;
+            _collisionComponent.OnGrounded -= _jumpComponent.ResetJump;
         }
     }
 }

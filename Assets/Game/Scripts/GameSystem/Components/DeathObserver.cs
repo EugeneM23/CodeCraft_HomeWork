@@ -7,14 +7,16 @@ namespace Gameplay
         private HealthComponent _healthComponent;
         private Transform _player;
 
-        public DeathObserver(Transform player)
+        [Inject]
+        private void Construct(HealthComponent healthComponent, Transform player)
         {
+            _healthComponent = healthComponent;
             _player = player;
         }
 
         public void Initialize()
         {
-            ServiceLocator.Get<HealthComponent>(PlayerId.HealthComponent).OnDeath += OnDeath;
+            _healthComponent.OnDeath += OnDeath;
         }
 
         private void OnDeath()

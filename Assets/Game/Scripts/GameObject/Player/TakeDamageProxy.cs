@@ -6,9 +6,10 @@ namespace Gameplay
     {
         private HealthComponent _healthComponent;
 
-        private void OnEnable()
+        [Inject]
+        private void Construct(HealthComponent healthComponent)
         {
-            _healthComponent = ServiceLocator.Get<HealthComponent>(PlayerId.HealthComponent);
+            _healthComponent = healthComponent;
         }
 
         public void TakeDamage(int damage) => _healthComponent.TakeDamage(damage);

@@ -16,6 +16,8 @@ namespace Gameplay
         GravityScale,
         CollisionComponent,
         GroundSyncComponent,
-        Rigidbody2D
+        Rigidbody2D,
+        AnimationController,
+        Transfrom
     }
 }

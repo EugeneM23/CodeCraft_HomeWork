@@ -14,10 +14,15 @@ namespace Gameplay
         private CollisionComponent _collisionComponent;
         private Rigidbody2D _rigidbody2D;
 
+        [Inject]
+        public void Construct(CollisionComponent collisionComponent, Rigidbody2D rigidbody2D)
+        {
+            _collisionComponent = collisionComponent;
+            _rigidbody2D = rigidbody2D;
+        }
+
         private void OnEnable()
         {
-            _collisionComponent = ServiceLocator.Get<CollisionComponent>(PlayerId.CollisionComponent);
-            _rigidbody2D = ServiceLocator.Get<Rigidbody2D>(PlayerId.Rigidbody2D);
             _collisionComponent.OnFlying += OnFall;
         }
 

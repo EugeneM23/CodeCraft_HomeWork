@@ -4,15 +4,14 @@ namespace Gameplay
 {
     public class FireController : IInitializeble
     {
-        public void Initialize()
-        {
-            ServiceLocator.Get<InputReader>(GameID.InpuReader).OnFire += Fire;
-        }
+        private InputReader _inputReader;
 
-        private void OnDisable()
-        {
-            ServiceLocator.Get<InputReader>(GameID.InpuReader).OnFire -= Fire;
-        }
+        [Inject]
+        private void Construct(InputReader inputReader) => _inputReader = inputReader;
+
+        public void Initialize() => _inputReader.OnFire += Fire;
+
+        private void OnDisable() => _inputReader.OnFire -= Fire;
 
         public void Fire() => Debug.Log("Fire");
     }

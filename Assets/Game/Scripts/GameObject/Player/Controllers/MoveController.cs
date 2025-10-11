@@ -8,6 +8,7 @@ namespace Gameplay
         private RotationComponent _rotationComponent;
         private InputReader _inputReader;
 
+        [Inject]
         public void Construct(MoveComponent moveComponent, RotationComponent rotationComponent, InputReader inputReader)
         {
             _moveComponent = moveComponent;
