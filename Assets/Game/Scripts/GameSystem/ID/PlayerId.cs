@@ -15,6 +15,7 @@ namespace Gameplay
         Character,
         GravityScale,
         CollisionComponent,
-        GroundSyncComponent
+        GroundSyncComponent,
+        Rigidbody2D
     }
 }

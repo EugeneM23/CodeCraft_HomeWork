@@ -1,10 +1,11 @@
+using System;
 using UnityEngine;
 
 namespace Gameplay
 {
     public class SceneResolver : MonoBehaviour
     {
-        private void Start()
+        private void OnEnable()
         {
             var moveController = ServiceLocator.Get<MoveController>(PlayerId.MoveController);
 

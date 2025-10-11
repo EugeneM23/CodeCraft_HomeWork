@@ -40,6 +40,7 @@ namespace Game.Scripts.Player
             ServiceLocator.Add(PlayerId.JumpComponent, new JumpComponent(_jumpForce, _rigidbody));
             ServiceLocator.Add(PlayerId.CollisionComponent, new CollisionComponent(_collider, _groundLayer));
             ServiceLocator.Add(PlayerId.GroundSyncComponent, new GroundSyncComponent());
+            ServiceLocator.Add(PlayerId.Rigidbody2D, _rigidbody);
         }
     }
 }

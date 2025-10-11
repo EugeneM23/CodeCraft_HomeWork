@@ -1,0 +1,40 @@
+using System;
+using UnityEngine;
+using UnityEngine.Serialization;
+
+namespace Gameplay
+{
+    public class AnimationController : MonoBehaviour
+    {
+        private static readonly int FlyingHash = Animator.StringToHash("IsFlying");
+        private static readonly int RunningHash = Animator.StringToHash("IsRunning");
+        private static readonly int IdlingHash = Animator.StringToHash("IsIdling");
+
+        [SerializeField] private Animator _animator;
+        private CollisionComponent _collisionComponent;
+        private Rigidbody2D _rigidbody2D;
+
+        private void OnEnable()
+        {
+            _collisionComponent = ServiceLocator.Get<CollisionComponent>(PlayerId.CollisionComponent);
+            _rigidbody2D = ServiceLocator.Get<Rigidbody2D>(PlayerId.Rigidbody2D);
+            _collisionComponent.OnFlying += OnFall;
+        }
+
+        private void OnFall()
+        {
+            _animator.SetTrigger("Fall");
+        }
+
+        private void Update()
+        {
+            bool isFlying = !_collisionComponent.IsGrounded;
+            bool isRunning = !isFlying && Mathf.Abs(_rigidbody2D.linearVelocity.x) > 1f && !isFlying;
+            bool isIdling = !isFlying && !isRunning;
+
+            _animator.SetBool(FlyingHash, isFlying);
+            _animator.SetBool(RunningHash, isRunning);
+            _animator.SetBool(IdlingHash, isIdling);
+        }
+    }
+}
