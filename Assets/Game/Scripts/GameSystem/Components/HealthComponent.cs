@@ -1,4 +1,5 @@
 using System;
+using UnityEditor.Graphs;
 using UnityEngine;
 
 namespace Gameplay
@@ -6,7 +7,7 @@ namespace Gameplay
     public class HealthComponent
     {
         public event Action OnDeath;
-        
+
         private readonly int _maxhealth;
         private int _currentHealth;
         private bool _isAlive;
@@ -23,8 +24,7 @@ namespace Gameplay
             if (!_isAlive || damage <= 0) return;
 
             _currentHealth = Mathf.Max(0, _currentHealth - damage);
-            Debug.Log($"Health: {_currentHealth}/{_maxhealth}");
-
+            
             if (_currentHealth <= 0)
             {
                 _isAlive = false;

@@ -13,6 +13,6 @@ namespace Gameplay
 
         private void OnDisable() => _inputReader.OnFire -= Fire;
 
-        public void Fire() => Debug.Log("Fire");
+        public void Fire() => "FIRE".Log(Color.red);
     }
 }
