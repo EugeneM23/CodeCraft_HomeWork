@@ -11,7 +11,8 @@ namespace Gameplay
     {
         public static DiContainer Instance { get; private set; }
         public int Count => _services.Count;
-        private readonly Dictionary<string, object> _services = new();
+        
+        private readonly Dictionary<string , object> _services = new();
 
         [SerializeField] private Installer[] _installers;
 
@@ -48,18 +49,17 @@ namespace Gameplay
         public TContract Get<TContract>(Enum id)
         {
             return (TContract)_services[id.ToString()];
-        }
+        } 
 
         public object Get(Type type)
         {
             foreach (var (key, value) in _services)
                 if (value.GetType() == type)
-                {
                     return value;
-                }
 
-            return default;
+            return null;
         }
+
 
         public IEnumerable<T> GetAll<T>() => _services.Values.OfType<T>();
         public object[] GetAll() => _services.Values.ToArray();
