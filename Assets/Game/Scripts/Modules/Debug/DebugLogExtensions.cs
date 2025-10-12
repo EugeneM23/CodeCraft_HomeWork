@@ -1,9 +1,8 @@
-using System;
 using UnityEngine;
 
 namespace Gameplay
 {
-    public static class DebugExtensions
+    public static class DebugLogExtensions
     {
         public static T Log<T>(this T value)
         {

@@ -98,14 +98,14 @@ namespace Gameplay
 
                 _headerStyle = new GUIStyle(GUI.skin.label)
                 {
-                    fontSize = 24,
+                    fontSize = 20,
                     fontStyle = FontStyle.Bold,
                     normal = { textColor = Color.green }
                 };
 
                 _labelStyle = new GUIStyle(GUI.skin.label)
                 {
-                    fontSize = 24,
+                    fontSize = 20,
                     normal = { textColor = Color.white }
                 };
 
@@ -133,7 +133,6 @@ namespace Gameplay
                 InitializeStyles();
 
                 GUILayout.BeginArea(new Rect(10, 10, 600, Screen.height - 20));
-                GUILayout.Label("🎬 ANIMATION DEBUGGER", _headerStyle);
                 GUILayout.Label("(Press F1)", _labelStyle);
                 GUILayout.Space(10);
 
