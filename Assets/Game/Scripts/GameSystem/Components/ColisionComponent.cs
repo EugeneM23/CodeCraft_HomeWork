@@ -14,6 +14,7 @@ namespace Gameplay
 
         private readonly CircleCollider2D _collider;
         private readonly LayerMask _groundLayer;
+        private bool _frameState;
 
         public CollisionComponent(CircleCollider2D collider, LayerMask groundLayer)
         {
@@ -23,12 +24,12 @@ namespace Gameplay
 
         public void FixedTick()
         {
-            bool frameState = IsGrounded;
+            _frameState = IsGrounded;
             LastHit = Raycast();
             IsGrounded = LastHit.collider != null;
 
-            if (!frameState && IsGrounded) OnGrounded?.Invoke();
-            else if (frameState && !IsGrounded) OnFlying?.Invoke();
+            if (!_frameState && IsGrounded) OnGrounded?.Invoke();
+            else if (_frameState && !IsGrounded) OnFlying?.Invoke();
         }
 
         private RaycastHit2D Raycast()

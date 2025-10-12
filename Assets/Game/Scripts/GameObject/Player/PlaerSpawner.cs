@@ -1,11 +1,12 @@
 using System;
+using Game.Scripts.Player;
 using UnityEngine;
 
 namespace Gameplay
 {
-    public class PlaewSpaner : MonoBehaviour
+    public class PlaerSpawner : MonoBehaviour
     {
-        [SerializeField] private Transform _player;
+        [SerializeField] private BoxTest _player;
 
         private void Start()
         {

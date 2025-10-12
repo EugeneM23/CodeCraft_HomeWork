@@ -3,8 +3,7 @@ using UnityEngine;
 
 namespace Game.Scripts.Player
 {
-    [DefaultExecutionOrder(-999)]
-    public class PlayerInstaller : MonoBehaviour
+    public class PlayerInstaller : Installer
     {
         [Header("Character Settings")] [SerializeField]
         private float _moveSpeed = 5f;
@@ -22,26 +21,27 @@ namespace Game.Scripts.Player
         [Header("Environment Settings")] [SerializeField]
         private LayerMask _groundLayer;
 
-        private void Awake()
+        public override void Install(DiContainer container)
         {
-            ServiceLocator.Add(PlayerId.MoveController, new MoveController());
-            ServiceLocator.Add(PlayerId.JumpController, new JumpController());
-            ServiceLocator.Add(PlayerId.FireController, new FireController());
+            
+            container.Add(PlayerId.MoveController, new MoveController());
+            container.Add(PlayerId.JumpController, new JumpController());
+            container.Add(PlayerId.FireController, new FireController());
 
-            ServiceLocator.Add(PlayerId.Condition, new CompositCondition());
+            container.Add(PlayerId.Condition, new CompositCondition());
 
-            ServiceLocator.Add(PlayerId.Character, new Gameplay.Player());
-            ServiceLocator.Add(PlayerId.Transfrom, _transform);
-            ServiceLocator.Add(PlayerId.DeathObserver, new DeathObserver());
+            container.Add(PlayerId.Character, new Gameplay.Player());
+            container.Add(PlayerId.Transfrom, _transform);
+            container.Add(PlayerId.DeathObserver, new DeathObserver());
 
-            ServiceLocator.Add(PlayerId.HealthComponent, new HealthComponent(_health));
-            ServiceLocator.Add(PlayerId.GravityScale, new GravityScaleComponent(_rigidbody, _gravityScale));
-            ServiceLocator.Add(PlayerId.MoveComponent, new MoveComponent(_rigidbody, _moveSpeed));
-            ServiceLocator.Add(PlayerId.RotationComponent, new RotationComponent(_transform));
-            ServiceLocator.Add(PlayerId.JumpComponent, new JumpComponent(_jumpForce, _rigidbody));
-            ServiceLocator.Add(PlayerId.CollisionComponent, new CollisionComponent(_collider, _groundLayer));
-            ServiceLocator.Add(PlayerId.GroundSyncComponent, new GroundSyncComponent());
-            ServiceLocator.Add(PlayerId.Rigidbody2D, _rigidbody);
+            container.Add(PlayerId.HealthComponent, new HealthComponent(_health));
+            container.Add(PlayerId.GravityScale, new GravityScaleComponent(_rigidbody, _gravityScale));
+            container.Add(PlayerId.MoveComponent, new MoveComponent(_rigidbody, _moveSpeed));
+            container.Add(PlayerId.RotationComponent, new RotationComponent(_transform));
+            container.Add(PlayerId.JumpComponent, new JumpComponent(_jumpForce, _rigidbody));
+            container.Add(PlayerId.CollisionComponent, new CollisionComponent(_collider, _groundLayer));
+            container.Add(PlayerId.GroundSyncComponent, new GroundSyncComponent());
+            container.Add(PlayerId.Rigidbody2D, _rigidbody);
         }
     }
 }

@@ -9,6 +9,7 @@ namespace Gameplay
     [DefaultExecutionOrder(-900)]
     public class DiContainer : MonoBehaviour
     {
+        public static DiContainer Instance { get; private set; }
         public int Count => _services.Count;
         private readonly Dictionary<string, object> _services = new();
 
@@ -16,6 +17,8 @@ namespace Gameplay
 
         private void Awake()
         {
+            Instance = this;
+            
             foreach (Installer installer in _installers)
             {
                 installer.Install(this);
@@ -28,6 +31,13 @@ namespace Gameplay
 
             foreach (var item in _services)
                 Inject(item.Value);
+        }
+
+        public T InstantiatePrefab<T>(T prefab, Vector3 position, Quaternion rotation) where T : Component
+        {
+            T component = GameObject.Instantiate(prefab, position, rotation, transform);
+            Inject(component);
+            return component;
         }
 
         public void Add(Enum id, object service)

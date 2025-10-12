@@ -11,7 +11,7 @@ namespace Gameplay
         {
             _reader = reader;
 
-            _reader.Log();
+            _reader.OnFire += () => "asdasdadas".Log();
         }
     }
 }

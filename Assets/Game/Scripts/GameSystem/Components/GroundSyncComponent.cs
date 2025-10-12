@@ -9,10 +9,15 @@ namespace Gameplay
         private MoveComponent _move;
         private Vector3 _lastPlatformPos;
 
+        [Inject]
+        public void Construct(CollisionComponent collision, MoveComponent move)
+        {
+            _collision = collision;
+            _move = move;
+        }
+
         public void Initialize()
         {
-            _collision = ServiceLocator.Get<CollisionComponent>(PlayerId.CollisionComponent);
-            _move = ServiceLocator.Get<MoveComponent>(PlayerId.MoveComponent);
             _collision.OnGrounded += OnGrounded;
         }
 

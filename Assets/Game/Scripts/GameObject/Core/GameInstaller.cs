@@ -2,12 +2,11 @@ using UnityEngine;
 
 namespace Gameplay
 {
-    [DefaultExecutionOrder(-1000)]
-    public class GameInstaller : MonoBehaviour
+    public class GameInstaller : Installer
     {
-        private void Awake()
+        public override void Install(DiContainer container)
         {
-            ServiceLocator.Add(GameID.InpuReader, new InputReader());
+            container.Add(GameID.InpuReader, new InputReader());
         }
     }
 }
