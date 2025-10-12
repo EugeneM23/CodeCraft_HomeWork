@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace Gameplay
+namespace Modules
 {
     public class InputReader : GameInput.IMovementActions, GameInput.IJumpActions, GameInput.IFireActions,
         IInitializeble

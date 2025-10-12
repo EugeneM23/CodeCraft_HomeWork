@@ -1,28 +1,29 @@
 using System.Collections.Generic;
 using Gameplay;
-using PlasticPipe.PlasticProtocol.Client;
 using UnityEngine;
 
 namespace Game.Scripts.Player
 {
     public class TickableManager : MonoBehaviour
     {
+        [SerializeField] private DiContainer _ioContainer;
+
         private List<ITickable> _tickables = new();
         private List<IFixedTickable> _fixedTickable = new();
         private List<IInitializeble> _initializeble = new();
 
         private void Start()
         {
-            foreach (var item in ServiceLocator.GetAll<ITickable>())
+            foreach (var item in _ioContainer.GetAll<ITickable>())
                 _tickables.Add(item);
 
-            foreach (var item in ServiceLocator.GetAll<IFixedTickable>())
+            foreach (var item in _ioContainer.GetAll<IFixedTickable>())
                 _fixedTickable.Add(item);
 
-            foreach (var item in ServiceLocator.GetAll<IInitializeble>())
+            foreach (var item in _ioContainer.GetAll<IInitializeble>())
                 _initializeble.Add(item);
 
-            foreach (var item in _initializeble) 
+            foreach (var item in _initializeble)
                 item.Initialize();
         }
 

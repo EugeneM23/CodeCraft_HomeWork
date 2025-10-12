@@ -1,22 +1,58 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using UnityEngine;
 
 namespace Gameplay
 {
     [DefaultExecutionOrder(-900)]
-    public class SceneResolver : MonoBehaviour
+    public class DiContainer : MonoBehaviour
     {
+        public int Count => _services.Count;
+        private readonly Dictionary<string, object> _services = new();
+
+        [SerializeField] private Installer[] _installers;
+
         private void Awake()
         {
-            foreach (var item in ServiceLocator.GetAll())
-                Inject(item);
+            foreach (Installer installer in _installers)
+            {
+                installer.Install(this);
+            }
 
             MonoBehaviour[] allObjects = FindObjectsOfType<MonoBehaviour>();
-            
-            foreach (var component in allObjects) 
+
+            foreach (var component in allObjects)
                 Inject(component);
+
+            foreach (var item in _services)
+                Inject(item.Value);
         }
+
+        public void Add(Enum id, object service)
+        {
+            _services[id.ToString()] = service;
+        }
+
+        public TContract Get<TContract>(Enum id)
+        {
+            return (TContract)_services[id.ToString()];
+        }
+
+        public object Get(Type type)
+        {
+            foreach (var (key, value) in _services)
+                if (value.GetType() == type)
+                {
+                    return value;
+                }
+
+            return default;
+        }
+
+        public IEnumerable<T> GetAll<T>() => _services.Values.OfType<T>();
+        public object[] GetAll() => _services.Values.ToArray();
 
         private void Inject(object target)
         {
@@ -47,9 +83,9 @@ namespace Gameplay
                 ParameterInfo parameterInfo = parameters[i];
                 Type type = parameterInfo.ParameterType;
 
-                object o = ServiceLocator.Get(type);
+                object service = Get(type);
 
-                args[i] = o;
+                args[i] = service;
             }
 
             method.Invoke(target, args);
