@@ -6,13 +6,11 @@ namespace Gameplay
     public abstract class Context : MonoBehaviour
     {
         [SerializeField] protected Installer[] _installers;
-        public diContainer Container { get; private set; }
+        public DiContainer Container { get; private set; }
 
-
-        public virtual void Initialize(diContainer parent = null)
+        public virtual void Initialize(DiContainer parent = null)
         {
-            "Initialize".Log(this);
-            Container = new diContainer(parent);
+            Container = new DiContainer(parent);
             InstallBindings();
         }
 

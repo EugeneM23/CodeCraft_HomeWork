@@ -9,6 +9,8 @@ namespace Gameplay
         [Inject]
         private void Construct(HealthComponent healthComponent)
         {
+            healthComponent.Log(healthComponent == null);
+
             _healthComponent = healthComponent;
         }
 

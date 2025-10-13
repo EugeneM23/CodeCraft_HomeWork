@@ -1,6 +1,9 @@
 using System;
+using System.Diagnostics;
+using System.Linq;
 using Game.Scripts.Player;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 namespace Gameplay
 {
@@ -14,38 +17,25 @@ namespace Gameplay
             base.InstallBindings();
 
             MonoBehaviour[] allObjects = FindObjectsOfType<MonoBehaviour>();
+            GameObject[] uniqueObjects = FindObjectsOfType<GameObject>();
 
             InjectScene(allObjects);
-
-            InitializeGameObjectContexts(allObjects);
-
-            CreatetickableManager();
+            InitializeGameObjectContexts(uniqueObjects);
         }
 
-        public void InjectScene(MonoBehaviour[] allObjects)
+        private void InjectScene(MonoBehaviour[] allObjects)
         {
             foreach (MonoBehaviour component in allObjects)
                 Container.Inject(component);
         }
 
-        private void InitializeGameObjectContexts(MonoBehaviour[] allObjects)
+        private void InitializeGameObjectContexts(GameObject[] allObjects)
         {
             foreach (var item in allObjects)
             {
                 if (item.TryGetComponent(out GameObjectContext context))
-                {
-
                     context.Initialize(Container);
-                }
             }
-        }
-
-        private void CreatetickableManager()
-        {
-            GameObject go = new GameObject("TickableManager");
-            TickableManager manager = go.AddComponent<TickableManager>();
-            Container.Add(manager);
-            manager.Run(Container);
         }
     }
 }

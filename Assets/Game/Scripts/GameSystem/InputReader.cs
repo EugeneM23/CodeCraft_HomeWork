@@ -47,7 +47,7 @@ namespace Gameplay
 
         void GameInput.IJumpActions.OnJump(InputAction.CallbackContext context)
         {
-            if (context.phase == InputActionPhase.Started) 
+            if (context.phase == InputActionPhase.Started)
                 OnJump?.Invoke();
         }
 

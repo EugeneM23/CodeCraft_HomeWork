@@ -1,4 +1,3 @@
-using System;
 using Game.Scripts.Player;
 using UnityEngine;
 
@@ -8,9 +7,9 @@ namespace Gameplay
     {
         [SerializeField] private PlayerInstaller _player;
 
-        private void Start()
+        /*private void Awake()
         {
-            
-        }
+            SceneContext.Instance.Container.InstantiatePrefab(_player, transform.position, transform.rotation);
+        }*/
     }
 }

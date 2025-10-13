@@ -26,6 +26,9 @@ namespace Gameplay
             _jumpCount++;
         }
 
-        public void ResetJump() => _jumpCount = 0;
+        public void ResetJump()
+        {
+            _jumpCount = 0;
+        }
     }
 }

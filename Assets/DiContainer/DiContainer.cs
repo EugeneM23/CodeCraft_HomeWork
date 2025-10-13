@@ -6,21 +6,22 @@ using UnityEngine;
 
 namespace Gameplay
 {
-    public class diContainer
+    public class DiContainer
     {
         private readonly Dictionary<Type, object> _services = new();
 
         private Installer[] _installers;
 
-        private readonly diContainer _parent;
+        private readonly DiContainer _parent;
 
-        public diContainer(diContainer parent)
+        public DiContainer(DiContainer parent)
         {
             _parent = parent;
         }
 
         public void Install(Installer installer)
         {
+
             installer.Install(this);
 
             foreach (var (key, value) in _services)
@@ -88,11 +89,10 @@ namespace Gameplay
                 ParameterInfo parameterInfo = parameters[i];
                 Type type = parameterInfo.ParameterType;
 
-                object service = Get(type.Log());
+                object service = Get(type);
 
                 if (service == null && _parent != null)
                     service = _parent.Get(type);
-
 
                 /*if (service == null)
                     Debug.LogError($"Can not find service of type {type}");*/

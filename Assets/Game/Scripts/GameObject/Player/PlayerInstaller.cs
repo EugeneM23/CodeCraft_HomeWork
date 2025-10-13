@@ -1,5 +1,6 @@
 using Gameplay;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Game.Scripts.Player
 {
@@ -22,18 +23,19 @@ namespace Game.Scripts.Player
         [Header("Environment Settings")] [SerializeField]
         private LayerMask _groundLayer;
 
-        public override void Install(diContainer container)
+        [SerializeField] private string massage;
+
+        public override void Install(DiContainer container)
         {
-            Debug.Log("PlayerInstaller installer");
+            container.Add(new GroundSyncComponent());
             container.Add(new CollisionComponent(_collider, _groundLayer));
             container.Add(new GravityScaleComponent(_rigidbody, _gravityScale));
-            container.Add(new JumpController());
             container.Add(_collider);
+            container.Add(new JumpController());
             container.Add(new JumpComponent(_jumpForce, _rigidbody));
 
             container.Add(new MoveController());
             container.Add(new RotationComponent(_transform));
-            container.Add(new InputReader());
             container.Add(new MoveComponent(_rigidbody, _moveSpeed));
             container.Add(new DeathObserver());
             container.Add(new HealthComponent(_health));

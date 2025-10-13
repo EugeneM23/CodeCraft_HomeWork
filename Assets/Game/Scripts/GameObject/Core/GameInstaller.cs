@@ -4,8 +4,12 @@ namespace Gameplay
 {
     public class GameInstaller : Installer
     {
-        public override void Install(diContainer container)
+        [SerializeField] private TickableManager _tickableManager;
+
+        public override void Install(DiContainer container)
         {
+            container.Add(new InputReader());
+            container.Add(_tickableManager);
         }
     }
 }

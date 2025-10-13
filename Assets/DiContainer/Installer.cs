@@ -4,6 +4,6 @@ namespace Gameplay
 {
     public abstract class Installer : MonoBehaviour
     {
-        public abstract void Install(diContainer container);
+        public abstract void Install(DiContainer container);
     }
 }

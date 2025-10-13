@@ -1,4 +1,7 @@
+using System.Diagnostics;
+using System.Linq;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 namespace Gameplay
 {
@@ -15,7 +18,7 @@ namespace Gameplay
             MonoBehaviour[] components = transform.GetComponentsInChildren<MonoBehaviour>(true);
 
             foreach (MonoBehaviour component in components)
-                Container.Inject(component.Log());
+                Container.Inject(component);
         }
     }
 }

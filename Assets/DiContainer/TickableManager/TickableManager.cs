@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Game.Scripts.Player;
@@ -12,19 +13,37 @@ namespace Gameplay
         private List<IFixedTickable> _fixedTickable = new();
         private List<IInitializeble> _initializeble = new();
 
-        public void Run(diContainer diContainer)
+        private void Start()
+        {
+            GameObjectContext[] contexts = FindObjectsOfType<GameObjectContext>();
+            SceneContext[] contextsScene = FindObjectsOfType<SceneContext>();
+
+            foreach (var item in contexts)
+            {
+                Run(item.Container);
+            }
+
+            foreach (var item in contextsScene)
+            {
+                Run(item.Container);
+            }
+
+            foreach (var item in _initializeble)
+                item.Initialize();
+        }
+
+        public void Run(DiContainer diContainer)
         {
             foreach (var item in diContainer.GetAll<ITickable>())
                 _tickables.Add(item);
 
             foreach (var item in diContainer.GetAll<IFixedTickable>())
-                _fixedTickable.Add(item.Log());
+                _fixedTickable.Add(item);
 
             foreach (var item in diContainer.GetAll<IInitializeble>())
+            {
                 _initializeble.Add(item);
-
-            foreach (var item in _initializeble)
-                item.Initialize();
+            }
         }
 
         private void Update()
