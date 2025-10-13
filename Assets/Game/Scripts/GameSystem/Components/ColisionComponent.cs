@@ -38,5 +38,7 @@ namespace Gameplay
             Vector2 groundCheckPos = new Vector2(position.x, _collider.bounds.min.y);
             return Physics2D.CircleCast(groundCheckPos, _collider.radius, Vector2.down, 0.1f, _groundLayer);
         }
+
+        public bool IsGround() => IsGrounded;
     }
 }

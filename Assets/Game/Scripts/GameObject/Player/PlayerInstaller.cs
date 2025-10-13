@@ -1,8 +1,7 @@
-using Gameplay;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace Game.Scripts.Player
+namespace Gameplay
 {
     public class PlayerInstaller : Installer
     {
@@ -29,6 +28,9 @@ namespace Game.Scripts.Player
         {
             container.Add(_rigidbody);
             container.Add(new GroundSyncComponent());
+            container.Add(new Player());
+            container.Add(new AttackComponent());
+            container.Add(new AttackCooldown());
             container.Add(new CollisionComponent(_collider, _groundLayer));
             container.Add(new GravityScaleComponent(_rigidbody, _gravityScale));
             container.Add(_collider);

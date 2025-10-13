@@ -1,5 +1,6 @@
 using Gameplay;
 using UnityEngine;
+using UnityEngine.Timeline;
 
 public class AnimationController : MonoBehaviour
 {
@@ -8,15 +9,24 @@ public class AnimationController : MonoBehaviour
     private static readonly int IdlingHash = Animator.StringToHash("IsIdling");
 
     [SerializeField] private Animator _animator;
+
     private CollisionComponent _collisionComponent;
     private Rigidbody2D _rigidbody2D;
+    private InputReader _inputReader;
 
     [Inject]
-    public void Construct(CollisionComponent collisionComponent, Rigidbody2D rigidbody2D)
+    public void Construct(CollisionComponent collisionComponent, Rigidbody2D rigidbody2D, InputReader inputReader)
     {
         _collisionComponent = collisionComponent;
         _rigidbody2D = rigidbody2D;
+        _inputReader = inputReader;
         _collisionComponent.OnFlying += OnFall;
+        _inputReader.OnFire += Attack;
+    }
+
+    private void Attack()
+    {
+        _animator.Play("Attack");
     }
 
     private void OnFall() => _animator.SetTrigger("Fall");
