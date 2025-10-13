@@ -23,9 +23,12 @@ namespace Gameplay
         private LayerMask _groundLayer;
 
         [SerializeField] private string massage;
+        [SerializeField] private SpriteRenderer _material;
 
         public override void Install(DiContainer container)
         {
+            container.Add(new ShadowFadeComponent(_material, _rigidbody));
+
             container.Add(_rigidbody);
             container.Add(new GroundSyncComponent());
             container.Add(new Player());

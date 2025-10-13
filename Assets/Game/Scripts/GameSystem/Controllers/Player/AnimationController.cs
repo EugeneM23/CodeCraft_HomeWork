@@ -1,6 +1,5 @@
 using Gameplay;
 using UnityEngine;
-using UnityEngine.Timeline;
 
 public class AnimationController : MonoBehaviour
 {

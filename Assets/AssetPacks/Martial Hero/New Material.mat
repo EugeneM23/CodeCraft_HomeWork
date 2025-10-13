@@ -12,8 +12,9 @@ Material:
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
+  - _ENABLECONTRAST_ON
   - _ENABLEOUTEROUTLINE_ON
-  - _ENABLESATURATION_ON
+  - _OUTEROUTLINEDISTORTIONTOGGLE_ON
   - _SHADERFADING_NONE
   - _SHADERSPACE_UV
   - _TEXTURELAYER1SHEETTOGGLE_ON
@@ -181,7 +182,7 @@ Material:
     - _ColorReplaceFade: 1
     - _ColorReplaceRange: 0.05
     - _ColorReplaceSmoothness: 0.1
-    - _Contrast: 1
+    - _Contrast: 12.37
     - _CustomFadeAlpha: 1
     - _CustomFadeNoiseFactor: 0
     - _CustomFadeSmoothness: 2
@@ -213,7 +214,7 @@ Material:
     - _EnableCamouflage: 0
     - _EnableCheckerboard: 0
     - _EnableColorReplace: 0
-    - _EnableContrast: 0
+    - _EnableContrast: 1
     - _EnableCustomFade: 0
     - _EnableDirectionalAlphaFade: 0
     - _EnableDirectionalDistortion: 0
@@ -241,7 +242,7 @@ Material:
     - _EnableRainbow: 0
     - _EnableRecolorRGB: 0
     - _EnableRecolorRGBYCP: 0
-    - _EnableSaturation: 1
+    - _EnableSaturation: 0
     - _EnableScreenTiling: 0
     - _EnableShadow: 0
     - _EnableSharpen: 0
@@ -301,7 +302,7 @@ Material:
     - _GaussianBlurFade: 1
     - _GaussianBlurOffset: 0.5
     - _GlitchBrightness: 4
-    - _GlitchFade: 1
+    - _GlitchFade: 0.06
     - _GlitchHueSpeed: 1
     - _GlitchMaskMin: 0.4
     - _GlossMapScale: 1
@@ -321,7 +322,7 @@ Material:
     - _HologramLineGap: 3
     - _HologramLineSpeed: 0.01
     - _HologramMinAlpha: 0.2
-    - _Hue: 0
+    - _Hue: -0.49
     - _InkSpreadContrast: 2
     - _InkSpreadDistance: 3
     - _InkSpreadFade: 1
@@ -341,11 +342,11 @@ Material:
     - _Mode: 0
     - _NegativeFade: 1
     - _OcclusionStrength: 1
-    - _OuterOutlineDistortionToggle: 0
-    - _OuterOutlineFade: 0.4
+    - _OuterOutlineDistortionToggle: 1
+    - _OuterOutlineFade: 0.19
     - _OuterOutlineOutlineOnlyToggle: 0
     - _OuterOutlineTextureToggle: 0
-    - _OuterOutlineWidth: -0.005
+    - _OuterOutlineWidth: 0.005
     - _Parallax: 0.02
     - _PingPongGlowContrast: 1
     - _PingPongGlowFade: 1
@@ -379,7 +380,7 @@ Material:
     - _RecolorRGBYCPTextureToggle: 0
     - _RectHeight: 100
     - _RectWidth: 100
-    - _Saturation: 2
+    - _Saturation: -7.01
     - _ScreenTilingPixelsPerUnit: 100
     - _ScreenWidthUnits: 10
     - _ShaderFading: 0
@@ -392,7 +393,7 @@ Material:
     - _ShiftingBrightness: 1
     - _ShiftingContrast: 0.5
     - _ShiftingDensity: 1.5
-    - _ShiftingFade: 1
+    - _ShiftingFade: 0.75
     - _ShiftingRainbowToggle: 0
     - _ShiftingSaturation: 0.8
     - _ShiftingSpeed: 0.5
@@ -542,7 +543,7 @@ Material:
     - _EnchantedHighColor: {r: 0, g: 0.7098798, b: 4.237095, a: 0}
     - _EnchantedLowColor: {r: 2.996078, g: 0, b: 0, a: 0}
     - _EnchantedScale: {r: 0.1, g: 0.1, b: 0, a: 0}
-    - _EnchantedSpeed: {r: 0, g: 1, b: 0, a: 0}
+    - _EnchantedSpeed: {r: 1.16, g: 1, b: 0, a: 0}
     - _FadingNoiseScale: {r: 0.2, g: 0.2, b: 0, a: 0}
     - _FadingPosition: {r: 0, g: 0, b: 0, a: 0}
     - _FlameNoiseScale: {r: 1.2, g: 0.8, b: 0, a: 0}

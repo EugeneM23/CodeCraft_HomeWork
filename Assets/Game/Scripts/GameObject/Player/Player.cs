@@ -9,6 +9,7 @@ namespace Gameplay
         private AttackCooldown _cooldown;
         private AttackComponent _attackComponent;
         private CollisionComponent _collisionComponent;
+        private ShadowFadeComponent shadowFadeComponent;
 
         [Inject]
         private void Construct(
@@ -18,9 +19,11 @@ namespace Gameplay
             JumpComponent jumpComponent,
             AttackCooldown cooldown,
             AttackComponent attackComponent,
-            CollisionComponent collisionComponent
+            CollisionComponent collisionComponent,
+            ShadowFadeComponent shadowFadeComponent
         )
         {
+            this.shadowFadeComponent = shadowFadeComponent;
             _collisionComponent = collisionComponent;
             _attackComponent = attackComponent;
             _cooldown = cooldown;
@@ -32,7 +35,7 @@ namespace Gameplay
 
         public void Initialize()
         {
-            
+            this.shadowFadeComponent.AddCondition(_cooldown.CanAttack);
             _attackComponent.AddCondition(_collisionComponent.IsGround);
             _attackComponent.AddCondition(_cooldown.CanAttack);
             _moveComponent.AddCondition(_healthComponent.IsDead);
