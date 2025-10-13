@@ -1,19 +1,16 @@
-using System;
-using System.Diagnostics;
-using System.Linq;
-using Game.Scripts.Player;
 using UnityEngine;
-using Debug = UnityEngine.Debug;
 
 namespace Gameplay
 {
     [DefaultExecutionOrder(-999)]
     public class SceneContext : Context
     {
+        public static SceneContext Instance { get; private set; }
         private void Awake() => Initialize();
 
         protected override void InstallBindings()
         {
+            Instance = this;
             base.InstallBindings();
 
             // 1️⃣ Сначала создаём все GameObjectContext, чтобы они зарегистрировали свои зависимости
@@ -29,13 +26,12 @@ namespace Gameplay
 
         private void InjectScene(MonoBehaviour[] allObjects)
         {
-
             foreach (MonoBehaviour component in allObjects)
             {
                 // если этот компонент находится под GameObjectContext — пропускаем
                 if (component.GetComponentInParent<GameObjectContext>() != null)
                     continue;
-                
+
                 Container.Inject(component);
             }
         }

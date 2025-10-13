@@ -17,7 +17,9 @@ namespace Gameplay
         protected virtual void InstallBindings()
         {
             foreach (Installer installer in _installers)
+            {
                 Container.Install(installer);
+            }
         }
     }
 }

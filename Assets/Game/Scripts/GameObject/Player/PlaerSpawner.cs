@@ -7,9 +7,9 @@ namespace Gameplay
     {
         [SerializeField] private PlayerInstaller _player;
 
-        /*private void Awake()
+        private void Start()
         {
             SceneContext.Instance.Container.InstantiatePrefab(_player, transform.position, transform.rotation);
-        }*/
+        }
     }
 }

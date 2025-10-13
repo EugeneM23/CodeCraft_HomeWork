@@ -8,6 +8,8 @@ namespace Gameplay
 {
     public class DiContainer
     {
+        public event Action<DiContainer> OnInstantiated;
+
         private readonly Dictionary<Type, object> _services = new();
 
         private Installer[] _installers;
@@ -25,17 +27,22 @@ namespace Gameplay
 
             foreach (var (key, value) in _services)
                 Inject(value);
+
+            Debug.Log(_services.Count);
         }
 
         public T InstantiatePrefab<T>(T prefab, Vector3 position, Quaternion rotation) where T : Component
         {
             T component = GameObject.Instantiate(prefab, position, rotation);
-
-            Inject(component);
-
             MonoBehaviour[] allComponentsInPrefab = component.GetComponentsInChildren<MonoBehaviour>();
-            foreach (var comp in allComponentsInPrefab)
-                Inject(comp);
+
+            foreach (var item in allComponentsInPrefab)
+            {
+                if (item.TryGetComponent(out GameObjectContext context))
+                    context.Initialize(this);
+                
+                TickableManager.Instance.Test(context.Container);
+            }
 
             return component;
         }

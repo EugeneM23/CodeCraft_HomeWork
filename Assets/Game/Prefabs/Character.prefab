@@ -286,6 +286,7 @@ GameObject:
   - component: {fileID: 2886291273409047000}
   - component: {fileID: 8812608545086563143}
   - component: {fileID: 138056122149107945}
+  - component: {fileID: 6962751473259231643}
   m_Layer: 9
   m_Name: Character
   m_TagString: Character
@@ -436,6 +437,7 @@ MonoBehaviour:
   _groundLayer:
     serializedVersion: 2
     m_Bits: 8
+  massage: 
 --- !u!114 &2886291273409047000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -448,6 +450,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c6ed4579a05245238dc127d1064380fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _massage: 
 --- !u!114 &8812608545086563143
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -475,6 +478,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _installers:
   - {fileID: 291177683333096632}
+--- !u!114 &6962751473259231643
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4184690822590908780}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5e853cf5ea7f47159f06b39473499043, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _animator: {fileID: 179451033210280670}
 --- !u!1 &5092079624281417673
 GameObject:
   m_ObjectHideFlags: 0
