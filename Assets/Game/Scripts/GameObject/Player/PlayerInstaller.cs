@@ -41,7 +41,6 @@ namespace Game.Scripts.Player
             container.Add(new DeathObserver());
             container.Add(new HealthComponent(_health));
             container.Add(_transform);
-            container.Add("asdasd");
         }
     }
 }

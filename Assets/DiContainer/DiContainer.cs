@@ -27,20 +27,17 @@ namespace Gameplay
 
             foreach (var (key, value) in _services)
                 Inject(value);
-
-            Debug.Log(_services.Count);
         }
 
         public T InstantiatePrefab<T>(T prefab, Vector3 position, Quaternion rotation) where T : Component
         {
             T component = GameObject.Instantiate(prefab, position, rotation);
-            MonoBehaviour[] allComponentsInPrefab = component.GetComponentsInChildren<MonoBehaviour>();
 
-            foreach (var item in allComponentsInPrefab)
+            // ищем GameObjectContext только один раз
+            GameObjectContext context = component.GetComponentInChildren<GameObjectContext>();
+            if (context != null)
             {
-                if (item.TryGetComponent(out GameObjectContext context))
-                    context.Initialize(this);
-                
+                context.Initialize(this);
                 TickableManager.Instance.Test(context.Container);
             }
 

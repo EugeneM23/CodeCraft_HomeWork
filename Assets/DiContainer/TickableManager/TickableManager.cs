@@ -1,81 +1,97 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using Game.Scripts.Player;
 using Gameplay;
 using UnityEngine;
 
-namespace Gameplay
+public class TickableManager : MonoBehaviour
 {
-    public class TickableManager : MonoBehaviour
+    public static TickableManager Instance { get; private set; }
+
+    private readonly List<ITickable> _tickables = new();
+    private readonly List<IFixedTickable> _fixedTickable = new();
+    private readonly List<IInitializeble> _initializeble = new();
+
+    private readonly HashSet<DiContainer> _registeredContainers = new();
+
+    private void Awake()
     {
-        public static TickableManager Instance { get; private set; }
+        Instance = this;
+    }
 
-        private List<ITickable> _tickables = new();
-        private List<IFixedTickable> _fixedTickable = new();
-        private List<IInitializeble> _initializeble = new();
+    private void Start()
+    {
+        // Проинициализировать контейнеры, которые уже на сцене
+        GameObjectContext[] contexts = FindObjectsOfType<GameObjectContext>();
+        SceneContext[] contextsScene = FindObjectsOfType<SceneContext>();
 
-        private void Awake()
+        foreach (var item in contexts)
+            Run(item.Container);
+
+        foreach (var item in contextsScene)
+            Run(item.Container);
+
+        // Выполнить Initialize только для тех, кто был добавлен в процессе Run
+        foreach (var item in _initializeble)
+            item.Initialize();
+    }
+
+    // Возвращает список только что добавленных IInitializeble
+    public List<IInitializeble> Run(DiContainer diContainer)
+    {
+        if (diContainer == null)
         {
-            Instance = this;
+            Debug.LogWarning("[TickableManager] Run called with null container.");
+            return new List<IInitializeble>();
         }
 
-        private void Start()
+        if (_registeredContainers.Contains(diContainer))
+            return new List<IInitializeble>();
+
+        _registeredContainers.Add(diContainer);
+
+        var newlyAddedInitializebles = new List<IInitializeble>();
+
+        foreach (var item in diContainer.GetAll<ITickable>())
         {
-            GameObjectContext[] contexts = FindObjectsOfType<GameObjectContext>();
-            SceneContext[] contextsScene = FindObjectsOfType<SceneContext>();
-
-            foreach (var item in contexts)
-                Run(item.Container);
-
-            foreach (var item in contextsScene)
-            {
-                Run(item.Container);
-            }
-
-            foreach (var item in _initializeble)
-                item.Initialize();
-        }
-
-        public void Run(DiContainer diContainer)
-        {
-            foreach (var item in diContainer.GetAll<ITickable>())
+            if (!_tickables.Contains(item))
                 _tickables.Add(item);
+        }
 
-            foreach (var item in diContainer.GetAll<IFixedTickable>())
-            {
-                "fixed".Log();
+        foreach (var item in diContainer.GetAll<IFixedTickable>())
+        {
+            if (!_fixedTickable.Contains(item))
                 _fixedTickable.Add(item);
-            }
+        }
 
-            foreach (var item in diContainer.GetAll<IInitializeble>())
+        foreach (var item in diContainer.GetAll<IInitializeble>())
+        {
+            if (!_initializeble.Contains(item))
             {
                 _initializeble.Add(item);
+                newlyAddedInitializebles.Add(item);
             }
         }
 
-        private void Update()
-        {
-            for (int i = 0; i < _tickables.Count; i++)
-                _tickables[i].Tick();
-        }
+        return newlyAddedInitializebles;
+    }
 
-        private void FixedUpdate()
-        {
-            for (int i = 0; i < _fixedTickable.Count; i++)
-                _fixedTickable[i].FixedTick();
-        }
+    // Вызывается при инстансе префаба: запускаем Run и инициализируем только вновь добавленные
+    public void Test(DiContainer diContainer)
+    {
+        var newly = Run(diContainer);
+        foreach (var item in newly)
+            item.Initialize();
+    }
 
-        public void Test(DiContainer diContainer)
-        {
-            foreach (var item in diContainer.GetAll<IInitializeble>())
-            {
-                item.Log();
-            }
+    private void Update()
+    {
+        for (int i = 0; i < _tickables.Count; i++)
+            _tickables[i].Tick();
+    }
 
-            Run(diContainer);
-            foreach (var item in _initializeble)
-                item.Initialize();
-        }
+    private void FixedUpdate()
+    {
+        for (int i = 0; i < _fixedTickable.Count; i++)
+            _fixedTickable[i].FixedTick();
     }
 }

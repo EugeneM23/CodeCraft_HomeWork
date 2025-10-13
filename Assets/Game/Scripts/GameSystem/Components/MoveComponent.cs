@@ -20,8 +20,6 @@ namespace Gameplay
 
         public void Move()
         {
-
-            "Move".Log();
             if (AndCondition()) return;
 
             _rigidbody.linearVelocity = new Vector2(_direction.x * _moveSpeed, _rigidbody.linearVelocity.y);
