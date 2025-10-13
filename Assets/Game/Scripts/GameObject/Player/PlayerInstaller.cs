@@ -15,33 +15,29 @@ namespace Game.Scripts.Player
         [Header("Components")] [SerializeField]
         private Transform _transform;
 
+        [SerializeField] private TakeDamageProxy _damageProxy;
         [SerializeField] private Rigidbody2D _rigidbody;
         [SerializeField] private CircleCollider2D _collider;
 
         [Header("Environment Settings")] [SerializeField]
         private LayerMask _groundLayer;
 
-        public override void Install(DiContainer container)
+        public override void Install(diContainer container)
         {
-            
-            container.Add(PlayerId.MoveController, new MoveController());
-            container.Add(PlayerId.JumpController, new JumpController());
-            container.Add(PlayerId.FireController, new FireController());
+            Debug.Log("PlayerInstaller installer");
+            container.Add(new CollisionComponent(_collider, _groundLayer));
+            container.Add(new GravityScaleComponent(_rigidbody, _gravityScale));
+            container.Add(new JumpController());
+            container.Add(_collider);
+            container.Add(new JumpComponent(_jumpForce, _rigidbody));
 
-            container.Add(PlayerId.Condition, new CompositCondition());
-
-            container.Add(PlayerId.Character, new Gameplay.Player());
-            container.Add(PlayerId.Transfrom, _transform);
-            container.Add(PlayerId.DeathObserver, new DeathObserver());
-
-            container.Add(PlayerId.HealthComponent, new HealthComponent(_health));
-            container.Add(PlayerId.GravityScale, new GravityScaleComponent(_rigidbody, _gravityScale));
-            container.Add(PlayerId.MoveComponent, new MoveComponent(_rigidbody, _moveSpeed));
-            container.Add(PlayerId.RotationComponent, new RotationComponent(_transform));
-            container.Add(PlayerId.JumpComponent, new JumpComponent(_jumpForce, _rigidbody));
-            container.Add(PlayerId.CollisionComponent, new CollisionComponent(_collider, _groundLayer));
-            container.Add(PlayerId.GroundSyncComponent, new GroundSyncComponent());
-            container.Add(PlayerId.Rigidbody2D, _rigidbody);
+            container.Add(new MoveController());
+            container.Add(new RotationComponent(_transform));
+            container.Add(new InputReader());
+            container.Add(new MoveComponent(_rigidbody, _moveSpeed));
+            container.Add(new DeathObserver());
+            container.Add(new HealthComponent(_health));
+            container.Add(_transform);
         }
     }
 }

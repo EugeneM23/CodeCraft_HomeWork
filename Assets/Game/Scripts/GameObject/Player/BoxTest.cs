@@ -1,17 +1,21 @@
+using System;
 using UnityEngine;
 
 namespace Gameplay
 {
     public class BoxTest : MonoBehaviour
     {
-        private InputReader _reader;
+        private string _massage;
 
         [Inject]
-        public void Construct(InputReader reader)
+        public void Construct(string massage)
         {
-            _reader = reader;
+            _massage = massage;
+        }
 
-            _reader.OnFire += () => "asdasdadas".Log();
+        private void Start()
+        {
+            _massage.Log();
         }
     }
 }

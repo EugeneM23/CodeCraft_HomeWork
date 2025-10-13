@@ -6,7 +6,35 @@
   <component name="ChangeListManager">
     <list default="true" id="6f0b762c-5415-4a85-b17b-cc44fd47261d" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.CodeCraft_HomeWork/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.CodeCraft_HomeWork/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Modules/DiContainer/DiContainer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/Modules/DiContainer/DiContainer.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Prefabs/Character.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Prefabs/Character.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scenes/Game.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scenes/Game.unity" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Game.asmdef" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Game.asmdef.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/GameObject/Core/GameInstaller.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/GameObject/Core/GameInstaller.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/GameObject/Player/BoxTest.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/GameObject/Player/BoxTest.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/GameObject/Player/PlaerSpawner.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/GameObject/Player/PlaerSpawner.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/GameObject/Player/Player.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/GameObject/Player/Player.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/GameObject/Player/PlayerInstaller.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/GameObject/Player/PlayerInstaller.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/Components/HealthComponent.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/Components/HealthComponent.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/Controllers/Player/AnimationController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/Controllers/Player/AnimationController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Modules/DiContainer.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DiContainer.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Modules/DiContainer/DiContainer.asmdef" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Modules/DiContainer/DiContainer.asmdef.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Modules/DiContainer/DiContainer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DiContainer/diContainer.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Modules/DiContainer/DiContainer.cs.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Modules/DiContainer/InjectAttribute.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DiContainer/InjectAttribute.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Modules/DiContainer/InjectAttribute.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DiContainer/InjectAttribute.cs.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Modules/DiContainer/Installer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DiContainer/Installer.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Modules/DiContainer/Installer.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DiContainer/Installer.cs.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Modules/DiContainer/TickableManager.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DiContainer/TickableManager.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Modules/DiContainer/TickableManager/IFixedTickable.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DiContainer/TickableManager/IFixedTickable.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Modules/DiContainer/TickableManager/IFixedTickable.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DiContainer/TickableManager/IFixedTickable.cs.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Modules/DiContainer/TickableManager/IInitializeble.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DiContainer/TickableManager/IInitializeble.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Modules/DiContainer/TickableManager/IInitializeble.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DiContainer/TickableManager/IInitializeble.cs.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Modules/DiContainer/TickableManager/ITickable.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DiContainer/TickableManager/ITickable.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Modules/DiContainer/TickableManager/ITickable.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DiContainer/TickableManager/ITickable.cs.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Modules/DiContainer/TickableManager/TickableManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DiContainer/TickableManager/TickableManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Modules/DiContainer/TickableManager/TickableManager.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DiContainer/TickableManager/TickableManager.cs.meta" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -32,16 +60,22 @@
   }
 }</component>
   <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/Assets/Game/Scripts/GameObject/Core/GameInstaller.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Game/Scripts/GameObject/Player/PlaerSpawner.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Game/Scripts/GameObject/Player/PlayerInstaller.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$USER_HOME$/Downloads/5. MVx Паттерны/MVx-Homework/Assets/Modules/UIComponents/FloatingAnimation.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/bc4b394796a146d5958dfc6ea6c36a72574000/0a/1caf13b4/ServerLocator.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/c6fcfbd931e348ecb5b0d76a4ac091c61df200/fd/d635bfb4/Debug.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/da6a1787df247a0274ec8fc4840f41df092ee13874f55f87a9db568acab1bd2/System.Reflection.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/da6a1787df247a0274ec8fc4840f41df092ee13874f55f87a9db568acab1bd2/System.Reflection.cs" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 4
 }</component>
   <component name="ProjectId" id="31uuFBoEorPnTxvTyRslDA9G6He" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="1" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -118,6 +152,8 @@
       <workItem from="1758984060587" duration="45286000" />
       <workItem from="1759852159875" duration="10172000" />
       <workItem from="1760175523777" duration="36357000" />
+      <workItem from="1760279050424" duration="13431000" />
+      <workItem from="1760300339906" duration="11622000" />
     </task>
     <task id="LOCAL-00001" summary="Update">
       <option name="closed" value="true" />

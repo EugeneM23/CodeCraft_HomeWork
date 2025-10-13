@@ -1,26 +1,26 @@
 using System.Collections.Generic;
+using System.Linq;
+using Game.Scripts.Player;
 using Gameplay;
 using UnityEngine;
 
-namespace Game.Scripts.Player
+namespace Gameplay
 {
     public class TickableManager : MonoBehaviour
     {
-        [SerializeField] private DiContainer _ioContainer;
-
         private List<ITickable> _tickables = new();
         private List<IFixedTickable> _fixedTickable = new();
         private List<IInitializeble> _initializeble = new();
 
-        private void Start()
+        public void Run(diContainer diContainer)
         {
-            foreach (var item in _ioContainer.GetAll<ITickable>())
+            foreach (var item in diContainer.GetAll<ITickable>())
                 _tickables.Add(item);
 
-            foreach (var item in _ioContainer.GetAll<IFixedTickable>())
-                _fixedTickable.Add(item);
+            foreach (var item in diContainer.GetAll<IFixedTickable>())
+                _fixedTickable.Add(item.Log());
 
-            foreach (var item in _ioContainer.GetAll<IInitializeble>())
+            foreach (var item in diContainer.GetAll<IInitializeble>())
                 _initializeble.Add(item);
 
             foreach (var item in _initializeble)

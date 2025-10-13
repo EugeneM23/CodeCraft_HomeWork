@@ -6,65 +6,60 @@ using UnityEngine;
 
 namespace Gameplay
 {
-    [DefaultExecutionOrder(-900)]
-    public class DiContainer : MonoBehaviour
+    public class diContainer
     {
-        public static DiContainer Instance { get; private set; }
-        public int Count => _services.Count;
-        
-        private readonly Dictionary<string , object> _services = new();
+        private readonly Dictionary<Type, object> _services = new();
 
-        [SerializeField] private Installer[] _installers;
+        private Installer[] _installers;
 
-        private void Awake()
+        private readonly diContainer _parent;
+
+        public diContainer(diContainer parent)
         {
-            Instance = this;
-            
-            foreach (Installer installer in _installers)
-            {
-                installer.Install(this);
-            }
+            _parent = parent;
+        }
 
-            MonoBehaviour[] allObjects = FindObjectsOfType<MonoBehaviour>();
+        public void Install(Installer installer)
+        {
+            installer.Install(this);
 
-            foreach (var component in allObjects)
-                Inject(component);
-
-            foreach (var item in _services)
-                Inject(item.Value);
+            foreach (var (key, value) in _services)
+                Inject(value);
         }
 
         public T InstantiatePrefab<T>(T prefab, Vector3 position, Quaternion rotation) where T : Component
         {
-            T component = GameObject.Instantiate(prefab, position, rotation, transform);
+            T component = GameObject.Instantiate(prefab, position, rotation);
+
             Inject(component);
+
+            MonoBehaviour[] allComponentsInPrefab = component.GetComponentsInChildren<MonoBehaviour>();
+            foreach (var comp in allComponentsInPrefab)
+                Inject(comp);
+
             return component;
         }
 
-        public void Add(Enum id, object service)
+        public void Add<T>(T service)
         {
-            _services[id.ToString()] = service;
+            Type type = typeof(T);
+            _services[type] = service;
         }
-
-        public TContract Get<TContract>(Enum id)
-        {
-            return (TContract)_services[id.ToString()];
-        } 
 
         public object Get(Type type)
         {
-            foreach (var (key, value) in _services)
-                if (value.GetType() == type)
-                    return value;
+            if (_services.TryGetValue(type, out object service))
+                return service;
 
             return null;
         }
 
+        public IEnumerable<T> GetAll<T>()
+        {
+            return _services.Values.OfType<T>();
+        }
 
-        public IEnumerable<T> GetAll<T>() => _services.Values.OfType<T>();
-        public object[] GetAll() => _services.Values.ToArray();
-
-        private void Inject(object target)
+        public void Inject(object target)
         {
             Type type = target.GetType();
 
@@ -93,7 +88,14 @@ namespace Gameplay
                 ParameterInfo parameterInfo = parameters[i];
                 Type type = parameterInfo.ParameterType;
 
-                object service = Get(type);
+                object service = Get(type.Log());
+
+                if (service == null && _parent != null)
+                    service = _parent.Get(type);
+
+
+                /*if (service == null)
+                    Debug.LogError($"Can not find service of type {type}");*/
 
                 args[i] = service;
             }

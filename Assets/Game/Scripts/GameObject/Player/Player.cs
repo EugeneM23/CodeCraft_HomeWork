@@ -9,7 +9,7 @@ namespace Gameplay
         private RotationComponent _rotationComponent;
         private JumpComponent _jumpComponent;
 
-        [Inject]
+        
         private void Construct(
             MoveComponent moveComponent,
             HealthComponent healthComponent,
