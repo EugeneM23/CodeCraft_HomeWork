@@ -5,12 +5,12 @@ namespace Gameplay
     public class TakeDamageProxy : MonoBehaviour, IDamageable
     {
         private HealthComponent _healthComponent;
+        public string _massage;
 
         [Inject]
-        private void Construct(HealthComponent healthComponent)
+        private void Construct(HealthComponent healthComponent, string massage)
         {
-            healthComponent.Log(healthComponent == null);
-
+            _massage = massage;
             _healthComponent = healthComponent;
         }
 

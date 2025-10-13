@@ -27,6 +27,7 @@ namespace Game.Scripts.Player
 
         public override void Install(DiContainer container)
         {
+            container.Add(_rigidbody);
             container.Add(new GroundSyncComponent());
             container.Add(new CollisionComponent(_collider, _groundLayer));
             container.Add(new GravityScaleComponent(_rigidbody, _gravityScale));
@@ -40,6 +41,7 @@ namespace Game.Scripts.Player
             container.Add(new DeathObserver());
             container.Add(new HealthComponent(_health));
             container.Add(_transform);
+            container.Add("asdasd");
         }
     }
 }

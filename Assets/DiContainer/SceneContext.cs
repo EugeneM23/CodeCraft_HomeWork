@@ -16,17 +16,28 @@ namespace Gameplay
         {
             base.InstallBindings();
 
-            MonoBehaviour[] allObjects = FindObjectsOfType<MonoBehaviour>();
-            GameObject[] uniqueObjects = FindObjectsOfType<GameObject>();
+            // 1️⃣ Сначала создаём все GameObjectContext, чтобы они зарегистрировали свои зависимости
+            GameObject[] allObjects = FindObjectsOfType<GameObject>();
+            InitializeGameObjectContexts(allObjects);
 
-            InjectScene(allObjects);
-            InitializeGameObjectContexts(uniqueObjects);
+            // 2️⃣ Потом получаем все компоненты
+            MonoBehaviour[] allObjectsMono = FindObjectsOfType<MonoBehaviour>();
+
+            // 3️⃣ И только теперь инжектим
+            InjectScene(allObjectsMono);
         }
 
         private void InjectScene(MonoBehaviour[] allObjects)
         {
+
             foreach (MonoBehaviour component in allObjects)
+            {
+                // если этот компонент находится под GameObjectContext — пропускаем
+                if (component.GetComponentInParent<GameObjectContext>() != null)
+                    continue;
+                
                 Container.Inject(component);
+            }
         }
 
         private void InitializeGameObjectContexts(GameObject[] allObjects)

@@ -5,10 +5,10 @@ namespace Gameplay
 {
     public class BoxTest : MonoBehaviour
     {
-        public GUI _massage;
+        public string _massage;
 
         [Inject]
-        public void Construct(GUI massage)
+        public void Construct(string massage)
         {
             _massage = massage;
         }

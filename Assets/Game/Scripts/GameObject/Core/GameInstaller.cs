@@ -8,6 +8,7 @@ namespace Gameplay
 
         public override void Install(DiContainer container)
         {
+            container.Add("Gameplay Installer");
             container.Add(new InputReader());
             container.Add(_tickableManager);
         }

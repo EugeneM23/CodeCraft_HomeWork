@@ -11,6 +11,7 @@ public class AnimationController : MonoBehaviour
     private CollisionComponent _collisionComponent;
     private Rigidbody2D _rigidbody2D;
 
+    [Inject]
     public void Construct(CollisionComponent collisionComponent, Rigidbody2D rigidbody2D)
     {
         _collisionComponent = collisionComponent;
@@ -18,23 +19,16 @@ public class AnimationController : MonoBehaviour
         _collisionComponent.OnFlying += OnFall;
     }
 
-    private void OnEnable()
-    {
-    }
-
-    private void OnFall()
-    {
-        _animator.SetTrigger("Fall");
-    }
+    private void OnFall() => _animator.SetTrigger("Fall");
 
     private void Update()
     {
-        /*bool isFlying = !_collisionComponent.IsGrounded;
+        bool isFlying = !_collisionComponent.IsGrounded;
         bool isRunning = !isFlying && Mathf.Abs(_rigidbody2D.linearVelocity.x) > 1f && !isFlying;
         bool isIdling = !isFlying && !isRunning;
 
         _animator.SetBool(FlyingHash, isFlying);
         _animator.SetBool(RunningHash, isRunning);
-        _animator.SetBool(IdlingHash, isIdling);*/
+        _animator.SetBool(IdlingHash, isIdling);
     }
 }

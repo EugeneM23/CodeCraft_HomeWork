@@ -6,22 +6,13 @@
   <component name="ChangeListManager">
     <list default="true" id="6f0b762c-5415-4a85-b17b-cc44fd47261d" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.CodeCraft_HomeWork/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.CodeCraft_HomeWork/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/DiContainer/Context.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DiContainer/Context.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/DiContainer/GameObjectContext.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DiContainer/GameObjectContext.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/DiContainer/Installer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DiContainer/Installer.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/DiContainer/DiContainer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DiContainer/DiContainer.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/DiContainer/SceneContext.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DiContainer/SceneContext.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/DiContainer/TickableManager/TickableManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DiContainer/TickableManager/TickableManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/DiContainer/diContainer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DiContainer/DiContainer.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/DiContainer/diContainer.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Prefabs/Character.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Prefabs/Character.prefab" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/GameObject/Core/GameInstaller.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/GameObject/Core/GameInstaller.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/GameObject/Player/BoxInstaller.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/GameObject/Player/BoxInstaller.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/GameObject/Player/BoxTest.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/GameObject/Player/BoxTest.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/GameObject/Player/PlaerSpawner.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/GameObject/Player/PlaerSpawner.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/GameObject/Player/PlayerInstaller.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/GameObject/Player/PlayerInstaller.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/GameObject/Player/TakeDamageProxy.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/GameObject/Player/TakeDamageProxy.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/Components/JumpComponent.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/Components/JumpComponent.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/InputReader.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/InputReader.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/Controllers/Player/AnimationController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/Controllers/Player/AnimationController.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -140,7 +131,7 @@
       <workItem from="1759852159875" duration="10172000" />
       <workItem from="1760175523777" duration="36357000" />
       <workItem from="1760279050424" duration="13431000" />
-      <workItem from="1760300339906" duration="22485000" />
+      <workItem from="1760300339906" duration="28021000" />
     </task>
     <task id="LOCAL-00001" summary="Update">
       <option name="closed" value="true" />

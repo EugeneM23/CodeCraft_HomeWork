@@ -21,7 +21,6 @@ namespace Gameplay
 
         public void Install(Installer installer)
         {
-
             installer.Install(this);
 
             foreach (var (key, value) in _services)
@@ -80,11 +79,12 @@ namespace Gameplay
         private void InjectToMethod(MethodInfo method, object target)
         {
             ParameterInfo[] parameters = method.GetParameters();
+            int length = parameters.Length;
+            object[] args = new object[length];
 
-            int lenth = parameters.Length;
-            object[] args = new object[lenth];
+            bool hasMissingDependency = false;
 
-            for (int i = 0; i < lenth; i++)
+            for (int i = 0; i < length; i++)
             {
                 ParameterInfo parameterInfo = parameters[i];
                 Type type = parameterInfo.ParameterType;
@@ -94,11 +94,22 @@ namespace Gameplay
                 if (service == null && _parent != null)
                     service = _parent.Get(type);
 
-                /*if (service == null)
-                    Debug.LogError($"Can not find service of type {type}");*/
+                if (service == null)
+                {
+                    hasMissingDependency = true;
+                    Debug.LogError(
+                        $"[DiContainer] Missing dependency for parameter '{parameterInfo.Name}' " +
+                        $"of type '{type.Name}' in method '{method.Name}' on '{target.GetType().Name}'. " +
+                        $"Service not registered in container."
+                    );
+                }
 
                 args[i] = service;
             }
+
+            // Если хотя бы один параметр не найден — не вызываем метод вообще
+            if (hasMissingDependency)
+                return;
 
             method.Invoke(target, args);
         }
