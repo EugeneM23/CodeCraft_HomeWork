@@ -15,7 +15,7 @@ namespace Gameplay
 
             InstallBindings();
 
-            var tickableManager = Container.Get<TickableManager>();
+            var tickableManager = Container.Resolve<TickableManager>();
             tickableManager?.RunAndInitialize(Container);
         }
 
