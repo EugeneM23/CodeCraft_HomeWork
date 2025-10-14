@@ -4,12 +4,6 @@ namespace Gameplay
 {
     public class GameObjectContext : Context
     {
-        internal void Initialize(DiContainer parent)
-        {
-            Container = new DiContainer(parent);
-            InstallBindings();
-        }
-
         protected override void InstallBindings()
         {
             base.InstallBindings();
@@ -20,6 +14,11 @@ namespace Gameplay
         {
             foreach (var component in GetComponentsInChildren<MonoBehaviour>(true))
                 Container.Inject(component);
+        }
+
+        public void SetParent(DiContainer diContainer)
+        {
+            Container = new DiContainer(diContainer);
         }
     }
 }

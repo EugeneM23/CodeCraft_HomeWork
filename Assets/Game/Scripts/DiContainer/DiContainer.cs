@@ -48,7 +48,7 @@ namespace Gameplay
             // Если на инстансе есть GameObjectContext, устанавливаем ему наш контейнер как parent
             if (instance.GetComponentInChildren<GameObjectContext>() is { } context)
             {
-                context.Initialize(this);
+                context.SetParent(this);
                 Get<TickableManager>().RunAndInitialize(context.Container);
             }
 
