@@ -7,7 +7,7 @@ namespace Gameplay
         public override void Install(DiContainer container)
         {
             container.BindSingle(new InputReader());
-            container.BindSingle("Gameplay Installer");
+            container.Bind("Gameplay Installer");
         }
     }
 }

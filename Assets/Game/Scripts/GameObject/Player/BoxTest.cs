@@ -10,13 +10,13 @@ namespace Gameplay
         [ShowInInspector] public InputReader input;
         [ShowInInspector] public Rigidbody2D rigidbody2D;
 
-        [FormerlySerializedAs("_massage")] public string massage;
+        [SerializeField] public string[] massage;
 
         [Inject]
         public void Construct(
             InputReader input,
             Rigidbody2D rigidbody2D,
-            string massage
+            string[] massage
         )
         {
             this.input = input;

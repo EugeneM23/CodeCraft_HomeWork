@@ -25,6 +25,14 @@ namespace Gameplay
 
         public override void Install(DiContainer container)
         {
+            /*
+            container.Bind("assdasdasd");
+            container.Bind("1111111111");
+            container.Bind("22222222222");
+            container.Bind("3333333333");
+            container.Bind("4444444444");
+            */
+            
             container.BindSingle(new ShadowFadeComponent(_material, _rigidbody));
             container.BindSingle(new GroundSyncComponent());
             container.BindSingle(_rigidbody);

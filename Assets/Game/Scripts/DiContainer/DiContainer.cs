@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -51,10 +52,53 @@ namespace Gameplay
 
         public T Get<T>() => (T)Get(typeof(T));
 
-        public object Get(Type type)
+        private object Get(Type type)
         {
-            // Сначала ищем локально, потом у родителя (если есть)
-            return _services.TryGetValue(type, out var service) ? service : _parent?.Get(type);
+            // Прямой биндинг
+            if (_services.TryGetValue(type, out var service))
+                return service;
+
+            // Проверяем, не запрашивается ли коллекция (List<T>, IEnumerable<T>, T[])
+            if (type.IsGenericType)
+            {
+                var genericDef = type.GetGenericTypeDefinition();
+
+                if (genericDef == typeof(List<>) || genericDef == typeof(IEnumerable<>))
+                {
+                    var elementType = type.GetGenericArguments()[0];
+                    var listType = typeof(List<>).MakeGenericType(elementType);
+
+                    if (_services.TryGetValue(listType, out var listObj))
+                        return listObj;
+                }
+            }
+
+            // Если запрашивается массив
+            if (type.IsArray)
+            {
+                var elementType = type.GetElementType();
+                var listType = typeof(List<>).MakeGenericType(elementType);
+
+                if (_services.TryGetValue(listType, out var listObj))
+                {
+                    var list = (IList)listObj;
+                    var array = Array.CreateInstance(elementType, list.Count);
+                    list.CopyTo(array, 0);
+                    return array;
+                }
+            }
+
+            // Проверяем, не запрашивается одиночный объект, а у нас хранится коллекция
+            var listType2 = typeof(List<>).MakeGenericType(type);
+            if (_services.TryGetValue(listType2, out var listObj2))
+            {
+                var list = (IList)listObj2;
+                if (list.Count > 0)
+                    return list[0];
+            }
+
+            // Пробуем у родителя
+            return _parent?.Get(type);
         }
 
         public IEnumerable<T> GetAll<T>() => _services.Values.OfType<T>();
