@@ -4,7 +4,7 @@ namespace Gameplay
     {
         public override void Install(DiContainer container)
         {
-            container.Add("HELLO WORLD!");
+            container.BindSingle("HELLO WORLD!");
         }
     }
 }

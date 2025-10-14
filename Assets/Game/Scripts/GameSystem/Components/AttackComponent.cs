@@ -16,7 +16,6 @@ namespace Gameplay
 
         public void Initialize()
         {
-            Debug.Log("Initialize attack component");
             _inputReader.OnFire += Attack;
         }
 

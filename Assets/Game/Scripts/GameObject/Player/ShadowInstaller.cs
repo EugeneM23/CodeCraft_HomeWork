@@ -12,10 +12,10 @@ namespace Game.Scripts.Player
 
         public override void Install(DiContainer container)
         {
-            container.Add(_rigidbody);
-            container.Add(new CollisionComponent(_collider, _groundLayer));
-            container.Add(new RotationComponent(_transform));
-            container.Add(new Rotationcotroller());
+            container.BindSingle(_rigidbody);
+            container.BindSingle(new CollisionComponent(_collider, _groundLayer));
+            container.BindSingle(new RotationComponent(_transform));
+            container.BindSingle(new Rotationcotroller());
         }
     }
 }

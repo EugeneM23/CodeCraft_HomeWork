@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Gameplay
 {
@@ -26,26 +25,24 @@ namespace Gameplay
 
         public override void Install(DiContainer container)
         {
-            container.Add("asdasdad111111111");
-            container.Add(new ShadowFadeComponent(_material, _rigidbody));
+            container.BindSingle(new ShadowFadeComponent(_material, _rigidbody));
+            container.BindSingle(new GroundSyncComponent());
+            container.BindSingle(_rigidbody);
+            container.BindSingle(new Player());
+            container.BindSingle(new AttackComponent());
+            container.BindSingle(new AttackCooldown());
+            container.BindSingle(new CollisionComponent(_collider, _groundLayer));
+            container.BindSingle(new GravityScaleComponent(_rigidbody, _gravityScale));
+            container.BindSingle(_collider);
+            container.BindSingle(new JumpController());
+            container.BindSingle(new JumpComponent(_jumpForce, _rigidbody));
 
-            container.Add(new GroundSyncComponent());
-            container.Add(_rigidbody);
-            container.Add(new Player());
-            container.Add(new AttackComponent());
-            container.Add(new AttackCooldown());
-            container.Add(new CollisionComponent(_collider, _groundLayer));
-            container.Add(new GravityScaleComponent(_rigidbody, _gravityScale));
-            container.Add(_collider);
-            container.Add(new JumpController());
-            container.Add(new JumpComponent(_jumpForce, _rigidbody));
-
-            container.Add(new MoveController());
-            container.Add(new RotationComponent(_transform));
-            container.Add(new MoveComponent(_rigidbody, _moveSpeed));
-            container.Add(new DeathObserver());
-            container.Add(new HealthComponent(_health));
-            container.Add(_transform);
+            container.BindSingle(new MoveController());
+            container.BindSingle(new RotationComponent(_transform));
+            container.BindSingle(new MoveComponent(_rigidbody, _moveSpeed));
+            container.BindSingle(new DeathObserver());
+            container.BindSingle(new HealthComponent(_health));
+            container.BindSingle(_transform);
         }
     }
 }

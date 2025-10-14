@@ -23,7 +23,7 @@ namespace Gameplay
         {
             GameObject tickableManager = new GameObject("TickableManager");
             var component = tickableManager.AddComponent<TickableManager>();
-            Container.Add(component);
+            Container.BindSingle(component);
             return component;
         }
 

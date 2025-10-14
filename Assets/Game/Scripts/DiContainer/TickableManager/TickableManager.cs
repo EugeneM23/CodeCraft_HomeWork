@@ -41,7 +41,6 @@ public class TickableManager : MonoBehaviour
     private void Update()
     {
         int count = _fixedTickables.Where(t => t is MoveComponent).ToArray().Length;
-        Debug.Log(count);
         
         for (int i = 0; i < _tickables.Count; i++)
         {
@@ -59,7 +58,6 @@ public class TickableManager : MonoBehaviour
     private void FixedUpdate()
     {
         int count = _fixedTickables.Where(t => t is GroundSyncComponent).ToArray().Length;
-        Debug.Log(count);
 
         for (int i = 0; i < _fixedTickables.Count; i++)
         {

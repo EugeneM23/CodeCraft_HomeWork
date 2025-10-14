@@ -18,9 +18,7 @@ namespace Gameplay
 
         public void Initialize()
         {
-            Debug.Log("Initialize ground sync");
             _collision.OnGrounded += OnGrounded;
-            
         }
 
         public void Dispose() => _collision.OnGrounded -= OnGrounded;

@@ -26,9 +26,27 @@ namespace Gameplay
                 Inject(service);
         }
 
-        public void Add<T>(T instance)
+        public void BindSingle<T>(T instance)
         {
+            if (_services.ContainsKey(typeof(T)) || _parent?.Contains(typeof(T)) == true)
+                throw new InvalidOperationException($"The type {typeof(T)} has already been installed as singleton.");
+
             _services[typeof(T)] = instance;
+        }
+
+        public void Bind<T>(T instances)
+        {
+            if (_services.ContainsKey(typeof(List<T>)))
+            {
+                List<T> service = (List<T>)_services[typeof(List<T>)];
+                service.Add(instances);
+            }
+            else
+            {
+                List<T> list = new List<T>();
+                list.Add(instances);
+                _services.Add(typeof(List<T>), list);
+            }
         }
 
         public T Get<T>() => (T)Get(typeof(T));
@@ -113,6 +131,8 @@ namespace Gameplay
             _services.Clear();
         }
 
+        public bool Contains(Type type) => _services.ContainsKey(type);
         public bool Contains(object instance) => _services.Values.Contains(instance);
+        public bool Contains<T>() => Contains(typeof(T));
     }
 }

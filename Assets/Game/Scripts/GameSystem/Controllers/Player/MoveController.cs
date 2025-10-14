@@ -20,7 +20,6 @@ namespace Gameplay
 
         public void Dispose()
         {
-            Debug.Log("MoveController cleared");
             _inputReader.OnMove -= Move;
         }
 
