@@ -1,10 +1,8 @@
 using System.Collections.Generic;
-using System.Linq;
 using Game.Scripts.Player;
 using Gameplay;
 using UnityEngine;
 
-[DefaultExecutionOrder(1000)]
 public class TickableManager : MonoBehaviour
 {
     private readonly List<ITickable> _tickables = new();
@@ -40,35 +38,13 @@ public class TickableManager : MonoBehaviour
 
     private void Update()
     {
-        int count = _fixedTickables.Where(t => t is MoveComponent).ToArray().Length;
-        
         for (int i = 0; i < _tickables.Count; i++)
-        {
-            if (_tickables[i] == null)
-            {
-                _tickables.RemoveAt(i);
-                i--;
-                continue;
-            }
-
             _tickables[i].Tick();
-        }
     }
 
     private void FixedUpdate()
     {
-        int count = _fixedTickables.Where(t => t is GroundSyncComponent).ToArray().Length;
-
         for (int i = 0; i < _fixedTickables.Count; i++)
-        {
-            if (_fixedTickables[i] == null)
-            {
-                _fixedTickables.RemoveAt(i);
-                i--;
-                continue;
-            }
-
             _fixedTickables[i].FixedTick();
-        }
     }
 }

@@ -8,11 +8,10 @@ namespace Gameplay
         {
             var instance = GameObject.Instantiate(prefab, position, rotation);
 
-            if (instance.GetComponentInChildren<GameObjectContext>() is { } context)
-            {
-                context.SetParent(this);
+            var context = instance.GetComponentInChildren<GameObjectContext>();
+            
+            if (context != null) 
                 Resolve<TickableManager>()?.RunAndInitialize(context.Container);
-            }
 
             return instance;
         }

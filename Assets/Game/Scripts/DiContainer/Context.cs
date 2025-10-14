@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace Gameplay
 {
+    [DefaultExecutionOrder(-999)]
     public abstract class Context : MonoBehaviour
     {
         [SerializeField] private Installer[] installers;
@@ -23,13 +24,15 @@ namespace Gameplay
 
         protected virtual void InstallBindings()
         {
-            if (installers == null) return;
-
             foreach (var installer in installers)
+            {
+                if (installer == null)
+                    throw new NullReferenceException("Installer is null");
+
                 Container.Install(installer);
+            }
         }
 
         private void OnDestroy() => Container?.Dispose();
     }
-    
 }

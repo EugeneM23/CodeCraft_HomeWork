@@ -2,7 +2,7 @@ namespace Gameplay
 {
     public class Player : IInitializeble
     {
-        private IMovabele _moveComponent;
+        private MoveComponent _moveComponent;
         private HealthComponent _healthComponent;
         private RotationComponent _rotationComponent;
         private JumpComponent _jumpComponent;
@@ -13,7 +13,7 @@ namespace Gameplay
 
         [Inject]
         private void Construct(
-            IMovabele moveComponent,
+            MoveComponent moveComponent,
             HealthComponent healthComponent,
             RotationComponent rotationComponent,
             JumpComponent jumpComponent,

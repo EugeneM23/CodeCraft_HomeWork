@@ -32,7 +32,7 @@ namespace Gameplay
             container.Bind("3333333333");
             container.Bind("4444444444");
             */
-            
+
             container.BindSingle(new ShadowFadeComponent(_material, _rigidbody));
             container.BindSingle(new GroundSyncComponent());
             container.BindSingle(_rigidbody);
@@ -47,7 +47,7 @@ namespace Gameplay
 
             container.BindSingle(new MoveController());
             container.BindSingle(new RotationComponent(_transform));
-            container.BindSingle<IMovabele>(new MoveComponent(_rigidbody, _moveSpeed));
+            container.BindSingle(new MoveComponent(_rigidbody, _moveSpeed));
             container.BindSingle(new DeathObserver());
             container.BindSingle(new HealthComponent(_health));
             container.BindSingle(_transform);

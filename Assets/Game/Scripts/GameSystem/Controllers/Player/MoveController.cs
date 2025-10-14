@@ -4,18 +4,23 @@ namespace Gameplay
 {
     public class MoveController : IInitializeble, IDisposable
     {
-        [Inject] private IMovabele _moveComponent;
-        [Inject] private RotationComponent _rotationComponent;
-        [Inject] private InputReader _inputReader;
+        private MoveComponent _moveComponent;
+        private RotationComponent _rotationComponent;
+        private InputReader _inputReader;
 
-        public void Construct(IMovabele moveComponent, RotationComponent rotationComponent, InputReader inputReader)
+        [Inject]
+        public void Construct(MoveComponent moveComponent, RotationComponent rotationComponent, InputReader inputReader)
         {
             _moveComponent = moveComponent;
             _rotationComponent = rotationComponent;
             _inputReader = inputReader;
         }
 
-        public void Initialize() => _inputReader.OnMove += Move;
+        public void Initialize()
+        {
+            Debug.Log("Initialize");
+            _inputReader.OnMove += Move;
+        }
 
         public void Dispose()
         {

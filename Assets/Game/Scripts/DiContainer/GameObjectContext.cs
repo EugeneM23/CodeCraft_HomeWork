@@ -12,7 +12,7 @@ namespace Gameplay
 
         private void InjectChildren()
         {
-            foreach (var component in GetComponentsInChildren<MonoBehaviour>(true))
+            foreach (var component in GetComponentsInChildren<MonoBehaviour>(true)) 
                 Container.Inject(component);
         }
 

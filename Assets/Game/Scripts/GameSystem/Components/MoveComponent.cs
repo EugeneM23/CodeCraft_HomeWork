@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Gameplay
 {
-    public class MoveComponent : CompositCondition, IFixedTickable, IMovabele
+    public class MoveComponent : CompositCondition, IFixedTickable
     {
         private readonly Rigidbody2D _rigidbody;
         private float _moveSpeed = 5f;
@@ -39,11 +39,5 @@ namespace Gameplay
             _rigidbody.position += (Vector2)offset;
         }
     }
-
-    public interface IMovabele
-    {
-        void SetDirection(Vector2 direction);
-        void AddGroundMove(Vector3 delta);
-        void AddCondition(Func<bool> isDead);
-    }
+    
 }
