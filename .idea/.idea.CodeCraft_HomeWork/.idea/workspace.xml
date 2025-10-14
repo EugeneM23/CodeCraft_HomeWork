@@ -6,53 +6,11 @@
   <component name="ChangeListManager">
     <list default="true" id="6f0b762c-5415-4a85-b17b-cc44fd47261d" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.CodeCraft_HomeWork/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.CodeCraft_HomeWork/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Plugins/Demigiant.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Plugins/Demigiant/DOTween.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Plugins/Demigiant/DOTween/DOTween.XML" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Plugins/Demigiant/DOTween/DOTween.XML.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Plugins/Demigiant/DOTween/DOTween.dll" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Plugins/Demigiant/DOTween/DOTween.dll.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Plugins/Demigiant/DOTween/Editor.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Plugins/Demigiant/DOTween/Editor/DOTweenEditor.XML" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Plugins/Demigiant/DOTween/Editor/DOTweenEditor.XML.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Plugins/Demigiant/DOTween/Editor/DOTweenEditor.dll" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Plugins/Demigiant/DOTween/Editor/DOTweenEditor.dll.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Plugins/Demigiant/DOTween/Editor/DOTweenUpgradeManager.XML" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Plugins/Demigiant/DOTween/Editor/DOTweenUpgradeManager.XML.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Plugins/Demigiant/DOTween/Editor/DOTweenUpgradeManager.dll" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Plugins/Demigiant/DOTween/Editor/DOTweenUpgradeManager.dll.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Plugins/Demigiant/DOTween/Editor/Imgs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Plugins/Demigiant/DOTween/Editor/Imgs/DOTweenIcon.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Plugins/Demigiant/DOTween/Editor/Imgs/DOTweenIcon.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Plugins/Demigiant/DOTween/Editor/Imgs/DOTweenMiniIcon.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Plugins/Demigiant/DOTween/Editor/Imgs/DOTweenMiniIcon.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Plugins/Demigiant/DOTween/Editor/Imgs/Footer.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Plugins/Demigiant/DOTween/Editor/Imgs/Footer.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Plugins/Demigiant/DOTween/Editor/Imgs/Footer_dark.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Plugins/Demigiant/DOTween/Editor/Imgs/Footer_dark.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Plugins/Demigiant/DOTween/Editor/Imgs/Header.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Plugins/Demigiant/DOTween/Editor/Imgs/Header.jpg.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Plugins/Demigiant/DOTween/Modules.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Plugins/Demigiant/DOTween/Modules/DOTweenModuleAudio.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Plugins/Demigiant/DOTween/Modules/DOTweenModuleAudio.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Plugins/Demigiant/DOTween/Modules/DOTweenModuleEPOOutline.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Plugins/Demigiant/DOTween/Modules/DOTweenModuleEPOOutline.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Plugins/Demigiant/DOTween/Modules/DOTweenModulePhysics.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Plugins/Demigiant/DOTween/Modules/DOTweenModulePhysics.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Plugins/Demigiant/DOTween/Modules/DOTweenModulePhysics2D.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Plugins/Demigiant/DOTween/Modules/DOTweenModulePhysics2D.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Plugins/Demigiant/DOTween/Modules/DOTweenModuleSprite.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Plugins/Demigiant/DOTween/Modules/DOTweenModuleSprite.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Plugins/Demigiant/DOTween/Modules/DOTweenModuleUI.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Plugins/Demigiant/DOTween/Modules/DOTweenModuleUI.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Plugins/Demigiant/DOTween/Modules/DOTweenModuleUnityVersion.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Plugins/Demigiant/DOTween/Modules/DOTweenModuleUnityVersion.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Plugins/Demigiant/DOTween/Modules/DOTweenModuleUtils.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Plugins/Demigiant/DOTween/Modules/DOTweenModuleUtils.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Plugins/Demigiant/DOTween/Modules/dotweenModules.asmdef" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Plugins/Demigiant/DOTween/Modules/dotweenModules.asmdef.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Plugins/Demigiant/DOTween/readme.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Plugins/Demigiant/DOTween/readme.txt.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Prefabs/Character.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Prefabs/Character.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/GameObject/Core/GameInstaller.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/GameObject/Core/GameInstaller.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/GameObject/Player/BoxTest.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/GameObject/Player/BoxTest.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/GameObject/Player/PlayerInstaller.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/GameObject/Player/PlayerInstaller.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/Components/AttackCooldown.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/Components/AttackCooldown.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -172,7 +130,7 @@
       <workItem from="1759852159875" duration="10172000" />
       <workItem from="1760175523777" duration="36357000" />
       <workItem from="1760279050424" duration="13431000" />
-      <workItem from="1760300339906" duration="43549000" />
+      <workItem from="1760300339906" duration="50870000" />
     </task>
     <task id="LOCAL-00001" summary="Update">
       <option name="closed" value="true" />

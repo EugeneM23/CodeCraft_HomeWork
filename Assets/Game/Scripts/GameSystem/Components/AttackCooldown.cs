@@ -31,7 +31,6 @@ namespace Gameplay
 
         public void Tick()
         {
-            _canAttack.Log();
             if (!_canAttack && Time.time >= _lastAttackTime + _cooldown)
                 _canAttack = true;
         }
