@@ -54,54 +54,84 @@ namespace Gameplay
 
         private object Get(Type type)
         {
-            // Прямой биндинг
-            if (_services.TryGetValue(type, out var service))
+            // 1. Прямой биндинг
+            if (TryGetDirect(type, out var service))
                 return service;
 
-            // Проверяем, не запрашивается ли коллекция (List<T>, IEnumerable<T>, T[])
-            if (type.IsGenericType)
-            {
-                var genericDef = type.GetGenericTypeDefinition();
+            // 2. Коллекции: List<T> или IEnumerable<T>
+            if (TryGetCollection(type, out service))
+                return service;
 
-                if (genericDef == typeof(List<>) || genericDef == typeof(IEnumerable<>))
-                {
-                    var elementType = type.GetGenericArguments()[0];
-                    var listType = typeof(List<>).MakeGenericType(elementType);
+            // 3. Массивы
+            if (TryGetArray(type, out service))
+                return service;
 
-                    if (_services.TryGetValue(listType, out var listObj))
-                        return listObj;
-                }
-            }
+            // 4. Один объект из коллекции
+            if (TryGetFromCollection(type, out service))
+                return service;
 
-            // Если запрашивается массив
-            if (type.IsArray)
-            {
-                var elementType = type.GetElementType();
-                var listType = typeof(List<>).MakeGenericType(elementType);
-
-                if (_services.TryGetValue(listType, out var listObj))
-                {
-                    var list = (IList)listObj;
-                    var array = Array.CreateInstance(elementType, list.Count);
-                    list.CopyTo(array, 0);
-                    return array;
-                }
-            }
-
-            // Проверяем, не запрашивается одиночный объект, а у нас хранится коллекция
-            var listType2 = typeof(List<>).MakeGenericType(type);
-            if (_services.TryGetValue(listType2, out var listObj2))
-            {
-                var list = (IList)listObj2;
-                if (list.Count > 0)
-                    return list[0];
-            }
-
-            // Пробуем у родителя
+            // 5. Родительский контейнер
             return _parent?.Get(type);
         }
 
-        public IEnumerable<T> GetAll<T>() => _services.Values.OfType<T>();
+        private bool TryGetDirect(Type type, out object service)
+        {
+            return _services.TryGetValue(type, out service);
+        }
+
+        private bool TryGetCollection(Type type, out object service)
+        {
+            service = null;
+            if (!type.IsGenericType) return false;
+
+            var elementType = type.GetGenericArguments()[0];
+            var listType = typeof(List<>).MakeGenericType(elementType);
+
+            if (!_services.TryGetValue(listType, out var listObj)) return false;
+
+            var genericDef = type.GetGenericTypeDefinition();
+            if (genericDef == typeof(List<>) || genericDef == typeof(IEnumerable<>))
+            {
+                service = listObj;
+                return true;
+            }
+
+            return false;
+        }
+
+        private bool TryGetArray(Type type, out object service)
+        {
+            service = null;
+            if (!type.IsArray) return false;
+
+            var elementType = type.GetElementType();
+            var listType = typeof(List<>).MakeGenericType(elementType);
+
+            if (!_services.TryGetValue(listType, out var listObj)) return false;
+
+            var list = (IList)listObj;
+            var array = Array.CreateInstance(elementType, list.Count);
+            list.CopyTo(array, 0);
+            service = array;
+            return true;
+        }
+
+        private bool TryGetFromCollection(Type type, out object service)
+        {
+            service = null;
+            var listType = typeof(List<>).MakeGenericType(type);
+
+            if (!_services.TryGetValue(listType, out var listObj)) return false;
+
+            var list = (IList)listObj;
+            if (list.Count > 0)
+            {
+                service = list[0];
+                return true;
+            }
+
+            return false;
+        }
 
         public T InstantiatePrefab<T>(T prefab, Vector3 position, Quaternion rotation) where T : Component
         {
@@ -119,21 +149,57 @@ namespace Gameplay
 
         public void Inject(object target)
         {
-            if (target == null) return;
+            InjectMethods(target);
+            InjectFields(target);
+            InjectProperties(target);
+        }
 
+        private void InjectMethods(object target)
+        {
             var methods = target.GetType()
-                .GetMethods(
-                    BindingFlags.Public |
-                    BindingFlags.NonPublic |
-                    BindingFlags.Instance |
-                    BindingFlags.FlattenHierarchy)
+                .GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance |
+                            BindingFlags.FlattenHierarchy)
                 .Where(m => m.IsDefined(typeof(InjectAttribute), true));
 
             foreach (var method in methods)
-                TryInvokeInjectMethod(method, target);
+                InjectMethod(method, target);
         }
 
-        private void TryInvokeInjectMethod(MethodInfo method, object target)
+        private void InjectFields(object target)
+        {
+            var fields = target.GetType()
+                .GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance |
+                           BindingFlags.FlattenHierarchy)
+                .Where(f => f.IsDefined(typeof(InjectAttribute), true));
+
+            foreach (var field in fields)
+                InjectMember(field.FieldType, value => field.SetValue(target, value), field.Name,
+                    target.GetType().Name);
+        }
+
+        private void InjectProperties(object target)
+        {
+            var properties = target.GetType()
+                .GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance |
+                               BindingFlags.FlattenHierarchy)
+                .Where(p => p.IsDefined(typeof(InjectAttribute), true) && p.CanWrite);
+
+            foreach (var prop in properties)
+                InjectMember(prop.PropertyType, value => prop.SetValue(target, value), prop.Name,
+                    target.GetType().Name);
+        }
+
+        private void InjectMember(Type memberType, Action<object> setValue, string memberName, string targetTypeName)
+        {
+            var service = Get(memberType);
+            if (service != null)
+                setValue(service);
+            else
+                Debug.LogError(
+                    $"[DiContainer] Missing dependency: '{memberType.Name}' for '{memberName}' in '{targetTypeName}'");
+        }
+
+        private void InjectMethod(MethodInfo method, object target)
         {
             var parameters = method.GetParameters();
             var args = new object[parameters.Length];
@@ -174,6 +240,8 @@ namespace Gameplay
 
             _services.Clear();
         }
+
+        public IEnumerable<T> GetAll<T>() => _services.Values.OfType<T>();
 
         public bool Contains(Type type) => _services.ContainsKey(type);
         public bool Contains(object instance) => _services.Values.Contains(instance);

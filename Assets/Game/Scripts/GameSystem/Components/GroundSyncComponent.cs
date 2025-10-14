@@ -6,11 +6,11 @@ namespace Gameplay
     public class GroundSyncComponent : IFixedTickable, IInitializeble, IDisposable
     {
         private CollisionComponent _collision;
-        private MoveComponent _move;
+        private IMovabele _move;
         private Vector3 _lastPlatformPos;
 
         [Inject]
-        public void Construct(CollisionComponent collision, MoveComponent move)
+        public void Construct(CollisionComponent collision, IMovabele move)
         {
             _collision = collision;
             _move = move;

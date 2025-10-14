@@ -1,8 +1,10 @@
 using System;
+using JetBrains.Annotations;
 
 namespace Gameplay
 {
-    [AttributeUsage(AttributeTargets.Method)]
+    [MeansImplicitUse]
+    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Field | AttributeTargets.Property)]
     public class InjectAttribute : Attribute
     {
     }

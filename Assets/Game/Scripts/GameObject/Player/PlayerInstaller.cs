@@ -47,7 +47,7 @@ namespace Gameplay
 
             container.BindSingle(new MoveController());
             container.BindSingle(new RotationComponent(_transform));
-            container.BindSingle(new MoveComponent(_rigidbody, _moveSpeed));
+            container.BindSingle<IMovabele>(new MoveComponent(_rigidbody, _moveSpeed));
             container.BindSingle(new DeathObserver());
             container.BindSingle(new HealthComponent(_health));
             container.BindSingle(_transform);
