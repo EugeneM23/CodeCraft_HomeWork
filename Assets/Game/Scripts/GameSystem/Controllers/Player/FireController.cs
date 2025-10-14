@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Gameplay
 {
-    public class FireController : IInitializeble
+    public class FireController : IInitializeble, IDisposable
     {
         private InputReader _inputReader;
 
@@ -11,7 +11,10 @@ namespace Gameplay
 
         public void Initialize() => _inputReader.OnFire += Fire;
 
-        private void OnDisable() => _inputReader.OnFire -= Fire;
+        public void Dispose()
+        {
+            _inputReader.OnFire -= Fire;
+        }
 
         public void Fire() => "FIRE".Log(Color.red);
     }

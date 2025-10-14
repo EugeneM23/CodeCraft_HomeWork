@@ -19,7 +19,6 @@ namespace Gameplay
 
         public void Initialize()
         {
-            Debug.Log("Component Initializing");
             this.material = spriteRendere.material;
             this.propertyToID = Shader.PropertyToID("_OuterOutlineFade");
         }

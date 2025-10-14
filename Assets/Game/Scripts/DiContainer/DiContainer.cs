@@ -108,7 +108,7 @@ namespace Gameplay
             }
 
             TickableManager tickableManager = Get<TickableManager>();
-            tickableManager.RemoveServices(this);
+            tickableManager?.RemoveServices(this);
 
             _services.Clear();
         }
