@@ -9,34 +9,61 @@ public class TickableManager : MonoBehaviour
     private readonly List<ITickable> _tickables = new();
     private readonly List<IFixedTickable> _fixedTickables = new();
     private readonly List<IInitializeble> _initializables = new();
-
     public void RunAndInitialize(DiContainer container)
     {
+
         if (container == null) return;
 
         foreach (var t in container.GetAll<ITickable>())
-            _tickables.Add(t);
+            if (!_tickables.Contains(t))
+                _tickables.Add(t);
 
         foreach (var t in container.GetAll<IFixedTickable>())
-            _fixedTickables.Add(t);
+            if (!_fixedTickables.Contains(t))
+                _fixedTickables.Add(t);
 
         foreach (var i in container.GetAll<IInitializeble>())
-            if (!_initializables.Contains(i))
+            if (i != null && !_initializables.Contains(i))
             {
                 _initializables.Add(i);
                 i.Initialize();
             }
     }
 
+    public void RemoveServices(DiContainer container)
+    {
+        _tickables.RemoveAll(t => container.Contains(t));
+        _fixedTickables.RemoveAll(t => container.Contains(t));
+        _initializables.RemoveAll(i => container.Contains(i));
+    }
+
     private void Update()
     {
-        foreach (var t in _tickables)
-            t.Tick();
+        for (int i = 0; i < _tickables.Count; i++)
+        {
+            if (_tickables[i] == null)
+            {
+                _tickables.RemoveAt(i);
+                i--;
+                continue;
+            }
+
+            _tickables[i].Tick();
+        }
     }
 
     private void FixedUpdate()
     {
-        foreach (var t in _fixedTickables)
-            t.FixedTick();
+        for (int i = 0; i < _fixedTickables.Count; i++)
+        {
+            if (_fixedTickables[i] == null)
+            {
+                _fixedTickables.RemoveAt(i);
+                i--;
+                continue;
+            }
+
+            _fixedTickables[i].FixedTick();
+        }
     }
 }

@@ -1,6 +1,6 @@
 namespace Gameplay
 {
-    public class JumpController : IInitializeble
+    public class JumpController : IInitializeble, IDisposable
     {
         private InputReader _inputReader;
         private CollisionComponent _collisionComponent;
@@ -21,7 +21,7 @@ namespace Gameplay
             _collisionComponent.OnGrounded += _jumpComponent.ResetJump;
         }
 
-        private void OnDisable()
+        public void Dispose()
         {
             _inputReader.OnJump -= _jumpComponent.Jump;
             _collisionComponent.OnGrounded -= _jumpComponent.ResetJump;

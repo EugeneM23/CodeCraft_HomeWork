@@ -428,9 +428,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _moveSpeed: 15
-  _jumpForce: 24
+  _jumpForce: 30
   _health: 10
-  _gravityScale: 5
+  _gravityScale: 10
   _transform: {fileID: 7783565616257484281}
   _damageProxy: {fileID: 2886291273409047000}
   _rigidbody: {fileID: 8707928189445928403}
@@ -438,7 +438,6 @@ MonoBehaviour:
   _groundLayer:
     serializedVersion: 2
     m_Bits: 8
-  massage: 
   _material: {fileID: 8292441105297730219}
 --- !u!114 &2886291273409047000
 MonoBehaviour:

@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Gameplay
 {
-    public class MoveController : IInitializeble
+    public class MoveController : IInitializeble, IDisposable
     {
         private MoveComponent _moveComponent;
         private RotationComponent _rotationComponent;
@@ -18,7 +18,11 @@ namespace Gameplay
 
         public void Initialize() => _inputReader.OnMove += Move;
 
-        private void OnDisable() => _inputReader.OnMove -= Move;
+        public void Dispose()
+        {
+            Debug.Log("MoveController cleared");
+            _inputReader.OnMove -= Move;
+        }
 
         private void Move(Vector2 direction)
         {

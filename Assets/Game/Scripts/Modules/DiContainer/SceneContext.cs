@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Gameplay
@@ -14,14 +15,16 @@ namespace Gameplay
 
             InjectSceneObjects();
 
-            CreateTickableManager();
+            TickableManager manager = CreateTickableManager();
+            manager?.RunAndInitialize(Container);
         }
 
-        private void CreateTickableManager()
+        private TickableManager CreateTickableManager()
         {
             GameObject tickableManager = new GameObject("TickableManager");
             var component = tickableManager.AddComponent<TickableManager>();
             Container.Add(component);
+            return component;
         }
 
         protected override DiContainer GetParent() => null;

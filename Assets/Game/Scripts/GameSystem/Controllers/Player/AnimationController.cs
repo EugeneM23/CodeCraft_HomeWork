@@ -1,7 +1,9 @@
+using System;
 using Gameplay;
 using UnityEngine;
+using IDisposable = Gameplay.IDisposable;
 
-public class AnimationController : MonoBehaviour
+public class AnimationController : MonoBehaviour, IDisposable, IInitializeble
 {
     private static readonly int FlyingHash = Animator.StringToHash("IsFlying");
     private static readonly int RunningHash = Animator.StringToHash("IsRunning");
@@ -23,6 +25,18 @@ public class AnimationController : MonoBehaviour
         _inputReader.OnFire += Attack;
     }
 
+    public void Initialize()
+    {
+        _collisionComponent.OnFlying += OnFall;
+        _inputReader.OnFire += Attack;
+    }
+
+    public void Dispose()
+    {
+        _collisionComponent.OnFlying -= OnFall;
+        _inputReader.OnFire -= Attack;
+    }
+
     private void Attack()
     {
         _animator.Play("Attack");
@@ -40,4 +54,6 @@ public class AnimationController : MonoBehaviour
         _animator.SetBool(RunningHash, isRunning);
         _animator.SetBool(IdlingHash, isIdling);
     }
+
+    private void OnDestroy() => Dispose();
 }

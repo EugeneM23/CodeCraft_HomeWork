@@ -16,6 +16,7 @@ namespace Gameplay
 
         public void Initialize()
         {
+            Debug.Log("Gameplay Initializing");
             _gameInput = new GameInput();
 
             _gameInput.Movement.Enable();

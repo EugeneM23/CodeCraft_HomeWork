@@ -6,10 +6,13 @@ using UnityEngine;
 
 namespace Gameplay
 {
-    public class DiContainer
+    public class DiContainer : IDisposable
     {
+        public event Action<object> OnServiceDisposed;
+
         private readonly Dictionary<Type, object> _services = new();
         private readonly DiContainer _parent;
+        private bool _disposed;
 
         public DiContainer(DiContainer parent = null) => _parent = parent;
 
@@ -91,5 +94,25 @@ namespace Gameplay
             if (!hasMissing)
                 method.Invoke(target, args);
         }
+
+        public void Dispose()
+        {
+            if (_disposed) return;
+
+            _disposed = true;
+
+            foreach (object service in _services.Values)
+            {
+                if (service is IDisposable disposable)
+                    disposable.Dispose();
+            }
+
+            TickableManager tickableManager = Get<TickableManager>();
+            tickableManager.RemoveServices(this);
+
+            _services.Clear();
+        }
+
+        public bool Contains(object instance) => _services.Values.Contains(instance);
     }
 }

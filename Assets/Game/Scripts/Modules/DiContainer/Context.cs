@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Gameplay
@@ -27,5 +28,8 @@ namespace Gameplay
             foreach (var installer in installers)
                 Container.Install(installer);
         }
+
+        private void OnDestroy() => Container?.Dispose();
     }
+    
 }
