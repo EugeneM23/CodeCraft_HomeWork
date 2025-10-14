@@ -2,6 +2,7 @@ using UnityEngine;
 
 namespace Gameplay
 {
+    [DefaultExecutionOrder(0)]
     public class GameObjectContext : Context
     {
         protected override void InstallBindings()
@@ -12,13 +13,8 @@ namespace Gameplay
 
         private void InjectChildren()
         {
-            foreach (var component in GetComponentsInChildren<MonoBehaviour>(true)) 
+            foreach (var component in GetComponentsInChildren<MonoBehaviour>(true))
                 Container.Inject(component);
-        }
-
-        public void SetParent(DiContainer diContainer)
-        {
-            Container = new DiContainer(diContainer);
         }
     }
 }
