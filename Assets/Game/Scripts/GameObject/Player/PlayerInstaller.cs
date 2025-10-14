@@ -26,6 +26,7 @@ namespace Gameplay
 
         public override void Install(DiContainer container)
         {
+            container.Add("asdasdad111111111");
             container.Add(new ShadowFadeComponent(_material, _rigidbody));
 
             container.Add(new GroundSyncComponent());
