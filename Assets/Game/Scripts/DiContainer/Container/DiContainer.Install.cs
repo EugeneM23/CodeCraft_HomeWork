@@ -9,7 +9,10 @@ namespace Gameplay
         private readonly DiContainer _parent;
         private bool _disposed;
 
-        public DiContainer(DiContainer parent = null) => _parent = parent;
+        public DiContainer(DiContainer parent = null)
+        {
+            _parent = parent;
+        }
 
         public void Install(Installer installer)
         {

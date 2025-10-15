@@ -1,5 +1,3 @@
-using UnityEngine;
-
 namespace Gameplay
 {
     public class GameInstaller : Installer

@@ -18,7 +18,6 @@ namespace Gameplay
 
         public void Initialize()
         {
-            Debug.Log("Initialize");
             _inputReader.OnMove += Move;
         }
 

@@ -15,7 +15,9 @@ namespace Gameplay
                 if (service is IDisposable disposable)
                     disposable.Dispose();
 
-            Resolve<TickableManager>()?.RemoveServices(this);
+            var manager = Resolve<TickableManager>();
+            manager?.RemoveServices(this);
+            
             _services.Clear();
         }
 

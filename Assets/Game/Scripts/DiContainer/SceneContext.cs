@@ -3,38 +3,66 @@ using UnityEngine;
 
 namespace Gameplay
 {
-    public class SceneContext : Context
+    [DefaultExecutionOrder(-999)]
+    public class SceneContext : MonoBehaviour
     {
-        public static SceneContext Instance { get; private set; }
+        [SerializeField] private Installer[] installers;
 
-        protected override void Awake()
+        public static SceneContext Instance { get; private set; }
+        public DiContainer Container { get; private set; }
+
+        private void Awake()
         {
             Instance = this;
-            base.Awake();
 
-            InjectSceneObjects();
+            InitializeContainer();
 
-            TickableManager manager = CreateTickableManager();
+            TickableManager tickableManager = CreateTickableManager();
+            Container.BindSingle(tickableManager);
+
+            InstallBindings(tickableManager);
+            InjectScene();
+        }
+
+        private void InitializeContainer()
+        {
+            Container = new DiContainer();
+
+            foreach (var installer in installers)
+            {
+                if (installer == null)
+                    throw new NullReferenceException($"Installer is null on {name}");
+
+                Container.Install(installer);
+            }
+        }
+
+        private void InstallBindings(TickableManager manager)
+        {
             manager?.RunAndInitialize(Container);
         }
 
-        private TickableManager CreateTickableManager()
-        {
-            GameObject tickableManager = new GameObject("TickableManager");
-            var component = tickableManager.AddComponent<TickableManager>();
-            Container.BindSingle(component);
-            return component;
-        }
-
-        protected override DiContainer GetParent() => null;
-
-        private void InjectSceneObjects()
+        private void InjectScene()
         {
             foreach (var component in FindObjectsOfType<MonoBehaviour>())
             {
                 if (component.GetComponentInParent<GameObjectContext>() == null)
                     Container.Inject(component);
             }
+        }
+
+        private TickableManager CreateTickableManager()
+        {
+            var go = new GameObject("TickableManager");
+            return go.AddComponent<TickableManager>();
+        }
+
+        private void OnDestroy()
+        {
+            if (Instance == this)
+                Instance = null;
+
+            Container?.Dispose();
         }
     }
 }
