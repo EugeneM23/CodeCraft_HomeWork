@@ -1,3 +1,4 @@
+using Game.Scripts.GameObject.Player;
 using UnityEngine;
 
 namespace Gameplay
@@ -10,6 +11,7 @@ namespace Gameplay
         [SerializeField] private float _jumpForce = 5f;
         [SerializeField] private int _health = 100;
         [SerializeField] private int _gravityScale = 20;
+        [SerializeField] private float _attackSpeed = 0.3f;
 
         [Header("Components")] [SerializeField]
         private Transform _transform;
@@ -25,25 +27,23 @@ namespace Gameplay
 
         public override void Install(DiContainer container)
         {
-            /*
-            container.Bind("assdasdasd");
-            container.Bind("1111111111");
-            container.Bind("22222222222");
-            container.Bind("3333333333");
-            container.Bind("4444444444");
-            */
-
             container.BindSingle(new ShadowFadeComponent(_material, _rigidbody));
             container.BindSingle(new GroundSyncComponent());
             container.BindSingle(_rigidbody);
             container.BindSingle(new Player());
             container.BindSingle(new AttackComponent());
-            container.BindSingle(new AttackCooldown());
-            container.BindSingle(new CollisionComponent(_collider, _groundLayer));
+            container.BindSingle(new CooldownComponent(_attackSpeed));
+
+            var rigidbodyForceComponent = new RigidbodyForceComponent(_rigidbody);
+            var collisionComponent = new CollisionComponent(_collider, _groundLayer);
+
+            container.BindSingle(collisionComponent);
+
             container.BindSingle(new GravityScaleComponent(_rigidbody, _gravityScale));
             container.BindSingle(_collider);
             container.BindSingle(new JumpController());
-            container.BindSingle(new JumpComponent(_jumpForce, _rigidbody));
+            container.BindSingle(new JumpComponent(_jumpForce, rigidbodyForceComponent, collisionComponent));
+            container.BindSingle(rigidbodyForceComponent);
 
             container.BindSingle(new MoveController());
             container.BindSingle(new RotationComponent(_transform));

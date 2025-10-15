@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Gameplay
 {
-    public class FireController : IInitializeble, IDisposable
+    public class AttackController : IInitializeble, IDisposable
     {
         private InputReader _inputReader;
 

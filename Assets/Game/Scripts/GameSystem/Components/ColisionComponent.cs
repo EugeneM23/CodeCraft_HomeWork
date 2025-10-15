@@ -40,5 +40,7 @@ namespace Gameplay
         }
 
         public bool IsGround() => IsGrounded;
+
+        public Vector2 GetHitNormal() => LastHit.normal;
     }
 }

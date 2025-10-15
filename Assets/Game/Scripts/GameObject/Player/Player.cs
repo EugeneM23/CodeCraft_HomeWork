@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace Gameplay
 {
     public class Player : IInitializeble
@@ -5,43 +7,42 @@ namespace Gameplay
         private MoveComponent _moveComponent;
         private HealthComponent _healthComponent;
         private RotationComponent _rotationComponent;
-        private JumpComponent _jumpComponent;
-        private AttackCooldown _cooldown;
+        private RigidbodyForceComponent _rigidbodyForceComponent;
+        private CooldownComponent _cooldownComponent;
         private AttackComponent _attackComponent;
         private CollisionComponent _collisionComponent;
-        private ShadowFadeComponent shadowFadeComponent;
 
         [Inject]
         private void Construct(
             MoveComponent moveComponent,
             HealthComponent healthComponent,
             RotationComponent rotationComponent,
-            JumpComponent jumpComponent,
-            AttackCooldown cooldown,
+            RigidbodyForceComponent rigidbodyForceComponent,
+            CooldownComponent cooldownComponent,
             AttackComponent attackComponent,
-            CollisionComponent collisionComponent,
-            ShadowFadeComponent shadowFadeComponent
+            CollisionComponent collisionComponent
         )
         {
-            this.shadowFadeComponent = shadowFadeComponent;
             _collisionComponent = collisionComponent;
             _attackComponent = attackComponent;
-            _cooldown = cooldown;
+            _cooldownComponent = cooldownComponent;
             _moveComponent = moveComponent;
             _healthComponent = healthComponent;
             _rotationComponent = rotationComponent;
-            _jumpComponent = jumpComponent;
+            _rigidbodyForceComponent = rigidbodyForceComponent;
         }
 
         public void Initialize()
         {
-            this.shadowFadeComponent.AddCondition(_cooldown.CanAttack);
             _attackComponent.AddCondition(_collisionComponent.IsGround);
-            _attackComponent.AddCondition(_cooldown.CanAttack);
+            _attackComponent.AddCondition(_cooldownComponent.IsNotRedy);
             _moveComponent.AddCondition(_healthComponent.IsDead);
-            _moveComponent.AddCondition(_cooldown.CanAttack);
+            _moveComponent.AddCondition(_cooldownComponent.IsNotRedy);
             _rotationComponent.AddCondition(_healthComponent.IsDead);
-            _jumpComponent.AddCondition(_healthComponent.IsDead);
+            _rigidbodyForceComponent.AddCondition(_healthComponent.IsDead);
         }
+
+
+        
     }
 }

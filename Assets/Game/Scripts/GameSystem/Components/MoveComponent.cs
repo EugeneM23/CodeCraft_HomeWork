@@ -8,7 +8,7 @@ namespace Gameplay
     {
         private readonly Rigidbody2D _rigidbody;
         private float _moveSpeed = 5f;
-
+        [Inject] private readonly Transform _transform;
         private Vector2 _direction;
 
         public MoveComponent(Rigidbody2D rigidbody, float moveSpeed)
@@ -23,13 +23,13 @@ namespace Gameplay
         {
             if (AndCondition())
             {
-                Vector2 velocity = _rigidbody.linearVelocity;
+                /*Vector2 velocity = _rigidbody.linearVelocity;
                 velocity.x = 0;
-                _rigidbody.linearVelocity = velocity;
+                _rigidbody.linearVelocity = velocity;*/
                 return;
             }
 
-            _rigidbody.linearVelocity = new Vector2(_direction.x * _moveSpeed, _rigidbody.linearVelocity.y);
+            _transform.position += new Vector3(_direction.x * _moveSpeed, 0f);
         }
 
         public void SetDirection(Vector2 direction) => _direction = direction;
@@ -39,5 +39,4 @@ namespace Gameplay
             _rigidbody.position += (Vector2)offset;
         }
     }
-    
 }

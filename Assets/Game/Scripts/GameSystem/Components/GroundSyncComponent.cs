@@ -22,13 +22,13 @@ namespace Gameplay
 
         public void FixedTick()
         {
-            if (_collision.IsGrounded && _collision.LastHit.collider != null)
+            /*if (_collision.IsGrounded && _collision.LastHit.collider != null)
             {
                 Vector3 newPos = _collision.LastHit.collider.bounds.center;
                 Vector3 delta = newPos - _lastPlatformPos;
                 _move.AddGroundMove(delta);
                 _lastPlatformPos = newPos;
-            }
+            }*/
         }
 
         private void OnGrounded()
