@@ -42,7 +42,7 @@ namespace Gameplay
             container.BindSingle(new GravityScaleComponent(_rigidbody, _gravityScale));
             container.BindSingle(_collider);
             container.BindSingle(new JumpController());
-            container.BindSingle(new JumpComponent(_jumpForce, rigidbodyForceComponent, collisionComponent));
+            container.BindSingle(new ImpulseComponent(_rigidbody, _jumpForce));
             container.BindSingle(rigidbodyForceComponent);
 
             container.BindSingle(new MoveController());

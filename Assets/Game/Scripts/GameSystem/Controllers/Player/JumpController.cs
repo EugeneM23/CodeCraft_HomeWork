@@ -6,26 +6,25 @@ namespace Gameplay
     {
         private InputReader _inputReader;
         private CollisionComponent _collisionComponent;
-        private JumpComponent _jumpComponent;
+        private ImpulseComponent _impulseComponent;
             
         [Inject]
         private void Construct(
             InputReader inputReader,
-            JumpComponent jumpComponent,
+            ImpulseComponent impulseComponent,
             CollisionComponent collisionComponent
         )
         {
             _collisionComponent = collisionComponent;
-            _jumpComponent = jumpComponent;
+            _impulseComponent = impulseComponent;
             _inputReader = inputReader;
         }
 
         public void Initialize()
         {
-            _inputReader.OnJump += _jumpComponent.Jump;
-            _collisionComponent.OnGrounded += _jumpComponent.ResetJump;
+            _inputReader.OnJump += _impulseComponent.AddForce;
         }
 
-        public void Dispose() => _inputReader.OnJump -= _jumpComponent.Jump;
+        public void Dispose() => _inputReader.OnJump -= _impulseComponent.AddForce;
     }
 }
