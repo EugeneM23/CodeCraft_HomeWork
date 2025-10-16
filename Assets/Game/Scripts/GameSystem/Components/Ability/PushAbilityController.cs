@@ -20,7 +20,7 @@ namespace Gameplay.Ability
             _upComponent = _player;
 
             _input.OnFire += _sideComponent.Push;
-            _input.OnFire += _upComponent.Push;
+            //_input.OnFire += _upComponent.Push;
         }
 
         public void Dispose()

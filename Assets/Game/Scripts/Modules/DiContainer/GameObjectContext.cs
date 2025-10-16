@@ -15,7 +15,7 @@ namespace Gameplay
             var parentContainer = SceneContext.Instance?.Container;
             InitializeContainer(parentContainer);
             InstallBindings();
-            
+
             InjectHierarchy();
         }
 
@@ -28,8 +28,10 @@ namespace Gameplay
                 if (installer == null)
                     throw new NullReferenceException($"Installer is null on {name}");
 
-                Container.Install(installer);
+                Container.AddServices(installer);
             }
+
+            Container.Install();
         }
 
         public void InstallBindings()
@@ -40,7 +42,7 @@ namespace Gameplay
 
         public void InjectHierarchy()
         {
-            foreach (var component in GetComponentsInChildren<MonoBehaviour>(true)) 
+            foreach (var component in GetComponentsInChildren<MonoBehaviour>(true))
                 Container.Inject(component);
         }
 

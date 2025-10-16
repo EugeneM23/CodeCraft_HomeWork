@@ -14,10 +14,10 @@ namespace Gameplay
             _parent = parent;
         }
 
-        public void Install(Installer installer)
-        {
-            installer.Install(this);
+        public void AddServices(Installer installer) => installer.Install(this);
 
+        public void Install()
+        {
             foreach (var service in _services.Values)
                 Inject(service);
         }

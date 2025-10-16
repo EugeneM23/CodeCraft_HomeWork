@@ -15,7 +15,7 @@ namespace Game.Scripts.GameObject.Player
         public void AddForce(Vector2 direction, float force)
         {
             this.rigidbody.linearVelocity = Vector2.zero;
-            this.rigidbody.AddForce(Vector2.up * force, ForceMode2D.Impulse);
+            this.rigidbody.AddForce(direction * force, ForceMode2D.Impulse);
         }
     }
 }

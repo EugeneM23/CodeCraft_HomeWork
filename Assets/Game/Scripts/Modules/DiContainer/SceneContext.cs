@@ -33,8 +33,10 @@ namespace Gameplay
                 if (installer == null)
                     throw new NullReferenceException($"Installer is null on {name}");
 
-                Container.Install(installer);
+                Container.AddServices(installer);
             }
+
+            Container.Install();
         }
 
         private void InstallBindings(TickableManager manager)

@@ -12,8 +12,7 @@ namespace Gameplay
 
         [Inject] private CollisionComponent collisionComponent;
 
-        //[Inject] private PushAbility ability;
-        [Inject] private PushAbility.IAction[] actions;
+        [Inject] private PushAbility ability;
 
         public void Initialize()
         {
@@ -22,15 +21,9 @@ namespace Gameplay
             this.rotationComponent.AddCondition(this.healthComponent.IsDead);
         }
 
-        void IPushUpComponent.Push()
-        {
-            //this.ability.Push(Vector2.up);
-        }
+        void IPushUpComponent.Push() => this.ability.Push(Vector2.up);
 
-        void IPushSideComponent.Push()
-        {
-            //this.ability.Push(Vector2.right);
-        }
+        void IPushSideComponent.Push() => this.ability.Push(Vector2.right);
     }
 
     public interface IPushSideComponent
