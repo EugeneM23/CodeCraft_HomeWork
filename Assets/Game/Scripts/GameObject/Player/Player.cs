@@ -25,14 +25,4 @@ namespace Gameplay
 
         void IPushSideComponent.Push() => this.ability.Push(Vector2.right);
     }
-
-    public interface IPushSideComponent
-    {
-        void Push();
-    }
-
-    public interface IPushUpComponent
-    {
-        void Push();
-    }
 }
