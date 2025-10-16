@@ -15,7 +15,7 @@ namespace Gameplay
 
         public void RemoveCondition(Func<bool> condition) => _conditions.Remove(condition);
 
-        public bool AndCondition()
+        public bool IsTrue()
         {
             for (int i = 0; i < _conditions.Count; i++)
                 if (_conditions[i].Invoke())

@@ -7,15 +7,14 @@ namespace Gameplay
     {
         public event Action OnDeath;
 
-        private readonly int _maxhealth;
+        private int _maxhealth;
         private int _currentHealth;
         private bool _isAlive;
 
         public HealthComponent(int maxhealth)
         {
             _maxhealth = maxhealth;
-            _currentHealth = maxhealth;
-            _isAlive = true;
+            _currentHealth = _maxhealth;
         }
 
         public void TakeDamage(int damage)
@@ -23,7 +22,7 @@ namespace Gameplay
             if (!_isAlive || damage <= 0) return;
 
             _currentHealth = Mathf.Max(0, _currentHealth - damage);
-            
+
             if (_currentHealth <= 0)
             {
                 _isAlive = false;

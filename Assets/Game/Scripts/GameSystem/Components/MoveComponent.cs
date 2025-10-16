@@ -6,14 +6,14 @@ namespace Gameplay
 {
     public class MoveComponent : CompositCondition, IFixedTickable
     {
-        [Inject] private readonly Transform _transform;
-        [Inject] private CollisionComponent _collision;
+        private readonly CollisionComponent _collision;
         private readonly Rigidbody2D _rigidbody;
-        private float _moveSpeed = 5f;
+        private readonly float _moveSpeed = 5f;
         private Vector2 _direction;
 
-        public MoveComponent(Rigidbody2D rigidbody, float moveSpeed)
+        public MoveComponent(CollisionComponent collision, Rigidbody2D rigidbody, float moveSpeed)
         {
+            _collision = collision;
             _rigidbody = rigidbody;
             _moveSpeed = moveSpeed;
         }
@@ -22,9 +22,11 @@ namespace Gameplay
 
         public void Move()
         {
-            if (AndCondition())
+            /*
+            if (IsTrue())
                 return;
-            
+                */
+
             Vector2 normal = _collision.GetHitNormal();
             if (normal == Vector2.zero)
                 normal = Vector2.up;
@@ -37,7 +39,10 @@ namespace Gameplay
             _rigidbody.linearVelocity = new Vector2(moveVelocity.x, _rigidbody.linearVelocity.y);
         }
 
-        public void SetDirection(Vector2 direction) => _direction = direction;
+        public void SetDirection(Vector2 direction)
+        {
+            _direction = direction;
+        }
 
         public void AddGroundMove(Vector3 offset)
         {

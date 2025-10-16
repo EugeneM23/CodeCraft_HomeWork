@@ -25,7 +25,7 @@ namespace Gameplay
 
         public void Tick()
         {
-            if (rigidbody.linearVelocity.magnitude < 1f && !AndCondition())
+            if (rigidbody.linearVelocity.magnitude < 1f && !IsTrue())
                 this.material.SetFloat(propertyToID, 0.8f);
             else
                 this.material.SetFloat(propertyToID, 0f);

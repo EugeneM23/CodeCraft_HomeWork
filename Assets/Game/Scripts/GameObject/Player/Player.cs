@@ -1,48 +1,45 @@
+using Gameplay.Ability;
 using UnityEngine;
 
 namespace Gameplay
 {
-    public class Player : IInitializeble
+    public class Player : IInitializeble, IPushUpComponent, IPushSideComponent
     {
-        private MoveComponent _moveComponent;
-        private HealthComponent _healthComponent;
-        private RotationComponent _rotationComponent;
-        private RigidbodyForceComponent _rigidbodyForceComponent;
-        private CooldownComponent _cooldownComponent;
-        private AttackComponent _attackComponent;
-        private CollisionComponent _collisionComponent;
+        [Inject] private MoveComponent moveComponent;
+        [Inject] private HealthComponent healthComponent;
+        [Inject] private RotationComponent rotationComponent;
+        [Inject] private AttackComponent attackComponent;
 
-        [Inject]
-        private void Construct(
-            MoveComponent moveComponent,
-            HealthComponent healthComponent,
-            RotationComponent rotationComponent,
-            RigidbodyForceComponent rigidbodyForceComponent,
-            CooldownComponent cooldownComponent,
-            AttackComponent attackComponent,
-            CollisionComponent collisionComponent
-        )
-        {
-            _collisionComponent = collisionComponent;
-            _attackComponent = attackComponent;
-            _cooldownComponent = cooldownComponent;
-            _moveComponent = moveComponent;
-            _healthComponent = healthComponent;
-            _rotationComponent = rotationComponent;
-            _rigidbodyForceComponent = rigidbodyForceComponent;
-        }
+        [Inject] private CollisionComponent collisionComponent;
+
+        //[Inject] private PushAbility ability;
+        [Inject] private PushAbility.IAction[] actions;
 
         public void Initialize()
         {
-            _attackComponent.AddCondition(_collisionComponent.IsGround);
-            _attackComponent.AddCondition(_cooldownComponent.IsNotRedy);
-            _moveComponent.AddCondition(_healthComponent.IsDead);
-            _moveComponent.AddCondition(_cooldownComponent.IsNotRedy);
-            _rotationComponent.AddCondition(_healthComponent.IsDead);
-            _rigidbodyForceComponent.AddCondition(_healthComponent.IsDead);
+            this.attackComponent.AddCondition(this.collisionComponent.IsGround);
+            this.moveComponent.AddCondition(this.healthComponent.IsDead);
+            this.rotationComponent.AddCondition(this.healthComponent.IsDead);
         }
 
+        void IPushUpComponent.Push()
+        {
+            //this.ability.Push(Vector2.up);
+        }
 
-        
+        void IPushSideComponent.Push()
+        {
+            //this.ability.Push(Vector2.right);
+        }
+    }
+
+    public interface IPushSideComponent
+    {
+        void Push();
+    }
+
+    public interface IPushUpComponent
+    {
+        void Push();
     }
 }

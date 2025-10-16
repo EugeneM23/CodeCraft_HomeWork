@@ -4,14 +4,12 @@ namespace Gameplay
 {
     public class AttackComponent : CompositCondition, IInitializeble
     {
-        private InputReader _inputReader;
-        private Rigidbody2D _rigidbody;
+        [Inject] private readonly InputReader _inputReader;
+        private readonly Rigidbody2D _rigidbody;
 
-        [Inject]
-        private void Construct(InputReader inputReader, Rigidbody2D rigidbody, CollisionComponent collision)
+        public AttackComponent(Rigidbody2D rigidbody)
         {
             _rigidbody = rigidbody;
-            _inputReader = inputReader;
         }
 
         public void Initialize()
@@ -21,7 +19,7 @@ namespace Gameplay
 
         private void Attack()
         {
-            if (!AndCondition())
+            if (!IsTrue())
                 _rigidbody.linearVelocity = Vector2.up * 5;
         }
     }

@@ -12,8 +12,9 @@ namespace Gameplay
         public bool IsGrounded { get; private set; }
         public RaycastHit2D LastHit { get; private set; }
 
-        private readonly CircleCollider2D _collider;
-        private readonly LayerMask _groundLayer;
+        private  CircleCollider2D _collider;
+        private LayerMask _groundLayer;
+
         private bool _frameState;
 
         public CollisionComponent(CircleCollider2D collider, LayerMask groundLayer)
@@ -21,7 +22,6 @@ namespace Gameplay
             _collider = collider;
             _groundLayer = groundLayer;
         }
-
         public void FixedTick()
         {
             _frameState = IsGrounded;

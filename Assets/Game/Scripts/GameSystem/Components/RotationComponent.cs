@@ -6,15 +6,15 @@ namespace Gameplay
     {
         private Transform _transform;
 
-        public RotationComponent(Transform transform)
+        [Inject]
+        public void Construct(Transform transform)
         {
             _transform = transform;
         }
 
         public void SetDiraction(Vector2 diraction)
         {
-            if (AndCondition()) return;
-
+            //if (IsTrue()) return;
             if (diraction == Vector2.zero) return;
 
             if (diraction == Vector2.right)
