@@ -1,14 +1,15 @@
-using System;
+using System.Collections.Generic;
 using System.Linq;
 using Gameplay;
 using UnityEngine;
 
-namespace Game.Scripts.Modules.SpriteAnimator
+namespace Gameplay
 {
     public class SpriteAnimator : ITickable, IInitializeble
     {
-        private SpriteAnimation[] _animation;
-        private SpriteRenderer _spriteRenderer;
+        private readonly AnimationEventReceiver _animationEventReceiver;
+        private readonly SpriteAnimation[] _animation;
+        private readonly SpriteRenderer _spriteRenderer;
 
         public SpriteAnimation CurrentAnimation => _currentAnimation;
         private SpriteAnimation _currentAnimation;
@@ -18,16 +19,14 @@ namespace Game.Scripts.Modules.SpriteAnimator
 
         private float FrameDuration => 1f / _currentAnimation.FPS;
 
-        public SpriteAnimator(SpriteAnimation[] animation, SpriteRenderer spriteRenderer)
+        public SpriteAnimator(SpriteAnimation[] animation, SpriteRenderer spriteRenderer, AnimationEventReceiver animationEventReceiver)
         {
             _animation = animation;
             _spriteRenderer = spriteRenderer;
+            _animationEventReceiver = animationEventReceiver;
         }
 
-        public void Initialize()
-        {
-            _currentAnimation = _animation[0];
-        }
+        public void Initialize() => _currentAnimation = _animation[0];
 
         public void Tick()
         {
@@ -36,16 +35,28 @@ namespace Game.Scripts.Modules.SpriteAnimator
             if (_frameTime < FrameDuration)
                 return;
 
+            UpdateSprite();
+            SendEvents();
+        }
+
+        private void UpdateSprite()
+        {
             _frameTime -= FrameDuration;
-
-            _currentAnimation.PlayEvents(_currentFrame);
-
             _spriteRenderer.sprite = _currentAnimation.Sprites[_currentFrame++];
             if (_currentFrame >= _currentAnimation.Sprites.Length)
             {
                 _currentFrame = 0;
                 _currentAnimation.CanInterrupt = true;
             }
+        }
+
+        private void SendEvents()
+        {
+            var eventIds = _currentAnimation.GetEvents(_currentFrame);
+
+            foreach (EventID item in eventIds)
+                if (item != EventID.None)
+                    _animationEventReceiver.SendEvent(item);
         }
 
         public SpriteAnimator Play(AnimationID id)
@@ -60,13 +71,6 @@ namespace Game.Scripts.Modules.SpriteAnimator
             return this;
         }
 
-        public SpriteAnimator AddEvent(Action action, int frame)
-        {
-            _currentAnimation.Event.Event = action;
-            _currentAnimation.Event.Frame = frame;
-            return this;
-        }
-
         public SpriteAnimator Interrupt(bool interrupt)
         {
             _currentAnimation.CanInterrupt = interrupt;
@@ -75,7 +79,6 @@ namespace Game.Scripts.Modules.SpriteAnimator
 
         public bool Lock()
         {
-            "Log lock".Log();
             return !_currentAnimation.CanInterrupt;
         }
     }

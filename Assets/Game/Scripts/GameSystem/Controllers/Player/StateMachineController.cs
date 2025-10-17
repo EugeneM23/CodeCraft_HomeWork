@@ -1,8 +1,6 @@
-using Game.Scripts.Modules.SpriteAnimator;
-using Gameplay;
 using UnityEngine;
 
-namespace Game.Scripts.GameSystem.Controllers.Player.StateMachine
+namespace Gameplay
 {
     public class StateMachineController : ITickable, IInitializeble, IDisposable
     {
@@ -25,9 +23,27 @@ namespace Game.Scripts.GameSystem.Controllers.Player.StateMachine
             _stateMachine = stateMachine;
         }
 
-        public void Initialize() => _inputReader.OnFire += Attack;
+        public void Initialize()
+        {
+            _inputReader.OnFire += Attack;
+            _inputReader.OnPushUp += PushUp;
+            _inputReader.OnPushSide += PushSide;
+        }
 
-        public void Dispose() => _inputReader.OnFire -= Attack;
+        public void Dispose()
+        {
+            _inputReader.OnFire -= Attack;
+            _inputReader.OnPushUp -= PushUp;
+            _inputReader.OnPushSide -= PushSide;
+        }
+
+        private void PushSide() => _stateMachine.SetState<PushAbilitySideState>();
+
+        private void PushUp()
+        {
+            Debug.Log("Pushing up");
+            _stateMachine.SetState<PushAbilityUPState>();
+        }
 
         private void Attack() => _stateMachine.SetState<AttackState>();
 

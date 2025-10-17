@@ -15,7 +15,7 @@ using System.Collections.Generic;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Utilities;
 
-namespace Gameplay
+namespace Gamplay
 {
     /// <summary>
     /// Provides programmatic access to <see cref="InputActionAsset" />, <see cref="InputActionMap" />, <see cref="InputAction" /> and <see cref="InputControlScheme" /> instances defined in asset "Assets/Game/Scripts/GameSystem/Inputs/Gamplay.inputactions".
@@ -186,17 +186,6 @@ namespace Gameplay
                     ""action"": ""Fire"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""fad35703-c083-4849-882a-4de48d751713"",
-                    ""path"": ""<Keyboard>/f"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Fire"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -227,6 +216,62 @@ namespace Gameplay
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""PushAbilityUp"",
+            ""id"": ""512b98be-e986-45d5-961e-09ce07de627b"",
+            ""actions"": [
+                {
+                    ""name"": ""PushAbilityUp"",
+                    ""type"": ""Button"",
+                    ""id"": ""ecdb0410-fdf0-417d-b18f-67b6db2b2ca2"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""0b928581-d8ae-4759-a1d3-3ef34da3904a"",
+                    ""path"": ""<Keyboard>/f"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""PushAbilityUp"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
+        },
+        {
+            ""name"": ""PushAbilitySide"",
+            ""id"": ""4253e628-2f71-4971-bd39-75cb5f261cda"",
+            ""actions"": [
+                {
+                    ""name"": ""PushAbilitySide"",
+                    ""type"": ""Button"",
+                    ""id"": ""9cec27b1-7877-409d-8f6a-d166dd2b0e5b"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""26cd03a3-122b-4960-b5cc-d676956845b3"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""PushAbilitySide"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
@@ -240,6 +285,12 @@ namespace Gameplay
             // Jump
             m_Jump = asset.FindActionMap("Jump", throwIfNotFound: true);
             m_Jump_Jump = m_Jump.FindAction("Jump", throwIfNotFound: true);
+            // PushAbilityUp
+            m_PushAbilityUp = asset.FindActionMap("PushAbilityUp", throwIfNotFound: true);
+            m_PushAbilityUp_PushAbilityUp = m_PushAbilityUp.FindAction("PushAbilityUp", throwIfNotFound: true);
+            // PushAbilitySide
+            m_PushAbilitySide = asset.FindActionMap("PushAbilitySide", throwIfNotFound: true);
+            m_PushAbilitySide_PushAbilitySide = m_PushAbilitySide.FindAction("PushAbilitySide", throwIfNotFound: true);
         }
 
         ~@GameInput()
@@ -247,6 +298,8 @@ namespace Gameplay
             UnityEngine.Debug.Assert(!m_Movement.enabled, "This will cause a leak and performance issues, GameInput.Movement.Disable() has not been called.");
             UnityEngine.Debug.Assert(!m_Fire.enabled, "This will cause a leak and performance issues, GameInput.Fire.Disable() has not been called.");
             UnityEngine.Debug.Assert(!m_Jump.enabled, "This will cause a leak and performance issues, GameInput.Jump.Disable() has not been called.");
+            UnityEngine.Debug.Assert(!m_PushAbilityUp.enabled, "This will cause a leak and performance issues, GameInput.PushAbilityUp.Disable() has not been called.");
+            UnityEngine.Debug.Assert(!m_PushAbilitySide.enabled, "This will cause a leak and performance issues, GameInput.PushAbilitySide.Disable() has not been called.");
         }
 
         /// <summary>
@@ -460,9 +513,9 @@ namespace Gameplay
             {
                 if (instance == null || m_Wrapper.m_FireActionsCallbackInterfaces.Contains(instance)) return;
                 m_Wrapper.m_FireActionsCallbackInterfaces.Add(instance);
-                @Fire.started += instance.Fire;
-                @Fire.performed += instance.Fire;
-                @Fire.canceled += instance.Fire;
+                @Fire.started += instance.OnFire;
+                @Fire.performed += instance.OnFire;
+                @Fire.canceled += instance.OnFire;
             }
 
             /// <summary>
@@ -474,9 +527,9 @@ namespace Gameplay
             /// <seealso cref="FireActions" />
             private void UnregisterCallbacks(IFireActions instance)
             {
-                @Fire.started -= instance.Fire;
-                @Fire.performed -= instance.Fire;
-                @Fire.canceled -= instance.Fire;
+                @Fire.started -= instance.OnFire;
+                @Fire.performed -= instance.OnFire;
+                @Fire.canceled -= instance.OnFire;
             }
 
             /// <summary>
@@ -606,6 +659,198 @@ namespace Gameplay
         /// Provides a new <see cref="JumpActions" /> instance referencing this action map.
         /// </summary>
         public JumpActions @Jump => new JumpActions(this);
+
+        // PushAbilityUp
+        private readonly InputActionMap m_PushAbilityUp;
+        private List<IPushAbilityUpActions> m_PushAbilityUpActionsCallbackInterfaces = new List<IPushAbilityUpActions>();
+        private readonly InputAction m_PushAbilityUp_PushAbilityUp;
+        /// <summary>
+        /// Provides access to input actions defined in input action map "PushAbilityUp".
+        /// </summary>
+        public struct PushAbilityUpActions
+        {
+            private @GameInput m_Wrapper;
+
+            /// <summary>
+            /// Construct a new instance of the input action map wrapper class.
+            /// </summary>
+            public PushAbilityUpActions(@GameInput wrapper) { m_Wrapper = wrapper; }
+            /// <summary>
+            /// Provides access to the underlying input action "PushAbilityUp/PushAbilityUp".
+            /// </summary>
+            public InputAction @PushAbilityUp => m_Wrapper.m_PushAbilityUp_PushAbilityUp;
+            /// <summary>
+            /// Provides access to the underlying input action map instance.
+            /// </summary>
+            public InputActionMap Get() { return m_Wrapper.m_PushAbilityUp; }
+            /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
+            public void Enable() { Get().Enable(); }
+            /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
+            public void Disable() { Get().Disable(); }
+            /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
+            public bool enabled => Get().enabled;
+            /// <summary>
+            /// Implicitly converts an <see ref="PushAbilityUpActions" /> to an <see ref="InputActionMap" /> instance.
+            /// </summary>
+            public static implicit operator InputActionMap(PushAbilityUpActions set) { return set.Get(); }
+            /// <summary>
+            /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+            /// </summary>
+            /// <param name="instance">Callback instance.</param>
+            /// <remarks>
+            /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
+            /// </remarks>
+            /// <seealso cref="PushAbilityUpActions" />
+            public void AddCallbacks(IPushAbilityUpActions instance)
+            {
+                if (instance == null || m_Wrapper.m_PushAbilityUpActionsCallbackInterfaces.Contains(instance)) return;
+                m_Wrapper.m_PushAbilityUpActionsCallbackInterfaces.Add(instance);
+                @PushAbilityUp.started += instance.OnPushAbilityUp;
+                @PushAbilityUp.performed += instance.OnPushAbilityUp;
+                @PushAbilityUp.canceled += instance.OnPushAbilityUp;
+            }
+
+            /// <summary>
+            /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+            /// </summary>
+            /// <remarks>
+            /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
+            /// </remarks>
+            /// <seealso cref="PushAbilityUpActions" />
+            private void UnregisterCallbacks(IPushAbilityUpActions instance)
+            {
+                @PushAbilityUp.started -= instance.OnPushAbilityUp;
+                @PushAbilityUp.performed -= instance.OnPushAbilityUp;
+                @PushAbilityUp.canceled -= instance.OnPushAbilityUp;
+            }
+
+            /// <summary>
+            /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="PushAbilityUpActions.UnregisterCallbacks(IPushAbilityUpActions)" />.
+            /// </summary>
+            /// <seealso cref="PushAbilityUpActions.UnregisterCallbacks(IPushAbilityUpActions)" />
+            public void RemoveCallbacks(IPushAbilityUpActions instance)
+            {
+                if (m_Wrapper.m_PushAbilityUpActionsCallbackInterfaces.Remove(instance))
+                    UnregisterCallbacks(instance);
+            }
+
+            /// <summary>
+            /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
+            /// </summary>
+            /// <remarks>
+            /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
+            /// </remarks>
+            /// <seealso cref="PushAbilityUpActions.AddCallbacks(IPushAbilityUpActions)" />
+            /// <seealso cref="PushAbilityUpActions.RemoveCallbacks(IPushAbilityUpActions)" />
+            /// <seealso cref="PushAbilityUpActions.UnregisterCallbacks(IPushAbilityUpActions)" />
+            public void SetCallbacks(IPushAbilityUpActions instance)
+            {
+                foreach (var item in m_Wrapper.m_PushAbilityUpActionsCallbackInterfaces)
+                    UnregisterCallbacks(item);
+                m_Wrapper.m_PushAbilityUpActionsCallbackInterfaces.Clear();
+                AddCallbacks(instance);
+            }
+        }
+        /// <summary>
+        /// Provides a new <see cref="PushAbilityUpActions" /> instance referencing this action map.
+        /// </summary>
+        public PushAbilityUpActions @PushAbilityUp => new PushAbilityUpActions(this);
+
+        // PushAbilitySide
+        private readonly InputActionMap m_PushAbilitySide;
+        private List<IPushAbilitySideActions> m_PushAbilitySideActionsCallbackInterfaces = new List<IPushAbilitySideActions>();
+        private readonly InputAction m_PushAbilitySide_PushAbilitySide;
+        /// <summary>
+        /// Provides access to input actions defined in input action map "PushAbilitySide".
+        /// </summary>
+        public struct PushAbilitySideActions
+        {
+            private @GameInput m_Wrapper;
+
+            /// <summary>
+            /// Construct a new instance of the input action map wrapper class.
+            /// </summary>
+            public PushAbilitySideActions(@GameInput wrapper) { m_Wrapper = wrapper; }
+            /// <summary>
+            /// Provides access to the underlying input action "PushAbilitySide/PushAbilitySide".
+            /// </summary>
+            public InputAction @PushAbilitySide => m_Wrapper.m_PushAbilitySide_PushAbilitySide;
+            /// <summary>
+            /// Provides access to the underlying input action map instance.
+            /// </summary>
+            public InputActionMap Get() { return m_Wrapper.m_PushAbilitySide; }
+            /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
+            public void Enable() { Get().Enable(); }
+            /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
+            public void Disable() { Get().Disable(); }
+            /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
+            public bool enabled => Get().enabled;
+            /// <summary>
+            /// Implicitly converts an <see ref="PushAbilitySideActions" /> to an <see ref="InputActionMap" /> instance.
+            /// </summary>
+            public static implicit operator InputActionMap(PushAbilitySideActions set) { return set.Get(); }
+            /// <summary>
+            /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+            /// </summary>
+            /// <param name="instance">Callback instance.</param>
+            /// <remarks>
+            /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
+            /// </remarks>
+            /// <seealso cref="PushAbilitySideActions" />
+            public void AddCallbacks(IPushAbilitySideActions instance)
+            {
+                if (instance == null || m_Wrapper.m_PushAbilitySideActionsCallbackInterfaces.Contains(instance)) return;
+                m_Wrapper.m_PushAbilitySideActionsCallbackInterfaces.Add(instance);
+                @PushAbilitySide.started += instance.OnPushAbilitySide;
+                @PushAbilitySide.performed += instance.OnPushAbilitySide;
+                @PushAbilitySide.canceled += instance.OnPushAbilitySide;
+            }
+
+            /// <summary>
+            /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+            /// </summary>
+            /// <remarks>
+            /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
+            /// </remarks>
+            /// <seealso cref="PushAbilitySideActions" />
+            private void UnregisterCallbacks(IPushAbilitySideActions instance)
+            {
+                @PushAbilitySide.started -= instance.OnPushAbilitySide;
+                @PushAbilitySide.performed -= instance.OnPushAbilitySide;
+                @PushAbilitySide.canceled -= instance.OnPushAbilitySide;
+            }
+
+            /// <summary>
+            /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="PushAbilitySideActions.UnregisterCallbacks(IPushAbilitySideActions)" />.
+            /// </summary>
+            /// <seealso cref="PushAbilitySideActions.UnregisterCallbacks(IPushAbilitySideActions)" />
+            public void RemoveCallbacks(IPushAbilitySideActions instance)
+            {
+                if (m_Wrapper.m_PushAbilitySideActionsCallbackInterfaces.Remove(instance))
+                    UnregisterCallbacks(instance);
+            }
+
+            /// <summary>
+            /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
+            /// </summary>
+            /// <remarks>
+            /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
+            /// </remarks>
+            /// <seealso cref="PushAbilitySideActions.AddCallbacks(IPushAbilitySideActions)" />
+            /// <seealso cref="PushAbilitySideActions.RemoveCallbacks(IPushAbilitySideActions)" />
+            /// <seealso cref="PushAbilitySideActions.UnregisterCallbacks(IPushAbilitySideActions)" />
+            public void SetCallbacks(IPushAbilitySideActions instance)
+            {
+                foreach (var item in m_Wrapper.m_PushAbilitySideActionsCallbackInterfaces)
+                    UnregisterCallbacks(item);
+                m_Wrapper.m_PushAbilitySideActionsCallbackInterfaces.Clear();
+                AddCallbacks(instance);
+            }
+        }
+        /// <summary>
+        /// Provides a new <see cref="PushAbilitySideActions" /> instance referencing this action map.
+        /// </summary>
+        public PushAbilitySideActions @PushAbilitySide => new PushAbilitySideActions(this);
         /// <summary>
         /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Movement" which allows adding and removing callbacks.
         /// </summary>
@@ -634,7 +879,7 @@ namespace Gameplay
             /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-            void Fire(InputAction.CallbackContext context);
+            void OnFire(InputAction.CallbackContext context);
         }
         /// <summary>
         /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Jump" which allows adding and removing callbacks.
@@ -650,6 +895,36 @@ namespace Gameplay
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnJump(InputAction.CallbackContext context);
+        }
+        /// <summary>
+        /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "PushAbilityUp" which allows adding and removing callbacks.
+        /// </summary>
+        /// <seealso cref="PushAbilityUpActions.AddCallbacks(IPushAbilityUpActions)" />
+        /// <seealso cref="PushAbilityUpActions.RemoveCallbacks(IPushAbilityUpActions)" />
+        public interface IPushAbilityUpActions
+        {
+            /// <summary>
+            /// Method invoked when associated input action "PushAbilityUp" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnPushAbilityUp(InputAction.CallbackContext context);
+        }
+        /// <summary>
+        /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "PushAbilitySide" which allows adding and removing callbacks.
+        /// </summary>
+        /// <seealso cref="PushAbilitySideActions.AddCallbacks(IPushAbilitySideActions)" />
+        /// <seealso cref="PushAbilitySideActions.RemoveCallbacks(IPushAbilitySideActions)" />
+        public interface IPushAbilitySideActions
+        {
+            /// <summary>
+            /// Method invoked when associated input action "PushAbilitySide" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnPushAbilitySide(InputAction.CallbackContext context);
         }
     }
 }

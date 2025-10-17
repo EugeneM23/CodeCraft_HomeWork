@@ -1,13 +1,12 @@
-
 namespace Gameplay
 {
-    public class AttackState : IState
+    public class PushAbilitySideState : IState
     {
         [Inject] private readonly SpriteAnimator _animator;
 
         public void Enter()
         {
-            _animator.Play(AnimationID.Attack).Interrupt(false);
+            _animator.Play(AnimationID.PushAbilitySide).Interrupt(false);
         }
     }
 }

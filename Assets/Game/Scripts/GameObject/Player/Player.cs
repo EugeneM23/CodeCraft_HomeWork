@@ -1,4 +1,3 @@
-using Game.Scripts.Modules.SpriteAnimator;
 using Gameplay.Ability;
 using UnityEngine;
 
@@ -9,9 +8,9 @@ namespace Gameplay
         [Inject] private MoveComponent moveComponent;
         [Inject] private HealthComponent healthComponent;
         [Inject] private RotationComponent rotationComponent;
-        [Inject] private CollisionComponent collisionComponent;
         [Inject] private PushAbility ability;
         [Inject] private SpriteAnimator animator;
+        [Inject] private Transform transform;
 
         public void Initialize()
         {
@@ -20,8 +19,15 @@ namespace Gameplay
             this.rotationComponent.AddCondition(this.healthComponent.IsDead);
         }
 
-        void IPushUpComponent.Push() => this.ability.Push(Vector2.up);
+        void IPushUpComponent.Push()
+        {
+            this.ability.Push(Vector2.up);
+        }
 
-        void IPushSideComponent.Push() => this.ability.Push(Vector2.right);
+        void IPushSideComponent.Push()
+        {
+            float x = this.transform.localScale.x;
+            this.ability.Push(new Vector2(x, 0));
+        }
     }
 }

@@ -1,6 +1,5 @@
-using Game.Scripts.Modules.SpriteAnimator;
 
-namespace Game.Scripts.GameSystem.Controllers.Player.StateMachine
+namespace Gameplay
 {
     public class FallState : IState
     {

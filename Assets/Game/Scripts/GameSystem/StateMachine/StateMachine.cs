@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
-using Game.Scripts.Modules.SpriteAnimator;
-using Gameplay;
 
-namespace Game.Scripts.GameSystem.Controllers.Player.StateMachine
+namespace Gameplay
 {
     public class StateMachine : IInitializeble
     {

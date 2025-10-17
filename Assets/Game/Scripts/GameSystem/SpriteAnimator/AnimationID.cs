@@ -1,4 +1,4 @@
-namespace Game.Scripts.Modules.SpriteAnimator
+namespace Gameplay
 {
     public enum AnimationID
     {
@@ -8,6 +8,8 @@ namespace Game.Scripts.Modules.SpriteAnimator
         Jump,
         Fall,
         Attack,
-        Push
+        Push,
+        PushAbilitySide,
+        PushAbilityUP
     }
 }

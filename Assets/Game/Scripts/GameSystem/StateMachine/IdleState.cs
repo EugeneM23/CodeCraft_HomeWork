@@ -1,7 +1,5 @@
-using Game.Scripts.Modules.SpriteAnimator;
-using UnityEngine;
 
-namespace Game.Scripts.GameSystem.Controllers.Player.StateMachine
+namespace Gameplay
 {
     public class IdleState : IState
     {

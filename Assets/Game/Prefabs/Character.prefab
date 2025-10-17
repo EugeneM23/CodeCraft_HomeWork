@@ -10299,6 +10299,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: d28fe78b1e47b4b828415075e2b90586, type: 2}
   - {fileID: 11400000, guid: 6ee8d9e938d0143c896db2ad73ec0562, type: 2}
   - {fileID: 11400000, guid: 492eac0d011e842ffbb457c078cc1301, type: 2}
+  - {fileID: 11400000, guid: bc67a2bc03bba4364bafb10294bd453f, type: 2}
+  - {fileID: 11400000, guid: 84d945c442c344f198b5b6996c228e96, type: 2}
   _spriteRenderer: {fileID: 6969335171927385727}
 --- !u!114 &2294488716626919524
 MonoBehaviour:

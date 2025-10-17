@@ -98,17 +98,6 @@
                     "action": "Fire",
                     "isComposite": false,
                     "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "fad35703-c083-4849-882a-4de48d751713",
-                    "path": "<Keyboard>/f",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Fire",
-                    "isComposite": false,
-                    "isPartOfComposite": false
                 }
             ]
         },
@@ -135,6 +124,62 @@
                     "processors": "",
                     "groups": "",
                     "action": "Jump",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "PushAbilityUp",
+            "id": "512b98be-e986-45d5-961e-09ce07de627b",
+            "actions": [
+                {
+                    "name": "PushAbilityUp",
+                    "type": "Button",
+                    "id": "ecdb0410-fdf0-417d-b18f-67b6db2b2ca2",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "0b928581-d8ae-4759-a1d3-3ef34da3904a",
+                    "path": "<Keyboard>/f",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "PushAbilityUp",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "PushAbilitySide",
+            "id": "4253e628-2f71-4971-bd39-75cb5f261cda",
+            "actions": [
+                {
+                    "name": "PushAbilitySide",
+                    "type": "Button",
+                    "id": "9cec27b1-7877-409d-8f6a-d166dd2b0e5b",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "26cd03a3-122b-4960-b5cc-d676956845b3",
+                    "path": "<Keyboard>/e",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "PushAbilitySide",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

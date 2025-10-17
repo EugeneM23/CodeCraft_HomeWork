@@ -1,6 +1,8 @@
+using System.Collections.Generic;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
-namespace Game.Scripts.Modules.SpriteAnimator
+namespace Gameplay
 {
     [CreateAssetMenu(fileName = "Animation", menuName = "Game/Sprite Animation")]
     public class SpriteAnimation : ScriptableObject
@@ -10,14 +12,20 @@ namespace Game.Scripts.Modules.SpriteAnimator
         [field: SerializeField] public float FPS { get; private set; }
         public bool CanInterrupt = true;
 
-        public SpriteAnimationEvent Event = new();
+        [ShowInInspector, SerializeField] public SpriteAnimationEvent[] _events;
+        private readonly List<EventID> _tempEvents = new(24);
 
-        public void PlayEvents(int currentFrame)
+        public List<EventID> GetEvents(int currentFrame)
         {
-            if (Event.Event == null) return;
+            _tempEvents.Clear();
 
-            if (currentFrame == Event.Frame)
-                Event.Event.Invoke();
+            for (int i = 0; i < _events.Length; i++)
+            {
+                if (_events[i].Frame == currentFrame)
+                    _tempEvents.Add(_events[i].ID);
+            }
+
+            return _tempEvents;
         }
     }
 }

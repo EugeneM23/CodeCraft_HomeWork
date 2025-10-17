@@ -1,15 +1,23 @@
 using System;
-using Gameplay;
+using Gamplay;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace Gameplay
 {
-    public class InputReader : GameInput.IMovementActions, GameInput.IJumpActions, GameInput.IFireActions,
-        IInitializeble
+    public class InputReader :
+        GameInput.IMovementActions,
+        GameInput.IJumpActions,
+        GameInput.IFireActions,
+        IInitializeble,
+        IDisposable,
+        GameInput.IPushAbilityUpActions,
+        GameInput.IPushAbilitySideActions
     {
         public event Action<Vector2> OnMove;
         public event Action OnJump;
+        public event Action OnPushUp;
+        public event Action OnPushSide;
         public event Action OnFire;
 
         private GameInput _gameInput;
@@ -26,9 +34,15 @@ namespace Gameplay
 
             _gameInput.Fire.Enable();
             _gameInput.Fire.AddCallbacks(this);
+
+            _gameInput.PushAbilityUp.Enable();
+            _gameInput.PushAbilityUp.AddCallbacks(this);
+
+            _gameInput.PushAbilitySide.Enable();
+            _gameInput.PushAbilitySide.AddCallbacks(this);
         }
 
-        private void OnDisable()
+        public void Dispose()
         {
             _gameInput.Movement.Disable();
             _gameInput.Movement.RemoveCallbacks(this);
@@ -38,6 +52,12 @@ namespace Gameplay
 
             _gameInput.Fire.Disable();
             _gameInput.Fire.RemoveCallbacks(this);
+
+            _gameInput.PushAbilityUp.Disable();
+            _gameInput.PushAbilityUp.RemoveCallbacks(this);
+
+            _gameInput.PushAbilitySide.Disable();
+            _gameInput.PushAbilitySide.RemoveCallbacks(this);
         }
 
         void GameInput.IMovementActions.OnWASD(InputAction.CallbackContext context)
@@ -51,9 +71,22 @@ namespace Gameplay
                 OnJump?.Invoke();
         }
 
-        void GameInput.IFireActions.Fire(InputAction.CallbackContext context)
+        void GameInput.IFireActions.OnFire(InputAction.CallbackContext context)
         {
-            OnFire?.Invoke();
+            if (context.phase == InputActionPhase.Started)
+                OnFire?.Invoke();
+        }
+
+        public void OnPushAbilityUp(InputAction.CallbackContext context)
+        {
+            if (context.phase == InputActionPhase.Started)
+                OnPushUp?.Invoke();
+        }
+
+        public void OnPushAbilitySide(InputAction.CallbackContext context)
+        {
+            if (context.phase == InputActionPhase.Started)
+                OnPushSide?.Invoke();
         }
     }
 }

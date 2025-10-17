@@ -1,4 +1,4 @@
-namespace Game.Scripts.GameSystem.Controllers.Player.StateMachine
+namespace Gameplay
 {
     public interface IState
     {

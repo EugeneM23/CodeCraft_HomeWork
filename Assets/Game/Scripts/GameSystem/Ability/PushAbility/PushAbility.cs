@@ -11,7 +11,7 @@ namespace Gameplay.Ability
         private Transform _transform;
         private LayerMask _layerMask;
 
-        private readonly float _radius = 0.5f;
+        private readonly float _radius = 2f;
         private readonly float _distance = 10f;
         private IAction[] _pushActions;
 
@@ -37,25 +37,37 @@ namespace Gameplay.Ability
 
         public void Push(Vector2 direction)
         {
-            Vector2 origin = new Vector2(_transform.position.x, _transform.position.y + CAST_OFFSET);
-            Vector2 dir = _transform.localScale;
-            dir.y = 0;
-            
+            RayCast(out var origin, out var dir, out var hits);
+
             _debugDrawer.Draw(origin, dir, _distance, _radius, Color.green);
-
-            RaycastHit2D hit = Physics2D.CircleCast(origin, _radius, dir, _distance, _layerMask);
-
-            if (hit.collider == null) return;
-
-            if (hit.collider.TryGetComponent(out Entity entity) &&
-                entity.TryGetEntityComponent<ImpulseComponent>(out var impulseComponent))
+            foreach (RaycastHit2D hit in hits)
             {
-                impulseComponent.AddForce(direction, 40f);
-                foreach (var action in _pushActions)
-                    action.Invoke();
+                if (hit.collider == null)
+                    continue;
 
-                _debugDrawer.Draw(origin, dir, _distance, _radius, Color.red);
+                if (hit.collider.TryGetComponent(out Entity entity) &&
+                    entity.TryGetEntityComponent<ImpulseComponent>(out var impulseComponent))
+                {
+                    impulseComponent.AddForce(direction, 40f);
+                    _debugDrawer.Draw(origin, dir, _distance, _radius, Color.red);
+                }
             }
+
+            DoActions();
+        }
+
+        private void RayCast(out Vector2 origin, out Vector2 dir, out RaycastHit2D[] hits)
+        {
+            origin = new Vector2(_transform.position.x, _transform.position.y + CAST_OFFSET);
+            dir = _transform.localScale;
+            dir.y = 0;
+            hits = Physics2D.CircleCastAll(origin, _radius, dir, _distance, _layerMask);
+        }
+
+        private void DoActions()
+        {
+            foreach (IAction action in _pushActions)
+                action.Invoke();
         }
     }
 }

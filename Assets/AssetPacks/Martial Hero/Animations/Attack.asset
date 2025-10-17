@@ -20,5 +20,6 @@ MonoBehaviour:
   - {fileID: -5639509438907974925, guid: c50b517797d93614aac4ca58aaf97355, type: 3}
   - {fileID: 452926297546027425, guid: c50b517797d93614aac4ca58aaf97355, type: 3}
   <ID>k__BackingField: 5
-  <Speed>k__BackingField: 50
+  <FPS>k__BackingField: 40
   CanInterrupt: 1
+  _events: []
