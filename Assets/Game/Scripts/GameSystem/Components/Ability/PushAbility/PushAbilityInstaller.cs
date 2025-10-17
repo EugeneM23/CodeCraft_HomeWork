@@ -11,7 +11,6 @@ namespace Gameplay.Ability
         {
             var pushAbility = new PushAbility(_groundLayer, _transform);
             container.BindSingle(pushAbility);
-            container.BindSingle(new PushAbilityController(pushAbility));
 
             container.Bind<PushAbility.IAction>(new TestPushAction01());
             container.Bind<PushAbility.IAction>(new TestPushAction02());

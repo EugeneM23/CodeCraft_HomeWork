@@ -1,28 +1,13 @@
+using Game.Scripts.Modules.SpriteAnimator;
 using UnityEngine;
 
 namespace Game.Scripts.GameSystem.Controllers.Player.StateMachine
 {
     public class IdleState : IState
     {
-        public StateMachine StateMachine { get; }
+        private readonly SpriteAnimator _animator;
+        public IdleState(SpriteAnimator animator) => _animator = animator;
 
-        public IdleState(StateMachine stateMachine)
-        {
-            StateMachine = stateMachine;
-        }
-
-        public void Enter()
-        {
-            
-        }
-
-        public void Exit()
-        {
-            
-        }
-        public void Tick()
-        {
-            
-        }
+        public void Enter() => _animator.Play(AnimationID.Idle);
     }
 }

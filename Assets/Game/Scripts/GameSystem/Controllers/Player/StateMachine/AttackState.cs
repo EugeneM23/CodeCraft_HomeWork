@@ -6,44 +6,16 @@ namespace Game.Scripts.GameSystem.Controllers.Player.StateMachine
 {
     public class AttackState : IState
     {
-        private readonly StateMachine _stateMachine;
-        private readonly SpriteAnimator _animator;
-
-        private float _time;
-        private float _animationDuration;
-
-        public AttackState(StateMachine stateMachine, SpriteAnimator animator)
-        {
-            _stateMachine = stateMachine;
-            _animator = animator;
-        }
+        [Inject] private readonly Gameplay.Player _player;
+        [Inject] private readonly SpriteAnimator _animator;
+        private IPushSideComponent _sideComponent => _player;
 
         public void Enter()
         {
-            _stateMachine.CanSetState = false;
-
-            int length = _animator.CurrentAnimation.Sprites.Length;
-            float speed = _animator.CurrentAnimation.Speed;
-            _animationDuration = (length / speed).Log();
-
-            _time = 0;
-
-            "Enter Attack State".Log(Color.red);
-        }
-
-        public void Exit()
-        {
-            "Exit Attack State".Log(Color.green);
-        }
-
-        public void Tick()
-        {
-            _time += Time.deltaTime;
-            if (_time >= _animationDuration)
-            {
-                Debug.Log("tick");
-                _stateMachine.CanSetState = true;
-            }
+            _animator
+                .Play(AnimationID.Attack)
+                .Interrupt(false)
+                .AddEvent(_sideComponent.Push, 5);
         }
     }
 }

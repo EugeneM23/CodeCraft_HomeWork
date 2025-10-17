@@ -1,26 +1,17 @@
-using UnityEngine;
+using Game.Scripts.Modules.SpriteAnimator;
 
 namespace Game.Scripts.GameSystem.Controllers.Player.StateMachine
 {
     public class FallState : IState
     {
-        public StateMachine StateMachine { get; }
+        private readonly SpriteAnimator _animator;
 
-        public FallState(StateMachine stateMachine)
+        public FallState(SpriteAnimator spriteAnimator)
         {
-            StateMachine = stateMachine;
+            _animator = spriteAnimator;
         }
 
-        public void Enter()
-        {
-        }
-
-        public void Exit()
-        {
-        }
-
-        public void Tick()
-        {
-        }
+        public void Enter() => _animator.Play(AnimationID.Fall);
+        
     }
 }

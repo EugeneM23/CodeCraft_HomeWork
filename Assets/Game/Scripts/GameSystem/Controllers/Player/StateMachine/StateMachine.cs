@@ -1,41 +1,40 @@
 using System;
 using System.Collections.Generic;
+using Game.Scripts.Modules.SpriteAnimator;
 using Gameplay;
 
 namespace Game.Scripts.GameSystem.Controllers.Player.StateMachine
 {
-    public class StateMachine : IInitializeble, ITickable
+    public class StateMachine : IInitializeble
     {
-        private Dictionary<Type, IState> _states = new();
+        private SpriteAnimator _animator;
+
+        private readonly Dictionary<Type, IState> _states = new();
         public IState CurrentState { get; private set; }
-        public bool CanSetState;
 
         [Inject]
-        public void Construct(List<IState> states)
+        public void Construct(List<IState> states, SpriteAnimator animator)
         {
+            _animator = animator;
+            
             foreach (IState state in states)
                 _states.Add(state.GetType(), state);
         }
 
         public void Initialize()
         {
-            CanSetState = true;
             CurrentState = _states[typeof(IdleState)];
             CurrentState.Enter();
         }
 
         public void SetState<T>() where T : IState
         {
-            if (!CanSetState || CurrentState is T) return;
+            if (!_animator.CurrentAnimation.CanInterrupt) return;
 
-            CurrentState.Exit();
+            if (CurrentState is T) return;
+
             CurrentState = _states[typeof(T)];
             CurrentState.Enter();
-        }
-
-        public void Tick()
-        {
-            CurrentState.Tick();
         }
     }
 }

@@ -1,28 +1,13 @@
+using Game.Scripts.Modules.SpriteAnimator;
 using UnityEngine;
 
 namespace Game.Scripts.GameSystem.Controllers.Player.StateMachine
 {
     public class RunState : IState
     {
-        public StateMachine StateMachine { get; }
+        private readonly SpriteAnimator _animator;
+        public RunState(SpriteAnimator animator) => _animator = animator;
 
-        public RunState(StateMachine stateMachine)
-        {
-            StateMachine = stateMachine;
-        }
-
-        public void Enter()
-        {
-            
-        }
-
-        public void Exit()
-        {
-            
-        }
-        public void Tick()
-        {
-            
-        }
+        public void Enter() => _animator.Play(AnimationID.Run);
     }
 }

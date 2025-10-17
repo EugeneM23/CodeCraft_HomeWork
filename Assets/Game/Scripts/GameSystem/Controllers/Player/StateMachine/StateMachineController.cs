@@ -1,3 +1,4 @@
+using Game.Scripts.Modules.SpriteAnimator;
 using Gameplay;
 using UnityEngine;
 

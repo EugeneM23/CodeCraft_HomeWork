@@ -1,6 +1,6 @@
 namespace Game.Scripts.Modules.SpriteAnimator
 {
-    public enum AnimationName
+    public enum AnimationID
     {
         Idle,
         Walk,

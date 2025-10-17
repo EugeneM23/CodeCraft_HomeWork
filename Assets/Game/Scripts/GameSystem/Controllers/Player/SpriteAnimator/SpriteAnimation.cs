@@ -7,8 +7,9 @@ namespace Game.Scripts.Modules.SpriteAnimator
     public class SpriteAnimation : ScriptableObject
     {
         [field: SerializeField] public Sprite[] Sprites { get; private set; }
-        [field: SerializeField] public AnimationName Name { get; private set; }
+        [field: SerializeField] public AnimationID ID { get; private set; }
         [field: SerializeField] public float Speed { get; private set; }
+        public bool CanInterrupt = true;
 
         public SpriteAnimationEvent Event = new();
 
@@ -16,7 +17,7 @@ namespace Game.Scripts.Modules.SpriteAnimator
         {
             if (Event.Event == null) return;
 
-            if (currentFrame == Event.Frame) 
+            if (currentFrame == Event.Frame)
                 Event.Event.Invoke();
         }
     }

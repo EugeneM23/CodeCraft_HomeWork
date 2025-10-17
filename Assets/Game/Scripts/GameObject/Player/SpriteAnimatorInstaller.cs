@@ -13,17 +13,19 @@ namespace Game.Scripts.Modules.SpriteAnimator
         {
             var spriteAnimator = new SpriteAnimator(_animation, _spriteRenderer);
             container.BindSingle(spriteAnimator);
-            container.BindSingle(new AnimationController());
-
 
             var stateMachine = new StateMachine();
             container.BindSingle(stateMachine);
             container.BindSingle(new StateMachineController());
 
-            container.Bind<IState>(new IdleState(stateMachine));
-            container.Bind<IState>(new RunState(stateMachine));
-            container.Bind<IState>(new FallState(stateMachine));
-            container.Bind<IState>(new AttackState(stateMachine, spriteAnimator));
+            container.Bind<IState>(new IdleState(spriteAnimator));
+            container.Bind<IState>(new RunState(spriteAnimator));
+            container.Bind<IState>(new FallState(spriteAnimator));
+
+            var attackState = new AttackState();
+
+            container.Bind<IState>(attackState);
+            container.BindSingle(attackState);
         }
     }
 }
