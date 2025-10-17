@@ -22,10 +22,8 @@ namespace Gameplay
 
         public void Move()
         {
-            /*
             if (IsTrue())
                 return;
-                */
 
             Vector2 normal = _collision.GetHitNormal();
             if (normal == Vector2.zero)

@@ -21,5 +21,6 @@ MonoBehaviour:
   - {fileID: -2834552850196481573, guid: 0bd97e23f8b532a4f8969605a3b00a4e, type: 3}
   - {fileID: 3278449094680734212, guid: 0bd97e23f8b532a4f8969605a3b00a4e, type: 3}
   - {fileID: 3384493420599841878, guid: 0bd97e23f8b532a4f8969605a3b00a4e, type: 3}
-  <Name>k__BackingField: 0
-  <Speed>k__BackingField: 0.05
+  <ID>k__BackingField: 0
+  <Speed>k__BackingField: 12
+  CanInterrupt: 1

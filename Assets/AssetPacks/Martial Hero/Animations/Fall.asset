@@ -15,5 +15,6 @@ MonoBehaviour:
   <Sprites>k__BackingField:
   - {fileID: -5966621866309598838, guid: ab9c6780bd1ac3c4fb318722a17a5862, type: 3}
   - {fileID: -2069157278089061004, guid: ab9c6780bd1ac3c4fb318722a17a5862, type: 3}
-  <Name>k__BackingField: 4
-  <Speed>k__BackingField: 0.05
+  <ID>k__BackingField: 4
+  <Speed>k__BackingField: 20
+  CanInterrupt: 1

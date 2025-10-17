@@ -16,7 +16,7 @@ namespace Game.Scripts.Modules.SpriteAnimator
         private float _frameTime;
         private int _currentFrame;
 
-        private float FrameDuration => 1f / _currentAnimation.Speed;
+        private float FrameDuration => 1f / _currentAnimation.FPS;
 
         public SpriteAnimator(SpriteAnimation[] animation, SpriteRenderer spriteRenderer)
         {
@@ -71,6 +71,12 @@ namespace Game.Scripts.Modules.SpriteAnimator
         {
             _currentAnimation.CanInterrupt = interrupt;
             return this;
+        }
+
+        public bool Lock()
+        {
+            "Log lock".Log();
+            return !_currentAnimation.CanInterrupt;
         }
     }
 }

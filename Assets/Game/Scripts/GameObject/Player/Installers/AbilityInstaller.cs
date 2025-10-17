@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Gameplay.Ability
 {
-    public class PushAbilityInstaller : Installer
+    public class AbilityInstaller : Installer
     {
         [SerializeField] private LayerMask _groundLayer;
         [SerializeField] private Transform _transform;

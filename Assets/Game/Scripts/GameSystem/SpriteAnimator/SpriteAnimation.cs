@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 namespace Game.Scripts.Modules.SpriteAnimator
@@ -8,7 +7,7 @@ namespace Game.Scripts.Modules.SpriteAnimator
     {
         [field: SerializeField] public Sprite[] Sprites { get; private set; }
         [field: SerializeField] public AnimationID ID { get; private set; }
-        [field: SerializeField] public float Speed { get; private set; }
+        [field: SerializeField] public float FPS { get; private set; }
         public bool CanInterrupt = true;
 
         public SpriteAnimationEvent Event = new();
@@ -20,11 +19,5 @@ namespace Game.Scripts.Modules.SpriteAnimator
             if (currentFrame == Event.Frame)
                 Event.Event.Invoke();
         }
-    }
-
-    public struct SpriteAnimationEvent
-    {
-        public Action Event { get; set; }
-        public int Frame { get; set; }
     }
 }

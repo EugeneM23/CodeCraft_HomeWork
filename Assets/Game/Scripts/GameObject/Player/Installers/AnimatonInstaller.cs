@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Game.Scripts.Modules.SpriteAnimator
 {
-    public class SpriteAnimatorInstaller : Installer
+    public class AnimatonInstaller : Installer
     {
         [SerializeField] private SpriteAnimation[] _animation;
         [SerializeField] private SpriteRenderer _spriteRenderer;
