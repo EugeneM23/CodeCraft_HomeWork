@@ -48,7 +48,7 @@ namespace Gameplay.Ability
                 if (hit.collider.TryGetComponent(out Entity entity) &&
                     entity.TryGetEntityComponent<ImpulseComponent>(out var impulseComponent))
                 {
-                    impulseComponent.AddForce(direction, 40f);
+                    impulseComponent.AddForce(direction, Random.Range(35, 55));
                     _debugDrawer.Draw(origin, dir, _distance, _radius, Color.red);
                 }
             }
