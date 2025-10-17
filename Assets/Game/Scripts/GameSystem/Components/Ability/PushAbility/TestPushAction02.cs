@@ -6,7 +6,6 @@ namespace Gameplay.Ability
     {
         public void Invoke()
         {
-                Debug.Log("Action: TestPushAction02");
         }
     }
 }

@@ -5202,6 +5202,7 @@ MonoBehaviour:
   - {fileID: 1476534750}
   - {fileID: 291177682341212838}
   - {fileID: 8707928190064518094}
+  - {fileID: 8707928190064518095}
 --- !u!82 &1398906259991429532
 AudioSource:
   m_ObjectHideFlags: 0
@@ -10521,6 +10522,7 @@ GameObject:
   - component: {fileID: 1476534750}
   - component: {fileID: 8707928190064518094}
   - component: {fileID: 291177682341212838}
+  - component: {fileID: 8707928190064518095}
   m_Layer: 9
   m_Name: Character
   m_TagString: Character
@@ -16083,6 +16085,18 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 9cf73916da0b343a4ad944fa774ba143, type: 2}
   - {fileID: 11400000, guid: 492eac0d011e842ffbb457c078cc1301, type: 2}
   _spriteRenderer: {fileID: 8292441106838289589}
+--- !u!114 &8707928190064518095
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4184690823418437490}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4eb2d6ddf4874abc895ac7e49c817b64, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8795770355249111922
 GameObject:
   m_ObjectHideFlags: 0

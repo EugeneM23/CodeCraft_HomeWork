@@ -9,9 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: 61caefda880f4a5d94965826455b144b, type: 3}
   m_Name: Idle
-  m_EditorClassIdentifier: Modules:Game.Scripts.Modules.SpriteAnimator:SpriteAnimation
+  m_EditorClassIdentifier: 
   <Sprites>k__BackingField:
   - {fileID: 4723107735738678597, guid: 0bd97e23f8b532a4f8969605a3b00a4e, type: 3}
   - {fileID: -7385789195546760866, guid: 0bd97e23f8b532a4f8969605a3b00a4e, type: 3}
@@ -22,4 +22,4 @@ MonoBehaviour:
   - {fileID: 3278449094680734212, guid: 0bd97e23f8b532a4f8969605a3b00a4e, type: 3}
   - {fileID: 3384493420599841878, guid: 0bd97e23f8b532a4f8969605a3b00a4e, type: 3}
   <Name>k__BackingField: 0
-  <Speed>k__BackingField: 0.2
+  <Speed>k__BackingField: 0.05

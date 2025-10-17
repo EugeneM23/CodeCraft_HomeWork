@@ -9,11 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: 61caefda880f4a5d94965826455b144b, type: 3}
   m_Name: Fall
-  m_EditorClassIdentifier: Modules:Game.Scripts.Modules.SpriteAnimator:SpriteAnimation
+  m_EditorClassIdentifier: 
   <Sprites>k__BackingField:
   - {fileID: -5966621866309598838, guid: ab9c6780bd1ac3c4fb318722a17a5862, type: 3}
   - {fileID: -2069157278089061004, guid: ab9c6780bd1ac3c4fb318722a17a5862, type: 3}
   <Name>k__BackingField: 4
-  <Speed>k__BackingField: 0.2
+  <Speed>k__BackingField: 0.05

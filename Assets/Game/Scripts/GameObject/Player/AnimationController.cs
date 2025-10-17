@@ -1,82 +1,26 @@
+using Game.Scripts.GameSystem.Controllers.Player.StateMachine;
 using Gameplay;
-using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Game.Scripts.Modules.SpriteAnimator
 {
-    public class AnimationController : ITickable, IInitializable, IDisposable
+    public class AnimationController : ITickable
     {
-        private CollisionComponent _collisionComponent;
-        private Rigidbody2D _rigidbody2D;
-        private InputReader _inputReader;
         private SpriteAnimator _animator;
-        private float _attackTime;
-        private bool _isAttacking;
+        private StateMachine _stateMachine;
 
         [Inject]
-        public void Construct(CollisionComponent collisionComponent, Rigidbody2D rigidbody2D, InputReader inputReader,
-            SpriteAnimator animator)
+        public void Construct(SpriteAnimator animator, StateMachine stateMachine)
         {
             _animator = animator;
-            _collisionComponent = collisionComponent;
-            _rigidbody2D = rigidbody2D;
-            _inputReader = inputReader;
-            _collisionComponent.OnFlying += OnFall;
-            _inputReader.OnFire += Attack;
+            _stateMachine = stateMachine;
         }
-
-        public void Initialize()
-        {
-            _collisionComponent.OnFlying += OnFall;
-            _inputReader.OnFire += Attack;
-        }
-
-        public void Dispose()
-        {
-            _collisionComponent.OnFlying -= OnFall;
-            _inputReader.OnFire -= Attack;
-        }
-
-        private void Attack()
-        {
-            if (_isAttacking) return;
-            
-            _animator
-                .Play(AnimationName.Attack)
-                .AddEvent((() => "Debug/log".Log(Color.cyan)), 3);
-            
-            _isAttacking = true;
-        }
-
-        private void OnFall() => _animator.Play(AnimationName.Fall);
 
         public void Tick()
         {
-            if (_isAttacking)
-            {
-                _attackTime += Time.deltaTime;
-                if (_attackTime >= 0.5f)
-                {
-                    _isAttacking = false;
-                    _attackTime = 0;
-                }
-
-                return;
-            }
-
-
-            if (!_collisionComponent.IsGrounded)
-            {
-                _animator.Play(AnimationName.Fall);
-                return;
-            }
-
-            float speed = Mathf.Abs(_rigidbody2D.linearVelocity.x);
-
-            if (speed > 1f)
-                _animator.Play(AnimationName.Run);
-            else
-                _animator.Play(AnimationName.Idle);
-        }
+            if (_stateMachine.CurrentState.GetType() == typeof(IdleState)) _animator.Play(AnimationName.Idle);
+            if (_stateMachine.CurrentState.GetType() == typeof(RunState)) _animator.Play(AnimationName.Run);
+            if (_stateMachine.CurrentState.GetType() == typeof(FallState)) _animator.Play(AnimationName.Fall);
+            if (_stateMachine.CurrentState.GetType() == typeof(AttackState)) _animator.Play(AnimationName.Attack);        }
     }
 }

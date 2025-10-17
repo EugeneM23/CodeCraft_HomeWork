@@ -8,15 +8,11 @@ namespace Gameplay
         [Inject] private MoveComponent moveComponent;
         [Inject] private HealthComponent healthComponent;
         [Inject] private RotationComponent rotationComponent;
-        [Inject] private AttackComponent attackComponent;
-
         [Inject] private CollisionComponent collisionComponent;
-
         [Inject] private PushAbility ability;
 
         public void Initialize()
         {
-            this.attackComponent.AddCondition(this.collisionComponent.IsGround);
             this.moveComponent.AddCondition(this.healthComponent.IsDead);
             this.rotationComponent.AddCondition(this.healthComponent.IsDead);
         }

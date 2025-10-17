@@ -34,7 +34,6 @@ namespace Gameplay
 
             container.BindSingle(new Player());
             container.BindSingle(new GravityScaleComponent(_rigidbody, _gravityScale));
-            container.BindSingle(new AttackComponent(_rigidbody));
 
             var collisionComponent = new CollisionComponent(_collider, _groundLayer);
             var impulseComponent = new ImpulseComponent(_rigidbody);
@@ -56,6 +55,6 @@ namespace Gameplay
             var healthComponent = new HealthComponent(_health);
             container.BindSingle(healthComponent);
             container.BindSingle(new DeathObserver(healthComponent, _transform));
-        }
+            }
     }
 }
