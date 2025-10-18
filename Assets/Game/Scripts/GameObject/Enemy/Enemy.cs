@@ -1,18 +1,14 @@
 using Game.Scripts.GameObject.Player;
-using Gameplay.Ability;
-using UnityEngine;
 
 namespace Gameplay
 {
-    public class Player : IInitializeble, IPushUpComponent, IPushSideComponent
+    public class Enemy : IInitializeble
     {
         [Inject] private MoveComponent moveComponent;
         [Inject] private HealthComponent healthComponent;
         [Inject] private RotationComponent rotationComponent;
-        [Inject] private PushAbility ability;
         [Inject] private SpriteAnimator animator;
         [Inject] private ImpulseComponent impulseComponent;
-        [Inject] private Transform transform;
 
         public void Initialize()
         {
@@ -20,17 +16,6 @@ namespace Gameplay
             this.moveComponent.AddCondition(this.impulseComponent.OnImpulse);
             this.moveComponent.AddCondition(animator.Lock);
             this.rotationComponent.AddCondition(this.healthComponent.IsDead);
-        }
-
-        void IPushUpComponent.Push()
-        {
-            this.ability.Push(Vector2.up);
-        }
-
-        void IPushSideComponent.Push()
-        {
-            float x = this.transform.localScale.x;
-            this.ability.Push(new Vector2(x, 0));
         }
     }
 }

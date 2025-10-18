@@ -2,10 +2,9 @@ using UnityEngine;
 
 namespace Gameplay
 {
-    public class StateMachineController : ITickable, IInitializeble, IDisposable
+    public class EnemyStateMachineController : ITickable, IInitializeble, IDisposable
     {
         private Rigidbody2D _rigidbody2D;
-        private InputReader _inputReader;
         private CollisionComponent _collisionComponent;
         private StateMachine _stateMachine;
 
@@ -13,35 +12,20 @@ namespace Gameplay
         private void Construct(
             CollisionComponent collisionComponent,
             StateMachine stateMachine,
-            Rigidbody2D rigidbody2D,
-            InputReader inputReader
+            Rigidbody2D rigidbody2D
         )
         {
             _rigidbody2D = rigidbody2D;
-            _inputReader = inputReader;
             _collisionComponent = collisionComponent;
             _stateMachine = stateMachine;
         }
 
         public void Initialize()
         {
-            _inputReader.OnFire += Attack;
-            _inputReader.OnPushUp += PushUp;
-            _inputReader.OnPushSide += PushSide;
         }
 
         public void Dispose()
         {
-            _inputReader.OnFire -= Attack;
-            _inputReader.OnPushUp -= PushUp;
-            _inputReader.OnPushSide -= PushSide;
-        }
-
-        private void PushSide() => _stateMachine.SetState<PushAbilitySideState>();
-
-        private void PushUp()
-        {
-            _stateMachine.SetState<PushAbilityUPState>();
         }
 
         private void Attack() => _stateMachine.SetState<AttackState>();

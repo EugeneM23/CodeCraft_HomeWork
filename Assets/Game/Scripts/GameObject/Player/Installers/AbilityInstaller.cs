@@ -9,8 +9,8 @@ namespace Gameplay.Ability
 
         public override void Install(DiContainer container)
         {
-            var pushAbility = new PushAbility(_groundLayer, _transform);
-            container.BindSingle(pushAbility);
+            container.BindSingle(new PushAbility());
+            container.BindSingle(new Sensor());
             container.BindSingle(new PushAbilityController());
 
             container.Bind<PushAbility.IAction>(new TestPushAction01());
