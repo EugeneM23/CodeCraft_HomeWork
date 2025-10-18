@@ -4,13 +4,15 @@ namespace Gameplay
 {
     public class PatrolComponent : IInitializeble, ITickable
     {
-        [Inject] private Transform _cameraTransform;
+        [Inject] private Transform _characterTransform;
         [Inject] private EnemyMoveController _moveController;
 
+        
         private readonly Transform[] _patrolPoints;
-
         private int _currentPointIndex;
         private readonly float _reachThreshold = 0.2f;
+
+        public bool IsActive { get; set; } = true; // Управление активностью извне
 
         public PatrolComponent(Transform[] patrolPoints)
         {
@@ -19,28 +21,23 @@ namespace Gameplay
 
         public void Initialize()
         {
-            if (_patrolPoints == null || _patrolPoints.Length == 0)
-            {
-                Debug.LogError("PatrolComponent: Patrol points not assigned!");
-                return;
-            }
-
             _currentPointIndex = 0;
         }
 
         public void Tick()
         {
-            if (_patrolPoints == null || _patrolPoints.Length == 0)
+            if (!IsActive || _patrolPoints.Length == 0)
                 return;
 
-            Transform targetPoint = _patrolPoints[_currentPointIndex];
-            MoveTo(targetPoint);
+            Transform target = _patrolPoints[_currentPointIndex];
+            MoveTo(target);
         }
 
-        private void MoveTo(Transform patrolPoint)
+        private void MoveTo(Transform target)
         {
-            Vector3 direction = (patrolPoint.position - _cameraTransform.position);
+            Vector3 direction = target.position - _characterTransform.position;
             direction.y = 0;
+
             float distance = direction.magnitude;
 
             if (distance < _reachThreshold)

@@ -1,4 +1,3 @@
-using Game.Scripts.GameObject.Player;
 using Gameplay.Ability;
 using UnityEngine;
 
@@ -11,13 +10,11 @@ namespace Gameplay
         [Inject] private RotationComponent rotationComponent;
         [Inject] private PushAbility ability;
         [Inject] private SpriteAnimator animator;
-        [Inject] private ImpulseComponent impulseComponent;
         [Inject] private Transform transform;
 
         public void Initialize()
         {
             this.moveComponent.AddCondition(this.healthComponent.IsDead);
-            this.moveComponent.AddCondition(this.impulseComponent.OnImpulse);
             this.moveComponent.AddCondition(animator.Lock);
             this.rotationComponent.AddCondition(this.healthComponent.IsDead);
         }

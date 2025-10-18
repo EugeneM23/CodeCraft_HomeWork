@@ -1,4 +1,5 @@
 using Game.Scripts.GameObject.Player;
+using Gameplay.Ability;
 using UnityEngine;
 
 namespace Gameplay
@@ -11,6 +12,8 @@ namespace Gameplay
         [SerializeField] private Transform _transform;
         [SerializeField] private Rigidbody2D _rigidbody;
         [SerializeField] private LayerMask _groundLayer;
+        [SerializeField] private LayerMask _targetLayer;
+        [SerializeField] private Transform[] _patrolPoints;
 
         [SerializeField] private CircleCollider2D _collider;
 
@@ -39,6 +42,8 @@ namespace Gameplay
             var healthComponent = new HealthComponent(_health);
             container.BindSingle(healthComponent);
             container.BindSingle(new DeathObserver(healthComponent, _transform));
+
+         
         }
     }
 }

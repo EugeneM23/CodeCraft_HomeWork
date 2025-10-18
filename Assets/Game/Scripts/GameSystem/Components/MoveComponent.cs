@@ -7,7 +7,7 @@ namespace Gameplay
     public class MoveComponent : CompositCondition, IFixedTickable
     {
         private readonly Rigidbody2D _rigidbody;
-        private readonly float _moveSpeed = 5f;
+        private float _moveSpeed = 5f;
         private Vector2 _direction;
 
         public MoveComponent(Rigidbody2D rigidbody, float moveSpeed)
@@ -35,5 +35,7 @@ namespace Gameplay
         {
             _rigidbody.position += (Vector2)offset;
         }
+
+        public void SetSpeed(float speed) => _moveSpeed = speed;
     }
 }
