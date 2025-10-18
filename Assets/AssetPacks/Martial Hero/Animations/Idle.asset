@@ -12,6 +12,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 61caefda880f4a5d94965826455b144b, type: 3}
   m_Name: Idle
   m_EditorClassIdentifier: 
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes:
+    - Name: _events
+      Entry: 7
+      Data: 0|Gameplay.SpriteAnimationEvent[], Assembly-CSharp
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
   <Sprites>k__BackingField:
   - {fileID: 4723107735738678597, guid: 0bd97e23f8b532a4f8969605a3b00a4e, type: 3}
   - {fileID: -7385789195546760866, guid: 0bd97e23f8b532a4f8969605a3b00a4e, type: 3}
@@ -24,4 +45,3 @@ MonoBehaviour:
   <ID>k__BackingField: 0
   <FPS>k__BackingField: 10
   CanInterrupt: 1
-  _events: []

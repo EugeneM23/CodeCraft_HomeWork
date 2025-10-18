@@ -1,15 +1,13 @@
 using System;
 using Sirenix.OdinInspector;
+using Sirenix.Serialization;
 
 namespace Gameplay
 {
-    [Serializable]
     public struct SpriteAnimationEvent
     {
-        [HorizontalGroup("Row"), LabelWidth(40)]
-        [ShowInInspector]
-        public EventID ID { get; set; }
-        [HorizontalGroup("Row"), LabelWidth(40)]
-        [ShowInInspector] public int Frame { get; set; }
+        [OdinSerialize] public EventID ID { get; set; }
+
+        [OdinSerialize] public int Frame { get; set; }
     }
 }
