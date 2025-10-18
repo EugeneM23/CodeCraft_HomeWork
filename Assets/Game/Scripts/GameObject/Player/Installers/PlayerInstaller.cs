@@ -18,7 +18,6 @@ namespace Gameplay
         [Header("Components")] [SerializeField]
         private Transform _transform;
 
-        [SerializeField] private TakeDamageProxy _damageProxy;
         [SerializeField] private Rigidbody2D _rigidbody;
         [SerializeField] private CircleCollider2D _collider;
 
@@ -55,6 +54,6 @@ namespace Gameplay
             var healthComponent = new HealthComponent(_health);
             container.BindSingle(healthComponent);
             container.BindSingle(new DeathObserver(healthComponent, _transform));
-            }
+        }
     }
 }

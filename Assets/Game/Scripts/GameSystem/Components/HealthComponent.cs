@@ -19,10 +19,9 @@ namespace Gameplay
 
         public void TakeDamage(int damage)
         {
-            if (!_isAlive || damage <= 0) return;
+            if (damage <= 0) return;
 
             _currentHealth = Mathf.Max(0, _currentHealth - damage);
-
             if (_currentHealth <= 0)
             {
                 _isAlive = false;
@@ -32,7 +31,7 @@ namespace Gameplay
 
         public void Heal(int amount)
         {
-            if (!_isAlive || amount <= 0) return;
+            if (amount <= 0) return;
             _currentHealth = Mathf.Min(_maxhealth, _currentHealth + amount);
         }
 

@@ -9,8 +9,11 @@ namespace Gameplay
 
         private void OnTriggerEnter2D(Collider2D other)
         {
-            if (other.TryGetComponent(out IDamageable healthComponent))
-                healthComponent.TakeDamage(_damage);
+            if (other.TryGetComponent(out Entity entity))
+            {
+                if (entity.TryGetEntityComponent(out HealthComponent component)) 
+                    component.TakeDamage(_damage);
+            }
         }
     }
 }
