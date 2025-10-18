@@ -9,13 +9,9 @@ namespace Gameplay
         [SerializeField] private float _smoothTime;
 
         private Vector3 _offset;
-
         private Vector3 _velocity = Vector3.zero;
 
-        private void Start()
-        {
-            _offset = gameObject.transform.position - _target.position;
-        }
+        private void Start() => _offset = gameObject.transform.position - _target.position;
 
         public void SetTarget(Transform target)
         {

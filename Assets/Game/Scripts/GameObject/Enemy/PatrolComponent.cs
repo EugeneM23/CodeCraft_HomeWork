@@ -4,55 +4,31 @@ namespace Gameplay
 {
     public class PatrolComponent : IInitializeble, ITickable
     {
-        [Inject] private Transform _characterTransform;
-        [Inject] private EnemyMoveController _moveController;
+        [Inject] private Transform _character;
+        [Inject] private EnemyMoveController _move;
 
-        
-        private readonly Transform[] _patrolPoints;
-        private int _currentPointIndex;
-        private readonly float _reachThreshold = 0.2f;
+        private readonly Transform[] _points;
+        private int _index;
+        private const float ReachThreshold = 0.2f;
 
-        public bool IsActive { get; set; } = true; // Управление активностью извне
+        public bool IsActive { get; set; } = true;
 
-        public PatrolComponent(Transform[] patrolPoints)
-        {
-            _patrolPoints = patrolPoints;
-        }
+        public PatrolComponent(Transform[] points) => _points = points;
 
-        public void Initialize()
-        {
-            _currentPointIndex = 0;
-        }
+        public void Initialize() => _index = 0;
 
         public void Tick()
         {
-            if (!IsActive || _patrolPoints.Length == 0)
-                return;
+            if (!IsActive || _points.Length == 0) return;
 
-            Transform target = _patrolPoints[_currentPointIndex];
-            MoveTo(target);
-        }
+            var target = _points[_index];
+            var dir = target.position - _character.position;
+            dir.y = 0;
 
-        private void MoveTo(Transform target)
-        {
-            Vector3 direction = target.position - _characterTransform.position;
-            direction.y = 0;
-
-            float distance = direction.magnitude;
-
-            if (distance < _reachThreshold)
-            {
-                NextPoint();
-                return;
-            }
-
-            direction.Normalize();
-            _moveController.Move(direction);
-        }
-
-        private void NextPoint()
-        {
-            _currentPointIndex = (_currentPointIndex + 1) % _patrolPoints.Length;
+            if (dir.magnitude < ReachThreshold)
+                _index = (_index + 1) % _points.Length;
+            else
+                _move.Move(dir.normalized);
         }
     }
 }

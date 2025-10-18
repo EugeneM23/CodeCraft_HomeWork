@@ -1,6 +1,4 @@
 using Game.Scripts.GameObject.Player;
-using Gameplay.Ability;
-using Unity.Android.Gradle.Manifest;
 using UnityEngine;
 
 namespace Gameplay
@@ -26,31 +24,34 @@ namespace Gameplay
 
         public override void Install(DiContainer container)
         {
+            // --- Base bindings ---
             container.BindSingle(_groundLayer);
             container.BindSingle(_collider);
             container.BindSingle(_rigidbody);
             container.BindSingle(_transform);
 
+            // --- Core player setup ---
             container.BindSingle(new Player());
             container.BindSingle(new GravityScaleComponent(_rigidbody, _gravityScale));
 
+            // --- Movement & physics ---
             var collisionComponent = new CollisionComponent(_collider, _groundLayer);
             var impulseComponent = new ImpulseComponent(_rigidbody);
             var jumpComponent = new JumpComponent();
-
-            container.BindSingle(new JumpController(collisionComponent, impulseComponent, jumpComponent));
-            container.BindSingle(jumpComponent);
-            container.BindSingle(impulseComponent);
-            container.BindSingle(collisionComponent);
-
             var moveComponent = new MoveComponent(_rigidbody, _moveSpeed);
             var rotationComponent = new RotationComponent();
 
+            container.BindSingle(collisionComponent);
+            container.BindSingle(impulseComponent);
+            container.BindSingle(jumpComponent);
             container.BindSingle(moveComponent);
             container.BindSingle(rotationComponent);
+
+            container.BindSingle(new JumpController(collisionComponent, impulseComponent, jumpComponent));
             container.BindSingle(new MoveController(moveComponent, rotationComponent));
             container.BindSingle(new GroundSyncComponent(collisionComponent, moveComponent));
 
+            // --- Health & death handling ---
             var healthComponent = new HealthComponent(_health);
             container.BindSingle(healthComponent);
             container.BindSingle(new DeathObserver(healthComponent, _transform));

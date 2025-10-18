@@ -5,29 +5,46 @@ namespace Gameplay
 {
     public class Player : IInitializeble, IPushUpComponent, IPushSideComponent
     {
-        [Inject] private MoveComponent moveComponent;
-        [Inject] private HealthComponent healthComponent;
-        [Inject] private RotationComponent rotationComponent;
-        [Inject] private PushAbility ability;
-        [Inject] private SpriteAnimator animator;
-        [Inject] private Transform transform;
+        private MoveComponent _moveComponent;
+        private HealthComponent _healthComponent;
+        private RotationComponent _rotationComponent;
+        private PushAbility _ability;
+        private SpriteAnimator _animator;
+        private Transform _transform;
+
+        [Inject]
+        private void Construct(
+            MoveComponent moveComponent,
+            HealthComponent healthComponent,
+            RotationComponent rotationComponent,
+            PushAbility ability,
+            SpriteAnimator animator,
+            Transform transform)
+        {
+            _moveComponent = moveComponent;
+            _healthComponent = healthComponent;
+            _rotationComponent = rotationComponent;
+            _ability = ability;
+            _animator = animator;
+            _transform = transform;
+        }
 
         public void Initialize()
         {
-            this.moveComponent.AddCondition(this.healthComponent.IsDead);
-            this.moveComponent.AddCondition(animator.Lock);
-            this.rotationComponent.AddCondition(this.healthComponent.IsDead);
+            _moveComponent.AddCondition(_healthComponent.IsDead);
+            _moveComponent.AddCondition(_animator.Lock);
+            _rotationComponent.AddCondition(_healthComponent.IsDead);
         }
 
         void IPushUpComponent.Push()
         {
-            this.ability.Push(Vector2.up);
+            _ability.Push(Vector2.up);
         }
 
         void IPushSideComponent.Push()
         {
-            float x = this.transform.localScale.x;
-            this.ability.Push(new Vector2(x, 0));
+            float x = _transform.localScale.x;
+            _ability.Push(new Vector2(x, 0));
         }
     }
 }

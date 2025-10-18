@@ -14,7 +14,7 @@ namespace Gameplay
 
         public void SetDiraction(Vector2 diraction)
         {
-            //if (IsTrue()) return;
+            if (IsTrue()) return;
             if (diraction == Vector2.zero) return;
 
             if (diraction == Vector2.right)

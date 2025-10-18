@@ -10,11 +10,11 @@ namespace Gameplay.Ability
         public override void Install(DiContainer container)
         {
             container.BindSingle(new PushAbility());
-            container.BindSingle(new Sensor());
+            container.BindSingle(new SensorComponent());
             container.BindSingle(new PushAbilityController());
 
-            container.Bind<PushAbility.IAction>(new TestPushAction01());
-            container.Bind<PushAbility.IAction>(new TestPushAction02());
+            container.BindInterface<PushAbility.IAction>(new TestPushAction01());
+            container.BindInterface<PushAbility.IAction>(new TestPushAction02());
         }
     }
 }

@@ -13,7 +13,7 @@ namespace Gameplay
             _services[typeof(T)] = instance;
         }
 
-        public void Bind<T>(T instance)
+        public void BindInterface<T>(T instance)
         {
             var listType = typeof(List<T>);
 

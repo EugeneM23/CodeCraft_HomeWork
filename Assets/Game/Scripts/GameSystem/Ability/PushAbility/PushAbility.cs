@@ -9,7 +9,7 @@ namespace Gameplay.Ability
         private const float CAST_OFFSET = 1f;
 
         private LayerMask _layerMask;
-        private Sensor _sensor;
+        private SensorComponent _sensorComponent;
 
         private readonly float _radius = 2f;
         private readonly float _distance = 10f;
@@ -23,10 +23,10 @@ namespace Gameplay.Ability
         }
 
         [Inject]
-        private void Construct(LayerMask layerMask, IAction[] pushActions, Sensor sensor, Transform transform)
+        private void Construct(LayerMask layerMask, IAction[] pushActions, SensorComponent sensorComponent, Transform transform)
         {
             _transform = transform;
-            _sensor = sensor;
+            _sensorComponent = sensorComponent;
             _layerMask = layerMask;
             _pushActions = pushActions;
         }
@@ -34,7 +34,7 @@ namespace Gameplay.Ability
         public void Push(Vector2 impulseDirection)
         {
             var castDir = new Vector2(_transform.lossyScale.x, 0);
-            RaycastHit2D[] hits = _sensor.Sense(castDir, _distance, _radius, _layerMask);
+            RaycastHit2D[] hits = _sensorComponent.Sense(castDir, _distance, _radius, _layerMask);
 
             foreach (var hit in hits)
             {
@@ -55,34 +55,6 @@ namespace Gameplay.Ability
         {
             foreach (IAction action in _pushActions)
                 action.Invoke();
-        }
-    }
-
-    public class Sensor
-    {
-        private readonly float _castOffset = 1f;
-        private readonly PushDebugDrawer _debugDrawer = new();
-
-        private Transform _transform;
-
-        [Inject]
-        private void Construct(Transform transform)
-        {
-            _transform = transform;
-        }
-
-        public RaycastHit2D[] Sense(Vector2 direction, float distance, float radius, LayerMask layerMask,
-            bool drawDebug = true)
-        {
-            Vector2 origin = new Vector2(_transform.position.x, _transform.position.y + _castOffset);
-            Vector2 dir = direction.normalized;
-
-            var hits = Physics2D.CircleCastAll(origin, radius, dir, distance, layerMask);
-
-            if (drawDebug)
-                _debugDrawer.Draw(origin, dir, distance, radius, Color.green);
-
-            return hits;
         }
     }
 }

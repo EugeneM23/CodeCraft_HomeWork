@@ -6,20 +6,20 @@ namespace Gameplay
     {
         public event Action OnJump;
 
-        private int maxJumps = 2;
-        private int currentJumps;
+        private int _maxJumps = 2;
+        private int _currentJumps;
 
         private readonly CompositCondition condition = new();
 
         public void TryJump()
         {
-            if (condition.IsTrue() || currentJumps >= maxJumps)
+            if (condition.IsTrue() || _currentJumps >= _maxJumps)
                 return;
 
-            this.currentJumps++;
-            this.OnJump?.Invoke();
+            _currentJumps++;
+            OnJump?.Invoke();
         }
 
-        public void RestJumps() => currentJumps = 0;
+        public void RestJumps() => _currentJumps = 0;
     }
 }

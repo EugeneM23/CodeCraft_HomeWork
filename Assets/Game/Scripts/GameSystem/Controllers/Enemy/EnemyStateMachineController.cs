@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Gameplay
 {
-    public class EnemyStateMachineController : ITickable, IInitializeble, IDisposable
+    public class EnemyStateMachineController : ITickable
     {
         private Rigidbody2D _rigidbody2D;
         private CollisionComponent _collisionComponent;
@@ -19,16 +19,6 @@ namespace Gameplay
             _collisionComponent = collisionComponent;
             _stateMachine = stateMachine;
         }
-
-        public void Initialize()
-        {
-        }
-
-        public void Dispose()
-        {
-        }
-
-        private void Attack() => _stateMachine.SetState<AttackState>();
 
         public void Tick()
         {

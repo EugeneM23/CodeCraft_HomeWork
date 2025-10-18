@@ -35,7 +35,5 @@ namespace Gameplay
         {
             _rigidbody.position += (Vector2)offset;
         }
-
-        public void SetSpeed(float speed) => _moveSpeed = speed;
     }
 }

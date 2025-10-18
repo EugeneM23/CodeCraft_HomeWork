@@ -7,7 +7,7 @@ namespace Gameplay
     {
         public event Action OnDeath;
 
-        private int _maxhealth;
+        private readonly int _maxhealth;
         private int _currentHealth;
         private bool _isAlive;
 
