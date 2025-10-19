@@ -1,6 +1,3 @@
-using Gameplay;
-using UnityEngine;
-using UnityEngine;
 using UnityEngine;
 
 public class SimpleBulletFall : MonoBehaviour
@@ -22,7 +19,7 @@ public class SimpleBulletFall : MonoBehaviour
         Vector3 move = Vector3.zero;
 
         move += GravityMove();
-        move += HorizontalMove();
+        move += SlopeMove();
         move += GroundMoveOffset();
 
         transform.position += move;
@@ -39,22 +36,31 @@ public class SimpleBulletFall : MonoBehaviour
                 fallSpeed = 0f;
             }
             else
-            {
                 return Vector3.zero;
-            }
         }
 
         fallSpeed += gravity * Time.deltaTime;
         float distance = fallSpeed * Time.deltaTime;
 
-        RaycastHit2D hit = Physics2D.CircleCast(transform.position, radius, Vector2.down, distance, groundLayer);
+        RaycastHit2D[] hits = Physics2D.CircleCastAll(transform.position, radius, Vector2.down, distance, groundLayer);
+        RaycastHit2D topHit = default;
+        float maxY = float.NegativeInfinity;
 
-        if (hit.collider != null)
+        foreach (var hit in hits)
         {
-            transform.position = new Vector3(transform.position.x, hit.point.y + radius, transform.position.z);
+            if (hit.point.y > maxY)
+            {
+                maxY = hit.point.y;
+                topHit = hit;
+            }
+        }
+
+        if (hits.Length > 0)
+        {
+            transform.position = new Vector3(transform.position.x, topHit.point.y + radius, transform.position.z);
             hasHitGround = true;
             fallSpeed = 0f;
-            currentGround = hit.collider.transform;
+            currentGround = topHit.collider.transform;
             lastGroundPos = currentGround.position;
             return Vector3.zero;
         }
@@ -63,9 +69,31 @@ public class SimpleBulletFall : MonoBehaviour
         return Vector3.down * distance;
     }
 
-    private Vector3 HorizontalMove()
+    private Vector3 SlopeMove()
     {
-        return new Vector3(inputDir.x * moveSpeed * Time.deltaTime, 0f, 0f);
+        if (!hasHitGround)
+            return new Vector3(inputDir.x * moveSpeed * Time.deltaTime, 0f, 0f);
+
+        RaycastHit2D[] hits = Physics2D.CircleCastAll(transform.position, radius, Vector2.down, 0.05f, groundLayer);
+        RaycastHit2D topHit = default;
+        float maxY = float.NegativeInfinity;
+
+        foreach (var hit in hits)
+        {
+            if (hit.point.y > maxY)
+            {
+                maxY = hit.point.y;
+                topHit = hit;
+            }
+        }
+
+        if (hits.Length == 0)
+            return Vector3.zero;
+
+        Vector2 normal = topHit.normal;
+        Vector2 tangent = new Vector2(normal.y, -normal.x);
+
+        return (Vector3)(tangent.normalized * inputDir.x * moveSpeed * Time.deltaTime);
     }
 
     private Vector3 GroundMoveOffset()
@@ -82,7 +110,7 @@ public class SimpleBulletFall : MonoBehaviour
 
     private bool IsGrounded()
     {
-        float checkDistance = 0.02f;
-        return Physics2D.CircleCast(transform.position, radius, Vector2.down, checkDistance, groundLayer);
+        RaycastHit2D[] hits = Physics2D.CircleCastAll(transform.position, radius, Vector2.down, 0.02f, groundLayer);
+        return hits.Length > 0;
     }
 }
