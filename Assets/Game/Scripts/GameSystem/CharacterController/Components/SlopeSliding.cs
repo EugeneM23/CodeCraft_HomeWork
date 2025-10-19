@@ -19,7 +19,7 @@ public class SlopeSliding
         }
 
         float angle = Vector2.Angle(normal, Vector2.up);
-        if (angle <= 15f)
+        if (angle <= 4f)
         {
             slideSpeedAccum = 0f;
             return Vector3.zero;
