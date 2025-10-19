@@ -16,6 +16,7 @@ public class PlayerController : MonoBehaviour
     private SlopeSliding slopeSliding;
     private RotationComponent rotationComponent;
     private JumpComponent jumpComponent;
+    private ScaleRotationComponent scaleRotation;
 
     private Vector2 inputDir;
 
@@ -27,11 +28,13 @@ public class PlayerController : MonoBehaviour
         slopeSliding = new SlopeSliding(slideMultiplier);
         rotationComponent = new RotationComponent(transform.rotation);
         jumpComponent = new JumpComponent(jumpForce, gravityComponent);
+        scaleRotation = new ScaleRotationComponent(transform);
     }
 
     void Update()
     {
         inputDir = new Vector2(Input.GetAxisRaw("Horizontal"), 0f);
+        scaleRotation.Rotation(inputDir);
 
         if (Input.GetKeyDown(KeyCode.Space))
             jumpComponent.RequestJump();
@@ -46,5 +49,23 @@ public class PlayerController : MonoBehaviour
         rotationComponent.ApplyRotation(gravityComponent.HasHitGround, gravityComponent.SurfaceNormal, transform);
 
         transform.position += move;
+    }
+
+    public class ScaleRotationComponent
+    {
+        private readonly Transform transform;
+
+        public ScaleRotationComponent(Transform transform)
+        {
+            this.transform = transform;
+        }
+
+        public void Rotation(Vector2 direction)
+        {
+            Vector3 scale = new Vector3(transform.localScale.x, 1, 1);
+            if (direction.x < 0) scale.x = -1;
+            if (direction.x > 0) scale.x = 1;
+            transform.localScale = scale;
+        }
     }
 }
