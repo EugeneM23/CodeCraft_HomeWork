@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class SimpleBulletFall : MonoBehaviour
@@ -16,6 +17,12 @@ public class SimpleBulletFall : MonoBehaviour
     private Vector3 lastGroundPos;
     private bool jumpRequest;
     private Vector2 surfaceNormal;
+    private Quaternion startRotation;
+
+    private void Start()
+    {
+        startRotation = transform.rotation;
+    }
 
     void Update()
     {
@@ -25,13 +32,35 @@ public class SimpleBulletFall : MonoBehaviour
             jumpRequest = true;
 
         Vector3 move = Vector3.zero;
+        Quaternion rotation = Quaternion.identity;
 
         move += GroundMoveOffset(); // сначала смещение платформы
         move += GravityMove(); // гравитация + прыжок + вертикальная коррекция
         move += SlopeMove(); // движение по наклону
 
+        rotation = HandleRotation();
         transform.position += move;
+        transform.rotation = rotation;
         jumpRequest = false;
+    }
+
+    private Quaternion HandleRotation()
+    {
+        Quaternion targetRotation;
+
+        if (hasHitGround)
+        {
+            targetRotation = Quaternion.FromToRotation(Vector3.up, surfaceNormal);
+        }
+        else
+        {
+            targetRotation = startRotation;
+        }
+
+        // Плавное вращение
+        transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, 360f * Time.deltaTime);
+
+        return targetRotation;
     }
 
     private Vector3 GravityMove()
