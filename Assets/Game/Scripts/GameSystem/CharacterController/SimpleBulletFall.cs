@@ -18,6 +18,8 @@ public class SimpleBulletFall : MonoBehaviour
     private bool jumpRequest;
     private Vector2 surfaceNormal;
     private Quaternion startRotation;
+    [SerializeField] private float slideMultiplier;
+    private float slideSpeedAccum;
 
     private void Start()
     {
@@ -34,14 +36,42 @@ public class SimpleBulletFall : MonoBehaviour
         Vector3 move = Vector3.zero;
         Quaternion rotation = Quaternion.identity;
 
-        move += GroundMoveOffset(); // сначала смещение платформы
-        move += GravityMove(); // гравитация + прыжок + вертикальная коррекция
-        move += SlopeMove(); // движение по наклону
-
+        move += GroundMoveOffset();
+        move += GravityMove();
+        move += SlopeMove();
+        move += SlopeSliding();
         rotation = HandleRotation();
+        
         transform.position += move;
         transform.rotation = rotation;
         jumpRequest = false;
+    }
+
+    private Vector3 SlopeSliding()
+    {
+        if (!hasHitGround || inputDir != Vector2.zero)
+        {
+            slideSpeedAccum = 0f;
+            return Vector3.zero;
+        }
+
+        float angle = Vector2.Angle(surfaceNormal, Vector2.up);
+
+        if (angle <= 15f)
+        {
+            slideSpeedAccum = 0f;
+            return Vector3.zero;
+        }
+
+        // скорость накапливается пропорционально наклону
+        slideSpeedAccum += slideMultiplier * (angle / 90f) * Time.deltaTime;
+
+        Vector2 tangent = new Vector2(surfaceNormal.y, -surfaceNormal.x);
+
+        if (Vector2.Dot(tangent, Vector2.down) < 0f)
+            tangent = -tangent;
+
+        return (Vector3)(tangent.normalized * slideSpeedAccum * Time.deltaTime);
     }
 
     private Quaternion HandleRotation()
