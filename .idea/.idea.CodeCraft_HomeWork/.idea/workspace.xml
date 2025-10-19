@@ -4,38 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6f0b762c-5415-4a85-b17b-cc44fd47261d" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/Assets/AssetPacks/Martial Hero/Animations/Attack.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/AssetPacks/Martial Hero/Animations/Attack.asset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scenes/Game.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scenes/Game.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/GameObject/Core/GameInstaller.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/GameObject/Core/GameInstaller.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/GameObject/Effects.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/GameObject/Effects/ShadowFadeComponent.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/GameObject/Effects/ShadowFadeComponent.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/GameObject/Effects/ShadowInstaller.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/GameObject/Effects/ShadowInstaller.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/GameObject/Enemy/Enemy.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/GameObject/Enemy/Enemy.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/GameObject/Enemy/EnemyAnimatonInstaller.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/GameObject/Enemy/EnemyAnimatonInstaller.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/GameObject/Player/Installers/AbilityInstaller.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/GameObject/Player/Installers/AbilityInstaller.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/GameObject/Player/Installers/AnimatonInstaller.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/GameObject/Player/Installers/AnimatonInstaller.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/GameObject/Player/Installers/PlayerInstaller.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/GameObject/Player/Installers/PlayerInstaller.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/GameObject/Player/Player.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/GameObject/Player/Player.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/Common/EventID.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/Modules/SpriteAnimator/EventID.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/Common/EventID.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/Modules/SpriteAnimator/EventID.cs.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/Components/MoveComponent.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/Components/MoveComponent.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/Controllers/Enemy/EnemyStateMachineController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/Controllers/Enemy/EnemyStateMachineController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/SpriteAnimator.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/Modules/SpriteAnimator.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/SpriteAnimator/AnimationEventReceiver.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/Modules/SpriteAnimator/AnimationEventReceiver.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/SpriteAnimator/AnimationEventReceiver.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/Modules/SpriteAnimator/AnimationEventReceiver.cs.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/SpriteAnimator/AnimationID.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/Modules/SpriteAnimator/AnimationID.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/SpriteAnimator/AnimationID.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/Modules/SpriteAnimator/AnimationID.cs.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/SpriteAnimator/SpriteAnimation.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/Modules/SpriteAnimator/SpriteAnimation.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/SpriteAnimator/SpriteAnimation.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/Modules/SpriteAnimator/SpriteAnimation.cs.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/SpriteAnimator/SpriteAnimationEvent.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/Modules/SpriteAnimator/SpriteAnimationEvent.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/SpriteAnimator/SpriteAnimationEvent.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/Modules/SpriteAnimator/SpriteAnimationEvent.cs.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/SpriteAnimator/SpriteAnimator.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/Modules/SpriteAnimator/SpriteAnimator.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/SpriteAnimator/SpriteAnimator.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/Modules/SpriteAnimator/SpriteAnimator.cs.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Modules/DiContainer/Container/DiContainer.Bind.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/Modules/DiContainer/Container/DiContainer.Bind.cs" afterDir="false" />
-    </list>
+    <list default="true" id="6f0b762c-5415-4a85-b17b-cc44fd47261d" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -170,6 +139,7 @@
       <workItem from="1760529180623" duration="17517000" />
       <workItem from="1760628816688" duration="10869000" />
       <workItem from="1760640173201" duration="58102000" />
+      <workItem from="1760805290228" duration="5936000" />
     </task>
     <task id="LOCAL-00001" summary="Update">
       <option name="closed" value="true" />
