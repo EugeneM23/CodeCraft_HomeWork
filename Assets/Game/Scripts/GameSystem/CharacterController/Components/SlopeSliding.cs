@@ -62,7 +62,7 @@ public class SlopeSliding
             tangent = -tangent;
 
         // Длина луча (можно регулировать)
-        float rayDistance = 1f;
+        float rayDistance = 1.2f;
 
         // Посылаем луч вперед по направлению скольжения
         RaycastHit2D hit = Physics2D.Raycast(origin, tangent, rayDistance, groundLayer);
