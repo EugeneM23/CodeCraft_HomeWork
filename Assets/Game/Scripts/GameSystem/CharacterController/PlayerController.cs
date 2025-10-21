@@ -41,18 +41,19 @@ public class PlayerController : MonoBehaviour
             jumpComponent.RequestJump();
 
         Vector3 move = Vector3.zero;
-        if (_collider.GetPenetrationLayer(groundLayer, out Vector2 correction))
+        
+        /*if (_collider.GetPenetrationLayer(groundLayer, out Vector2 correction))
         {
             var delta = Vector3.Lerp(Vector3.zero, correction, 0.1f);
-            transform.position += delta;
-        }
+            move += delta;
+        }*/
 
-        move += _groundOffsetComponent.GetOffset(gravityComponent.HasHitGround);
+        // move += _groundOffsetComponent.GetOffset(gravityComponent.HasHitGround);
         move += gravityComponent.ApplyGravity(transform.position, gravityComponent.GetGroundOffset());
         move += _moveComponent.Move(inputDir, gravityComponent.HasHitGround, gravityComponent.SurfaceNormal);
         move += slopeSliding.Slide(gravityComponent.HasHitGround, inputDir, gravityComponent.SurfaceNormal);
 
-        rotationComponent.ApplyRotation(gravityComponent.HasHitGround, gravityComponent.SurfaceNormal, transform);
+        //rotationComponent.ApplyRotation(gravityComponent.HasHitGround, gravityComponent.SurfaceNormal, transform);
 
         transform.position += move;
     }
