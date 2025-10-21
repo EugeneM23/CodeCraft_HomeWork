@@ -4,24 +4,21 @@ using UnityEngine;
 public class JumpComponent
 {
     private readonly GravityComponent gravityComponent;
-    private float jumpForce;
-    private bool jumpRequested = false;
-    private float normalInfluence = 0.5f;
+    private float normalInfluence = 0.3f;
 
-    public JumpComponent(float jumpForce, GravityComponent gravityComponent)
+    public JumpComponent(GravityComponent gravityComponent)
     {
-        this.jumpForce = jumpForce;
         this.gravityComponent = gravityComponent;
     }
 
-    public void RequestJump()
+    public void Jump(Vector2 diraction, float jumpForce)
     {
         // Берём нормаль поверхности, по которой стоим
         Vector3 normal = gravityComponent.SurfaceNormal.normalized;
 
         // Смешиваем с направлением строго вверх
         // НО ВАЖНО: не нормализуем здесь, чтобы потом управлять осью Y
-        Vector3 jumpDir = Vector3.Lerp(Vector3.up, normal, normalInfluence);
+        Vector3 jumpDir = Vector3.Lerp(diraction, normal, normalInfluence);
 
         // Делаем вертикальную силу прыжка фиксированной (высота одинаковая даже на склонах)
         jumpDir.y = 1f;
@@ -33,12 +30,5 @@ public class JumpComponent
         gravityComponent.AddImpulse(jumpForce, jumpDir);
     }
 
-    public bool ConsumeJumpRequest()
-    {
-        if (!jumpRequested) return false;
-        jumpRequested = false;
-        return true;
-    }
-
-    public float GetJumpForce() => jumpForce;
+    
 }

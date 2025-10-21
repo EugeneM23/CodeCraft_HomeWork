@@ -30,7 +30,7 @@ public class PlayerController : MonoBehaviour
         _moveComponent = new MoveComponent(moveSpeed);
         slopeSliding = new SlopeSliding(slideMultiplier, gravityComponent, groundLayer, _collider);
         rotationComponent = new RotationComponent(transform.rotation);
-        jumpComponent = new JumpComponent(jumpForce, gravityComponent);
+        jumpComponent = new JumpComponent(gravityComponent);
         scaleRotation = new SpriteFlip(transform);
     }
 
@@ -40,7 +40,8 @@ public class PlayerController : MonoBehaviour
         scaleRotation.Flip(inputDir);
 
         if (Input.GetKeyDown(KeyCode.Space))
-            jumpComponent.RequestJump();
+            Jump(Vector2.up, jumpForce);
+
 
         Vector3 move = Vector3.zero;
 
@@ -54,5 +55,10 @@ public class PlayerController : MonoBehaviour
         rotationComponent.ApplyRotation(gravityComponent.HasHitGround, gravityComponent.SurfaceNormal, transform);
 
         transform.position += move;
+    }
+
+    public void Jump(Vector2 dir, float jumpForce)
+    {
+        jumpComponent.Jump(dir, jumpForce);
     }
 }
