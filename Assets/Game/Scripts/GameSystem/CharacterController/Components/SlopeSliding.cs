@@ -2,12 +2,14 @@ using UnityEngine;
 
 public class SlopeSliding 
 {
+    private readonly GravityComponent gravityComponent;
     private float slideMultiplier;
     private float slideSpeedAccum;
 
-    public SlopeSliding(float slideMultiplier)
+    public SlopeSliding(float slideMultiplier, GravityComponent gravityComponent)
     {
         this.slideMultiplier = slideMultiplier;
+        this.gravityComponent = gravityComponent;
     }
 
     public Vector3 Slide(bool grounded, Vector2 input, Vector2 normal)
@@ -26,6 +28,7 @@ public class SlopeSliding
         }
 
         slideSpeedAccum += slideMultiplier * (angle / 90f) * Time.deltaTime;
+        gravityComponent.fallSpeed += slideSpeedAccum;
 
         Vector2 tangent = new Vector2(normal.y, -normal.x);
         if (Vector2.Dot(tangent, Vector2.down) < 0f) tangent = -tangent;

@@ -11,7 +11,7 @@ public class GravityComponent
     public Vector2 SurfaceNormal { get; private set; }
     public Transform CurrentGround { get; private set; }
 
-    private float fallSpeed;
+    public float fallSpeed;
     private Vector3 lastGroundPos;
 
     public GravityComponent(LayerMask groundLayer, float gravity, float maxSlopeAngle)

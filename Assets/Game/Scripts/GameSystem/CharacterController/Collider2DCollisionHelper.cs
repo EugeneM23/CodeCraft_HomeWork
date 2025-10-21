@@ -1,12 +1,23 @@
+using System.Data;
 using UnityEngine;
 
-public static class Collider2DExtensions
+public class Collider2DCollisionHelper
 {
-    public static bool GetPenetrationLayer(this Collider2D source, LayerMask layer, out Vector2 correction)
+    private Collider2D source;
+
+    public Collider2DCollisionHelper(Collider2D sourceCollider)
     {
+        source = sourceCollider;
+    }
+
+    public Vector3 GetPenetrationLayer(LayerMask layer)
+    {
+        Vector3 correction = Vector2.zero;
+
+        if (source == null)
+            throw new InvalidExpressionException();
+
         Collider2D[] overlapCache = new Collider2D[32];
-        correction = Vector2.zero;
-        if (source == null) return false;
 
         int count = Physics2D.OverlapBoxNonAlloc(
             source.bounds.center,
@@ -17,7 +28,9 @@ public static class Collider2DExtensions
         );
 
         bool collided = false;
+
         Vector2 sumDir = Vector2.zero;
+
         float totalDist = 0f;
 
         for (int i = 0; i < count; i++)
@@ -25,25 +38,26 @@ public static class Collider2DExtensions
             Collider2D target = overlapCache[i];
             if (target == source) continue;
 
-            if (source.ComputePenetration2D(target, out Vector2 dir, out float dist))
+            if (ComputePenetration2D(source, target, out Vector2 dir, out float dist))
             {
-                collided = true;
                 sumDir += dir * dist;
                 totalDist += dist;
             }
         }
 
         correction = sumDir;
-
-        return collided;
+        var delta = Vector3.Lerp(Vector3.zero, correction, 0.1f);
+        return delta;
     }
 
-    public static bool ComputePenetration2D(this Collider2D source, Collider2D target, out Vector2 direction,
-        out float distance)
+    private bool ComputePenetration2D(Collider2D source, Collider2D target, out Vector2 direction, out float distance)
     {
         direction = Vector2.zero;
         distance = 0f;
-        if (source == null || target == null) return false;
+
+        if (source == null || target == null)
+            return false;
+
         ColliderDistance2D info = source.Distance(target);
         if (info.isOverlapped)
         {
