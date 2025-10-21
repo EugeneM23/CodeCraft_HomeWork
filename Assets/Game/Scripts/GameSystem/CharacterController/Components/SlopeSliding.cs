@@ -27,12 +27,17 @@ public class SlopeSliding
             return Vector3.zero;
         }
 
+        // Увеличиваем скорость скольжения
         slideSpeedAccum += slideMultiplier * (angle / 90f) * Time.deltaTime;
-        gravityComponent.fallSpeed += slideSpeedAccum;
 
+        // Направление вдоль поверхности (касательная)
         Vector2 tangent = new Vector2(normal.y, -normal.x);
         if (Vector2.Dot(tangent, Vector2.down) < 0f) tangent = -tangent;
 
+        // Добавляем вектор скорости к gravityVector (скольжение = падение по наклонной)
+        gravityComponent.AddSlopeGravity(tangent.normalized * slideSpeedAccum);
+
+        // Возвращаем движение по склону
         return tangent.normalized * slideSpeedAccum * Time.deltaTime;
     }
 }
