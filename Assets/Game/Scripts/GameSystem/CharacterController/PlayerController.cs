@@ -48,10 +48,9 @@ public class PlayerController : MonoBehaviour
             move += delta;
         }
 
-        //move += _groundOffsetComponent.GetOffset(gravityComponent.HasHitGround);
+        move += _groundOffsetComponent.GetOffset(gravityComponent.HasHitGround);
         move += gravityComponent.ApplyGravity(transform.position, gravityComponent.GetGroundOffset());
-        move += _moveComponent.Move(inputDir, gravityComponent.HasHitGround, gravityComponent.SurfaceNormal, _collider,
-            groundLayer);
+        move += _moveComponent.Move(inputDir, gravityComponent.HasHitGround, gravityComponent.SurfaceNormal, _collider, groundLayer);
         move += slopeSliding.Slide(gravityComponent.HasHitGround, inputDir, gravityComponent.SurfaceNormal);
 
         rotationComponent.ApplyRotation(gravityComponent.HasHitGround, gravityComponent.SurfaceNormal, transform);
