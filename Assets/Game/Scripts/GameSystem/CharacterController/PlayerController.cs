@@ -28,7 +28,7 @@ public class PlayerController : MonoBehaviour
         gravityComponent = new GravityComponent(groundLayer, gravity, maxSlopeAngle);
         _groundOffsetComponent = new GroundOffsetComponent(gravityComponent);
         _moveComponent = new MoveComponent(moveSpeed);
-        slopeSliding = new SlopeSliding(slideMultiplier, gravityComponent);
+        slopeSliding = new SlopeSliding(slideMultiplier, gravityComponent, groundLayer, _collider);
         rotationComponent = new RotationComponent(transform.rotation);
         jumpComponent = new JumpComponent(jumpForce, gravityComponent);
         scaleRotation = new SpriteFlip(transform);
@@ -47,7 +47,8 @@ public class PlayerController : MonoBehaviour
         move += _2DCollisionHelper.GetPenetrationLayer(groundLayer);
         move += _groundOffsetComponent.GetOffset(gravityComponent.HasHitGround);
         move += gravityComponent.ApplyGravity(transform.position, gravityComponent.GetGroundOffset());
-        move += _moveComponent.Move(inputDir, gravityComponent.HasHitGround, gravityComponent.SurfaceNormal, _collider, groundLayer);
+        move += _moveComponent.Move(inputDir, gravityComponent.HasHitGround, gravityComponent.SurfaceNormal, _collider,
+            groundLayer);
         move += slopeSliding.Slide(gravityComponent.HasHitGround, inputDir, gravityComponent.SurfaceNormal);
 
         rotationComponent.ApplyRotation(gravityComponent.HasHitGround, gravityComponent.SurfaceNormal, transform);

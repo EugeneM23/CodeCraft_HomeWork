@@ -17,7 +17,7 @@ public class MoveComponent
 
         float angle = Vector2.Angle(hitNormal, Vector2.up);
 
-        if (hit.collider != null && angle >= 89)
+        if (hit.collider != null && angle >= 55)
         {
             Debug.DrawRay(collider.transform.position + new Vector3(0, 1, 0), input * 1, Color.red);
             return Vector3.zero;
