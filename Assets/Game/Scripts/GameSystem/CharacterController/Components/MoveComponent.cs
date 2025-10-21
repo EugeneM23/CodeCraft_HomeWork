@@ -1,10 +1,10 @@
 using UnityEngine;
 
-public class SlopeMovement 
+public class MoveComponent 
 {
     private float moveSpeed;
 
-    public SlopeMovement(float moveSpeed)
+    public MoveComponent(float moveSpeed)
     {
         this.moveSpeed = moveSpeed;
     }

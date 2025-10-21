@@ -1,11 +1,11 @@
 using System;
 using UnityEngine;
 
-public class GroundMovement 
+public class GroundOffsetComponent 
 {
     private GravityComponent gravity;
 
-    public GroundMovement(GravityComponent gravity)
+    public GroundOffsetComponent(GravityComponent gravity)
     {
         this.gravity = gravity;
     }

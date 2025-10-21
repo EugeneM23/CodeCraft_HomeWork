@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    [SerializeField] private Collider2D _collider;
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private int moveSpeed;
     [SerializeField] private float gravity;
@@ -10,9 +11,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float slideMultiplier;
     [SerializeField] private float jumpForce;
 
-    private GroundMovement groundMovement;
+    private GroundOffsetComponent _groundOffsetComponent;
     private GravityComponent gravityComponent;
-    private SlopeMovement slopeMovement;
+    private MoveComponent _moveComponent;
     private SlopeSliding slopeSliding;
     private RotationComponent rotationComponent;
     private JumpComponent jumpComponent;
@@ -23,8 +24,8 @@ public class PlayerController : MonoBehaviour
     private void Awake()
     {
         gravityComponent = new GravityComponent(groundLayer, gravity, maxSlopeAngle);
-        groundMovement = new GroundMovement(gravityComponent);
-        slopeMovement = new SlopeMovement(moveSpeed);
+        _groundOffsetComponent = new GroundOffsetComponent(gravityComponent);
+        _moveComponent = new MoveComponent(moveSpeed);
         slopeSliding = new SlopeSliding(slideMultiplier);
         rotationComponent = new RotationComponent(transform.rotation);
         jumpComponent = new JumpComponent(jumpForce, gravityComponent);
@@ -40,33 +41,19 @@ public class PlayerController : MonoBehaviour
             jumpComponent.RequestJump();
 
         Vector3 move = Vector3.zero;
+        if (_collider.GetPenetrationLayer(groundLayer, out Vector2 correction))
+        {
+            var delta = Vector3.Lerp(Vector3.zero, correction, 0.1f);
+            transform.position += delta;
+        }
 
-        move += groundMovement.GetOffset(gravityComponent.HasHitGround);
+        move += _groundOffsetComponent.GetOffset(gravityComponent.HasHitGround);
         move += gravityComponent.ApplyGravity(transform.position, gravityComponent.GetGroundOffset());
-        move += slopeMovement.Move(inputDir, gravityComponent.HasHitGround, gravityComponent.SurfaceNormal);
+        move += _moveComponent.Move(inputDir, gravityComponent.HasHitGround, gravityComponent.SurfaceNormal);
         move += slopeSliding.Slide(gravityComponent.HasHitGround, inputDir, gravityComponent.SurfaceNormal);
 
         rotationComponent.ApplyRotation(gravityComponent.HasHitGround, gravityComponent.SurfaceNormal, transform);
 
         transform.position += move;
-    }
-
-    public class SpriteFlip
-    {
-        private readonly Transform transform;
-
-        public SpriteFlip(Transform transform)
-        {
-            this.transform = transform;
-        }
-
-        public void Flip(Vector2 direction)
-        {
-            if (direction == Vector2.zero) return;
-
-            Vector3 scale = transform.localScale;
-            scale.x = Mathf.Abs(scale.x) * Mathf.Sign(direction.x);
-            transform.localScale = scale;
-        }
     }
 }
