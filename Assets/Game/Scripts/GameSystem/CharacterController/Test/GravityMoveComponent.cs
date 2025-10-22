@@ -59,7 +59,19 @@ namespace Game.Scripts.GameSystem.CharacterController.Test
         {
             _inputDir = new Vector2(Input.GetAxisRaw("Horizontal"), 0f);
 
+            /*if (Mathf.Abs(_inputDir.x) < 0.1f || !IsGrounded)
+                return Vector3.zero;*/
+
+
+            RaycastHit2D hit = Physics2D.Raycast(_capsule.transform.position, Vector2.down, 1f, _groundLayer);
+
+            if (hit.collider != null)
+                CurrentSurfaceNormal = hit.normal;
+            else
+                CurrentSurfaceNormal = Vector2.up;
+
             Vector2 tangent = new Vector2(CurrentSurfaceNormal.y, -CurrentSurfaceNormal.x).normalized;
+
             return (Vector3)(tangent * _inputDir.x * 15f * Time.deltaTime);
         }
     }
