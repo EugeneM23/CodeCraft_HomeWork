@@ -11,7 +11,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float _maxSlopeAngle;
     [SerializeField] private float _slideMultiplier;
     [SerializeField] private float _jumpForce;
-
+    [SerializeField] private float _acceleration;
+    [SerializeField] private float _deceleration;
     private GroundOffsetComponent _groundOffsetComponent;
     private GravityComponent _gravityComponent;
     private MoveComponent _moveComponent;
@@ -31,10 +32,11 @@ public class PlayerController : MonoBehaviour
     public float Gravity => _gravity;
     public float MoveSpeed => _moveSpeed;
     public float SlideMultiplier => _slideMultiplier;
+    public float Acceleration => _acceleration;
+    public float Deceleration => _deceleration;
 
     private void Awake()
     {
-        Application.targetFrameRate = 10;
         _2DCollisionHelper = new Collider2DCollisionHelper(this);
         _gravityComponent = new GravityComponent(this);
         _groundOffsetComponent = new GroundOffsetComponent(_gravityComponent);
@@ -56,11 +58,11 @@ public class PlayerController : MonoBehaviour
 
         Vector3 move = Vector3.zero;
 
-        //move += _groundOffsetComponent.GetOffset();
+        move += _groundOffsetComponent.GetOffset();
         move += _gravityComponent.ApplyGravity(_collider.transform.position, _groundOffsetComponent.GetOffset());
         move += _moveComponent.Move();
-        //move += _slopeSliding.Slide();
-        //move += _2DCollisionHelper.GetPenetrationLayer();
+        move += _slopeSliding.Slide();
+        move += _2DCollisionHelper.GetPenetrationLayer();
 
         _rotationComponent.ApplyRotation(_gravityComponent.IsGrounded, _gravityComponent.SurfaceNormal, transform);
 

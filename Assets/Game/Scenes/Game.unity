@@ -17543,9 +17543,11 @@ MonoBehaviour:
     m_Bits: 8
   _moveSpeed: 15
   _gravity: 200
-  _maxSlopeAngle: 90
+  _maxSlopeAngle: 89
   _slideMultiplier: 120
   _jumpForce: 40
+  _acceleration: 2
+  _deceleration: 2
 --- !u!50 &8946605514910863021
 Rigidbody2D:
   serializedVersion: 5
