@@ -1,10 +1,11 @@
+using Gameplay;
 using UnityEngine;
 
 public class GravityComponent
 {
     private readonly PlayerController _controller;
 
-    private const float radius = 0.1f;
+    private const float radius = 2f;
 
     public bool IsGrounded { get; private set; }
     public Vector2 SurfaceNormal { get; private set; }
@@ -35,7 +36,7 @@ public class GravityComponent
 
                 gravityVector = Vector3.zero;
 
-                float verticalOffset = (hit.point.y + radius) - (position.y + groundOffset.y);
+                float verticalOffset = (hit.point.y + _controller.Collider.size.y / 2) - (position.y + groundOffset.y);
                 return Vector3.up * verticalOffset;
             }
         }
@@ -64,19 +65,17 @@ public class GravityComponent
 
     private bool TryGetGround(Vector3 pos, out RaycastHit2D hit)
     {
-        hit = default;
-        float maxY = float.NegativeInfinity;
+        hit = Physics2D.Raycast(pos, Vector2.down, 2f, _controller.GroundLayer);
 
-        foreach (RaycastHit2D h in Physics2D.CircleCastAll(pos, radius, Vector2.down, 0.1f, _controller.GroundLayer))
+        if (hit.collider != null)
         {
-            if (h.point.y > maxY)
-            {
-                maxY = h.point.y;
-                hit = h;
-            }
+            Debug.DrawLine(hit.point, hit.point + Vector2.up * 0.1f, Color.red, 0.1f);
+            Debug.DrawLine(pos, pos + Vector3.down * 0.1f, Color.green, 0.1f);
+            return true;
         }
 
-        return maxY > float.NegativeInfinity;
+        Debug.DrawLine(pos, pos + Vector3.down * 0.1f, Color.green, 0.1f);
+        return false;
     }
 
     public void AddImpulse(float jumpForce, Vector3 direction)

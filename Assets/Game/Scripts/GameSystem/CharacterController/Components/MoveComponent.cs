@@ -1,3 +1,4 @@
+using Gameplay;
 using UnityEngine;
 
 public class MoveComponent
@@ -11,29 +12,33 @@ public class MoveComponent
 
     public Vector3 Move()
     {
-        RaycastHit2D hit = Physics2D.Raycast(_controller.Collider.transform.position + new Vector3(0, 1, 0),
-            _controller.InputDir,
-            1, _controller.GroundLayer);
+        CapsuleCollider2D capsule = _controller.Collider;
+        Vector2 direction = _controller.InputDir.normalized;
+        float distance = _controller.MoveSpeed * Time.deltaTime;
 
-        Vector2 hitNormal = hit.normal;
+        RaycastHit2D hit = Physics2D.CapsuleCast(
+            capsule.transform.position,
+            capsule.size,
+            CapsuleDirection2D.Vertical,
+            0f,
+            direction,
+            distance,
+            _controller.GroundLayer
+        );
 
-        float angle = Vector2.Angle(hitNormal, Vector2.up);
-
-        if (hit.collider != null && angle >= 55)
+        if (hit.collider != null && Vector2.Angle(hit.normal, Vector2.up).Log() > _controller.MaxSlopeAngle)
         {
-            Debug.DrawRay(_controller.Collider.transform.position + new Vector3(0, 1, 0), _controller.InputDir * 1,
-                Color.red);
+            Debug.Log("Problem");
+            Debug.DrawRay(capsule.transform.position, direction * distance, Color.red);
             return Vector3.zero;
         }
 
-        Debug.DrawRay(_controller.Collider.transform.position + new Vector3(0, 1, 0), _controller.InputDir * 1,
-            Color.red);
-
+        Debug.DrawRay(capsule.transform.position, direction * distance, Color.green);
 
         if (!_controller.IsGrounded)
-            return new Vector3(_controller.InputDir.x * _controller.MoveSpeed * Time.deltaTime, 0f, 0f);
+            return new Vector3(direction.x * distance, 0f, 0f);
 
         Vector2 tangent = new Vector2(_controller.SurfaceNormal.y, -_controller.SurfaceNormal.x);
-        return tangent.normalized * _controller.InputDir.x * _controller.MoveSpeed * Time.deltaTime;
+        return tangent.normalized * direction.x * distance;
     }
 }

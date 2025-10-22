@@ -4,7 +4,7 @@ using UnityEngine.Serialization;
 
 public class PlayerController : MonoBehaviour
 {
-    [SerializeField] private Collider2D _collider;
+    [SerializeField] private CapsuleCollider2D _collider;
     [SerializeField] private LayerMask _groundLayer;
     [SerializeField] private int _moveSpeed;
     [SerializeField] private float _gravity;
@@ -26,7 +26,7 @@ public class PlayerController : MonoBehaviour
     public Vector2 InputDir => _inputDir;
     public Vector2 SurfaceNormal => _gravityComponent.SurfaceNormal;
     public LayerMask GroundLayer => _groundLayer;
-    public Collider2D Collider => _collider;
+    public CapsuleCollider2D Collider => _collider;
     public float MaxSlopeAngle => _maxSlopeAngle;
     public float Gravity => _gravity;
     public float MoveSpeed => _moveSpeed;
@@ -56,7 +56,7 @@ public class PlayerController : MonoBehaviour
         Vector3 move = Vector3.zero;
 
         move += _groundOffsetComponent.GetOffset();
-        move += _gravityComponent.ApplyGravity(transform.position, _groundOffsetComponent.GetOffset());
+        move += _gravityComponent.ApplyGravity(_collider.transform.position, _groundOffsetComponent.GetOffset());
         move += _moveComponent.Move();
         move += _slopeSliding.Slide();
         move += _2DCollisionHelper.GetPenetrationLayer();

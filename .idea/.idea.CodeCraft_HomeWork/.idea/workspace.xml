@@ -6,8 +6,18 @@
   <component name="ChangeListManager">
     <list default="true" id="6f0b762c-5415-4a85-b17b-cc44fd47261d" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.CodeCraft_HomeWork/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.CodeCraft_HomeWork/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/CharacterController/Components/JumpComponent.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/CharacterController/Components/JumpComponent.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/CharacterController/BoxTest.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/CharacterController/BoxTest.cs.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/CharacterController/Collider2DCollisionHelper.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/CharacterController/Components/Collider2DCollisionHelper.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/CharacterController/Collider2DCollisionHelper.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/CharacterController/Components/Collider2DCollisionHelper.cs.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/CharacterController/Collider2DExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/CharacterController/Extensions/Collider2DExtensions.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/CharacterController/Collider2DExtensions.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/CharacterController/Extensions/Collider2DExtensions.cs.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/CharacterController/ColliderExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/CharacterController/Extensions/ColliderExtensions.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/CharacterController/ColliderExtensions.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/CharacterController/Extensions/ColliderExtensions.cs.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/CharacterController/Components/GravityComponent.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/CharacterController/Components/GravityComponent.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/CharacterController/Components/MoveComponent.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/CharacterController/Components/MoveComponent.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/CharacterController/PlayerController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/CharacterController/PlayerController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/Components/Final.meta" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -147,6 +157,7 @@
       <workItem from="1760640173201" duration="58102000" />
       <workItem from="1760805290228" duration="5936000" />
       <workItem from="1760862974908" duration="21566000" />
+      <workItem from="1761129343480" duration="6282000" />
     </task>
     <task id="LOCAL-00001" summary="Update">
       <option name="closed" value="true" />
