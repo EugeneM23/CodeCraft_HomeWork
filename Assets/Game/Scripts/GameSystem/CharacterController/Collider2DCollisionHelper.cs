@@ -3,28 +3,28 @@ using UnityEngine;
 
 public class Collider2DCollisionHelper
 {
-    private Collider2D source;
+    private readonly PlayerController _controller;
 
-    public Collider2DCollisionHelper(Collider2D sourceCollider)
+    public Collider2DCollisionHelper(PlayerController controller)
     {
-        source = sourceCollider;
+        _controller = controller;
     }
 
-    public Vector3 GetPenetrationLayer(LayerMask layer)
+    public Vector3 GetPenetrationLayer()
     {
         Vector3 correction = Vector2.zero;
 
-        if (source == null)
+        if (_controller == null)
             throw new InvalidExpressionException();
 
         Collider2D[] overlapCache = new Collider2D[32];
 
         int count = Physics2D.OverlapBoxNonAlloc(
-            source.bounds.center,
-            source.bounds.size,
-            source.transform.eulerAngles.z,
+            _controller.Collider.bounds.center,
+            _controller.Collider.bounds.size,
+            _controller.transform.eulerAngles.z,
             overlapCache,
-            layer
+            _controller.GroundLayer
         );
 
         bool collided = false;
@@ -36,9 +36,9 @@ public class Collider2DCollisionHelper
         for (int i = 0; i < count; i++)
         {
             Collider2D target = overlapCache[i];
-            if (target == source) continue;
+            if (target == _controller) continue;
 
-            if (ComputePenetration2D(source, target, out Vector2 dir, out float dist))
+            if (ComputePenetration2D(_controller.Collider, target, out Vector2 dir, out float dist))
             {
                 sumDir += dir * dist;
                 totalDist += dist;

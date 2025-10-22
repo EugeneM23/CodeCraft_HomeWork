@@ -1,19 +1,20 @@
 using System;
 using UnityEngine;
 
-public class GroundOffsetComponent 
+public class GroundOffsetComponent
 {
-    private GravityComponent gravity;
+    private readonly GravityComponent _gravity;
 
     public GroundOffsetComponent(GravityComponent gravity)
     {
-        this.gravity = gravity;
+        _gravity = gravity;
     }
 
-    public Vector3 GetOffset(bool grounded)
+    public Vector3 GetOffset()
+
     {
-        if (grounded && gravity.CurrentGround != null)
-            return gravity.GetGroundOffset();
+        if (_gravity.IsGrounded && _gravity.CurrentGround != null)
+            return _gravity.GetGroundOffset();
 
         return Vector3.zero;
     }

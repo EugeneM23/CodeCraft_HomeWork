@@ -2,57 +2,70 @@ using UnityEngine;
 
 public class SlopeSliding
 {
-    private readonly GravityComponent gravityComponent;
-    private readonly Collider2D collider;
+    private readonly GravityComponent _gravityComponent;
+    private readonly PlayerController _controller;
+
     private float slideMultiplier;
     private float slideSpeedAccum;
-    private int groundLayer;
 
-    public SlopeSliding(float slideMultiplier, GravityComponent gravityComponent, int groundLayer, Collider2D collider)
+    public SlopeSliding(PlayerController controller, GravityComponent gravityComponent)
     {
-        this.slideMultiplier = slideMultiplier;
-        this.gravityComponent = gravityComponent;
-        this.groundLayer = groundLayer;
-        this.collider = collider;
+        _controller = controller;
+        _gravityComponent = gravityComponent;
     }
 
-    public Vector3 Slide(bool grounded, Vector2 input, Vector2 normal)
+    public Vector3 Slide()
     {
-        if (DetectObstacle(normal, out var stop))
+        if (DetectObstacle(_controller.SurfaceNormal, out var stop))
             return stop;
 
-
-        if (!grounded || input != Vector2.zero)
+        if (!_controller.IsGrounded)
         {
             slideSpeedAccum = 0f;
             return Vector3.zero;
         }
 
-        float angle = Vector2.Angle(normal, Vector2.up);
+        float angle = Vector2.Angle(_controller.SurfaceNormal, Vector2.up);
         if (angle <= 4f)
         {
             slideSpeedAccum = 0f;
             return Vector3.zero;
         }
 
-        // Увеличиваем скорость скольжения
-        slideSpeedAccum += slideMultiplier * (angle / 90f) * Time.deltaTime;
+        // === Направление скольжения (касательное к поверхности) ===
+        Vector2 tangent = new Vector2(_controller.SurfaceNormal.y, -_controller.SurfaceNormal.x);
 
-        // Направление вдоль поверхности (касательная)
-        Vector2 tangent = new Vector2(normal.y, -normal.x);
-        if (Vector2.Dot(tangent, Vector2.down) < 0f) tangent = -tangent;
+        // Обеспечиваем направление вниз по склону
+        if (Vector2.Dot(tangent, Vector2.down) < 0f)
+            tangent = -tangent;
 
-        // Добавляем вектор скорости к gravityVector (скольжение = падение по наклонной)
-        gravityComponent.AddSlopeGravity(tangent.normalized * slideSpeedAccum);
+        // === Если есть Input — проверяем, помогает он или мешает ===
+        if (_controller.InputDir != Vector2.zero)
+        {
+            float dot = Vector2.Dot(_controller.InputDir.normalized, tangent.normalized);
 
-        // Возвращаем движение по склону
-        return tangent.normalized * slideSpeedAccum * Time.deltaTime;
-    }
+            if (dot < 0f)
+            {
+                // Игрок жмёт ПРОТИВ наклона — остановить скользение
+                slideSpeedAccum = 0f;
+                return Vector3.zero;
+            }
+            // Если dot >= 0 → игрок либо помогает скользить, либо жмёт перпендикулярно — позволяем скользить
+        }
+
+        // === Увеличиваем скорость скольжения ===
+        slideSpeedAccum += _controller.SlideMultiplier * (angle / 90f) * Time.deltaTime;
+
+        // === Добавляем ускорение в гравитацию ===
+        _gravityComponent.AddSlopeGravity(tangent.normalized * slideSpeedAccum);
+
+        // === Возвращаем итоговое движение по Time.deltaTime ===
+        return tangent.normalized * slideSpeedAccum * Time.deltaTime;    }
 
     private bool DetectObstacle(Vector2 normal, out Vector3 result)
     {
         // Центр коллайдера
-        Vector2 origin = collider.bounds.center;
+        Vector2 origin = _controller.Collider.bounds.center;
 
         // Касательная вдоль склона (направление скольжения)
         Vector2 tangent = new Vector2(normal.y, -normal.x);
@@ -65,7 +78,7 @@ public class SlopeSliding
         float rayDistance = 1.2f;
 
         // Посылаем луч вперед по направлению скольжения
-        RaycastHit2D hit = Physics2D.Raycast(origin, tangent, rayDistance, groundLayer);
+        RaycastHit2D hit = Physics2D.Raycast(origin, tangent, rayDistance, _controller.GroundLayer);
 
         Debug.DrawRay(origin, tangent * rayDistance, Color.red);
 

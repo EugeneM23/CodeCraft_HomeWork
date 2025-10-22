@@ -2,19 +2,19 @@ using UnityEngine;
 
 public class SpriteFlip
 {
-    private readonly Transform transform;
+    private readonly Transform _transform;
 
-    public SpriteFlip(Transform transform)
+    public SpriteFlip(PlayerController controller)
     {
-        this.transform = transform;
+        _transform = controller.transform;
     }
 
     public void Flip(Vector2 direction)
     {
         if (direction == Vector2.zero) return;
 
-        Vector3 scale = transform.localScale;
+        Vector3 scale = _transform.localScale;
         scale.x = Mathf.Abs(scale.x) * Mathf.Sign(direction.x);
-        transform.localScale = scale;
+        _transform.localScale = scale;
     }
 }

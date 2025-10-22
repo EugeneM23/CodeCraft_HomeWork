@@ -2,16 +2,18 @@ using UnityEngine;
 
 public class MoveComponent
 {
-    private float moveSpeed;
+    private readonly PlayerController _controller;
 
-    public MoveComponent(float moveSpeed)
+    public MoveComponent(PlayerController player)
     {
-        this.moveSpeed = moveSpeed;
+        _controller = player;
     }
 
-    public Vector3 Move(Vector2 input, bool grounded, Vector2 normal, Collider2D collider, LayerMask groundLayer)
+    public Vector3 Move()
     {
-        RaycastHit2D hit = Physics2D.Raycast(collider.transform.position + new Vector3(0, 1, 0), input, 1, groundLayer);
+        RaycastHit2D hit = Physics2D.Raycast(_controller.Collider.transform.position + new Vector3(0, 1, 0),
+            _controller.InputDir,
+            1, _controller.GroundLayer);
 
         Vector2 hitNormal = hit.normal;
 
@@ -19,16 +21,19 @@ public class MoveComponent
 
         if (hit.collider != null && angle >= 55)
         {
-            Debug.DrawRay(collider.transform.position + new Vector3(0, 1, 0), input * 1, Color.red);
+            Debug.DrawRay(_controller.Collider.transform.position + new Vector3(0, 1, 0), _controller.InputDir * 1,
+                Color.red);
             return Vector3.zero;
         }
 
-        Debug.DrawRay(collider.transform.position + new Vector3(0, 1, 0), input * 1, Color.red);
+        Debug.DrawRay(_controller.Collider.transform.position + new Vector3(0, 1, 0), _controller.InputDir * 1,
+            Color.red);
 
 
-        if (!grounded) return new Vector3(input.x * moveSpeed * Time.deltaTime, 0f, 0f);
+        if (!_controller.IsGrounded)
+            return new Vector3(_controller.InputDir.x * _controller.MoveSpeed * Time.deltaTime, 0f, 0f);
 
-        Vector2 tangent = new Vector2(normal.y, -normal.x);
-        return tangent.normalized * input.x * moveSpeed * Time.deltaTime;
+        Vector2 tangent = new Vector2(_controller.SurfaceNormal.y, -_controller.SurfaceNormal.x);
+        return tangent.normalized * _controller.InputDir.x * _controller.MoveSpeed * Time.deltaTime;
     }
 }

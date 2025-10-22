@@ -11,7 +11,7 @@ namespace Gameplay
         {
             if (other.TryGetComponent(out PlayerController controller))
             {
-                controller.Jump(transform.up, _impulsionForce);
+                controller.AddImpulse(_impulsionForce, transform.up);
             }
         }
     }

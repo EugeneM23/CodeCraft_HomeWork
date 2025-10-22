@@ -3,18 +3,18 @@ using UnityEngine;
 
 public class JumpComponent
 {
-    private readonly GravityComponent gravityComponent;
+    private readonly PlayerController _controller;
     private float normalInfluence = 0.3f;
 
-    public JumpComponent(GravityComponent gravityComponent)
+    public JumpComponent(PlayerController controller)
     {
-        this.gravityComponent = gravityComponent;
+        _controller = controller;   
     }
 
     public void Jump(Vector2 diraction, float jumpForce)
     {
         // Берём нормаль поверхности, по которой стоим
-        Vector3 normal = gravityComponent.SurfaceNormal.normalized;
+        Vector3 normal = _controller.SurfaceNormal.normalized;
 
         // Смешиваем с направлением строго вверх
         // НО ВАЖНО: не нормализуем здесь, чтобы потом управлять осью Y
@@ -27,8 +27,6 @@ public class JumpComponent
         jumpDir = jumpDir.normalized;
 
         // Применяем импульс
-        gravityComponent.AddImpulse(jumpForce, jumpDir);
+        _controller.AddImpulse(jumpForce, jumpDir);
     }
-
-    
 }

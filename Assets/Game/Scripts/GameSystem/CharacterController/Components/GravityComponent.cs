@@ -2,12 +2,11 @@ using UnityEngine;
 
 public class GravityComponent
 {
-    private readonly float gravity;
-    private readonly float maxSlopeAngle;
-    private readonly LayerMask groundLayer;
+    private readonly PlayerController _controller;
+
     private const float radius = 0.1f;
 
-    public bool HasHitGround { get; private set; }
+    public bool IsGrounded { get; private set; }
     public Vector2 SurfaceNormal { get; private set; }
     public Transform CurrentGround { get; private set; }
 
@@ -15,11 +14,9 @@ public class GravityComponent
     private Vector3 lastGroundPos;
     private Vector3 gravityVector;
 
-    public GravityComponent(LayerMask groundLayer, float gravity, float maxSlopeAngle)
+    public GravityComponent(PlayerController controller)
     {
-        this.groundLayer = groundLayer;
-        this.gravity = gravity;
-        this.maxSlopeAngle = maxSlopeAngle;
+        _controller = controller;
     }
 
     public Vector3 ApplyGravity(Vector3 position, Vector3 groundOffset)
@@ -30,9 +27,9 @@ public class GravityComponent
             float angle = Vector2.Angle(hit.normal, Vector2.up);
 
             // Проверяем: стоим ли на земле и не двигаемся вверх от неё
-            if (angle <= maxSlopeAngle && Vector2.Dot(gravityVector, Vector2.down) >= 0f)
+            if (angle <= _controller.MaxSlopeAngle && Vector2.Dot(gravityVector, Vector2.down) >= 0f)
             {
-                HasHitGround = true;
+                IsGrounded = true;
                 CurrentGround = hit.collider.transform;
                 lastGroundPos = CurrentGround.position;
 
@@ -44,18 +41,18 @@ public class GravityComponent
         }
 
         // В воздухе
-        HasHitGround = false;
+        IsGrounded = false;
         CurrentGround = null;
 
         // Добавляем гравитацию вниз
-        gravityVector += Vector3.down * gravity * Time.deltaTime;
+        gravityVector += Vector3.down * _controller.Gravity * Time.deltaTime;
 
         return gravityVector * Time.deltaTime;
     }
 
     public Vector3 GetGroundOffset()
     {
-        if (HasHitGround && CurrentGround != null)
+        if (IsGrounded && CurrentGround != null)
         {
             Vector3 offset = CurrentGround.position - lastGroundPos;
             lastGroundPos = CurrentGround.position;
@@ -70,7 +67,7 @@ public class GravityComponent
         hit = default;
         float maxY = float.NegativeInfinity;
 
-        foreach (RaycastHit2D h in Physics2D.CircleCastAll(pos, radius, Vector2.down, 0.1f, groundLayer))
+        foreach (RaycastHit2D h in Physics2D.CircleCastAll(pos, radius, Vector2.down, 0.1f, _controller.GroundLayer))
         {
             if (h.point.y > maxY)
             {
@@ -84,7 +81,7 @@ public class GravityComponent
 
     public void AddImpulse(float jumpForce, Vector3 direction)
     {
-        HasHitGround = false;
+        IsGrounded = false;
         CurrentGround = null;
 
         // Прыжок по нормали поверхности

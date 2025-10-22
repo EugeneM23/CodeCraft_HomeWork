@@ -1,12 +1,12 @@
 using UnityEngine;
 
-public class RotationComponent 
+public class RotationComponent
 {
     private Quaternion startRotation;
 
-    public RotationComponent(Quaternion startRotation)
+    public RotationComponent(PlayerController controller)
     {
-        this.startRotation = startRotation;
+        this.startRotation = controller.transform.rotation;
     }
 
     public void ApplyRotation(bool grounded, Vector2 normal, Transform target)
