@@ -1,3 +1,4 @@
+using System;
 using Gameplay;
 using UnityEngine;
 
@@ -13,6 +14,10 @@ namespace Game.Scripts.PlayerController
         
         public Vector2 SurfaceNormal { get; set; }
 
+        private void Start()
+        {
+            Physics2D.queriesStartInColliders = false;
+        }
 
         private void FixedUpdate()
         {

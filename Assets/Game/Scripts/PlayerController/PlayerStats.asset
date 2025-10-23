@@ -13,15 +13,16 @@ MonoBehaviour:
   m_Name: PlayerStats
   m_EditorClassIdentifier: 
   MaxSpeed: 15
-  Acceleration: 200
-  GroundDeceleration: 200
+  Acceleration: 100
+  GroundDeceleration: 30
   AirDeceleration: 10
-  JumpPower: 40
-  FallAcceleration: 70
-  MaxFallSpeed: 200
+  AirAcceleration: 100
+  JumpPower: 30
+  FallAcceleration: 100
+  MaxFallSpeed: 400
   GrounderDistance: 0.1
   PlayerLayer:
     serializedVersion: 2
     m_Bits: 64
   GroundingForce: -0.1
-  FallMultiplier: 0.2
+  FallMultiplier: 0

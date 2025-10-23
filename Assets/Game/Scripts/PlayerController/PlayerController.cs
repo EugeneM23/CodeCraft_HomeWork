@@ -31,14 +31,15 @@ namespace Game.Scripts.PlayerController
 
         private void Start()
         {
+            Application.targetFrameRate = 10;
             Physics2D.queriesStartInColliders = false;
 
             _collisionComponent = new CollisionComponent(_collider, _stats);
             _inputHandler = new InputHandler();
-            _gravityComponent = new GravityComponent(_stats);
+            _gravityComponent = new GravityComponent(_stats, _debugger);
+            _moveComponent = new MoveComponentDva(_stats, this, _debugger);
             //_moveComponent = new MoveComponent(_stats, this);
-            _moveComponent = new MoveComponentDva(_stats, this);
-            _jumpComponent = new JumpComponent(_stats, _inputHandler);
+            _jumpComponent = new JumpComponent(_stats, _inputHandler, _debugger);
 
             OnJump += _gravityComponent.Reset;
         }
@@ -50,7 +51,12 @@ namespace Game.Scripts.PlayerController
             _collisionComponent.DetectCollisions();
 
             _frameVelocity = _moveComponent.Move(_frameInput.Move);
-            _frameVelocity.y = _gravityComponent.GetGravity(IsGrounded, _frameVelocity.y, IsCeilingHit);
+            
+            float gravityY = _gravityComponent.GetGravity(IsGrounded, _frameVelocity.y, IsCeilingHit);
+            
+            if (gravityY != 0) 
+                _frameVelocity.y = gravityY;
+            
             _frameVelocity.y += _jumpComponent.HandleJump();
 
             _rigidbody.linearVelocity = _frameVelocity;
