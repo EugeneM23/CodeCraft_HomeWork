@@ -1,3 +1,4 @@
+using System;
 using Game.Scripts.PlayerController.Game.Scripts.PlayerController;
 using UnityEngine;
 
@@ -12,8 +13,14 @@ namespace Game.Scripts.PlayerController
         private CollisionComponent _collisionComponent;
         private InputHandler _inputHandler;
         private GravityComponent _gravityComponent;
-        private MoveComponent _moveComponent;
+        private IMoveComponent _moveComponent;
         private JumpComponent _jumpComponent;
+
+        public event Action OnJump;
+        public event Action OnLand;
+        public event Action OnGrounded;
+        public event Action OnHitCeiling;
+        
 
         public bool IsGrounded => _collisionComponent.IsGrounded;
         public bool IsCeilingHit => _collisionComponent.IsCeilingHit;
@@ -24,7 +31,7 @@ namespace Game.Scripts.PlayerController
         private void Start()
         {
             Physics2D.queriesStartInColliders = false;
-            
+
             _collisionComponent = new CollisionComponent(_collider, _stats);
             _inputHandler = new InputHandler();
             _gravityComponent = new GravityComponent(_stats);

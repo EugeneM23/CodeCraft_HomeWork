@@ -1,8 +1,9 @@
+using Gameplay;
 using UnityEngine;
 
 namespace Game.Scripts.PlayerController
 {
-    internal class MoveComponent
+    internal class MoveComponent : IMoveComponent
     {
         private readonly ScriptableStats _stats;
 
@@ -29,4 +30,5 @@ namespace Game.Scripts.PlayerController
             }
         }
     }
+    
 }
