@@ -38,37 +38,54 @@ namespace Game.Scripts.GameSystem.CharacterController.Test
 
         private Vector3 CheckCollision(Vector3 move)
         {
-            RaycastHit2D hit = _capsule.Cast(Vector2.down, move.magnitude, _groundLayer);
+            Vector2 direction = move.normalized; // направление
+            float distance = move.magnitude; // длина движения за кадр
 
-            if (hit.collider.Log() != null)
+            RaycastHit2D hit = _capsule.Cast(direction, distance, _groundLayer);
+
+            if (hit.collider != null)
             {
                 CurrentSurfaceNormal = hit.normal;
                 IsGrounded = true;
                 _velocity = 0f;
-                return Vector3.down * hit.distance;
+
+                // Перемещаемся ровно до коллайдера
+                return direction * hit.distance;
             }
-            else
-            {
-                IsGrounded = false;
-                CurrentSurfaceNormal = Vector2.up;
-                return move;
-            }
+
+            IsGrounded = false;
+            CurrentSurfaceNormal = Vector2.up;
+            return move;
         }
 
         private Vector3 CalculateSurfaceMove()
         {
             _inputDir = new Vector2(Input.GetAxisRaw("Horizontal"), 0f);
 
-            /*if (Mathf.Abs(_inputDir.x) < 0.1f || !IsGrounded)
-                return Vector3.zero;*/
+            // Используем RaycastAll для получения всех коллайдеров
+            RaycastHit2D[] hits = Physics2D.RaycastAll(_capsule.transform.position, Vector2.down, 1f, _groundLayer);
 
+            if (hits.Length > 0)
+            {
+                // Находим ближайшую точку
+                RaycastHit2D closestHit = hits[0];
+                float minDistance = hits[0].distance;
 
-            RaycastHit2D hit = Physics2D.Raycast(_capsule.transform.position, Vector2.down, 1f, _groundLayer);
+                for (int i = 1; i < hits.Length; i++)
+                {
+                    if (hits[i].distance < minDistance)
+                    {
+                        minDistance = hits[i].distance;
+                        closestHit = hits[i];
+                    }
+                }
 
-            if (hit.collider != null)
-                CurrentSurfaceNormal = hit.normal;
+                CurrentSurfaceNormal = closestHit.normal;
+            }
             else
+            {
                 CurrentSurfaceNormal = Vector2.up;
+            }
 
             Vector2 tangent = new Vector2(CurrentSurfaceNormal.y, -CurrentSurfaceNormal.x).normalized;
 
