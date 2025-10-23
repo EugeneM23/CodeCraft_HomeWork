@@ -12,24 +12,25 @@ namespace Game.Scripts.PlayerController
             _stats = stats;
         }
 
-        public float CalculateYVelocity(bool isGrounded, float currentYVelocity)
+        public float GetGravity(bool isGrounded, float currentYVelocity, bool IsCeilingHit)
         {
+            if (IsCeilingHit)
+                return Mathf.Min(0, currentYVelocity);
+
             if (isGrounded && currentYVelocity <= 0f)
             {
                 _fallMultiplier = _stats.FallMultiplier;
                 return _stats.GroundingForce;
             }
-            else
-            {
-                float inAirGravity = _stats.FallAcceleration * (1 + _fallMultiplier);
 
-                float newYVelocity = Mathf.MoveTowards(currentYVelocity, -_stats.MaxFallSpeed,
-                    inAirGravity * Time.fixedDeltaTime);
+            float inAirGravity = _stats.FallAcceleration * (1 + _fallMultiplier);
 
-                _fallMultiplier += _stats.FallMultiplier;
+            float newYVelocity = Mathf.MoveTowards(currentYVelocity, -_stats.MaxFallSpeed,
+                inAirGravity * Time.fixedDeltaTime);
 
-                return newYVelocity;
-            }
+            _fallMultiplier += _stats.FallMultiplier;
+
+            return newYVelocity;
         }
     }
 }

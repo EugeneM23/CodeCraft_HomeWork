@@ -12,6 +12,8 @@ namespace Game.Scripts.PlayerController
         private CollisionComponent _collisionComponent;
         private InputHandler _inputHandler;
         private GravityComponent _gravityComponent;
+        private MoveComponent _moveComponent;
+        private JumpComponent _jumpComponent;
 
         public bool IsGrounded => _collisionComponent.IsGrounded;
         public bool IsCeilingHit => _collisionComponent.IsCeilingHit;
@@ -22,64 +24,25 @@ namespace Game.Scripts.PlayerController
         private void Start()
         {
             Physics2D.queriesStartInColliders = false;
+            
             _collisionComponent = new CollisionComponent(_collider, _stats);
             _inputHandler = new InputHandler();
             _gravityComponent = new GravityComponent(_stats);
+            _moveComponent = new MoveComponent(_stats);
+            _jumpComponent = new JumpComponent(_stats, _inputHandler);
         }
 
-        private void Update()
-        {
-            _inputHandler.HandleInput();
-        }
+        private void Update() => _inputHandler.HandleInput();
 
         private void FixedUpdate()
         {
             _collisionComponent.DetectCollisions();
 
-            HandleDirection();
-            _frameVelocity.y = _gravityComponent.CalculateYVelocity(IsGrounded, _frameVelocity.y);
-            HandleJump();
-
-            ApplyMovement();
-        }
-
-        private void HandleJump()
-        {
-            if (_inputHandler.JumpToConsume)
-            {
-                ExecuteJump();
-                _inputHandler.ConsumeJump();
-            }
-        }
-
-        private void ExecuteJump()
-        {
-            _frameVelocity.y = _stats.JumpPower;
-        }
-
-        private void ApplyMovement()
-        {
-            if (IsCeilingHit)
-                _frameVelocity.y = Mathf.Min(0, _frameVelocity.y);
+            _frameVelocity.x = _moveComponent.Move(_frameInput.Move.x, IsGrounded, _frameVelocity.x);
+            _frameVelocity.y = _gravityComponent.GetGravity(IsGrounded, _frameVelocity.y, IsCeilingHit);
+            _frameVelocity.y += _jumpComponent.HandleJump();
 
             _rigidbody.linearVelocity = _frameVelocity;
-        }
-
-        private void HandleDirection()
-        {
-            if (_frameInput.Move.x == 0)
-            {
-                var deceleration = IsGrounded
-                    ? _stats.GroundDeceleration
-                    : _stats.AirDeceleration;
-                _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, 0, deceleration * Time.fixedDeltaTime);
-            }
-            else
-            {
-                _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x,
-                    _frameInput.Move.x * _stats.MaxSpeed,
-                    _stats.Acceleration * Time.fixedDeltaTime);
-            }
         }
     }
 }
