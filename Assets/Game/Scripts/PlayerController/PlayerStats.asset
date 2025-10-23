@@ -12,21 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 67cba8c975ac45fcbca7651eef096eb8, type: 3}
   m_Name: PlayerStats
   m_EditorClassIdentifier: 
-  MaxSpeed: 5
-  Acceleration: 20
-  GroundDeceleration: 30
+  MaxSpeed: 15
+  Acceleration: 200
+  GroundDeceleration: 200
   AirDeceleration: 10
-  JumpPower: 10
-  FallAcceleration: 30
+  JumpPower: 40
+  FallAcceleration: 70
   MaxFallSpeed: 200
-  GrounderDistance: 1
+  GrounderDistance: 0.1
   PlayerLayer:
     serializedVersion: 2
     m_Bits: 64
-  SnapInput: 1
-  HorizontalDeadZoneThreshold: 0.2
-  VerticalDeadZoneThreshold: 0.2
-  CoyoteTime: 0.1
-  JumpBuffer: 0.1
-  JumpEndEarlyGravityModifier: 2
   GroundingForce: -0.1
+  FallMultiplier: 0.2
