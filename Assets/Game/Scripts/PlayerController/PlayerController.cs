@@ -31,7 +31,7 @@ namespace Game.Scripts.PlayerController
 
         private void Start()
         {
-            Application.targetFrameRate = 10;
+            Application.targetFrameRate = 120;
             Physics2D.queriesStartInColliders = false;
 
             _collisionComponent = new CollisionComponent(_collider, _stats);
