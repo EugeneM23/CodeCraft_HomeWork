@@ -32,5 +32,10 @@ namespace Game.Scripts.PlayerController
 
             return newYVelocity;
         }
+
+        public void Reset()
+        {
+            _fallMultiplier = 0;
+        }
     }
 }

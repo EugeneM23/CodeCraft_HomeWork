@@ -20,7 +20,6 @@ namespace Game.Scripts.PlayerController
         public event Action OnLand;
         public event Action OnGrounded;
         public event Action OnHitCeiling;
-        
 
         public bool IsGrounded => _collisionComponent.IsGrounded;
         public bool IsCeilingHit => _collisionComponent.IsCeilingHit;
@@ -37,6 +36,8 @@ namespace Game.Scripts.PlayerController
             _gravityComponent = new GravityComponent(_stats);
             _moveComponent = new MoveComponent(_stats);
             _jumpComponent = new JumpComponent(_stats, _inputHandler);
+
+            OnJump += _gravityComponent.Reset;
         }
 
         private void Update() => _inputHandler.HandleInput();
