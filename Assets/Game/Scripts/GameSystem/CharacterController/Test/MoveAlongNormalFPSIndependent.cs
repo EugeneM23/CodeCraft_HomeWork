@@ -3,18 +3,17 @@ using UnityEngine;
 
 public class MoveAlongSurface2D_FixedVerticalDistance : MonoBehaviour
 {
-    [Header("Movement Settings")]
-    public float speed = 5f;                  // горизонтальная скорость
-    public float distanceToGround = 1f;       // вертикальная высота над поверхностью
-    public LayerMask groundLayerMask;         // слой поверхности
-    public float stepSize = 0.05f;            // шаг движения для точного Raycast
-    public float heightSmoothSpeed = 10f;     // скорость сглаживания высоты
+    [Header("Movement Settings")] public float speed = 5f; // горизонтальная скорость
+    public float distanceToGround = 1f; // вертикальная высота над поверхностью
+    public LayerMask groundLayerMask; // слой поверхности
+    public float stepSize = 0.01f; // шаг движения для точного Raycast
+    public float heightSmoothSpeed = 10f; // скорость сглаживания высоты
 
-    private Vector2 lastNormal = Vector2.up;  // последняя нормаль поверхности
+    private Vector2 lastNormal = Vector2.up; // последняя нормаль поверхности
 
     private void Start()
     {
-        Application.targetFrameRate = 60;
+        Application.targetFrameRate = 100;
     }
 
     void Update()
@@ -50,7 +49,8 @@ public class MoveAlongSurface2D_FixedVerticalDistance : MonoBehaviour
                 Vector2 targetPos = hit.point + offset;
 
                 // плавная корректировка высоты
-                float smoothY = Mathf.MoveTowards(transform.position.y, targetPos.y, heightSmoothSpeed * Time.deltaTime);
+                float smoothY =
+                    Mathf.MoveTowards(transform.position.y, targetPos.y, heightSmoothSpeed * Time.deltaTime);
 
                 // применяем позицию
                 transform.position = new Vector3(newPos.x, smoothY, transform.position.z);
