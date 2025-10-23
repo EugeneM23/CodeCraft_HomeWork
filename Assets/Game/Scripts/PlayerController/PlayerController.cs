@@ -9,6 +9,7 @@ namespace Game.Scripts.PlayerController
         [SerializeField] private Rigidbody2D _rigidbody;
         [SerializeField] private ScriptableStats _stats;
         [SerializeField] private CapsuleCollider2D _collider;
+        [SerializeField] private SurfaceTangentDebugger _debugger;
 
         private CollisionComponent _collisionComponent;
         private InputHandler _inputHandler;
@@ -25,6 +26,7 @@ namespace Game.Scripts.PlayerController
         public bool IsCeilingHit => _collisionComponent.IsCeilingHit;
         private FrameInput _frameInput => _inputHandler.FrameInput;
 
+        public Vector2 Velocity => _frameVelocity;
         private Vector2 _frameVelocity;
 
         private void Start()
@@ -34,7 +36,8 @@ namespace Game.Scripts.PlayerController
             _collisionComponent = new CollisionComponent(_collider, _stats);
             _inputHandler = new InputHandler();
             _gravityComponent = new GravityComponent(_stats);
-            _moveComponent = new MoveComponent(_stats);
+            //_moveComponent = new MoveComponent(_stats, this);
+            _moveComponent = new MoveComponentDva(_stats, this);
             _jumpComponent = new JumpComponent(_stats, _inputHandler);
 
             OnJump += _gravityComponent.Reset;
@@ -46,7 +49,7 @@ namespace Game.Scripts.PlayerController
         {
             _collisionComponent.DetectCollisions();
 
-            _frameVelocity.x = _moveComponent.Move(_frameInput.Move.x, IsGrounded, _frameVelocity.x);
+            _frameVelocity = _moveComponent.Move(_frameInput.Move);
             _frameVelocity.y = _gravityComponent.GetGravity(IsGrounded, _frameVelocity.y, IsCeilingHit);
             _frameVelocity.y += _jumpComponent.HandleJump();
 

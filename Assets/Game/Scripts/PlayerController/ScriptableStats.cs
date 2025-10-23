@@ -9,6 +9,7 @@ namespace Game.Scripts.PlayerController
         public float Acceleration = 20f;
         public float GroundDeceleration = 30f;
         public float AirDeceleration = 10f;
+        public float AirAcceleration = 10f;
         public float JumpPower = 10f;
         public float FallAcceleration = 30f;
         public float MaxFallSpeed = 20f;
