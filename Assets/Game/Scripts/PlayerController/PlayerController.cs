@@ -36,17 +36,17 @@ namespace Game.Scripts.PlayerController
         [ShowInInspector] private bool _debugIsceiling;
         [ShowInInspector] private Vector2 _debugFrameVelocity;
         private SlopeSlideComponent _slopeSlideComponent;
+        private BounceComponent _bounceComponent;
 
         private void Start()
         {
-            _rigidbody.gravityScale = 0;
-            Time.timeScale = 1f;
             _collision = new CollisionComponent(_collider, _stats, this);
             _inputHandler = new InputHandler();
             _gravityComponent = new GravityComponent(_stats, _collision, this);
             _moveComponent = new MoveComponentDva(_stats, _collision, this);
             _jumpComponent = new JumpComponent(_stats, _inputHandler);
             _slopeSlideComponent = new SlopeSlideComponent(_collision, 89, 2);
+            _bounceComponent = new BounceComponent(_collision, this, 5f, 10);
             OnJump += _gravityComponent.Reset;
         }
 
@@ -64,6 +64,7 @@ namespace Game.Scripts.PlayerController
             _frameVelocity.y = _gravityComponent.GetYVelocity();
             _frameVelocity += _slopeSlideComponent.GetSlideVelocity();
             _frameVelocity.y += _jumpComponent.HandleJump();
+            _frameVelocity.y += _bounceComponent.GetBounceImpulse();
 
             _rigidbody.linearVelocity = _frameVelocity;
 
@@ -76,6 +77,60 @@ namespace Game.Scripts.PlayerController
             {
                 Debug.Log("Ceiling hit");
             }
+        }
+    }
+
+    public class BounceComponent
+    {
+        private readonly CollisionComponent _collision;
+        private readonly PlayerController _player;
+        private readonly float _flatSurfaceAngle;
+        private readonly float _bounceMultiplier;
+
+        private bool _wasGrounded;
+        private bool _canBounce;
+        private float _landingVelocity;
+
+        public BounceComponent(CollisionComponent collision, PlayerController player, float flatSurfaceAngle = 5f,
+            float bounceMultiplier = 0.5f)
+        {
+            _collision = collision;
+            _player = player;
+            _flatSurfaceAngle = flatSurfaceAngle;
+            _bounceMultiplier = bounceMultiplier;
+            _canBounce = true;
+        }
+
+        public float GetBounceImpulse()
+        {
+            bool isGroundedNow = _collision.IsGrounded;
+
+            if (!_wasGrounded && isGroundedNow)
+            {
+                Debug.Log("Grounded ---------------------------");
+                Debug.Log("Landed! Velocity: " + _player.Velocity.y);
+                Vector2 normal = _collision.SurfaceNormal;
+                float angle = Vector2.Angle(normal, Vector2.up);
+                Debug.Log("Surface angle: " + angle + " CanBounce: " + _canBounce);
+
+
+                _landingVelocity = _player.Velocity.y;
+                _canBounce = false;
+                _wasGrounded = true;
+
+                float bounce = Mathf.Abs(_landingVelocity) * _bounceMultiplier;
+                Debug.Log("BOUNCE! Impulse: " + bounce);
+                return _bounceMultiplier;
+            }
+
+            if (!isGroundedNow && _wasGrounded)
+            {
+                _canBounce = true;
+                Debug.Log("Left ground - can bounce again");
+            }
+
+            _wasGrounded = isGroundedNow;
+            return 0f;
         }
     }
 
