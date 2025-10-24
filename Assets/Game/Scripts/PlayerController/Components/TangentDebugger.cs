@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Game.Scripts.PlayerController
 {
-    public class SurfaceTangentDebugger : MonoBehaviour
+    public class TangentDebugger : MonoBehaviour
     {
         [SerializeField] private Rigidbody2D _rigidbody;
         [SerializeField] private CapsuleCollider2D _collider;
@@ -14,15 +14,16 @@ namespace Game.Scripts.PlayerController
         
         public Vector2 SurfaceNormal { get; set; }
 
-        private void Start()
-        {
-            Physics2D.queriesStartInColliders = false;
-        }
 
         private void FixedUpdate()
         {
+            GetNormal();
+        }
+
+        private void GetNormal()
+        {
             Vector2 origin = _collider.bounds.center;
-            float rayLength = _collider.bounds.extents.y + rayExtraLength;
+            float rayLength = _collider.bounds.extents.y + 5;
 
             Debug.DrawRay(origin, Vector2.down * rayLength, Color.yellow);
 
@@ -44,6 +45,5 @@ namespace Game.Scripts.PlayerController
                 SurfaceNormal = Vector2.up;
             }
         }
-
     }
 }

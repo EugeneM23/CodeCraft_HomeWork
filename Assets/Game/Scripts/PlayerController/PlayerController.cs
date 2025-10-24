@@ -9,9 +9,8 @@ namespace Game.Scripts.PlayerController
         [SerializeField] private Rigidbody2D _rigidbody;
         [SerializeField] private ScriptableStats _stats;
         [SerializeField] private CapsuleCollider2D _collider;
-        [SerializeField] private SurfaceTangentDebugger _debugger;
 
-        private CollisionComponent _collisionComponent;
+        private CollisionComponent _collision;
         private InputHandler _inputHandler;
         private GravityComponent _gravityComponent;
         private IMoveComponent _moveComponent;
@@ -22,24 +21,21 @@ namespace Game.Scripts.PlayerController
         public event Action OnGrounded;
         public event Action OnHitCeiling;
 
-        public bool IsGrounded => _collisionComponent.IsGrounded;
-        public bool IsCeilingHit => _collisionComponent.IsCeilingHit;
+        public bool IsGrounded => _collision.IsGrounded;
+        public bool IsCeilingHit => _collision.IsCeilingHit;
         private FrameInput _frameInput => _inputHandler.FrameInput;
 
         public Vector2 Velocity => _frameVelocity;
+
         private Vector2 _frameVelocity;
 
         private void Start()
         {
-            Application.targetFrameRate = 120;
-            Physics2D.queriesStartInColliders = false;
-
-            _collisionComponent = new CollisionComponent(_collider, _stats);
+            _collision = new CollisionComponent(_collider, _stats);
             _inputHandler = new InputHandler();
-            _gravityComponent = new GravityComponent(_stats, _debugger);
-            _moveComponent = new MoveComponentDva(_stats, this, _debugger);
-            //_moveComponent = new MoveComponent(_stats, this);
-            _jumpComponent = new JumpComponent(_stats, _inputHandler, _debugger);
+            _gravityComponent = new GravityComponent(_stats, _collision, this);
+            _moveComponent = new MoveComponentDva(_stats, _collision, this);
+            _jumpComponent = new JumpComponent(_stats, _inputHandler);
 
             OnJump += _gravityComponent.Reset;
         }
@@ -48,15 +44,15 @@ namespace Game.Scripts.PlayerController
 
         private void FixedUpdate()
         {
-            _collisionComponent.DetectCollisions();
+            _collision.DetectCollisions();
 
             _frameVelocity = _moveComponent.Move(_frameInput.Move);
-            
-            float gravityY = _gravityComponent.GetGravity(IsGrounded, _frameVelocity.y, IsCeilingHit);
-            
-            if (gravityY != 0) 
-                _frameVelocity.y = gravityY;
-            
+
+            float yVelocity = _gravityComponent.GetYVelocity();
+
+            if (yVelocity != 0)
+                _frameVelocity.y = yVelocity;
+
             _frameVelocity.y += _jumpComponent.HandleJump();
 
             _rigidbody.linearVelocity = _frameVelocity;

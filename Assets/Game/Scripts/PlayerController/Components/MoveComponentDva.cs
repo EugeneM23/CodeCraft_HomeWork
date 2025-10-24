@@ -4,29 +4,29 @@ namespace Game.Scripts.PlayerController
 {
     internal class MoveComponentDva : IMoveComponent
     {
-        private SurfaceTangentDebugger _debugger;
-        private PlayerController _character;
-        private ScriptableStats _stats;
+        private readonly CollisionComponent _collision;
+        private readonly ScriptableStats _stats;
+        private readonly PlayerController _player;
 
-        public MoveComponentDva(ScriptableStats stats, PlayerController character, SurfaceTangentDebugger debugger)
+        public MoveComponentDva(ScriptableStats stats, CollisionComponent collision, PlayerController player)
         {
             _stats = stats;
-            _character = character;
-            _debugger = debugger;
+            _collision = collision;
+            _player = player;
         }
 
         public Vector2 Move(Vector2 direction)
         {
-            Vector2 normal = _debugger.SurfaceNormal.normalized;
-            
+            Vector2 normal = _collision.SurfaceNormal;
+
             // Если персонаж на земле и есть нормаль поверхности
-            if (_character.IsGrounded && normal != Vector2.zero)
+            if (_collision.IsGrounded && normal != Vector2.zero)
             {
                 // Касательная (направление вдоль поверхности)
                 Vector2 tangent = new Vector2(normal.y, -normal.x).normalized;
 
                 // Текущая скорость проецируем на касательную
-                float currentSpeed = Vector2.Dot(_character.Velocity, tangent);
+                float currentSpeed = Vector2.Dot(_player.Velocity, tangent);
 
                 // Задаём целевую скорость вдоль касательной
                 float targetSpeed = direction.x * _stats.MaxSpeed;
@@ -43,7 +43,7 @@ namespace Game.Scripts.PlayerController
 
                 // Итоговое движение вдоль поверхности
                 Vector2 movement = tangent * currentSpeed;
-                
+
                 // Добавляем небольшую силу прижатия к поверхности
                 movement += normal * _stats.GroundingForce * Time.fixedDeltaTime;
 
@@ -52,19 +52,19 @@ namespace Game.Scripts.PlayerController
             else
             {
                 // В воздухе используем стандартное горизонтальное движение
-                float currentSpeed = _character.Velocity.x;
+                float currentSpeed = _player.Velocity.x;
                 float targetSpeed = direction.x * _stats.MaxSpeed;
-                
+
                 float accel = _stats.AirAcceleration;
                 float decel = _stats.AirDeceleration;
-                
+
                 if (Mathf.Abs(direction.x) > 0.01f)
                     currentSpeed = Mathf.MoveTowards(currentSpeed, targetSpeed, accel * Time.fixedDeltaTime);
                 else
                     currentSpeed = Mathf.MoveTowards(currentSpeed, 0, decel * Time.fixedDeltaTime);
-                
+
                 // Сохраняем вертикальную скорость
-                return new Vector2(currentSpeed, _character.Velocity.y);
+                return new Vector2(currentSpeed, _player.Velocity.y);
             }
         }
     }
