@@ -64,7 +64,7 @@ namespace Game.Scripts.PlayerController
             _frameVelocity.y = _gravityComponent.GetYVelocity();
             _frameVelocity += _slopeSlideComponent.GetSlideVelocity();
             _frameVelocity.y += _jumpComponent.HandleJump();
-            _frameVelocity.y += _bounceComponent.GetBounceImpulse();
+            //_frameVelocity.y += _bounceComponent.GetBounceImpulse();
 
             _rigidbody.linearVelocity = _frameVelocity;
 
