@@ -1,5 +1,6 @@
 using System;
 using Game.Scripts.PlayerController.Game.Scripts.PlayerController;
+using Gameplay;
 using UnityEngine;
 
 namespace Game.Scripts.PlayerController
@@ -27,10 +28,11 @@ namespace Game.Scripts.PlayerController
 
         public Vector2 Velocity => _frameVelocity;
 
-        private Vector2 _frameVelocity;
+        public Vector2 _frameVelocity;
 
         private void Start()
         {
+            Time.timeScale = 0.1f;
             _collision = new CollisionComponent(_collider, _stats);
             _inputHandler = new InputHandler();
             _gravityComponent = new GravityComponent(_stats, _collision, this);
@@ -46,12 +48,9 @@ namespace Game.Scripts.PlayerController
         {
             _collision.DetectCollisions();
 
+
             _frameVelocity = _moveComponent.Move(_frameInput.Move);
-
-            float yVelocity = _gravityComponent.GetYVelocity();
-
-            if (yVelocity != 0)
-                _frameVelocity.y = yVelocity;
+            _frameVelocity.y = _gravityComponent.GetYVelocity();
 
             _frameVelocity.y += _jumpComponent.HandleJump();
 

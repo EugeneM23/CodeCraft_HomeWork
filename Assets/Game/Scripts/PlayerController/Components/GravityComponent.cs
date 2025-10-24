@@ -19,18 +19,15 @@ namespace Game.Scripts.PlayerController
 
         public float GetYVelocity()
         {
-            // На наклонной поверхности
-            if (_collision.IsGrounded && _collision.SurfaceNormal != Vector2.zero &&
-                _collision.SurfaceNormal != Vector2.up)
+            // На наклонной поверхности - не применяем гравитацию
+            if (_collision.IsGrounded && _collision.SurfaceNormal != Vector2.up)
+                return _player._frameVelocity.y;
+
+            if (_collision.IsGrounded)
                 return 0;
 
-            // Удар головой о потолок
             if (_collision.IsCeilingHit)
-                return Mathf.Min(0, _player.Velocity.y);
-
-            // На земле и падаем/стоим
-            if (_collision.IsGrounded && _player.Velocity.y <= 0f)
-                return 0;
+                return _player._frameVelocity.y = -_player._frameVelocity.y / 2;
 
             // В воздухе - применяем гравитацию
             float gravity = _stats.FallAcceleration * (1 + _fallMultiplier);
@@ -39,10 +36,6 @@ namespace Game.Scripts.PlayerController
             float moveTowards = Mathf.MoveTowards(_player.Velocity.y, -_stats.MaxFallSpeed,
                 gravity * Time.fixedDeltaTime);
 
-            /*
-            if (moveTowards == 0f)
-                return _player.Velocity.y;
-                */
 
             return moveTowards;
         }
