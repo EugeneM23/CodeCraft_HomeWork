@@ -1,6 +1,7 @@
 using System;
 using Game.Scripts.PlayerController.Game.Scripts.PlayerController;
 using Gameplay;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace Game.Scripts.PlayerController
@@ -30,9 +31,14 @@ namespace Game.Scripts.PlayerController
 
         public Vector2 _frameVelocity;
 
+        [ShowInInspector] private Vector2 _debugNormal;
+        [ShowInInspector] private bool _debugIsGround;
+        [ShowInInspector] private bool _debugIsceiling;
+        [ShowInInspector] private Vector2 _debugFrameVelocity;
+
         private void Start()
         {
-            Time.timeScale = 0.1f;
+            Time.timeScale = 1f;
             _collision = new CollisionComponent(_collider, _stats);
             _inputHandler = new InputHandler();
             _gravityComponent = new GravityComponent(_stats, _collision, this);
@@ -42,7 +48,11 @@ namespace Game.Scripts.PlayerController
             OnJump += _gravityComponent.Reset;
         }
 
-        private void Update() => _inputHandler.HandleInput();
+        private void Update()
+        {
+           
+            _inputHandler.HandleInput();
+        }
 
         private void FixedUpdate()
         {
@@ -55,6 +65,16 @@ namespace Game.Scripts.PlayerController
             _frameVelocity.y += _jumpComponent.HandleJump();
 
             _rigidbody.linearVelocity = _frameVelocity;
+            
+            _debugIsGround = IsGrounded;
+            _debugIsceiling = IsCeilingHit;
+            _debugFrameVelocity = _frameVelocity;
+            _debugNormal = _collision.SurfaceNormal;
+
+            if (IsCeilingHit)
+            {
+                Debug.Log("Ceiling hit");
+            }
         }
     }
 }

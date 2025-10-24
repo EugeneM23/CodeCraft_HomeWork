@@ -52,33 +52,49 @@ namespace Game.Scripts.PlayerController
 
             if (!IsGrounded && groundHit)
                 IsGrounded = true;
+
             else if (IsGrounded && !groundHit)
                 IsGrounded = false;
         }
 
+        private Vector2 lastSurfaceNormal = Vector2.up;
+
         private void GetGroundNormal()
         {
+            if (!IsGrounded) return;
+            
             Vector2 origin = _collider.bounds.center;
-            float rayLength = _collider.bounds.extents.y + 1;
+            float rayLength = _collider.bounds.extents.y + 5f;
 
-            VectorDebug.DrawArrow(1, origin, Vector2.down * rayLength, Color.yellow);
+            // Направление второго луча
+            Vector2 directionToSurface = -lastSurfaceNormal;
 
-            RaycastHit2D hit = Physics2D.Raycast(origin, Vector2.down, rayLength, _stats.PlayerLayer);
+            Debug.DrawLine(origin, origin + directionToSurface * rayLength, Color.green);
+            RaycastHit2D hit = Physics2D.Raycast(origin, directionToSurface, _collider.bounds.extents.y + 0.2f,
+                _stats.PlayerLayer);
 
             if (hit.collider != null)
             {
-                Vector2 normal = hit.normal.normalized;
-                Vector2 tangent = new Vector2(normal.y, -normal.x).normalized;
-
-                VectorDebug.DrawArrow(2, origin, normal * 1, Color.blue);
-                VectorDebug.DrawArrow(3, origin, tangent * 1, Color.green);
-                VectorDebug.DrawArrow(4, origin, -tangent * 1, Color.red);
-
-                SurfaceNormal = hit.normal;
+                SurfaceNormal = hit.normal.normalized;
+                lastSurfaceNormal = hit.normal.normalized;
+                Debug.Log("Green Hit Normal: " + hit.normal);
             }
             else
             {
-                SurfaceNormal = Vector2.up;
+                // Если зеленый не попал — запускаем красный вниз
+                Debug.DrawLine(origin, origin + Vector2.down * rayLength, Color.red);
+                RaycastHit2D hitToSurface = Physics2D.Raycast(origin, Vector2.down, rayLength, _stats.PlayerLayer);
+
+                if (hitToSurface.collider != null)
+                {
+                    SurfaceNormal = hitToSurface.normal.normalized;
+                    lastSurfaceNormal = hitToSurface.normal.normalized;
+                    Debug.Log("Red Hit Normal: " + hitToSurface.normal);
+                }
+                else
+                {
+                    SurfaceNormal = Vector2.zero;
+                }
             }
         }
     }

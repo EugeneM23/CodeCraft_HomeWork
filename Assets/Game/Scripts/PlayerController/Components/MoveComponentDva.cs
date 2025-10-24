@@ -20,8 +20,9 @@ namespace Game.Scripts.PlayerController
             Vector2 normal = _collision.SurfaceNormal;
 
             // Если персонаж на земле и есть нормаль поверхности
-            if (_collision.IsGrounded && normal != Vector2.up)
+            if (_collision.IsGrounded)
             {
+                Debug.Log("move on ground");
                 // Касательная (направление вдоль поверхности)
                 Vector2 tangent = new Vector2(normal.y, -normal.x).normalized;
 
