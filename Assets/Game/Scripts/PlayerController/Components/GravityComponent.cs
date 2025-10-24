@@ -1,3 +1,4 @@
+using Gameplay;
 using UnityEngine;
 
 namespace Game.Scripts.PlayerController
@@ -19,7 +20,6 @@ namespace Game.Scripts.PlayerController
 
         public float GetYVelocity()
         {
-            // На наклонной поверхности - не применяем гравитацию
             if (_collision.IsGrounded && _collision.SurfaceNormal != Vector2.up)
                 return _player._frameVelocity.y;
 
@@ -27,9 +27,11 @@ namespace Game.Scripts.PlayerController
                 return 0;
 
             if (_collision.IsCeilingHit)
-                return _player._frameVelocity.y = -_player._frameVelocity.y / 2;
+            {
+                _player._frameVelocity.y = 0;
+                return -5;
+            }
 
-            // В воздухе - применяем гравитацию
             float gravity = _stats.FallAcceleration * (1 + _fallMultiplier);
             _fallMultiplier += _stats.FallMultiplier * Time.fixedDeltaTime;
 

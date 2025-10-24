@@ -6,11 +6,13 @@ namespace Game.Scripts.PlayerController
     {
         private readonly CapsuleCollider2D _collider;
         private readonly ScriptableStats _stats;
+        private readonly PlayerController _player;
 
-        public CollisionComponent(CapsuleCollider2D collider, ScriptableStats stats)
+        public CollisionComponent(CapsuleCollider2D collider, ScriptableStats stats, PlayerController player)
         {
             _collider = collider;
             _stats = stats;
+            _player = player;
 
             Physics2D.queriesStartInColliders = false;
         }
@@ -48,8 +50,13 @@ namespace Game.Scripts.PlayerController
                 _stats.PlayerLayer
             );
 
-            IsCeilingHit = ceilingHit;
-
+            if (ceilingHit && _player._frameVelocity.y > 0)
+            {
+                IsCeilingHit = true;
+            }
+            else
+                IsCeilingHit = false;
+            
             if (!IsGrounded && groundHit)
                 IsGrounded = true;
 
@@ -62,7 +69,7 @@ namespace Game.Scripts.PlayerController
         private void GetGroundNormal()
         {
             if (!IsGrounded) return;
-            
+
             Vector2 origin = _collider.bounds.center;
             float rayLength = _collider.bounds.extents.y + 5f;
 

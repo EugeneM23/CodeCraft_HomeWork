@@ -39,7 +39,7 @@ namespace Game.Scripts.PlayerController
         private void Start()
         {
             Time.timeScale = 1f;
-            _collision = new CollisionComponent(_collider, _stats);
+            _collision = new CollisionComponent(_collider, _stats, this);
             _inputHandler = new InputHandler();
             _gravityComponent = new GravityComponent(_stats, _collision, this);
             _moveComponent = new MoveComponentDva(_stats, _collision, this);
@@ -50,7 +50,6 @@ namespace Game.Scripts.PlayerController
 
         private void Update()
         {
-           
             _inputHandler.HandleInput();
         }
 
@@ -65,7 +64,7 @@ namespace Game.Scripts.PlayerController
             _frameVelocity.y += _jumpComponent.HandleJump();
 
             _rigidbody.linearVelocity = _frameVelocity;
-            
+
             _debugIsGround = IsGrounded;
             _debugIsceiling = IsCeilingHit;
             _debugFrameVelocity = _frameVelocity;

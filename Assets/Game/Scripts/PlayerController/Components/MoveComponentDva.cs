@@ -19,11 +19,8 @@ namespace Game.Scripts.PlayerController
         {
             Vector2 normal = _collision.SurfaceNormal;
 
-            // Если персонаж на земле и есть нормаль поверхности
             if (_collision.IsGrounded)
             {
-                Debug.Log("move on ground");
-                // Касательная (направление вдоль поверхности)
                 Vector2 tangent = new Vector2(normal.y, -normal.x).normalized;
 
                 // Текущая скорость проецируем на касательную
@@ -50,7 +47,7 @@ namespace Game.Scripts.PlayerController
             }
             else
             {
-                // В воздухе используем стандартное горизонтальное движение
+                Debug.Log("Not grounded");
                 float currentSpeed = _player.Velocity.x;
                 float targetSpeed = direction.x * _stats.MaxSpeed;
 
