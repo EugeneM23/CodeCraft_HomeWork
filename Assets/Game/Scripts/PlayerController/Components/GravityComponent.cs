@@ -18,17 +18,17 @@ namespace Game.Scripts.PlayerController
 
         public Vector2 GetGravityVector()
         {
-            // Если на земле и поверхность не горизонтальная - не применяем гравитацию
+            if (_player.IsOnStairs || _player.IsOnSlope)
+                return Vector2.zero;
+            
             if (_collision.IsGrounded && _collision.SurfaceNormal != Vector2.up)
                 return Vector2.zero;
 
-            // Если ударились о потолок - принудительная скорость вниз
             if (_collision.IsCeilingHit)
                 return new Vector2(0, -5);
 
             float gravity = _stats.FallAcceleration;
             
-            // Читаем текущую скорость из Velocity (которая теперь берется из rigidbody)
             float currentYVelocity = _player.Velocity.y;
 
             float newYVelocity = Mathf.MoveTowards(currentYVelocity, -_stats.MaxFallSpeed,

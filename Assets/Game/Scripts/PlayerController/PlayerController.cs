@@ -28,6 +28,8 @@ namespace Game.Scripts.PlayerController
         private FrameInput _frameInput => _inputHandler.FrameInput;
 
         public Vector2 Velocity => _rigidbody.linearVelocity;
+        public bool IsOnStairs { get; set; }
+        public bool IsOnSlope => false;
 
         public Vector2 _frameVelocity;
 
@@ -38,6 +40,7 @@ namespace Game.Scripts.PlayerController
 
         private SlopeSlideComponent _slopeSlideComponent;
         private BounceComponent _bounceComponent;
+        private StairsMoveComponent _stairsMove;
 
         private void Start()
         {
@@ -46,21 +49,26 @@ namespace Game.Scripts.PlayerController
             _inputHandler = new InputHandler();
             _gravityComponent = new GravityComponent(_stats, _collision, this);
             _moveComponent = new MoveComponent(_stats, _collision, this);
-            _jumpComponent = new JumpComponent(_stats, _inputHandler);
-            _slopeSlideComponent = new SlopeSlideComponent(_collision, 89, 5);
+            _jumpComponent = new JumpComponent(_stats, _inputHandler, this);
+            _slopeSlideComponent = new SlopeSlideComponent(_collision, 89, 3);
             _bounceComponent = new BounceComponent(_collision, this, 5f, 10);
+            _stairsMove = new StairsMoveComponent(_stats, _collision, this);
         }
 
         private void Update()
         {
-            _collision.DetectCollisions();
+            _collision.SurfaceNormal.Log();
+            IsOnSlope.Log();
             _inputHandler.HandleInput();
         }
 
         private void FixedUpdate()
         {
+            _collision.DetectCollisions();
+            float slopeAngle = 90f - Vector2.Angle(Vector2.right, _collision.SurfaceNormal).Log();
             Vector2 move = Vector2.zero;
 
+            move += _stairsMove.Move(_frameInput.Move);
             move += _moveComponent.Move(_frameInput.Move);
             move += _gravityComponent.GetGravityVector();
             move += _slopeSlideComponent.GetSlideVelocity();

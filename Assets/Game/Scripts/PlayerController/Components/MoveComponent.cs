@@ -29,20 +29,16 @@ namespace Game.Scripts.PlayerController
 
         private Vector2 InAir(Vector2 direction)
         {
-            // Берём текущую горизонтальную скорость из предыдущего кадра
             _currentHorizontalSpeed = _player.Velocity.x;
             float targetSpeed = direction.x * _stats.MaxSpeed;
 
-            float accel = _stats.AirAcceleration;
-            float decel = _stats.AirDeceleration;
 
             if (Mathf.Abs(direction.x) > 0.01f)
                 _currentHorizontalSpeed =
-                    Mathf.MoveTowards(_currentHorizontalSpeed, targetSpeed, accel * Time.fixedDeltaTime);
+                    Mathf.MoveTowards(_currentHorizontalSpeed, targetSpeed, _stats.AirAcceleration * Time.fixedDeltaTime);
             else
-                _currentHorizontalSpeed = Mathf.MoveTowards(_currentHorizontalSpeed, 0, decel * Time.fixedDeltaTime);
+                _currentHorizontalSpeed = Mathf.MoveTowards(_currentHorizontalSpeed, 0, _stats.AirDeceleration * Time.fixedDeltaTime);
 
-            // Возвращаем только горизонтальный вектор (вертикальное движение добавят другие компоненты)
             return new Vector2(_currentHorizontalSpeed, 0);
         }
 

@@ -2,25 +2,23 @@ using UnityEngine;
 
 namespace Game.Scripts.PlayerController
 {
-    public class CollisionComponent
+    public class CollisionComponentSave
     {
+        
         private readonly CapsuleCollider2D _collider;
         private readonly ScriptableStats _stats;
         private readonly PlayerController _player;
-
-        public CollisionComponent(CapsuleCollider2D collider, ScriptableStats stats, PlayerController player)
-        {
-            _collider = collider;
-            _stats = stats;
-            _player = player;
-
-            Physics2D.queriesStartInColliders = false;
-        }
-
         public bool IsGrounded { get; private set; }
         public bool IsCeilingHit { get; private set; }
 
         public Vector2 SurfaceNormal { get; private set; }
+
+        public CollisionComponentSave(CapsuleCollider2D collider, ScriptableStats stats, PlayerController player)
+        {
+            _collider = collider;
+            _stats = stats;
+            _player = player;
+        }
 
         public void DetectCollisions()
         {

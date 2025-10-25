@@ -15,7 +15,5 @@ namespace Game.Scripts.PlayerController
         public float MaxFallSpeed = 20f;
         public float GrounderDistance = 0.1f;
         public LayerMask PlayerLayer;
-        public float GroundingForce = -0.1f;
-        public float FallMultiplier = 0.1f;
     }
 }
