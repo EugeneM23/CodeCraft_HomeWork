@@ -2,6 +2,7 @@ using System;
 using Game.Scripts.PlayerController.Game.Scripts.PlayerController;
 using Gameplay;
 using Sirenix.OdinInspector;
+using UnityEditor;
 using UnityEngine;
 
 namespace Game.Scripts.PlayerController
@@ -42,6 +43,7 @@ namespace Game.Scripts.PlayerController
         private SlopeSlideComponent _slopeSlideComponent;
         private BounceComponent _bounceComponent;
         private StairsMoveComponent _stairsMove;
+        private WallSlidingComponent _wallSliding;
 
         private void Start()
         {
@@ -51,9 +53,10 @@ namespace Game.Scripts.PlayerController
             _gravityComponent = new GravityComponent(_stats, _collision, this);
             _moveComponent = new MoveComponent(_stats, _collision, this);
             _jumpComponent = new JumpComponent(_stats, _inputHandler, this);
-            _slopeSlideComponent = new SlopeSlideComponent(_collision, 89, 3);
+            _slopeSlideComponent = new SlopeSlideComponent(_collision, this, 89, 7);
             _bounceComponent = new BounceComponent(_collision, this, 5f, 10);
             _stairsMove = new StairsMoveComponent(_stats, _collision, this);
+            _wallSliding = new WallSlidingComponent(_collider, this, _stats);
         }
 
         private void Update()
@@ -71,6 +74,7 @@ namespace Game.Scripts.PlayerController
             move += _gravityComponent.GetGravityVector();
             move += _slopeSlideComponent.GetSlideVelocity();
             move += _jumpComponent.GetJumpVector();
+            move += _wallSliding.ScanWall();
 
             _rigidbody.linearVelocity = move;
 

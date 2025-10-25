@@ -9,7 +9,8 @@ namespace Game.Scripts.PlayerController
         private readonly float _maxAngle;
         private readonly float _slideForce;
 
-        public SlopeSlideComponent(CollisionComponent collision, PlayerController player, float maxAngle = 45f, float slideForce = 50f)
+        public SlopeSlideComponent(CollisionComponent collision, PlayerController player, float maxAngle = 45f,
+            float slideForce = 50f)
         {
             _collision = collision;
             _player = player;
@@ -25,20 +26,37 @@ namespace Game.Scripts.PlayerController
             if (normal == Vector2.zero) return Vector2.zero;
 
             float angle = Vector2.Angle(normal, Vector2.up);
-            if (angle > _maxAngle) return Vector2.zero;
-            if (_player.FrameInput.Move )
-            {
-                
-            }
+            if (angle > _maxAngle || angle < 1f) return Vector2.zero;
 
+            // Вычисляем направление ската (вниз по склону)
             Vector2 slideDir = Vector3.Cross(Vector3.forward, normal);
             slideDir = new Vector2(slideDir.x, slideDir.y).normalized;
 
+            // Убеждаемся что направление идет вниз
             if (slideDir.y > 0) slideDir = -slideDir;
 
-            float multiplier = angle / _maxAngle;
+            Vector2 inputDirection = _player.FrameInput.Move;
 
-            return slideDir * (_slideForce * multiplier);
+            // Случай 1: Нет ввода - скатываемся
+            if (Mathf.Abs(inputDirection.x) < 0.01f)
+            {
+                float multiplier = angle / _maxAngle;
+                return slideDir * (_slideForce * multiplier);
+            }
+
+            // Случай 2: Определяем склон влево или вправо
+            bool slopeGoesRight = slideDir.x > 0; // true = склон идет вправо-вниз
+            bool playerGoesRight = inputDirection.x > 0; // true = игрок нажимает вправо
+
+            // Случай 3: Игрок движется вниз по склону
+            if (slopeGoesRight == playerGoesRight)
+            {
+                float multiplier = angle / _maxAngle;
+                return slideDir * (_slideForce * multiplier);
+            }
+
+            // Случай 4: Игрок движется вверх по склону - не добавляем скат
+            return Vector2.zero;
         }
     }
 }
