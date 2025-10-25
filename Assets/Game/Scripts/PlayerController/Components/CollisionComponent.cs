@@ -93,15 +93,35 @@ namespace Game.Scripts.PlayerController
         private bool ScanLowerSurface()
         {
             float shortRayLength = _collider.bounds.extents.y / 2;
-            
+
             Vector2 origin2 = new Vector2(_collider.bounds.center.x, _collider.bounds.min.y);
             Vector2 direction = _player.FrameInput.Move;
-            
+
             Debug.DrawLine(origin2, origin2 + direction * shortRayLength, Color.green);
             RaycastHit2D hit = Physics2D.Raycast(origin2, direction, shortRayLength, _stats.PlayerLayer);
             if (hit.collider != null)
             {
                 SurfaceNormal = hit.normal.normalized;
+                lastSurfaceNormal = hit.normal.normalized;
+                return true;
+            }
+
+            return false;
+        }
+
+        public bool ScanWalls(out RaycastHit2D hit)
+        {
+            float shortRayLength = _collider.bounds.extents.y / 2 + 1;
+
+            Vector2 origin2 = new Vector2(_collider.bounds.center.x, _collider.bounds.min.y);
+            Vector2 direction = _player.FrameInput.Move;
+
+            Debug.DrawLine(origin2, origin2 + direction * shortRayLength, Color.green);
+            hit = Physics2D.Raycast(origin2, direction, shortRayLength, _stats.PlayerLayer);
+
+            if (hit.collider != null)
+            {
+                SurfaceNormal = hit.normal.normalized * -1;
                 lastSurfaceNormal = hit.normal.normalized;
                 return true;
             }

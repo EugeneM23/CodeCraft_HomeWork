@@ -56,7 +56,7 @@ namespace Game.Scripts.PlayerController
             _slopeSlideComponent = new SlopeSlideComponent(_collision, this, 89, 7);
             _bounceComponent = new BounceComponent(_collision, this, 5f, 10);
             _stairsMove = new StairsMoveComponent(_stats, _collision, this);
-            _wallSliding = new WallSlidingComponent(_collider, this, _stats);
+            _wallSliding = new WallSlidingComponent(_collider, this, _stats, _collision);
         }
 
         private void Update()
@@ -66,6 +66,7 @@ namespace Game.Scripts.PlayerController
 
         private void FixedUpdate()
         {
+            SurfaceNormal.Log();
             _collision.DetectCollisions();
             Vector2 move = Vector2.zero;
 

@@ -8,26 +8,20 @@ namespace Game.Scripts.PlayerController
         private CapsuleCollider2D _collider;
         private readonly PlayerController _player;
         private ScriptableStats _stats;
+        private CollisionComponent _collision;
 
-        public WallSlidingComponent(CapsuleCollider2D collider, PlayerController player, ScriptableStats stats)
+        public WallSlidingComponent(CapsuleCollider2D collider, PlayerController player, ScriptableStats stats, CollisionComponent collision)
         {
             _collider = collider;
             _player = player;
             _stats = stats;
+            _collision = collision;
         }
 
-        public Vector2 SurfaceNormal { get; set; }
 
         public Vector2 ScanWall()
         {
-            float shortRayLength = _collider.bounds.extents.y / 2 + 1;
-
-            Vector2 origin2 = new Vector2(_collider.bounds.center.x, _collider.bounds.min.y);
-            Vector2 direction = _player.FrameInput.Move;
-
-            Debug.DrawLine(origin2, origin2 + direction * shortRayLength, Color.green);
-            RaycastHit2D hit = Physics2D.Raycast(origin2, direction, shortRayLength, _stats.PlayerLayer);
-            if (hit.collider != null)
+            if (_collision.ScanWalls(out var hit))
             {
                 if (Mathf.Approximately(Vector2.Angle(Vector2.up, hit.normal.normalized), 90))
                 {
