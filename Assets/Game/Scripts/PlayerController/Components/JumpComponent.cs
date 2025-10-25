@@ -22,12 +22,14 @@ namespace Game.Scripts.PlayerController
             {
                 _player.IsOnStairs = false;
                 _inputHandler.ConsumeJump();
-                
+
+                if (_player.IsOnStairs)
+                    return Vector2.up * _stats.JumpPower;
+
                 return _player.SurfaceNormal * _stats.JumpPower;
             }
 
             return Vector2.zero;
         }
-
     }
 }

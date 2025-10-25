@@ -58,8 +58,6 @@ namespace Game.Scripts.PlayerController
 
         private void Update()
         {
-            _collision.SurfaceNormal.Log();
-            IsOnSlope.Log();
             _inputHandler.HandleInput();
         }
 

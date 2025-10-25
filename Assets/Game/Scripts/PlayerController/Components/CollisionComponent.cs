@@ -68,7 +68,7 @@ namespace Game.Scripts.PlayerController
         {
             if (!IsGrounded)
             {
-                SurfaceNormal = Vector2.zero;
+                SurfaceNormal = Vector2.up;
                 return;
             }
 
@@ -76,6 +76,15 @@ namespace Game.Scripts.PlayerController
             Vector2 directionToSurface = -lastSurfaceNormal;
             float shortRayLength = _collider.bounds.extents.y + 1;
             float longRayLength = _collider.bounds.extents.y + 5f;
+            
+            Debug.DrawLine(origin, origin + directionToSurface * shortRayLength, Color.green);
+            RaycastHit2D hit = Physics2D.Raycast(origin, directionToSurface, shortRayLength, _stats.PlayerLayer);
+
+            if (hit.collider != null)
+            {
+                SurfaceNormal = hit.normal.normalized;
+                lastSurfaceNormal = hit.normal.normalized;
+            }
             
             Debug.DrawLine(origin, origin + Vector2.down * longRayLength, Color.red);
             RaycastHit2D hitDown = Physics2D.Raycast(origin, Vector2.down, longRayLength, _stats.PlayerLayer);
@@ -88,14 +97,7 @@ namespace Game.Scripts.PlayerController
             }
 
             SurfaceNormal = Vector2.zero;
-            Debug.DrawLine(origin, origin + directionToSurface * shortRayLength, Color.green);
-            RaycastHit2D hit = Physics2D.Raycast(origin, directionToSurface, shortRayLength, _stats.PlayerLayer);
-
-            if (hit.collider != null)
-            {
-                SurfaceNormal = hit.normal.normalized;
-                lastSurfaceNormal = hit.normal.normalized;
-            }
+            
         }
     }
 }
