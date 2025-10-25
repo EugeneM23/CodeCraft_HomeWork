@@ -58,7 +58,6 @@ namespace Game.Scripts.PlayerController
 
         private void Update()
         {
-            (Vector2.Angle(Vector2.right, _collision.SurfaceNormal)).Log();
             _collision.SurfaceNormal.Log();
             IsOnSlope.Log();
             _inputHandler.HandleInput();
@@ -72,7 +71,7 @@ namespace Game.Scripts.PlayerController
             move += _stairsMove.Move(_frameInput.Move);
             move += _moveComponent.Move(_frameInput.Move);
             move += _gravityComponent.GetGravityVector();
-            move += _slopeSlideComponent.GetSlideVelocity();
+            //move += _slopeSlideComponent.GetSlideVelocity();
             move += _jumpComponent.GetJumpVector();
 
             _rigidbody.linearVelocity = move;
