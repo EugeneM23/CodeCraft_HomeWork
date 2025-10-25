@@ -27,9 +27,10 @@ namespace Game.Scripts.PlayerController
         public bool IsCeilingHit => _collision.IsCeilingHit;
         private FrameInput _frameInput => _inputHandler.FrameInput;
 
+        public Vector2 SurfaceNormal => _collision.SurfaceNormal;
         public Vector2 Velocity => _rigidbody.linearVelocity;
         public bool IsOnStairs { get; set; }
-        public bool IsOnSlope => false;
+        public bool IsOnSlope => Vector2.Angle(Vector2.right, _collision.SurfaceNormal) < 89;
 
         public Vector2 _frameVelocity;
 
@@ -57,6 +58,7 @@ namespace Game.Scripts.PlayerController
 
         private void Update()
         {
+            (Vector2.Angle(Vector2.right, _collision.SurfaceNormal)).Log();
             _collision.SurfaceNormal.Log();
             IsOnSlope.Log();
             _inputHandler.HandleInput();
@@ -65,7 +67,6 @@ namespace Game.Scripts.PlayerController
         private void FixedUpdate()
         {
             _collision.DetectCollisions();
-            float slopeAngle = 90f - Vector2.Angle(Vector2.right, _collision.SurfaceNormal).Log();
             Vector2 move = Vector2.zero;
 
             move += _stairsMove.Move(_frameInput.Move);

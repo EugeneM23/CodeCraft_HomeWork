@@ -7,22 +7,23 @@ namespace Game.Scripts.PlayerController
     {
         private readonly ScriptableStats _stats;
         private readonly InputHandler _inputHandler;
-        private readonly PlayerController _playerController;
+        private readonly PlayerController _player;
 
-        public JumpComponent(ScriptableStats stats, InputHandler inputHandler, PlayerController playerController)
+        public JumpComponent(ScriptableStats stats, InputHandler inputHandler, PlayerController player)
         {
             _stats = stats;
             _inputHandler = inputHandler;
-            _playerController = playerController;
+            _player = player;
         }
 
         public Vector2 GetJumpVector()
         {
             if (_inputHandler.JumpToConsume)
             {
-                _playerController.IsOnStairs = false;
+                _player.IsOnStairs = false;
                 _inputHandler.ConsumeJump();
-                return new Vector2(0, _stats.JumpPower);
+                
+                return _player.SurfaceNormal * _stats.JumpPower;
             }
 
             return Vector2.zero;

@@ -18,7 +18,7 @@ namespace Game.Scripts.PlayerController
 
         public Vector2 GetGravityVector()
         {
-            if (_player.IsOnStairs || _player.IsOnSlope)
+            if (_player.IsOnStairs)
                 return Vector2.zero;
             
             if (_collision.IsGrounded && _collision.SurfaceNormal != Vector2.up)
