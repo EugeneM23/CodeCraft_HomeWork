@@ -52,11 +52,11 @@ namespace Game.Scripts.PlayerController
             _inputHandler = new InputHandler();
             _gravityComponent = new GravityComponent(_stats, _collision, this);
             _moveComponent = new MoveComponent(_stats, _collision, this);
-            _jumpComponent = new JumpComponent(_stats, _inputHandler, this);
+            _wallSliding = new WallSlidingComponent(_collider, this, _stats, _collision);
+            _jumpComponent = new JumpComponent(_stats, _inputHandler, this, _wallSliding);
             _slopeSlideComponent = new SlopeSlideComponent(_collision, this, 89, 7);
             _bounceComponent = new BounceComponent(_collision, this, 5f, 10);
             _stairsMove = new StairsMoveComponent(_stats, _collision, this);
-            _wallSliding = new WallSlidingComponent(_collider, this, _stats, _collision);
         }
 
         private void Update()
