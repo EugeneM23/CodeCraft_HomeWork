@@ -4,13 +4,15 @@ namespace Game.Scripts.PlayerController
 {
     public class SlopeSlideComponent
     {
+        private readonly PlayerController _player;
         private readonly CollisionComponent _collision;
         private readonly float _maxAngle;
         private readonly float _slideForce;
 
-        public SlopeSlideComponent(CollisionComponent collision, float maxAngle = 45f, float slideForce = 50f)
+        public SlopeSlideComponent(CollisionComponent collision, PlayerController player, float maxAngle = 45f, float slideForce = 50f)
         {
             _collision = collision;
+            _player = player;
             _maxAngle = maxAngle;
             _slideForce = slideForce;
         }
@@ -24,6 +26,10 @@ namespace Game.Scripts.PlayerController
 
             float angle = Vector2.Angle(normal, Vector2.up);
             if (angle > _maxAngle) return Vector2.zero;
+            if (_player.FrameInput.Move )
+            {
+                
+            }
 
             Vector2 slideDir = Vector3.Cross(Vector3.forward, normal);
             slideDir = new Vector2(slideDir.x, slideDir.y).normalized;

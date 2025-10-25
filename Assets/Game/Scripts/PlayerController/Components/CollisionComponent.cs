@@ -74,18 +74,21 @@ namespace Game.Scripts.PlayerController
 
             Vector2 origin = _collider.bounds.center;
             Vector2 directionToSurface = -lastSurfaceNormal;
-            float shortRayLength = _collider.bounds.extents.y + 1;
+            float shortRayLength = _collider.bounds.extents.y / 2;
             float longRayLength = _collider.bounds.extents.y + 5f;
-            
-            Debug.DrawLine(origin, origin + directionToSurface * shortRayLength, Color.green);
-            RaycastHit2D hit = Physics2D.Raycast(origin, directionToSurface, shortRayLength, _stats.PlayerLayer);
 
+
+            Vector2 origin2 = new Vector2(_collider.bounds.center.x, _collider.bounds.min.y);
+            Vector2 direction = _player.FrameInput.Move;
+            Debug.DrawLine(origin2, origin2 + direction * shortRayLength, Color.green);
+            RaycastHit2D hit = Physics2D.Raycast(origin2, direction, shortRayLength, _stats.PlayerLayer);
             if (hit.collider != null)
             {
                 SurfaceNormal = hit.normal.normalized;
                 lastSurfaceNormal = hit.normal.normalized;
+                return;
             }
-            
+
             Debug.DrawLine(origin, origin + Vector2.down * longRayLength, Color.red);
             RaycastHit2D hitDown = Physics2D.Raycast(origin, Vector2.down, longRayLength, _stats.PlayerLayer);
 
@@ -97,7 +100,6 @@ namespace Game.Scripts.PlayerController
             }
 
             SurfaceNormal = Vector2.zero;
-            
         }
     }
 }

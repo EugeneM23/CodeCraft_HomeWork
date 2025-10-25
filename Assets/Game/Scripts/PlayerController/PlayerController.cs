@@ -25,7 +25,7 @@ namespace Game.Scripts.PlayerController
 
         public bool IsGrounded => _collision.IsGrounded;
         public bool IsCeilingHit => _collision.IsCeilingHit;
-        private FrameInput _frameInput => _inputHandler.FrameInput;
+        public FrameInput FrameInput => _inputHandler.FrameInput;
 
         public Vector2 SurfaceNormal => _collision.SurfaceNormal;
         public Vector2 Velocity => _rigidbody.linearVelocity;
@@ -66,10 +66,10 @@ namespace Game.Scripts.PlayerController
             _collision.DetectCollisions();
             Vector2 move = Vector2.zero;
 
-            move += _stairsMove.Move(_frameInput.Move);
-            move += _moveComponent.Move(_frameInput.Move);
+            move += _stairsMove.Move(FrameInput.Move);
+            move += _moveComponent.Move(FrameInput.Move);
             move += _gravityComponent.GetGravityVector();
-            //move += _slopeSlideComponent.GetSlideVelocity();
+            move += _slopeSlideComponent.GetSlideVelocity();
             move += _jumpComponent.GetJumpVector();
 
             _rigidbody.linearVelocity = move;
