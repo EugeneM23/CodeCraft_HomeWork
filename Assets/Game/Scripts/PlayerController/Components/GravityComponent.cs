@@ -23,25 +23,15 @@ namespace Game.Scripts.PlayerController
             if (_collision.IsGrounded && _collision.SurfaceNormal != Vector2.up)
                 return _player._frameVelocity.y;
 
-            if (_collision.IsGrounded)
-                return 0;
-
             if (_collision.IsCeilingHit)
-            {
-                _player._frameVelocity.y = 0;
                 return -5;
-            }
 
-            float gravity = _stats.FallAcceleration * (1 + _fallMultiplier);
-            _fallMultiplier += _stats.FallMultiplier * Time.fixedDeltaTime;
+            float gravity = _stats.FallAcceleration;
 
-            float moveTowards = Mathf.MoveTowards(_player.Velocity.y, -_stats.MaxFallSpeed,
+            float frameGravity = Mathf.MoveTowards(_player.Velocity.y, -_stats.MaxFallSpeed,
                 gravity * Time.fixedDeltaTime);
 
-
-            return moveTowards;
+            return frameGravity;
         }
-
-        public void Reset() => _fallMultiplier = 0;
     }
 }

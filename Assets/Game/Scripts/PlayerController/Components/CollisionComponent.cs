@@ -24,11 +24,12 @@ namespace Game.Scripts.PlayerController
 
         public void DetectCollisions()
         {
-            GetGround();
+            IsCeilingHit = CheckCeilingCollision();
+            IsGrounded = CheckGroundCollision();
             GetGroundNormal();
         }
 
-        private void GetGround()
+        private bool CheckGroundCollision()
         {
             bool groundHit = Physics2D.CapsuleCast(
                 _collider.bounds.center,
@@ -40,6 +41,11 @@ namespace Game.Scripts.PlayerController
                 _stats.PlayerLayer
             );
 
+            return groundHit;
+        }
+
+        public bool CheckCeilingCollision()
+        {
             bool ceilingHit = Physics2D.CapsuleCast(
                 _collider.bounds.center,
                 _collider.size,
@@ -51,57 +57,49 @@ namespace Game.Scripts.PlayerController
             );
 
             if (ceilingHit && _player._frameVelocity.y > 0)
-            {
-                IsCeilingHit = true;
-            }
-            else
-                IsCeilingHit = false;
-            
-            if (!IsGrounded && groundHit)
-                IsGrounded = true;
+                return true;
 
-            else if (IsGrounded && !groundHit)
-                IsGrounded = false;
+            return false;
         }
 
         private Vector2 lastSurfaceNormal = Vector2.up;
 
         private void GetGroundNormal()
         {
-            if (!IsGrounded) return;
+            if (!IsGrounded)
+            {
+                SurfaceNormal = Vector2.zero;
+                return;
+            }
 
             Vector2 origin = _collider.bounds.center;
-            float rayLength = _collider.bounds.extents.y + 5f;
-
-            // Направление второго луча
             Vector2 directionToSurface = -lastSurfaceNormal;
+            float shortRayLength = _collider.bounds.extents.y;
+            float longRayLength = _collider.bounds.extents.y + 1f;
 
-            Debug.DrawLine(origin, origin + directionToSurface * rayLength, Color.green);
-            RaycastHit2D hit = Physics2D.Raycast(origin, directionToSurface, _collider.bounds.extents.y + 0.2f,
-                _stats.PlayerLayer);
+            // Первый луч (зеленый) - по направлению к последней нормали
+            Debug.DrawLine(origin, origin + directionToSurface * shortRayLength, Color.green);
+            RaycastHit2D hit = Physics2D.Raycast(origin, directionToSurface, shortRayLength, _stats.PlayerLayer);
 
             if (hit.collider != null)
             {
                 SurfaceNormal = hit.normal.normalized;
                 lastSurfaceNormal = hit.normal.normalized;
-                Debug.Log("Green Hit Normal: " + hit.normal);
+                return;
+            }
+
+            // Второй луч (красный) - строго вниз
+            Debug.DrawLine(origin, origin + Vector2.down * longRayLength, Color.red);
+            RaycastHit2D hitDown = Physics2D.Raycast(origin, Vector2.down, longRayLength, _stats.PlayerLayer);
+
+            if (hitDown.collider != null)
+            {
+                SurfaceNormal = hitDown.normal.normalized;
+                lastSurfaceNormal = hitDown.normal.normalized;
             }
             else
             {
-                // Если зеленый не попал — запускаем красный вниз
-                Debug.DrawLine(origin, origin + Vector2.down * rayLength, Color.red);
-                RaycastHit2D hitToSurface = Physics2D.Raycast(origin, Vector2.down, rayLength, _stats.PlayerLayer);
-
-                if (hitToSurface.collider != null)
-                {
-                    SurfaceNormal = hitToSurface.normal.normalized;
-                    lastSurfaceNormal = hitToSurface.normal.normalized;
-                    Debug.Log("Red Hit Normal: " + hitToSurface.normal);
-                }
-                else
-                {
-                    SurfaceNormal = Vector2.zero;
-                }
+                SurfaceNormal = Vector2.zero;
             }
         }
     }
