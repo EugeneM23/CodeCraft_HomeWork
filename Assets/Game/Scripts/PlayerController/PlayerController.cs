@@ -35,6 +35,7 @@ namespace Game.Scripts.PlayerController
         [ShowInInspector] private bool _debugIsGround;
         [ShowInInspector] private bool _debugIsceiling;
         [ShowInInspector] private Vector2 _debugFrameVelocity;
+        
         private SlopeSlideComponent _slopeSlideComponent;
         private BounceComponent _bounceComponent;
 
