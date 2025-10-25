@@ -8,6 +8,8 @@ namespace Game.Scripts.PlayerController
         private readonly ScriptableStats _stats;
         private readonly PlayerController _player;
 
+        private float _currentHorizontalSpeed;
+
         public MoveComponent(ScriptableStats stats, CollisionComponent collision, PlayerController player)
         {
             _stats = stats;
@@ -27,19 +29,21 @@ namespace Game.Scripts.PlayerController
 
         private Vector2 InAir(Vector2 direction)
         {
-            float currentSpeed = _player.Velocity.x;
+            // Берём текущую горизонтальную скорость из предыдущего кадра
+            _currentHorizontalSpeed = _player.Velocity.x;
             float targetSpeed = direction.x * _stats.MaxSpeed;
 
             float accel = _stats.AirAcceleration;
             float decel = _stats.AirDeceleration;
 
             if (Mathf.Abs(direction.x) > 0.01f)
-                currentSpeed = Mathf.MoveTowards(currentSpeed, targetSpeed, accel * Time.fixedDeltaTime);
+                _currentHorizontalSpeed =
+                    Mathf.MoveTowards(_currentHorizontalSpeed, targetSpeed, accel * Time.fixedDeltaTime);
             else
-                currentSpeed = Mathf.MoveTowards(currentSpeed, 0, decel * Time.fixedDeltaTime);
+                _currentHorizontalSpeed = Mathf.MoveTowards(_currentHorizontalSpeed, 0, decel * Time.fixedDeltaTime);
 
-            // Сохраняем вертикальную скорость
-            return new Vector2(currentSpeed, _player.Velocity.y);
+            // Возвращаем только горизонтальный вектор (вертикальное движение добавят другие компоненты)
+            return new Vector2(_currentHorizontalSpeed, 0);
         }
 
         private Vector2 OnGround(Vector2 direction, Vector2 normal)
@@ -60,7 +64,6 @@ namespace Game.Scripts.PlayerController
 
             // Итоговое движение вдоль поверхности
             Vector2 movement = tangent * currentSpeed;
-
 
             return movement;
         }

@@ -9,8 +9,6 @@ namespace Game.Scripts.PlayerController
         private readonly ScriptableStats _stats;
         private readonly CollisionComponent _collision;
 
-        private float _fallMultiplier;
-
         public GravityComponent(ScriptableStats stats, CollisionComponent collision, PlayerController player)
         {
             _player = player;
@@ -18,20 +16,25 @@ namespace Game.Scripts.PlayerController
             _collision = collision;
         }
 
-        public float GetYVelocity()
+        public Vector2 GetGravityVector()
         {
+            // Если на земле и поверхность не горизонтальная - не применяем гравитацию
             if (_collision.IsGrounded && _collision.SurfaceNormal != Vector2.up)
-                return _player._frameVelocity.y;
+                return Vector2.zero;
 
+            // Если ударились о потолок - принудительная скорость вниз
             if (_collision.IsCeilingHit)
-                return -5;
+                return new Vector2(0, -5);
 
             float gravity = _stats.FallAcceleration;
+            
+            // Читаем текущую скорость из Velocity (которая теперь берется из rigidbody)
+            float currentYVelocity = _player.Velocity.y;
 
-            float frameGravity = Mathf.MoveTowards(_player.Velocity.y, -_stats.MaxFallSpeed,
+            float newYVelocity = Mathf.MoveTowards(currentYVelocity, -_stats.MaxFallSpeed,
                 gravity * Time.fixedDeltaTime);
 
-            return frameGravity;
+            return new Vector2(0, newYVelocity);
         }
     }
 }

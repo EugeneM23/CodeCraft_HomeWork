@@ -27,7 +27,7 @@ namespace Game.Scripts.PlayerController
         public bool IsCeilingHit => _collision.IsCeilingHit;
         private FrameInput _frameInput => _inputHandler.FrameInput;
 
-        public Vector2 Velocity => _frameVelocity;
+        public Vector2 Velocity => _rigidbody.linearVelocity;
 
         public Vector2 _frameVelocity;
 
@@ -47,7 +47,7 @@ namespace Game.Scripts.PlayerController
             _gravityComponent = new GravityComponent(_stats, _collision, this);
             _moveComponent = new MoveComponent(_stats, _collision, this);
             _jumpComponent = new JumpComponent(_stats, _inputHandler);
-            _slopeSlideComponent = new SlopeSlideComponent(_collision, 89, 20);
+            _slopeSlideComponent = new SlopeSlideComponent(_collision, 89, 5);
             _bounceComponent = new BounceComponent(_collision, this, 5f, 10);
         }
 
@@ -59,13 +59,20 @@ namespace Game.Scripts.PlayerController
 
         private void FixedUpdate()
         {
+            Vector2 move = Vector2.zero;
 
-            _frameVelocity = _moveComponent.Move(_frameInput.Move);
-            _frameVelocity.y = _gravityComponent.GetYVelocity();
-            _frameVelocity.y += _jumpComponent.HandleJump();
+            move += _moveComponent.Move(_frameInput.Move);
+            move += _gravityComponent.GetGravityVector();
+            move += _slopeSlideComponent.GetSlideVelocity();
+            move += _jumpComponent.GetJumpVector();
 
-            _rigidbody.linearVelocity = _frameVelocity;
+            _rigidbody.linearVelocity = move;
 
+            debug();
+        }
+
+        private void debug()
+        {
             _debugIsGround = IsGrounded;
             _debugIsceiling = IsCeilingHit;
             _debugFrameVelocity = _frameVelocity;

@@ -14,15 +14,16 @@ namespace Game.Scripts.PlayerController
             _inputHandler = inputHandler;
         }
 
-        public float HandleJump()
+        public Vector2 GetJumpVector()
         {
             if (_inputHandler.JumpToConsume)
             {
                 _inputHandler.ConsumeJump();
-                return _stats.JumpPower;
+                return new Vector2(0, _stats.JumpPower);
             }
 
-            return 0;
+            return Vector2.zero;
         }
+
     }
 }
