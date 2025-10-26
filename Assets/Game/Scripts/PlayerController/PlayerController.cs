@@ -32,6 +32,7 @@ namespace Game.Scripts.PlayerController
         public Vector2 Velocity => _rigidbody.linearVelocity;
         public bool IsOnStairs { get; set; }
         public bool IsOnSlope => Vector2.Angle(Vector2.right, _collision.SurfaceNormal) < 89;
+        public bool IsGrabbingLedge;
 
         public Vector2 _frameVelocity;
 
@@ -39,14 +40,18 @@ namespace Game.Scripts.PlayerController
         [ShowInInspector] private bool _debugIsGround;
         [ShowInInspector] private bool _debugIsceiling;
         [ShowInInspector] private Vector2 _debugFrameVelocity;
+        [ShowInInspector]private bool _debugGrab;
+        [ShowInInspector]private Vector2 _debugVelocity;
 
         private SlopeSlideComponent _slopeSlideComponent;
         private BounceComponent _bounceComponent;
         private StairsMoveComponent _stairsMove;
         private WallSlidingComponent _wallSliding;
+        private LedgeGrabComponent _ledgeGrabComponent;
 
         private void Start()
         {
+            Time.timeScale = 0.1f;
             _rigidbody.gravityScale = 0;
             _collision = new CollisionComponent(_collider, _stats, this);
             _inputHandler = new InputHandler();
@@ -57,16 +62,24 @@ namespace Game.Scripts.PlayerController
             _slopeSlideComponent = new SlopeSlideComponent(_collision, this, 89, 7);
             _bounceComponent = new BounceComponent(_collision, this, 5f, 10);
             _stairsMove = new StairsMoveComponent(_stats, _collision, this);
+            _ledgeGrabComponent = new LedgeGrabComponent(_collider, this, _stats.PlayerLayer);
         }
 
         private void Update()
         {
             _inputHandler.HandleInput();
+
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                _ledgeGrabComponent.ReleaseGrab();
+                IsGrabbingLedge = false;
+            }
         }
 
         private void FixedUpdate()
         {
-            SurfaceNormal.Log();
+            _ledgeGrabComponent.CheckLedges();
+            IsGrabbingLedge = _ledgeGrabComponent.IsGrabbing;
             _collision.DetectCollisions();
             Vector2 move = Vector2.zero;
 
@@ -74,10 +87,12 @@ namespace Game.Scripts.PlayerController
             move += _moveComponent.Move(FrameInput.Move);
             move += _gravityComponent.GetGravityVector();
             move += _slopeSlideComponent.GetSlideVelocity();
-            move += _jumpComponent.GetJumpVector();
             move += _wallSliding.ScanWall();
+            move += _jumpComponent.GetJumpVector();
 
             _rigidbody.linearVelocity = move;
+
+            
 
             debug();
         }
@@ -88,7 +103,9 @@ namespace Game.Scripts.PlayerController
             _debugIsceiling = IsCeilingHit;
             _debugFrameVelocity = _frameVelocity;
             _debugNormal = _collision.SurfaceNormal;
+            _debugGrab = IsGrabbingLedge;
 
+             _debugVelocity = Velocity;
             if (IsCeilingHit)
             {
                 Debug.Log("Ceiling hit");

@@ -25,7 +25,7 @@ namespace Game.Scripts.PlayerController
             {
                 _inputHandler.ConsumeJump();
                 _player.IsOnStairs = false;
-
+                
                 if (_wallSliding.IsOnWall)
                     return (_wallSliding.WallNormal + Vector2.up) * _stats.JumpPower;
 
@@ -41,4 +41,5 @@ namespace Game.Scripts.PlayerController
             return Vector2.zero;
         }
     }
+    
 }
