@@ -18,7 +18,7 @@ namespace Game.Scripts.PlayerController
 
         public Vector2 GetGravityVector()
         {
-            if (_player.IsOnStairs || _player.IsGrabbingLedge.Log())
+            if (_player.IsOnStairs || _player.IsGrabbingLedge)
             {
                 Debug.Log("asdasd");
                 return Vector2.zero;

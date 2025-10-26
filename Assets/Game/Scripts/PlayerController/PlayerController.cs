@@ -18,7 +18,12 @@ namespace Game.Scripts.PlayerController
         private GravityComponent _gravityComponent;
         private IMoveComponent _moveComponent;
         private JumpComponent _jumpComponent;
-
+        private SlopeSlideComponent _slopeSlideComponent;
+        private StairsMoveComponent _stairsMove;
+        private WallSlidingComponent _wallSliding;
+        private LedgeGrabComponent _ledgeGrabComponent;
+        private SpeedComponent _inert;
+        private MovingPlatformComponent _movePlatform;
         public event Action OnJump;
         public event Action OnLand;
         public event Action OnGrounded;
@@ -42,13 +47,6 @@ namespace Game.Scripts.PlayerController
         [ShowInInspector] private Vector2 _debugFrameVelocity;
         [ShowInInspector] private bool _debugGrab;
         [ShowInInspector] private Vector2 _debugVelocity;
-
-        private SlopeSlideComponent _slopeSlideComponent;
-        private StairsMoveComponent _stairsMove;
-        private WallSlidingComponent _wallSliding;
-        private LedgeGrabComponent _ledgeGrabComponent;
-        private SpeedComponent _inert;
-        private MovingPlatformComponent _movePlatform;
 
         private void Start()
         {
@@ -85,8 +83,8 @@ namespace Game.Scripts.PlayerController
             move += _moveComponent.Move(FrameInput.Move);
             move += _gravityComponent.GetGravityVector();
             move += _wallSliding.ScanWall();
-            move += _movePlatform.GetPlatformDelta().Log();
-            
+            move += _movePlatform.GetPlatformDelta();
+
             _rigidbody.linearVelocity = move;
 
             debug();
