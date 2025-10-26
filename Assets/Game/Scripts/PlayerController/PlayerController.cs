@@ -48,6 +48,8 @@ namespace Game.Scripts.PlayerController
         private StairsMoveComponent _stairsMove;
         private WallSlidingComponent _wallSliding;
         private LedgeGrabComponent _ledgeGrabComponent;
+        private InertiaComponent _inert;
+        private MovingPlatformComponent _movePlatform;
 
         private void Start()
         {
@@ -57,13 +59,15 @@ namespace Game.Scripts.PlayerController
             _collision = new CollisionComponent(_collider, _stats, this);
             _inputHandler = new InputHandler();
             _gravityComponent = new GravityComponent(_stats, _collision, this);
-            _moveComponent = new MoveComponent(_stats, _collision, this);
+            _inert = new InertiaComponent(_stats, this);
+            _moveComponent = new MoveComponent(_collision, _inert);
             _wallSliding = new WallSlidingComponent(_collider, this, _stats, _collision);
             _ledgeGrabComponent = new LedgeGrabComponent(_collider, this, _stats.PlayerLayer);
             _jumpComponent = new JumpComponent(_stats, _inputHandler, this, _wallSliding, _ledgeGrabComponent);
-            _slopeSlideComponent = new SlopeSlideComponent(_collision, this, 89f, 6f);
+            _slopeSlideComponent = new SlopeSlideComponent(_collision, this, 89f, 30f);
             _bounceComponent = new BounceComponent(_collision, this, 5f, 10);
             _stairsMove = new StairsMoveComponent(_stats, _collision, this);
+            _movePlatform = new MovingPlatformComponent(this, _collision, _stats);
         }
 
         private void Update()
@@ -73,7 +77,7 @@ namespace Game.Scripts.PlayerController
 
         private void FixedUpdate()
         {
-            _ledgeGrabComponent.CheckLedges();
+            //_ledgeGrabComponent.CheckLedges();
             _collision.DetectCollisions();
             Vector2 move = Vector2.zero;
 
@@ -83,9 +87,9 @@ namespace Game.Scripts.PlayerController
             move += _moveComponent.Move(FrameInput.Move);
             move += _gravityComponent.GetGravityVector();
             move += _wallSliding.ScanWall();
-
+            move += _movePlatform.GetPlatformDelta().Log();
+            
             _rigidbody.linearVelocity = move;
-
 
             debug();
         }

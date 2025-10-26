@@ -37,7 +37,6 @@ namespace Game.Scripts.PlayerController
 
             Vector2 inputDirection = _player.FrameInput.Move;
 
-            // Случай 1: Нет ввода - скатываемся
             if (Mathf.Abs(inputDirection.x) < 0.01f)
             {
                 float multiplier = angle / _maxAngle;

@@ -5,64 +5,36 @@ namespace Game.Scripts.PlayerController
     internal class MoveComponent : IMoveComponent
     {
         private readonly CollisionComponent _collision;
-        private readonly ScriptableStats _stats;
-        private readonly PlayerController _player;
+        private readonly InertiaComponent _inertia;
 
-        private float _currentHorizontalSpeed;
-
-        public MoveComponent(ScriptableStats stats, CollisionComponent collision, PlayerController player)
+        public MoveComponent(CollisionComponent collision, InertiaComponent inertia)
         {
-            _stats = stats;
             _collision = collision;
-            _player = player;
+            _inertia = inertia;
         }
 
         public Vector2 Move(Vector2 direction)
         {
-            Vector2 normal = _collision.SurfaceNormal;
-
             if (_collision.IsGrounded)
-                return OnGround(direction, normal);
-
-            return InAir(direction);
+                return MoveOnGround(direction);
+            
+            return MoveInAir(direction);
         }
 
-        private Vector2 InAir(Vector2 direction)
+        private Vector2 MoveInAir(Vector2 direction)
         {
-            _currentHorizontalSpeed = _player.Velocity.x;
-            float targetSpeed = direction.x * _stats.MaxSpeed;
-
-
-            if (Mathf.Abs(direction.x) > 0.01f)
-                _currentHorizontalSpeed =
-                    Mathf.MoveTowards(_currentHorizontalSpeed, targetSpeed,
-                        _stats.AirAcceleration * Time.fixedDeltaTime);
-            else
-                _currentHorizontalSpeed = Mathf.MoveTowards(_currentHorizontalSpeed, 0,
-                    _stats.AirDeceleration * Time.fixedDeltaTime);
-
-            return new Vector2(_currentHorizontalSpeed, 0);
+            float speed = _inertia.CalculateSpeed(direction.x, false);
+            return new Vector2(speed, 0);
         }
 
-        private Vector2 OnGround(Vector2 direction, Vector2 normal)
+        private Vector2 MoveOnGround(Vector2 direction)
         {
-            if (normal == Vector2.zero)
-                normal = Vector2.up;
-
+            Vector2 normal = _collision.SurfaceNormal == Vector2.zero ? Vector2.up : _collision.SurfaceNormal;
             Vector2 tangent = new Vector2(normal.y, -normal.x).normalized;
 
-            float currentSpeed = Vector2.Dot(_player.Velocity, tangent);
-
-            float targetSpeed = direction.x * _stats.MaxSpeed;
-
-            if (Mathf.Abs(direction.x) > 0.01f)
-                currentSpeed = Mathf.MoveTowards(currentSpeed, targetSpeed, _stats.Acceleration * Time.fixedDeltaTime);
-            else
-                currentSpeed = Mathf.MoveTowards(currentSpeed, 0, _stats.GroundDeceleration * Time.fixedDeltaTime);
-
-            Vector2 movement = tangent * currentSpeed;
-
-            return movement;
+            float speed = _inertia.CalculateSpeed(direction.x, true);
+            return tangent * speed;
         }
     }
 }
+
