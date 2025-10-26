@@ -44,11 +44,10 @@ namespace Game.Scripts.PlayerController
         [ShowInInspector] private Vector2 _debugVelocity;
 
         private SlopeSlideComponent _slopeSlideComponent;
-        private BounceComponent _bounceComponent;
         private StairsMoveComponent _stairsMove;
         private WallSlidingComponent _wallSliding;
         private LedgeGrabComponent _ledgeGrabComponent;
-        private InertiaComponent _inert;
+        private SpeedComponent _inert;
         private MovingPlatformComponent _movePlatform;
 
         private void Start()
@@ -59,13 +58,12 @@ namespace Game.Scripts.PlayerController
             _collision = new CollisionComponent(_collider, _stats, this);
             _inputHandler = new InputHandler();
             _gravityComponent = new GravityComponent(_stats, _collision, this);
-            _inert = new InertiaComponent(_stats, this);
+            _inert = new SpeedComponent(_stats, this);
             _moveComponent = new MoveComponent(_collision, _inert);
             _wallSliding = new WallSlidingComponent(_collider, this, _stats, _collision);
             _ledgeGrabComponent = new LedgeGrabComponent(_collider, this, _stats.PlayerLayer);
             _jumpComponent = new JumpComponent(_stats, _inputHandler, this, _wallSliding, _ledgeGrabComponent);
             _slopeSlideComponent = new SlopeSlideComponent(_collision, this, 89f, 30f);
-            _bounceComponent = new BounceComponent(_collision, this, 5f, 10);
             _stairsMove = new StairsMoveComponent(_stats, _collision, this);
             _movePlatform = new MovingPlatformComponent(this, _collision, _stats);
         }

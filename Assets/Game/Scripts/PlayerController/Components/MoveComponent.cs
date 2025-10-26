@@ -5,12 +5,12 @@ namespace Game.Scripts.PlayerController
     internal class MoveComponent : IMoveComponent
     {
         private readonly CollisionComponent _collision;
-        private readonly InertiaComponent _inertia;
+        private readonly SpeedComponent _speed;
 
-        public MoveComponent(CollisionComponent collision, InertiaComponent inertia)
+        public MoveComponent(CollisionComponent collision, SpeedComponent speed)
         {
             _collision = collision;
-            _inertia = inertia;
+            _speed = speed;
         }
 
         public Vector2 Move(Vector2 direction)
@@ -23,7 +23,7 @@ namespace Game.Scripts.PlayerController
 
         private Vector2 MoveInAir(Vector2 direction)
         {
-            float speed = _inertia.CalculateSpeed(direction.x, false);
+            float speed = _speed.CalculateSpeed(direction.x, false);
             return new Vector2(speed, 0);
         }
 
@@ -32,7 +32,7 @@ namespace Game.Scripts.PlayerController
             Vector2 normal = _collision.SurfaceNormal == Vector2.zero ? Vector2.up : _collision.SurfaceNormal;
             Vector2 tangent = new Vector2(normal.y, -normal.x).normalized;
 
-            float speed = _inertia.CalculateSpeed(direction.x, true);
+            float speed = _speed.CalculateSpeed(direction.x, true);
             return tangent * speed;
         }
     }

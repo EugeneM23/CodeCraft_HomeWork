@@ -2,14 +2,14 @@ using UnityEngine;
 
 namespace Game.Scripts.PlayerController
 {
-    public class InertiaComponent
+    public class SpeedComponent
     {
         private readonly ScriptableStats _stats;
         private readonly PlayerController _player;
 
         private float _horizontalSpeed;
 
-        public InertiaComponent(ScriptableStats stats, PlayerController player)
+        public SpeedComponent(ScriptableStats stats, PlayerController player)
         {
             _stats = stats;
             _player = player;
