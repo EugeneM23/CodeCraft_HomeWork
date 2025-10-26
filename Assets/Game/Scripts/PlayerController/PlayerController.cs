@@ -40,8 +40,8 @@ namespace Game.Scripts.PlayerController
         [ShowInInspector] private bool _debugIsGround;
         [ShowInInspector] private bool _debugIsceiling;
         [ShowInInspector] private Vector2 _debugFrameVelocity;
-        [ShowInInspector]private bool _debugGrab;
-        [ShowInInspector]private Vector2 _debugVelocity;
+        [ShowInInspector] private bool _debugGrab;
+        [ShowInInspector] private Vector2 _debugVelocity;
 
         private SlopeSlideComponent _slopeSlideComponent;
         private BounceComponent _bounceComponent;
@@ -51,6 +51,7 @@ namespace Game.Scripts.PlayerController
 
         private void Start()
         {
+            Application.targetFrameRate = 120;
             Time.timeScale = 1f;
             _rigidbody.gravityScale = 0;
             _collision = new CollisionComponent(_collider, _stats, this);
@@ -60,7 +61,7 @@ namespace Game.Scripts.PlayerController
             _wallSliding = new WallSlidingComponent(_collider, this, _stats, _collision);
             _ledgeGrabComponent = new LedgeGrabComponent(_collider, this, _stats.PlayerLayer);
             _jumpComponent = new JumpComponent(_stats, _inputHandler, this, _wallSliding, _ledgeGrabComponent);
-            _slopeSlideComponent = new SlopeSlideComponent(_collision, this, 89, 7);
+            _slopeSlideComponent = new SlopeSlideComponent(_collision, this, 89f, 6f);
             _bounceComponent = new BounceComponent(_collision, this, 5f, 10);
             _stairsMove = new StairsMoveComponent(_stats, _collision, this);
         }
@@ -76,16 +77,15 @@ namespace Game.Scripts.PlayerController
             _collision.DetectCollisions();
             Vector2 move = Vector2.zero;
 
+            move += _jumpComponent.GetJumpVector();
             move += _stairsMove.Move(FrameInput.Move);
+            move += _slopeSlideComponent.GetSlideVelocity();
             move += _moveComponent.Move(FrameInput.Move);
             move += _gravityComponent.GetGravityVector();
-            move += _slopeSlideComponent.GetSlideVelocity();
             move += _wallSliding.ScanWall();
-            move += _jumpComponent.GetJumpVector();
 
             _rigidbody.linearVelocity = move;
 
-            
 
             debug();
         }
@@ -98,7 +98,7 @@ namespace Game.Scripts.PlayerController
             _debugNormal = _collision.SurfaceNormal;
             _debugGrab = IsGrabbingLedge;
 
-             _debugVelocity = Velocity;
+            _debugVelocity = Velocity;
             if (IsCeilingHit)
             {
                 Debug.Log("Ceiling hit");

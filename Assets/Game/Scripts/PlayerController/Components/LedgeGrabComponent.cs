@@ -9,7 +9,7 @@ namespace Game.Scripts.PlayerController
         private readonly LayerMask _ledgeLayer;
 
         private const float CheckDistance = 0.5f;
-        private const float OffsetFromTop = 0.2f;
+        private const float MaxNormalDeviation = 80f;
 
         private bool _isGrabbing;
         private Vector2 _leftCornerPoint;
@@ -31,10 +31,9 @@ namespace Game.Scripts.PlayerController
             Vector2 center = (Vector2)_player.transform.position + _collider.offset;
             float halfHeight = _collider.size.y / 2f;
             float halfWidth = _collider.size.x / 2f;
-            float y = center.y + halfHeight - OffsetFromTop;
 
-            Vector2 leftPos = new Vector2(center.x - halfWidth, y);
-            Vector2 rightPos = new Vector2(center.x + halfWidth, y);
+            Vector2 leftPos = new Vector2(center.x - halfWidth, center.y + halfHeight);
+            Vector2 rightPos = new Vector2(center.x + halfWidth, center.y + halfHeight);
 
             bool left = CheckCorner(leftPos, -1, out _leftCornerPoint);
             bool right = CheckCorner(rightPos, 1, out _rightCornerPoint);
@@ -42,27 +41,26 @@ namespace Game.Scripts.PlayerController
             _isGrabbing = left || right;
         }
 
-        private const float MaxNormalDeviation = 15f; // допустимый угол отклонения
-
         private bool CheckCorner(Vector2 startPos, float direction, out Vector2 corner)
         {
             corner = Vector2.zero;
 
-            // 1. Стена
+            // 1. WallRay
+            float dynamicDistance = CheckDistance + Mathf.Min(_player.Velocity.magnitude * Time.fixedDeltaTime, 0.3f);
             Vector2 rayDir = Vector2.right * direction;
-            RaycastHit2D wallHit = Physics2D.Raycast(startPos, rayDir, CheckDistance, _ledgeLayer);
-            Debug.DrawLine(startPos, startPos + rayDir * CheckDistance, wallHit ? Color.red : Color.gray);
+            RaycastHit2D wallHit = Physics2D.Raycast(startPos, rayDir, dynamicDistance, _ledgeLayer);
+            Debug.DrawLine(startPos, startPos + rayDir * dynamicDistance, wallHit ? Color.red : Color.gray);
             if (!wallHit) return false;
 
-            // 2. Точка сверху и вперед от wallHit (чтобы не попасть в стену)
-            Vector2 grabOffset = new Vector2(0.1f * direction, 0.5f); // немного вперед + вверх
-            Vector2 topCheckPos = wallHit.point + grabOffset;
+            // 2. TopCheckPos — чуть выше wallHit и немного вперед, чтобы попасть на платформу
+            Vector2 topCheckPos = wallHit.point + new Vector2(0.1f * direction, 0.5f);
 
+            // 3. Raycast вниз, чтобы найти кромку
             RaycastHit2D topHit = Physics2D.Raycast(topCheckPos, Vector2.down, 0.4f, _ledgeLayer);
             Debug.DrawLine(topCheckPos, topCheckPos + Vector2.down * 0.4f, topHit ? Color.blue : Color.gray);
             if (!topHit) return false;
 
-            // 3. Проверка нормалей
+            // 4. Проверяем нормали
             Vector2 idealWallNormal = direction == 1 ? Vector2.left : Vector2.right;
             Vector2 idealTopNormal = Vector2.up;
 
@@ -72,11 +70,10 @@ namespace Game.Scripts.PlayerController
             if (wallAngle > MaxNormalDeviation || topAngle > MaxNormalDeviation)
                 return false;
 
-            // 4. Угол найден
+            // 5. Угол найден
             corner = topHit.point;
             return true;
         }
-
 
 
 
