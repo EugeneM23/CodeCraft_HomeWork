@@ -31,7 +31,7 @@ namespace Game.Scripts.PlayerController
 
                 if (_player.IsGrounded || _player.IsOnStairs)
                 {
-                    return _player.SurfaceNormal * _stats.JumpPower;
+                    return (_wallSliding.WallNormal + Vector2.up) * _stats.JumpPower;
                 }
 
                 if (!_player.IsGrounded)

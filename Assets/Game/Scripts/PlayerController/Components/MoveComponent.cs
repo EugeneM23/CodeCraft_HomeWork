@@ -35,30 +35,31 @@ namespace Game.Scripts.PlayerController
 
             if (Mathf.Abs(direction.x) > 0.01f)
                 _currentHorizontalSpeed =
-                    Mathf.MoveTowards(_currentHorizontalSpeed, targetSpeed, _stats.AirAcceleration * Time.fixedDeltaTime);
+                    Mathf.MoveTowards(_currentHorizontalSpeed, targetSpeed,
+                        _stats.AirAcceleration * Time.fixedDeltaTime);
             else
-                _currentHorizontalSpeed = Mathf.MoveTowards(_currentHorizontalSpeed, 0, _stats.AirDeceleration * Time.fixedDeltaTime);
+                _currentHorizontalSpeed = Mathf.MoveTowards(_currentHorizontalSpeed, 0,
+                    _stats.AirDeceleration * Time.fixedDeltaTime);
 
             return new Vector2(_currentHorizontalSpeed, 0);
         }
 
         private Vector2 OnGround(Vector2 direction, Vector2 normal)
         {
+            if (normal == Vector2.zero)
+                normal = Vector2.up;
+
             Vector2 tangent = new Vector2(normal.y, -normal.x).normalized;
 
-            // Текущая скорость проецируем на касательную
             float currentSpeed = Vector2.Dot(_player.Velocity, tangent);
 
-            // Задаём целевую скорость вдоль касательной
             float targetSpeed = direction.x * _stats.MaxSpeed;
 
-            // Ускорение или замедление
             if (Mathf.Abs(direction.x) > 0.01f)
                 currentSpeed = Mathf.MoveTowards(currentSpeed, targetSpeed, _stats.Acceleration * Time.fixedDeltaTime);
             else
                 currentSpeed = Mathf.MoveTowards(currentSpeed, 0, _stats.GroundDeceleration * Time.fixedDeltaTime);
 
-            // Итоговое движение вдоль поверхности
             Vector2 movement = tangent * currentSpeed;
 
             return movement;

@@ -6,9 +6,10 @@
   <component name="ChangeListManager">
     <list default="true" id="6f0b762c-5415-4a85-b17b-cc44fd47261d" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.CodeCraft_HomeWork/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.CodeCraft_HomeWork/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/PlayerController/Components/GravityComponent.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/PlayerController/Components/GravityComponent.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/PlayerController/Components/MoveComponentDva.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/PlayerController/Components/MoveComponentDva.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/PlayerController/PlayerController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/PlayerController/PlayerController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/2.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/2.unity" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/PlayerController/Components/JumpComponent.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/PlayerController/Components/JumpComponent.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/PlayerController/Components/MoveComponent.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/PlayerController/Components/MoveComponent.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/PlayerController/PlayerStats.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/PlayerController/PlayerStats.asset" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -40,10 +41,39 @@
   }
 }</component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="file://$PROJECT_DIR$/Assets/Game/Scripts/GameObject/Core/GameInstaller.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Game/Scripts/GameObject/Player/Installers/PlayerInstaller.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/Controllers/Player/JumpController.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/Controllers/Player/MoveController.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="mock:///Users/eugene/Desktop/untitled folder/CodeCraft_HomeWork/Assets/Game/Scripts/PlayerController/Components/CollisionComponent.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/eugene/Desktop/untitled folder/CodeCraft_HomeWork/Assets/Game/Scripts/PlayerController/Components/CollisionComponent.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/eugene/Desktop/untitled folder/CodeCraft_HomeWork/Assets/Game/Scripts/PlayerController/Components/CollisionComponent.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/eugene/Desktop/untitled folder/CodeCraft_HomeWork/Assets/Game/Scripts/PlayerController/Components/CollisionComponent.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/eugene/Desktop/untitled folder/CodeCraft_HomeWork/Assets/Game/Scripts/PlayerController/Components/CollisionComponent.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/eugene/Desktop/untitled folder/CodeCraft_HomeWork/Assets/Game/Scripts/PlayerController/Components/CollisionComponent.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/eugene/Desktop/untitled folder/CodeCraft_HomeWork/Assets/Game/Scripts/PlayerController/Components/CollisionComponent.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/eugene/Desktop/untitled folder/CodeCraft_HomeWork/Assets/Game/Scripts/PlayerController/Components/CollisionComponent.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/eugene/Desktop/untitled folder/CodeCraft_HomeWork/Assets/Game/Scripts/PlayerController/Components/CollisionComponent.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/eugene/Desktop/untitled folder/CodeCraft_HomeWork/Assets/Game/Scripts/PlayerController/Components/CollisionComponent.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/eugene/Desktop/untitled folder/CodeCraft_HomeWork/Assets/Game/Scripts/PlayerController/Components/CollisionComponent.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/eugene/Desktop/untitled folder/CodeCraft_HomeWork/Assets/Game/Scripts/PlayerController/Components/CollisionComponent.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/eugene/Desktop/untitled folder/CodeCraft_HomeWork/Assets/Game/Scripts/PlayerController/Components/CollisionComponent.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/eugene/Desktop/untitled folder/CodeCraft_HomeWork/Assets/Game/Scripts/PlayerController/Components/CollisionComponent.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/eugene/Desktop/untitled folder/CodeCraft_HomeWork/Assets/Game/Scripts/PlayerController/Components/CollisionComponent.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/eugene/Desktop/untitled folder/CodeCraft_HomeWork/Assets/Game/Scripts/PlayerController/Components/GravityComponent.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/eugene/Desktop/untitled folder/CodeCraft_HomeWork/Assets/Game/Scripts/PlayerController/Components/GravityComponent.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/eugene/Desktop/untitled folder/CodeCraft_HomeWork/Assets/Game/Scripts/PlayerController/Components/GravityComponent.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/eugene/Desktop/untitled folder/CodeCraft_HomeWork/Assets/Game/Scripts/PlayerController/Components/GravityComponent.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/eugene/Desktop/untitled folder/CodeCraft_HomeWork/Assets/Game/Scripts/PlayerController/Components/GravityComponent.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/eugene/Desktop/untitled folder/CodeCraft_HomeWork/Assets/Game/Scripts/PlayerController/Components/GravityComponent.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/eugene/Desktop/untitled folder/CodeCraft_HomeWork/Assets/Game/Scripts/PlayerController/Components/GravityComponent.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/eugene/Desktop/untitled folder/CodeCraft_HomeWork/Assets/Game/Scripts/PlayerController/Components/GravityComponent.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/eugene/Desktop/untitled folder/CodeCraft_HomeWork/Assets/Game/Scripts/PlayerController/PlayerController.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/eugene/Desktop/untitled folder/CodeCraft_HomeWork/Assets/Game/Scripts/PlayerController/PlayerController.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/eugene/Desktop/untitled folder/CodeCraft_HomeWork/Assets/Game/Scripts/PlayerController/PlayerController.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/eugene/Desktop/untitled folder/CodeCraft_HomeWork/Assets/Game/Scripts/PlayerController/PlayerController.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/eugene/Desktop/untitled folder/CodeCraft_HomeWork/Assets/Game/Scripts/PlayerController/PlayerController.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/eugene/Desktop/untitled folder/CodeCraft_HomeWork/Assets/Game/Scripts/PlayerController/PlayerController.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/eugene/Desktop/untitled folder/CodeCraft_HomeWork/Assets/Game/Scripts/PlayerController/PlayerController.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/eugene/Desktop/untitled folder/CodeCraft_HomeWork/Assets/Game/Scripts/PlayerController/PlayerController.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/eugene/Desktop/untitled folder/CodeCraft_HomeWork/Assets/Game/Scripts/PlayerController/PlayerController.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/eugene/Desktop/untitled folder/CodeCraft_HomeWork/Assets/Game/Scripts/PlayerController/PlayerController.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.visualscripting@1b53f46e931b/Runtime/VisualScripting.State/StateMachine.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$USER_HOME$/Downloads/5. MVx Паттерны/MVx-Homework/Assets/Modules/UIComponents/FloatingAnimation.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/723ae1096b414639900dc6293535501b2f200/92/3ac0d547/Rigidbody2D.cs" root0="SKIP_HIGHLIGHTING" />
@@ -151,6 +181,8 @@
       <workItem from="1761129343480" duration="6925000" />
       <workItem from="1761242155255" duration="3565000" />
       <workItem from="1761297126326" duration="6223000" />
+      <workItem from="1761328977212" duration="36039000" />
+      <workItem from="1761465958328" duration="2775000" />
     </task>
     <task id="LOCAL-00001" summary="Update">
       <option name="closed" value="true" />
@@ -198,6 +230,11 @@
             <list>
               <RecentGroup>
                 <option name="FILTER_VALUES">
+                  <option value="CharacterController" />
+                </option>
+              </RecentGroup>
+              <RecentGroup>
+                <option name="FILTER_VALUES">
                   <option value="origin/HomeWork_07_ComponentsWay" />
                 </option>
               </RecentGroup>
@@ -221,7 +258,7 @@
                   <entry key="branch">
                     <value>
                       <list>
-                        <option value="origin/HomeWork_07_ComponentsWay" />
+                        <option value="CharacterController" />
                       </list>
                     </value>
                   </entry>
