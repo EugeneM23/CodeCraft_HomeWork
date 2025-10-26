@@ -10,7 +10,6 @@ namespace Game.Scripts.PlayerController
 
         private const float CheckDistance = 0.5f;
         private const float OffsetFromTop = 0.2f;
-        private const float MaxNormalDeviation = 15f;
 
         private bool _isGrabbing;
         private Vector2 _leftCornerPoint;
@@ -30,12 +29,12 @@ namespace Game.Scripts.PlayerController
             if (_player.Velocity.y > 0) return;
 
             Vector2 center = (Vector2)_player.transform.position + _collider.offset;
-            float halfHeight = _collider.size.y / 2;
-            float halfWidth = _collider.size.x / 2;
+            float halfHeight = _collider.size.y / 2f;
+            float halfWidth = _collider.size.x / 2f;
             float y = center.y + halfHeight - OffsetFromTop;
 
-            Vector2 leftPos = new(center.x - halfWidth, y);
-            Vector2 rightPos = new(center.x + halfWidth, y);
+            Vector2 leftPos = new Vector2(center.x - halfWidth, y);
+            Vector2 rightPos = new Vector2(center.x + halfWidth, y);
 
             bool left = CheckCorner(leftPos, -1, out _leftCornerPoint);
             bool right = CheckCorner(rightPos, 1, out _rightCornerPoint);
@@ -43,35 +42,42 @@ namespace Game.Scripts.PlayerController
             _isGrabbing = left || right;
         }
 
+        private const float MaxNormalDeviation = 15f; // допустимый угол отклонения
+
         private bool CheckCorner(Vector2 startPos, float direction, out Vector2 corner)
         {
             corner = Vector2.zero;
 
-            // 1. Луч к стене
-            RaycastHit2D wallHit = Physics2D.Raycast(startPos, Vector2.right * direction, CheckDistance, _ledgeLayer);
-            Debug.DrawLine(startPos, startPos + Vector2.right * direction * CheckDistance, wallHit ? Color.red : Color.gray);
-
+            // 1. Стена
+            Vector2 rayDir = Vector2.right * direction;
+            RaycastHit2D wallHit = Physics2D.Raycast(startPos, rayDir, CheckDistance, _ledgeLayer);
+            Debug.DrawLine(startPos, startPos + rayDir * CheckDistance, wallHit ? Color.red : Color.gray);
             if (!wallHit) return false;
 
-            // 2. Точка, где рука должна цепляться (чуть выше стены)
-            Vector2 grabPoint = wallHit.point + new Vector2(0, 0.5f);
+            // 2. Точка сверху и вперед от wallHit (чтобы не попасть в стену)
+            Vector2 grabOffset = new Vector2(0.1f * direction, 0.5f); // немного вперед + вверх
+            Vector2 topCheckPos = wallHit.point + grabOffset;
 
-            // 3. Проверяем: над этой точкой есть земля (платформа)
-            RaycastHit2D topHit = Physics2D.Raycast(grabPoint, Vector2.down, 0.3f, _ledgeLayer);
-            Debug.DrawLine(grabPoint, grabPoint + Vector2.down * 1f, topHit ? Color.blue : Color.gray);
-
+            RaycastHit2D topHit = Physics2D.Raycast(topCheckPos, Vector2.down, 0.4f, _ledgeLayer);
+            Debug.DrawLine(topCheckPos, topCheckPos + Vector2.down * 0.4f, topHit ? Color.blue : Color.gray);
             if (!topHit) return false;
 
-            // 4. Проверяем, что прямо перед grabPoint нет стены (то есть зацеп возможен)
-            Vector2 forwardCheck = grabPoint + Vector2.right * direction * 0.2f;
-            bool blocked = Physics2D.OverlapCircle(forwardCheck, 0.05f, _ledgeLayer);
-            Debug.DrawLine(grabPoint, forwardCheck, blocked ? Color.yellow : Color.green);
+            // 3. Проверка нормалей
+            Vector2 idealWallNormal = direction == 1 ? Vector2.left : Vector2.right;
+            Vector2 idealTopNormal = Vector2.up;
 
-            if (blocked) return false;
+            float wallAngle = Vector2.Angle(wallHit.normal, idealWallNormal);
+            float topAngle = Vector2.Angle(topHit.normal, idealTopNormal);
 
-            // Всё ок — угол найден
+            if (wallAngle > MaxNormalDeviation || topAngle > MaxNormalDeviation)
+                return false;
+
+            // 4. Угол найден
             corner = topHit.point;
-            return true;        }
+            return true;
+        }
+
+
 
 
         public void ReleaseGrab() => _isGrabbing = false;

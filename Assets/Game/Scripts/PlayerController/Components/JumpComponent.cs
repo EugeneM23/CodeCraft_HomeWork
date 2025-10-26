@@ -9,14 +9,16 @@ namespace Game.Scripts.PlayerController
         private readonly InputHandler _inputHandler;
         private readonly PlayerController _player;
         private readonly WallSlidingComponent _wallSliding;
+        private LedgeGrabComponent ledgeGrab;
 
         public JumpComponent(ScriptableStats stats, InputHandler inputHandler, PlayerController player,
-            WallSlidingComponent wallSliding)
+            WallSlidingComponent wallSliding, LedgeGrabComponent ledgeGrab)
         {
             _stats = stats;
             _inputHandler = inputHandler;
             _player = player;
             _wallSliding = wallSliding;
+            this.ledgeGrab = ledgeGrab;
         }
 
         public Vector2 GetJumpVector()
@@ -25,7 +27,9 @@ namespace Game.Scripts.PlayerController
             {
                 _inputHandler.ConsumeJump();
                 _player.IsOnStairs = false;
-                
+
+                ledgeGrab.ReleaseGrab();
+
                 if (_wallSliding.IsOnWall)
                     return (_wallSliding.WallNormal + Vector2.up) * _stats.JumpPower;
 
@@ -41,5 +45,4 @@ namespace Game.Scripts.PlayerController
             return Vector2.zero;
         }
     }
-    
 }
