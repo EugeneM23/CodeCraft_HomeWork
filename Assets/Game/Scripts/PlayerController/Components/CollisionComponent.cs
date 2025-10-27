@@ -27,7 +27,6 @@ namespace Game.Scripts.PlayerController
         {
             IsCeilingHit = CheckCeilingCollision();
             IsGrounded = CheckGroundCollision() && SurfaceNormal == Vector2.zero;
-            GetGroundNormal();
         }
 
         private bool CheckGroundCollision()
@@ -59,51 +58,6 @@ namespace Game.Scripts.PlayerController
 
             if (ceilingHit && _player._frameVelocity.y > 0)
                 return true;
-
-            return false;
-        }
-
-        private void GetGroundNormal()
-        {
-            if (!IsGrounded)
-            {
-                SurfaceNormal = Vector2.up;
-                return;
-            }
-
-            Vector2 origin = _collider.bounds.center;
-            float longRayLength = _collider.bounds.extents.y + 1f;
-
-            /*if (ScanLowerSurface())
-                return;*/
-
-            Debug.DrawLine(origin, origin + Vector2.down * longRayLength, Color.red);
-            RaycastHit2D hitDown = Physics2D.Raycast(origin, Vector2.down, longRayLength, _stats.PlayerLayer);
-
-            if (hitDown.collider != null)
-            {
-                SurfaceNormal = hitDown.normal.normalized;
-                return;
-            }
-
-
-            SurfaceNormal = Vector2.zero;
-        }
-
-        private bool ScanLowerSurface()
-        {
-            float shortRayLength = 2f;
-
-            Vector2 origin2 = new Vector2(_collider.bounds.center.x, _collider.bounds.min.y);
-            Vector2 direction = new Vector2(_player.FrameInput.Move.x, 0);
-
-            Debug.DrawLine(origin2, origin2 + direction, Color.green);
-            RaycastHit2D hit = Physics2D.Raycast(origin2, direction, shortRayLength, _stats.PlayerLayer);
-            if (hit.collider != null)
-            {
-                SurfaceNormal = hit.normal.normalized;
-                return true;
-            }
 
             return false;
         }

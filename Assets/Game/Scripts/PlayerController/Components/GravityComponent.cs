@@ -18,15 +18,8 @@ namespace Game.Scripts.PlayerController
 
         public Vector2 GetGravityVector()
         {
-            if (_player.IsGrounded)
-            {
-                return new Vector2(0, 0);
-            }
             
             if (_player.IsOnStairs || _player.IsGrabbingLedge)
-                return Vector2.zero;
-
-            if (_collision.IsGrounded && _collision.SurfaceNormal != Vector2.up)
                 return Vector2.zero;
 
             if (_collision.IsCeilingHit)

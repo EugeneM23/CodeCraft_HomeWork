@@ -40,7 +40,7 @@ namespace Game.Scripts.PlayerController
                     return Vector2.up * _stats.JumpPower;
                 }
 
-                if (_player.IsGrounded)
+                if (_player.IsGrounded || !_player.IsGrounded)
                     return Vector2.up * _stats.JumpPower;
             }
 

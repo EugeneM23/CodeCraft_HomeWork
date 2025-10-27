@@ -56,7 +56,7 @@ namespace Game.Scripts.PlayerController
             _collision = new CollisionComponent(_collider, _stats, this);
             _inputHandler = new InputHandler();
             _gravityComponent = new GravityComponent(_stats, _collision, this);
-            _inert = new SpeedComponent(_stats, this);
+            _inert = new SpeedComponent(_stats);
             _moveComponent = new MoveComponent(_collision, _inert, this);
             _wallSliding = new WallSlidingComponent(_collider, this, _stats, _collision);
             _ledgeGrabComponent = new LedgeGrabComponent(_collider, this, _stats.PlayerLayer);
@@ -71,16 +71,21 @@ namespace Game.Scripts.PlayerController
             _inputHandler.HandleInput();
         }
 
+        private void LateUpdate()
+        {
+            _ledgeGrabComponent.CheckLedges();
+
+        }
+
         private void FixedUpdate()
         {
-            //_ledgeGrabComponent.CheckLedges();
             _collision.DetectCollisions();
             Vector2 move = Vector2.zero;
 
             move += _jumpComponent.GetJumpVector();
             move += _stairsMove.Move(FrameInput.Move);
            // move += _slopeSlideComponent.GetSlideVelocity();
-            move += _moveComponent.Move(FrameInput.Move).Log();
+            move += _moveComponent.Move(FrameInput.Move);
             move += _gravityComponent.GetGravityVector();
             move += _wallSliding.ScanWall();
             move += _movePlatform.GetPlatformDelta();

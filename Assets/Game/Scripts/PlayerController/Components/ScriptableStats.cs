@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Game.Scripts.PlayerController
 {
@@ -7,7 +8,7 @@ namespace Game.Scripts.PlayerController
     {
         public float MaxSpeed = 5f;
         public float Acceleration = 20f;
-        public float GroundDeceleration = 30f;
+        [FormerlySerializedAs("GroundDeceleration")] public float Deceleration = 30f;
         public float AirDeceleration = 10f;
         public float AirAcceleration = 10f;
         public float JumpPower = 10f;
