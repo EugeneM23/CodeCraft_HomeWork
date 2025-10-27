@@ -36,7 +36,7 @@ namespace Game.Scripts.PlayerController
                 WallNormal = leftHit.normal;
                 IsOnWall = true; // Активный слайд только при нажатии влево
 
-                if (IsOnWall&& _player.FrameInput.Move.x < 0)
+                if (IsOnWall && _player.FrameInput.Move.x < 0 && _player.Velocity.y < 0)
                     return new Vector2(0, _player.Velocity.y / 1f * -1);
             }
             // Проверяем правую стену
@@ -45,7 +45,7 @@ namespace Game.Scripts.PlayerController
                 WallNormal = rightHit.normal;
                 IsOnWall = true;
 
-                if (IsOnWall && _player.FrameInput.Move.x > 0)
+                if (IsOnWall && _player.FrameInput.Move.x > 0 && _player.Velocity.y < 0)
                     return new Vector2(0, _player.Velocity.y / 1f * -1);
             }
             else
@@ -53,6 +53,7 @@ namespace Game.Scripts.PlayerController
                 IsOnWall = false;
                 WallNormal = Vector2.zero;
             }
+
             IsOnWall = false;
 
             return Vector2.zero;
@@ -61,7 +62,7 @@ namespace Game.Scripts.PlayerController
         private RaycastHit2D Scan(Vector2 direction)
         {
             Vector2 origin = _collider.bounds.center;
-            float length = 1f;
+            float length = 0.7f;
 
             Debug.DrawLine(origin, origin + direction * length, Color.cyan);
 

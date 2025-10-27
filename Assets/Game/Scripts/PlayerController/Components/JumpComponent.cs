@@ -1,4 +1,5 @@
 using Game.Scripts.PlayerController.Game.Scripts.PlayerController;
+using Gameplay;
 using UnityEngine;
 
 namespace Game.Scripts.PlayerController
@@ -31,14 +32,15 @@ namespace Game.Scripts.PlayerController
                 ledgeGrab.ReleaseGrab();
 
                 if (_wallSliding.IsOnWall)
-                    return (_wallSliding.WallNormal + Vector2.up) * _stats.JumpPower;
+                    return (Vector2.up * _stats.JumpPower);
 
-                if (_player.IsGrounded || _player.IsOnStairs)
+                if (_player.IsOnSlope || _player.IsOnStairs)
                 {
-                    return (_wallSliding.WallNormal + Vector2.up) * _stats.JumpPower;
+                    Debug.Log("Jump from slope");
+                    return Vector2.up * _stats.JumpPower;
                 }
 
-                if (!_player.IsGrounded)
+                if (_player.IsGrounded)
                     return Vector2.up * _stats.JumpPower;
             }
 

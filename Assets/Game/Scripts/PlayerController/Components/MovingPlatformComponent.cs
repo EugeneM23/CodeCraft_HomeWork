@@ -18,19 +18,14 @@ namespace Game.Scripts.PlayerController
             _stats = stats;
         }
 
-        /// <summary>
-        /// Основной метод: находит платформу, вычисляет смещение за кадр FixedUpdate и возвращает вектор
-        /// </summary>
         public Vector2 GetPlatformDelta()
         {
-            // Если игрок не на земле — платформа отсутствует
             if (!_collision.IsGrounded)
             {
                 _currentPlatform = null;
                 return Vector2.zero;
             }
 
-            // Raycast вниз для поиска платформы
             Vector2 rayOrigin = new Vector2(_player.transform.position.x, _player.transform.position.y - 0.05f);
 
             RaycastHit2D hit = Physics2D.Raycast(
@@ -44,22 +39,18 @@ namespace Game.Scripts.PlayerController
             {
                 if (_currentPlatform != hit.collider.transform)
                 {
-                    // Новая платформа — сохраняем позицию
                     _currentPlatform = hit.collider.transform;
                     _lastPlatformPosition = _currentPlatform.position;
                     return Vector2.zero;
                 }
 
-                // Вычисляем дельту платформы за кадр
                 Vector3 currentPos = _currentPlatform.position;
                 Vector3 delta3 = currentPos - _lastPlatformPosition;
                 _lastPlatformPosition = currentPos;
 
-                // Масштабируем на 1 / Time.fixedDeltaTime, чтобы получить корректное смещение для движения
-                // Это компенсирует маленькие значения за один FixedUpdate кадр
+
                 Vector2 delta = new Vector2(delta3.x, delta3.y) / Time.fixedDeltaTime;
 
-                // Теперь умножение на Time.fixedDeltaTime при сложении с move не требуется
                 return delta;
             }
 

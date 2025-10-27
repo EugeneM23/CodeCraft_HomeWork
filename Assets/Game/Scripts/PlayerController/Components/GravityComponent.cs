@@ -18,13 +18,14 @@ namespace Game.Scripts.PlayerController
 
         public Vector2 GetGravityVector()
         {
-            if (_player.IsOnStairs || _player.IsGrabbingLedge)
+            if (_player.IsGrounded)
             {
-                Debug.Log("asdasd");
-                return Vector2.zero;
+                return new Vector2(0, 0);
             }
             
-            
+            if (_player.IsOnStairs || _player.IsGrabbingLedge)
+                return Vector2.zero;
+
             if (_collision.IsGrounded && _collision.SurfaceNormal != Vector2.up)
                 return Vector2.zero;
 
@@ -32,7 +33,7 @@ namespace Game.Scripts.PlayerController
                 return new Vector2(0, -5);
 
             float gravity = _stats.FallAcceleration;
-            
+
             float currentYVelocity = _player.Velocity.y;
 
             float newYVelocity = Mathf.MoveTowards(currentYVelocity, -_stats.MaxFallSpeed,

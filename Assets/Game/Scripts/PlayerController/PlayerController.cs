@@ -36,7 +36,7 @@ namespace Game.Scripts.PlayerController
         public Vector2 SurfaceNormal => _collision.SurfaceNormal;
         public Vector2 Velocity => _rigidbody.linearVelocity;
         public bool IsOnStairs { get; set; }
-        public bool IsOnSlope => Vector2.Angle(Vector2.right, _collision.SurfaceNormal) < 89;
+        public bool IsOnSlope => Vector2.Angle(Vector2.right, _collision.SurfaceNormal) > 89;
         public bool IsGrabbingLedge => _ledgeGrabComponent.IsGrabbing;
 
         public Vector2 _frameVelocity;
@@ -57,7 +57,7 @@ namespace Game.Scripts.PlayerController
             _inputHandler = new InputHandler();
             _gravityComponent = new GravityComponent(_stats, _collision, this);
             _inert = new SpeedComponent(_stats, this);
-            _moveComponent = new MoveComponent(_collision, _inert);
+            _moveComponent = new MoveComponent(_collision, _inert, this);
             _wallSliding = new WallSlidingComponent(_collider, this, _stats, _collision);
             _ledgeGrabComponent = new LedgeGrabComponent(_collider, this, _stats.PlayerLayer);
             _jumpComponent = new JumpComponent(_stats, _inputHandler, this, _wallSliding, _ledgeGrabComponent);
@@ -79,8 +79,8 @@ namespace Game.Scripts.PlayerController
 
             move += _jumpComponent.GetJumpVector();
             move += _stairsMove.Move(FrameInput.Move);
-            move += _slopeSlideComponent.GetSlideVelocity();
-            move += _moveComponent.Move(FrameInput.Move);
+           // move += _slopeSlideComponent.GetSlideVelocity();
+            move += _moveComponent.Move(FrameInput.Move).Log();
             move += _gravityComponent.GetGravityVector();
             move += _wallSliding.ScanWall();
             move += _movePlatform.GetPlatformDelta();

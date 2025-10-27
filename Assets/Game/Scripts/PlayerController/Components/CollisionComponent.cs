@@ -1,3 +1,4 @@
+using Gameplay;
 using UnityEngine;
 
 namespace Game.Scripts.PlayerController
@@ -25,7 +26,7 @@ namespace Game.Scripts.PlayerController
         public void DetectCollisions()
         {
             IsCeilingHit = CheckCeilingCollision();
-            IsGrounded = CheckGroundCollision();
+            IsGrounded = CheckGroundCollision() && SurfaceNormal == Vector2.zero;
             GetGroundNormal();
         }
 
@@ -44,7 +45,7 @@ namespace Game.Scripts.PlayerController
             return groundHit;
         }
 
-        public bool CheckCeilingCollision()
+        private bool CheckCeilingCollision()
         {
             bool ceilingHit = Physics2D.CapsuleCast(
                 _collider.bounds.center,
@@ -62,8 +63,6 @@ namespace Game.Scripts.PlayerController
             return false;
         }
 
-        private Vector2 lastSurfaceNormal = Vector2.up;
-
         private void GetGroundNormal()
         {
             if (!IsGrounded)
@@ -73,9 +72,10 @@ namespace Game.Scripts.PlayerController
             }
 
             Vector2 origin = _collider.bounds.center;
-            float longRayLength = _collider.bounds.extents.y + 5f;
+            float longRayLength = _collider.bounds.extents.y + 1f;
 
-            if (ScanLowerSurface()) return;
+            /*if (ScanLowerSurface())
+                return;*/
 
             Debug.DrawLine(origin, origin + Vector2.down * longRayLength, Color.red);
             RaycastHit2D hitDown = Physics2D.Raycast(origin, Vector2.down, longRayLength, _stats.PlayerLayer);
@@ -83,46 +83,25 @@ namespace Game.Scripts.PlayerController
             if (hitDown.collider != null)
             {
                 SurfaceNormal = hitDown.normal.normalized;
-                lastSurfaceNormal = hitDown.normal.normalized;
                 return;
             }
+
 
             SurfaceNormal = Vector2.zero;
         }
 
         private bool ScanLowerSurface()
         {
-            float shortRayLength = _collider.bounds.extents.y / 2;
+            float shortRayLength = 2f;
 
             Vector2 origin2 = new Vector2(_collider.bounds.center.x, _collider.bounds.min.y);
-            Vector2 direction = _player.FrameInput.Move;
+            Vector2 direction = new Vector2(_player.FrameInput.Move.x, 0);
 
-            Debug.DrawLine(origin2, origin2 + direction * shortRayLength, Color.green);
+            Debug.DrawLine(origin2, origin2 + direction, Color.green);
             RaycastHit2D hit = Physics2D.Raycast(origin2, direction, shortRayLength, _stats.PlayerLayer);
             if (hit.collider != null)
             {
                 SurfaceNormal = hit.normal.normalized;
-                lastSurfaceNormal = hit.normal.normalized;
-                return true;
-            }
-
-            return false;
-        }
-
-        public bool ScanWalls(out RaycastHit2D hit)
-        {
-            float shortRayLength = _collider.bounds.extents.y / 2 + 1;
-
-            Vector2 origin2 = new Vector2(_collider.bounds.center.x, _collider.bounds.min.y);
-            Vector2 direction = _player.FrameInput.Move;
-
-            Debug.DrawLine(origin2, origin2 + direction * shortRayLength, Color.green);
-            hit = Physics2D.Raycast(origin2, direction, shortRayLength, _stats.PlayerLayer);
-
-            if (hit.collider != null)
-            {
-                SurfaceNormal = hit.normal.normalized * -1;
-                lastSurfaceNormal = hit.normal.normalized;
                 return true;
             }
 
