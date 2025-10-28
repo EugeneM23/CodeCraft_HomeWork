@@ -38,7 +38,8 @@ namespace Game.Scripts.PlayerController
         private void Start()
         {
             _rigidbody.gravityScale = 0;
-            Application.targetFrameRate = 6;
+            Application.targetFrameRate = 120;
+            Time.timeScale = 1f;
 
             _collision = new CollisionComponent(_collider, _stats, this);
             _inputHandler = new InputHandler();
