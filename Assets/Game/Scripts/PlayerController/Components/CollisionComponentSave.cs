@@ -54,7 +54,7 @@ namespace Game.Scripts.PlayerController
                 _stats.PlayerLayer
             );
 
-            if (ceilingHit && _player._frameVelocity.y > 0)
+            if (ceilingHit && _player.Velocity.y > 0)
                 return true;
 
             return false;

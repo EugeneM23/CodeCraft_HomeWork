@@ -8,7 +8,7 @@ namespace Game.Scripts.PlayerController
         {
             if (other.TryGetComponent(out PlayerController player))
             {
-                player.Hit();
+                player.Restvelocity();
                 player.IsOnStairs = true;
             }
         }
@@ -18,6 +18,7 @@ namespace Game.Scripts.PlayerController
             if (other.TryGetComponent(out PlayerController player))
             {
                 player.Hit();
+                
                 player.IsOnStairs = false;
             }
         }

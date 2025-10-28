@@ -5,48 +5,37 @@ using UnityEngine;
 
 namespace Game.Scripts.PlayerController
 {
-    public class JumpComponent
+    public class JumpComponent : IVelocity
     {
-        private readonly ScriptableStats _stats;
         private readonly InputHandler _inputHandler;
         private readonly PlayerController _player;
-        private readonly WallSlidingComponent _wallSliding;
-        private readonly LedgeGrabComponent _ledgeGrab;
-        private readonly GravityComponent _gravityComponent;
 
-        public JumpComponent(ScriptableStats stats, InputHandler inputHandler, PlayerController player,
-            WallSlidingComponent wallSliding, LedgeGrabComponent ledgeGrab, GravityComponent gravityComponent)
+        public JumpComponent(InputHandler inputHandler, PlayerController player)
         {
-            _stats = stats;
             _inputHandler = inputHandler;
             _player = player;
-            _wallSliding = wallSliding;
-            _ledgeGrab = ledgeGrab;
-            _gravityComponent = gravityComponent;
         }
 
-        public Vector2 GetJumpVector()
+        public Vector2 GetVelocity()
         {
             if (_inputHandler.JumpToConsume)
             {
                 _inputHandler.ConsumeJump();
                 _player.IsOnStairs = false;
 
-                _ledgeGrab.ReleaseGrab();
-
-                if (_wallSliding.IsOnWall)
+                if (_player.IsOnWall)
                 {
-                    Vector2 jumpDirection = (_player.SurfaceNormal + Vector2.up).normalized * _stats.JumpPower;
-                    _gravityComponent.AddImpulse(jumpDirection);
+                    Vector2 jumpDirection = (_player.SurfaceNormal + Vector2.up).normalized * _player.Stats.JumpPower;
+                    _player.AddImpulse(jumpDirection);
                 }
                 else if (_player.IsOnSlope || _player.IsOnStairs)
                 {
-                    Vector2 jumpDirection = (_player.SurfaceNormal + Vector2.up).normalized * _stats.JumpPower;
-                    _gravityComponent.AddImpulse(jumpDirection);
+                    Vector2 jumpDirection = (_player.SurfaceNormal + Vector2.up).normalized * _player.Stats.JumpPower;
+                    _player.AddImpulse(jumpDirection);
                 }
                 else if (_player.IsGrounded)
                 {
-                    _gravityComponent.AddImpulse(new Vector2(0, _stats.JumpPower));
+                    _player.AddImpulse(new Vector2(0, _player.Stats.JumpPower));
                 }
             }
 

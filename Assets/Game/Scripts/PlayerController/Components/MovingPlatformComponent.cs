@@ -2,25 +2,18 @@ using UnityEngine;
 
 namespace Game.Scripts.PlayerController
 {
-    public class MovingPlatformComponent
+    public class MovingPlatformComponent : IVelocity
     {
         private readonly PlayerController _player;
-        private readonly CollisionComponent _collision;
-        private readonly ScriptableStats _stats;
 
         private Transform _currentPlatform;
         private Vector3 _lastPlatformPosition;
 
-        public MovingPlatformComponent(PlayerController player, CollisionComponent collision, ScriptableStats stats)
-        {
-            _player = player;
-            _collision = collision;
-            _stats = stats;
-        }
+        public MovingPlatformComponent(PlayerController player) => _player = player;
 
-        public Vector2 GetPlatformDelta()
+        public Vector2 GetVelocity()
         {
-            if (!_collision.IsGrounded)
+            if (!_player.IsGrounded)
             {
                 _currentPlatform = null;
                 return Vector2.zero;
@@ -31,8 +24,8 @@ namespace Game.Scripts.PlayerController
             RaycastHit2D hit = Physics2D.Raycast(
                 rayOrigin,
                 Vector2.down,
-                _stats.GrounderDistance + 2f,
-                _stats.PlayerLayer
+                _player.Stats.GrounderDistance,
+                _player.Stats.PlayerLayer
             );
 
             if (hit.collider != null)

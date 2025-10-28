@@ -1,25 +1,34 @@
-using Game.Scripts.PlayerController;
 using Gameplay;
-using SpriteShadersUltimate.Demo;
 using UnityEngine;
 
-internal class MoveComponent : IMoveComponent
+namespace Game.Scripts.PlayerController
 {
-    private readonly CollisionComponent _collision;
-    private readonly SpeedComponent _speed;
-    private PlayerController _player;
-    private float _lastInputX;
-
-    public MoveComponent(CollisionComponent collision, SpeedComponent speed, PlayerController player)
+    internal class MoveComponent : IVelocity
     {
-        _collision = collision;
-        _speed = speed;
-        _player = player;
-    }
+        private readonly PlayerController _player;
 
-    public Vector2 Move(Vector2 input)
-    {
-        float speed = _speed.CalculateSpeed(input.x);
-        return new Vector2(speed, 0);
+        private float _horizontalSpeed;
+        private float _lastInputX;
+        private Vector2 _currentVelocity;
+
+        public MoveComponent(PlayerController player)
+        {
+            _player = player;
+        }
+
+        public void Move(Vector2 directrion)
+        {
+            float targetSpeed = directrion.x * _player.Stats.MaxSpeed;
+
+            _horizontalSpeed = Mathf.MoveTowards(
+                _horizontalSpeed,
+                targetSpeed,
+                _player.Stats.Acceleration * Time.fixedDeltaTime
+            );
+
+            _currentVelocity = new Vector2(_horizontalSpeed, 0);
+        }
+
+        public Vector2 GetVelocity() => _currentVelocity;
     }
 }

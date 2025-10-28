@@ -3,24 +3,19 @@ using UnityEngine;
 
 namespace Game.Scripts.PlayerController
 {
-    public class GravityComponent
+    public class GravityComponent : IVelocity
     {
         private readonly PlayerController _player;
-        private readonly ScriptableStats _stats;
-        private readonly CollisionComponent _collision;
-        
+
         private Vector2 _impulse;
         private bool _impulseApplied;
 
-        public GravityComponent(ScriptableStats stats, CollisionComponent collision, PlayerController player)
+        public GravityComponent(PlayerController player)
         {
             _player = player;
-            _stats = stats;
-            _collision = collision;
             _impulse = Vector2.zero;
             _impulseApplied = false;
-            
-            // Подписываемся на событие столкновения
+
             _player.OnHit += ResetImpulse;
         }
 
@@ -37,30 +32,29 @@ namespace Game.Scripts.PlayerController
             _impulseApplied = false;
         }
 
-        public Vector2 GetGravityVector()
+
+        public Vector2 GetVelocity()
         {
             if (_player.IsOnStairs || _player.IsGrabbingLedge)
                 return Vector2.zero;
 
-            if (_collision.IsCeilingHit)
+            if (_player.IsCeilingHit)
                 return new Vector2(0, -5);
 
-            float gravity = _stats.FallAcceleration;
+            float gravity = _player.Stats.FallAcceleration;
             float currentYVelocity = _player.Velocity.y;
-            
-            // Применяем импульс только один раз
+
             if (!_impulseApplied && _impulse != Vector2.zero)
             {
                 currentYVelocity += _impulse.y;
                 _impulseApplied = true;
             }
-            
-            // Двигаем к максимальной скорости падения
-            float newYVelocity = Mathf.MoveTowards(currentYVelocity, -_stats.MaxFallSpeed, gravity * Time.fixedDeltaTime);
-            
-            // Возвращаем горизонтальный импульс только в первом кадре
+
+            float newYVelocity =
+                Mathf.MoveTowards(currentYVelocity, -_player.Stats.MaxFallSpeed, gravity * Time.fixedDeltaTime);
+
             float horizontalComponent = (!_impulseApplied || _impulse.x != 0) ? _impulse.x : 0;
-            
+
             return new Vector2(horizontalComponent, newYVelocity);
         }
     }

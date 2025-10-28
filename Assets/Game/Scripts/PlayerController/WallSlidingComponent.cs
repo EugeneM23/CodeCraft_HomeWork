@@ -3,34 +3,21 @@ using UnityEngine;
 
 namespace Game.Scripts.PlayerController
 {
-    public class WallSlidingComponent
+    public class WallSlidingComponent : IVelocity
     {
-        private readonly CollisionComponent _collision;
         private readonly PlayerController _player;
-        private readonly CapsuleCollider2D _collider;
-        private readonly ScriptableStats _stats;
 
         public bool IsOnWall { get; private set; }
         public Vector2 WallNormal { get; private set; }
 
-        public WallSlidingComponent(CapsuleCollider2D collider, PlayerController player, ScriptableStats stats,
-            CollisionComponent collision)
-        {
-            _collider = collider;
-            _collision = collision;
-            _player = player;
-            _stats = stats;
-        }
+        public WallSlidingComponent(PlayerController player) => _player = player;
 
-        public Vector2 ScanWall()
+        public Vector2 GetVelocity()
         {
-            // Сканируем слева и справа
             RaycastHit2D leftHit = Scan(Vector2.left);
             RaycastHit2D rightHit = Scan(Vector2.right);
 
-            float moveX = _player.FrameInput.Move.x;
 
-            // Проверяем левую стену
             if (leftHit.collider != null && IsWallAngle(leftHit))
             {
                 WallNormal = leftHit.normal;
@@ -39,7 +26,6 @@ namespace Game.Scripts.PlayerController
                 if (IsOnWall && _player.FrameInput.Move.x < 0 && _player.Velocity.y < 0)
                     return new Vector2(0, _player.Velocity.y / 1f * -1);
             }
-            // Проверяем правую стену
             else if (rightHit.collider != null && IsWallAngle(rightHit))
             {
                 WallNormal = rightHit.normal;
@@ -61,14 +47,14 @@ namespace Game.Scripts.PlayerController
 
         private RaycastHit2D Scan(Vector2 direction)
         {
-            Vector2 origin = _collider.bounds.center;
+            Vector2 origin = _player.Collider.bounds.center;
             float length = 0.7f;
 
             Debug.DrawLine(origin, origin + direction * length, Color.cyan);
 
-            RaycastHit2D hit = Physics2D.Raycast(origin, direction, length, _stats.PlayerLayer);
+            RaycastHit2D hit = Physics2D.Raycast(origin, direction, length, _player.Stats.PlayerLayer);
 
-            if (hit.collider == _collider)
+            if (hit.collider == _player.Collider)
                 return default;
 
             return hit;

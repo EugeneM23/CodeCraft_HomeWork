@@ -2,10 +2,9 @@ using UnityEngine;
 
 namespace Game.Scripts.PlayerController
 {
-    public class SlopeSlideComponent
+    public class SlopeSlideComponent : IVelocity
     {
         private readonly PlayerController _player;
-        private readonly CollisionComponent _collision;
 
         private const float MaxAngle = 89f;
         private const float Acceleration = 20f;
@@ -15,19 +14,15 @@ namespace Game.Scripts.PlayerController
         private Vector2 _slideVelocity;
         private bool _wasInAir;
 
-        public SlopeSlideComponent(CollisionComponent collision, PlayerController player)
-        {
-            _collision = collision;
-            _player = player;
-        }
+        public SlopeSlideComponent(PlayerController player) => _player = player;
 
-        public Vector2 GetSlideVelocity()
+        public Vector2 GetVelocity()
         {
-            if (!_collision.IsGrounded)
+            if (!_player.IsGrounded)
                 return HandleAirState();
 
             float slopeAngle = GetSlopeAngle();
-            
+
             if (slopeAngle < 1f)
                 return ApplyDamping();
 
@@ -36,7 +31,7 @@ namespace Game.Scripts.PlayerController
 
         private float GetSlopeAngle()
         {
-            return Vector2.Angle(_collision.SurfaceNormal, Vector2.up);
+            return Vector2.Angle(_player.SurfaceNormal, Vector2.up);
         }
 
         private Vector2 HandleAirState()
@@ -48,7 +43,7 @@ namespace Game.Scripts.PlayerController
         private Vector2 HandleSlopeSlide(float slopeAngle)
         {
             Vector2 slideDirection = CalculateSlideDirection();
-            
+
             if (IsPlayerMovingAgainstSlope(slideDirection))
             {
                 ResetSlide();
@@ -64,20 +59,20 @@ namespace Game.Scripts.PlayerController
 
         private Vector2 CalculateSlideDirection()
         {
-            Vector2 direction = Vector3.Cross(Vector3.forward, _collision.SurfaceNormal).normalized;
+            Vector2 direction = Vector3.Cross(Vector3.forward, _player.SurfaceNormal).normalized;
             return direction.y > 0 ? -direction : direction;
         }
 
         private bool IsPlayerMovingAgainstSlope(Vector2 slideDirection)
         {
             Vector2 input = _player.FrameInput.Move;
-            
+
             if (Mathf.Abs(input.x) < MinVelocityThreshold)
                 return false;
 
             bool slopeGoesRight = slideDirection.x > 0;
             bool playerGoesRight = input.x > 0;
-            
+
             return slopeGoesRight != playerGoesRight;
         }
 
@@ -97,10 +92,10 @@ namespace Game.Scripts.PlayerController
         private Vector2 ApplyDamping()
         {
             _slideVelocity *= Mathf.Exp(-Damping * Time.deltaTime);
-            
+
             if (_slideVelocity.magnitude < MinVelocityThreshold)
                 _slideVelocity = Vector2.zero;
-            
+
             return _slideVelocity;
         }
 

@@ -9,7 +9,7 @@ namespace Game.Scripts.PlayerController
             if (other.TryGetComponent(out PlayerController player))
             {
                 player.Hit();
-                player.AddImpulse(-transform.up * 50);
+                player.AddImpulse(-transform.up * 70);
             }
         }
 
