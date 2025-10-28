@@ -36,7 +36,7 @@ namespace Game.Scripts.PlayerController
         private void Start()
         {
             _rigidbody.gravityScale = 0;
-            
+
             _collision = new CollisionComponent(_collider, _stats, this);
             _inputHandler = new InputHandler();
             _gravityComponent = new GravityComponent(_stats, _collision, this);
@@ -55,7 +55,6 @@ namespace Game.Scripts.PlayerController
             _inputHandler.HandleInput();
         }
 
-
         private void FixedUpdate()
         {
             _collision.DetectCollisions();
@@ -70,7 +69,6 @@ namespace Game.Scripts.PlayerController
             move += _slopeSlide.GetSlideVelocity();
 
             _rigidbody.linearVelocity = move;
-
         }
     }
 }

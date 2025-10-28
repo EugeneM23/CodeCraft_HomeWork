@@ -6,9 +6,12 @@ namespace Game.Scripts.PlayerController
     {
         private readonly PlayerController _player;
         private readonly CollisionComponent _collision;
+        private readonly JumpComponent _jump;
+
         private readonly float _maxAngle = 89f;
         private readonly float _acceleration = 30f;
         private readonly float _damping = 5f;
+
         private Vector2 _currentSlideVelocity;
         private bool _wasInAir;
 

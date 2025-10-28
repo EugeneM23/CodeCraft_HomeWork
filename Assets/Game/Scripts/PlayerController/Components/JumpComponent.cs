@@ -1,3 +1,4 @@
+using System;
 using Game.Scripts.PlayerController.Game.Scripts.PlayerController;
 using Gameplay;
 using UnityEngine;
@@ -6,6 +7,7 @@ namespace Game.Scripts.PlayerController
 {
     public class JumpComponent
     {
+        public event Action OnJump;
         private readonly ScriptableStats _stats;
         private readonly InputHandler _inputHandler;
         private readonly PlayerController _player;
@@ -36,12 +38,13 @@ namespace Game.Scripts.PlayerController
 
                 if (_player.IsOnSlope || _player.IsOnStairs)
                 {
-                    Debug.Log("Jump from slope");
                     return Vector2.up * _stats.JumpPower;
                 }
 
                 if (_player.IsGrounded || !_player.IsGrounded)
                     return Vector2.up * _stats.JumpPower;
+
+                OnJump?.Invoke();
             }
 
             return Vector2.zero;
