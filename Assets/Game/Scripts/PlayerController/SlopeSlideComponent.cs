@@ -6,13 +6,13 @@ namespace Game.Scripts.PlayerController
     {
         private readonly PlayerController _player;
         private readonly CollisionComponent _collision;
-        private readonly JumpComponent _jump;
 
-        private readonly float _maxAngle = 89f;
-        private readonly float _acceleration = 30f;
-        private readonly float _damping = 5f;
+        private const float MaxAngle = 89f;
+        private const float Acceleration = 20f;
+        private const float Damping = 5f;
+        private const float MinVelocityThreshold = 0.01f;
 
-        private Vector2 _currentSlideVelocity;
+        private Vector2 _slideVelocity;
         private bool _wasInAir;
 
         public SlopeSlideComponent(CollisionComponent collision, PlayerController player)
@@ -23,61 +23,91 @@ namespace Game.Scripts.PlayerController
 
         public Vector2 GetSlideVelocity()
         {
-            Vector2 normal = _collision.SurfaceNormal;
-            bool grounded = _collision.IsGrounded;
+            if (!_collision.IsGrounded)
+                return HandleAirState();
 
-            if (grounded)
+            float slopeAngle = GetSlopeAngle();
+            
+            if (slopeAngle < 1f)
+                return ApplyDamping();
+
+            return HandleSlopeSlide(slopeAngle);
+        }
+
+        private float GetSlopeAngle()
+        {
+            return Vector2.Angle(_collision.SurfaceNormal, Vector2.up);
+        }
+
+        private Vector2 HandleAirState()
+        {
+            _wasInAir = true;
+            return ApplyDamping();
+        }
+
+        private Vector2 HandleSlopeSlide(float slopeAngle)
+        {
+            Vector2 slideDirection = CalculateSlideDirection();
+            
+            if (IsPlayerMovingAgainstSlope(slideDirection))
             {
-                float angle = Vector2.Angle(normal, Vector2.up);
-
-                if (angle >= 1f)
-                {
-                    Vector2 slideDir = Vector3.Cross(Vector3.forward, normal).normalized;
-                    if (slideDir.y > 0)
-                        slideDir = -slideDir;
-
-                    Vector2 input = _player.FrameInput.Move;
-                    bool slopeRight = slideDir.x > 0;
-                    bool playerRight = input.x > 0;
-
-                    // Если игрок идет против склона — обнуляем скорость
-                    if (Mathf.Abs(input.x) > 0.01f && slopeRight != playerRight)
-                    {
-                        _currentSlideVelocity = Vector2.zero;
-                        _wasInAir = false;
-                        return Vector2.zero;
-                    }
-
-                    if (_wasInAir)
-                    {
-                        float slopeFactor = Mathf.Clamp01(angle / _maxAngle);
-                        _currentSlideVelocity = new Vector2(
-                            _player.Velocity.x * slopeFactor,
-                            _player.Velocity.y * slopeFactor
-                        );
-                        _wasInAir = false;
-                    }
-
-                    float slopeFactorAcceleration = Mathf.Clamp01(angle / _maxAngle);
-                    _currentSlideVelocity += slideDir * (_acceleration * slopeFactorAcceleration * Time.deltaTime);
-                    return _currentSlideVelocity;
-                }
-                else
-                {
-                    _currentSlideVelocity *= Mathf.Exp(-_damping * Time.deltaTime);
-                    if (_currentSlideVelocity.magnitude < 0.01f)
-                        _currentSlideVelocity = Vector2.zero;
-                    return _currentSlideVelocity;
-                }
+                ResetSlide();
+                return Vector2.zero;
             }
-            else
-            {
-                _wasInAir = true;
-                _currentSlideVelocity *= Mathf.Exp(-_damping * Time.deltaTime);
-                if (_currentSlideVelocity.magnitude < 0.01f)
-                    _currentSlideVelocity = Vector2.zero;
-                return _currentSlideVelocity;
-            }
+
+            if (_wasInAir)
+                InitializeSlideFromAir(slopeAngle);
+
+            AccelerateSlide(slideDirection, slopeAngle);
+            return _slideVelocity;
+        }
+
+        private Vector2 CalculateSlideDirection()
+        {
+            Vector2 direction = Vector3.Cross(Vector3.forward, _collision.SurfaceNormal).normalized;
+            return direction.y > 0 ? -direction : direction;
+        }
+
+        private bool IsPlayerMovingAgainstSlope(Vector2 slideDirection)
+        {
+            Vector2 input = _player.FrameInput.Move;
+            
+            if (Mathf.Abs(input.x) < MinVelocityThreshold)
+                return false;
+
+            bool slopeGoesRight = slideDirection.x > 0;
+            bool playerGoesRight = input.x > 0;
+            
+            return slopeGoesRight != playerGoesRight;
+        }
+
+        private void InitializeSlideFromAir(float slopeAngle)
+        {
+            float factor = Mathf.Clamp01(slopeAngle / MaxAngle);
+            _slideVelocity = _player.Velocity * factor;
+            _wasInAir = false;
+        }
+
+        private void AccelerateSlide(Vector2 slideDirection, float slopeAngle)
+        {
+            float factor = Mathf.Clamp01(slopeAngle / MaxAngle);
+            _slideVelocity += slideDirection * (Acceleration * factor * Time.deltaTime);
+        }
+
+        private Vector2 ApplyDamping()
+        {
+            _slideVelocity *= Mathf.Exp(-Damping * Time.deltaTime);
+            
+            if (_slideVelocity.magnitude < MinVelocityThreshold)
+                _slideVelocity = Vector2.zero;
+            
+            return _slideVelocity;
+        }
+
+        private void ResetSlide()
+        {
+            _slideVelocity = Vector2.zero;
+            _wasInAir = false;
         }
     }
 }
