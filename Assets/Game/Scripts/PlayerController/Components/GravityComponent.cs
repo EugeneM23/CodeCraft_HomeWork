@@ -3,12 +3,12 @@ using UnityEngine;
 
 namespace Game.Scripts.PlayerController
 {
-    internal class GravityComponent
+    public class GravityComponent
     {
         private readonly PlayerController _player;
         private readonly ScriptableStats _stats;
         private readonly CollisionComponent _collision;
-
+        
         private Vector2 _impulse;
         private bool _impulseApplied;
 
@@ -19,13 +19,14 @@ namespace Game.Scripts.PlayerController
             _collision = collision;
             _impulse = Vector2.zero;
             _impulseApplied = false;
-
+            
             // Подписываемся на событие столкновения
             _player.OnHit += ResetImpulse;
         }
 
         public void AddImpulse(Vector2 impulseValue)
         {
+            _player.Restvelocity();
             _impulse = impulseValue;
             _impulseApplied = false;
         }
@@ -46,22 +47,20 @@ namespace Game.Scripts.PlayerController
 
             float gravity = _stats.FallAcceleration;
             float currentYVelocity = _player.Velocity.y;
-
+            
             // Применяем импульс только один раз
             if (!_impulseApplied && _impulse != Vector2.zero)
             {
-                currentYVelocity = 0;
                 currentYVelocity += _impulse.y;
                 _impulseApplied = true;
             }
-
+            
             // Двигаем к максимальной скорости падения
-            float newYVelocity =
-                Mathf.MoveTowards(currentYVelocity, -_stats.MaxFallSpeed, gravity * Time.fixedDeltaTime);
-
+            float newYVelocity = Mathf.MoveTowards(currentYVelocity, -_stats.MaxFallSpeed, gravity * Time.fixedDeltaTime);
+            
             // Возвращаем горизонтальный импульс только в первом кадре
             float horizontalComponent = (!_impulseApplied || _impulse.x != 0) ? _impulse.x : 0;
-
+            
             return new Vector2(horizontalComponent, newYVelocity);
         }
     }

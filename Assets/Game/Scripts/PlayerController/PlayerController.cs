@@ -38,6 +38,7 @@ namespace Game.Scripts.PlayerController
         private void Start()
         {
             _rigidbody.gravityScale = 0;
+            Application.targetFrameRate = 6;
 
             _collision = new CollisionComponent(_collider, _stats, this);
             _inputHandler = new InputHandler();
@@ -46,7 +47,8 @@ namespace Game.Scripts.PlayerController
             _moveComponent = new MoveComponent(_collision, _speed, this);
             _wallSliding = new WallSlidingComponent(_collider, this, _stats, _collision);
             _ledgeGrabComponent = new LedgeGrabComponent(_collider, this, _stats.PlayerLayer);
-            _jumpComponent = new JumpComponent(_stats, _inputHandler, this, _wallSliding, _ledgeGrabComponent);
+            _jumpComponent = new JumpComponent(_stats, _inputHandler, this, _wallSliding, _ledgeGrabComponent,
+                _gravityComponent);
             _stairsMove = new StairsMoveComponent(_stats, _collision, this);
             _movePlatform = new MovingPlatformComponent(this, _collision, _stats);
             _slopeSlide = new SlopeSlideComponent(_collision, this);
@@ -54,7 +56,8 @@ namespace Game.Scripts.PlayerController
 
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.E)) 
+            //_ledgeGrabComponent.CheckLedges();
+            if (Input.GetKeyDown(KeyCode.E))
                 AddImpulse(new Vector2(50, 0f));
 
             _inputHandler.HandleInput();
@@ -79,10 +82,15 @@ namespace Game.Scripts.PlayerController
         public void OnCollisionEnter2D(Collision2D other) => Hit();
 
         public void Hit() => OnHit?.Invoke();
-        
+
         public void AddImpulse(Vector2 impulse)
         {
             _gravityComponent.AddImpulse(impulse);
+        }
+
+        public void Restvelocity()
+        {
+            _rigidbody.linearVelocity = Vector2.zero;
         }
     }
 }

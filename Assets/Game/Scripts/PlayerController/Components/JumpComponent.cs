@@ -11,16 +11,18 @@ namespace Game.Scripts.PlayerController
         private readonly InputHandler _inputHandler;
         private readonly PlayerController _player;
         private readonly WallSlidingComponent _wallSliding;
-        private LedgeGrabComponent ledgeGrab;
+        private readonly LedgeGrabComponent _ledgeGrab;
+        private readonly GravityComponent _gravityComponent;
 
         public JumpComponent(ScriptableStats stats, InputHandler inputHandler, PlayerController player,
-            WallSlidingComponent wallSliding, LedgeGrabComponent ledgeGrab)
+            WallSlidingComponent wallSliding, LedgeGrabComponent ledgeGrab, GravityComponent gravityComponent)
         {
             _stats = stats;
             _inputHandler = inputHandler;
             _player = player;
             _wallSliding = wallSliding;
-            this.ledgeGrab = ledgeGrab;
+            _ledgeGrab = ledgeGrab;
+            _gravityComponent = gravityComponent;
         }
 
         public Vector2 GetJumpVector()
@@ -30,20 +32,22 @@ namespace Game.Scripts.PlayerController
                 _inputHandler.ConsumeJump();
                 _player.IsOnStairs = false;
 
-                ledgeGrab.ReleaseGrab();
+                _ledgeGrab.ReleaseGrab();
 
                 if (_wallSliding.IsOnWall)
                 {
-                    _player.AddImpulse(Vector2.up * _stats.JumpPower);
+                    Vector2 jumpDirection = (_player.SurfaceNormal + Vector2.up).normalized * _stats.JumpPower;
+                    _gravityComponent.AddImpulse(jumpDirection);
                 }
-
-                if (_player.IsOnSlope || _player.IsOnStairs)
+                else if (_player.IsOnSlope || _player.IsOnStairs)
                 {
-                    _player.AddImpulse(Vector2.up * _stats.JumpPower);
+                    Vector2 jumpDirection = (_player.SurfaceNormal + Vector2.up).normalized * _stats.JumpPower;
+                    _gravityComponent.AddImpulse(jumpDirection);
                 }
-
-                if (_player.IsGrounded || !_player.IsGrounded)
-                    _player.AddImpulse(Vector2.up * _stats.JumpPower);
+                else if (_player.IsGrounded)
+                {
+                    _gravityComponent.AddImpulse(new Vector2(0, _stats.JumpPower));
+                }
             }
 
             return Vector2.zero;
