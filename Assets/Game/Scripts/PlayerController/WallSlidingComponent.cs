@@ -23,7 +23,7 @@ namespace Game.Scripts.PlayerController
                 WallNormal = leftHit.normal;
                 IsOnWall = true; // Активный слайд только при нажатии влево
 
-                if (IsOnWall && _player.FrameInput.Move.x < 0 && _player.Velocity.y < 0)
+                if (IsOnWall && _player.MoveDirection.x < 0 && _player.Velocity.y < 0)
                     return new Vector2(0, _player.Velocity.y / 1f * -1);
             }
             else if (rightHit.collider != null && IsWallAngle(rightHit))
@@ -31,7 +31,7 @@ namespace Game.Scripts.PlayerController
                 WallNormal = rightHit.normal;
                 IsOnWall = true;
 
-                if (IsOnWall && _player.FrameInput.Move.x > 0 && _player.Velocity.y < 0)
+                if (IsOnWall && _player.MoveDirection.x > 0 && _player.Velocity.y < 0)
                     return new Vector2(0, _player.Velocity.y / 1f * -1);
             }
             else

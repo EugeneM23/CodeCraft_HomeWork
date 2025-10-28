@@ -35,7 +35,7 @@ namespace Game.Scripts.PlayerController
 
         public Vector2 GetVelocity()
         {
-            if (_player.IsOnStairs || _player.IsGrabbingLedge)
+            if (_player.IsOnStairs)
                 return Vector2.zero;
 
             if (_player.IsCeilingHit)

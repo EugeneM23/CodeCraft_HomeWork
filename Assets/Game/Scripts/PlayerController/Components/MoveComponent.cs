@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Game.Scripts.PlayerController
 {
-    internal class MoveComponent : IVelocity
+    public class MoveComponent : IVelocity
     {
         private readonly PlayerController _player;
 

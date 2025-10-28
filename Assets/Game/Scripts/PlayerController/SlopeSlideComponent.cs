@@ -65,7 +65,7 @@ namespace Game.Scripts.PlayerController
 
         private bool IsPlayerMovingAgainstSlope(Vector2 slideDirection)
         {
-            Vector2 input = _player.FrameInput.Move;
+            Vector2 input = _player.MoveDirection;
 
             if (Mathf.Abs(input.x) < MinVelocityThreshold)
                 return false;

@@ -36,22 +36,24 @@ public class ServiceLocator
     public ServiceLocator(PlayerController player)
     {
         var collision = new CollisionComponent(player);
-        var inputHandler = new InputHandler();
         var gravity = new GravityComponent(player);
         var move = new MoveComponent(player);
         var wallSlide = new WallSlidingComponent(player);
         var ledgeGrab = new LedgeGrabComponent(player);
-        var jump = new JumpComponent(inputHandler, player);
+        var jump = new JumpComponent(player);
         var stairs = new StairsMoveComponent(player);
         var movingPlatform = new MovingPlatformComponent(player);
         var slopeSlide = new SlopeSlideComponent(player);
+        var moveController = new MoveController(player);
+        var jumpController = new JumpController(player);
 
+        Register(jumpController);
+        Register(moveController);
         Register(collision);
-        Register(inputHandler);
         Register(gravity);
         Register(move);
         Register(wallSlide);
-        Register(ledgeGrab);
+        //Register(ledgeGrab);
         Register(jump);
         Register(stairs);
         Register(movingPlatform);

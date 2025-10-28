@@ -1,45 +1,29 @@
-using System;
-using Game.Scripts.PlayerController.Game.Scripts.PlayerController;
-using Gameplay;
 using UnityEngine;
 
 namespace Game.Scripts.PlayerController
 {
-    public class JumpComponent : IVelocity
+    public class JumpComponent
     {
-        private readonly InputHandler _inputHandler;
         private readonly PlayerController _player;
 
-        public JumpComponent(InputHandler inputHandler, PlayerController player)
-        {
-            _inputHandler = inputHandler;
-            _player = player;
-        }
+        public JumpComponent(PlayerController player) => _player = player;
 
-        public Vector2 GetVelocity()
+        public void Jump()
         {
-            if (_inputHandler.JumpToConsume)
+            if (_player.IsOnWall)
             {
-                _inputHandler.ConsumeJump();
-                _player.IsOnStairs = false;
-
-                if (_player.IsOnWall)
-                {
-                    Vector2 jumpDirection = (_player.SurfaceNormal + Vector2.up).normalized * _player.Stats.JumpPower;
-                    _player.AddImpulse(jumpDirection);
-                }
-                else if (_player.IsOnSlope || _player.IsOnStairs)
-                {
-                    Vector2 jumpDirection = (_player.SurfaceNormal + Vector2.up).normalized * _player.Stats.JumpPower;
-                    _player.AddImpulse(jumpDirection);
-                }
-                else if (_player.IsGrounded)
-                {
-                    _player.AddImpulse(new Vector2(0, _player.Stats.JumpPower));
-                }
+                Vector2 jumpDirection = (_player.SurfaceNormal + Vector2.up).normalized * _player.Stats.JumpPower;
+                _player.AddImpulse(jumpDirection);
             }
-
-            return Vector2.zero;
+            else if (_player.IsOnSlope || _player.IsOnStairs)
+            {
+                Vector2 jumpDirection = (_player.SurfaceNormal + Vector2.up).normalized * _player.Stats.JumpPower;
+                _player.AddImpulse(jumpDirection);
+            }
+            else if (_player.IsGrounded)
+            {
+                _player.AddImpulse(new Vector2(0, _player.Stats.JumpPower));
+            }
         }
     }
 }
