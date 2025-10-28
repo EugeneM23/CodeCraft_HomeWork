@@ -20,7 +20,7 @@ namespace Game.Scripts.PlayerController
                 Vector2 jumpDirection = (_player.SurfaceNormal + Vector2.up).normalized * _player.Stats.JumpPower;
                 _player.AddImpulse(jumpDirection);
             }
-            else if (_player.IsGrounded)
+            else if (_player.IsGrounded || !_player.IsGrounded)
             {
                 _player.AddImpulse(new Vector2(0, _player.Stats.JumpPower));
             }

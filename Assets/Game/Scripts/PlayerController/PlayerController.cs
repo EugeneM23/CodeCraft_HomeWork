@@ -12,7 +12,7 @@ namespace Game.Scripts.PlayerController
 
         private IReadOnlyCollection<ITickable> _tickables;
         private IReadOnlyCollection<IVelocity> _velocities;
-        
+
         private ServiceLocator _locator;
         public event Action OnHit;
         public bool IsOnStairs { get; set; }
@@ -39,18 +39,18 @@ namespace Game.Scripts.PlayerController
 
         private void Update()
         {
-            foreach (var tick in _tickables)
-                tick.Tick();
+            foreach (var t in _tickables)
+                t.Tick();
         }
 
         private void FixedUpdate()
         {
-            Vector2 move = Vector2.zero;
+            Vector2 velocity = Vector2.zero;
 
             foreach (var v in _velocities)
-                move += v.GetVelocity();
+                velocity += v.GetVelocity();
 
-            _rigidbody.linearVelocity = move;
+            _rigidbody.linearVelocity = velocity;
         }
 
         public void Move(Vector2 direction) => _locator.Get<MoveComponent>().Move(direction);

@@ -13,7 +13,7 @@ namespace Game.Scripts.PlayerController
 
         public void Tick()
         {
-            if (Input.GetKeyDown(KeyCode.Space)) 
+            if (Input.GetKeyDown(KeyCode.Space))
                 _player.Jump();
         }
     }

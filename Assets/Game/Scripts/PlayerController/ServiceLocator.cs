@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Game.Scripts.PlayerController;
-using Game.Scripts.PlayerController.Game.Scripts.PlayerController;
 
 public class ServiceLocator
 {
@@ -18,8 +17,7 @@ public class ServiceLocator
 
     public void Register<T>(T service)
     {
-        var type = typeof(T);
-        _services[type] = service;
+        _services[typeof(T)] = service;
     }
 
     public List<T> GetAll<T>()
@@ -35,28 +33,19 @@ public class ServiceLocator
 
     public ServiceLocator(PlayerController player)
     {
-        var collision = new CollisionComponent(player);
-        var gravity = new GravityComponent(player);
-        var move = new MoveComponent(player);
-        var wallSlide = new WallSlidingComponent(player);
-        var ledgeGrab = new LedgeGrabComponent(player);
-        var jump = new JumpComponent(player);
-        var stairs = new StairsMoveComponent(player);
-        var movingPlatform = new MovingPlatformComponent(player);
-        var slopeSlide = new SlopeSlideComponent(player);
-        var moveController = new MoveController(player);
-        var jumpController = new JumpController(player);
+        Register(new DashController(player));
+        Register(new SmashController(player));
+        Register(new JumpController(player));
+        Register(new MoveController(player));
 
-        Register(jumpController);
-        Register(moveController);
-        Register(collision);
-        Register(gravity);
-        Register(move);
-        Register(wallSlide);
-        //Register(ledgeGrab);
-        Register(jump);
-        Register(stairs);
-        Register(movingPlatform);
-        Register(slopeSlide);
+        Register(new CollisionComponent(player));
+        Register(new GravityComponent(player));
+        Register(new MoveComponent(player));
+        Register(new WallSlidingComponent(player));
+        // Register(new LedgeGrabComponent(player)); 
+        Register(new JumpComponent(player));
+        Register(new StairsMoveComponent(player));
+        Register(new MovingPlatformComponent(player));
+        Register(new SlopeSlideComponent(player));
     }
 }
