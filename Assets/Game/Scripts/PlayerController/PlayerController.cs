@@ -1,3 +1,4 @@
+using System;
 using Game.Scripts.PlayerController.Game.Scripts.PlayerController;
 using UnityEngine;
 
@@ -20,6 +21,7 @@ namespace Game.Scripts.PlayerController
         private SpeedComponent _speed;
         private MovingPlatformComponent _movePlatform;
 
+        public event Action OnHit;
         public bool IsGrounded => _collision.IsGrounded;
         public bool IsCeilingHit => _collision.IsCeilingHit;
         public FrameInput FrameInput => _inputHandler.FrameInput;
@@ -52,6 +54,9 @@ namespace Game.Scripts.PlayerController
 
         private void Update()
         {
+            if (Input.GetKeyDown(KeyCode.E)) 
+                AddImpulse(new Vector2(50, 0f));
+
             _inputHandler.HandleInput();
         }
 
@@ -69,6 +74,15 @@ namespace Game.Scripts.PlayerController
             move += _slopeSlide.GetSlideVelocity();
 
             _rigidbody.linearVelocity = move;
+        }
+
+        public void OnCollisionEnter2D(Collision2D other) => Hit();
+
+        public void Hit() => OnHit?.Invoke();
+        
+        public void AddImpulse(Vector2 impulse)
+        {
+            _gravityComponent.AddImpulse(impulse);
         }
     }
 }

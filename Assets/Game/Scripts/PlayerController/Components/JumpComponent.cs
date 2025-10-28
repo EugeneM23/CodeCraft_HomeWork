@@ -7,7 +7,6 @@ namespace Game.Scripts.PlayerController
 {
     public class JumpComponent
     {
-        public event Action OnJump;
         private readonly ScriptableStats _stats;
         private readonly InputHandler _inputHandler;
         private readonly PlayerController _player;
@@ -34,17 +33,17 @@ namespace Game.Scripts.PlayerController
                 ledgeGrab.ReleaseGrab();
 
                 if (_wallSliding.IsOnWall)
-                    return (Vector2.up * _stats.JumpPower);
+                {
+                    _player.AddImpulse(Vector2.up * _stats.JumpPower);
+                }
 
                 if (_player.IsOnSlope || _player.IsOnStairs)
                 {
-                    return Vector2.up * _stats.JumpPower;
+                    _player.AddImpulse(Vector2.up * _stats.JumpPower);
                 }
 
                 if (_player.IsGrounded || !_player.IsGrounded)
-                    return Vector2.up * _stats.JumpPower;
-
-                OnJump?.Invoke();
+                    _player.AddImpulse(Vector2.up * _stats.JumpPower);
             }
 
             return Vector2.zero;
