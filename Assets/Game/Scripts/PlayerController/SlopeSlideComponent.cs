@@ -6,56 +6,75 @@ namespace Game.Scripts.PlayerController
     {
         private readonly PlayerController _player;
         private readonly CollisionComponent _collision;
-        private readonly float _maxAngle;
-        private readonly float _slideForce;
+        private readonly float _maxAngle = 89f;
+        private readonly float _acceleration = 30f;
+        private readonly float _damping = 5f;
+        private Vector2 _currentSlideVelocity;
+        private bool _wasInAir;
 
-        public SlopeSlideComponent(CollisionComponent collision, PlayerController player, float maxAngle = 45f,
-            float slideForce = 50f)
+        public SlopeSlideComponent(CollisionComponent collision, PlayerController player)
         {
             _collision = collision;
             _player = player;
-            _maxAngle = maxAngle;
-            _slideForce = slideForce;
         }
 
         public Vector2 GetSlideVelocity()
         {
-            if (!_collision.IsGrounded) return Vector2.zero;
-
             Vector2 normal = _collision.SurfaceNormal;
-            if (normal == Vector2.zero) return Vector2.zero;
+            bool grounded = _collision.IsGrounded;
 
-            float angle = Vector2.Angle(normal, Vector2.up);
-            if (angle > _maxAngle || angle < 1f) return Vector2.zero;
-
-            // Вычисляем направление ската (вниз по склону)
-            Vector2 slideDir = Vector3.Cross(Vector3.forward, normal);
-            slideDir = new Vector2(slideDir.x, slideDir.y).normalized;
-
-            // Убеждаемся что направление идет вниз
-            if (slideDir.y > 0) slideDir = -slideDir;
-
-            Vector2 inputDirection = _player.FrameInput.Move;
-
-            if (Mathf.Abs(inputDirection.x) < 0.01f)
+            if (grounded)
             {
-                float multiplier = angle / _maxAngle;
-                return slideDir * (_slideForce * multiplier);
+                float angle = Vector2.Angle(normal, Vector2.up);
+
+                if (angle >= 1f)
+                {
+                    Vector2 slideDir = Vector3.Cross(Vector3.forward, normal).normalized;
+                    if (slideDir.y > 0)
+                        slideDir = -slideDir;
+
+                    Vector2 input = _player.FrameInput.Move;
+                    bool slopeRight = slideDir.x > 0;
+                    bool playerRight = input.x > 0;
+
+                    // Если игрок идет против склона — обнуляем скорость
+                    if (Mathf.Abs(input.x) > 0.01f && slopeRight != playerRight)
+                    {
+                        _currentSlideVelocity = Vector2.zero;
+                        _wasInAir = false;
+                        return Vector2.zero;
+                    }
+
+                    if (_wasInAir)
+                    {
+                        float slopeFactor = Mathf.Clamp01(angle / _maxAngle);
+                        _currentSlideVelocity = new Vector2(
+                            _player.Velocity.x * slopeFactor,
+                            _player.Velocity.y * slopeFactor
+                        );
+                        _wasInAir = false;
+                    }
+
+                    float slopeFactorAcceleration = Mathf.Clamp01(angle / _maxAngle);
+                    _currentSlideVelocity += slideDir * (_acceleration * slopeFactorAcceleration * Time.deltaTime);
+                    return _currentSlideVelocity;
+                }
+                else
+                {
+                    _currentSlideVelocity *= Mathf.Exp(-_damping * Time.deltaTime);
+                    if (_currentSlideVelocity.magnitude < 0.01f)
+                        _currentSlideVelocity = Vector2.zero;
+                    return _currentSlideVelocity;
+                }
             }
-
-            // Случай 2: Определяем склон влево или вправо
-            bool slopeGoesRight = slideDir.x > 0; // true = склон идет вправо-вниз
-            bool playerGoesRight = inputDirection.x > 0; // true = игрок нажимает вправо
-
-            // Случай 3: Игрок движется вниз по склону
-            if (slopeGoesRight == playerGoesRight)
+            else
             {
-                float multiplier = angle / _maxAngle;
-                return slideDir * (_slideForce * multiplier);
+                _wasInAir = true;
+                _currentSlideVelocity *= Mathf.Exp(-_damping * Time.deltaTime);
+                if (_currentSlideVelocity.magnitude < 0.01f)
+                    _currentSlideVelocity = Vector2.zero;
+                return _currentSlideVelocity;
             }
-
-            // Случай 4: Игрок движется вверх по склону - не добавляем скат
-            return Vector2.zero;
         }
     }
 }
