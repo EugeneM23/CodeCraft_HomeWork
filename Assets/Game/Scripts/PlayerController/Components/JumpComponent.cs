@@ -12,7 +12,7 @@ public class JumpComponent : ITickable
     private bool _jumpPressedThisFrame = false;
 
     // Jump buffer по расстоянию
-    private float _jumpBufferDistance = 1f; // например, 0.2 юнита
+    private float _jumpBufferDistance = 6f; // например, 0.2 юнита
 
     public JumpComponent(PlayerController player)
     {

@@ -12,15 +12,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 67cba8c975ac45fcbca7651eef096eb8, type: 3}
   m_Name: PlayerStats
   m_EditorClassIdentifier: 
-  MaxSpeed: 15
-  Acceleration: 30
-  GroundDeceleration: 30
-  AirDeceleration: 30
+  MaxSpeed: 20
+  Acceleration: 100
+  Deceleration: 30
+  AirDeceleration: 10
   AirAcceleration: 30
   JumpPower: 40
   FallAcceleration: 100
   MaxFallSpeed: 400
-  GrounderDistance: 0.1
+  GrounderDistance: 2
   PlayerLayer:
     serializedVersion: 2
     m_Bits: 64
+  WallSlideSpeed: 2
+  JumpFromWall: 50
+  MaxJumps: 0

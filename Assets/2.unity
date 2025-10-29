@@ -141,7 +141,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 774187977907358418, guid: f8c9fe38d3b5d4b20be5ba7130a1c5bc, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 21.1
+      value: 53.6
       objectReference: {fileID: 0}
     - target: {fileID: 774187977907358418, guid: f8c9fe38d3b5d4b20be5ba7130a1c5bc, type: 3}
       propertyPath: m_LocalPosition.z
@@ -605,7 +605,7 @@ Transform:
   m_GameObject: {fileID: 534578783}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 28, y: -22.96, z: 0}
+  m_LocalPosition: {x: 28, y: -18, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1186,15 +1186,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 774187978255677167}
-  deadZoneWidth: 6
-  deadZoneHeight: 6
-  followSpeed: 3
+  followRadius: 5
+  followSpeed: 10
   boundaryTopLeft: {fileID: 1948333979}
   boundaryTopRight: {fileID: 1628932306}
   boundaryBottomLeft: {fileID: 1830873465}
   boundaryBottomRight: {fileID: 534578784}
-  showDeadZone: 1
-  deadZoneColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  showFollowRadius: 1
+  radiusColor: {r: 0.3, g: 0.8, b: 1, a: 0.4}
 --- !u!1001 &1551790224
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1487,7 +1486,7 @@ Transform:
   m_GameObject: {fileID: 1830873464}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -19.03, y: -22.96, z: 0}
+  m_LocalPosition: {x: -19.03, y: -18, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1724,6 +1723,7 @@ GameObject:
   - component: {fileID: 1683106046}
   - component: {fileID: 8638877389788008125}
   - component: {fileID: 8638877389788008126}
+  - component: {fileID: 8638877389788008127}
   m_Layer: 6
   m_Name: Player
   m_TagString: Untagged
@@ -1783,7 +1783,21 @@ MonoBehaviour:
   _rigidbody: {fileID: 1683106046}
   _stats: {fileID: 11400000, guid: d3fdd4f84dad545bf8b94c557f1dd4e1, type: 2}
   _collider: {fileID: 8638877389788008125}
-  _frameVelocity: {x: 0, y: 0}
+--- !u!114 &8638877389788008127
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8638877389788008124}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02cf2598cfe14ab9977e6049be3c8d46, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _playerController: {fileID: 8638877389788008126}
+  _showDebug: 1
+  _toggleKey: 284
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
