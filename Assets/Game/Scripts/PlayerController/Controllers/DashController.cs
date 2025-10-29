@@ -1,3 +1,4 @@
+using Gameplay;
 using UnityEngine;
 
 namespace Game.Scripts.PlayerController
@@ -13,26 +14,18 @@ namespace Game.Scripts.PlayerController
 
         public void Tick()
         {
-            bool right = Input.GetKeyDown(KeyCode.D) && Input.GetKey(KeyCode.LeftShift);
-            bool left = Input.GetKeyDown(KeyCode.A) && Input.GetKey(KeyCode.LeftShift);
+            bool right = Input.GetKey(KeyCode.D) && Input.GetKeyDown(KeyCode.LeftShift);
+            bool left = Input.GetKey(KeyCode.A) && Input.GetKeyDown(KeyCode.LeftShift);
 
-            if (right || left)
+            if (right.Log() || left)
             {
-                float currentTime = Time.time;
 
-                if (currentTime - _lastSPressTime <= _doublePressThreshold)
-                {
-                    if (right)
-                        _player.AddImpulse(Vector2.right * 50f);
-                    else if (left)
-                        _player.AddImpulse(Vector2.left * 50f);
+                if (right)
+                    _player.AddImpulse(Vector2.right * 50f);
+                else if (left)
+                    _player.AddImpulse(Vector2.left * 50f);
 
-                    _lastSPressTime = -1f;
-                }
-                else
-                {
-                    _lastSPressTime = currentTime;
-                }
+                _lastSPressTime = -1f;
             }
         }
     }

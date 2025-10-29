@@ -59,7 +59,7 @@ public class ImpulseComponent : IVelocity
             else
             {
                 // Инпут совпадает с направлением импульса — сбрасываем импульс
-                _impulse.x = 0;
+                //_impulse.x = 0;
                 horizontalComponent = 0;
             }
         }

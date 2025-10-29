@@ -69,6 +69,8 @@ namespace Game.Scripts.PlayerController
         {
             _rigidbody.linearVelocity = Vector2.zero;
             _locator.Get<ImpulseComponent>().AddImpulse(impulse);
+            Debug.Log("dash double press");
+
         }
 
         public void Restvelocity() => _rigidbody.linearVelocity = Vector2.zero;
