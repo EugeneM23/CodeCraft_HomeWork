@@ -12,7 +12,8 @@ namespace Game.Scripts.PlayerController
         {
             if (_player.IsOnWall && !_player.IsGrounded && _player.MoveDirection != Vector2.zero)
             {
-                Vector2 jumpDirection = (Vector2.right * -_player.WallDirection + Vector2.up) * _player.Stats.JumpPower;
+                Vector2 jumpDirection = (Vector2.right * -_player.WallDirection + Vector2.up).normalized *
+                                        _player.Stats.JumpPower;
                 _player.AddImpulse(jumpDirection);
             }
             else if (_player.IsOnSlope || _player.IsOnStairs)

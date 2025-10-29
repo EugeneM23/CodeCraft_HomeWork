@@ -12,7 +12,7 @@ public class GravityComponent : IVelocity
 
     public Vector2 GetVelocity()
     {
-        if (_player.IsOnStairs)
+        if (_player.IsOnStairs )
             return Vector2.zero;
 
         if (_player.IsCeilingHit)
