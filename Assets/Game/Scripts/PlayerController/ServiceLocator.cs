@@ -50,4 +50,5 @@ public class ServiceLocator
         Register(new MovingPlatformComponent(player));
         Register(new SlopeSlideComponent(player));
     }
+    
 }

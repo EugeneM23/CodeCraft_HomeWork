@@ -1,22 +1,27 @@
+using System.Collections.Generic;
+using Game.Scripts.PlayerController;
 using UnityEngine;
 
 public class CameraFollow : MonoBehaviour
 {
-    [Header("Target Settings")]
-    [SerializeField] private Transform target;
+    [Header("Target Settings")] [SerializeField]
+    private Transform target;
 
-    [Header("Follow Settings")]
-    [SerializeField] private float followRadius = 5f; // Радиус 100% преследования
+    [Header("Follow Settings")] [SerializeField]
+    private float followRadius = 5f; // Радиус 100% преследования
+
     [SerializeField] private float followSpeed = 10f; // Максимальная скорость преследования
 
-    [Header("Level Boundaries")]
-    [SerializeField] private Transform boundaryTopLeft;
+    [Header("Level Boundaries")] [SerializeField]
+    private Transform boundaryTopLeft;
+
     [SerializeField] private Transform boundaryTopRight;
     [SerializeField] private Transform boundaryBottomLeft;
     [SerializeField] private Transform boundaryBottomRight;
 
-    [Header("Debug Visualization")]
-    [SerializeField] private bool showFollowRadius = true;
+    [Header("Debug Visualization")] [SerializeField]
+    private bool showFollowRadius = true;
+
     [SerializeField] private Color radiusColor = new Color(0.3f, 0.8f, 1f, 0.4f);
 
     private float minX, maxX, minY, maxY;
@@ -86,7 +91,8 @@ public class CameraFollow : MonoBehaviour
 
     private void CalculateBoundaries()
     {
-        if (boundaryTopLeft == null || boundaryTopRight == null || boundaryBottomLeft == null || boundaryBottomRight == null)
+        if (boundaryTopLeft == null || boundaryTopRight == null || boundaryBottomLeft == null ||
+            boundaryBottomRight == null)
             return;
 
         float levelMinX = Mathf.Min(boundaryBottomLeft.position.x, boundaryTopLeft.position.x);

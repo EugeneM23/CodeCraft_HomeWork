@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: PlayerStats
   m_EditorClassIdentifier: 
   MaxSpeed: 20
-  Acceleration: 100
+  Acceleration: 30
   Deceleration: 30
   AirDeceleration: 10
   AirAcceleration: 30
