@@ -33,6 +33,8 @@ public class ServiceLocator
 
     public ServiceLocator(PlayerController player)
     {
+        
+        Register(new ImpulseComponent(player));
         Register(new DashController(player));
         Register(new SmashController(player));
         Register(new JumpController(player));

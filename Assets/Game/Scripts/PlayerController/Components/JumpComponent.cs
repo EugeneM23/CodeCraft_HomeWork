@@ -10,9 +10,9 @@ namespace Game.Scripts.PlayerController
 
         public void Jump()
         {
-            if (_player.IsOnWall)
+            if (_player.IsOnWall && !_player.IsGrounded && _player.MoveDirection != Vector2.zero)
             {
-                Vector2 jumpDirection = (_player.SurfaceNormal + Vector2.up).normalized * _player.Stats.JumpPower;
+                Vector2 jumpDirection = (Vector2.right * -_player.WallDirection + Vector2.up) * _player.Stats.JumpPower;
                 _player.AddImpulse(jumpDirection);
             }
             else if (_player.IsOnSlope || _player.IsOnStairs)
@@ -20,7 +20,7 @@ namespace Game.Scripts.PlayerController
                 Vector2 jumpDirection = (_player.SurfaceNormal + Vector2.up).normalized * _player.Stats.JumpPower;
                 _player.AddImpulse(jumpDirection);
             }
-            else if (_player.IsGrounded || !_player.IsGrounded)
+            else if (_player.IsGrounded)
             {
                 _player.AddImpulse(new Vector2(0, _player.Stats.JumpPower));
             }

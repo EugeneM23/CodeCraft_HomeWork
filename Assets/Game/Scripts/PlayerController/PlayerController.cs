@@ -22,12 +22,16 @@ namespace Game.Scripts.PlayerController
         public bool IsCeilingHit => _locator.Get<CollisionComponent>().IsCeilingHit;
         public Vector2 SurfaceNormal => _locator.Get<CollisionComponent>().SurfaceNormal;
         public Vector2 Velocity => _rigidbody.linearVelocity;
-        public bool IsOnSlope => Vector2.Angle(Vector2.right, _locator.Get<CollisionComponent>().SurfaceNormal).Log() > 91;
-        public bool IsOnWall => _locator.Get<WallSlidingComponent>().IsOnWall;
+
+        public bool IsOnSlope =>
+            Vector2.Angle(Vector2.right, _locator.Get<CollisionComponent>().SurfaceNormal) > 91;
+
+        public bool IsOnWall => _locator.Get<CollisionComponent>().IsOnWall;
         public bool IsGrabbingLedge => _locator.Get<LedgeGrabComponent>().IsGrabbing;
         public CapsuleCollider2D Collider => _collider;
         public ScriptableStats Stats => _stats;
         public Vector2 MoveDirection => _locator.Get<MoveController>().CurrentDirection;
+        public int WallDirection => _locator.Get<CollisionComponent>().WallDirection;
 
         private void Start()
         {
@@ -60,7 +64,13 @@ namespace Game.Scripts.PlayerController
 
         public void OnCollisionEnter2D(Collision2D other) => Hit();
         public void Hit() => OnHit?.Invoke();
-        public void AddImpulse(Vector2 impulse) => _locator.Get<GravityComponent>().AddImpulse(impulse);
+
+        public void AddImpulse(Vector2 impulse)
+        {
+            _rigidbody.linearVelocity = Vector2.zero;
+            _locator.Get<ImpulseComponent>().AddImpulse(impulse);
+        }
+
         public void Restvelocity() => _rigidbody.linearVelocity = Vector2.zero;
     }
 }

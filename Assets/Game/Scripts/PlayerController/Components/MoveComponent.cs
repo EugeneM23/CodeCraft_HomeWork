@@ -1,4 +1,3 @@
-using Gameplay;
 using UnityEngine;
 
 namespace Game.Scripts.PlayerController
