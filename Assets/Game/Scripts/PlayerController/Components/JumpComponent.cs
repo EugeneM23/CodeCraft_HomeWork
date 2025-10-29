@@ -1,58 +1,71 @@
-using System;
+using Game.Scripts.PlayerController;
 using UnityEngine;
 
-namespace Game.Scripts.PlayerController
+public class JumpComponent : ITickable
 {
-    public class JumpComponent : ITickable
+    private readonly PlayerController _player;
+
+    private float _coyoteTime = 0.1f;
+    private float _lastGroundedTime;
+
+    private int _availableJumps;
+    private bool _jumpPressedThisFrame = false;
+
+    // Jump buffer по расстоянию
+    private float _jumpBufferDistance = 1f; // например, 0.2 юнита
+
+    public JumpComponent(PlayerController player)
     {
-        private readonly PlayerController _player;
+        _player = player;
+        _availableJumps = _player.Stats.MaxJumps;
+    }
 
-        // Coyote time параметры
-        private float _coyoteTime = 0.2f; // время в секундах
-        private float _lastGroundedTime;
-
-        public JumpComponent(PlayerController player)
+    public void Tick()
+    {
+        // Сбрасываем прыжки, если игрок на земле / склоне / лестнице
+        if (_player.IsGrounded || _player.IsOnSlope || _player.IsOnStairs)
         {
-            _player = player;
+            _lastGroundedTime = Time.time;
+            _availableJumps = _player.Stats.MaxJumps;
         }
 
-        public void Jump()
+        // Сбрасываем флаг нажатия
+        _jumpPressedThisFrame = false;
+    }
+
+    public void Jump()
+    {
+        // Wall jump
+        if (_player.IsOnWall && !_player.IsGrounded && _player.MoveDirection != Vector2.zero)
         {
-            // Wall jump: только если на стене и не на земле
-            if (_player.IsOnWall && !_player.IsGrounded && _player.MoveDirection != Vector2.zero)
-            {
-                float jumpX = (-_player.WallDirection * _player.Stats.JumpFromWall) * 0.6f;
-                float jumpY = _player.Stats.JumpFromWall;
-
-                Vector2 jumpDirection = new Vector2(jumpX, jumpY);
-                _player.AddImpulse(jumpDirection);
-                return; // выход — остальные условия не проверяем
-            }
-
-            // Slope / stairs jump: проверка без coyote time
-            if (_player.IsOnSlope || _player.IsOnStairs)
-            {
-                Vector2 jumpDirection = (_player.SurfaceNormal + Vector2.up).normalized * _player.Stats.JumpPower;
-                _player.AddImpulse(jumpDirection);
-                return;
-            }
-
-            // Ground jump (или coyote time)
-            if (_player.IsGrounded || (Time.time - _lastGroundedTime <= _coyoteTime))
-            {
-                _player.AddImpulse(new Vector2(0, _player.Stats.JumpPower));
-            }
+            float jumpX = (-_player.WallDirection * _player.Stats.JumpFromWall) * 0.6f;
+            float jumpY = _player.Stats.JumpFromWall;
+            Vector2 jumpDirection = new Vector2(jumpX, jumpY);
+            _player.AddImpulse(jumpDirection);
+            return;
         }
 
-        public void Tick()
+        // Slope / stairs jump
+        if (_player.IsOnSlope || _player.IsOnStairs)
         {
-            // Обновляем время последнего касания земли
-            if (_player.IsGrounded || _player.IsOnWallSliding)
-            {
-                _lastGroundedTime = Time.time;
-            }
+            Vector2 jumpDirection = (Vector2.up).normalized * _player.Stats.JumpPower;
+            _player.AddImpulse(jumpDirection);
+            return;
         }
 
-        private bool CanJump() => _player.IsGrounded || (Time.time - _lastGroundedTime <= _coyoteTime);
+        bool nearGround = _player.DistanceToGround <= _jumpBufferDistance;
+        bool canJump = _player.IsGrounded || nearGround || (Time.time - _lastGroundedTime <= _coyoteTime) ||
+                       _availableJumps > 0;
+
+        if (canJump)
+        {
+            _player.AddImpulse(new Vector2(0, _player.Stats.JumpPower));
+
+            // Если не на земле и не “почти на земле”, уменьшаем доступные мульти-прыжки
+            if (!_player.IsGrounded && !nearGround && Time.time - _lastGroundedTime > _coyoteTime)
+            {
+                _availableJumps--;
+            }
+        }
     }
 }

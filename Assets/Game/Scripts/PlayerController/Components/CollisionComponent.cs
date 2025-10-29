@@ -11,7 +11,8 @@ public class CollisionComponent : ITickable
     public bool IsOnWall { get; private set; }
     public Vector2 WallNormal { get; private set; }
     public int WallDirection { get; private set; }
-    public bool IsOnWallSliding { get; set; }
+    public bool IsOnWallSliding { get; private set; }
+    public float DistanceToGround { get; private set; }
 
     public CollisionComponent(PlayerController player)
     {
@@ -70,9 +71,15 @@ public class CollisionComponent : ITickable
         );
 
         if (hit)
+        {
             SurfaceNormal = hit.normal;
+            DistanceToGround = hit.distance;
+        }
         else
+        {
             SurfaceNormal = Vector2.zero;
+            DistanceToGround = 9999f;
+        }
     }
 
     private void UpdateWallCollision()
@@ -109,7 +116,8 @@ public class CollisionComponent : ITickable
         else
         {
             IsOnWallSliding = false;
-        }  }
+        }
+    }
 
     private RaycastHit2D ScanWall(Vector2 direction)
     {

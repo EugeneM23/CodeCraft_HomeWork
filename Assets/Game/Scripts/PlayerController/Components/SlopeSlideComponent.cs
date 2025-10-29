@@ -6,7 +6,7 @@ namespace Game.Scripts.PlayerController
     {
         private readonly PlayerController _player;
 
-        private const float MaxAngle = 89f;
+        private const float MaxAngle = 91f;
         private const float Acceleration = 50f;
         private const float Damping = 5f;
         private const float MinVelocityThreshold = 0.01f;

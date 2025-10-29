@@ -21,5 +21,6 @@ namespace Game.Scripts.PlayerController
         public LayerMask PlayerLayer;
         public float WallSlideSpeed = 2f;
         public int JumpFromWall = 60;
+        public int MaxJumps = 2;
     }
 }

@@ -35,7 +35,7 @@ namespace Game.Scripts.PlayerController
         public ScriptableStats Stats => _stats;
         public Vector2 MoveDirection => _locator.Get<MoveController>().CurrentDirection;
         public int WallDirection => _locator.Get<CollisionComponent>().WallDirection;
-        public Vector2 WallNormal => _locator.Get<CollisionComponent>().WallNormal;
+        public float DistanceToGround => _locator.Get<CollisionComponent>().DistanceToGround;
 
         private void Start()
         {
