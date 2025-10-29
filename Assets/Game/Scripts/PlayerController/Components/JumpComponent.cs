@@ -40,7 +40,7 @@ public class JumpComponent : ITickable
         {
             float jumpX = (-_player.WallDirection * _player.Stats.JumpFromWall) * 0.6f;
             float jumpY = _player.Stats.JumpFromWall;
-            Vector2 jumpDirection = new Vector2(jumpX, jumpY);
+            Vector2 jumpDirection = new Vector2(jumpX * 1.3f, jumpY);
             _player.AddImpulse(jumpDirection);
             return;
         }

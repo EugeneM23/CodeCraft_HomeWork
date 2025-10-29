@@ -16,7 +16,7 @@ MonoBehaviour:
   Acceleration: 30
   Deceleration: 30
   AirDeceleration: 10
-  AirAcceleration: 30
+  AirAcceleration: 100
   JumpPower: 40
   FallAcceleration: 100
   MaxFallSpeed: 400
@@ -26,4 +26,4 @@ MonoBehaviour:
     m_Bits: 64
   WallSlideSpeed: 2
   JumpFromWall: 50
-  MaxJumps: 0
+  MaxJumps: 1

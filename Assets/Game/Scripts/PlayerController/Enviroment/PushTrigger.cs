@@ -10,7 +10,7 @@ namespace Game.Scripts.PlayerController
             {
                 player.Hit();
                 Vector2 velocity = player.Velocity;
-                player.AddImpulse(-transform.up * 5 + -(Vector3)velocity);
+                player.AddImpulse(-transform.up * 40 + -(Vector3)velocity);
             }
         }
 
