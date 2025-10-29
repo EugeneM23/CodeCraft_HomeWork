@@ -8,17 +8,13 @@ namespace Game.Scripts.PlayerController
         private readonly PlayerController _player;
 
         private float _horizontalSpeed;
-        private float _lastInputX;
         private Vector2 _currentVelocity;
 
-        public MoveComponent(PlayerController player)
-        {
-            _player = player;
-        }
+        public MoveComponent(PlayerController player) => _player = player;
 
-        public void Move(Vector2 directrion)
+        public void Move(Vector2 direction)
         {
-            float targetSpeed = directrion.x * _player.Stats.MaxSpeed;
+            float targetSpeed = direction.x * _player.Stats.MaxSpeed;
 
             _horizontalSpeed = Mathf.MoveTowards(
                 _horizontalSpeed,
@@ -26,7 +22,18 @@ namespace Game.Scripts.PlayerController
                 _player.Stats.Acceleration * Time.fixedDeltaTime
             );
 
-            _currentVelocity = new Vector2(_horizontalSpeed, 0);
+            Vector2 surfaceNormal = _player.SurfaceNormal;
+
+            if (surfaceNormal == Vector2.zero)
+            {
+                _currentVelocity = new Vector2(_horizontalSpeed, 0);
+                return;
+            }
+
+            Vector2 surfaceTangent = new Vector2(surfaceNormal.y, -surfaceNormal.x);
+            surfaceTangent.Normalize();
+
+            _currentVelocity = surfaceTangent * _horizontalSpeed;
         }
 
         public Vector2 GetVelocity() => _currentVelocity;

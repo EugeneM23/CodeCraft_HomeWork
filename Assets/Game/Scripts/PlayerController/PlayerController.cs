@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Gameplay;
 using UnityEngine;
 
 namespace Game.Scripts.PlayerController
@@ -21,7 +22,7 @@ namespace Game.Scripts.PlayerController
         public bool IsCeilingHit => _locator.Get<CollisionComponent>().IsCeilingHit;
         public Vector2 SurfaceNormal => _locator.Get<CollisionComponent>().SurfaceNormal;
         public Vector2 Velocity => _rigidbody.linearVelocity;
-        public bool IsOnSlope => Vector2.Angle(Vector2.right, _locator.Get<CollisionComponent>().SurfaceNormal) > 89;
+        public bool IsOnSlope => Vector2.Angle(Vector2.right, _locator.Get<CollisionComponent>().SurfaceNormal).Log() > 91;
         public bool IsOnWall => _locator.Get<WallSlidingComponent>().IsOnWall;
         public bool IsGrabbingLedge => _locator.Get<LedgeGrabComponent>().IsGrabbing;
         public CapsuleCollider2D Collider => _collider;

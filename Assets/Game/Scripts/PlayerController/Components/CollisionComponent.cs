@@ -31,7 +31,7 @@ public class CollisionComponent : ITickable
             _player.Collider.direction,
             0,
             Vector2.down,
-            _player.Stats.GrounderDistance,
+            0.1f,
             _player.Stats.PlayerLayer
         );
 

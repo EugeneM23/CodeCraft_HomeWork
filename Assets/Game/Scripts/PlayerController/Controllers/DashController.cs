@@ -13,8 +13,8 @@ namespace Game.Scripts.PlayerController
 
         public void Tick()
         {
-            bool right = Input.GetKeyDown(KeyCode.D);
-            bool left = Input.GetKeyDown(KeyCode.A);
+            bool right = Input.GetKeyDown(KeyCode.D) && Input.GetKey(KeyCode.LeftShift);
+            bool left = Input.GetKeyDown(KeyCode.A) && Input.GetKey(KeyCode.LeftShift);
 
             if (right || left)
             {
