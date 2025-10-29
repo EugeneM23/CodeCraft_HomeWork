@@ -1,4 +1,5 @@
 using Game.Scripts.PlayerController;
+using Gameplay;
 using UnityEngine;
 
 public class ImpulseComponent : IVelocity
@@ -34,7 +35,7 @@ public class ImpulseComponent : IVelocity
         float horizontalComponent = UpdateHorizontalImpulse();
         float verticalComponent = UpdateVerticalImpulse();
 
-        return new Vector2(horizontalComponent, verticalComponent);
+        return new Vector2(horizontalComponent, verticalComponent).Log();
     }
 
     private float UpdateHorizontalImpulse()
@@ -58,9 +59,11 @@ public class ImpulseComponent : IVelocity
             }
             else
             {
-                // Инпут совпадает с направлением импульса — сбрасываем импульс
-                //_impulse.x = 0;
-                horizontalComponent = 0;
+                float inputX = _player.MoveDirection.x * _player.Stats.MaxSpeed;
+
+                if (Mathf.Abs(inputX) > Mathf.Abs(_impulse.x))
+                    _impulse.x = inputX;
+               
             }
         }
         else
