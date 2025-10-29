@@ -16,6 +16,7 @@ namespace Game.Scripts.PlayerController
 
         private ServiceLocator _locator;
         public event Action OnHit;
+        public event Action OnJump;
         public bool IsOnStairs { get; set; }
 
         public bool IsGrounded => _locator.Get<CollisionComponent>().IsGrounded;
@@ -27,11 +28,14 @@ namespace Game.Scripts.PlayerController
             Vector2.Angle(Vector2.right, _locator.Get<CollisionComponent>().SurfaceNormal) > 91;
 
         public bool IsOnWall => _locator.Get<CollisionComponent>().IsOnWall;
+        public bool IsOnWallSliding => _locator.Get<CollisionComponent>().IsOnWallSliding;
+
         public bool IsGrabbingLedge => _locator.Get<LedgeGrabComponent>().IsGrabbing;
         public CapsuleCollider2D Collider => _collider;
         public ScriptableStats Stats => _stats;
         public Vector2 MoveDirection => _locator.Get<MoveController>().CurrentDirection;
         public int WallDirection => _locator.Get<CollisionComponent>().WallDirection;
+        public Vector2 WallNormal => _locator.Get<CollisionComponent>().WallNormal;
 
         private void Start()
         {
@@ -50,6 +54,7 @@ namespace Game.Scripts.PlayerController
 
         private void FixedUpdate()
         {
+            IsOnWallSliding.Log();
             Vector2 velocity = Vector2.zero;
 
             foreach (var v in _velocities)
@@ -60,7 +65,11 @@ namespace Game.Scripts.PlayerController
 
         public void Move(Vector2 direction) => _locator.Get<MoveComponent>().Move(direction);
 
-        public void Jump() => _locator.Get<JumpComponent>().Jump();
+        public void Jump()
+        {
+            _locator.Get<JumpComponent>().Jump();
+            OnJump?.Invoke();
+        }
 
         public void OnCollisionEnter2D(Collision2D other) => Hit();
         public void Hit() => OnHit?.Invoke();
@@ -70,7 +79,6 @@ namespace Game.Scripts.PlayerController
             _rigidbody.linearVelocity = Vector2.zero;
             _locator.Get<ImpulseComponent>().AddImpulse(impulse);
             Debug.Log("dash double press");
-
         }
 
         public void Restvelocity() => _rigidbody.linearVelocity = Vector2.zero;

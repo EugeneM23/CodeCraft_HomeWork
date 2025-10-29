@@ -19,7 +19,7 @@ namespace Game.Scripts.PlayerController
         public Vector2 GetVelocity()
         {
             if (!_player.IsGrounded)
-                return HandleAirState();
+                return Vector2.zero;
 
             float slopeAngle = GetSlopeAngle();
 

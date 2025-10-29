@@ -10,7 +10,8 @@ public class CollisionComponent : ITickable
     public bool IsCeilingHit { get; private set; }
     public bool IsOnWall { get; private set; }
     public Vector2 WallNormal { get; private set; }
-    public int WallDirection { get; private set; } 
+    public int WallDirection { get; private set; }
+    public bool IsOnWallSliding { get; set; }
 
     public CollisionComponent(PlayerController player)
     {
@@ -97,7 +98,18 @@ public class CollisionComponent : ITickable
             WallNormal = Vector2.zero;
             WallDirection = 0;
         }
-    }
+
+        // ИСПРАВЛЕНИЕ: Проверяем, жмёт ли игрок В СТОРОНУ стены
+        if (IsOnWall && Mathf.Abs(_player.MoveDirection.x) > 0.1f)
+        {
+            // Используем умножение: если знаки совпадают = жмём в стену
+            float directionCheck = _player.MoveDirection.x * WallDirection;
+            IsOnWallSliding = directionCheck > 0; // true если жмём в стену
+        }
+        else
+        {
+            IsOnWallSliding = false;
+        }  }
 
     private RaycastHit2D ScanWall(Vector2 direction)
     {

@@ -12,8 +12,10 @@ namespace Game.Scripts.PlayerController
         {
             if (_player.IsOnWall && !_player.IsGrounded && _player.MoveDirection != Vector2.zero)
             {
-                Vector2 jumpDirection = (Vector2.right * -_player.WallDirection + Vector2.up).normalized *
-                                        _player.Stats.JumpPower;
+                float jumpX = (-_player.WallDirection * _player.Stats.JumpFromWall) * 0.6f; // Горизонтальная сила
+                float jumpY = _player.Stats.JumpFromWall; // Вертикальная сила (такая же как обычный прыжок)
+
+                Vector2 jumpDirection = new Vector2(jumpX, jumpY);
                 _player.AddImpulse(jumpDirection);
             }
             else if (_player.IsOnSlope || _player.IsOnStairs)

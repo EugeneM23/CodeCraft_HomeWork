@@ -17,7 +17,7 @@ namespace Game.Scripts.PlayerController
             bool right = Input.GetKey(KeyCode.D) && Input.GetKeyDown(KeyCode.LeftShift);
             bool left = Input.GetKey(KeyCode.A) && Input.GetKeyDown(KeyCode.LeftShift);
 
-            if (right.Log() || left)
+            if (right|| left)
             {
 
                 if (right)
