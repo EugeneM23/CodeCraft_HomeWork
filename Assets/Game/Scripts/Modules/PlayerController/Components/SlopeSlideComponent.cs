@@ -4,101 +4,107 @@ namespace Game.Scripts.Modules.PlayerController.Components
 {
     internal class SlopeSlideComponent : IVelocity
     {
+        private const float MAX_SLOPE_ANGLE = 91f;
+        private const float SLIDE_ACCELERATION = 50f;
+        private const float DAMPING = 4f;
+        private const float MIN_VELOCITY = 0.01f;
+        private const float MIN_ANGLE = 1f;
+
         private readonly PlayerController _player;
-
-        private const float MaxAngle = 91f;
-        private const float Acceleration = 50f;
-        private const float Damping = 5f;
-        private const float MinVelocityThreshold = 0.01f;
-
         private Vector2 _slideVelocity;
-        private bool _wasInAir;
+        private bool _wasGroundedLastFrame;
 
-        public SlopeSlideComponent(PlayerController player) => _player = player;
+        public SlopeSlideComponent(PlayerController player)
+        {
+            _player = player;
+            _player.OnJump += () => _slideVelocity = Vector2.zero;
+        }
 
         public Vector2 GetVelocity()
         {
-            
-            if (!_player.IsGrounded)
-                return Vector2.zero;
+            bool isGrounded = _player.IsGrounded;
+            bool justLeftGround = _wasGroundedLastFrame && !isGrounded;
 
-            float slopeAngle = GetSlopeAngle();
+            // Запоминаем состояние для следующего кадра
+            _wasGroundedLastFrame = isGrounded;
 
-            if (slopeAngle < 1f)
+            // Если только что покинули землю - сохраняем скорость скольжения
+            if (justLeftGround)
+                return _slideVelocity;
+
+            // В воздухе - возвращаем сохраненную скорость без изменений
+            if (!isGrounded)
+                return _slideVelocity;
+
+            float angle = Vector2.Angle(_player.SurfaceNormal, Vector2.up);
+
+            // Плоская поверхность - применяем только затухание
+            if (angle < MIN_ANGLE)
                 return ApplyDamping();
 
-            return HandleSlopeSlide(slopeAngle);
-        }
+            // Игрок двигается против склона - тормозим скольжение
+            if (IsMovingAgainstSlope())
+                return ApplyBraking();
 
-        private float GetSlopeAngle()
-        {
-            return Vector2.Angle(_player.SurfaceNormal, Vector2.up);
-        }
+            // Вычисляем направление и ускорение скольжения
+            Vector2 slideDirection = GetSlideDirection();
+            float slideStrength = Mathf.Clamp01(angle / MAX_SLOPE_ANGLE);
 
+            _slideVelocity += slideDirection * (SLIDE_ACCELERATION * slideStrength * Time.deltaTime);
 
-        private Vector2 HandleSlopeSlide(float slopeAngle)
-        {
-            Vector2 slideDirection = CalculateSlideDirection();
-
-            if (IsPlayerMovingAgainstSlope(slideDirection))
-            {
-                ResetSlide();
-                return Vector2.zero;
-            }
-
-            if (_wasInAir)
-                InitializeSlideFromAir(slopeAngle);
-
-            AccelerateSlide(slideDirection, slopeAngle);
             return _slideVelocity;
         }
 
-        private Vector2 CalculateSlideDirection()
+        private Vector2 GetSlideDirection()
         {
-            Vector2 direction = Vector3.Cross(Vector3.forward, _player.SurfaceNormal).normalized;
-            return direction.y > 0 ? -direction : direction;
+            // Перпендикуляр к нормали поверхности
+            Vector2 perpendicular = Vector3.Cross(Vector3.forward, _player.SurfaceNormal).normalized;
+
+            // Направляем вниз по склону
+            return perpendicular.y > 0 ? -perpendicular : perpendicular;
         }
 
-        private bool IsPlayerMovingAgainstSlope(Vector2 slideDirection)
+        private bool IsMovingAgainstSlope()
         {
-            Vector2 input = _player.MoveDirection;
+            float input = _player.MoveDirection.x;
 
-            if (Mathf.Abs(input.x) < MinVelocityThreshold)
+            if (Mathf.Abs(input) < MIN_VELOCITY)
                 return false;
 
-            bool slopeGoesRight = slideDirection.x > 0;
-            bool playerGoesRight = input.x > 0;
+            Vector2 slideDirection = GetSlideDirection();
 
-            return slopeGoesRight != playerGoesRight;
-        }
-
-        private void InitializeSlideFromAir(float slopeAngle)
-        {
-            float factor = Mathf.Clamp01(slopeAngle / MaxAngle);
-            _slideVelocity = _player.Velocity * factor;
-            _wasInAir = false;
-        }
-
-        private void AccelerateSlide(Vector2 slideDirection, float slopeAngle)
-        {
-            float factor = Mathf.Clamp01(slopeAngle / MaxAngle);
-            _slideVelocity += slideDirection * (Acceleration * factor * Time.deltaTime);
+            // Проверяем, двигается ли игрок в противоположную сторону от склона
+            return Mathf.Sign(input) != Mathf.Sign(slideDirection.x);
         }
 
         private Vector2 ApplyDamping()
         {
-            _slideVelocity *= Mathf.Exp(-Damping * Time.deltaTime);
+            if (Mathf.Abs(_player.MoveDirection.x) > 0)
+            {
+                _slideVelocity = Vector2.zero;
+                return _slideVelocity;
+            }
+            
+            _slideVelocity *= Mathf.Exp(-DAMPING * Time.deltaTime);
 
-            if (_slideVelocity.magnitude < MinVelocityThreshold)
+            if (_slideVelocity.magnitude < MIN_VELOCITY)
                 _slideVelocity = Vector2.zero;
 
             return _slideVelocity;
         }
 
-        private void ResetSlide()
+        private Vector2 ApplyBraking()
         {
-            _slideVelocity = Vector2.zero;
-            _wasInAir = false;
+           
+            float inputStrength = Mathf.Abs(_player.MoveDirection.x);
+            float brakingForce = DAMPING * 2f * inputStrength; // Торможение сильнее затухания
+
+            _slideVelocity *= Mathf.Exp(-brakingForce * Time.deltaTime);
+
+            if (_slideVelocity.magnitude < MIN_VELOCITY)
+                _slideVelocity = Vector2.zero;
+
+            return _slideVelocity;
         }
     }
 }

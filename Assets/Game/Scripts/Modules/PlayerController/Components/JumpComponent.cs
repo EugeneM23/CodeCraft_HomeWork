@@ -4,7 +4,7 @@ namespace Game.Scripts.Modules.PlayerController.Components
 {
     internal class JumpComponent : ITickable
     {
-        private const float COYOTE_TIME = 0.1f;
+        private const float COYOTE_TIME = 0.15f;
         private readonly PlayerController _player;
         private float _lastGroundedTime;
         private int _availableJumps;
@@ -43,6 +43,4 @@ namespace Game.Scripts.Modules.PlayerController.Components
             }
         }
     }
-
-    
 }

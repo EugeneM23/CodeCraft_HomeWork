@@ -7,6 +7,7 @@ namespace Game.Scripts.Modules.PlayerController.Components
         private readonly PlayerController _player;
         private Vector2 _impulse;
         private bool _verticalApplied;
+        private bool _horizontalApplied;
 
         public ImpulseComponent(PlayerController player)
         {
@@ -20,12 +21,14 @@ namespace Game.Scripts.Modules.PlayerController.Components
         {
             _impulse = value;
             _verticalApplied = false;
+            _horizontalApplied = false;
         }
 
         private void Reset()
         {
             _impulse = Vector2.zero;
             _verticalApplied = false;
+            _horizontalApplied = false;
         }
 
         public Vector2 GetVelocity()
@@ -39,6 +42,13 @@ namespace Game.Scripts.Modules.PlayerController.Components
         {
             if (_impulse.x == 0)
                 return 0;
+
+            // Если это первый кадр после wall jump (сильный импульс), применяем его полностью
+            if (!_horizontalApplied && Mathf.Abs(_impulse.x) > _player.Stats.MaxSpeed)
+            {
+                _horizontalApplied = true;
+                return _impulse.x;
+            }
 
             float input = _player.MoveDirection.x;
 
