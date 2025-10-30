@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Game.Scripts.PlayerController
+namespace PlayerController
 {
     public class SlopeSlideComponent : IVelocity
     {
@@ -18,6 +18,7 @@ namespace Game.Scripts.PlayerController
 
         public Vector2 GetVelocity()
         {
+            
             if (!_player.IsGrounded)
                 return Vector2.zero;
 

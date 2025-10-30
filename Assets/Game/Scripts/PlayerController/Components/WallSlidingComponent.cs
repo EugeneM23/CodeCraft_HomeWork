@@ -1,7 +1,6 @@
-using Gameplay;
 using UnityEngine;
 
-namespace Game.Scripts.PlayerController
+namespace PlayerController
 {
     public class WallSlidingComponent : ITickable, IVelocity
     {

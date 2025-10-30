@@ -1,25 +1,33 @@
 using UnityEngine;
 
-namespace Game.Scripts.PlayerController
+namespace PlayerController
 {
     public class MoveComponent : IVelocity
     {
         private readonly PlayerController _player;
-
         private float _horizontalSpeed;
-        private float _lastInputX;
-        private Vector2 _currentVelocity;
+        private Vector2 _targetDirection;
 
         public MoveComponent(PlayerController player) => _player = player;
 
         public void Move(Vector2 direction)
         {
-            float targetSpeed = direction.x * _player.Stats.MaxSpeed;
+            _targetDirection = direction;
+        }
 
-            // ИСПРАВЛЕНИЕ: Выбираем ускорение в зависимости от того, на земле ли персонаж
-            float acceleration = _player.IsGrounded 
-                ? _player.Stats.Acceleration 
-                : _player.Stats.AirAcceleration; // Новый параметр для воздуха
+        public Vector2 GetVelocity()
+        {
+            if (_player.IsOnWall && _player.WallDirection == _player.MoveDirection.x)
+                return Vector2.zero;
+        
+            if (Mathf.Abs(_player.Velocity.x) >= _player.Stats.MaxSpeed + 1)
+                return new Vector2(_horizontalSpeed, 0);
+
+            float targetSpeed = _targetDirection.x * _player.Stats.MaxSpeed;
+
+            float acceleration = _player.IsGrounded
+                ? _player.Stats.Acceleration
+                : _player.Stats.AirAcceleration;
 
             _horizontalSpeed = Mathf.MoveTowards(
                 _horizontalSpeed,
@@ -27,9 +35,7 @@ namespace Game.Scripts.PlayerController
                 acceleration * Time.fixedDeltaTime
             );
 
-            _currentVelocity = new Vector2(_horizontalSpeed, 0);
+            return new Vector2(_horizontalSpeed, 0);
         }
-
-        public Vector2 GetVelocity() => _currentVelocity;
     }
 }

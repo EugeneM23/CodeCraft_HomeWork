@@ -1,4 +1,4 @@
-namespace Game.Scripts.PlayerController
+namespace Game.Scripts.PlayerController.Data
 {
     [System.Serializable]
     public class PlayerStats

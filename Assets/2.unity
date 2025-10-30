@@ -468,11 +468,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 774187977907358418, guid: f8c9fe38d3b5d4b20be5ba7130a1c5bc, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -26.66
+      value: -1.57
       objectReference: {fileID: 0}
     - target: {fileID: 774187977907358418, guid: f8c9fe38d3b5d4b20be5ba7130a1c5bc, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 7.18
+      value: 13.47
       objectReference: {fileID: 0}
     - target: {fileID: 774187977907358418, guid: f8c9fe38d3b5d4b20be5ba7130a1c5bc, type: 3}
       propertyPath: m_LocalPosition.z
@@ -1231,12 +1231,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ee996d94e5f46caa0f28526d3de54d6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHitShakeIntensity: 0.5
-  jumpShakeIntensity: 0.2
-  shakeDuration: 0.3
-  dampingSpeed: 2
-  player: {fileID: 8638877389788008126}
-  _initialPosition: {x: 0, y: 0, z: 0}
 --- !u!1001 &1551790224
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1824,7 +1818,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _rigidbody: {fileID: 1683106046}
-  _stats: {fileID: 11400000, guid: d3fdd4f84dad545bf8b94c557f1dd4e1, type: 2}
   _collider: {fileID: 8638877389788008125}
 --- !u!114 &8638877389788008127
 MonoBehaviour:

@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Gameplay;
+
+using Game.Scripts.PlayerController.Data;
 using UnityEngine;
 
-namespace Game.Scripts.PlayerController
+namespace PlayerController
 {
     public class PlayerController : MonoBehaviour
     {
@@ -40,6 +41,7 @@ namespace Game.Scripts.PlayerController
 
         private void Awake()
         {
+            Time.timeScale = 1f;
             _rigidbody.gravityScale = 0;
 
             _locator = new ServiceLocator(this);

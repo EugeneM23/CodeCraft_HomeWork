@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Game.Scripts.PlayerController
+namespace PlayerController
 {
     public class MovingPlatformComponent : IVelocity
     {

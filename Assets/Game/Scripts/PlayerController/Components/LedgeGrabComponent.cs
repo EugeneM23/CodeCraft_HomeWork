@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Game.Scripts.PlayerController
+namespace PlayerController
 {
     public class LedgeGrabComponent : ITickable
     {
@@ -44,7 +44,7 @@ namespace Game.Scripts.PlayerController
             float dynamicDistance = CheckDistance + Mathf.Min(_player.Velocity.magnitude * Time.fixedDeltaTime, 0.3f);
             Vector2 rayDir = Vector2.right * direction;
             RaycastHit2D wallHit = Physics2D.Raycast(startPos, rayDir, dynamicDistance, _player.Stats.LayerMask);
-            Debug.DrawLine(startPos, startPos + rayDir * dynamicDistance, wallHit ? Color.red : Color.gray);
+            UnityEngine.Debug.DrawLine(startPos, startPos + rayDir * dynamicDistance, wallHit ? Color.red : Color.gray);
             if (!wallHit) return false;
 
             // 2. TopCheckPos — чуть выше wallHit и немного вперед, чтобы попасть на платформу
@@ -52,7 +52,7 @@ namespace Game.Scripts.PlayerController
 
             // 3. Raycast вниз, чтобы найти кромку
             RaycastHit2D topHit = Physics2D.Raycast(topCheckPos, Vector2.down, 0.4f, _player.Stats.LayerMask);
-            Debug.DrawLine(topCheckPos, topCheckPos + Vector2.down * 0.4f, topHit ? Color.blue : Color.gray);
+            UnityEngine.Debug.DrawLine(topCheckPos, topCheckPos + Vector2.down * 0.4f, topHit ? Color.blue : Color.gray);
             if (!topHit) return false;
 
             // 4. Проверяем нормали
@@ -76,8 +76,8 @@ namespace Game.Scripts.PlayerController
         {
             if (!_isGrabbing) return;
 
-            Debug.DrawLine(_player.transform.position, _leftCornerPoint, Color.green);
-            Debug.DrawLine(_player.transform.position, _rightCornerPoint, Color.green);
+            UnityEngine.Debug.DrawLine(_player.transform.position, _leftCornerPoint, Color.green);
+            UnityEngine.Debug.DrawLine(_player.transform.position, _rightCornerPoint, Color.green);
         }
     }
 }

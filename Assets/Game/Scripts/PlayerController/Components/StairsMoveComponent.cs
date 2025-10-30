@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Game.Scripts.PlayerController
+namespace PlayerController
 {
     internal class StairsMoveComponent : IVelocity
     {

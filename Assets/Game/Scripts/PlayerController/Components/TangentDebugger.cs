@@ -1,8 +1,6 @@
-using System;
-using Gameplay;
 using UnityEngine;
 
-namespace Game.Scripts.PlayerController
+namespace PlayerController
 {
     public class TangentDebugger : MonoBehaviour
     {
@@ -25,7 +23,7 @@ namespace Game.Scripts.PlayerController
             Vector2 origin = _collider.bounds.center;
             float rayLength = _collider.bounds.extents.y + 5;
 
-            Debug.DrawRay(origin, Vector2.down * rayLength, Color.yellow);
+            UnityEngine.Debug.DrawRay(origin, Vector2.down * rayLength, Color.yellow);
 
             RaycastHit2D hit = Physics2D.Raycast(origin, Vector2.down, rayLength, _groundMask);
 
@@ -34,9 +32,9 @@ namespace Game.Scripts.PlayerController
                 Vector2 normal = hit.normal.normalized;
                 Vector2 tangent = new Vector2(normal.y, -normal.x).normalized;
 
-                Debug.DrawRay(origin, normal * lineLength, Color.blue);
-                Debug.DrawRay(origin, tangent * lineLength, Color.green);
-                Debug.DrawRay(origin, -tangent * lineLength, Color.red);
+                UnityEngine.Debug.DrawRay(origin, normal * lineLength, Color.blue);
+                UnityEngine.Debug.DrawRay(origin, tangent * lineLength, Color.green);
+                UnityEngine.Debug.DrawRay(origin, -tangent * lineLength, Color.red);
                 
                 SurfaceNormal = hit.normal;
             }

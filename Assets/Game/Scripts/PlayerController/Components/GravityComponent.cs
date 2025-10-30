@@ -1,29 +1,31 @@
-using Game.Scripts.PlayerController;
 using UnityEngine;
 
-public class GravityComponent : IVelocity
+namespace PlayerController
 {
-    private readonly PlayerController _player;
-
-    public GravityComponent(PlayerController player)
+    public class GravityComponent : IVelocity
     {
-        _player = player;
-    }
+        private readonly PlayerController _player;
 
-    public Vector2 GetVelocity()
-    {
-        if (_player.IsOnStairs || _player.IsOnWallSliding)
-            return Vector2.zero;
+        public GravityComponent(PlayerController player)
+        {
+            _player = player;
+        }
 
-        if (_player.IsCeilingHit)
-            return new Vector2(0, -5);
+        public Vector2 GetVelocity()
+        {
+            if (_player.IsOnStairs  || _player.IsOnWallSliding)
+                return Vector2.zero;
 
-        float gravity = _player.Stats.FallAcceleration;
-        float currentYVelocity = _player.Velocity.y;
+            if (_player.IsCeilingHit)
+                return new Vector2(0, -5);
 
-        float newYVelocity =
-            Mathf.MoveTowards(currentYVelocity, -_player.Stats.MaxFallSpeed, gravity * Time.fixedDeltaTime);
+            float gravity = _player.Stats.FallAcceleration;
+            float currentYVelocity = _player.Velocity.y;
 
-        return new Vector2(0, newYVelocity);
+            float newYVelocity =
+                Mathf.MoveTowards(currentYVelocity, -_player.Stats.MaxFallSpeed, gravity * Time.fixedDeltaTime);
+
+            return new Vector2(0, newYVelocity);
+        }
     }
 }

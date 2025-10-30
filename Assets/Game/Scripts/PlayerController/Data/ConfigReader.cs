@@ -1,7 +1,7 @@
 using System.IO;
 using UnityEngine;
 
-namespace Game.Scripts.PlayerController
+namespace Game.Scripts.PlayerController.Data
 {
     public static class ConfigReader
     {

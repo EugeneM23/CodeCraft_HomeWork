@@ -1,4 +1,7 @@
-public interface ITickable
+namespace PlayerController
 {
-    void Tick();
+    public interface ITickable
+    {
+        void Tick();
+    }
 }

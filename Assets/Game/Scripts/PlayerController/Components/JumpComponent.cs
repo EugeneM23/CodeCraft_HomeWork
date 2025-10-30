@@ -1,44 +1,46 @@
-using Game.Scripts.PlayerController;
 using UnityEngine;
 
-public class JumpComponent : ITickable
+namespace PlayerController
 {
-    private const float COYOTE_TIME = 0.1f;
-    private readonly PlayerController _player;
-    private float _lastGroundedTime;
-    private int _availableJumps;
-
-    public JumpComponent(PlayerController player)
+    public class JumpComponent : ITickable
     {
-        _player = player;
-    }
+        private const float COYOTE_TIME = 0.1f;
+        private readonly PlayerController _player;
+        private float _lastGroundedTime;
+        private int _availableJumps;
 
-    public void Tick()
-    {
-        if (_player.IsGrounded)
+        public JumpComponent(PlayerController player)
         {
-            _lastGroundedTime = Time.time;
-            _availableJumps = _player.Stats.MaxJumps;
-        }
-    }
-
-    public void Jump()
-    {
-        if (_player.IsOnWallSliding)
-        {
-            Vector2 wallJump =
-                new Vector2(-_player.WallDirection * _player.Stats.JumpFromWall, _player.Stats.JumpPower);
-            _player.AddImpulse(wallJump);
-            return;
+            _player = player;
         }
 
-        bool coyoteTime = Time.time - _lastGroundedTime <= COYOTE_TIME;
-        if (_player.IsGrounded || coyoteTime || _availableJumps > 0)
+        public void Tick()
         {
-            _player.AddImpulse(Vector2.up * _player.Stats.JumpPower);
+            if (_player.IsGrounded || _player.IsOnWallSliding)
+            {
+                _lastGroundedTime = Time.time;
+                _availableJumps = _player.Stats.MaxJumps;
+            }
+        }
 
-            if (!_player.IsGrounded && !coyoteTime)
-                _availableJumps--;
+        public void Jump()
+        {
+            if (_player.IsOnWallSliding)
+            {
+                Vector2 wallJump =
+                    new Vector2(-_player.WallDirection * _player.Stats.JumpFromWall, _player.Stats.JumpPower);
+                _player.AddImpulse(wallJump);
+                return;
+            }
+
+            bool coyoteTime = Time.time - _lastGroundedTime <= COYOTE_TIME;
+            if (_player.IsGrounded || coyoteTime || _availableJumps > 0)
+            {
+                _player.AddImpulse(Vector2.up * _player.Stats.JumpPower);
+
+                if (!_player.IsGrounded && !coyoteTime)
+                    _availableJumps--;
+            }
         }
     }
 }

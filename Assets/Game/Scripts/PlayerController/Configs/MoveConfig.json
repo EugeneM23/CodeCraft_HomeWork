@@ -1,9 +1,9 @@
 {
   "MaxSpeed": 20,
-  "Acceleration": 30,
-  "Deceleration": 35,
+  "Acceleration": 200,
+  "Deceleration": 200,
   "AirDeceleration": 12,
-  "AirAcceleration": 15,
+  "AirAcceleration": 100,
   "JumpPower": 40,
   "FallAcceleration": 100,
   "MaxFallSpeed": 500,
