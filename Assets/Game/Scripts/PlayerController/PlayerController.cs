@@ -29,7 +29,7 @@ namespace Game.Scripts.PlayerController
             Vector2.Angle(Vector2.right, _locator.Get<CollisionComponent>().SurfaceNormal) > 91;
 
         public bool IsOnWall => _locator.Get<CollisionComponent>().IsOnWall;
-        public bool IsOnWallSliding => _locator.Get<CollisionComponent>().IsOnWallSliding;
+        public bool IsOnWallSliding => _locator.Get<WallSlidingComponent>().IsWallSliding;
 
         public bool IsGrabbingLedge => _locator.Get<LedgeGrabComponent>().IsGrabbing;
         public CapsuleCollider2D Collider => _collider;

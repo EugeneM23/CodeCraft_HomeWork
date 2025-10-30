@@ -24,9 +24,10 @@ public class JumpComponent : ITickable
 
     public void Jump()
     {
-        if (_player.IsOnWall && !_player.IsGrounded)
+        if (_player.IsOnWallSliding)
         {
-            Vector2 wallJump = new Vector2(-_player.WallDirection * _player.Stats.JumpFromWall, _player.Stats.JumpPower);
+            Vector2 wallJump =
+                new Vector2(-_player.WallDirection * _player.Stats.JumpFromWall, _player.Stats.JumpPower);
             _player.AddImpulse(wallJump);
             return;
         }
@@ -35,7 +36,7 @@ public class JumpComponent : ITickable
         if (_player.IsGrounded || coyoteTime || _availableJumps > 0)
         {
             _player.AddImpulse(Vector2.up * _player.Stats.JumpPower);
-            
+
             if (!_player.IsGrounded && !coyoteTime)
                 _availableJumps--;
         }

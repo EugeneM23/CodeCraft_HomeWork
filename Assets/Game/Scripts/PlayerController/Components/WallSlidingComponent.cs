@@ -3,40 +3,36 @@ using UnityEngine;
 
 namespace Game.Scripts.PlayerController
 {
-    public class WallSlidingComponent : IVelocity
+    public class WallSlidingComponent : ITickable, IVelocity
     {
         private readonly PlayerController _player;
-        private Vector2 _currentVelocity;
+
+        public bool IsWallSliding { get; private set; }
 
         public WallSlidingComponent(PlayerController player)
         {
             _player = player;
         }
 
+        public void Tick()
+        {
+            // Определяем, скользим ли по стене
+            if (_player.IsOnWall && Mathf.Abs(_player.MoveDirection.x) > 0.1f)
+            {
+                IsWallSliding = _player.MoveDirection.x * _player.WallDirection > 0;
+            }
+            else
+            {
+                IsWallSliding = false;
+            }
+        }
+
         public Vector2 GetVelocity()
         {
-            if (!_player.IsOnWall)
+            if (!IsWallSliding || _player.Velocity.y > 0.5f)
                 return Vector2.zero;
 
-            if (_player.Velocity.y > 0.5f)
-                return Vector2.zero;
-
-            int wallDir = _player.WallDirection;
-            float inputX = _player.MoveDirection.x;
-
-            // Проверяем, жмёт ли игрок в сторону стены
-            if (Mathf.Abs(inputX) < 0.1f)
-                return Vector2.zero; // Не жмём — не скользим
-
-            float directionToWall = inputX * wallDir;
-
-            // Если жмём ОТ стены — не скользим
-            if (directionToWall < 0)
-                return Vector2.zero;
-
-            // Жмём В стену — скользим
-            float slideSpeed = _player.Stats.WallSlideSpeed;
-            return new Vector2(0, -slideSpeed);
+            return new Vector2(0, -_player.Stats.WallSlideSpeed);
         }
     }
 }

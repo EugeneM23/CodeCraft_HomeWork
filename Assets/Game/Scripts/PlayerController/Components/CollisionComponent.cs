@@ -10,9 +10,7 @@ public class CollisionComponent : ITickable
     public bool IsGrounded { get; private set; }
     public bool IsCeilingHit { get; private set; }
     public bool IsOnWall { get; private set; }
-    public Vector2 WallNormal { get; private set; }
     public int WallDirection { get; private set; }
-    public bool IsOnWallSliding { get; private set; }
     public float DistanceToGround { get; private set; }
 
     public CollisionComponent(PlayerController player)
@@ -23,55 +21,23 @@ public class CollisionComponent : ITickable
 
     public void Tick()
     {
-        IsCeilingHit = CheckCeilingCollision();
-        IsGrounded = CheckGroundCollision();
-        UpdateSurfaceNormal();
-        UpdateWallCollision();
+        CheckGround();
+        CheckCeiling();
+        CheckWall();
     }
 
-    private bool CheckGroundCollision()
-    {
-        bool groundHit = Physics2D.CapsuleCast(
-            _player.Collider.bounds.center,
-            _player.Collider.size,
-            _player.Collider.direction,
-            0,
-            Vector2.down,
-            0.1f,
-            _player.Stats.LayerMask
-        );
-
-        return groundHit;
-    }
-
-    private bool CheckCeilingCollision()
-    {
-        bool ceilingHit = Physics2D.CapsuleCast(
-            _player.Collider.bounds.center,
-            _player.Collider.size,
-            _player.Collider.direction,
-            0,
-            Vector2.up,
-            _player.Stats.GrounderDistance,
-            _player.Stats.LayerMask
-        );
-
-        if (ceilingHit && _player.Velocity.y > 0)
-            return true;
-
-        return false;
-    }
-
-    private void UpdateSurfaceNormal()
+    private void CheckGround()
     {
         RaycastHit2D hit = Physics2D.Raycast(
             _player.Collider.bounds.center,
             Vector2.down,
-            _player.Stats.GrounderDistance,
+            2,
             _player.Stats.LayerMask
         );
 
-        if (hit)
+        IsGrounded = hit.collider != null;
+        
+        if (hit.collider != null)
         {
             SurfaceNormal = hit.normal;
             DistanceToGround = hit.distance;
@@ -83,59 +49,58 @@ public class CollisionComponent : ITickable
         }
     }
 
-    private void UpdateWallCollision()
+    private void CheckCeiling()
     {
-        RaycastHit2D leftHit = ScanWall(Vector2.left);
-        RaycastHit2D rightHit = ScanWall(Vector2.right);
-
-        if (leftHit.collider != null && IsWallAngle(leftHit))
+        if (_player.Velocity.y <= 0)
         {
-            WallNormal = leftHit.normal;
+            IsCeilingHit = false;
+            return;
+        }
+
+        RaycastHit2D hit = Physics2D.Raycast(
+            _player.Collider.bounds.center,
+            Vector2.up,
+            0.2f,
+            _player.Stats.LayerMask
+        );
+
+        IsCeilingHit = hit.collider != null;
+    }
+
+    private void CheckWall()
+    {
+        RaycastHit2D leftHit = Physics2D.Raycast(
+            _player.Collider.bounds.center,
+            Vector2.left,
+            0.7f,
+            _player.Stats.LayerMask
+        );
+
+        RaycastHit2D rightHit = Physics2D.Raycast(
+            _player.Collider.bounds.center,
+            Vector2.right,
+            0.7f,
+            _player.Stats.LayerMask
+        );
+
+        if (leftHit.collider != null && IsWall(leftHit))
+        {
             IsOnWall = true;
             WallDirection = -1;
         }
-        else if (rightHit.collider != null && IsWallAngle(rightHit))
+        else if (rightHit.collider != null && IsWall(rightHit))
         {
-            WallNormal = rightHit.normal;
             IsOnWall = true;
             WallDirection = 1;
         }
         else
         {
             IsOnWall = false;
-            WallNormal = Vector2.zero;
             WallDirection = 0;
         }
-
-        // ИСПРАВЛЕНИЕ: Проверяем, жмёт ли игрок В СТОРОНУ стены
-        if (IsOnWall && Mathf.Abs(_player.MoveDirection.x) > 0.1f)
-        {
-            // Используем умножение: если знаки совпадают = жмём в стену
-            float directionCheck = _player.MoveDirection.x * WallDirection;
-            IsOnWallSliding = directionCheck > 0; // true если жмём в стену
-        }
-        else
-        {
-            IsOnWallSliding = false;
-        }
     }
 
-    private RaycastHit2D ScanWall(Vector2 direction)
-    {
-        Vector2 origin = _player.Collider.bounds.center;
-        float length = 0.7f;
-
-        Debug.DrawLine(origin, origin + direction * length, Color.cyan);
-
-        RaycastHit2D hit = Physics2D.Raycast(origin, direction, length, _player.Stats.LayerMask.Log());
-
-        if (hit.collider == _player.Collider)
-            return default;
-
-        return hit;
-    }
-
-    private bool IsWallAngle(RaycastHit2D hit)
+    private bool IsWall(RaycastHit2D hit)
     {
         float angle = Vector2.Angle(Vector2.up, hit.normal);
         return Mathf.Abs(angle - 90f) < 10f;
