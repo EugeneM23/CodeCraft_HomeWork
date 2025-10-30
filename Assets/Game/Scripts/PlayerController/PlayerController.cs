@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using Gameplay;
 using UnityEngine;
 
@@ -8,13 +9,13 @@ namespace Game.Scripts.PlayerController
     public class PlayerController : MonoBehaviour
     {
         [SerializeField] private Rigidbody2D _rigidbody;
-        [SerializeField] private ScriptableStats _stats;
         [SerializeField] private CapsuleCollider2D _collider;
 
         private IReadOnlyCollection<ITickable> _tickables;
         private IReadOnlyCollection<IVelocity> _velocities;
 
         private ServiceLocator _locator;
+        private PlayerStats _stats;
         public event Action OnHit;
         public event Action OnJump;
         public bool IsOnStairs { get; set; }
@@ -32,16 +33,18 @@ namespace Game.Scripts.PlayerController
 
         public bool IsGrabbingLedge => _locator.Get<LedgeGrabComponent>().IsGrabbing;
         public CapsuleCollider2D Collider => _collider;
-        public ScriptableStats Stats => _stats;
+        public PlayerStats Stats => _stats;
         public Vector2 MoveDirection => _locator.Get<MoveController>().CurrentDirection;
         public int WallDirection => _locator.Get<CollisionComponent>().WallDirection;
         public float DistanceToGround => _locator.Get<CollisionComponent>().DistanceToGround;
 
-        private void Start()
+        private void Awake()
         {
             _rigidbody.gravityScale = 0;
 
             _locator = new ServiceLocator(this);
+
+            _stats = _locator.Get<PlayerStats>();
             _tickables = _locator.GetAll<ITickable>();
             _velocities = _locator.GetAll<IVelocity>();
         }
@@ -54,7 +57,6 @@ namespace Game.Scripts.PlayerController
 
         private void FixedUpdate()
         {
-            IsOnWallSliding.Log();
             Vector2 velocity = Vector2.zero;
 
             foreach (var v in _velocities)
@@ -78,7 +80,6 @@ namespace Game.Scripts.PlayerController
         {
             _rigidbody.linearVelocity = Vector2.zero;
             _locator.Get<ImpulseComponent>().AddImpulse(impulse);
-            Debug.Log("dash double press");
         }
 
         public void Restvelocity() => _rigidbody.linearVelocity = Vector2.zero;

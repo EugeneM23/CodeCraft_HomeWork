@@ -1,0 +1,15 @@
+{
+  "MaxSpeed": 20,
+  "Acceleration": 30,
+  "Deceleration": 35,
+  "AirDeceleration": 12,
+  "AirAcceleration": 15,
+  "JumpPower": 40,
+  "FallAcceleration": 100,
+  "MaxFallSpeed": 500,
+  "GrounderDistance": 2,
+  "WallSlideSpeed": 3,
+  "JumpFromWall": 50,
+  "MaxJumps": 1,
+  "LayerMask": 6
+}

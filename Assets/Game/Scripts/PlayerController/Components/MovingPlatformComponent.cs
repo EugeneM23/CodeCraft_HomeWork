@@ -25,7 +25,7 @@ namespace Game.Scripts.PlayerController
                 rayOrigin,
                 Vector2.down,
                 _player.Stats.GrounderDistance,
-                _player.Stats.PlayerLayer
+                _player.Stats.LayerMask
             );
 
             if (hit.collider != null)

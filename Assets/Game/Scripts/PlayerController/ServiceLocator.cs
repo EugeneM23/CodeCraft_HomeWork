@@ -1,9 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using Game.Scripts.PlayerController;
+using UnityEngine;
 
 public class ServiceLocator
 {
+    private const string SETING_PATH = "Game/Scripts/PlayerController/Configs/MoveConfig.json";
     private readonly Dictionary<Type, object> _services = new();
 
     public T Get<T>()
@@ -33,7 +36,6 @@ public class ServiceLocator
 
     public ServiceLocator(PlayerController player)
     {
-        
         Register(new ImpulseComponent(player));
         Register(new DashController(player));
         Register(new SmashController(player));
@@ -49,6 +51,8 @@ public class ServiceLocator
         Register(new StairsMoveComponent(player));
         Register(new MovingPlatformComponent(player));
         Register(new SlopeSlideComponent(player));
+
+        PlayerStats stats = ConfigReader.Rread(Path.Combine(Application.dataPath, SETING_PATH));
+        Register(stats);
     }
-    
 }

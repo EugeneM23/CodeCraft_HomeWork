@@ -1,4 +1,5 @@
 using Game.Scripts.PlayerController;
+using Gameplay;
 using UnityEngine;
 
 public class CollisionComponent : ITickable
@@ -37,7 +38,7 @@ public class CollisionComponent : ITickable
             0,
             Vector2.down,
             0.1f,
-            _player.Stats.PlayerLayer
+            _player.Stats.LayerMask
         );
 
         return groundHit;
@@ -52,7 +53,7 @@ public class CollisionComponent : ITickable
             0,
             Vector2.up,
             _player.Stats.GrounderDistance,
-            _player.Stats.PlayerLayer
+            _player.Stats.LayerMask
         );
 
         if (ceilingHit && _player.Velocity.y > 0)
@@ -67,7 +68,7 @@ public class CollisionComponent : ITickable
             _player.Collider.bounds.center,
             Vector2.down,
             _player.Stats.GrounderDistance,
-            _player.Stats.PlayerLayer
+            _player.Stats.LayerMask
         );
 
         if (hit)
@@ -126,7 +127,7 @@ public class CollisionComponent : ITickable
 
         Debug.DrawLine(origin, origin + direction * length, Color.cyan);
 
-        RaycastHit2D hit = Physics2D.Raycast(origin, direction, length, _player.Stats.PlayerLayer);
+        RaycastHit2D hit = Physics2D.Raycast(origin, direction, length, _player.Stats.LayerMask.Log());
 
         if (hit.collider == _player.Collider)
             return default;

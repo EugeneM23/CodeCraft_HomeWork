@@ -43,7 +43,7 @@ namespace Game.Scripts.PlayerController
             // 1. WallRay
             float dynamicDistance = CheckDistance + Mathf.Min(_player.Velocity.magnitude * Time.fixedDeltaTime, 0.3f);
             Vector2 rayDir = Vector2.right * direction;
-            RaycastHit2D wallHit = Physics2D.Raycast(startPos, rayDir, dynamicDistance, _player.Stats.PlayerLayer);
+            RaycastHit2D wallHit = Physics2D.Raycast(startPos, rayDir, dynamicDistance, _player.Stats.LayerMask);
             Debug.DrawLine(startPos, startPos + rayDir * dynamicDistance, wallHit ? Color.red : Color.gray);
             if (!wallHit) return false;
 
@@ -51,7 +51,7 @@ namespace Game.Scripts.PlayerController
             Vector2 topCheckPos = wallHit.point + new Vector2(0.1f * direction, 0.5f);
 
             // 3. Raycast вниз, чтобы найти кромку
-            RaycastHit2D topHit = Physics2D.Raycast(topCheckPos, Vector2.down, 0.4f, _player.Stats.PlayerLayer);
+            RaycastHit2D topHit = Physics2D.Raycast(topCheckPos, Vector2.down, 0.4f, _player.Stats.LayerMask);
             Debug.DrawLine(topCheckPos, topCheckPos + Vector2.down * 0.4f, topHit ? Color.blue : Color.gray);
             if (!topHit) return false;
 

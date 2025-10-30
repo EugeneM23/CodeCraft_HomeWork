@@ -11,25 +11,21 @@ public class JumpComponent : ITickable
     private int _availableJumps;
     private bool _jumpPressedThisFrame = false;
 
-    // Jump buffer по расстоянию
     private float _jumpBufferDistance = 6f; // например, 0.2 юнита
 
     public JumpComponent(PlayerController player)
     {
         _player = player;
-        _availableJumps = _player.Stats.MaxJumps;
     }
 
     public void Tick()
     {
-        // Сбрасываем прыжки, если игрок на земле / склоне / лестнице
         if (_player.IsGrounded || _player.IsOnSlope || _player.IsOnStairs)
         {
             _lastGroundedTime = Time.time;
             _availableJumps = _player.Stats.MaxJumps;
         }
 
-        // Сбрасываем флаг нажатия
         _jumpPressedThisFrame = false;
     }
 
@@ -45,7 +41,6 @@ public class JumpComponent : ITickable
             return;
         }
 
-        // Slope / stairs jump
         if (_player.IsOnSlope || _player.IsOnStairs)
         {
             Vector2 jumpDirection = (Vector2.up).normalized * _player.Stats.JumpPower;
