@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Game.Scripts.PlayerController;
 using UnityEngine;
 
 public class CameraFollow : MonoBehaviour

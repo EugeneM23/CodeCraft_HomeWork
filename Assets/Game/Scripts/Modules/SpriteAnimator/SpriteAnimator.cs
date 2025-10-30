@@ -1,15 +1,14 @@
-using System.Collections.Generic;
+using System;
 using System.Linq;
-using Gameplay;
 using UnityEngine;
 
 namespace Gameplay
 {
-    public class SpriteAnimator : ITickable, IInitializeble
+    public class SpriteAnimator : MonoBehaviour
     {
-        private readonly AnimationEventReceiver _animationEventReceiver;
-        private readonly SpriteAnimation[] _animation;
-        private readonly SpriteRenderer _spriteRenderer;
+        [SerializeField] private AnimationEventReceiver _animationEventReceiver;
+        [SerializeField] private SpriteAnimation[] _animation;
+        [SerializeField] private SpriteRenderer _spriteRenderer;
 
         public SpriteAnimation CurrentAnimation => _currentAnimation;
         private SpriteAnimation _currentAnimation;
@@ -19,16 +18,9 @@ namespace Gameplay
 
         private float FrameDuration => 1f / _currentAnimation.FPS;
 
-        public SpriteAnimator(SpriteAnimation[] animation, SpriteRenderer spriteRenderer, AnimationEventReceiver animationEventReceiver)
-        {
-            _animation = animation;
-            _spriteRenderer = spriteRenderer;
-            _animationEventReceiver = animationEventReceiver;
-        }
+        public void Start() => _currentAnimation = _animation[0];
 
-        public void Initialize() => _currentAnimation = _animation[0];
-
-        public void Tick()
+        public void Update()
         {
             _frameTime += Time.deltaTime;
 
@@ -61,7 +53,7 @@ namespace Gameplay
 
         public SpriteAnimator Play(AnimationID id)
         {
-            if (_currentAnimation.ID != id)
+            if (_currentAnimation.ID != id && _currentAnimation.CanInterrupt)
             {
                 _currentAnimation = _animation.FirstOrDefault(x => x.ID == id);
                 _currentFrame = 0;
@@ -83,3 +75,4 @@ namespace Gameplay
         }
     }
 }
+

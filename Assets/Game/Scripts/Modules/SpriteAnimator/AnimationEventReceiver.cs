@@ -1,8 +1,9 @@
 using System;
+using UnityEngine;
 
 namespace Gameplay
 {
-    public class AnimationEventReceiver
+    public class AnimationEventReceiver : MonoBehaviour
     {
         public event Action<EventID> OnEventRaised;
 

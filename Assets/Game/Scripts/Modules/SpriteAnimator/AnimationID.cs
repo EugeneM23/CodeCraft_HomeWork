@@ -10,6 +10,8 @@ namespace Gameplay
         Attack,
         Push,
         PushAbilitySide,
-        PushAbilityUP
+        PushAbilityUP,
+        WallSlide,
+        Sprint
     }
 }
