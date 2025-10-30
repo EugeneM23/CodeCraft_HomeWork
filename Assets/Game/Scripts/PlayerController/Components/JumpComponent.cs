@@ -3,15 +3,10 @@ using UnityEngine;
 
 public class JumpComponent : ITickable
 {
+    private const float COYOTE_TIME = 0.1f;
     private readonly PlayerController _player;
-
-    private float _coyoteTime = 0.1f;
     private float _lastGroundedTime;
-
     private int _availableJumps;
-    private bool _jumpPressedThisFrame = false;
-
-    private float _jumpBufferDistance = 6f; // например, 0.2 юнита
 
     public JumpComponent(PlayerController player)
     {
@@ -20,47 +15,29 @@ public class JumpComponent : ITickable
 
     public void Tick()
     {
-        if (_player.IsGrounded || _player.IsOnSlope || _player.IsOnStairs)
+        if (_player.IsGrounded)
         {
             _lastGroundedTime = Time.time;
             _availableJumps = _player.Stats.MaxJumps;
         }
-
-        _jumpPressedThisFrame = false;
     }
 
     public void Jump()
     {
-        // Wall jump
-        if (_player.IsOnWall && !_player.IsGrounded && _player.MoveDirection != Vector2.zero)
+        if (_player.IsOnWall && !_player.IsGrounded)
         {
-            float jumpX = (-_player.WallDirection * _player.Stats.JumpFromWall) * 0.6f;
-            float jumpY = _player.Stats.JumpFromWall;
-            Vector2 jumpDirection = new Vector2(jumpX * 1.3f, jumpY);
-            _player.AddImpulse(jumpDirection);
+            Vector2 wallJump = new Vector2(-_player.WallDirection * _player.Stats.JumpFromWall, _player.Stats.JumpPower);
+            _player.AddImpulse(wallJump);
             return;
         }
 
-        if (_player.IsOnSlope || _player.IsOnStairs)
+        bool coyoteTime = Time.time - _lastGroundedTime <= COYOTE_TIME;
+        if (_player.IsGrounded || coyoteTime || _availableJumps > 0)
         {
-            Vector2 jumpDirection = (Vector2.up).normalized * _player.Stats.JumpPower;
-            _player.AddImpulse(jumpDirection);
-            return;
-        }
-
-        bool nearGround = _player.DistanceToGround <= _jumpBufferDistance;
-        bool canJump = _player.IsGrounded || nearGround || (Time.time - _lastGroundedTime <= _coyoteTime) ||
-                       _availableJumps > 0;
-
-        if (canJump)
-        {
-            _player.AddImpulse(new Vector2(0, _player.Stats.JumpPower));
-
-            // Если не на земле и не “почти на земле”, уменьшаем доступные мульти-прыжки
-            if (!_player.IsGrounded && !nearGround && Time.time - _lastGroundedTime > _coyoteTime)
-            {
+            _player.AddImpulse(Vector2.up * _player.Stats.JumpPower);
+            
+            if (!_player.IsGrounded && !coyoteTime)
                 _availableJumps--;
-            }
         }
     }
 }

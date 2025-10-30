@@ -9,7 +9,7 @@
   "MaxFallSpeed": 500,
   "GrounderDistance": 2,
   "WallSlideSpeed": 3,
-  "JumpFromWall": 50,
-  "MaxJumps": 1,
+  "JumpFromWall": 35,
+  "MaxJumps": 0,
   "LayerMask": 6
 }
