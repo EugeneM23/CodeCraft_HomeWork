@@ -27,8 +27,9 @@ namespace Game.Scripts.Modules.PlayerController.Components
         {
             if (_player.IsOnWallSliding)
             {
-                Vector2 wallJump =
-                    new Vector2(-_player.WallDirection * _player.Stats.JumpFromWall, _player.Stats.JumpPower);
+                Vector2 wallJump = new Vector2(-_player.WallDirection * _player.Stats.JumpFromWall,
+                    _player.Stats.JumpPower);
+
                 _player.AddImpulse(wallJump);
                 return;
             }

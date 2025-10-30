@@ -12,6 +12,7 @@ namespace Gameplay
         PushAbilitySide,
         PushAbilityUP,
         WallSlide,
-        Sprint
+        Sprint,
+        SlopeSlide
     }
 }

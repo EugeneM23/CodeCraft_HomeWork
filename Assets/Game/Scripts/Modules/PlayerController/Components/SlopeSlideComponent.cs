@@ -28,13 +28,17 @@ namespace Game.Scripts.Modules.PlayerController.Components
             // Запоминаем состояние для следующего кадра
             _wasGroundedLastFrame = isGrounded;
 
+            if (!isGrounded || !_player.IsOnSlope)
+                IsSlidingOnslope = false;
+
             // Если только что покинули землю - сохраняем скорость скольжения
             if (justLeftGround)
                 return _slideVelocity;
 
-            // В воздухе - возвращаем сохраненную скорость без изменений
             if (!isGrounded)
                 return _slideVelocity;
+
+            // В воздухе - возвращаем сохраненную скорость без изменений
 
             float angle = Vector2.Angle(_player.SurfaceNormal, Vector2.up);
 
@@ -69,13 +73,23 @@ namespace Game.Scripts.Modules.PlayerController.Components
             float input = _player.MoveDirection.x;
 
             if (Mathf.Abs(input) < MIN_VELOCITY)
+            {
+                IsSlidingOnslope = false;
                 return false;
+            }
 
             Vector2 slideDirection = GetSlideDirection();
 
             // Проверяем, двигается ли игрок в противоположную сторону от склона
-            return Mathf.Sign(input) != Mathf.Sign(slideDirection.x);
+            bool isMovingAgainstSlope = Mathf.Sign(input) != Mathf.Sign(slideDirection.x);
+
+            if (isMovingAgainstSlope && Mathf.Abs(_slideVelocity.x) > 1f)
+                IsSlidingOnslope = true;
+
+            return isMovingAgainstSlope;
         }
+
+        public bool IsSlidingOnslope { get; set; }
 
         private Vector2 ApplyDamping()
         {
@@ -84,7 +98,7 @@ namespace Game.Scripts.Modules.PlayerController.Components
                 _slideVelocity = Vector2.zero;
                 return _slideVelocity;
             }
-            
+
             _slideVelocity *= Mathf.Exp(-DAMPING * Time.deltaTime);
 
             if (_slideVelocity.magnitude < MIN_VELOCITY)
@@ -95,7 +109,6 @@ namespace Game.Scripts.Modules.PlayerController.Components
 
         private Vector2 ApplyBraking()
         {
-           
             float inputStrength = Mathf.Abs(_player.MoveDirection.x);
             float brakingForce = DAMPING * 2f * inputStrength; // Торможение сильнее затухания
 

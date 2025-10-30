@@ -12,10 +12,30 @@ namespace Game.Scripts
 
         private void Update()
         {
-            if (_player.IsOnWallSliding) _animator.Play(AnimationID.WallSlide);
-            if (!_player.IsGrounded && !_player.IsOnWallSliding) _animator.Play(AnimationID.Fall);
-            if (_player.Velocity.x < 19f && _player.IsGrounded) _animator.Play(AnimationID.Idle);
-            if (_player.Velocity.x > 19 && _player.IsGrounded) _animator.Play(AnimationID.Run);
+            if (_player.IsOnWallSliding)
+            {
+                _animator.Play(AnimationID.WallSlide);
+                return;
+            }
+
+            
+            if (!_player.IsGrounded && !_player.IsOnWallSliding)
+            {
+                _animator.Play(AnimationID.Fall);
+                return;
+            }
+
+            if (Mathf.Abs(_player.Velocity.x) < 1f && _player.IsGrounded)
+            {
+                _animator.Play(AnimationID.Idle);
+                return;
+            }
+
+            if (Mathf.Abs(_player.Velocity.x) > 1 && _player.IsGrounded || _player.IsOnSlope)
+            {
+                _animator.Play(AnimationID.Run);
+                return;
+            }
         }
     }
 }

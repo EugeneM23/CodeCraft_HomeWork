@@ -30,6 +30,7 @@ namespace Game.Scripts.Modules.PlayerController
             Vector2.Angle(Vector2.right, _locator.Get<CollisionComponent>().SurfaceNormal) > 91;
 
         public bool IsOnWall => _locator.Get<CollisionComponent>().IsOnWall;
+        public bool IsSlidingOnslope => _locator.Get<SlopeSlideComponent>().IsSlidingOnslope;
         public bool IsOnWallSliding => _locator.Get<WallSlidingComponent>().IsWallSliding;
 
         public bool IsGrabbingLedge => _locator.Get<LedgeGrabComponent>().IsGrabbing;
