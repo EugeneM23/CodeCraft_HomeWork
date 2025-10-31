@@ -43,18 +43,10 @@ namespace Game.Scripts.Modules.PlayerController.Components
             if (_impulse.x == 0)
                 return 0;
 
-            // Если это первый кадр после wall jump (сильный импульс), применяем его полностью
-            if (!_horizontalApplied && Mathf.Abs(_impulse.x) > _player.Stats.MaxSpeed)
-            {
-                _horizontalApplied = true;
-                return _impulse.x;
-            }
-
             float input = _player.MoveDirection.x;
 
             if (input != 0)
             {
-                // Игрок двигает стик
                 bool sameDirection = Mathf.Sign(input) == Mathf.Sign(_impulse.x);
 
                 if (sameDirection)

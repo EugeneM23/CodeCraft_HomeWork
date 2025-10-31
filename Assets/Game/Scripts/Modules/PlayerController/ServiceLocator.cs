@@ -54,7 +54,7 @@ namespace Game.Scripts.Modules.PlayerController
             Register(new JumpComponent(player));
             Register(new StairsMoveComponent(player));
             Register(new MovingPlatformComponent(player));
-            Register(new SlopeSlideComponent(player));
+            //Register(new SlopeSlideComponent(player));
 
             PlayerStats stats = ConfigReader.Rread(Path.Combine(Application.dataPath, SETING_PATH));
             Register(stats);

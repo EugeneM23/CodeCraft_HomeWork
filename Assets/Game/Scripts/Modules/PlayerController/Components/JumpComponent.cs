@@ -25,7 +25,7 @@ namespace Game.Scripts.Modules.PlayerController.Components
 
         public void Jump()
         {
-            if (_player.IsOnWallSliding)
+            if (_player.IsOnWallSliding || _player.IsGrabbingLedge)
             {
                 Vector2 wallJump = new Vector2(-_player.WallDirection * _player.Stats.JumpFromWall,
                     _player.Stats.JumpPower);

@@ -11,6 +11,12 @@ namespace Game.Scripts
 
         private void Update()
         {
+            if (_player.IsOnWallSliding && _player.WallDirection < 0)
+            {
+                _renderer.flipX = true;
+                return;
+            }
+
             if (_player.Velocity.x < 0) _renderer.flipX = true;
             if (_player.Velocity.x > 0) _renderer.flipX = false;
         }

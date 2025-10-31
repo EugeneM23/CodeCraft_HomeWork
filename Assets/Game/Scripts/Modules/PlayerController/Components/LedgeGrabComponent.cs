@@ -1,83 +1,109 @@
+using Game.Scripts.Modules.PlayerController;
+using Game.Scripts.Modules.PlayerController.Components;
 using UnityEngine;
 
-namespace Game.Scripts.Modules.PlayerController.Components
+internal class LedgeGrabComponent : ITickable
 {
-    internal class LedgeGrabComponent : ITickable
+    private readonly PlayerController _player;
+
+    private const float WallCheckDistance = 0.5f;
+    private const float LedgeCheckDistance = 0.5f;
+    private const float MaxAngleDeviation = 30f;
+    private const float GrabCooldown = 0.1f;
+
+    private bool _isGrabbing;
+    private Vector2 _grabPoint;
+    private float _releaseTime;
+
+    public bool IsGrabbing => _isGrabbing;
+
+    public LedgeGrabComponent(PlayerController player)
     {
-        private readonly PlayerController _player;
+        _player = player;
+        _player.OnJump += ReleaseGrab;
+    }
 
-        private const float CheckDistance = 0.5f;
-        private const float MaxNormalDeviation = 80f;
+    public void Tick() => CheckLedges();
 
-        private bool _isGrabbing;
-        private Vector2 _leftCornerPoint;
-        private Vector2 _rightCornerPoint;
-
-        public bool IsGrabbing => _isGrabbing;
-
-        public LedgeGrabComponent(PlayerController player) => _player = player;
-
-        public void Tick() => CheckLedges();
-
-        public void CheckLedges()
+    public void CheckLedges()
+    {
+        // Проверяем кулдаун после отпускания
+        if (Time.time < _releaseTime + GrabCooldown)
         {
-            if (_player.Velocity.y > 0) return;
-
-            Vector2 center = (Vector2)_player.transform.position + _player.Collider.offset;
-            float halfHeight = _player.Collider.size.y / 2f;
-            float halfWidth = _player.Collider.size.x / 2f;
-
-            Vector2 leftPos = new Vector2(center.x - halfWidth, center.y + halfHeight);
-            Vector2 rightPos = new Vector2(center.x + halfWidth, center.y + halfHeight);
-
-            bool left = CheckCorner(leftPos, -1, out _leftCornerPoint);
-            bool right = CheckCorner(rightPos, 1, out _rightCornerPoint);
-
-            _isGrabbing = left || right;
+            _isGrabbing = false;
+            return;
         }
 
-        private bool CheckCorner(Vector2 startPos, float direction, out Vector2 corner)
+        // Проверяем только при падении
+        if (_player.Velocity.y > 0)
         {
-            corner = Vector2.zero;
-
-            // 1. WallRay
-            float dynamicDistance = CheckDistance + Mathf.Min(_player.Velocity.magnitude * Time.fixedDeltaTime, 0.3f);
-            Vector2 rayDir = Vector2.right * direction;
-            RaycastHit2D wallHit = Physics2D.Raycast(startPos, rayDir, dynamicDistance, _player.Stats.LayerMask);
-            UnityEngine.Debug.DrawLine(startPos, startPos + rayDir * dynamicDistance, wallHit ? Color.red : Color.gray);
-            if (!wallHit) return false;
-
-            // 2. TopCheckPos — чуть выше wallHit и немного вперед, чтобы попасть на платформу
-            Vector2 topCheckPos = wallHit.point + new Vector2(0.1f * direction, 0.5f);
-
-            // 3. Raycast вниз, чтобы найти кромку
-            RaycastHit2D topHit = Physics2D.Raycast(topCheckPos, Vector2.down, 0.4f, _player.Stats.LayerMask);
-            UnityEngine.Debug.DrawLine(topCheckPos, topCheckPos + Vector2.down * 0.4f, topHit ? Color.blue : Color.gray);
-            if (!topHit) return false;
-
-            // 4. Проверяем нормали
-            Vector2 idealWallNormal = direction == 1 ? Vector2.left : Vector2.right;
-            Vector2 idealTopNormal = Vector2.up;
-
-            float wallAngle = Vector2.Angle(wallHit.normal, idealWallNormal);
-            float topAngle = Vector2.Angle(topHit.normal, idealTopNormal);
-
-            if (wallAngle > MaxNormalDeviation || topAngle > MaxNormalDeviation)
-                return false;
-
-            // 5. Угол найден
-            corner = topHit.point;
-            return true;
+            _isGrabbing = false;
+            return;
         }
 
-        public void ReleaseGrab() => _isGrabbing = false;
+        Vector2 playerCenter = (Vector2)_player.transform.position + _player.Collider.offset;
+        float halfWidth = _player.Collider.size.x / 2f;
+        float topY = playerCenter.y + _player.Collider.size.y / 2f;
 
-        public void DrawDebug()
-        {
-            if (!_isGrabbing) return;
+        // Проверяем обе стороны
+        bool leftGrab = CheckSide(new Vector2(playerCenter.x - halfWidth, topY), -1);
+        bool rightGrab = CheckSide(new Vector2(playerCenter.x + halfWidth, topY), 1);
 
-            UnityEngine.Debug.DrawLine(_player.transform.position, _leftCornerPoint, Color.green);
-            UnityEngine.Debug.DrawLine(_player.transform.position, _rightCornerPoint, Color.green);
-        }
+        _isGrabbing = leftGrab || rightGrab;
+    }
+
+    private bool CheckSide(Vector2 startPos, int direction)
+    {
+        Vector2 horizontalDir = Vector2.right * direction;
+
+        // ШАГ 1: Проверяем стену сбоку
+        RaycastHit2D wallHit = Physics2D.Raycast(
+            startPos,
+            horizontalDir,
+            WallCheckDistance,
+            _player.Stats.LayerMask
+        );
+
+        Debug.DrawLine(startPos, startPos + horizontalDir * WallCheckDistance, wallHit ? Color.green : Color.gray);
+
+        if (!wallHit) return false;
+
+        // ШАГ 2: Точка проверки сверху (над стеной, чуть впереди)
+        Vector2 ledgeCheckStart = wallHit.point + new Vector2(0.15f * direction, 0.4f);
+
+        // ШАГ 3: Ищем выступ сверху
+        RaycastHit2D ledgeHit = Physics2D.Raycast(
+            ledgeCheckStart,
+            Vector2.down,
+            LedgeCheckDistance,
+            _player.Stats.LayerMask
+        );
+
+        Debug.DrawLine(ledgeCheckStart, ledgeCheckStart + Vector2.down * LedgeCheckDistance, ledgeHit ? Color.cyan : Color.gray);
+
+        if (!ledgeHit) return false;
+
+        // ШАГ 4: Проверяем углы поверхностей
+        Vector2 expectedWallNormal = direction > 0 ? Vector2.left : Vector2.right;
+        float wallAngle = Vector2.Angle(wallHit.normal, expectedWallNormal);
+        float ledgeAngle = Vector2.Angle(ledgeHit.normal, Vector2.up);
+
+        Debug.DrawRay(wallHit.point, wallHit.normal * 0.3f, Color.yellow);
+        Debug.DrawRay(ledgeHit.point, ledgeHit.normal * 0.3f, Color.magenta);
+
+        if (wallAngle > MaxAngleDeviation || ledgeAngle > MaxAngleDeviation)
+            return false;
+
+        // ШАГ 5: Выступ найден!
+        _grabPoint = ledgeHit.point;
+        Debug.DrawLine(ledgeHit.point, ledgeHit.point + Vector2.up * 0.5f, Color.red, 0.5f);
+        
+        return true;
+    }
+
+    public void ReleaseGrab()
+    {
+        _isGrabbing = false;
+        _releaseTime = Time.time;
     }
 }

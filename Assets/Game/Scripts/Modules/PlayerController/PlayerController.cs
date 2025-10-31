@@ -60,6 +60,12 @@ namespace Game.Scripts.Modules.PlayerController
 
         private void FixedUpdate()
         {
+            if (IsGrabbingLedge)
+            {
+                _rigidbody.linearVelocity = Vector2.zero;
+                return;
+            }
+
             Vector2 velocity = Vector2.zero;
 
             foreach (var v in _velocities)
@@ -72,8 +78,11 @@ namespace Game.Scripts.Modules.PlayerController
 
         public void Jump()
         {
-            _locator.Get<JumpComponent>().Jump();
+            // Принудительно отпускаем захват
+            _locator.Get<LedgeGrabComponent>().ReleaseGrab();
+            // Вызываем событие
             OnJump?.Invoke();
+            _locator.Get<JumpComponent>().Jump();
         }
 
         public void OnCollisionEnter2D(Collision2D other) => Hit();

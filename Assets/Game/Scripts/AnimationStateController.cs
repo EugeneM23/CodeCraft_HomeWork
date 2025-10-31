@@ -12,28 +12,34 @@ namespace Game.Scripts
 
         private void Update()
         {
+            if (_player.IsGrabbingLedge)
+            {
+                _animator.Play(AnimationID.GrabHang);
+                return;
+                
+            }
             if (_player.IsOnWallSliding)
             {
                 _animator.Play(AnimationID.WallSlide);
                 return;
             }
 
-            
             if (!_player.IsGrounded && !_player.IsOnWallSliding)
             {
                 _animator.Play(AnimationID.Fall);
                 return;
             }
 
-            if (Mathf.Abs(_player.Velocity.x) < 1f && _player.IsGrounded)
+            if (Mathf.Abs(_player.MoveDirection.x) > 0.5f && (_player.IsGrounded || _player.IsOnSlope))
             {
-                _animator.Play(AnimationID.Idle);
+                Debug.Log(_player.MoveDirection.x);
+                _animator.Play(AnimationID.Run);
                 return;
             }
 
-            if (Mathf.Abs(_player.Velocity.x) > 1 && _player.IsGrounded || _player.IsOnSlope)
+            if (Mathf.Abs(_player.MoveDirection.x) < 0.5f && _player.IsGrounded || _player.IsOnSlope)
             {
-                _animator.Play(AnimationID.Run);
+                _animator.Play(AnimationID.Idle);
                 return;
             }
         }
