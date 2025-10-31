@@ -101,7 +101,7 @@ namespace Game.Scripts.Modules.PlayerController
 
         public void SetComponent<T>() where T : class
         {
-            var component = ServiceLocator.Get<T>();
+            T component = ServiceLocator.Get<T>();
 
             switch (component)
             {
