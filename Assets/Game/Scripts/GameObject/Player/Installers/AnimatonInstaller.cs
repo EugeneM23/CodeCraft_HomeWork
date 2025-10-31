@@ -1,12 +1,15 @@
+using Modules.PlayerController;
 using UnityEngine;
 
 namespace Gameplay
 {
     public class AnimationInstaller : Installer
     {
-        [Header("Animation Settings")]
-        [SerializeField] private SpriteAnimation[] _animations;
+        [Header("Animation Settings")] [SerializeField]
+        private SpriteAnimation[] _animations;
+
         [SerializeField] private SpriteRenderer _spriteRenderer;
+        [SerializeField] private PlayerController _player;
 
         public override void Install(DiContainer container)
         {
@@ -14,6 +17,7 @@ namespace Gameplay
             var receiver = new AnimationEventReceiver();
             var spriteAnimator = new SpriteAnimator(_animations, _spriteRenderer, receiver);
 
+            container.BindSingle(_player);
             container.BindSingle(spriteAnimator);
             container.BindSingle(receiver);
 
