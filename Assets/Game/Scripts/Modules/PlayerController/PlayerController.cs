@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
-using Game.Scripts.Modules.PlayerController.Components;
-using Game.Scripts.Modules.PlayerController.Controllers;
 using Game.Scripts.Modules.PlayerController.Data;
 using UnityEngine;
 
-namespace Game.Scripts.Modules.PlayerController
+namespace Modules.PlayerController
 {
     public class PlayerController : MonoBehaviour
     {
@@ -25,14 +23,11 @@ namespace Game.Scripts.Modules.PlayerController
 
         public ServiceLocator ServiceLocator { get; private set; }
         public PlayerStats Stats { get; private set; }
-
         public event Action OnCollisionHit;
         public event Action OnJump;
         public bool IsOnStairs { get; set; }
         public CapsuleCollider2D Collider => _capsuleCollider;
-
         public Vector2 Velocity => _rigidbody2D.linearVelocity;
-
         public bool IsGrounded => _collisionComponent.IsGrounded;
         public bool IsCeilingHit => _collisionComponent.IsCeilingHit;
         public Vector2 SurfaceNormal => _collisionComponent.SurfaceNormal;
@@ -43,12 +38,11 @@ namespace Game.Scripts.Modules.PlayerController
         public bool IsWallSliding => _wallSlidingComponent.IsWallSliding;
         public Vector2 MoveDirection => _moveController.CurrentDirection;
         public float DistanceToGround => _collisionComponent.DistanceToGround;
-        public bool IsMonkey { get; set; }
-
+        
         private void Awake()
         {
             _rigidbody2D.gravityScale = 0;
-            _rigidbody2D.interpolation = RigidbodyInterpolation2D.Interpolate;
+            _rigidbody2D.interpolation = RigidbodyInterpolation2D.Extrapolate;
 
             ServiceLocator = new ServiceLocator(this);
 
@@ -83,11 +77,7 @@ namespace Game.Scripts.Modules.PlayerController
 
         public void Move(Vector2 direction) => _moveComponent.Move(direction);
 
-        public void Jump()
-        {
-            _jumpComponent.Jump();
-            OnJump?.Invoke();
-        }
+        public void Jump() => _jumpComponent.Jump();
 
         public void AddImpulse(Vector2 impulse)
         {

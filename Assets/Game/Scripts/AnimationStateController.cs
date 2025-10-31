@@ -1,6 +1,7 @@
 using System;
 using Game.Scripts.Modules.PlayerController;
 using Gameplay;
+using Modules.PlayerController;
 using UnityEngine;
 
 namespace Game.Scripts

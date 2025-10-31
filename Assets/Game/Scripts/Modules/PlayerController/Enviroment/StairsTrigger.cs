@@ -1,8 +1,6 @@
-using System;
-using Game.Scripts.Modules.PlayerController.Components;
 using UnityEngine;
 
-namespace Game.Scripts.Modules.PlayerController.Enviroment
+namespace Modules.PlayerController
 {
     internal class StairsTrigger : MonoBehaviour
     {

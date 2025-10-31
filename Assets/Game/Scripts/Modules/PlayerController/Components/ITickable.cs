@@ -1,4 +1,4 @@
-namespace Game.Scripts.Modules.PlayerController.Components
+namespace Modules.PlayerController
 {
     internal interface ITickable
     {

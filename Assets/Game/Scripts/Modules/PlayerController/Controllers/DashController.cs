@@ -1,7 +1,6 @@
-using Game.Scripts.Modules.PlayerController.Components;
 using UnityEngine;
 
-namespace Game.Scripts.Modules.PlayerController.Controllers
+namespace Modules.PlayerController
 {
     internal class DashController : ITickable
     {

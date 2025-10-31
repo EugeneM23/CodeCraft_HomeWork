@@ -2,7 +2,7 @@ using System;
 using System.Text;
 using UnityEngine;
 
-namespace Game.Scripts.Modules.PlayerController.Debug
+namespace Modules.PlayerController
 {
     internal class PlayerControllerDebugger : MonoBehaviour
     {

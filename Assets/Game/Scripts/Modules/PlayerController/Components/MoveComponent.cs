@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Game.Scripts.Modules.PlayerController.Components
+namespace Modules.PlayerController
 {
     internal class MoveComponent : IVelocity, IMoveComponent
     {
