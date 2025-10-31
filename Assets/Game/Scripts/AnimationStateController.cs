@@ -12,19 +12,13 @@ namespace Game.Scripts
 
         private void Update()
         {
-            if (_player.IsGrabbingLedge)
-            {
-                _animator.Play(AnimationID.GrabHang);
-                return;
-                
-            }
-            if (_player.IsOnWallSliding)
+            if (_player.IsWallSliding)
             {
                 _animator.Play(AnimationID.WallSlide);
                 return;
             }
 
-            if (!_player.IsGrounded && !_player.IsOnWallSliding)
+            if (!_player.IsGrounded && !_player.IsWallSliding)
             {
                 _animator.Play(AnimationID.Fall);
                 return;

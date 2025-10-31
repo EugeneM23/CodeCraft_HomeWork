@@ -95,9 +95,8 @@ namespace Game.Scripts.Modules.PlayerController.Debug
             DrawBoolPropertySafe("IsOnStairs", () => _playerController.IsOnStairs);
             DrawBoolPropertySafe("IsOnSlope", () => _playerController.IsOnSlope);
             DrawBoolPropertySafe("IsOnWall", () => _playerController.IsOnWall);
-            DrawBoolPropertySafe("IsOnWallSliding", () => _playerController.IsOnWallSliding);
-            DrawBoolPropertySafe("IsGrabbingLedge", () => _playerController.IsGrabbingLedge);
-            DrawBoolPropertySafe("IsSlidingOnslope", () => _playerController.IsSlidingOnslope);
+            DrawBoolPropertySafe("IsOnWallSliding", () => _playerController.IsWallSliding);
+            DrawBoolPropertySafe("IsSlidingOnslope", () => _playerController.IsSlidingOnSlope);
 
             GUILayout.Space(10);
 

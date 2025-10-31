@@ -8,10 +8,11 @@ using UnityEngine;
 
 namespace Game.Scripts.Modules.PlayerController
 {
-    internal class ServiceLocator
+    public class ServiceLocator
     {
         private const string SETING_PATH = "Game/Scripts/Modules/PlayerController/Configs/MoveConfig.json";
         private readonly Dictionary<Type, object> _services = new();
+        private readonly PlayerController _player;
 
         public T Get<T>()
         {
@@ -40,20 +41,27 @@ namespace Game.Scripts.Modules.PlayerController
 
         public ServiceLocator(PlayerController player)
         {
-            Register(new ImpulseComponent(player));
-            Register(new DashController(player));
-            Register(new SmashController(player));
-            Register(new JumpController(player));
-            Register(new MoveController(player));
+            _player = player;
+            Initialize();
+        }
 
-            Register(new CollisionComponent(player));
-            Register(new GravityComponent(player));
-            Register(new MoveComponent(player));
-            Register(new WallSlidingComponent(player));
-            Register(new LedgeGrabComponent(player)); 
-            Register(new JumpComponent(player));
-            Register(new StairsMoveComponent(player));
-            Register(new MovingPlatformComponent(player));
+        public void Initialize()
+        {
+            Register(new ImpulseComponent(_player));
+            Register(new DashController(_player));
+            Register(new SmashController(_player));
+            Register(new JumpController(_player));
+            Register(new MoveController(_player));
+
+            Register(new CollisionComponent(_player));
+            Register(new GravityComponent(_player));
+            Register(new MoveComponent(_player));
+            Register(new WallSlidingComponent(_player));
+            Register(new JumpComponent(_player));
+            Register(new StairsMoveComponent(_player));
+            Register(new MovingPlatformComponent(_player));
+
+            //Register(new LedgeGrabComponent(player)); 
             //Register(new SlopeSlideComponent(player));
 
             PlayerStats stats = ConfigReader.Rread(Path.Combine(Application.dataPath, SETING_PATH));

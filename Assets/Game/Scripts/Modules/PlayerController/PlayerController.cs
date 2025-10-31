@@ -9,91 +9,93 @@ namespace Game.Scripts.Modules.PlayerController
 {
     public class PlayerController : MonoBehaviour
     {
-        [SerializeField] private Rigidbody2D _rigidbody;
-        [SerializeField] private CapsuleCollider2D _collider;
+        [SerializeField] private Rigidbody2D _rigidbody2D;
+        [SerializeField] private CapsuleCollider2D _capsuleCollider;
 
         private IReadOnlyCollection<ITickable> _tickables;
         private IReadOnlyCollection<IVelocity> _velocities;
 
-        private ServiceLocator _locator;
-        private PlayerStats _stats;
-        public event Action OnHit;
+        private CollisionComponent _collisionComponent;
+        private SlopeSlideComponent _slopeSlideComponent;
+        private WallSlidingComponent _wallSlidingComponent;
+        private MoveController _moveController;
+        private MoveComponent _moveComponent;
+        private JumpComponent _jumpComponent;
+        private ImpulseComponent _impulseComponent;
+
+        public ServiceLocator ServiceLocator { get; private set; }
+        public PlayerStats Stats { get; private set; }
+
+        public event Action OnCollisionHit;
         public event Action OnJump;
         public bool IsOnStairs { get; set; }
+        public CapsuleCollider2D Collider => _capsuleCollider;
 
-        public bool IsGrounded => _locator.Get<CollisionComponent>().IsGrounded;
-        public bool IsCeilingHit => _locator.Get<CollisionComponent>().IsCeilingHit;
-        public Vector2 SurfaceNormal => _locator.Get<CollisionComponent>().SurfaceNormal;
-        public Vector2 Velocity => _rigidbody.linearVelocity;
+        public Vector2 Velocity => _rigidbody2D.linearVelocity;
 
-        public bool IsOnSlope =>
-            Vector2.Angle(Vector2.right, _locator.Get<CollisionComponent>().SurfaceNormal) > 91;
-
-        public bool IsOnWall => _locator.Get<CollisionComponent>().IsOnWall;
-        public bool IsSlidingOnslope => _locator.Get<SlopeSlideComponent>().IsSlidingOnslope;
-        public bool IsOnWallSliding => _locator.Get<WallSlidingComponent>().IsWallSliding;
-
-        public bool IsGrabbingLedge => _locator.Get<LedgeGrabComponent>().IsGrabbing;
-        public CapsuleCollider2D Collider => _collider;
-        public PlayerStats Stats => _stats;
-        public Vector2 MoveDirection => _locator.Get<MoveController>().CurrentDirection;
-        public int WallDirection => _locator.Get<CollisionComponent>().WallDirection;
-        public float DistanceToGround => _locator.Get<CollisionComponent>().DistanceToGround;
+        public bool IsGrounded => _collisionComponent.IsGrounded;
+        public bool IsCeilingHit => _collisionComponent.IsCeilingHit;
+        public Vector2 SurfaceNormal => _collisionComponent.SurfaceNormal;
+        public bool IsOnSlope => _collisionComponent.IsOnSlope;
+        public int WallDirection => _collisionComponent.WallDirection;
+        public bool IsOnWall => _collisionComponent.IsOnWall;
+        public bool IsSlidingOnSlope => _slopeSlideComponent.IsSlidingOnslope;
+        public bool IsWallSliding => _wallSlidingComponent.IsWallSliding;
+        public Vector2 MoveDirection => _moveController.CurrentDirection;
+        public float DistanceToGround => _collisionComponent.DistanceToGround;
 
         private void Awake()
         {
-            Time.timeScale = 1f;
-            _rigidbody.gravityScale = 0;
+            _rigidbody2D.gravityScale = 0;
+            _rigidbody2D.interpolation = RigidbodyInterpolation2D.Interpolate;
 
-            _locator = new ServiceLocator(this);
+            ServiceLocator = new ServiceLocator(this);
 
-            _stats = _locator.Get<PlayerStats>();
-            _tickables = _locator.GetAll<ITickable>();
-            _velocities = _locator.GetAll<IVelocity>();
+            Stats = ServiceLocator.Get<PlayerStats>();
+            _tickables = ServiceLocator.GetAll<ITickable>();
+            _velocities = ServiceLocator.GetAll<IVelocity>();
+
+            _collisionComponent = ServiceLocator.Get<CollisionComponent>();
+            _wallSlidingComponent = ServiceLocator.Get<WallSlidingComponent>();
+            _moveController = ServiceLocator.Get<MoveController>();
+            _moveComponent = ServiceLocator.Get<MoveComponent>();
+            _jumpComponent = ServiceLocator.Get<JumpComponent>();
+            _impulseComponent = ServiceLocator.Get<ImpulseComponent>();
+            //_slopeSlideComponent = ServiceLocator.Get<SlopeSlideComponent>();
         }
 
         private void Update()
         {
-            foreach (var t in _tickables)
-                t.Tick();
+            foreach (var tickable in _tickables)
+                tickable.Tick();
         }
 
         private void FixedUpdate()
         {
-            if (IsGrabbingLedge)
-            {
-                _rigidbody.linearVelocity = Vector2.zero;
-                return;
-            }
-
             Vector2 velocity = Vector2.zero;
 
             foreach (var v in _velocities)
                 velocity += v.GetVelocity();
 
-            _rigidbody.linearVelocity = velocity;
+            _rigidbody2D.linearVelocity = velocity;
         }
 
-        public void Move(Vector2 direction) => _locator.Get<MoveComponent>().Move(direction);
+        public void Move(Vector2 direction) => _moveComponent.Move(direction);
 
         public void Jump()
         {
-            // Принудительно отпускаем захват
-            _locator.Get<LedgeGrabComponent>().ReleaseGrab();
-            // Вызываем событие
+            _jumpComponent.Jump();
             OnJump?.Invoke();
-            _locator.Get<JumpComponent>().Jump();
         }
-
-        public void OnCollisionEnter2D(Collision2D other) => Hit();
-        public void Hit() => OnHit?.Invoke();
 
         public void AddImpulse(Vector2 impulse)
         {
-            _rigidbody.linearVelocity = Vector2.zero;
-            _locator.Get<ImpulseComponent>().AddImpulse(impulse);
+            _rigidbody2D.linearVelocity = Vector2.zero;
+            _impulseComponent.AddImpulse(impulse);
         }
 
-        public void Restvelocity() => _rigidbody.linearVelocity = Vector2.zero;
+        public void OnCollisionEnter2D(Collision2D other) => OnCollisionHit?.Invoke();
+
+        public void ResetVelocity() => _rigidbody2D.linearVelocity = Vector2.zero;
     }
 }

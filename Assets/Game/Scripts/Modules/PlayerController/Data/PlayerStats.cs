@@ -5,8 +5,6 @@ namespace Game.Scripts.Modules.PlayerController.Data
     {
         public float MaxSpeed;
         public float Acceleration;
-        public float Deceleration;
-        public float AirDeceleration;
         public float AirAcceleration;
         public float JumpPower;
         public float FallAcceleration;

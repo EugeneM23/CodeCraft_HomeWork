@@ -12,6 +12,7 @@ namespace Game.Scripts.Modules.PlayerController.Components
         public bool IsOnWall { get; private set; }
         public int WallDirection { get; private set; }
         public float DistanceToGround { get; private set; }
+        public bool IsOnSlope => Vector2.Angle(Vector2.right, SurfaceNormal) > 91;
 
         public CollisionComponent(PlayerController player)
         {
@@ -36,7 +37,7 @@ namespace Game.Scripts.Modules.PlayerController.Components
             );
 
             IsGrounded = hit.collider != null;
-        
+
             if (hit.collider != null)
             {
                 SurfaceNormal = hit.normal;

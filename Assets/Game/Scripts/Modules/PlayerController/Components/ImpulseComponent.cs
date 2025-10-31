@@ -12,10 +12,10 @@ namespace Game.Scripts.Modules.PlayerController.Components
         public ImpulseComponent(PlayerController player)
         {
             _player = player;
-            _player.OnHit += Reset;
+            _player.OnCollisionHit += Reset;
         }
 
-        ~ImpulseComponent() => _player.OnHit -= Reset;
+        ~ImpulseComponent() => _player.OnCollisionHit -= Reset;
 
         public void AddImpulse(Vector2 value)
         {

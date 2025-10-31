@@ -16,7 +16,7 @@ namespace Game.Scripts.Modules.PlayerController.Components
 
         public void Tick()
         {
-            if (_player.IsGrounded || _player.IsOnWallSliding)
+            if (_player.IsGrounded || _player.IsWallSliding)
             {
                 _lastGroundedTime = Time.time;
                 _availableJumps = _player.Stats.MaxJumps;
@@ -25,7 +25,7 @@ namespace Game.Scripts.Modules.PlayerController.Components
 
         public void Jump()
         {
-            if (_player.IsOnWallSliding || _player.IsGrabbingLedge)
+            if (_player.IsWallSliding)
             {
                 Vector2 wallJump = new Vector2(-_player.WallDirection * _player.Stats.JumpFromWall,
                     _player.Stats.JumpPower);

@@ -8,7 +8,7 @@ namespace Game.Scripts.Modules.PlayerController.Enviroment
         {
             if (other.TryGetComponent(out PlayerController player))
             {
-                player.Restvelocity();
+                player.ResetVelocity();
                 player.IsOnStairs = true;
             }
         }
@@ -17,8 +17,8 @@ namespace Game.Scripts.Modules.PlayerController.Enviroment
         {
             if (other.TryGetComponent(out PlayerController player))
             {
-                player.Hit();
-                
+                player.OnCollisionEnter2D(null);
+
                 player.IsOnStairs = false;
             }
         }

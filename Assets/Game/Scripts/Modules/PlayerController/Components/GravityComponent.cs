@@ -13,11 +13,11 @@ namespace Game.Scripts.Modules.PlayerController.Components
 
         public Vector2 GetVelocity()
         {
-            if (_player.IsOnStairs  || _player.IsOnWallSliding)
+            if (_player.IsOnStairs  || _player.IsWallSliding)
                 return Vector2.zero;
 
             if (_player.IsCeilingHit)
-                return new Vector2(0, -5);
+                return new Vector2(0, 0);
 
             float gravity = _player.Stats.FallAcceleration;
             float currentYVelocity = _player.Velocity.y;
