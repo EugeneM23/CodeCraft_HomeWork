@@ -2,30 +2,21 @@ using UnityEngine;
 
 namespace Game.Scripts.Modules.PlayerController.Components
 {
-    internal class StairsMoveComponent : IVelocity
+    internal class StairsMoveComponent : IMoveComponent
     {
         private readonly PlayerController _player;
-
-        private float _currentHorizontalSpeed;
-        private float _moveY;
-
-        private Vector2 _currentVelocity;
 
         public StairsMoveComponent(PlayerController player) => _player = player;
 
         public void Move(Vector2 directrion)
         {
-            if (!_player.IsOnStairs)
-                _currentVelocity = Vector2.zero;
-
-            if (directrion.y != 0)
-                _moveY = directrion.y * 5;
-            else
-                _currentVelocity = Vector2.zero;
-
-            _currentVelocity = new Vector2(0, _moveY);
+            Vector2 move = new Vector2(0, directrion.y);
+            _player.transform.Translate(move * _player.Stats.MaxSpeed * Time.deltaTime);
         }
+    }
 
-        public Vector2 GetVelocity() => _currentVelocity;
+    public interface IMoveComponent
+    {
+        void Move(Vector2 directrion);
     }
 }

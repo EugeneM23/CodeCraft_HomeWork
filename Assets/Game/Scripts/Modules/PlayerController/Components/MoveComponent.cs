@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Game.Scripts.Modules.PlayerController.Components
 {
-    internal class MoveComponent : IVelocity
+    internal class MoveComponent : IVelocity, IMoveComponent
     {
         private readonly PlayerController _player;
         private float _horizontalSpeed;

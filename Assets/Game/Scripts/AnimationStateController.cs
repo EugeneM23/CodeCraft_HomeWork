@@ -12,6 +12,18 @@ namespace Game.Scripts
 
         private void Update()
         {
+            if (_player.IsOnStairs)
+            {
+                _animator.Play(AnimationID.Stairs);
+
+                if (Mathf.Abs(_player.MoveDirection.y) > 0)
+                    _animator.SetSpeed(12);
+                else
+                    _animator.SetSpeed(0);
+
+                return;
+            }
+
             if (_player.IsWallSliding)
             {
                 _animator.Play(AnimationID.WallSlide);

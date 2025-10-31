@@ -4,6 +4,7 @@ using System.IO;
 using Game.Scripts.Modules.PlayerController.Components;
 using Game.Scripts.Modules.PlayerController.Controllers;
 using Game.Scripts.Modules.PlayerController.Data;
+using Game.Scripts.Modules.PlayerController.Enviroment;
 using UnityEngine;
 
 namespace Game.Scripts.Modules.PlayerController

@@ -19,7 +19,7 @@ namespace Game.Scripts.Modules.PlayerController
         private SlopeSlideComponent _slopeSlideComponent;
         private WallSlidingComponent _wallSlidingComponent;
         private MoveController _moveController;
-        private MoveComponent _moveComponent;
+        private IMoveComponent _moveComponent;
         private JumpComponent _jumpComponent;
         private ImpulseComponent _impulseComponent;
 
@@ -43,6 +43,7 @@ namespace Game.Scripts.Modules.PlayerController
         public bool IsWallSliding => _wallSlidingComponent.IsWallSliding;
         public Vector2 MoveDirection => _moveController.CurrentDirection;
         public float DistanceToGround => _collisionComponent.DistanceToGround;
+        public bool IsMonkey { get; set; }
 
         private void Awake()
         {
@@ -97,5 +98,17 @@ namespace Game.Scripts.Modules.PlayerController
         public void OnCollisionEnter2D(Collision2D other) => OnCollisionHit?.Invoke();
 
         public void ResetVelocity() => _rigidbody2D.linearVelocity = Vector2.zero;
+
+        public void SetComponent<T>() where T : class
+        {
+            var component = ServiceLocator.Get<T>();
+
+            switch (component)
+            {
+                case IMoveComponent move:
+                    _moveComponent = move;
+                    break;
+            }
+        }
     }
 }

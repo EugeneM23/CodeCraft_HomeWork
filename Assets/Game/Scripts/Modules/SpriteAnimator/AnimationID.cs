@@ -14,6 +14,7 @@ namespace Gameplay
         WallSlide,
         Sprint,
         SlopeSlide,
-        GrabHang
+        GrabHang,
+        Stairs
     }
 }

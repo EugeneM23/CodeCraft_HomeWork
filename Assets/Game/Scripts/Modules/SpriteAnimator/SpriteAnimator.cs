@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 
 namespace Gameplay
@@ -16,8 +17,8 @@ namespace Gameplay
         private float _frameTime;
         private int _currentFrame;
 
-        private float FrameDuration => 1f / _currentAnimation.FPS;
-
+        private float FrameDuration => 1f / _fps;
+        private float _fps;
         public void Start() => _currentAnimation = _animation[0];
 
         public void Update()
@@ -56,6 +57,7 @@ namespace Gameplay
             if (_currentAnimation.ID != id && _currentAnimation.CanInterrupt)
             {
                 _currentAnimation = _animation.FirstOrDefault(x => x.ID == id);
+                _fps = _currentAnimation.FPS;
                 _currentFrame = 0;
                 _frameTime = 0;
             }
@@ -73,6 +75,10 @@ namespace Gameplay
         {
             return !_currentAnimation.CanInterrupt;
         }
+
+        public void SetSpeed(float speed)
+        {
+            _fps = speed;
+        }
     }
 }
-
