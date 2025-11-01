@@ -44,6 +44,7 @@ namespace Modules.PlayerController
                 player.OnCollisionEnter2D(null);
                 player.SetComponent<MoveComponent>();
                 player.IsOnStairs = false;
+                player.ResetVelocity();
             }
         }
     }

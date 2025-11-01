@@ -43,6 +43,7 @@ namespace Modules.PlayerController
 
         private void Awake()
         {
+            Application.targetFrameRate = 140;
             _rigidbody2D.gravityScale = 0;
             _rigidbody2D.interpolation = RigidbodyInterpolation2D.Extrapolate;
 
