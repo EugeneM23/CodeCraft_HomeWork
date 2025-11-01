@@ -21,29 +21,19 @@ namespace Gameplay
             container.BindSingle(spriteAnimator);
             container.BindSingle(receiver);
 
-            // --- Animation states ---
-            container.BindInterface<IState>(new IdleState(spriteAnimator));
-            container.BindInterface<IState>(new RunState(spriteAnimator));
-            container.BindInterface<IState>(new FallState(spriteAnimator));
 
             // --- State machine ---
             var stateMachine = new StateMachine();
             container.BindSingle(stateMachine);
-            container.BindSingle(new StateMachineController());
 
-            // --- Ability-related states ---
-            var attackState = new AttackState();
-            var pushAbilitySideState = new PushAbilitySideState();
-            var pushAbilityUpState = new PushAbilityUPState();
-
-            container.BindInterface<IState>(attackState);
-            container.BindSingle(attackState);
-
-            container.BindInterface<IState>(pushAbilitySideState);
-            container.BindSingle(pushAbilitySideState);
-
-            container.BindInterface<IState>(pushAbilityUpState);
-            container.BindSingle(pushAbilityUpState);
+            // --- Animation states ---
+            container.BindInterface<BaseState>(new IdleState(spriteAnimator, stateMachine, _player));
+            container.BindInterface<BaseState>(new RunState(spriteAnimator, stateMachine, _player));
+            container.BindInterface<BaseState>(new RiseState(spriteAnimator, stateMachine, _player));
+            container.BindInterface<BaseState>(new FallState(spriteAnimator, stateMachine, _player));
+            container.BindInterface<BaseState>(new LandingState(spriteAnimator, stateMachine, _player));
+            container.BindInterface<BaseState>(new RunToIdleState(spriteAnimator, stateMachine, _player));
+            container.BindInterface<BaseState>(new DashState(spriteAnimator, stateMachine, _player));
         }
     }
 }

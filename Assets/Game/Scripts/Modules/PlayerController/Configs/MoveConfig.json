@@ -8,6 +8,6 @@
   "GrounderDistance": 2,
   "WallSlideSpeed": 3,
   "JumpFromWall": 35,
-  "MaxJumps": 1,
+  "MaxJumps": 5,
   "LayerMask": 6
 }

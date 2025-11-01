@@ -61,7 +61,7 @@ namespace Gameplay
 
         public SpriteAnimator Play(AnimationID id)
         {
-            if (_currentAnimation.ID != id)
+            if (_currentAnimation.ID != id && _currentAnimation.CanInterrupt)
             {
                 _currentAnimation = _animation.FirstOrDefault(x => x.ID == id);
                 _currentFrame = 0;

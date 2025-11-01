@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Codice.CM.SEIDInfo;
 using Game.Scripts.Modules.PlayerController.Data;
 using Gameplay;
 using UnityEngine;
@@ -11,6 +12,7 @@ namespace Modules.PlayerController
         [SerializeField] private Rigidbody2D _rigidbody2D;
         [SerializeField] private CapsuleCollider2D _capsuleCollider;
         [SerializeField] private LayerMask _test;
+        [SerializeField] private SpriteRenderer _spriteRenderer;
 
         private IReadOnlyCollection<ITickable> _tickables;
         private IReadOnlyCollection<IVelocity> _velocities;
@@ -23,10 +25,12 @@ namespace Modules.PlayerController
         private JumpComponent _jumpComponent;
         private ImpulseComponent _impulseComponent;
 
+        public SpriteRenderer SpriteRenderer => _spriteRenderer;
         public ServiceLocator ServiceLocator { get; private set; }
         public PlayerStats Stats { get; private set; }
         public event Action OnCollisionHit;
         public event Action OnJump;
+        public event Action OnDash;
         public bool IsOnStairs { get; set; }
         public CapsuleCollider2D Collider => _capsuleCollider;
         public Vector2 Velocity => _rigidbody2D.linearVelocity;
@@ -60,7 +64,7 @@ namespace Modules.PlayerController
             _jumpComponent = ServiceLocator.Get<JumpComponent>();
             _impulseComponent = ServiceLocator.Get<ImpulseComponent>();
             //_slopeSlideComponent = ServiceLocator.Get<SlopeSlideComponent>();
-            
+
             Stats.LayerMask = _test;
         }
 
@@ -82,13 +86,19 @@ namespace Modules.PlayerController
 
         public void Move(Vector2 direction) => _moveComponent.Move(direction);
 
-        public void Jump() => _jumpComponent.Jump();
+        public void Jump()
+        {
+            OnJump?.Invoke();
+            _jumpComponent.Jump();
+        }
 
         public void AddImpulse(Vector2 impulse)
         {
             _rigidbody2D.linearVelocity = Vector2.zero;
             _impulseComponent.AddImpulse(impulse);
         }
+
+        public void Dash() => OnDash?.Invoke();
 
         public void OnCollisionEnter2D(Collision2D other) => OnCollisionHit?.Invoke();
 

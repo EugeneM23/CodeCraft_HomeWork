@@ -11,6 +11,8 @@ namespace Gameplay
     {
         [field: SerializeField] public Sprite[] Sprites { get; private set; }
         [field: SerializeField] public AnimationID ID { get; private set; }
+
+        [field: SerializeField] public bool Breaker { get; private set; }
         [field: SerializeField] public float FPS { get; private set; }
         public bool CanInterrupt = true;
 

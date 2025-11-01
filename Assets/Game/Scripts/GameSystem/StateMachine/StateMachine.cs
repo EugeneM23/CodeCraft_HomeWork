@@ -1,38 +1,59 @@
 using System;
 using System.Collections.Generic;
+using Modules.PlayerController;
+using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace Gameplay
 {
-    public class StateMachine : IInitializeble
+    public class StateMachine : IInitializeble, ITickable, IDisposable
     {
         private SpriteAnimator _animator;
+        private PlayerController _player;
 
-        private readonly Dictionary<Type, IState> _states = new();
-        public IState CurrentState { get; private set; }
+        private readonly Dictionary<Type, BaseState> _states = new();
+        private BaseState _currentState;
 
         [Inject]
-        public void Construct(List<IState> states, SpriteAnimator animator)
+        public void Construct(List<BaseState> states, SpriteAnimator animator, PlayerController player)
         {
+            _player = player;
             _animator = animator;
-            
-            foreach (IState state in states)
+
+            foreach (BaseState state in states)
                 _states.Add(state.GetType(), state);
         }
 
         public void Initialize()
         {
-            CurrentState = _states[typeof(IdleState)];
-            CurrentState.Enter();
+            SetState<IdleState>();
+            _player.OnJump += TransitToJump;
+            _player.OnDash += TransitToDash;
         }
 
-        public void SetState<T>() where T : IState
+        public void Dispose()
         {
-            if (!_animator.CurrentAnimation.CanInterrupt) return;
+            _player.OnDash -= TransitToDash;
+            _player.OnJump -= TransitToJump;
+        }
 
-            if (CurrentState is T) return;
+        private void TransitToDash() => SetState<DashState>();
 
-            CurrentState = _states[typeof(T)];
-            CurrentState.Enter();
+        private void TransitToJump() => SetState<RiseState>();
+
+        public void SetState<T>() where T : BaseState
+        {
+
+            if (_currentState is T) return;
+
+            _currentState?.Exit();
+            _currentState = _states[typeof(T)];
+            _currentState.Enter();
+        }
+
+        public void Tick()
+        {
+            _currentState?.Tick();
         }
     }
 }
