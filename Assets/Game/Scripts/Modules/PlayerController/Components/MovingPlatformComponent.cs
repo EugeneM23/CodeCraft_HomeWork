@@ -17,7 +17,6 @@ namespace Modules.PlayerController
             if (!_player.IsGrounded)
             {
                 _currentPlatform = null;
-                Debug.Log("MovingPlatformComponent::GetVelocity");
                 return Vector2.zero;
             }
 

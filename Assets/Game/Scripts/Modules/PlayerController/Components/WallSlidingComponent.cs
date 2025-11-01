@@ -8,22 +8,14 @@ namespace Modules.PlayerController
 
         public bool IsWallSliding { get; private set; }
 
-        public WallSlidingComponent(PlayerController player)
-        {
-            _player = player;
-        }
+        public WallSlidingComponent(PlayerController player) => _player = player;
 
         public void Tick()
         {
-            // Определяем, скользим ли по стене
             if (_player.IsOnWall && Mathf.Abs(_player.MoveDirection.x) > 0.1f)
-            {
                 IsWallSliding = _player.MoveDirection.x * _player.WallDirection > 0;
-            }
             else
-            {
                 IsWallSliding = false;
-            }
         }
 
         public Vector2 GetVelocity()

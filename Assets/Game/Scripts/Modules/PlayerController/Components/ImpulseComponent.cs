@@ -7,7 +7,6 @@ namespace Modules.PlayerController
         private readonly PlayerController _player;
         private Vector2 _impulse;
         private bool _verticalApplied;
-        private bool _horizontalApplied;
 
         public ImpulseComponent(PlayerController player)
         {
@@ -21,14 +20,12 @@ namespace Modules.PlayerController
         {
             _impulse = value;
             _verticalApplied = false;
-            _horizontalApplied = false;
         }
 
         private void Reset()
         {
-            _impulse = new Vector2(0,_player.Velocity.y);
+            _impulse = new Vector2(0, _player.Velocity.y);
             _verticalApplied = false;
-            _horizontalApplied = false;
         }
 
         public Vector2 GetVelocity()
@@ -40,40 +37,13 @@ namespace Modules.PlayerController
 
         private float UpdateHorizontal()
         {
-            if (_impulse.x == 0)
-                return 0;
-
-            float input = _player.MoveDirection.x;
-
-            if (input != 0)
-            {
-                bool sameDirection = Mathf.Sign(input) == Mathf.Sign(_impulse.x);
-
-                if (sameDirection)
-                {
-                    // В ту же сторону - можем ускориться
-                    float inputSpeed = input * _player.Stats.MaxSpeed;
-                    if (Mathf.Abs(inputSpeed) > Mathf.Abs(_impulse.x))
-                        _impulse.x = inputSpeed;
-                }
-                else
-                {
-                    // В противоположную - тормозим
-                    _impulse.x = Mathf.MoveTowards(_impulse.x, 0, 100 * Time.fixedDeltaTime);
-                }
-            }
-            else
-            {
-                // Нет инпута - затухание
-                _impulse.x = Mathf.MoveTowards(_impulse.x, 0, 50 * Time.fixedDeltaTime);
-            }
-
+            _impulse.x = Mathf.MoveTowards(_impulse.x, 0, 100 * Time.fixedDeltaTime);
             return _impulse.x;
         }
 
         private float UpdateVertical()
         {
-            if (_verticalApplied || _impulse.y == 0)
+            if (_verticalApplied)
                 return 0;
 
             _verticalApplied = true;
