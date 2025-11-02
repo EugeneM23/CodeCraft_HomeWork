@@ -1,3 +1,4 @@
 {
-  "name": "CharacterController2D"
+  "name": "CharacterController2D",
+  "references":[ "Modules" ]
 }

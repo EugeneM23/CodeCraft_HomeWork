@@ -1,4 +1,5 @@
 using System.Collections;
+using Gameplay;
 using Modules.PlayerController;
 using UnityEngine;
 
@@ -42,6 +43,7 @@ public class CameraShake : MonoBehaviour
 
     private void OnSmashShake(Vector2 characterVelocity)
     {
+        characterVelocity.Log(Color.green);
         if (characterVelocity.y < -50f)
         {
             TriggerShake(_smashShake);

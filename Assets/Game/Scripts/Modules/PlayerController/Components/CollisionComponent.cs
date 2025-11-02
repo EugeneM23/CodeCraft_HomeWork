@@ -27,6 +27,22 @@ namespace Modules.PlayerController
             CheckGround();
             CheckCeiling();
             CheckWall();
+            GetGroundDistance();
+        }
+
+        private void GetGroundDistance()
+        {
+            RaycastHit2D hit = Physics2D.Raycast(
+                _character.Collider.bounds.min,
+                Vector2.down,
+                float.MaxValue,
+                _character.Stats.LayerMask
+            );
+
+            if (hit.collider != null)
+                DistanceToGround = hit.distance;
+            else
+                DistanceToGround = float.MaxValue;
         }
 
         private void CheckGround()
@@ -40,26 +56,13 @@ namespace Modules.PlayerController
 
             bool isGroundedNow = hit.collider != null;
 
-            // Проверяем, если персонаж только что приземлился
             if (isGroundedNow && !_wasGroundedLastFrame)
-            {
-                // Вызываем событие с текущей скоростью персонажа
-                _character.TriggerGroundedEvent(_character.Velocity);
-            }
+                _character.TriggerGroundedEvent();
 
             IsGrounded = isGroundedNow;
             _wasGroundedLastFrame = isGroundedNow;
 
-            if (hit.collider != null)
-            {
-                SurfaceNormal = hit.normal;
-                DistanceToGround = hit.distance;
-            }
-            else
-            {
-                SurfaceNormal = Vector2.zero;
-                DistanceToGround = 9999f;
-            }
+            SurfaceNormal = hit.collider != null ? hit.normal : Vector2.zero;
         }
 
         private void CheckCeiling()

@@ -23,13 +23,14 @@ namespace Modules.PlayerController
         private JumpComponent _jumpComponent;
         private ImpulseComponent _impulseComponent;
         private SpriteFlipComponent _spriteFLip;
+        private Vector2 _lastFrameVelocity;
 
         public ServiceLocator ServiceLocator { get; private set; }
         public PlayerStats Stats { get; private set; }
         public event Action OnDash;
         public event Action OnSmash;
         public event Action OnJump;
-        public event Action<Vector2> OnGrounded; 
+        public event Action<Vector2> OnGrounded;
         public event Action OnCollisionHit;
         public bool IsOnStairs { get; set; }
         public CapsuleCollider2D Collider => _capsuleCollider;
@@ -65,7 +66,6 @@ namespace Modules.PlayerController
             _jumpComponent = ServiceLocator.Get<JumpComponent>();
             _impulseComponent = ServiceLocator.Get<ImpulseComponent>();
             _spriteFLip = ServiceLocator.Get<SpriteFlipComponent>();
-            //_slopeSlideComponent = ServiceLocator.Get<SlopeSlideComponent>();
         }
 
         private void Update()
@@ -76,6 +76,7 @@ namespace Modules.PlayerController
 
         private void FixedUpdate()
         {
+            _lastFrameVelocity = _rigidbody2D.linearVelocity;
             Vector2 velocity = Vector2.zero;
 
             foreach (var v in _velocities)
@@ -92,11 +93,17 @@ namespace Modules.PlayerController
             _jumpComponent.Jump();
         }
 
+        public void TriggerGroundedEvent()
+        {
+            OnGrounded?.Invoke(_lastFrameVelocity);
+        }
+
         public void Dash(Vector2 impulse)
         {
             OnDash?.Invoke();
             _impulseComponent.AddImpulse(impulse);
         }
+
         public void Smash(Vector2 impulse)
         {
             OnSmash?.Invoke();
@@ -123,11 +130,6 @@ namespace Modules.PlayerController
                     _moveComponent = move;
                     break;
             }
-        }
-
-        public void TriggerGroundedEvent(Vector2 characterVelocity)
-        {
-            OnGrounded?.Invoke(characterVelocity);
         }
     }
 }
