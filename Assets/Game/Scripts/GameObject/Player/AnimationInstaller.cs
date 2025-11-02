@@ -18,6 +18,7 @@ namespace Game.Scripts.GameObject.Player
 
             public override void Install(DiContainer container)
             {
+                Application.targetFrameRate = 140;
                 // --- Core animation setup ---
                 var receiver = new AnimationEventReceiver();
                 var spriteAnimator = new SpriteAnimator(_animations, _spriteRenderer, receiver);
