@@ -9,6 +9,8 @@ namespace Modules.PlayerController
     {
         [SerializeField] private Rigidbody2D _rigidbody2D;
         [SerializeField] private CapsuleCollider2D _capsuleCollider;
+        [SerializeField] private SpriteRenderer _spriteRenderer;
+        [SerializeField] private LayerMask _layerMask;
 
         private IReadOnlyCollection<ITickable> _tickables;
         private IReadOnlyCollection<IVelocity> _velocities;
@@ -20,9 +22,12 @@ namespace Modules.PlayerController
         private IMoveComponent _moveComponent;
         private JumpComponent _jumpComponent;
         private ImpulseComponent _impulseComponent;
+        private SpriteFlipComponent _spriteFLip;
 
         public ServiceLocator ServiceLocator { get; private set; }
         public PlayerStats Stats { get; private set; }
+        public event Action OnDash;
+
         public event Action OnCollisionHit;
         public event Action OnJump;
         public bool IsOnStairs { get; set; }
@@ -38,7 +43,8 @@ namespace Modules.PlayerController
         public bool IsWallSliding => _wallSlidingComponent.IsWallSliding;
         public Vector2 MoveDirection => _moveController.CurrentDirection;
         public float DistanceToGround => _collisionComponent.DistanceToGround;
-        
+        public SpriteRenderer SpriteRenderer => _spriteRenderer;
+
         private void Awake()
         {
             _rigidbody2D.gravityScale = 0;
@@ -47,6 +53,7 @@ namespace Modules.PlayerController
             ServiceLocator = new ServiceLocator(this);
 
             Stats = ServiceLocator.Get<PlayerStats>();
+            Stats.LayerMask = _layerMask;
             _tickables = ServiceLocator.GetAll<ITickable>();
             _velocities = ServiceLocator.GetAll<IVelocity>();
 
@@ -56,6 +63,7 @@ namespace Modules.PlayerController
             _moveComponent = ServiceLocator.Get<MoveComponent>();
             _jumpComponent = ServiceLocator.Get<JumpComponent>();
             _impulseComponent = ServiceLocator.Get<ImpulseComponent>();
+            _spriteFLip = ServiceLocator.Get<SpriteFlipComponent>();
             //_slopeSlideComponent = ServiceLocator.Get<SlopeSlideComponent>();
         }
 

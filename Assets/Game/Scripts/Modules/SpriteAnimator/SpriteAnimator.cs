@@ -5,11 +5,11 @@ using UnityEngine;
 
 namespace Gameplay
 {
-    public class SpriteAnimator : MonoBehaviour
+    public class SpriteAnimator : IInitializeble, ITickable
     {
-        [SerializeField] private AnimationEventReceiver _animationEventReceiver;
-        [SerializeField] private SpriteAnimation[] _animation;
-        [SerializeField] private SpriteRenderer _spriteRenderer;
+        private readonly AnimationEventReceiver _animationEventReceiver;
+        private readonly SpriteAnimation[] _animation;
+        private readonly SpriteRenderer _spriteRenderer;
 
         public SpriteAnimation CurrentAnimation => _currentAnimation;
         private SpriteAnimation _currentAnimation;
@@ -19,9 +19,21 @@ namespace Gameplay
 
         private float FrameDuration => 1f / _fps;
         private float _fps;
-        public void Start() => _currentAnimation = _animation[0];
 
-        public void Update()
+        public SpriteAnimator(SpriteAnimation[] animation, SpriteRenderer spriteRenderer,
+            AnimationEventReceiver animationEventReceiver)
+        {
+            _spriteRenderer = spriteRenderer;
+            _animationEventReceiver = animationEventReceiver;
+            _animation = animation;
+        }
+
+        public void Initialize()
+        {
+            _currentAnimation = _animation[0];
+        }
+
+        public void Tick()
         {
             _frameTime += Time.deltaTime;
 
@@ -54,6 +66,7 @@ namespace Gameplay
 
         public SpriteAnimator Play(AnimationID id)
         {
+            id.Log(Color.red);
             if (_currentAnimation.ID != id && _currentAnimation.CanInterrupt)
             {
                 _currentAnimation = _animation.FirstOrDefault(x => x.ID == id);

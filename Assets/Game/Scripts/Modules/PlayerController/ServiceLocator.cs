@@ -58,6 +58,7 @@ namespace Modules.PlayerController
             Register(new JumpComponent(_player));
             Register(new StairsMoveComponent(_player));
             Register(new MovingPlatformComponent(_player));
+            Register(new SpriteFlipComponent(_player));
 
             //Register(new LedgeGrabComponent(player)); 
             //Register(new SlopeSlideComponent(player));

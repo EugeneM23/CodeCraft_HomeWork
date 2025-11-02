@@ -1,25 +1,25 @@
-using System;
-using Game.Scripts.Modules.PlayerController;
+using Gameplay;
 using Modules.PlayerController;
-using UnityEngine;
 
 namespace Game.Scripts
 {
-    public class SpriteFlipComponent : MonoBehaviour
+    public class SpriteFlipComponent : ITickable
     {
-        [SerializeField] private SpriteRenderer _renderer;
-        [SerializeField] private PlayerController _player;
+        private readonly PlayerController _player;
 
-        private void Update()
+        public SpriteFlipComponent(PlayerController player) => _player = player;
+
+        public void Tick()
         {
-            if (_player.IsWallSliding && _player.WallDirection < 0)
+            if (_player.WallDirection != 0 && _player.IsWallSliding && !_player.IsGrounded)
             {
-                _renderer.flipX = true;
+                if (_player.WallDirection < 0) _player.SpriteRenderer.flipX = true;
+                if (_player.WallDirection > 0) _player.SpriteRenderer.flipX = false;
                 return;
             }
 
-            if (_player.Velocity.x < 0) _renderer.flipX = true;
-            if (_player.Velocity.x > 0) _renderer.flipX = false;
+            if (_player.Velocity.x < 0) _player.SpriteRenderer.flipX = true;
+            if (_player.Velocity.x > 0) _player.SpriteRenderer.flipX = false;
         }
     }
 }

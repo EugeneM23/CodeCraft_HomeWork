@@ -15,6 +15,11 @@ namespace Gameplay
         Sprint,
         SlopeSlide,
         GrabHang,
-        Stairs
+        Stairs,
+        AirMid,
+        Landindg,
+        JumpRise,
+        RunToIdle,
+        Dash
     }
 }
