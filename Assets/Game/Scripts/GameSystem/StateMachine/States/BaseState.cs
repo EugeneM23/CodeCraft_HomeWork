@@ -25,6 +25,17 @@ namespace Gameplay
 
         public virtual void Tick()
         {
+            if (_player.IsWallSliding)
+            {
+                _stateMachine.SetState<WallSlideState>();
+                return;
+            }
+
+            if (!_player.IsGrounded)
+            {
+                _stateMachine.SetState<FallMidState>();
+                return;
+            }
         }
     }
 }

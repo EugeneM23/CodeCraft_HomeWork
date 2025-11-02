@@ -10,13 +10,13 @@ namespace Modules.PlayerController
         {
             if (_player.WallDirection != 0 && _player.IsWallSliding && !_player.IsGrounded)
             {
-                if (_player.WallDirection > 0) _player.SpriteRenderer.flipX = true;
-                if (_player.WallDirection < 0) _player.SpriteRenderer.flipX = false;
+                if (_player.WallDirection < 0) _player.SpriteRenderer.flipX = true;
+                if (_player.WallDirection > 0) _player.SpriteRenderer.flipX = false;
                 return;
             }
 
-            if (_player.MoveDirection.x < 0) _player.SpriteRenderer.flipX = true;
-            if (_player.MoveDirection.x > 0) _player.SpriteRenderer.flipX = false;
+            if (_player.Velocity.x < 0) _player.SpriteRenderer.flipX = true;
+            if (_player.Velocity.x > 0) _player.SpriteRenderer.flipX = false;
         }
     }
 }

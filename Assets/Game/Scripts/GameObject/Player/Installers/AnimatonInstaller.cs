@@ -13,7 +13,6 @@ namespace Gameplay
 
         public override void Install(DiContainer container)
         {
-            // --- Core animation setup ---
             var receiver = new AnimationEventReceiver();
             var spriteAnimator = new SpriteAnimator(_animations, _spriteRenderer, receiver);
 
@@ -22,18 +21,16 @@ namespace Gameplay
             container.BindSingle(receiver);
 
 
-            // --- State machine ---
             var stateMachine = new StateMachine();
             container.BindSingle(stateMachine);
-
-            // --- Animation states ---
             container.BindInterface<BaseState>(new IdleState(spriteAnimator, stateMachine, _player));
             container.BindInterface<BaseState>(new RunState(spriteAnimator, stateMachine, _player));
             container.BindInterface<BaseState>(new RiseState(spriteAnimator, stateMachine, _player));
-            container.BindInterface<BaseState>(new FallState(spriteAnimator, stateMachine, _player));
             container.BindInterface<BaseState>(new LandingState(spriteAnimator, stateMachine, _player));
             container.BindInterface<BaseState>(new RunToIdleState(spriteAnimator, stateMachine, _player));
             container.BindInterface<BaseState>(new DashState(spriteAnimator, stateMachine, _player));
+            container.BindInterface<BaseState>(new FallMidState(spriteAnimator, stateMachine, _player));
+            container.BindInterface<BaseState>(new WallSlideState(spriteAnimator, stateMachine, _player));
         }
     }
 }

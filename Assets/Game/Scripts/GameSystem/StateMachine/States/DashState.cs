@@ -14,15 +14,22 @@ public class DashState : BaseState
 
     public override void Enter()
     {
-        _dashTimer = _dashDuration; // сбрасываем таймер
-        _animator.Play(AnimationID.Dash);
+        _dashTimer = _dashDuration; 
+        _animator.Play(AnimationID.Dash).Interrupt(false);
         _player.OnCollisionHit += TransitToFall;
     }
 
-    private void TransitToFall() => _stateMachine.SetState<FallState>();
+    private void TransitToFall() => _stateMachine.SetState<FallMidState>();
 
     public override void Tick()
     {
+        base.Tick();
+        if (_player.IsWallSliding)
+        {
+            _stateMachine.SetState<WallSlideState>();
+            return;
+        }
+
         _dashTimer -= Time.deltaTime;
 
         if (_dashTimer <= 0f)

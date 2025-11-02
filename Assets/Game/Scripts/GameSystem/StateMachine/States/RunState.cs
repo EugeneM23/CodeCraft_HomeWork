@@ -17,31 +17,10 @@ namespace Gameplay
 
         public override void Tick()
         {
-            if (!_player.IsGrounded)
-            {
-                _stateMachine.SetState<FallState>();
-                return;
-            }
+            base.Tick();
 
-            if (Mathf.Abs(_player.Velocity.x) < 0.1f) 
+            if (Mathf.Abs(_player.Velocity.x) < 0.1f && _player.MoveDirection == Vector2.zero)
                 _stateMachine.SetState<RunToIdleState>();
-        }
-    }
-
-    public class RunToIdleState : BaseState
-    {
-        public RunToIdleState(SpriteAnimator animator, StateMachine stateMachine, PlayerController player) : base(
-            animator,
-            stateMachine, player)
-        {
-        }
-
-        public override void Enter() => _animator.Play(AnimationID.RunToIdle).Interrupt(false);
-
-        public override void Tick()
-        {
-            if (_animator.CurrentAnimation.CanInterrupt)
-                _stateMachine.SetState<IdleState>();
         }
     }
 }

@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Modules.PlayerController;
-using UnityEngine;
-using UnityEngine.Rendering;
 
 namespace Gameplay
 {
@@ -43,7 +41,6 @@ namespace Gameplay
 
         public void SetState<T>() where T : BaseState
         {
-
             if (_currentState is T) return;
 
             _currentState?.Exit();

@@ -6,9 +6,8 @@ namespace Modules.PlayerController
     {
         private readonly PlayerController _player;
 
-        // --- Новые поля ---
-        private float _ignoreGroundTimer = 0f;
-        private const float IgnoreGroundDuration = 0.1f; // Время игнорирования после прыжка (настраиваемое)
+        private float _ignoreGroundTimer;
+        private const float IgnoreGroundDuration = 0.1f; 
 
         public Vector2 SurfaceNormal { get; private set; }
         public bool IsGrounded { get; private set; }
@@ -23,25 +22,38 @@ namespace Modules.PlayerController
             _player = player;
             Physics2D.queriesStartInColliders = false;
 
-            // Подписка на событие прыжка
             _player.OnJump += HandleJump;
         }
 
         private void HandleJump()
         {
-            // Запускаем таймер игнорирования земли
             _ignoreGroundTimer = IgnoreGroundDuration;
         }
 
         public void Tick()
         {
-            // Отсчитываем таймер
             if (_ignoreGroundTimer > 0)
                 _ignoreGroundTimer -= Time.deltaTime;
 
             CheckGround();
             CheckCeiling();
             CheckWall();
+            GetDistanceToGround();
+        }
+
+        private void GetDistanceToGround()
+        {
+            RaycastHit2D hit = Physics2D.Raycast(
+                _player.Collider.bounds.min,
+                Vector2.down,
+                100,
+                _player.Stats.LayerMask
+            );
+
+            if (hit.collider != null) 
+                DistanceToGround = hit.distance;
+            else
+                DistanceToGround = float.MaxValue;
         }
 
         private void CheckGround()
@@ -55,19 +67,12 @@ namespace Modules.PlayerController
 
             bool grounded = hit.collider != null;
 
-            // Если таймер активен — игнорируем коллизию с землёй
             IsGrounded = grounded && _ignoreGroundTimer <= 0f;
 
             if (grounded)
-            {
                 SurfaceNormal = hit.normal;
-                DistanceToGround = hit.distance;
-            }
             else
-            {
                 SurfaceNormal = Vector2.zero;
-                DistanceToGround = 9999f;
-            }
         }
 
         private void CheckCeiling()

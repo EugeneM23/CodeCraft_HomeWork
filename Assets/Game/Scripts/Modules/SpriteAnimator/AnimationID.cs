@@ -12,10 +12,11 @@ namespace Gameplay
         PushAbilitySide,
         PushAbilityUP,
         RunToIdle,
-        StartJump,
-        Fly,
-        FlyDown,
-        Land,
-        Dash
+        JumpRise,
+        AirMid,
+        FallDown,
+        Landindg,
+        Dash,
+        WallSlide
     }
 }

@@ -10,23 +10,16 @@ namespace Gameplay
         {
         }
 
-        public override void Enter()
-        {
-            _player.OnJump += TransitToJump;
-        }
+        public override void Enter() => _player.OnJump += TransitToJump;
 
-        public override void Exit()
-        {
-            _player.OnJump -= TransitToJump;
-        }
+        public override void Exit() => _player.OnJump -= TransitToJump;
 
-        private void TransitToJump()
-        {
-            _stateMachine.SetState<RiseState>();
-        }
+        private void TransitToJump() => _stateMachine.SetState<RiseState>();
 
         public override void Tick()
         {
+            base.Tick();
+            
             _animator.Play(AnimationID.Idle);
 
             if (Mathf.Abs(_player.Velocity.x) > 0.1f)
