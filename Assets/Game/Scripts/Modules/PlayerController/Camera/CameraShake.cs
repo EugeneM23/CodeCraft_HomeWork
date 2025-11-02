@@ -29,26 +29,25 @@ public class CameraShake : MonoBehaviour
 
     private void OnEnable()
     {
-        if (_character != null)
-        {
-            _character.OnSmash += OnSmashShake;
-        }
+        _character.OnGrounded += OnSmashShake;
     }
 
     private void OnDisable()
     {
-        if (_character != null)
-        {
-            _character.OnJump -= OnJumpShake;
-            _character.OnDash -= OnDashShake;
-            _character.OnSmash -= OnSmashShake;
-            _character.OnCollisionHit -= OnCollisionShake;
-        }
+        _character.OnGrounded -= OnSmashShake;
     }
 
     private void OnJumpShake() => TriggerShake(_jumpShake);
     private void OnDashShake() => TriggerShake(_dashShake);
-    private void OnSmashShake() => TriggerShake(_smashShake);
+
+    private void OnSmashShake(Vector2 characterVelocity)
+    {
+        if (characterVelocity.y < -50f)
+        {
+            TriggerShake(_smashShake);
+        }
+    }
+
     private void OnCollisionShake() => TriggerShake(_collisionShake);
 
     private void TriggerShake(ShakeSettings settings)

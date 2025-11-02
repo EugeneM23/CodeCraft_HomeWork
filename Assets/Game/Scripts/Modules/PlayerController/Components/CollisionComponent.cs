@@ -5,6 +5,7 @@ namespace Modules.PlayerController
     internal class CollisionComponent : ITickable
     {
         private readonly CharacterController2D _character;
+        private bool _wasGroundedLastFrame;
 
         public Vector2 SurfaceNormal { get; private set; }
         public bool IsGrounded { get; private set; }
@@ -17,6 +18,7 @@ namespace Modules.PlayerController
         public CollisionComponent(CharacterController2D character)
         {
             _character = character;
+            _wasGroundedLastFrame = false;
             Physics2D.queriesStartInColliders = false;
         }
 
@@ -36,7 +38,17 @@ namespace Modules.PlayerController
                 _character.Stats.LayerMask
             );
 
-            IsGrounded = hit.collider != null;
+            bool isGroundedNow = hit.collider != null;
+
+            // Проверяем, если персонаж только что приземлился
+            if (isGroundedNow && !_wasGroundedLastFrame)
+            {
+                // Вызываем событие с текущей скоростью персонажа
+                _character.TriggerGroundedEvent(_character.Velocity);
+            }
+
+            IsGrounded = isGroundedNow;
+            _wasGroundedLastFrame = isGroundedNow;
 
             if (hit.collider != null)
             {

@@ -29,6 +29,7 @@ namespace Modules.PlayerController
         public event Action OnDash;
         public event Action OnSmash;
         public event Action OnJump;
+        public event Action<Vector2> OnGrounded; 
         public event Action OnCollisionHit;
         public bool IsOnStairs { get; set; }
         public CapsuleCollider2D Collider => _capsuleCollider;
@@ -124,6 +125,9 @@ namespace Modules.PlayerController
             }
         }
 
-        
+        public void TriggerGroundedEvent(Vector2 characterVelocity)
+        {
+            OnGrounded?.Invoke(characterVelocity);
+        }
     }
 }

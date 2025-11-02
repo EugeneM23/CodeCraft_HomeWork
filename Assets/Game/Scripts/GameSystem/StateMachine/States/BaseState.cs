@@ -1,5 +1,4 @@
 using Modules.PlayerController;
-using UnityEngine;
 
 namespace Gameplay
 {
@@ -60,15 +59,7 @@ namespace Gameplay
 
         private void TransitionToJump()
         {
-            if (Character.IsGrounded)
-            {
-                if (Random.Range(0, 2) > 0)
-                    _stateMachine.SetState<FrontFlipState>();
-                else
-                    _stateMachine.SetState<JumpStartState>();
-            }
-            else
-                _stateMachine.SetState<JumpStartState>();
+            _stateMachine.SetState<JumpStartState>();
         }
 
         private void TransitionToDash()
