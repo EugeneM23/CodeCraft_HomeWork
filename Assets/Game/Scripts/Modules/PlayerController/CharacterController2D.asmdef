@@ -1,4 +1,4 @@
 {
   "name": "CharacterController2D",
-  "references":[ "Modules" ]
+  "references":[ "Modules", "SpriteAnimator" ]
 }
