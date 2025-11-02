@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 61caefda880f4a5d94965826455b144b, type: 3}
-  m_Name: Fly
+  m_Name: Landing
   m_EditorClassIdentifier: 
   serializationData:
     SerializedFormat: 2
@@ -34,8 +34,9 @@ MonoBehaviour:
       Entry: 8
       Data: 
   <Sprites>k__BackingField:
-  - {fileID: 21300000, guid: 43f052f9f047ce4479506e404793bc11, type: 3}
-  <ID>k__BackingField: 14
+  - {fileID: 21300000, guid: 334fd27f46f02a84abe2f6e32cb05a15, type: 3}
+  - {fileID: 21300000, guid: 511671a6f7aadb34eb1582432ec6920e, type: 3}
+  <ID>k__BackingField: 6
   <Breaker>k__BackingField: 0
-  <FPS>k__BackingField: 10
+  <FPS>k__BackingField: 16
   CanInterrupt: 1

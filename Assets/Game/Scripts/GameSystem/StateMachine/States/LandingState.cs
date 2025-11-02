@@ -12,7 +12,7 @@ namespace Gameplay
 
         public override void Enter()
         {
-            _animator.Play(AnimationID.Landindg).Interrupt(false);
+            _animator.Play(AnimationID.Landing).Interrupt(false);
         }
 
         public override void Tick()

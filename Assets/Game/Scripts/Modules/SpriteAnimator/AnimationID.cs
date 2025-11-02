@@ -3,23 +3,16 @@ namespace Gameplay
     public enum AnimationID
     {
         Idle,
-        Walk,
         Run,
-        Jump,
-        Fall,
-        Attack,
-        Push,
-        PushAbilitySide,
-        PushAbilityUP,
+        AirFall,
         WallSlide,
-        Sprint,
-        SlopeSlide,
-        GrabHang,
         Stairs,
         AirMid,
-        Landindg,
-        JumpRise,
+        Landing,
+        JumpStart,
         RunToIdle,
-        Dash
+        Dash,
+        Roll,
+        FrontFlip
     }
 }

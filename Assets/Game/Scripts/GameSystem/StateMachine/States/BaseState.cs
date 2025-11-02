@@ -52,8 +52,25 @@ namespace Gameplay
             }
         }
 
-        private void TransitionToJump() => _stateMachine.SetState<RiseState>();
+        private void TransitionToJump()
+        {
+            if (_player.IsGrounded)
+            {
+                if (Random.Range(0, 2) > 0)
+                    _stateMachine.SetState<FrontFlipState>();
+                else
+                    _stateMachine.SetState<JumpStartState>();
+            }
+            else
+                _stateMachine.SetState<JumpStartState>();
+        }
 
-        private void TransitionToDash() => _stateMachine.SetState<DashState>();
+        private void TransitionToDash()
+        {
+            if (_player.IsGrounded)
+                _stateMachine.SetState<RollState>();
+            else
+                _stateMachine.SetState<DashState>();
+        }
     }
 }

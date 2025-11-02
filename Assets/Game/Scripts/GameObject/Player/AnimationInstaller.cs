@@ -34,12 +34,14 @@ namespace Game.Scripts.GameObject.Player
                 // --- Animation states ---
                 container.BindInterfacesAndSelf(new IdleState(spriteAnimator, stateMachine, _player));
                 container.BindInterfacesAndSelf(new RunState(spriteAnimator, stateMachine, _player));
-                container.BindInterfacesAndSelf(new RiseState(spriteAnimator, stateMachine, _player));
+                container.BindInterfacesAndSelf(new JumpStartState(spriteAnimator, stateMachine, _player));
                 container.BindInterfacesAndSelf(new FallMidState(spriteAnimator, stateMachine, _player));
                 container.BindInterfacesAndSelf(new LandingState(spriteAnimator, stateMachine, _player));
                 container.BindInterfacesAndSelf(new RunToIdleState(spriteAnimator, stateMachine, _player));
                 container.BindInterfacesAndSelf(new DashState(spriteAnimator, stateMachine, _player));
                 container.BindInterfacesAndSelf(new WallSlideState(spriteAnimator, stateMachine, _player));
+                container.BindInterfacesAndSelf(new RollState(spriteAnimator, stateMachine, _player));
+                container.BindInterfacesAndSelf(new FrontFlipState(spriteAnimator, stateMachine, _player));
             }
         }
     }

@@ -14,9 +14,44 @@ public class DashState : BaseState
 
     public override void Enter()
     {
-        Debug.Log("Dash");
         _dashTimer = _dashDuration;
-        _animator.Play(AnimationID.Dash).Interrupt(false);
+        _animator.PlayForce(AnimationID.Dash).Interrupt(false);
+        _player.OnCollisionHit += TransitToFall;
+    }
+
+    public override void Exit() => _player.OnCollisionHit -= TransitToFall;
+
+    private void TransitToFall() => _stateMachine.SetState<FallMidState>();
+
+    public override void Tick()
+    {
+        if (_player.IsWallSliding)
+        {
+            _stateMachine.SetState<WallSlideState>();
+            return;
+        }
+
+        _dashTimer -= Time.deltaTime;
+
+        if (_dashTimer <= 0f)
+            TransitToFall();
+    }
+}
+
+public class RollState : BaseState
+{
+    private readonly float _dashDuration = 0.5f;
+    private float _dashTimer;
+
+    public RollState(SpriteAnimator animator, StateMachine stateMachine, PlayerController player)
+        : base(animator, stateMachine, player)
+    {
+    }
+
+    public override void Enter()
+    {
+        _dashTimer = _dashDuration;
+        _animator.PlayForce(AnimationID.Roll).Interrupt(false);
         _player.OnCollisionHit += TransitToFall;
     }
 

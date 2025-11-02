@@ -81,6 +81,23 @@ namespace Gameplay
             return this;
         }
 
+        public SpriteAnimator PlayForce(AnimationID id)
+        {
+            if (_currentAnimation.ID != id)
+            {
+                _currentAnimation = _animation.FirstOrDefault(x => x.ID == id);
+
+                if (_currentAnimation == null)
+                    Debug.LogError($"Animation {id} not found");
+
+                _fps = _currentAnimation.FPS;
+                _currentFrame = 0;
+                _frameTime = 0;
+            }
+
+            return this;
+        }
+
         public SpriteAnimator Interrupt(bool interrupt)
         {
             _currentAnimation.CanInterrupt = interrupt;

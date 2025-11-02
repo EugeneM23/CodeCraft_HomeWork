@@ -33,7 +33,7 @@ namespace Game.Scripts
 
             if (!_player.IsGrounded && !_player.IsWallSliding)
             {
-                _animator.Play(AnimationID.Fall);
+                _animator.Play(AnimationID.AirFall);
                 return;
             }
 

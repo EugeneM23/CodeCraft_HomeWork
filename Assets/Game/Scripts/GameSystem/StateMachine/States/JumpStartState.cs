@@ -2,17 +2,14 @@ using Modules.PlayerController;
 
 namespace Gameplay
 {
-    public class RiseState : BaseState
+    public class JumpStartState : BaseState
     {
-        public RiseState(SpriteAnimator animator, StateMachine stateMachine, PlayerController player) : base(animator,
+        public JumpStartState(SpriteAnimator animator, StateMachine stateMachine, PlayerController player) : base(animator,
             stateMachine, player)
         {
         }
 
-        public override void Enter()
-        {
-            _animator.Play(AnimationID.JumpRise).Interrupt(false);
-        }
+        public override void Enter() => _animator.Play(AnimationID.JumpStart).Interrupt(false);
 
         public override void Tick()
         {

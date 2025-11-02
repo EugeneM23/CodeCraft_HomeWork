@@ -14,7 +14,7 @@ namespace Gameplay
 
         public override void Exit() => _player.OnJump -= TransitToJump;
 
-        private void TransitToJump() => _stateMachine.SetState<RiseState>();
+        private void TransitToJump() => _stateMachine.SetState<JumpStartState>();
 
         public override void Tick()
         {
