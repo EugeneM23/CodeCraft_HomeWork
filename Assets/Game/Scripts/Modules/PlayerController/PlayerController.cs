@@ -27,9 +27,8 @@ namespace Modules.PlayerController
         public ServiceLocator ServiceLocator { get; private set; }
         public PlayerStats Stats { get; private set; }
         public event Action OnDash;
-
-        public event Action OnCollisionHit;
         public event Action OnJump;
+        public event Action OnCollisionHit;
         public bool IsOnStairs { get; set; }
         public CapsuleCollider2D Collider => _capsuleCollider;
         public Vector2 Velocity => _rigidbody2D.linearVelocity;
@@ -85,7 +84,17 @@ namespace Modules.PlayerController
 
         public void Move(Vector2 direction) => _moveComponent.Move(direction);
 
-        public void Jump() => _jumpComponent.Jump();
+        public void Jump()
+        {
+            OnJump?.Invoke();
+            _jumpComponent.Jump();
+        }
+
+        public void Dash(Vector2 impulse)
+        {
+            OnDash?.Invoke();
+            _impulseComponent.AddImpulse(impulse);
+        }
 
         public void AddImpulse(Vector2 impulse)
         {

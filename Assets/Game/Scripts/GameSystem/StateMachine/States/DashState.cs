@@ -14,16 +14,18 @@ public class DashState : BaseState
 
     public override void Enter()
     {
-        _dashTimer = _dashDuration; 
+        Debug.Log("Dash");
+        _dashTimer = _dashDuration;
         _animator.Play(AnimationID.Dash).Interrupt(false);
         _player.OnCollisionHit += TransitToFall;
     }
+
+    public override void Exit() => _player.OnCollisionHit -= TransitToFall;
 
     private void TransitToFall() => _stateMachine.SetState<FallMidState>();
 
     public override void Tick()
     {
-        base.Tick();
         if (_player.IsWallSliding)
         {
             _stateMachine.SetState<WallSlideState>();
@@ -35,6 +37,4 @@ public class DashState : BaseState
         if (_dashTimer <= 0f)
             TransitToFall();
     }
-
-    public override void Exit() => _player.OnCollisionHit -= TransitToFall;
 }

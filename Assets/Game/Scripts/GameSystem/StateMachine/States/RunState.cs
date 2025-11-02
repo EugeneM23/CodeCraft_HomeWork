@@ -10,14 +10,11 @@ namespace Gameplay
         {
         }
 
-        public override void Enter()
-        {
-            _animator.Play(AnimationID.Run);
-        }
 
         public override void Tick()
         {
             base.Tick();
+            _animator.Play(AnimationID.Run);
 
             if (Mathf.Abs(_player.Velocity.x) < 0.1f && _player.MoveDirection == Vector2.zero)
                 _stateMachine.SetState<RunToIdleState>();

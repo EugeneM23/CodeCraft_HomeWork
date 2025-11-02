@@ -2,23 +2,18 @@ using System;
 using System.Collections.Generic;
 using Modules.PlayerController;
 using UnityEngine;
+using Color = System.Drawing.Color;
 
 namespace Gameplay
 {
-    public class StateMachine : IInitializeble, ITickable, IDisposable
+    public class StateMachine : IInitializeble, ITickable
     {
-        private SpriteAnimator _animator;
-        private PlayerController _player;
-
         private readonly Dictionary<Type, BaseState> _states = new();
         private BaseState _currentState;
 
         [Inject]
-        public void Construct(List<BaseState> states, SpriteAnimator animator, PlayerController player)
+        public void Construct(List<BaseState> states)
         {
-            _player = player;
-            _animator = animator;
-
             foreach (BaseState state in states)
                 _states.Add(state.GetType(), state);
         }
@@ -26,19 +21,8 @@ namespace Gameplay
         public void Initialize()
         {
             SetState<IdleState>();
-            _player.OnJump += TransitToJump;
-            _player.OnDash += TransitToDash;
+            Debug.Log("StateMachine initialized".Log(Color.Coral));
         }
-
-        public void Dispose()
-        {
-            _player.OnDash -= TransitToDash;
-            _player.OnJump -= TransitToJump;
-        }
-
-        private void TransitToDash() => SetState<DashState>();
-
-        private void TransitToJump() => SetState<RiseState>();
 
         public void SetState<T>() where T : BaseState
         {
@@ -55,6 +39,4 @@ namespace Gameplay
             _currentState?.Tick();
         }
     }
-         
-    
 }

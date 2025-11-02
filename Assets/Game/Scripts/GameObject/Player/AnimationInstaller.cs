@@ -23,23 +23,23 @@ namespace Game.Scripts.GameObject.Player
                 var spriteAnimator = new SpriteAnimator(_animations, _spriteRenderer, receiver);
 
                 container.BindSingle(_player);
-                container.BindSingle(spriteAnimator);
+                container.BindInterfacesAndSelf(spriteAnimator);
                 container.BindSingle(receiver);
 
 
                 // --- State machine ---
                 var stateMachine = new StateMachine();
-                container.BindSingle(stateMachine);
+                container.BindInterfacesAndSelf(stateMachine);
 
                 // --- Animation states ---
-                container.BindInterface<BaseState>(new IdleState(spriteAnimator, stateMachine, _player));
-                container.BindInterface<BaseState>(new RunState(spriteAnimator, stateMachine, _player));
-                container.BindInterface<BaseState>(new RiseState(spriteAnimator, stateMachine, _player));
-                container.BindInterface<BaseState>(new FallMidState(spriteAnimator, stateMachine, _player));
-                container.BindInterface<BaseState>(new LandingState(spriteAnimator, stateMachine, _player));
-                container.BindInterface<BaseState>(new RunToIdleState(spriteAnimator, stateMachine, _player));
-                container.BindInterface<BaseState>(new DashState(spriteAnimator, stateMachine, _player));
-                container.BindInterface<BaseState>(new WallSlideState(spriteAnimator, stateMachine, _player));
+                container.BindInterfacesAndSelf(new IdleState(spriteAnimator, stateMachine, _player));
+                container.BindInterfacesAndSelf(new RunState(spriteAnimator, stateMachine, _player));
+                container.BindInterfacesAndSelf(new RiseState(spriteAnimator, stateMachine, _player));
+                container.BindInterfacesAndSelf(new FallMidState(spriteAnimator, stateMachine, _player));
+                container.BindInterfacesAndSelf(new LandingState(spriteAnimator, stateMachine, _player));
+                container.BindInterfacesAndSelf(new RunToIdleState(spriteAnimator, stateMachine, _player));
+                container.BindInterfacesAndSelf(new DashState(spriteAnimator, stateMachine, _player));
+                container.BindInterfacesAndSelf(new WallSlideState(spriteAnimator, stateMachine, _player));
             }
         }
     }

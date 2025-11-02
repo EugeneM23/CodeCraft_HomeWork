@@ -13,19 +13,56 @@ namespace Gameplay
             _services[typeof(T)] = instance;
         }
 
-        public void BindInterface<T>(T instance)
+        public void BindInterfaceToInstance<TInterface>(object instance)
+        {
+            if (instance is not TInterface)
+                throw new InvalidOperationException($"{instance.GetType()} does not implement {typeof(TInterface)}");
+
+            AddToList((TInterface)instance);
+        }
+
+        public void BindInterfacesAndSelf<T>(T instance, bool includeBaseClasses = true)
+        {
+            BindSingle(instance);
+
+            var interfaces = instance.GetType().GetInterfaces();
+            foreach (var interfaceType in interfaces)
+            {
+                AddToListDynamic(interfaceType, instance);
+            }
+
+            if (includeBaseClasses)
+            {
+                var baseType = instance.GetType().BaseType;
+                while (baseType != null && baseType != typeof(object))
+                {
+                    AddToListDynamic(baseType, instance);
+                    baseType = baseType.BaseType;
+                }
+            }
+        }
+
+        private void AddToList<T>(T instance)
         {
             var listType = typeof(List<T>);
 
             if (_services.TryGetValue(listType, out var existing))
-            {
-                var list = (List<T>)existing;
-                list.Add(instance);
-            }
+                ((List<T>)existing).Add(instance);
+            else
+                _services[listType] = new List<T> { instance };
+        }
+
+        private void AddToListDynamic(Type type, object instance)
+        {
+            var listType = typeof(List<>).MakeGenericType(type);
+
+            if (_services.TryGetValue(listType, out var existing))
+                ((System.Collections.IList)existing).Add(instance);
             else
             {
-                var newList = new List<T> { instance };
-                _services[listType] = newList;
+                var list = (System.Collections.IList)Activator.CreateInstance(listType);
+                list.Add(instance);
+                _services[listType] = list;
             }
         }
     }

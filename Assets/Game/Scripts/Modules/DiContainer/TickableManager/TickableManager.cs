@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Game.Scripts.Player;
 using Gameplay;
 using UnityEngine;
@@ -22,11 +23,14 @@ public class TickableManager : MonoBehaviour
                 _fixedTickables.Add(t);
 
         foreach (var i in container.GetAll<IInitializeble>())
+        {
             if (i != null && !_initializables.Contains(i))
             {
+                Debug.Log("adsasdasda");
                 _initializables.Add(i);
                 i.Initialize();
             }
+        }
     }
 
     public void RemoveServices(DiContainer container)

@@ -1,8 +1,9 @@
 using Modules.PlayerController;
+using UnityEngine;
 
 namespace Gameplay
 {
-    public abstract class BaseState
+    public abstract class BaseState : IInitializeble, IDisposable
     {
         protected readonly SpriteAnimator _animator;
         protected readonly StateMachine _stateMachine;
@@ -13,6 +14,19 @@ namespace Gameplay
             _animator = animator;
             _stateMachine = stateMachine;
             _player = player;
+        }
+
+        void IInitializeble.Initialize()
+        {
+            Debug.Log($"Initializing {GetType().Name}");
+            _player.OnDash += TransitionToDash;
+            _player.OnJump += TransitionToJump;
+        }
+
+        void IDisposable.Dispose()
+        {
+            _player.OnDash -= TransitionToDash;
+            _player.OnJump -= TransitionToJump;
         }
 
         public virtual void Enter()
@@ -37,5 +51,9 @@ namespace Gameplay
                 return;
             }
         }
+
+        private void TransitionToJump() => _stateMachine.SetState<RiseState>();
+
+        private void TransitionToDash() => _stateMachine.SetState<DashState>();
     }
 }

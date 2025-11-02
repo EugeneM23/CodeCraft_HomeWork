@@ -37,6 +37,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 461d2a5c6bfa495418202c51b6fddacd, type: 3}
   - {fileID: 21300000, guid: a9f61568d0e28394782b7f10e0da3e72, type: 3}
   - {fileID: 21300000, guid: 02304637044eaa1438b649083c3067eb, type: 3}
-  <ID>k__BackingField: 9
+  <ID>k__BackingField: 17
+  <Breaker>k__BackingField: 0
   <FPS>k__BackingField: 16
   CanInterrupt: 1

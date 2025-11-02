@@ -16,13 +16,12 @@ namespace Modules.PlayerController
             bool right = Input.GetKey(KeyCode.D) && Input.GetKeyDown(KeyCode.LeftShift);
             bool left = Input.GetKey(KeyCode.A) && Input.GetKeyDown(KeyCode.LeftShift);
 
-            if (right|| left)
+            if (right || left)
             {
-
                 if (right)
-                    _player.AddImpulse(Vector2.right * 50f);
+                    _player.Dash(Vector2.right * 50f);
                 else if (left)
-                    _player.AddImpulse(Vector2.left * 50f);
+                    _player.Dash(Vector2.left * 50f);
 
                 _lastSPressTime = -1f;
             }

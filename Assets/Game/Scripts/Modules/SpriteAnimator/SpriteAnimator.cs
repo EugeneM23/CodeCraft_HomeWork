@@ -66,10 +66,13 @@ namespace Gameplay
 
         public SpriteAnimator Play(AnimationID id)
         {
-            id.Log(Color.red);
             if (_currentAnimation.ID != id && _currentAnimation.CanInterrupt)
             {
                 _currentAnimation = _animation.FirstOrDefault(x => x.ID == id);
+
+                if (_currentAnimation == null)
+                    Debug.LogError($"Animation {id} not found");
+
                 _fps = _currentAnimation.FPS;
                 _currentFrame = 0;
                 _frameTime = 0;

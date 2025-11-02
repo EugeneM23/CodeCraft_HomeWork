@@ -73,6 +73,14 @@ namespace Gameplay
             return false;
         }
 
-        public IEnumerable<T> GetAll<T>() => _services.Values.OfType<T>();
+        public IEnumerable<T> GetAll<T>()
+        {
+            var listType = typeof(List<T>);
+
+            if (_services.TryGetValue(listType, out var list))
+                return (IEnumerable<T>)list;
+
+            return Enumerable.Empty<T>();
+        }
     }
 }
