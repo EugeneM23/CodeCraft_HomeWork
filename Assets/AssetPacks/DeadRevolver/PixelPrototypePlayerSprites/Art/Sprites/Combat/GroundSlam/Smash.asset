@@ -34,7 +34,6 @@ MonoBehaviour:
       Entry: 8
       Data: 
   <Sprites>k__BackingField:
-  - {fileID: 21300000, guid: fc574a62ff474c842b363785e91020a4, type: 3}
   - {fileID: 21300000, guid: cff5613df1538b9488ee9382edb53865, type: 3}
   - {fileID: 21300000, guid: 60c64ea476273d6438c7c1123783ff86, type: 3}
   - {fileID: 21300000, guid: 676a30f53e64656409e2641a1c378aca, type: 3}
@@ -42,9 +41,13 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 167f290faa5f3454484a3205b1aab490, type: 3}
   - {fileID: 21300000, guid: f606d835d6c02ec42bfa9f5afac85181, type: 3}
   - {fileID: 21300000, guid: b7964750ea5bb1b41ba82c8acb589be8, type: 3}
+  - {fileID: 21300000, guid: b7964750ea5bb1b41ba82c8acb589be8, type: 3}
+  - {fileID: 21300000, guid: b7964750ea5bb1b41ba82c8acb589be8, type: 3}
+  - {fileID: 21300000, guid: b7964750ea5bb1b41ba82c8acb589be8, type: 3}
+  - {fileID: 21300000, guid: b7964750ea5bb1b41ba82c8acb589be8, type: 3}
   - {fileID: 21300000, guid: e2d00e494cc7a7443a24444b093829bf, type: 3}
   - {fileID: 21300000, guid: 226e271b75cd469449bdd27472a80efc, type: 3}
-  <ID>k__BackingField: 0
+  <ID>k__BackingField: 12
   <Breaker>k__BackingField: 0
-  <FPS>k__BackingField: 12
+  <FPS>k__BackingField: 24
   CanInterrupt: 1

@@ -4,7 +4,8 @@ namespace Gameplay
 {
     public class FrontFlipState : BaseState
     {
-        public FrontFlipState(SpriteAnimator animator, StateMachine stateMachine, CharacterController2D character) : base(
+        public FrontFlipState(SpriteAnimator animator, StateMachine stateMachine,
+            CharacterController2D character) : base(
             animator,
             stateMachine, character)
         {
@@ -15,7 +16,7 @@ namespace Gameplay
         public override void Tick()
         {
             base.Tick();
-            if (_animator.CurrentAnimation.CanInterrupt || Character.IsGrounded || Character.IsOnWall)
+            if (_animator.CurrentAnimation.CanInterrupt)
                 _stateMachine.SetState<FallMidState>();
         }
     }

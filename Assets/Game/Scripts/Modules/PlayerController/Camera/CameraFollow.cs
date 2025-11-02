@@ -2,15 +2,17 @@ using UnityEngine;
 
 public class CameraFollow : MonoBehaviour
 {
-    [Header("Target Settings")]
-    [SerializeField] private Transform target;
+    [Header("Target Settings")] [SerializeField]
+    private Transform target;
 
-    [Header("Follow Settings")]
-    [SerializeField] private float smoothSpeed = 5f;
+    [Header("Follow Settings")] [SerializeField]
+    private float smoothSpeed = 5f;
+
     [SerializeField] private float maxDistance = 10f;
-    
-    [Header("Level Boundaries")]
-    [SerializeField] private Transform boundaryTopLeft;
+
+    [Header("Level Boundaries")] [SerializeField]
+    private Transform boundaryTopLeft;
+
     [SerializeField] private Transform boundaryBottomRight;
 
     private Camera cam;
@@ -19,7 +21,7 @@ public class CameraFollow : MonoBehaviour
     void Start()
     {
         cam = GetComponent<Camera>();
-        
+
         if (target != null)
         {
             Vector3 startPos = target.position;
@@ -76,7 +78,7 @@ public class CameraFollow : MonoBehaviour
     void OnDrawGizmosSelected()
     {
         if (target == null) return;
-        
+
         Gizmos.color = new Color(0.3f, 0.8f, 1f, 0.2f);
         Gizmos.DrawWireSphere(transform.position, maxDistance);
     }
