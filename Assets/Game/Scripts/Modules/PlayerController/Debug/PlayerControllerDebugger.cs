@@ -1,12 +1,13 @@
 using System;
 using System.Text;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Modules.PlayerController
 {
     internal class PlayerControllerDebugger : MonoBehaviour
     {
-        [SerializeField] private PlayerController _playerController;
+        [FormerlySerializedAs("_playerController")] [SerializeField] private CharacterController2D characterController2D;
         [SerializeField] private bool _showDebug = true;
         [SerializeField] private KeyCode _toggleKey = KeyCode.F3;
 
@@ -45,7 +46,7 @@ namespace Modules.PlayerController
 
         private void OnGUI()
         {
-            if (!_showDebug || _playerController == null) return;
+            if (!_showDebug || characterController2D == null) return;
 
             InitializeStyles();
 
@@ -90,56 +91,56 @@ namespace Modules.PlayerController
         {
             // Boolean Properties
             DrawSection("STATE");
-            DrawBoolPropertySafe("IsGrounded", () => _playerController.IsGrounded);
-            DrawBoolPropertySafe("IsCeilingHit", () => _playerController.IsCeilingHit);
-            DrawBoolPropertySafe("IsOnStairs", () => _playerController.IsOnStairs);
-            DrawBoolPropertySafe("IsOnSlope", () => _playerController.IsOnSlope);
-            DrawBoolPropertySafe("IsOnWall", () => _playerController.IsOnWall);
-            DrawBoolPropertySafe("IsOnWallSliding", () => _playerController.IsWallSliding);
-            DrawBoolPropertySafe("IsSlidingOnslope", () => _playerController.IsSlidingOnSlope);
+            DrawBoolPropertySafe("IsGrounded", () => characterController2D.IsGrounded);
+            DrawBoolPropertySafe("IsCeilingHit", () => characterController2D.IsCeilingHit);
+            DrawBoolPropertySafe("IsOnStairs", () => characterController2D.IsOnStairs);
+            DrawBoolPropertySafe("IsOnSlope", () => characterController2D.IsOnSlope);
+            DrawBoolPropertySafe("IsOnWall", () => characterController2D.IsOnWall);
+            DrawBoolPropertySafe("IsOnWallSliding", () => characterController2D.IsWallSliding);
+            DrawBoolPropertySafe("IsSlidingOnslope", () => characterController2D.IsSlidingOnSlope);
 
             GUILayout.Space(10);
 
             // Vector2 Properties
             DrawSection("VECTORS");
-            DrawVector2PropertySafe("Velocity", () => _playerController.Velocity);
-            DrawVector2PropertySafe("MoveDirection", () => _playerController.MoveDirection);
-            DrawVector2PropertySafe("SurfaceNormal", () => _playerController.SurfaceNormal);
+            DrawVector2PropertySafe("Velocity", () => characterController2D.Velocity);
+            DrawVector2PropertySafe("MoveDirection", () => characterController2D.MoveDirection);
+            DrawVector2PropertySafe("SurfaceNormal", () => characterController2D.SurfaceNormal);
 
             GUILayout.Space(10);
 
             // Numeric Properties
             DrawSection("NUMERIC");
-            DrawFloatPropertySafe("DistanceToGround", () => _playerController.DistanceToGround);
-            DrawIntPropertySafe("WallDirection", () => _playerController.WallDirection);
+            DrawFloatPropertySafe("DistanceToGround", () => characterController2D.DistanceToGround);
+            DrawIntPropertySafe("WallDirection", () => characterController2D.WallDirection);
 
             GUILayout.Space(10);
 
             // Component References
             DrawSection("COMPONENTS");
-            DrawObjectPropertySafe("Rigidbody", () => _playerController.GetComponent<Rigidbody2D>());
-            DrawObjectPropertySafe("Collider", () => _playerController.Collider);
-            DrawObjectPropertySafe("Stats", () => _playerController.Stats);
+            DrawObjectPropertySafe("Rigidbody", () => characterController2D.GetComponent<Rigidbody2D>());
+            DrawObjectPropertySafe("Collider", () => characterController2D.Collider);
+            DrawObjectPropertySafe("Stats", () => characterController2D.Stats);
 
             GUILayout.Space(10);
 
             // Internals / Systems
             DrawSection("SYSTEMS");
             DrawObjectPropertySafe("ServiceLocator",
-                () => typeof(PlayerController)
+                () => typeof(CharacterController2D)
                     .GetField("_locator",
                         System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-                    ?.GetValue(_playerController));
+                    ?.GetValue(characterController2D));
             DrawObjectPropertySafe("Tickables",
-                () => typeof(PlayerController)
+                () => typeof(CharacterController2D)
                     .GetField("_tickables",
                         System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-                    ?.GetValue(_playerController));
+                    ?.GetValue(characterController2D));
             DrawObjectPropertySafe("Velocities",
-                () => typeof(PlayerController)
+                () => typeof(CharacterController2D)
                     .GetField("_velocities",
                         System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-                    ?.GetValue(_playerController));
+                    ?.GetValue(characterController2D));
         }
 
         private void DrawSection(string sectionName)
@@ -282,7 +283,7 @@ namespace Modules.PlayerController
 #if UNITY_EDITOR
         private void OnDrawGizmos()
         {
-            if (_playerController == null) return;
+            if (characterController2D == null) return;
 
             // Безопасно получаем все необходимые данные
             Vector2 moveDir = Vector2.zero;
@@ -292,17 +293,17 @@ namespace Modules.PlayerController
 
             try
             {
-                moveDir = _playerController.MoveDirection;
-                velocity = _playerController.Velocity;
-                normal = _playerController.SurfaceNormal;
-                collider = _playerController.Collider;
+                moveDir = characterController2D.MoveDirection;
+                velocity = characterController2D.Velocity;
+                normal = characterController2D.SurfaceNormal;
+                collider = characterController2D.Collider;
             }
             catch
             {
                 return;
             }
 
-            Vector3 playerPos = _playerController.transform.position;
+            Vector3 playerPos = characterController2D.transform.position;
 
             // === 1. INPUT DIRECTION ===
             Vector3 headPos = playerPos + Vector3.up * (collider != null ? collider.size.y / 2 + 0.5f : 1.5f);
@@ -320,7 +321,7 @@ namespace Modules.PlayerController
             }
 
             // === 3. SURFACE NORMAL ===
-            if (normal.sqrMagnitude > 0.001f && _playerController.IsGrounded)
+            if (normal.sqrMagnitude > 0.001f && characterController2D.IsGrounded)
             {
                 Vector3 groundPos = playerPos + Vector3.down * (collider != null ? collider.size.y / 2 + 0.1f : 0.6f);
                 DrawArrow(groundPos, normal.normalized, Color.yellow, 0.8f);

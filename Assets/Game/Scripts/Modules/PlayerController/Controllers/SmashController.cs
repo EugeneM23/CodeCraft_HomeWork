@@ -4,12 +4,12 @@ namespace Modules.PlayerController
 {
     internal class SmashController : ITickable
     {
-        private readonly PlayerController _player;
+        private readonly CharacterController2D _character;
 
         private float _lastSPressTime;
         private readonly float _doublePressThreshold = 0.3f; // Максимальное время между нажатиями
 
-        public SmashController(PlayerController player) => _player = player;
+        public SmashController(CharacterController2D character) => _character = character;
 
         public void Tick()
         {
@@ -19,7 +19,7 @@ namespace Modules.PlayerController
 
                 if (currentTime - _lastSPressTime <= _doublePressThreshold)
                 {
-                    _player.AddImpulse(Vector2.down * 70f);
+                    _character.Smash(Vector2.down * 70f);
                     _lastSPressTime = -1f;
                 }
                 else

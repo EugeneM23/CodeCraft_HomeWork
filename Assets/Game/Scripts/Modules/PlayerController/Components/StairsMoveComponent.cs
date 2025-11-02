@@ -4,14 +4,14 @@ namespace Modules.PlayerController
 {
     internal class StairsMoveComponent : IMoveComponent
     {
-        private readonly PlayerController _player;
+        private readonly CharacterController2D _character;
 
-        public StairsMoveComponent(PlayerController player) => _player = player;
+        public StairsMoveComponent(CharacterController2D character) => _character = character;
 
         public void Move(Vector2 directrion)
         {
             Vector2 move = new Vector2(0, directrion.y);
-            _player.transform.Translate(move * _player.Stats.MaxSpeed * Time.deltaTime);
+            _character.transform.Translate(move * _character.Stats.MaxSpeed * Time.deltaTime);
         }
     }
 

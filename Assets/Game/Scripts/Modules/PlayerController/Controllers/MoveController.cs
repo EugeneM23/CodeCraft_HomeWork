@@ -4,15 +4,15 @@ namespace Modules.PlayerController
 {
     internal class MoveController : ITickable
     {
-        private readonly PlayerController _player;
+        private readonly CharacterController2D _character;
 
-        public MoveController(PlayerController player) => _player = player;
+        public MoveController(CharacterController2D character) => _character = character;
         public Vector2 CurrentDirection { get; private set; }
 
         public void Tick()
         {
             CurrentDirection = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
-            _player.Move(CurrentDirection);
+            _character.Move(CurrentDirection);
         }
     }
 }

@@ -5,41 +5,41 @@ namespace Modules.PlayerController
     internal class JumpComponent : ITickable
     {
         private const float COYOTE_TIME = 0.15f;
-        private readonly PlayerController _player;
+        private readonly CharacterController2D _character;
         private float _lastGroundedTime;
         private int _availableJumps;
 
-        public JumpComponent(PlayerController player)
+        public JumpComponent(CharacterController2D character)
         {
-            _player = player;
+            _character = character;
         }
 
         public void Tick()
         {
-            if (_player.IsGrounded || _player.IsWallSliding)
+            if (_character.IsGrounded || _character.IsWallSliding)
             {
                 _lastGroundedTime = Time.time;
-                _availableJumps = _player.Stats.MaxJumps;
+                _availableJumps = _character.Stats.MaxJumps;
             }
         }
 
         public void Jump()
         {
-            if (_player.IsWallSliding)
+            if (_character.IsWallSliding)
             {
-                Vector2 wallJump = new Vector2(-_player.WallDirection * _player.Stats.JumpFromWall,
-                    _player.Stats.JumpPower);
+                Vector2 wallJump = new Vector2(-_character.WallDirection * _character.Stats.JumpFromWall,
+                    _character.Stats.JumpPower);
 
-                _player.AddImpulse(wallJump);
+                _character.AddImpulse(wallJump);
                 return;
             }
 
             bool coyoteTime = Time.time - _lastGroundedTime <= COYOTE_TIME;
-            if (_player.IsGrounded || coyoteTime || _availableJumps > 0)
+            if (_character.IsGrounded || coyoteTime || _availableJumps > 0)
             {
-                _player.AddImpulse(Vector2.up * _player.Stats.JumpPower);
+                _character.AddImpulse(Vector2.up * _character.Stats.JumpPower);
 
-                if (!_player.IsGrounded && !coyoteTime)
+                if (!_character.IsGrounded && !coyoteTime)
                     _availableJumps--;
             }
         }

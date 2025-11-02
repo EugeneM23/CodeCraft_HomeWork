@@ -13,7 +13,7 @@ namespace Modules.PlayerController
             Debug.Log("Stay");
             if (Input.GetKeyDown(KeyCode.E))
             {
-                if (other.TryGetComponent(out PlayerController player))
+                if (other.TryGetComponent(out CharacterController2D player))
                 {
                     _rigidbody.bodyType = RigidbodyType2D.Dynamic;
                     Vector3 direction = (transform.position - player.transform.position).normalized;

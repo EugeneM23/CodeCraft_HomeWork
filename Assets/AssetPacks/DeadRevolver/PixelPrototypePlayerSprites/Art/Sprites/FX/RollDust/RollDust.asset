@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 61caefda880f4a5d94965826455b144b, type: 3}
+  m_Name: RollDust
+  m_EditorClassIdentifier: 
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes:
+    - Name: _events
+      Entry: 7
+      Data: 0|Gameplay.SpriteAnimationEvent[], SpriteAnimator
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+  <Sprites>k__BackingField:
+  - {fileID: 21300000, guid: 866fb8fe11d10d0438ea2b92a5c367a4, type: 3}
+  - {fileID: 21300000, guid: e20a8dffc91f09a4cb308ae402a20cee, type: 3}
+  - {fileID: 21300000, guid: a797be88fc6e0d54f86e254cb0f80a4d, type: 3}
+  - {fileID: 21300000, guid: f88cb480aaeeba94b8d4641178d78089, type: 3}
+  - {fileID: 21300000, guid: 2aa126b0f9acca244a50fd672f943ba0, type: 3}
+  - {fileID: 21300000, guid: 070dc92eb0f61cf4ba2d004fd6a8ac76, type: 3}
+  - {fileID: 21300000, guid: 5ebb66b88fd7f0040924f415be33dcd5, type: 3}
+  <ID>k__BackingField: 0
+  <Breaker>k__BackingField: 0
+  <FPS>k__BackingField: 12
+  CanInterrupt: 1

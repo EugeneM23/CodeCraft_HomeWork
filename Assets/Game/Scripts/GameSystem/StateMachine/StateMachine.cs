@@ -35,7 +35,7 @@ namespace Gameplay
 
         public void Tick()
         {
-            Debug.Log("Tick");
+            _currentState.Log();
             _currentState?.Tick();
         }
     }

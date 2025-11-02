@@ -1,6 +1,4 @@
-using System;
 using System.Linq;
-using TMPro;
 using UnityEngine;
 
 namespace Gameplay
@@ -31,6 +29,7 @@ namespace Gameplay
         public void Initialize()
         {
             _currentAnimation = _animation[0];
+            _fps = _currentAnimation.FPS;
         }
 
         public void Tick()
@@ -41,6 +40,8 @@ namespace Gameplay
                 return;
 
             UpdateSprite();
+            Debug.Log(_currentAnimation.ID);
+
             SendEvents();
         }
 

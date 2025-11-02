@@ -10,25 +10,25 @@ namespace Modules.PlayerController
         private const float MIN_VELOCITY = 0.01f;
         private const float MIN_ANGLE = 1f;
 
-        private readonly PlayerController _player;
+        private readonly CharacterController2D _character;
         private Vector2 _slideVelocity;
         private bool _wasGroundedLastFrame;
 
-        public SlopeSlideComponent(PlayerController player)
+        public SlopeSlideComponent(CharacterController2D character)
         {
-            _player = player;
-            _player.OnJump += () => _slideVelocity = Vector2.zero;
+            _character = character;
+            _character.OnJump += () => _slideVelocity = Vector2.zero;
         }
 
         public Vector2 GetVelocity()
         {
-            bool isGrounded = _player.IsGrounded;
+            bool isGrounded = _character.IsGrounded;
             bool justLeftGround = _wasGroundedLastFrame && !isGrounded;
 
             // Запоминаем состояние для следующего кадра
             _wasGroundedLastFrame = isGrounded;
 
-            if (!isGrounded || !_player.IsOnSlope)
+            if (!isGrounded || !_character.IsOnSlope)
                 IsSlidingOnslope = false;
 
             // Если только что покинули землю - сохраняем скорость скольжения
@@ -40,7 +40,7 @@ namespace Modules.PlayerController
 
             // В воздухе - возвращаем сохраненную скорость без изменений
 
-            float angle = Vector2.Angle(_player.SurfaceNormal, Vector2.up);
+            float angle = Vector2.Angle(_character.SurfaceNormal, Vector2.up);
 
             // Плоская поверхность - применяем только затухание
             if (angle < MIN_ANGLE)
@@ -62,7 +62,7 @@ namespace Modules.PlayerController
         private Vector2 GetSlideDirection()
         {
             // Перпендикуляр к нормали поверхности
-            Vector2 perpendicular = Vector3.Cross(Vector3.forward, _player.SurfaceNormal).normalized;
+            Vector2 perpendicular = Vector3.Cross(Vector3.forward, _character.SurfaceNormal).normalized;
 
             // Направляем вниз по склону
             return perpendicular.y > 0 ? -perpendicular : perpendicular;
@@ -70,7 +70,7 @@ namespace Modules.PlayerController
 
         private bool IsMovingAgainstSlope()
         {
-            float input = _player.MoveDirection.x;
+            float input = _character.MoveDirection.x;
 
             if (Mathf.Abs(input) < MIN_VELOCITY)
             {
@@ -93,7 +93,7 @@ namespace Modules.PlayerController
 
         private Vector2 ApplyDamping()
         {
-            if (Mathf.Abs(_player.MoveDirection.x) > 0)
+            if (Mathf.Abs(_character.MoveDirection.x) > 0)
             {
                 _slideVelocity = Vector2.zero;
                 return _slideVelocity;
@@ -109,7 +109,7 @@ namespace Modules.PlayerController
 
         private Vector2 ApplyBraking()
         {
-            float inputStrength = Mathf.Abs(_player.MoveDirection.x);
+            float inputStrength = Mathf.Abs(_character.MoveDirection.x);
             float brakingForce = DAMPING * 2f * inputStrength; // Торможение сильнее затухания
 
             _slideVelocity *= Mathf.Exp(-brakingForce * Time.deltaTime);

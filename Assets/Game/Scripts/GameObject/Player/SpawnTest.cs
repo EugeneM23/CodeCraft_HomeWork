@@ -2,16 +2,17 @@ using System;
 using Gameplay;
 using Modules.PlayerController;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Game.Scripts.GameObject.Player
 {
     public class SpawnTest : MonoBehaviour
     {
-        [SerializeField] private PlayerController _player;
+        [FormerlySerializedAs("_player")] [SerializeField] private CharacterController2D character;
 
         private void Awake()
         {
-            SceneContext.Instance.Container.InstantiatePrefab(_player, transform.position, Quaternion.identity);
+            SceneContext.Instance.Container.InstantiatePrefab(character, transform.position, Quaternion.identity);
         }
     }
 }

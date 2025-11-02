@@ -4,12 +4,12 @@ namespace Modules.PlayerController
 {
     internal class DashController : ITickable
     {
-        private readonly PlayerController _player;
+        private readonly CharacterController2D _character;
 
         private float _lastSPressTime;
         private readonly float _doublePressThreshold = 0.3f; // Максимальное время между нажатиями
 
-        public DashController(PlayerController player) => _player = player;
+        public DashController(CharacterController2D character) => _character = character;
 
         public void Tick()
         {
@@ -19,9 +19,9 @@ namespace Modules.PlayerController
             if (right || left)
             {
                 if (right)
-                    _player.Dash(Vector2.right * 50f);
+                    _character.Dash(Vector2.right * 50f);
                 else if (left)
-                    _player.Dash(Vector2.left * 50f);
+                    _character.Dash(Vector2.left * 50f);
 
                 _lastSPressTime = -1f;
             }

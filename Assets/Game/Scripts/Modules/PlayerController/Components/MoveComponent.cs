@@ -4,11 +4,11 @@ namespace Modules.PlayerController
 {
     internal class MoveComponent : IVelocity, IMoveComponent
     {
-        private readonly PlayerController _player;
+        private readonly CharacterController2D _character;
         private float _horizontalSpeed;
         private Vector2 _targetDirection;
 
-        public MoveComponent(PlayerController player) => _player = player;
+        public MoveComponent(CharacterController2D character) => _character = character;
 
         public void Move(Vector2 direction)
         {
@@ -17,17 +17,17 @@ namespace Modules.PlayerController
 
         public Vector2 GetVelocity()
         {
-            if (_player.IsOnWall && _player.WallDirection == _player.MoveDirection.x)
+            if (_character.IsOnWall && _character.WallDirection == _character.MoveDirection.x)
                 return Vector2.zero;
         
-            if (Mathf.Abs(_player.Velocity.x) >= _player.Stats.MaxSpeed + 1)
+            if (Mathf.Abs(_character.Velocity.x) >= _character.Stats.MaxSpeed + 1)
                 return new Vector2(_horizontalSpeed, 0);
 
-            float targetSpeed = _targetDirection.x * _player.Stats.MaxSpeed;
+            float targetSpeed = _targetDirection.x * _character.Stats.MaxSpeed;
 
-            float acceleration = _player.IsGrounded
-                ? _player.Stats.Acceleration
-                : _player.Stats.AirAcceleration;
+            float acceleration = _character.IsGrounded
+                ? _character.Stats.Acceleration
+                : _character.Stats.AirAcceleration;
 
             _horizontalSpeed = Mathf.MoveTowards(
                 _horizontalSpeed,

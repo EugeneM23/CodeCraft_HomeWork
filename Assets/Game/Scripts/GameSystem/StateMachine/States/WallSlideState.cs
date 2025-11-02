@@ -4,8 +4,8 @@ namespace Gameplay
 {
     public class WallSlideState : BaseState
     {
-        public WallSlideState(SpriteAnimator animator, StateMachine stateMachine, PlayerController player) : base(
-            animator, stateMachine, player)
+        public WallSlideState(SpriteAnimator animator, StateMachine stateMachine, CharacterController2D character) : base(
+            animator, stateMachine, character)
         {
         }
 
@@ -13,7 +13,7 @@ namespace Gameplay
         {
             _animator.Play(AnimationID.WallSlide);
 
-            if (!_player.IsWallSliding) 
+            if (!Character.IsWallSliding) 
                 _stateMachine.SetState<IdleState>();
         }
     }

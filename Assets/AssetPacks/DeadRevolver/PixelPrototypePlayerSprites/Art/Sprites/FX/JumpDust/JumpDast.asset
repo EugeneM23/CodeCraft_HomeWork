@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 61caefda880f4a5d94965826455b144b, type: 3}
+  m_Name: JumpDast
+  m_EditorClassIdentifier: 
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes:
+    - Name: _events
+      Entry: 7
+      Data: 0|Gameplay.SpriteAnimationEvent[], SpriteAnimator
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+  <Sprites>k__BackingField:
+  - {fileID: 21300000, guid: 39a56137c35f6344d9974cddc0317dae, type: 3}
+  - {fileID: 21300000, guid: 1ec8502712bc7624db4eec57080bda9a, type: 3}
+  - {fileID: 21300000, guid: e04eb5bea7ba21940848eabe2fd80cee, type: 3}
+  - {fileID: 21300000, guid: d69d67485bc632a4497fff7db61d3f6f, type: 3}
+  - {fileID: 21300000, guid: 50fd8f99077927540a222ce56a7ef95a, type: 3}
+  - {fileID: 21300000, guid: 163cb56b44df7834a8544a6f03260974, type: 3}
+  - {fileID: 21300000, guid: f1caa5ee5bbbc3d4286f6fc84153e123, type: 3}
+  <ID>k__BackingField: 0
+  <Breaker>k__BackingField: 0
+  <FPS>k__BackingField: 16
+  CanInterrupt: 1

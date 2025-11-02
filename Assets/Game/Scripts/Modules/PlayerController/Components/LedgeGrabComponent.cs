@@ -5,7 +5,7 @@ namespace Modules.PlayerController
 
     internal class LedgeGrabComponent : ITickable
     {
-        private readonly PlayerController _player;
+        private readonly CharacterController2D _character;
 
         private const float WallCheckDistance = 0.5f;
         private const float LedgeCheckDistance = 0.5f;
@@ -18,10 +18,10 @@ namespace Modules.PlayerController
 
         public bool IsGrabbing => _isGrabbing;
 
-        public LedgeGrabComponent(PlayerController player)
+        public LedgeGrabComponent(CharacterController2D character)
         {
-            _player = player;
-            _player.OnJump += ReleaseGrab;
+            _character = character;
+            _character.OnJump += ReleaseGrab;
         }
 
         public void Tick() => CheckLedges();
@@ -36,15 +36,15 @@ namespace Modules.PlayerController
             }
 
             // Проверяем только при падении
-            if (_player.Velocity.y > 0)
+            if (_character.Velocity.y > 0)
             {
                 _isGrabbing = false;
                 return;
             }
 
-            Vector2 playerCenter = (Vector2)_player.transform.position + _player.Collider.offset;
-            float halfWidth = _player.Collider.size.x / 2f;
-            float topY = playerCenter.y + _player.Collider.size.y / 2f;
+            Vector2 playerCenter = (Vector2)_character.transform.position + _character.Collider.offset;
+            float halfWidth = _character.Collider.size.x / 2f;
+            float topY = playerCenter.y + _character.Collider.size.y / 2f;
 
             // Проверяем обе стороны
             bool leftGrab = CheckSide(new Vector2(playerCenter.x - halfWidth, topY), -1);
@@ -62,7 +62,7 @@ namespace Modules.PlayerController
                 startPos,
                 horizontalDir,
                 WallCheckDistance,
-                _player.Stats.LayerMask
+                _character.Stats.LayerMask
             );
 
             Debug.DrawLine(startPos, startPos + horizontalDir * WallCheckDistance, wallHit ? Color.green : Color.gray);
@@ -77,7 +77,7 @@ namespace Modules.PlayerController
                 ledgeCheckStart,
                 Vector2.down,
                 LedgeCheckDistance,
-                _player.Stats.LayerMask
+                _character.Stats.LayerMask
             );
 
             Debug.DrawLine(ledgeCheckStart, ledgeCheckStart + Vector2.down * LedgeCheckDistance,

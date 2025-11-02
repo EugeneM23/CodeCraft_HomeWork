@@ -4,7 +4,7 @@ namespace Modules.PlayerController
 {
     internal class CollisionComponent : ITickable
     {
-        private readonly PlayerController _player;
+        private readonly CharacterController2D _character;
 
         public Vector2 SurfaceNormal { get; private set; }
         public bool IsGrounded { get; private set; }
@@ -14,9 +14,9 @@ namespace Modules.PlayerController
         public float DistanceToGround { get; private set; }
         public bool IsOnSlope => Vector2.Angle(Vector2.right, SurfaceNormal) > 91;
 
-        public CollisionComponent(PlayerController player)
+        public CollisionComponent(CharacterController2D character)
         {
-            _player = player;
+            _character = character;
             Physics2D.queriesStartInColliders = false;
         }
 
@@ -30,10 +30,10 @@ namespace Modules.PlayerController
         private void CheckGround()
         {
             RaycastHit2D hit = Physics2D.Raycast(
-                _player.Collider.bounds.center,
+                _character.Collider.bounds.center,
                 Vector2.down,
                 2,
-                _player.Stats.LayerMask
+                _character.Stats.LayerMask
             );
 
             IsGrounded = hit.collider != null;
@@ -52,17 +52,17 @@ namespace Modules.PlayerController
 
         private void CheckCeiling()
         {
-            if (_player.Velocity.y <= 0)
+            if (_character.Velocity.y <= 0)
             {
                 IsCeilingHit = false;
                 return;
             }
 
             RaycastHit2D hit = Physics2D.Raycast(
-                _player.Collider.bounds.center,
+                _character.Collider.bounds.center,
                 Vector2.up,
                 0.2f,
-                _player.Stats.LayerMask
+                _character.Stats.LayerMask
             );
 
             IsCeilingHit = hit.collider != null;
@@ -71,17 +71,17 @@ namespace Modules.PlayerController
         private void CheckWall()
         {
             RaycastHit2D leftHit = Physics2D.Raycast(
-                _player.Collider.bounds.center,
+                _character.Collider.bounds.center,
                 Vector2.left,
                 0.7f,
-                _player.Stats.LayerMask
+                _character.Stats.LayerMask
             );
 
             RaycastHit2D rightHit = Physics2D.Raycast(
-                _player.Collider.bounds.center,
+                _character.Collider.bounds.center,
                 Vector2.right,
                 0.7f,
-                _player.Stats.LayerMask
+                _character.Stats.LayerMask
             );
 
             if (leftHit.collider != null && IsWall(leftHit))

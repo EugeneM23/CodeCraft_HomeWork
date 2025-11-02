@@ -5,9 +5,9 @@ namespace Gameplay
 {
     public class FallMidState : BaseState
     {
-        public FallMidState(SpriteAnimator animator, StateMachine stateMachine, PlayerController player) : base(
+        public FallMidState(SpriteAnimator animator, StateMachine stateMachine, CharacterController2D character) : base(
             animator,
-            stateMachine, player)
+            stateMachine, character)
         {
         }
 
@@ -15,7 +15,7 @@ namespace Gameplay
         {
             base.Tick();
             _animator.Play(AnimationID.AirMid);
-            if (_player.IsGrounded) _stateMachine.SetState<LandingState>();
+            if (Character.IsGrounded) _stateMachine.SetState<LandingState>();
         }
     }
 }

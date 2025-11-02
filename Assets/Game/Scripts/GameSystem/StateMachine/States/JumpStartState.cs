@@ -4,8 +4,8 @@ namespace Gameplay
 {
     public class JumpStartState : BaseState
     {
-        public JumpStartState(SpriteAnimator animator, StateMachine stateMachine, PlayerController player) : base(animator,
-            stateMachine, player)
+        public JumpStartState(SpriteAnimator animator, StateMachine stateMachine, CharacterController2D character) : base(animator,
+            stateMachine, character)
         {
         }
 

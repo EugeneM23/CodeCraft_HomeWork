@@ -26,7 +26,6 @@ public class TickableManager : MonoBehaviour
         {
             if (i != null && !_initializables.Contains(i))
             {
-                Debug.Log("adsasdasda");
                 _initializables.Add(i);
                 i.Initialize();
             }

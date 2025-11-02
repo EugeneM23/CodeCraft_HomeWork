@@ -4,26 +4,26 @@ namespace Modules.PlayerController
 {
     internal class GravityComponent : IVelocity
     {
-        private readonly PlayerController _player;
+        private readonly CharacterController2D _character;
 
-        public GravityComponent(PlayerController player)
+        public GravityComponent(CharacterController2D character)
         {
-            _player = player;
+            _character = character;
         }
 
         public Vector2 GetVelocity()
         {
-            if (_player.IsOnStairs  || _player.IsWallSliding)
+            if (_character.IsOnStairs  || _character.IsWallSliding)
                 return Vector2.zero;
 
-            if (_player.IsCeilingHit)
+            if (_character.IsCeilingHit)
                 return new Vector2(0, 0);
 
-            float gravity = _player.Stats.FallAcceleration;
-            float currentYVelocity = _player.Velocity.y;
+            float gravity = _character.Stats.FallAcceleration;
+            float currentYVelocity = _character.Velocity.y;
 
             float newYVelocity =
-                Mathf.MoveTowards(currentYVelocity, -_player.Stats.MaxFallSpeed, gravity * Time.fixedDeltaTime);
+                Mathf.MoveTowards(currentYVelocity, -_character.Stats.MaxFallSpeed, gravity * Time.fixedDeltaTime);
 
             return new Vector2(0, newYVelocity);
         }

@@ -4,9 +4,9 @@ namespace Gameplay
 {
     public class RunToIdleState : BaseState
     {
-        public RunToIdleState(SpriteAnimator animator, StateMachine stateMachine, PlayerController player) : base(
+        public RunToIdleState(SpriteAnimator animator, StateMachine stateMachine, CharacterController2D character) : base(
             animator,
-            stateMachine, player)
+            stateMachine, character)
         {
         }
 

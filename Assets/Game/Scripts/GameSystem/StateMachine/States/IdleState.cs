@@ -5,14 +5,14 @@ namespace Gameplay
 {
     public class IdleState : BaseState
     {
-        public IdleState(SpriteAnimator animator, StateMachine stateMachine, PlayerController player) : base(animator,
-            stateMachine, player)
+        public IdleState(SpriteAnimator animator, StateMachine stateMachine, CharacterController2D character) : base(animator,
+            stateMachine, character)
         {
         }
 
-        public override void Enter() => _player.OnJump += TransitToJump;
+        public override void Enter() => Character.OnJump += TransitToJump;
 
-        public override void Exit() => _player.OnJump -= TransitToJump;
+        public override void Exit() => Character.OnJump -= TransitToJump;
 
         private void TransitToJump() => _stateMachine.SetState<JumpStartState>();
 
@@ -22,7 +22,7 @@ namespace Gameplay
             
             _animator.Play(AnimationID.Idle);
 
-            if (Mathf.Abs(_player.Velocity.x) > 0.1f)
+            if (Mathf.Abs(Character.Velocity.x) > 0.1f)
                 _stateMachine.SetState<RunState>();
         }
     }

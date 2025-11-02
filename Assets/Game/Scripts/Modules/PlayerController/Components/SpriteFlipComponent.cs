@@ -2,21 +2,21 @@ namespace Modules.PlayerController
 {
     public class SpriteFlipComponent : ITickable
     {
-        private readonly PlayerController _player;
+        private readonly CharacterController2D _character;
 
-        public SpriteFlipComponent(PlayerController player) => _player = player;
+        public SpriteFlipComponent(CharacterController2D character) => _character = character;
 
         public void Tick()
         {
-            if (_player.WallDirection != 0 && _player.IsWallSliding && !_player.IsGrounded)
+            if (_character.WallDirection != 0 && _character.IsWallSliding && !_character.IsGrounded)
             {
-                if (_player.WallDirection < 0) _player.SpriteRenderer.flipX = true;
-                if (_player.WallDirection > 0) _player.SpriteRenderer.flipX = false;
+                if (_character.WallDirection < 0) _character.SpriteRenderer.flipX = true;
+                if (_character.WallDirection > 0) _character.SpriteRenderer.flipX = false;
                 return;
             }
 
-            if (_player.Velocity.x < 0) _player.SpriteRenderer.flipX = true;
-            if (_player.Velocity.x > 0) _player.SpriteRenderer.flipX = false;
+            if (_character.Velocity.x < 0) _character.SpriteRenderer.flipX = true;
+            if (_character.Velocity.x > 0) _character.SpriteRenderer.flipX = false;
         }
     }
 }

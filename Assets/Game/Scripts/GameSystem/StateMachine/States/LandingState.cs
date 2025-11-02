@@ -4,9 +4,9 @@ namespace Gameplay
 {
     public class LandingState : BaseState
     {
-        public LandingState(SpriteAnimator animator, StateMachine stateMachine, PlayerController player) : base(
+        public LandingState(SpriteAnimator animator, StateMachine stateMachine, CharacterController2D character) : base(
             animator,
-            stateMachine, player)
+            stateMachine, character)
         {
         }
 

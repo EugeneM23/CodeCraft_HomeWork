@@ -4,17 +4,17 @@ namespace Modules.PlayerController
 {
     internal class JumpController : ITickable
     {
-        private readonly PlayerController _player;
+        private readonly CharacterController2D _character;
 
-        public JumpController(PlayerController player)
+        public JumpController(CharacterController2D character)
         {
-            _player = player;
+            _character = character;
         }
 
         public void Tick()
         {
             if (Input.GetKeyDown(KeyCode.Space))
-                _player.Jump();
+                _character.Jump();
         }
     }
 }

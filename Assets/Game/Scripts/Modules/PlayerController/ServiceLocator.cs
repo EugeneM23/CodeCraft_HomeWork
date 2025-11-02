@@ -10,7 +10,7 @@ namespace Modules.PlayerController
     {
         private const string SETING_PATH = "Game/Scripts/Modules/PlayerController/Configs/MoveConfig.json";
         private readonly Dictionary<Type, object> _services = new();
-        private readonly PlayerController _player;
+        private readonly CharacterController2D _character;
 
         public T Get<T>()
         {
@@ -37,28 +37,28 @@ namespace Modules.PlayerController
             return list;
         }
 
-        public ServiceLocator(PlayerController player)
+        public ServiceLocator(CharacterController2D character)
         {
-            _player = player;
+            _character = character;
             Initialize();
         }
 
         public void Initialize()
         {
-            Register(new ImpulseComponent(_player));
-            Register(new DashController(_player));
-            Register(new SmashController(_player));
-            Register(new JumpController(_player));
-            Register(new MoveController(_player));
+            Register(new ImpulseComponent(_character));
+            Register(new DashController(_character));
+            Register(new SmashController(_character));
+            Register(new JumpController(_character));
+            Register(new MoveController(_character));
 
-            Register(new CollisionComponent(_player));
-            Register(new GravityComponent(_player));
-            Register(new MoveComponent(_player));
-            Register(new WallSlidingComponent(_player));
-            Register(new JumpComponent(_player));
-            Register(new StairsMoveComponent(_player));
-            Register(new MovingPlatformComponent(_player));
-            Register(new SpriteFlipComponent(_player));
+            Register(new CollisionComponent(_character));
+            Register(new GravityComponent(_character));
+            Register(new MoveComponent(_character));
+            Register(new WallSlidingComponent(_character));
+            Register(new JumpComponent(_character));
+            Register(new StairsMoveComponent(_character));
+            Register(new MovingPlatformComponent(_character));
+            Register(new SpriteFlipComponent(_character));
 
             //Register(new LedgeGrabComponent(player)); 
             //Register(new SlopeSlideComponent(player));

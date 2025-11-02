@@ -4,18 +4,18 @@ namespace Modules.PlayerController
 {
     internal class ImpulseComponent : IVelocity
     {
-        private readonly PlayerController _player;
+        private readonly CharacterController2D _character;
         private Vector2 _impulse;
         private bool _verticalApplied;
         private bool _horizontalApplied;
 
-        public ImpulseComponent(PlayerController player)
+        public ImpulseComponent(CharacterController2D character)
         {
-            _player = player;
-            _player.OnCollisionHit += Reset;
+            _character = character;
+            _character.OnCollisionHit += Reset;
         }
 
-        ~ImpulseComponent() => _player.OnCollisionHit -= Reset;
+        ~ImpulseComponent() => _character.OnCollisionHit -= Reset;
 
         public void AddImpulse(Vector2 value)
         {
@@ -43,7 +43,7 @@ namespace Modules.PlayerController
             if (_impulse.x == 0)
                 return 0;
 
-            float input = _player.MoveDirection.x;
+            float input = _character.MoveDirection.x;
 
             if (input != 0)
             {
@@ -52,7 +52,7 @@ namespace Modules.PlayerController
                 if (sameDirection)
                 {
                     // В ту же сторону - можем ускориться
-                    float inputSpeed = input * _player.Stats.MaxSpeed;
+                    float inputSpeed = input * _character.Stats.MaxSpeed;
                     if (Mathf.Abs(inputSpeed) > Mathf.Abs(_impulse.x))
                         _impulse.x = inputSpeed;
                 }

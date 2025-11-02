@@ -4,28 +4,28 @@ namespace Modules.PlayerController
 {
     internal class MovingPlatformComponent : IVelocity
     {
-        private readonly PlayerController _player;
+        private readonly CharacterController2D _character;
 
         private Transform _currentPlatform;
         private Vector3 _lastPlatformPosition;
 
-        public MovingPlatformComponent(PlayerController player) => _player = player;
+        public MovingPlatformComponent(CharacterController2D character) => _character = character;
 
         public Vector2 GetVelocity()
         {
-            if (!_player.IsGrounded)
+            if (!_character.IsGrounded)
             {
                 _currentPlatform = null;
                 return Vector2.zero;
             }
 
-            Vector2 rayOrigin = new Vector2(_player.transform.position.x, _player.transform.position.y - 0.05f);
+            Vector2 rayOrigin = new Vector2(_character.transform.position.x, _character.transform.position.y - 0.05f);
 
             RaycastHit2D hit = Physics2D.Raycast(
                 rayOrigin,
                 Vector2.down,
-                _player.Stats.GrounderDistance,
-                _player.Stats.LayerMask
+                _character.Stats.GrounderDistance,
+                _character.Stats.LayerMask
             );
 
             if (hit.collider != null)

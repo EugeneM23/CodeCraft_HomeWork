@@ -1,49 +1,39 @@
 using Gameplay;
 using Modules.PlayerController;
+using UnityEngine;
 
-namespace Game.Scripts.GameObject.Player
+namespace Gameplay
 {
-    using Modules.PlayerController;
-    using UnityEngine;
-
-    namespace Gameplay
+    public class AnimationInstaller : Installer
     {
-        public class AnimationInstaller : Installer
+        [SerializeField] private SpriteAnimation[] _animations;
+        [SerializeField] private SpriteRenderer _spriteRenderer;
+        [SerializeField] private CharacterController2D character;
+
+        public override void Install(DiContainer container)
         {
-            [Header("Animation Settings")] [SerializeField]
-            private SpriteAnimation[] _animations;
+            Application.targetFrameRate = 140;
+            var receiver = new AnimationEventReceiver();
+            var spriteAnimator = new SpriteAnimator(_animations, _spriteRenderer, receiver);
 
-            [SerializeField] private SpriteRenderer _spriteRenderer;
-            [SerializeField] private PlayerController _player;
+            container.BindSingle(character);
+            container.BindInterfacesAndSelf(spriteAnimator);
+            container.BindSingle(receiver);
 
-            public override void Install(DiContainer container)
-            {
-                Application.targetFrameRate = 140;
-                // --- Core animation setup ---
-                var receiver = new AnimationEventReceiver();
-                var spriteAnimator = new SpriteAnimator(_animations, _spriteRenderer, receiver);
+            var stateMachine = new StateMachine();
+            container.BindInterfacesAndSelf(stateMachine);
 
-                container.BindSingle(_player);
-                container.BindInterfacesAndSelf(spriteAnimator);
-                container.BindSingle(receiver);
-
-
-                // --- State machine ---
-                var stateMachine = new StateMachine();
-                container.BindInterfacesAndSelf(stateMachine);
-
-                // --- Animation states ---
-                container.BindInterfacesAndSelf(new IdleState(spriteAnimator, stateMachine, _player));
-                container.BindInterfacesAndSelf(new RunState(spriteAnimator, stateMachine, _player));
-                container.BindInterfacesAndSelf(new JumpStartState(spriteAnimator, stateMachine, _player));
-                container.BindInterfacesAndSelf(new FallMidState(spriteAnimator, stateMachine, _player));
-                container.BindInterfacesAndSelf(new LandingState(spriteAnimator, stateMachine, _player));
-                container.BindInterfacesAndSelf(new RunToIdleState(spriteAnimator, stateMachine, _player));
-                container.BindInterfacesAndSelf(new DashState(spriteAnimator, stateMachine, _player));
-                container.BindInterfacesAndSelf(new WallSlideState(spriteAnimator, stateMachine, _player));
-                container.BindInterfacesAndSelf(new RollState(spriteAnimator, stateMachine, _player));
-                container.BindInterfacesAndSelf(new FrontFlipState(spriteAnimator, stateMachine, _player));
-            }
+            container.BindInterfacesAndSelf(new IdleState(spriteAnimator, stateMachine, character));
+            container.BindInterfacesAndSelf(new RunState(spriteAnimator, stateMachine, character));
+            container.BindInterfacesAndSelf(new JumpStartState(spriteAnimator, stateMachine, character));
+            container.BindInterfacesAndSelf(new FallMidState(spriteAnimator, stateMachine, character));
+            container.BindInterfacesAndSelf(new LandingState(spriteAnimator, stateMachine, character));
+            container.BindInterfacesAndSelf(new RunToIdleState(spriteAnimator, stateMachine, character));
+            container.BindInterfacesAndSelf(new DashState(spriteAnimator, stateMachine, character));
+            container.BindInterfacesAndSelf(new WallSlideState(spriteAnimator, stateMachine, character));
+            container.BindInterfacesAndSelf(new RollState(spriteAnimator, stateMachine, character));
+            container.BindInterfacesAndSelf(new FrontFlipState(spriteAnimator, stateMachine, character));
+            container.BindInterfacesAndSelf(new SmashState(spriteAnimator, stateMachine, character));
         }
     }
 }

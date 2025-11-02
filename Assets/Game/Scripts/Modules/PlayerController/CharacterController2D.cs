@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Modules.PlayerController
 {
-    public class PlayerController : MonoBehaviour
+    public class CharacterController2D : MonoBehaviour
     {
         [SerializeField] private Rigidbody2D _rigidbody2D;
         [SerializeField] private CapsuleCollider2D _capsuleCollider;
@@ -27,6 +27,7 @@ namespace Modules.PlayerController
         public ServiceLocator ServiceLocator { get; private set; }
         public PlayerStats Stats { get; private set; }
         public event Action OnDash;
+        public event Action OnSmash;
         public event Action OnJump;
         public event Action OnCollisionHit;
         public bool IsOnStairs { get; set; }
@@ -95,6 +96,11 @@ namespace Modules.PlayerController
             OnDash?.Invoke();
             _impulseComponent.AddImpulse(impulse);
         }
+        public void Smash(Vector2 impulse)
+        {
+            OnSmash?.Invoke();
+            _impulseComponent.AddImpulse(impulse);
+        }
 
         public void AddImpulse(Vector2 impulse)
         {
@@ -117,5 +123,7 @@ namespace Modules.PlayerController
                     break;
             }
         }
+
+        
     }
 }

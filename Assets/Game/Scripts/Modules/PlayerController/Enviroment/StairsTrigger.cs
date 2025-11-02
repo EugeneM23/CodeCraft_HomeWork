@@ -27,7 +27,7 @@ namespace Modules.PlayerController
         private void Enter(Collider2D other)
         {
             _isOn = true;
-            if (other.TryGetComponent(out PlayerController player))
+            if (other.TryGetComponent(out CharacterController2D player))
             {
                 player.ResetVelocity();
                 player.SetComponent<StairsMoveComponent>();
@@ -39,7 +39,7 @@ namespace Modules.PlayerController
 
         private void Exit(Collider2D other)
         {
-            if (other.TryGetComponent(out PlayerController player))
+            if (other.TryGetComponent(out CharacterController2D player))
             {
                 player.OnCollisionEnter2D(null);
                 player.SetComponent<MoveComponent>();

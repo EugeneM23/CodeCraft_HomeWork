@@ -23,7 +23,7 @@ MonoBehaviour:
     SerializationNodes:
     - Name: _events
       Entry: 7
-      Data: 0|Gameplay.SpriteAnimationEvent[], Modules
+      Data: 0|Gameplay.SpriteAnimationEvent[], SpriteAnimator
     - Name: 
       Entry: 12
       Data: 0
@@ -34,14 +34,14 @@ MonoBehaviour:
       Entry: 8
       Data: 
   <Sprites>k__BackingField:
-  - {fileID: 21300000, guid: 82e6b596188111043a307af9957bdff5, type: 3}
   - {fileID: 21300000, guid: eeed59b6c20fcce44936bcef25f91ccd, type: 3}
-  - {fileID: 21300000, guid: 00fda886eae39e44d9a7e712524bfb76, type: 3}
-  - {fileID: 21300000, guid: 1970b22b3ddaa1c41ae9e6bfdbc018b9, type: 3}
-  - {fileID: 21300000, guid: 1970b22b3ddaa1c41ae9e6bfdbc018b9, type: 3}
-  - {fileID: 21300000, guid: 1970b22b3ddaa1c41ae9e6bfdbc018b9, type: 3}
-  - {fileID: 21300000, guid: 1970b22b3ddaa1c41ae9e6bfdbc018b9, type: 3}
-  <ID>k__BackingField: 18
+  - {fileID: 21300000, guid: eeed59b6c20fcce44936bcef25f91ccd, type: 3}
+  - {fileID: 21300000, guid: eeed59b6c20fcce44936bcef25f91ccd, type: 3}
+  - {fileID: 21300000, guid: eeed59b6c20fcce44936bcef25f91ccd, type: 3}
+  - {fileID: 21300000, guid: eeed59b6c20fcce44936bcef25f91ccd, type: 3}
+  - {fileID: 21300000, guid: eeed59b6c20fcce44936bcef25f91ccd, type: 3}
+  - {fileID: 21300000, guid: eeed59b6c20fcce44936bcef25f91ccd, type: 3}
+  <ID>k__BackingField: 9
   <Breaker>k__BackingField: 1
   <FPS>k__BackingField: 16
   CanInterrupt: 1

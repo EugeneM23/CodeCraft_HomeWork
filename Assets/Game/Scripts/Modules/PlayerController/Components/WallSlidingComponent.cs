@@ -4,21 +4,21 @@ namespace Modules.PlayerController
 {
     internal class WallSlidingComponent : ITickable, IVelocity
     {
-        private readonly PlayerController _player;
+        private readonly CharacterController2D _character;
 
         public bool IsWallSliding { get; private set; }
 
-        public WallSlidingComponent(PlayerController player)
+        public WallSlidingComponent(CharacterController2D character)
         {
-            _player = player;
+            _character = character;
         }
 
         public void Tick()
         {
             // Определяем, скользим ли по стене
-            if (_player.IsOnWall && Mathf.Abs(_player.MoveDirection.x) > 0.1f)
+            if (_character.IsOnWall && Mathf.Abs(_character.MoveDirection.x) > 0.1f)
             {
-                IsWallSliding = _player.MoveDirection.x * _player.WallDirection > 0;
+                IsWallSliding = _character.MoveDirection.x * _character.WallDirection > 0;
             }
             else
             {
@@ -28,10 +28,10 @@ namespace Modules.PlayerController
 
         public Vector2 GetVelocity()
         {
-            if (!IsWallSliding || _player.Velocity.y > 0.5f)
+            if (!IsWallSliding || _character.Velocity.y > 0.5f)
                 return Vector2.zero;
 
-            return new Vector2(0, -_player.Stats.WallSlideSpeed);
+            return new Vector2(0, -_character.Stats.WallSlideSpeed);
         }
     }
 }

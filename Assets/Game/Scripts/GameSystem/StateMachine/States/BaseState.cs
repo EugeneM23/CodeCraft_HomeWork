@@ -7,26 +7,32 @@ namespace Gameplay
     {
         protected readonly SpriteAnimator _animator;
         protected readonly StateMachine _stateMachine;
-        protected readonly PlayerController _player;
+        protected readonly CharacterController2D Character;
 
-        protected BaseState(SpriteAnimator animator, StateMachine stateMachine, PlayerController player)
+        protected BaseState(SpriteAnimator animator, StateMachine stateMachine, CharacterController2D character)
         {
             _animator = animator;
             _stateMachine = stateMachine;
-            _player = player;
+            Character = character;
         }
 
         void IInitializeble.Initialize()
         {
-            Debug.Log($"Initializing {GetType().Name}");
-            _player.OnDash += TransitionToDash;
-            _player.OnJump += TransitionToJump;
+            Character.OnDash += TransitionToDash;
+            Character.OnJump += TransitionToJump;
+            Character.OnSmash += TransitionToSmash;
+        }
+
+        private void TransitionToSmash()
+        {
+            _stateMachine.SetState<SmashState>();
         }
 
         void IDisposable.Dispose()
         {
-            _player.OnDash -= TransitionToDash;
-            _player.OnJump -= TransitionToJump;
+            Character.OnDash -= TransitionToDash;
+            Character.OnJump -= TransitionToJump;
+            Character.OnSmash -= TransitionToSmash;
         }
 
         public virtual void Enter()
@@ -39,13 +45,13 @@ namespace Gameplay
 
         public virtual void Tick()
         {
-            if (_player.IsWallSliding)
+            if (Character.IsWallSliding)
             {
                 _stateMachine.SetState<WallSlideState>();
                 return;
             }
 
-            if (!_player.IsGrounded)
+            if (!Character.IsGrounded)
             {
                 _stateMachine.SetState<FallMidState>();
                 return;
@@ -54,7 +60,7 @@ namespace Gameplay
 
         private void TransitionToJump()
         {
-            if (_player.IsGrounded)
+            if (Character.IsGrounded)
             {
                 if (Random.Range(0, 2) > 0)
                     _stateMachine.SetState<FrontFlipState>();
@@ -67,7 +73,7 @@ namespace Gameplay
 
         private void TransitionToDash()
         {
-            if (_player.IsGrounded)
+            if (Character.IsGrounded)
                 _stateMachine.SetState<RollState>();
             else
                 _stateMachine.SetState<DashState>();

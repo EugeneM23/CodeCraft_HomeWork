@@ -13,6 +13,7 @@ namespace Gameplay
         RunToIdle,
         Dash,
         Roll,
-        FrontFlip
+        FrontFlip,
+        Smash
     }
 }

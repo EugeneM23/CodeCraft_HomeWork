@@ -23,7 +23,7 @@ MonoBehaviour:
     SerializationNodes:
     - Name: _events
       Entry: 7
-      Data: 0|Gameplay.SpriteAnimationEvent[], Modules
+      Data: 0|Gameplay.SpriteAnimationEvent[], SpriteAnimator
     - Name: 
       Entry: 12
       Data: 0
@@ -38,7 +38,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 9c2c724bea724a748970afee246ef1ed, type: 3}
   - {fileID: 21300000, guid: 9c2c724bea724a748970afee246ef1ed, type: 3}
   - {fileID: 21300000, guid: 9c2c724bea724a748970afee246ef1ed, type: 3}
-  <ID>k__BackingField: 16
+  <ID>k__BackingField: 7
   <Breaker>k__BackingField: 0
   <FPS>k__BackingField: 16
   CanInterrupt: 1
