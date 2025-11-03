@@ -40,7 +40,6 @@ namespace Gameplay
                 return;
 
             UpdateSprite();
-            Debug.Log(_currentAnimation.ID);
 
             SendEvents();
         }

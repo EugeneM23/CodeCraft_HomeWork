@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 6708921266048008112}
   - component: {fileID: 4878737706768346367}
   - component: {fileID: 8514366258295164170}
-  - component: {fileID: 6629558378798088083}
   - component: {fileID: 5590908311297847801}
+  - component: {fileID: 8743850804186553071}
   m_Layer: 0
   m_Name: JumpDust01
   m_TagString: Untagged
@@ -103,22 +103,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   installers:
-  - {fileID: 6629558378798088083}
---- !u!114 &6629558378798088083
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4426153498857860807}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 41782a7ad82242f19cb23fd9f449f0be, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _renderer: {fileID: 4878737706768346367}
-  _animations:
-  - {fileID: 11400000, guid: 18fa9ff723e664dbe92394f9455efb77, type: 2}
+  - {fileID: 8743850804186553071}
 --- !u!114 &5590908311297847801
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -132,3 +117,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lifetime: 0.5
+--- !u!114 &8743850804186553071
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4426153498857860807}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5813c77ec9004e12812c9441a7c67da9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _animations:
+  - {fileID: 11400000, guid: 18fa9ff723e664dbe92394f9455efb77, type: 2}
+  _spriteRenderer: {fileID: 4878737706768346367}

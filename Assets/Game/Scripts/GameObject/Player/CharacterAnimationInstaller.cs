@@ -5,19 +5,16 @@ using UnityEngine.Serialization;
 
 namespace Gameplay
 {
-    public class AnimationInstaller : Installer
+    public class CharacterAnimationInstaller : Installer
     {
         [SerializeField] private SpriteAnimation[] _animations;
         [SerializeField] private SpriteRenderer _spriteRenderer;
-        [FormerlySerializedAs("character")] [SerializeField] private CharacterController2D _character;
+
 
         public override void Install(DiContainer container)
         {
-            Application.targetFrameRate = 140;
             var receiver = new AnimationEventReceiver();
             var spriteAnimator = new SpriteAnimator(_animations, _spriteRenderer, receiver);
-
-            container.BindSingle(_character);
             container.BindInterfacesAndSelf(spriteAnimator);
             container.BindSingle(receiver);
 

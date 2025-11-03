@@ -25,6 +25,7 @@ namespace Modules.PlayerController
         private SpriteFlipComponent _spriteFLip;
         private Vector2 _lastFrameVelocity;
 
+        public Vector2 LastFrameVelocity => _lastFrameVelocity;
         public ServiceLocator ServiceLocator { get; private set; }
         public PlayerStats Stats { get; private set; }
         public event Action OnDash;
