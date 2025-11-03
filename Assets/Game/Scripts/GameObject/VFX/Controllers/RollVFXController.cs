@@ -5,8 +5,8 @@ namespace Gameplay
 {
     public class RollVFXController : IInitializeble
     {
-        private Transform _prefab;
         [Inject] private CharacterController2D _controller;
+        private Transform _prefab;
 
         public RollVFXController(Transform prefab)
         {
@@ -33,4 +33,6 @@ namespace Gameplay
             _controller.OnDash += SpawnEffect;
         }
     }
+
+    
 }

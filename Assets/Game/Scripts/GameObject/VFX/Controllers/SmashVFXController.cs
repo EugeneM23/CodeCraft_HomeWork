@@ -10,9 +10,11 @@ namespace Gameplay
 
         public SmashVFXController(Transform prefab) => _prefab = prefab;
 
-        private void SpawnEffect()
+        private void SpawnEffect(Vector2 veloscity)
         {
-            float offset = _controller.transform.position.y - (_controller.Collider.size.y / 2);
+            if (veloscity.y > -50) return;
+
+            float offset = _controller.transform.position.y - (_controller.Collider.size.y);
             Vector3 position = _controller.transform.position;
             position.y = offset;
 
@@ -22,7 +24,7 @@ namespace Gameplay
 
         public void Initialize()
         {
-            _controller.OnSmash += SpawnEffect;
+            _controller.OnGrounded += SpawnEffect;
         }
     }
 }
