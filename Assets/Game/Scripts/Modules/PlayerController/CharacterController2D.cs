@@ -12,20 +12,20 @@ namespace Modules.PlayerController
         [SerializeField] private SpriteRenderer _spriteRenderer;
         [SerializeField] private LayerMask _layerMask;
 
-        private IReadOnlyCollection<ITickable> _tickables;
+        private List<ITickable> _tickables;
         private IReadOnlyCollection<IVelocity> _velocities;
 
         private CollisionComponent _collisionComponent;
         private SlopeSlideComponent _slopeSlideComponent;
         private WallSlidingComponent _wallSlidingComponent;
-        private MoveController _moveController;
+        private IMoveController _moveController;
         private IMoveComponent _moveComponent;
         private JumpComponent _jumpComponent;
         private ImpulseComponent _impulseComponent;
         private SpriteFlipComponent _spriteFLip;
         private Vector2 _lastFrameVelocity;
 
-        public  List<Func<bool>> MoveCondition = new();
+        public List<Func<bool>> MoveCondition = new();
 
         public Vector2 LastFrameVelocity => _lastFrameVelocity;
         public ServiceLocator ServiceLocator { get; private set; }
@@ -88,7 +88,10 @@ namespace Modules.PlayerController
             _rigidbody2D.linearVelocity = velocity;
         }
 
-        public void Move(Vector2 direction) => _moveComponent.Move(direction);
+        public void Move(Vector2 direction)
+        {
+            _moveComponent.Move(direction);
+        }
 
         public void Jump()
         {
@@ -123,14 +126,28 @@ namespace Modules.PlayerController
 
         public void ResetVelocity() => _rigidbody2D.linearVelocity = Vector2.zero;
 
-        public void SetComponent<T>() where T : class
+        public void SetComponent<T>(T instance = null) where T : class
         {
-            T component = ServiceLocator.Get<T>();
+            T component = null;
+
+            if (instance == null)
+                component = ServiceLocator.Get<T>();
+            else
+                component = instance;
 
             switch (component)
             {
                 case IMoveComponent move:
                     _moveComponent = move;
+                    break;
+
+                case IMoveController moveController:
+                    _moveController = moveController;
+
+                    _tickables.RemoveAll(t => t is MoveController);
+
+                    if (moveController is ITickable tickable)
+                        _tickables.Add(tickable);
                     break;
             }
         }

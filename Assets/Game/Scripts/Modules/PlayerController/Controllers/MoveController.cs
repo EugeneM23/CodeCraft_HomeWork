@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Modules.PlayerController
 {
-    internal class MoveController : ITickable
+    internal class MoveController : ITickable, IMoveController
     {
         private readonly CharacterController2D _character;
 
