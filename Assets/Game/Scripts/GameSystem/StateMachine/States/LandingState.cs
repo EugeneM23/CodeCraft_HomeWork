@@ -6,7 +6,7 @@ namespace Gameplay
     {
         public override void Enter()
         {
-            _animator.Play(AnimationID.Landing).Interrupt(false);
+            _animator.Play(AnimationID.Landing).CanBreak(false);
         }
 
         public override void Tick()

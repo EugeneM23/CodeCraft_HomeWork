@@ -98,20 +98,10 @@ namespace Gameplay
             return this;
         }
 
-        public SpriteAnimator Interrupt(bool interrupt)
+        public SpriteAnimator CanBreak(bool interrupt)
         {
             _currentAnimation.CanInterrupt = interrupt;
             return this;
-        }
-
-        public bool Lock()
-        {
-            return !_currentAnimation.CanInterrupt;
-        }
-
-        public void SetSpeed(float speed)
-        {
-            _fps = speed;
         }
     }
 }

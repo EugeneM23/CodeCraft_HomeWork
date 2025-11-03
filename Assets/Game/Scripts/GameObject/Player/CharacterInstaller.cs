@@ -1,3 +1,4 @@
+using Gameplay.Controllers;
 using Modules.PlayerController;
 using UnityEngine;
 
@@ -13,6 +14,8 @@ namespace Gameplay
             Application.targetFrameRate = 140;
 
             container.BindSingle(_character);
+
+            container.BindInterfacesAndSelf(new AttackController());
             container.BindInterfacesAndSelf(new HealthComponent(_health));
             container.BindInterfacesAndSelf(new CharacterDeathObserver());
             container.BindInterfacesAndSelf(new WallSmashDamageComponent());

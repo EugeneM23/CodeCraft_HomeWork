@@ -4,7 +4,7 @@ namespace Gameplay
 {
     public class RunToIdleState : BaseState
     {
-        public override void Enter() => _animator.Play(AnimationID.RunToIdle).Interrupt(false);
+        public override void Enter() => _animator.Play(AnimationID.RunToIdle).CanBreak(false);
 
         public override void Tick()
         {

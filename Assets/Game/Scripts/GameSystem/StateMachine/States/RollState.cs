@@ -11,7 +11,7 @@ public class RollState : BaseState
     public override void Enter()
     {
         _dashTimer = _dashDuration;
-        _animator.PlayForce(AnimationID.Roll).Interrupt(false);
+        _animator.PlayForce(AnimationID.Roll).CanBreak(false);
         _character.OnCollisionHit += TransitToFall;
     }
 

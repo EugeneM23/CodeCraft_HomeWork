@@ -1,4 +1,5 @@
 using Gameplay;
+using Gameplay.Controllers;
 using Modules.PlayerController;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -9,7 +10,6 @@ namespace Gameplay
     {
         [SerializeField] private SpriteAnimation[] _animations;
         [SerializeField] private SpriteRenderer _spriteRenderer;
-
 
         public override void Install(DiContainer container)
         {
@@ -32,6 +32,7 @@ namespace Gameplay
             container.BindInterfacesAndSelf(new RollState());
             container.BindInterfacesAndSelf(new FrontFlipState());
             container.BindInterfacesAndSelf(new SmashState());
+            container.BindInterfacesAndSelf(new AttackState());
         }
     }
 }

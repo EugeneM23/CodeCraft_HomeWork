@@ -508,6 +508,12 @@ MonoBehaviour:
   - {fileID: 11400000, guid: b5f6cd6e3fa734dca9fea039681135ba, type: 2}
   - {fileID: 11400000, guid: a413d3688637645d5a3f25b7468e5e7c, type: 2}
   - {fileID: 11400000, guid: 54a3e71aba5244d47ac9c1f64a41e298, type: 2}
+  - {fileID: 11400000, guid: 1d999657850534bd09645a0de3d61d6f, type: 2}
+  - {fileID: 11400000, guid: 4f5a07fc0806249f1b34ef33f42d17b1, type: 2}
+  - {fileID: 11400000, guid: b35efc52d2b65450a9805c870ebb9d24, type: 2}
+  - {fileID: 11400000, guid: eba099b3a66474e1b9cf18d3c6dcbd3b, type: 2}
+  - {fileID: 11400000, guid: 195e397dd1a3245799a2eeae93f4aa94, type: 2}
+  - {fileID: 11400000, guid: 349f755cbcbbb45f89caf3cbf0dd0442, type: 2}
   _spriteRenderer: {fileID: 901116726241398886}
 --- !u!114 &1646859192729148470
 MonoBehaviour:

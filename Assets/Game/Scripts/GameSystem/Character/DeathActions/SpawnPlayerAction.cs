@@ -7,9 +7,6 @@ namespace Gameplay
     {
         [Inject] private readonly PlayerSpawner _playerSpawner;
 
-        public void Invoke(CharacterController2D character)
-        {
-            _playerSpawner.Spawn();
-        }
+        public void Invoke(CharacterController2D character) => _playerSpawner.Spawn();
     }
 }

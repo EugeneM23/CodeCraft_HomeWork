@@ -4,7 +4,7 @@ namespace Gameplay
 {
     public class FrontFlipState : BaseState
     {
-        public override void Enter() => _animator.Play(AnimationID.FrontFlip).Interrupt(false);
+        public override void Enter() => _animator.Play(AnimationID.FrontFlip).CanBreak(false);
 
         public override void Tick()
         {

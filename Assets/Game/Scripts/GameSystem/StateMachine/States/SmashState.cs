@@ -5,7 +5,7 @@ namespace Gameplay
     {
         public override void Enter()
         {
-            _animator.Play(AnimationID.Smash).Interrupt(false);
+            _animator.Play(AnimationID.Smash).CanBreak(false);
         }
 
         public override void Tick()

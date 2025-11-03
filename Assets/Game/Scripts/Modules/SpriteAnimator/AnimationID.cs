@@ -14,6 +14,12 @@ namespace Gameplay
         Dash,
         Roll,
         FrontFlip,
-        Smash
+        Smash,
+        KickA,
+        KickB,
+        KickC,
+        PunchA,
+        PunchB,
+        PunchC
     }
 }

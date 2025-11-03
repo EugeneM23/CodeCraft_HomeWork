@@ -10,7 +10,7 @@ public class DashState : BaseState
     public override void Enter()
     {
         _dashTimer = _dashDuration;
-        _animator.PlayForce(AnimationID.Dash).Interrupt(false);
+        _animator.PlayForce(AnimationID.Dash).CanBreak(false);
         _character.OnCollisionHit += TransitToFall;
     }
 
