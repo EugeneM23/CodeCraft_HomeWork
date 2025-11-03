@@ -24,6 +24,11 @@ namespace Modules.PlayerController
             return true;
         }
 
+        public void InheritVelocity(float horizontal)
+        {
+            _horizontalSpeed = horizontal;
+        }
+
         public Vector2 GetVelocity()
         {
             if (!CanMove()) return Vector2.zero;

@@ -24,5 +24,10 @@ namespace Modules.PlayerController
 
             return true;
         }
+
+        public void InheritVelocity(float obj)
+        {
+            
+        }
     }
 }

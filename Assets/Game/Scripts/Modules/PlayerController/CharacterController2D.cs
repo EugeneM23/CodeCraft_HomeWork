@@ -72,6 +72,11 @@ namespace Modules.PlayerController
             _spriteFLip = ServiceLocator.Get<SpriteFlipComponent>();
         }
 
+        private void Start()
+        {
+            _impulseComponent.OnImpulseEnd += _moveComponent.InheritVelocity;
+        }
+
         private void Update()
         {
             foreach (var tickable in _tickables)
