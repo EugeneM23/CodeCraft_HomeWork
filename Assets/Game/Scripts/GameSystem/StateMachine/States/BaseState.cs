@@ -1,37 +1,20 @@
 using Modules.PlayerController;
+using UnityEngine;
 
 namespace Gameplay
 {
-    public abstract class BaseState : IInitializeble, IDisposable
+    public class BaseState
     {
-        protected readonly SpriteAnimator _animator;
-        protected readonly StateMachine _stateMachine;
-        protected readonly CharacterController2D Character;
+        protected SpriteAnimator _animator;
+        protected StateMachine _stateMachine;
+        protected CharacterController2D _character;
 
-        protected BaseState(SpriteAnimator animator, StateMachine stateMachine, CharacterController2D character)
+        [Inject]
+        public void Construct(SpriteAnimator animator, StateMachine stateMachine, CharacterController2D сharacter)
         {
             _animator = animator;
             _stateMachine = stateMachine;
-            Character = character;
-        }
-
-        void IInitializeble.Initialize()
-        {
-            Character.OnDash += TransitionToDash;
-            Character.OnJump += TransitionToJump;
-            Character.OnSmash += TransitionToSmash;
-        }
-
-        private void TransitionToSmash()
-        {
-            _stateMachine.SetState<SmashState>();
-        }
-
-        void IDisposable.Dispose()
-        {
-            Character.OnDash -= TransitionToDash;
-            Character.OnJump -= TransitionToJump;
-            Character.OnSmash -= TransitionToSmash;
+            _character = сharacter;
         }
 
         public virtual void Enter()
@@ -44,30 +27,6 @@ namespace Gameplay
 
         public virtual void Tick()
         {
-            if (Character.IsWallSliding)
-            {
-                _stateMachine.SetState<WallSlideState>();
-                return;
-            }
-
-            if (!Character.IsGrounded)
-            {
-                _stateMachine.SetState<FallMidState>();
-                return;
-            }
-        }
-
-        private void TransitionToJump()
-        {
-            _stateMachine.SetState<JumpStartState>();
-        }
-
-        private void TransitionToDash()
-        {
-            if (Character.IsGrounded)
-                _stateMachine.SetState<RollState>();
-            else
-                _stateMachine.SetState<DashState>();
         }
     }
 }

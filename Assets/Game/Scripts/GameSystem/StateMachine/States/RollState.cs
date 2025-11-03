@@ -2,22 +2,22 @@ using Gameplay;
 using Modules.PlayerController;
 using UnityEngine;
 
-public class DashState : BaseState
+public class RollState : BaseState
 {
     private readonly float _dashDuration = 0.5f;
     private float _dashTimer;
 
+
     public override void Enter()
     {
         _dashTimer = _dashDuration;
-        _animator.PlayForce(AnimationID.Dash).Interrupt(false);
+        _animator.PlayForce(AnimationID.Roll).Interrupt(false);
         _character.OnCollisionHit += TransitToFall;
     }
 
-    public override void Exit()
-    {
-        _character.OnCollisionHit -= TransitToFall;
-    }
+    public override void Exit() => _character.OnCollisionHit -= TransitToFall;
+
+    private void TransitToFall() => _stateMachine.SetState<FallMidState>();
 
     public override void Tick()
     {
@@ -32,6 +32,4 @@ public class DashState : BaseState
         if (_dashTimer <= 0f)
             TransitToFall();
     }
-
-    private void TransitToFall() => _stateMachine.SetState<FallMidState>();
 }
