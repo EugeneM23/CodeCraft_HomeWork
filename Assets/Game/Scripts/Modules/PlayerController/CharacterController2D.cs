@@ -25,6 +25,8 @@ namespace Modules.PlayerController
         private SpriteFlipComponent _spriteFLip;
         private Vector2 _lastFrameVelocity;
 
+        public  List<Func<bool>> MoveCondition = new();
+
         public Vector2 LastFrameVelocity => _lastFrameVelocity;
         public ServiceLocator ServiceLocator { get; private set; }
         public PlayerStats Stats { get; private set; }
@@ -131,6 +133,11 @@ namespace Modules.PlayerController
                     _moveComponent = move;
                     break;
             }
+        }
+
+        public void AddMoveCondition(Func<bool> condition)
+        {
+            MoveCondition.Add(condition);
         }
     }
 }

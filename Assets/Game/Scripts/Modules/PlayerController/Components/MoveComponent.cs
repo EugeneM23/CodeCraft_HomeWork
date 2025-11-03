@@ -15,11 +15,22 @@ namespace Modules.PlayerController
             _targetDirection = direction;
         }
 
+        public bool CanMove()
+        {
+            foreach (var item in _character.MoveCondition)
+                if (item.Invoke())
+                    return false;
+
+            return true;
+        }
+
         public Vector2 GetVelocity()
         {
+            if (!CanMove()) return Vector2.zero;
+
             if (_character.IsOnWall && _character.WallDirection == _character.MoveDirection.x)
                 return Vector2.zero;
-        
+
             if (Mathf.Abs(_character.Velocity.x) >= _character.Stats.MaxSpeed + 1)
                 return new Vector2(_horizontalSpeed, 0);
 

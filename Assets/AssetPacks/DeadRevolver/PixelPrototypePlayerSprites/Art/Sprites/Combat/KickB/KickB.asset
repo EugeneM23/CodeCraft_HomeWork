@@ -33,8 +33,16 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
-  <Sprites>k__BackingField: []
-  <ID>k__BackingField: 0
+  <Sprites>k__BackingField:
+  - {fileID: 21300000, guid: 264eba3d65bb22048b85b34d5fe7e231, type: 3}
+  - {fileID: 21300000, guid: 453e8fef9b3f2364aac49f2a947a2eec, type: 3}
+  - {fileID: 21300000, guid: 8092dc08401f1b94980360244bff29bd, type: 3}
+  - {fileID: 21300000, guid: eca93744f9b5c9d43a331b5182de433d, type: 3}
+  - {fileID: 21300000, guid: 6c23ae91b4256c9418f2a02614f4e095, type: 3}
+  - {fileID: 21300000, guid: 45ed401f2842ffc46a38d332695c4f2f, type: 3}
+  - {fileID: 21300000, guid: e88f172eb1ffd7243818ac3405a69a57, type: 3}
+  - {fileID: 21300000, guid: ed16900b62dd0e54491c69c55137d18d, type: 3}
+  <ID>k__BackingField: 14
   <Breaker>k__BackingField: 0
-  <FPS>k__BackingField: 0
+  <FPS>k__BackingField: 30
   CanInterrupt: 1

@@ -326,7 +326,6 @@ GameObject:
   - component: {fileID: 3788572536378151966}
   - component: {fileID: 4355544034558131170}
   - component: {fileID: 1646859192729148470}
-  - component: {fileID: 383084561560823105}
   - component: {fileID: 2464818498196678020}
   - component: {fileID: 187488164384910502}
   m_Layer: 9
@@ -531,20 +530,6 @@ MonoBehaviour:
   _rollPrefab: {fileID: 6708921266048008112, guid: a9f9356c9427c4cc5bf1351abc828f11, type: 3}
   _smashPrefab: {fileID: 745031272938547566, guid: 43bef0fdbe1da48c5824d5b82ef8974a, type: 3}
   _deathPrefab: {fileID: 5093879680652798486, guid: 3699dc9a41a7440dab313701db480222, type: 3}
---- !u!114 &383084561560823105
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7842712783245254731}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2877319ed06a42268e31a03e941e0209, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _character: {fileID: 1168726062001797579}
-  _health: 100
 --- !u!114 &2464818498196678020
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -572,3 +557,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _character: {fileID: 1168726062001797579}
   _health: 100
+  _attackEffect: {fileID: 4442827011764290, guid: 4f5a71e03aa40429bb18446af19f1dae, type: 3}
