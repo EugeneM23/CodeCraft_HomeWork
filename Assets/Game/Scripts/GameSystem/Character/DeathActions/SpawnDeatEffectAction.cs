@@ -8,7 +8,7 @@ namespace Gameplay
         private Transform _prefab;
         private float _force;
 
-        public SpawnDeathEffectAction(Transform prefab, float force = 8f)
+        public SpawnDeathEffectAction(Transform prefab, float force = 15f)
         {
             _prefab = prefab;
             _force = force;
