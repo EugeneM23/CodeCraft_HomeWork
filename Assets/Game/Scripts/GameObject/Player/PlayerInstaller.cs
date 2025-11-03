@@ -18,6 +18,11 @@ namespace Gameplay
             container.BindSingle(_character);
 
             container.BindInterfacesAndSelf(new Player());
+            container.BindInterfacesAndSelf(new MoveController());
+            container.BindInterfacesAndSelf(new JumpController());
+            container.BindInterfacesAndSelf(new SmashController());
+            container.BindInterfacesAndSelf(new DashController());
+            
             container.BindInterfacesAndSelf(new AttackController());
             container.BindInterfacesAndSelf(new AttackComponent());
             container.BindInterfacesAndSelf(new HealthComponent(_health));

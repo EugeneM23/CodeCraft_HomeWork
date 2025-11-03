@@ -16,7 +16,7 @@ namespace Game.Scripts.GameObject.Enemy
 
         public void Initialize()
         {
-            _character.SetComponent(_moveController);
+            //_character.SetComponent(_moveController);
         }
     }
 }

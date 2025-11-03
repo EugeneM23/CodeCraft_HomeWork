@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using Codice.Client.BaseCommands.Filters;
 using Game.Scripts.Modules.PlayerController.Data;
+using Gameplay;
 using UnityEngine;
 
 namespace Modules.PlayerController
@@ -18,7 +20,6 @@ namespace Modules.PlayerController
         private CollisionComponent _collisionComponent;
         private SlopeSlideComponent _slopeSlideComponent;
         private WallSlidingComponent _wallSlidingComponent;
-        private IMoveController _moveController;
         private IMoveComponent _moveComponent;
         private JumpComponent _jumpComponent;
         private ImpulseComponent _impulseComponent;
@@ -46,9 +47,9 @@ namespace Modules.PlayerController
         public bool IsOnWall => _collisionComponent.IsOnWall;
         public bool IsSlidingOnSlope => _slopeSlideComponent.IsSlidingOnslope;
         public bool IsWallSliding => _wallSlidingComponent.IsWallSliding;
-        public Vector2 MoveDirection => _moveController.CurrentDirection;
         public float DistanceToGround => _collisionComponent.DistanceToGround;
         public SpriteRenderer SpriteRenderer => _spriteRenderer;
+        public float MoveDirection => Input.GetAxisRaw("Horizontal");
 
         private void Awake()
         {
@@ -59,12 +60,12 @@ namespace Modules.PlayerController
 
             Stats = ServiceLocator.Get<PlayerStats>();
             Stats.LayerMask = _layerMask;
+            
             _tickables = ServiceLocator.GetAll<ITickable>();
             _velocities = ServiceLocator.GetAll<IVelocity>();
 
             _collisionComponent = ServiceLocator.Get<CollisionComponent>();
             _wallSlidingComponent = ServiceLocator.Get<WallSlidingComponent>();
-            _moveController = ServiceLocator.Get<MoveController>();
             _moveComponent = ServiceLocator.Get<MoveComponent>();
             _jumpComponent = ServiceLocator.Get<JumpComponent>();
             _impulseComponent = ServiceLocator.Get<ImpulseComponent>();
@@ -126,35 +127,6 @@ namespace Modules.PlayerController
 
         public void ResetVelocity() => _rigidbody2D.linearVelocity = Vector2.zero;
 
-        public void SetComponent<T>(T instance = null) where T : class
-        {
-            T component = null;
-
-            if (instance == null)
-                component = ServiceLocator.Get<T>();
-            else
-                component = instance;
-
-            switch (component)
-            {
-                case IMoveComponent move:
-                    _moveComponent = move;
-                    break;
-
-                case IMoveController moveController:
-                    _moveController = moveController;
-
-                    _tickables.RemoveAll(t => t is MoveController);
-
-                    if (moveController is ITickable tickable)
-                        _tickables.Add(tickable);
-                    break;
-            }
-        }
-
-        public void AddMoveCondition(Func<bool> condition)
-        {
-            MoveCondition.Add(condition);
-        }
+        public void AddMoveCondition(Func<bool> condition) => MoveCondition.Add(condition);
     }
 }

@@ -104,7 +104,7 @@ namespace Modules.PlayerController
             // Vector2 Properties
             DrawSection("VECTORS");
             DrawVector2PropertySafe("Velocity", () => characterController2D.Velocity);
-            DrawVector2PropertySafe("MoveDirection", () => characterController2D.MoveDirection);
+            DrawVector2PropertySafe("MoveDirection", () => characterController2D.Velocity);
             DrawVector2PropertySafe("SurfaceNormal", () => characterController2D.SurfaceNormal);
 
             GUILayout.Space(10);
@@ -293,7 +293,7 @@ namespace Modules.PlayerController
 
             try
             {
-                moveDir = characterController2D.MoveDirection;
+                moveDir = characterController2D.Velocity;
                 velocity = characterController2D.Velocity;
                 normal = characterController2D.SurfaceNormal;
                 collider = characterController2D.Collider;

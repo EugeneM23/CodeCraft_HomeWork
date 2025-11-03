@@ -4,10 +4,15 @@ namespace Modules.PlayerController
 {
     internal class ImpulseComponent : IVelocity
     {
+        private const float GROUND_FRICTION = 100;
+        private const float INPUT_COUNTER_FORCE = 80; // Сила противодействия инпута
+
         private readonly CharacterController2D _character;
+
         private Vector2 _impulse;
         private bool _verticalApplied;
-        private bool _horizontalApplied;
+        private float _initialImpulseSign; // Запоминаем начальное направление импульса
+        private bool _wasCountering; // Было ли противодействие
 
         public ImpulseComponent(CharacterController2D character)
         {
@@ -21,14 +26,16 @@ namespace Modules.PlayerController
         {
             _impulse = value;
             _verticalApplied = false;
-            _horizontalApplied = false;
+            _initialImpulseSign = Mathf.Sign(value.x);
+            _wasCountering = false;
         }
 
         private void Reset()
         {
             _impulse = Vector2.zero;
             _verticalApplied = false;
-            _horizontalApplied = false;
+            _initialImpulseSign = 0;
+            _wasCountering = false;
         }
 
         public Vector2 GetVelocity()
@@ -43,29 +50,32 @@ namespace Modules.PlayerController
             if (_impulse.x == 0)
                 return 0;
 
-            float input = _character.MoveDirection.x;
+            float inputDirection = _character.MoveDirection;
 
-            if (input != 0)
+            // Если есть инпут в противоположную сторону от начального импульса
+            if (inputDirection != 0 && Mathf.Sign(inputDirection) != _initialImpulseSign)
             {
-                bool sameDirection = Mathf.Sign(input) == Mathf.Sign(_impulse.x);
-
-                if (sameDirection)
+                _wasCountering = true;
+                
+                // Вычитаем силу противодействия из импульса
+                float counterForce = INPUT_COUNTER_FORCE * Time.fixedDeltaTime * -_initialImpulseSign;
+                _impulse.x += counterForce;
+                
+                // Если импульс перешёл через ноль или стал слишком маленьким - обнуляем
+                if (Mathf.Sign(_impulse.x) != _initialImpulseSign || Mathf.Abs(_impulse.x) < 0.5f)
                 {
-                    // В ту же сторону - можем ускориться
-                    float inputSpeed = input * _character.Stats.MaxSpeed;
-                    if (Mathf.Abs(inputSpeed) > Mathf.Abs(_impulse.x))
-                        _impulse.x = inputSpeed;
-                }
-                else
-                {
-                    // В противоположную - тормозим
-                    _impulse.x = Mathf.MoveTowards(_impulse.x, 0, 100 * Time.fixedDeltaTime);
+                    _impulse.x = 0;
                 }
             }
-            else
+            // Если отпустили кнопки после противодействия - обнуляем импульс
+            else if (inputDirection == 0 && _wasCountering)
             {
-                // Нет инпута - затухание
-                _impulse.x = Mathf.MoveTowards(_impulse.x, 0, 50 * Time.fixedDeltaTime);
+                _impulse.x = 0;
+            }
+            // Если персонаж на земле - обычное трение
+            else if (_character.IsGrounded) 
+            {
+                _impulse.x = Mathf.MoveTowards(_impulse.x, 0, GROUND_FRICTION * Time.fixedDeltaTime);
             }
 
             return _impulse.x;

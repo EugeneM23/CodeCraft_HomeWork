@@ -19,9 +19,9 @@ namespace Modules.PlayerController
             if (right || left)
             {
                 if (right)
-                    _character.Dash(Vector2.right * 50f);
+                    _character.Dash(Vector2.right * 5f);
                 else if (left)
-                    _character.Dash(Vector2.left * 50f);
+                    _character.Dash(Vector2.left * 5f);
 
                 _lastSPressTime = -1f;
             }

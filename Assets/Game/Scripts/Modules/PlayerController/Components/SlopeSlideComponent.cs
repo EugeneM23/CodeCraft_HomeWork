@@ -70,7 +70,7 @@ namespace Modules.PlayerController
 
         private bool IsMovingAgainstSlope()
         {
-            float input = _character.MoveDirection.x;
+            float input = _character.Velocity.x;
 
             if (Mathf.Abs(input) < MIN_VELOCITY)
             {
@@ -93,7 +93,7 @@ namespace Modules.PlayerController
 
         private Vector2 ApplyDamping()
         {
-            if (Mathf.Abs(_character.MoveDirection.x) > 0)
+            if (Mathf.Abs(_character.Velocity.x) > 0)
             {
                 _slideVelocity = Vector2.zero;
                 return _slideVelocity;
@@ -109,7 +109,7 @@ namespace Modules.PlayerController
 
         private Vector2 ApplyBraking()
         {
-            float inputStrength = Mathf.Abs(_character.MoveDirection.x);
+            float inputStrength = Mathf.Abs(_character.Velocity.x);
             float brakingForce = DAMPING * 2f * inputStrength; // Торможение сильнее затухания
 
             _slideVelocity *= Mathf.Exp(-brakingForce * Time.deltaTime);

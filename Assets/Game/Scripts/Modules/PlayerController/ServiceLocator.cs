@@ -46,11 +46,7 @@ namespace Modules.PlayerController
         public void Initialize()
         {
             Register(new ImpulseComponent(_character));
-            Register(new DashController(_character));
-            Register(new SmashController(_character));
-            Register(new JumpController(_character));
-            Register(new MoveController(_character));
-
+            
             Register(new CollisionComponent(_character));
             Register(new GravityComponent(_character));
             Register(new MoveComponent(_character));
@@ -59,9 +55,6 @@ namespace Modules.PlayerController
             Register(new StairsMoveComponent(_character));
             Register(new MovingPlatformComponent(_character));
             Register(new SpriteFlipComponent(_character));
-
-            //Register(new LedgeGrabComponent(player)); 
-            //Register(new SlopeSlideComponent(player));
 
             PlayerStats stats = ConfigReader.Rread(Path.Combine(Application.dataPath, SETING_PATH));
             Register(stats);

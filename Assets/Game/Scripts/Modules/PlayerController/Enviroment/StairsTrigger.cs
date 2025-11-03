@@ -30,7 +30,7 @@ namespace Modules.PlayerController
             if (other.TryGetComponent(out CharacterController2D player))
             {
                 player.ResetVelocity();
-                player.SetComponent<StairsMoveComponent>();
+                //player.SetComponent<StairsMoveComponent>();
                 player.IsOnStairs = true;
                 player.transform.position =
                     new Vector3(transform.position.x, player.transform.position.y, player.transform.position.z);
@@ -42,7 +42,7 @@ namespace Modules.PlayerController
             if (other.TryGetComponent(out CharacterController2D player))
             {
                 player.OnCollisionEnter2D(null);
-                player.SetComponent<MoveComponent>();
+                //player.SetComponent<MoveComponent>();
                 player.IsOnStairs = false;
             }
         }

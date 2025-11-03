@@ -28,7 +28,7 @@ namespace Modules.PlayerController
         {
             if (!CanMove()) return Vector2.zero;
 
-            if (_character.IsOnWall && _character.WallDirection == _character.MoveDirection.x)
+            if (_character.IsOnWall && _character.WallDirection == _character.Velocity.x)
                 return Vector2.zero;
 
             if (Mathf.Abs(_character.Velocity.x) >= _character.Stats.MaxSpeed + 1)
