@@ -1,4 +1,5 @@
 using Gameplay;
+using Gameplay.Controllers;
 using Modules.PlayerController;
 using UnityEngine;
 
@@ -21,6 +22,7 @@ namespace Game.Scripts.GameObject.Enemy
             container.BindInterfacesAndSelf(new HealthComponent(_health));
             container.BindInterfacesAndSelf(new CharacterDeathObserver());
             container.BindInterfacesAndSelf(new DamageCaster(_damageLayer, _prefab));
+            container.BindInterfacesAndSelf(new AttackComponent());
         }
     }
 }

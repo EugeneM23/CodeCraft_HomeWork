@@ -1,3 +1,4 @@
+using System;
 using Modules.PlayerController;
 using UnityEngine;
 
@@ -5,6 +6,7 @@ namespace Gameplay
 {
     public class DamageCaster : IInitializeble, IDisposable
     {
+        public event Action<RaycastHit2D> OnHitTarget;
         [Inject] private readonly SpriteAnimator _spriteAnimator;
         [Inject] private readonly CharacterController2D _character;
 
@@ -22,8 +24,6 @@ namespace Gameplay
 
         public void Initialize()
         {
-            Debug.Log("DamageCast");
-
             _spriteAnimator.OnEventRaised += DamageCast;
             Physics2D.queriesStartInColliders = false;
         }
@@ -44,17 +44,8 @@ namespace Gameplay
                 _layerMask
             );
 
-            if (hits.Length > 0)
-            {
-                foreach (RaycastHit2D hit in hits)
-                {
-                    SceneContext.Instance.Container.InstantiatePrefab(_prefab, hit.point, Quaternion.identity);
-                }
-            }
-            else
-            {
-                Debug.Log("[DamageCaster] No hits.");
-            }
+            if (hits.Length > 0) 
+                OnHitTarget?.Invoke(hits[0]);
 
             Debug.DrawRay(castOrigin, castDirection * _castDistance, Color.red, 0.5f);
         }

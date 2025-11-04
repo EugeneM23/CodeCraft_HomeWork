@@ -4,11 +4,13 @@ using UnityEngine;
 
 namespace Gameplay.Controllers
 {
-    public class AttackComponent : ITickable
+    public class AttackComponent : ITickable, IInitializeble, IDisposable
     {
         [Inject] private readonly StateMachine _stateMachine;
         [Inject] private readonly CharacterController2D _character;
         [Inject] private readonly List<IAction> _actions;
+
+        [Inject] private readonly DamageCaster _damageCaster;
 
         private readonly float _attackTime = 0.2f;
         private float _attackTimer;
@@ -17,6 +19,18 @@ namespace Gameplay.Controllers
         public interface IAction
         {
             void Invoke();
+        }
+
+        public void Initialize() => _damageCaster.OnHitTarget += HitTarget;
+
+        public void Dispose() => _damageCaster.OnHitTarget -= HitTarget;
+
+        private void HitTarget(RaycastHit2D hit)
+        {
+            if (hit.transform.TryGetComponent<Entity>(out var entity))
+            {
+                entity.GetEntityComponent<IDamageable>().TakeDamage(100);
+            }
         }
 
         public void Attack()
