@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Game.Scripts.Modules.PlayerController.Data;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Modules.PlayerController
 {
@@ -13,8 +14,7 @@ namespace Modules.PlayerController
         [SerializeField] private Rigidbody2D _rigidbody2D;
         [SerializeField] private CapsuleCollider2D _capsuleCollider;
         [SerializeField] private SpriteRenderer _spriteRenderer;
-        [SerializeField] private LayerMask _layerMask;
-        [SerializeField] private string _settingPath;
+        [SerializeField] private PlayerStats _playerStats;
 
         private List<ITickable> _tickables;
         private IReadOnlyCollection<IVelocity> _velocities;
@@ -30,9 +30,8 @@ namespace Modules.PlayerController
 
         public Vector2 LastFrameVelocity => _lastFrameVelocity;
         private ServiceLocator ServiceLocator { get; set; }
-        public PlayerStats Stats { get; private set; }
+        public PlayerStats Stats => _playerStats;
 
-        public string SettingPath => _settingPath;
         public bool IsOnStairs { get; set; }
         public CapsuleCollider2D Collider => _capsuleCollider;
         public Vector2 Velocity => _rigidbody2D.linearVelocity;
@@ -57,9 +56,6 @@ namespace Modules.PlayerController
             _rigidbody2D.interpolation = RigidbodyInterpolation2D.Extrapolate;
 
             ServiceLocator = new ServiceLocator(this);
-
-            Stats = ServiceLocator.Get<PlayerStats>();
-            Stats.LayerMask = _layerMask;
 
             _tickables = ServiceLocator.GetAll<ITickable>();
             _velocities = ServiceLocator.GetAll<IVelocity>();

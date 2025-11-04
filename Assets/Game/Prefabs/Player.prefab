@@ -326,6 +326,7 @@ GameObject:
   - component: {fileID: 187488164384910502}
   - component: {fileID: 9204874381127870231}
   - component: {fileID: 1168726062001797579}
+  - component: {fileID: 6663216350268955131}
   m_Layer: 9
   m_Name: Player
   m_TagString: Character
@@ -375,7 +376,7 @@ Rigidbody2D:
     m_Bits: 8
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 1024
   m_Interpolate: 2
   m_SleepingMode: 1
   m_CollisionDetection: 1
@@ -505,10 +506,10 @@ MonoBehaviour:
   _entity: {fileID: 2464818498196678020}
   _character: {fileID: 1168726062001797579}
   _damage: 100
-  _health: 1000
+  _health: 100
   _damageLayer:
     serializedVersion: 2
-    m_Bits: 256
+    m_Bits: 1288
   _hitEffect: {fileID: 4442827011764290, guid: 4f5a71e03aa40429bb18446af19f1dae, type: 3}
   _jumpPrefab: {fileID: 6708921266048008112, guid: 8a383a4a291e746c38e74a89c179ee17, type: 3}
   _rollPrefab: {fileID: 6708921266048008112, guid: a9f9356c9427c4cc5bf1351abc828f11, type: 3}
@@ -529,7 +530,32 @@ MonoBehaviour:
   _rigidbody2D: {fileID: 4537528024654466014}
   _capsuleCollider: {fileID: 5626981465393170380}
   _spriteRenderer: {fileID: 901116726241398886}
-  _layerMask:
-    serializedVersion: 2
-    m_Bits: 8
-  _settingPath: Game/Scripts/Modules/PlayerController/Configs/MoveConfig.json
+  _playerStats:
+    MaxSpeed: 20
+    Acceleration: 200
+    AirAcceleration: 100
+    JumpPower: 40
+    FallAcceleration: 100
+    MaxFallSpeed: 500
+    GrounderDistance: 2
+    WallSlideSpeed: 3
+    JumpFromWall: 35
+    MaxJumps: 1
+    LayerMask:
+      serializedVersion: 2
+      m_Bits: 72
+--- !u!114 &6663216350268955131
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7842712783245254731}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02cf2598cfe14ab9977e6049be3c8d46, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  characterController2D: {fileID: 1168726062001797579}
+  _showDebug: 1
+  _toggleKey: 284

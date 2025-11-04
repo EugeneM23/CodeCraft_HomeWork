@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 3093902813817029621}
   - component: {fileID: 6245722611094657670}
   - component: {fileID: 1761204566410064668}
+  - component: {fileID: 3669507925273981218}
   m_Layer: 3
   m_Name: Tile (27)
   m_TagString: Untagged
@@ -151,7 +152,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 5
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -176,6 +177,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lifetime: 3
+--- !u!114 &3669507925273981218
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 125051329848980304}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ca7afe2fc4441618075fd2a4ad2aec2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &199245188791560465
 GameObject:
   m_ObjectHideFlags: 0
@@ -189,6 +202,7 @@ GameObject:
   - component: {fileID: 7212064117148173030}
   - component: {fileID: 2002059142587925269}
   - component: {fileID: 4844734563921157378}
+  - component: {fileID: 1237610603075708399}
   m_Layer: 3
   m_Name: Tile (37)
   m_TagString: Untagged
@@ -327,7 +341,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 5
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -352,6 +366,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lifetime: 3
+--- !u!114 &1237610603075708399
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 199245188791560465}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ca7afe2fc4441618075fd2a4ad2aec2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &564200692719409395
 GameObject:
   m_ObjectHideFlags: 0
@@ -365,6 +391,7 @@ GameObject:
   - component: {fileID: 6718149160240794295}
   - component: {fileID: 5390502894855990480}
   - component: {fileID: 2510749511954088314}
+  - component: {fileID: 2686020463343467495}
   m_Layer: 0
   m_Name: Idle01 (5)
   m_TagString: Untagged
@@ -506,7 +533,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 5
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -518,6 +545,18 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!114 &2686020463343467495
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 564200692719409395}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ca7afe2fc4441618075fd2a4ad2aec2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &647663493589424837
 GameObject:
   m_ObjectHideFlags: 0
@@ -531,6 +570,7 @@ GameObject:
   - component: {fileID: 1896205675674193198}
   - component: {fileID: 5300253613273891742}
   - component: {fileID: 2495414532357695207}
+  - component: {fileID: 7231253625634419470}
   m_Layer: 3
   m_Name: Tile (40)
   m_TagString: Untagged
@@ -669,7 +709,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 5
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -694,6 +734,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lifetime: 3
+--- !u!114 &7231253625634419470
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 647663493589424837}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ca7afe2fc4441618075fd2a4ad2aec2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &716065490349485995
 GameObject:
   m_ObjectHideFlags: 0
@@ -781,6 +833,7 @@ GameObject:
   - component: {fileID: 935098092190668071}
   - component: {fileID: 1570137209949306481}
   - component: {fileID: 1818114532624013408}
+  - component: {fileID: 7473711946637676207}
   m_Layer: 3
   m_Name: Tile (28)
   m_TagString: Untagged
@@ -919,7 +972,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 5
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -944,6 +997,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lifetime: 3
+--- !u!114 &7473711946637676207
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1570416751126030894}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ca7afe2fc4441618075fd2a4ad2aec2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1609684288350337487
 GameObject:
   m_ObjectHideFlags: 0
@@ -957,6 +1022,7 @@ GameObject:
   - component: {fileID: 8436287401246475911}
   - component: {fileID: 3125590868697308455}
   - component: {fileID: 6223580877514735923}
+  - component: {fileID: 709215329851657483}
   m_Layer: 3
   m_Name: Tile (31)
   m_TagString: Untagged
@@ -1095,7 +1161,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 5
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -1120,6 +1186,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lifetime: 3
+--- !u!114 &709215329851657483
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1609684288350337487}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ca7afe2fc4441618075fd2a4ad2aec2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1661854200110836625
 GameObject:
   m_ObjectHideFlags: 0
@@ -1133,6 +1211,7 @@ GameObject:
   - component: {fileID: 866045686262827157}
   - component: {fileID: 4838698944942704761}
   - component: {fileID: 5706353763214077802}
+  - component: {fileID: 9040336290276236106}
   m_Layer: 3
   m_Name: Tile (29)
   m_TagString: Untagged
@@ -1271,7 +1350,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 5
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -1296,6 +1375,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lifetime: 3
+--- !u!114 &9040336290276236106
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1661854200110836625}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ca7afe2fc4441618075fd2a4ad2aec2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1697768604012571480
 GameObject:
   m_ObjectHideFlags: 0
@@ -1309,6 +1400,7 @@ GameObject:
   - component: {fileID: 6821034975911028230}
   - component: {fileID: 8999985661664699320}
   - component: {fileID: 1750014413473091447}
+  - component: {fileID: 4816231706048383062}
   m_Layer: 0
   m_Name: Idle01 (3)
   m_TagString: Untagged
@@ -1450,7 +1542,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 5
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -1462,6 +1554,18 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!114 &4816231706048383062
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1697768604012571480}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ca7afe2fc4441618075fd2a4ad2aec2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1799769575675868112
 GameObject:
   m_ObjectHideFlags: 0
@@ -1475,6 +1579,7 @@ GameObject:
   - component: {fileID: 8433736324510389825}
   - component: {fileID: 1727865594602524002}
   - component: {fileID: 1591187972681583542}
+  - component: {fileID: 6010498139458554976}
   m_Layer: 3
   m_Name: Tile (14)
   m_TagString: Untagged
@@ -1613,7 +1718,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 5
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -1638,6 +1743,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lifetime: 3
+--- !u!114 &6010498139458554976
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1799769575675868112}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ca7afe2fc4441618075fd2a4ad2aec2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1925088805946710483
 GameObject:
   m_ObjectHideFlags: 0
@@ -1651,6 +1768,7 @@ GameObject:
   - component: {fileID: 2590644373965210418}
   - component: {fileID: 4242714078164756619}
   - component: {fileID: 1088134444180505057}
+  - component: {fileID: 7973501809881735607}
   m_Layer: 3
   m_Name: Tile (23)
   m_TagString: Untagged
@@ -1789,7 +1907,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 5
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -1814,6 +1932,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lifetime: 3
+--- !u!114 &7973501809881735607
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1925088805946710483}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ca7afe2fc4441618075fd2a4ad2aec2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2010486097409368115
 GameObject:
   m_ObjectHideFlags: 0
@@ -1827,6 +1957,7 @@ GameObject:
   - component: {fileID: 4718983842253599923}
   - component: {fileID: 3707344499289240146}
   - component: {fileID: 8588240458967412565}
+  - component: {fileID: 5584537967757571068}
   m_Layer: 3
   m_Name: Tile (45)
   m_TagString: Untagged
@@ -1965,7 +2096,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 5
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -1990,6 +2121,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lifetime: 3
+--- !u!114 &5584537967757571068
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2010486097409368115}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ca7afe2fc4441618075fd2a4ad2aec2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2965301037594371144
 GameObject:
   m_ObjectHideFlags: 0
@@ -2003,6 +2146,7 @@ GameObject:
   - component: {fileID: 8074719203107578369}
   - component: {fileID: 4794118777966864304}
   - component: {fileID: 5526829511716905178}
+  - component: {fileID: 8461927327490956009}
   m_Layer: 3
   m_Name: Tile (36)
   m_TagString: Untagged
@@ -2141,7 +2285,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 5
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -2166,6 +2310,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lifetime: 3
+--- !u!114 &8461927327490956009
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2965301037594371144}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ca7afe2fc4441618075fd2a4ad2aec2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &3020087330943889048
 GameObject:
   m_ObjectHideFlags: 0
@@ -2179,6 +2335,7 @@ GameObject:
   - component: {fileID: 3920917001545455588}
   - component: {fileID: 7764942987789243827}
   - component: {fileID: 4551798154352902767}
+  - component: {fileID: 764053915165858571}
   m_Layer: 3
   m_Name: Tile (35)
   m_TagString: Untagged
@@ -2317,7 +2474,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 5
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -2342,6 +2499,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lifetime: 3
+--- !u!114 &764053915165858571
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3020087330943889048}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ca7afe2fc4441618075fd2a4ad2aec2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &3024594277806963992
 GameObject:
   m_ObjectHideFlags: 0
@@ -2355,6 +2524,7 @@ GameObject:
   - component: {fileID: 4620458938716446291}
   - component: {fileID: 6468490868343992685}
   - component: {fileID: 4122434741437099416}
+  - component: {fileID: 4036090965690498807}
   m_Layer: 3
   m_Name: Tile (15)
   m_TagString: Untagged
@@ -2493,7 +2663,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 5
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -2518,6 +2688,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lifetime: 3
+--- !u!114 &4036090965690498807
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3024594277806963992}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ca7afe2fc4441618075fd2a4ad2aec2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &3180202823182112217
 GameObject:
   m_ObjectHideFlags: 0
@@ -2531,6 +2713,7 @@ GameObject:
   - component: {fileID: 8765161675940907255}
   - component: {fileID: 5008670275373761433}
   - component: {fileID: 7989616000710762743}
+  - component: {fileID: 5729966072874972074}
   m_Layer: 3
   m_Name: Tile (17)
   m_TagString: Untagged
@@ -2669,7 +2852,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 5
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -2694,6 +2877,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lifetime: 3
+--- !u!114 &5729966072874972074
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3180202823182112217}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ca7afe2fc4441618075fd2a4ad2aec2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &3234010326481017474
 GameObject:
   m_ObjectHideFlags: 0
@@ -2707,6 +2902,7 @@ GameObject:
   - component: {fileID: 1273366672211943626}
   - component: {fileID: 7698738978428118836}
   - component: {fileID: 6096982989372434023}
+  - component: {fileID: 7276593557458570413}
   m_Layer: 3
   m_Name: Tile (46)
   m_TagString: Untagged
@@ -2845,7 +3041,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 5
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -2870,6 +3066,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lifetime: 3
+--- !u!114 &7276593557458570413
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3234010326481017474}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ca7afe2fc4441618075fd2a4ad2aec2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &3518953088183592065
 GameObject:
   m_ObjectHideFlags: 0
@@ -2883,6 +3091,7 @@ GameObject:
   - component: {fileID: 5477451622642495099}
   - component: {fileID: 8318916665423204223}
   - component: {fileID: 7381161529518559423}
+  - component: {fileID: 156563518813407164}
   m_Layer: 0
   m_Name: Idle01
   m_TagString: Untagged
@@ -3024,7 +3233,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 5
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -3036,6 +3245,18 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!114 &156563518813407164
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3518953088183592065}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ca7afe2fc4441618075fd2a4ad2aec2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &3598307423054899047
 GameObject:
   m_ObjectHideFlags: 0
@@ -3049,6 +3270,7 @@ GameObject:
   - component: {fileID: 2382641466450275465}
   - component: {fileID: 944662796387285368}
   - component: {fileID: 2577845987201888018}
+  - component: {fileID: 7211819129846351145}
   m_Layer: 3
   m_Name: Tile (21)
   m_TagString: Untagged
@@ -3187,7 +3409,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 5
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -3212,6 +3434,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lifetime: 3
+--- !u!114 &7211819129846351145
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3598307423054899047}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ca7afe2fc4441618075fd2a4ad2aec2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4447826129299005226
 GameObject:
   m_ObjectHideFlags: 0
@@ -3225,6 +3459,7 @@ GameObject:
   - component: {fileID: 1544911187764163239}
   - component: {fileID: 2343917784603905109}
   - component: {fileID: 6488781690371858350}
+  - component: {fileID: 2670697242193826188}
   m_Layer: 3
   m_Name: Tile (43)
   m_TagString: Untagged
@@ -3363,7 +3598,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 5
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -3388,6 +3623,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lifetime: 3
+--- !u!114 &2670697242193826188
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4447826129299005226}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ca7afe2fc4441618075fd2a4ad2aec2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4508117822338943501
 GameObject:
   m_ObjectHideFlags: 0
@@ -3401,6 +3648,7 @@ GameObject:
   - component: {fileID: 5326177932140988972}
   - component: {fileID: 5887428945490648213}
   - component: {fileID: 853787405954658037}
+  - component: {fileID: 9004953479926282028}
   m_Layer: 3
   m_Name: Tile (12)
   m_TagString: Untagged
@@ -3539,7 +3787,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 5
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -3564,6 +3812,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lifetime: 3
+--- !u!114 &9004953479926282028
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4508117822338943501}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ca7afe2fc4441618075fd2a4ad2aec2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4759256435302229835
 GameObject:
   m_ObjectHideFlags: 0
@@ -3577,6 +3837,7 @@ GameObject:
   - component: {fileID: 5625040879139464832}
   - component: {fileID: 3275704560537976654}
   - component: {fileID: 2871371976208445789}
+  - component: {fileID: 599819371130534823}
   m_Layer: 3
   m_Name: Tile (25)
   m_TagString: Untagged
@@ -3715,7 +3976,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 5
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -3740,6 +4001,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lifetime: 3
+--- !u!114 &599819371130534823
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4759256435302229835}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ca7afe2fc4441618075fd2a4ad2aec2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4771277387449483585
 GameObject:
   m_ObjectHideFlags: 0
@@ -3753,6 +4026,7 @@ GameObject:
   - component: {fileID: 8118367375366678245}
   - component: {fileID: 9036284484316666127}
   - component: {fileID: 7219548603916056897}
+  - component: {fileID: 7112586856898137961}
   m_Layer: 3
   m_Name: Tile (13)
   m_TagString: Untagged
@@ -3891,7 +4165,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 5
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -3916,6 +4190,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lifetime: 3
+--- !u!114 &7112586856898137961
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4771277387449483585}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ca7afe2fc4441618075fd2a4ad2aec2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5153162806174164130
 GameObject:
   m_ObjectHideFlags: 0
@@ -3929,6 +4215,7 @@ GameObject:
   - component: {fileID: 4523485954985575653}
   - component: {fileID: 4128314792265190281}
   - component: {fileID: 6848285156626298468}
+  - component: {fileID: 2642797848233681904}
   m_Layer: 3
   m_Name: Tile (20)
   m_TagString: Untagged
@@ -4067,7 +4354,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 5
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -4092,6 +4379,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lifetime: 3
+--- !u!114 &2642797848233681904
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5153162806174164130}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ca7afe2fc4441618075fd2a4ad2aec2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5308487602986837099
 GameObject:
   m_ObjectHideFlags: 0
@@ -4105,6 +4404,7 @@ GameObject:
   - component: {fileID: 4007228171003351740}
   - component: {fileID: 558765277860204078}
   - component: {fileID: 4976481430436517578}
+  - component: {fileID: 4024549177511801728}
   m_Layer: 3
   m_Name: Tile (18)
   m_TagString: Untagged
@@ -4243,7 +4543,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 5
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -4268,6 +4568,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lifetime: 3
+--- !u!114 &4024549177511801728
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5308487602986837099}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ca7afe2fc4441618075fd2a4ad2aec2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5428701448320669504
 GameObject:
   m_ObjectHideFlags: 0
@@ -4281,6 +4593,7 @@ GameObject:
   - component: {fileID: 159056445443396065}
   - component: {fileID: 8770657341797019492}
   - component: {fileID: 3454021761080434921}
+  - component: {fileID: 8713074621268042271}
   m_Layer: 3
   m_Name: Tile (32)
   m_TagString: Untagged
@@ -4419,7 +4732,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 5
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -4444,6 +4757,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lifetime: 3
+--- !u!114 &8713074621268042271
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5428701448320669504}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ca7afe2fc4441618075fd2a4ad2aec2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5455000159898070100
 GameObject:
   m_ObjectHideFlags: 0
@@ -4457,6 +4782,7 @@ GameObject:
   - component: {fileID: 5434354026305105270}
   - component: {fileID: 3580623703088444795}
   - component: {fileID: 1073867766636741323}
+  - component: {fileID: 6813295060031979649}
   m_Layer: 3
   m_Name: Tile (10)
   m_TagString: Untagged
@@ -4595,7 +4921,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 5
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -4620,6 +4946,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lifetime: 3
+--- !u!114 &6813295060031979649
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5455000159898070100}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ca7afe2fc4441618075fd2a4ad2aec2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5492646978625365625
 GameObject:
   m_ObjectHideFlags: 0
@@ -4633,6 +4971,7 @@ GameObject:
   - component: {fileID: 8600109993945169228}
   - component: {fileID: 9031563784617345747}
   - component: {fileID: 1619646644712895504}
+  - component: {fileID: 3724304374838614821}
   m_Layer: 3
   m_Name: Tile (26)
   m_TagString: Untagged
@@ -4771,7 +5110,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 5
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -4796,6 +5135,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lifetime: 3
+--- !u!114 &3724304374838614821
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5492646978625365625}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ca7afe2fc4441618075fd2a4ad2aec2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5840121969687603791
 GameObject:
   m_ObjectHideFlags: 0
@@ -4809,6 +5160,7 @@ GameObject:
   - component: {fileID: 1337897219686696279}
   - component: {fileID: 2690679614139549561}
   - component: {fileID: 48370344012947815}
+  - component: {fileID: 8279976769778334504}
   m_Layer: 3
   m_Name: Tile (41)
   m_TagString: Untagged
@@ -4947,7 +5299,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 5
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -4972,6 +5324,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lifetime: 3
+--- !u!114 &8279976769778334504
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5840121969687603791}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ca7afe2fc4441618075fd2a4ad2aec2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &6457406607267432283
 GameObject:
   m_ObjectHideFlags: 0
@@ -4985,6 +5349,7 @@ GameObject:
   - component: {fileID: 4621885947478781290}
   - component: {fileID: 6362399634924839122}
   - component: {fileID: 3285839335540630419}
+  - component: {fileID: 4360889360236653479}
   m_Layer: 0
   m_Name: Idle01 (1)
   m_TagString: Untagged
@@ -5126,7 +5491,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 5
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -5138,6 +5503,18 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!114 &4360889360236653479
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6457406607267432283}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ca7afe2fc4441618075fd2a4ad2aec2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &6543765894801655632
 GameObject:
   m_ObjectHideFlags: 0
@@ -5151,6 +5528,7 @@ GameObject:
   - component: {fileID: 5283541280281942919}
   - component: {fileID: 6310356825163860705}
   - component: {fileID: 7630114696955144352}
+  - component: {fileID: 1667934648492673562}
   m_Layer: 3
   m_Name: Tile (24)
   m_TagString: Untagged
@@ -5289,7 +5667,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 5
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -5314,6 +5692,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lifetime: 3
+--- !u!114 &1667934648492673562
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6543765894801655632}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ca7afe2fc4441618075fd2a4ad2aec2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &6551156432008217574
 GameObject:
   m_ObjectHideFlags: 0
@@ -5327,6 +5717,7 @@ GameObject:
   - component: {fileID: 2856687366644079601}
   - component: {fileID: 3934382567224561520}
   - component: {fileID: 3907598078699776978}
+  - component: {fileID: 196782616223019126}
   m_Layer: 3
   m_Name: Tile (22)
   m_TagString: Untagged
@@ -5465,7 +5856,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 5
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -5490,6 +5881,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lifetime: 3
+--- !u!114 &196782616223019126
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6551156432008217574}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ca7afe2fc4441618075fd2a4ad2aec2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &6756463267249706361
 GameObject:
   m_ObjectHideFlags: 0
@@ -5503,6 +5906,7 @@ GameObject:
   - component: {fileID: 3244552032819988647}
   - component: {fileID: 5189325558771455249}
   - component: {fileID: 8119344085486791855}
+  - component: {fileID: 5056952061252799749}
   m_Layer: 0
   m_Name: Idle01 (2)
   m_TagString: Untagged
@@ -5644,7 +6048,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 5
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -5656,6 +6060,18 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!114 &5056952061252799749
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6756463267249706361}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ca7afe2fc4441618075fd2a4ad2aec2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7021526178365221088
 GameObject:
   m_ObjectHideFlags: 0
@@ -5669,6 +6085,7 @@ GameObject:
   - component: {fileID: 8581850469582922062}
   - component: {fileID: 8489635489356947373}
   - component: {fileID: 8896026589759221551}
+  - component: {fileID: 8967474454072982691}
   m_Layer: 3
   m_Name: Tile (16)
   m_TagString: Untagged
@@ -5807,7 +6224,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 5
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -5832,6 +6249,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lifetime: 3
+--- !u!114 &8967474454072982691
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7021526178365221088}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ca7afe2fc4441618075fd2a4ad2aec2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7317672630548652535
 GameObject:
   m_ObjectHideFlags: 0
@@ -5845,6 +6274,7 @@ GameObject:
   - component: {fileID: 5986960375492067727}
   - component: {fileID: 7169164714930692844}
   - component: {fileID: 5258497054016387128}
+  - component: {fileID: 6369365517770625042}
   m_Layer: 3
   m_Name: Tile (33)
   m_TagString: Untagged
@@ -5983,7 +6413,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 5
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -6008,6 +6438,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lifetime: 3
+--- !u!114 &6369365517770625042
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7317672630548652535}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ca7afe2fc4441618075fd2a4ad2aec2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7354120338076834063
 GameObject:
   m_ObjectHideFlags: 0
@@ -6021,6 +6463,7 @@ GameObject:
   - component: {fileID: 4491275382918474126}
   - component: {fileID: 8320369155218941718}
   - component: {fileID: 7991360807989123972}
+  - component: {fileID: 8497733352039100360}
   m_Layer: 3
   m_Name: Tile (34)
   m_TagString: Untagged
@@ -6159,7 +6602,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 5
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -6184,6 +6627,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lifetime: 3
+--- !u!114 &8497733352039100360
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7354120338076834063}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ca7afe2fc4441618075fd2a4ad2aec2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7366707477728040519
 GameObject:
   m_ObjectHideFlags: 0
@@ -6197,6 +6652,7 @@ GameObject:
   - component: {fileID: 3783518928517260871}
   - component: {fileID: 5341595150453310752}
   - component: {fileID: 4750202075552540413}
+  - component: {fileID: 7645069254533333232}
   m_Layer: 3
   m_Name: Tile (11)
   m_TagString: Untagged
@@ -6335,7 +6791,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 5
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -6360,6 +6816,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lifetime: 3
+--- !u!114 &7645069254533333232
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7366707477728040519}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ca7afe2fc4441618075fd2a4ad2aec2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7380774093984686094
 GameObject:
   m_ObjectHideFlags: 0
@@ -6373,6 +6841,7 @@ GameObject:
   - component: {fileID: 2253890431058833268}
   - component: {fileID: 52073810214437051}
   - component: {fileID: 2338448231083253387}
+  - component: {fileID: 8103039103034153394}
   m_Layer: 3
   m_Name: Tile (44)
   m_TagString: Untagged
@@ -6511,7 +6980,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 5
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -6536,6 +7005,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lifetime: 3
+--- !u!114 &8103039103034153394
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7380774093984686094}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ca7afe2fc4441618075fd2a4ad2aec2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7458618760885187506
 GameObject:
   m_ObjectHideFlags: 0
@@ -6549,6 +7030,7 @@ GameObject:
   - component: {fileID: 6700120101371152078}
   - component: {fileID: 1355390238009887336}
   - component: {fileID: 6337502125079802975}
+  - component: {fileID: 3693199281364049253}
   m_Layer: 0
   m_Name: Idle01 (4)
   m_TagString: Untagged
@@ -6690,7 +7172,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 5
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -6702,6 +7184,18 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!114 &3693199281364049253
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7458618760885187506}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ca7afe2fc4441618075fd2a4ad2aec2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7680720342635402413
 GameObject:
   m_ObjectHideFlags: 0
@@ -6715,6 +7209,7 @@ GameObject:
   - component: {fileID: 7206621571718332000}
   - component: {fileID: 2199614275071406655}
   - component: {fileID: 2304702744289007864}
+  - component: {fileID: 6203151262949450905}
   m_Layer: 3
   m_Name: Tile (39)
   m_TagString: Untagged
@@ -6853,7 +7348,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 5
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -6878,6 +7373,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lifetime: 3
+--- !u!114 &6203151262949450905
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7680720342635402413}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ca7afe2fc4441618075fd2a4ad2aec2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7953017518972919775
 GameObject:
   m_ObjectHideFlags: 0
@@ -6891,6 +7398,7 @@ GameObject:
   - component: {fileID: 207147821010399897}
   - component: {fileID: 9120016396163267199}
   - component: {fileID: 5512688953155506112}
+  - component: {fileID: 3986174733816823383}
   m_Layer: 3
   m_Name: Tile (19)
   m_TagString: Untagged
@@ -7029,7 +7537,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 5
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -7054,6 +7562,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lifetime: 3
+--- !u!114 &3986174733816823383
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7953017518972919775}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ca7afe2fc4441618075fd2a4ad2aec2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8135268363212944195
 GameObject:
   m_ObjectHideFlags: 0
@@ -7067,6 +7587,7 @@ GameObject:
   - component: {fileID: 1370013962423516244}
   - component: {fileID: 3148097961347543505}
   - component: {fileID: 8326015858125062668}
+  - component: {fileID: 943065475132391036}
   m_Layer: 3
   m_Name: Tile (30)
   m_TagString: Untagged
@@ -7205,7 +7726,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 5
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -7230,6 +7751,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lifetime: 3
+--- !u!114 &943065475132391036
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8135268363212944195}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ca7afe2fc4441618075fd2a4ad2aec2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8465025105807114082
 GameObject:
   m_ObjectHideFlags: 0
@@ -7243,6 +7776,7 @@ GameObject:
   - component: {fileID: 2914095266634009719}
   - component: {fileID: 6580097600000424597}
   - component: {fileID: 1087200664144517925}
+  - component: {fileID: 1346360639146020482}
   m_Layer: 3
   m_Name: Tile (38)
   m_TagString: Untagged
@@ -7381,7 +7915,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 5
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -7406,6 +7940,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lifetime: 3
+--- !u!114 &1346360639146020482
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8465025105807114082}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ca7afe2fc4441618075fd2a4ad2aec2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8535960564768093004
 GameObject:
   m_ObjectHideFlags: 0
@@ -7419,6 +7965,7 @@ GameObject:
   - component: {fileID: 4660847547503899853}
   - component: {fileID: 5435878356356938990}
   - component: {fileID: 9075983171098378204}
+  - component: {fileID: 1108750160761043204}
   m_Layer: 3
   m_Name: Tile (42)
   m_TagString: Untagged
@@ -7557,7 +8104,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 5
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -7582,3 +8129,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lifetime: 3
+--- !u!114 &1108750160761043204
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8535960564768093004}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ca7afe2fc4441618075fd2a4ad2aec2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

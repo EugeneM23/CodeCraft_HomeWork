@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace Game.Scripts.Modules.PlayerController.Data
 {
     [System.Serializable]
@@ -13,6 +15,6 @@ namespace Game.Scripts.Modules.PlayerController.Data
         public float WallSlideSpeed;
         public int JumpFromWall;
         public int MaxJumps;
-        public int LayerMask;
+        public LayerMask LayerMask;
     }
 }

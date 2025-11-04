@@ -6,7 +6,7 @@ namespace Gameplay.Controllers
     public class SmashController : ITickable
     {
         [Inject] private readonly CharacterController2D _controller;
-        [Inject] private readonly Character _player;
+        [Inject] private readonly SmashComponent _smash;
 
         private float _lastSPressTime;
         private readonly float _doublePressThreshold = 0.3f;
@@ -19,7 +19,7 @@ namespace Gameplay.Controllers
 
                 if (currentTime - _lastSPressTime <= _doublePressThreshold && !_controller.IsGrounded)
                 {
-                    _player.Smash(Vector2.down * 70f);
+                    _smash.Smash(Vector2.down * 70f);
                     _lastSPressTime = -1f;
                 }
                 else

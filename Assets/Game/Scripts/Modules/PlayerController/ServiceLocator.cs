@@ -57,9 +57,6 @@ namespace Modules.PlayerController
             Register(new MovingPlatformComponent(_character));
             Register(new SpriteFlipComponent(_character));
             Register(new CharacterFacingComponent(_character));
-
-            PlayerStats stats = ConfigReader.Rread(Path.Combine(Application.dataPath, _character.SettingPath));
-            Register(stats);
         }
     }
 }
