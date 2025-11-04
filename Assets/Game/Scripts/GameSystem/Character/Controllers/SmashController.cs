@@ -16,7 +16,7 @@ namespace Gameplay.Controllers
             {
                 float currentTime = Time.time;
 
-                if (currentTime - _lastSPressTime <= _doublePressThreshold)
+                if (currentTime - _lastSPressTime <= _doublePressThreshold && !_character.IsGrounded)
                 {
                     _character.Smash(Vector2.down * 70f);
                     _lastSPressTime = -1f;

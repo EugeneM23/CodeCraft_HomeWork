@@ -12,12 +12,13 @@ namespace Game.Scripts.GameObject.Enemy
         [Inject] private readonly StateMachine _stateMachine;
 
         private readonly Transform[] _patrolPoints;
-        private readonly float _chaseDistance = 5f;
+        private readonly float _chaseDistance = 10f;
         private readonly float _attackDistance = 2f;
         private readonly float _waypointReachDistance = 0.3f;
 
         private int _currentPatrolIndex = 0;
         private Vector2[] _patrolPositions;
+        private bool _wasGrounded = true;
 
         public EnemyBehaviour(Transform[] patrolPoints)
         {
@@ -28,6 +29,28 @@ namespace Game.Scripts.GameObject.Enemy
         {
             var distance = Vector2.Distance(_character.transform.position, _provider.Player.transform.position);
 
+            // Проверяем потерю земли
+            if (_wasGrounded && !_character.IsGrounded)
+            {
+                _character.Jump();
+            }
+
+            _wasGrounded = _character.IsGrounded;
+
+            // Если в воздухе - только двигаемся
+            if (!_character.IsGrounded)
+            {
+                if (distance < _chaseDistance)
+                {
+                    Vector2 direction = (_provider.Player.transform.position - _character.transform.position)
+                        .normalized;
+                    _character.Move(direction);
+                }
+
+                return;
+            }
+
+            // Атака
             if (distance <= _attackDistance)
             {
                 _character.Move(Vector2.zero);
@@ -35,13 +58,16 @@ namespace Game.Scripts.GameObject.Enemy
                 return;
             }
 
+            // Преследование
             if (distance < _chaseDistance)
             {
-                Vector2 direction = (_provider.Player.transform.position - _character.transform.position).normalized;
+                Vector2 direction = (_provider.Player.transform.position - _character.transform.position)
+                    .normalized;
                 _character.Move(direction);
                 return;
             }
 
+            // Патрулирование
             Patrol();
         }
 
@@ -54,9 +80,7 @@ namespace Game.Scripts.GameObject.Enemy
             }
 
             Vector2 targetPoint = _patrolPositions[_currentPatrolIndex];
-
             float distanceToWaypoint = Mathf.Abs(_character.transform.position.x - targetPoint.x);
-
             Vector2 direction = (targetPoint - (Vector2)_character.transform.position).normalized;
 
             if (distanceToWaypoint < _waypointReachDistance)

@@ -101,8 +101,12 @@ namespace Modules.PlayerController
 
         public void Jump()
         {
-            OnJump?.Invoke();
             _jumpComponent.Jump();
+        }
+
+        public void CallJumpEvent()
+        {
+            OnJump?.Invoke();
         }
 
         public void TriggerGroundedEvent()

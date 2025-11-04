@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Gameplay
 {
-    public class JumpVFXController : IInitializeble
+    public class JumpVFXController : IInitializeble, IDisposable
     {
         private Transform _prefab;
         [Inject] private CharacterController2D _controller;
@@ -23,9 +23,8 @@ namespace Gameplay
                 Quaternion.identity);
         }
 
-        public void Initialize()
-        {
-            _controller.OnJump += SpawnEffect;
-        }
+        public void Initialize() => _controller.OnJump += SpawnEffect;
+
+        public void Dispose() => _controller.OnJump -= SpawnEffect;
     }
 }

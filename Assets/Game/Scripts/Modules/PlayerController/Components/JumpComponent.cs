@@ -25,11 +25,12 @@ namespace Modules.PlayerController
 
         public void Jump()
         {
-            if (_character.IsWallSliding)
+            if (_character.IsWallSliding && _availableJumps > 0)
             {
                 Vector2 wallJump = new Vector2(-_character.WallDirection * _character.Stats.JumpFromWall,
                     _character.Stats.JumpPower);
 
+                _character.CallJumpEvent();
                 _character.AddImpulse(wallJump);
                 return;
             }
@@ -38,6 +39,7 @@ namespace Modules.PlayerController
             if (_character.IsGrounded || coyoteTime || _availableJumps > 0)
             {
                 _character.AddImpulse(Vector2.up * _character.Stats.JumpPower);
+                _character.CallJumpEvent();
 
                 if (!_character.IsGrounded && !coyoteTime)
                     _availableJumps--;

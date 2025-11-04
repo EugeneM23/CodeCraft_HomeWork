@@ -7069,6 +7069,10 @@ MonoBehaviour:
   _waypoints:
   - {fileID: 256668334}
   - {fileID: 1154310650}
+  _damageLayer:
+    serializedVersion: 2
+    m_Bits: 512
+  _prefab: {fileID: 4181674187146696, guid: 01b3042f7953a4869a13d1919efc50ff, type: 3}
 --- !u!1 &7500859319258839516
 GameObject:
   m_ObjectHideFlags: 0
