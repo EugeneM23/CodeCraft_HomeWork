@@ -28,6 +28,7 @@ namespace Modules.PlayerController
         private JumpComponent _jumpComponent;
         private ImpulseComponent _impulseComponent;
         private Vector2 _lastFrameVelocity;
+        private CharacterFacingComponent _facingComponent;
 
         private readonly List<Func<bool>> MoveCondition = new();
 
@@ -52,6 +53,8 @@ namespace Modules.PlayerController
         public Vector2 MoveDirection { get; private set; }
         public bool CanMove { get; private set; }
 
+        public int LookDirection => _facingComponent.FacingDirection;
+
         private void Awake()
         {
             _rigidbody2D.gravityScale = 0;
@@ -69,6 +72,7 @@ namespace Modules.PlayerController
             _wallSlidingComponent = ServiceLocator.Get<WallSlidingComponent>();
             _jumpComponent = ServiceLocator.Get<JumpComponent>();
             _impulseComponent = ServiceLocator.Get<ImpulseComponent>();
+            _facingComponent = ServiceLocator.Get<CharacterFacingComponent>();
         }
 
         private void Update()

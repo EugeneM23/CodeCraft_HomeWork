@@ -2,6 +2,7 @@ using Gameplay.Controllers;
 using Gameplay.Controllers.AttackAction;
 using Modules.PlayerController;
 using UnityEngine;
+using UnityEngine.PlayerLoop;
 
 namespace Gameplay
 {
@@ -10,6 +11,8 @@ namespace Gameplay
         [SerializeField] private CharacterController2D _character;
         [SerializeField] private int _health;
         [SerializeField] private Transform _attackEffect;
+        [SerializeField] private LayerMask _damageLayer;
+        [SerializeField] private Transform _hitPrefab;
 
         public override void Install(DiContainer container)
         {
@@ -22,7 +25,7 @@ namespace Gameplay
             container.BindInterfacesAndSelf(new JumpController());
             container.BindInterfacesAndSelf(new SmashController());
             container.BindInterfacesAndSelf(new DashController());
-            
+
             container.BindInterfacesAndSelf(new AttackController());
             container.BindInterfacesAndSelf(new AttackComponent());
             container.BindInterfacesAndSelf(new HealthComponent(_health));
@@ -31,6 +34,7 @@ namespace Gameplay
             container.BindInterfacesAndSelf(new SpawnPlayerAction());
 
             container.BindInterfacesAndSelf(new SpawnEffectAction(_attackEffect));
+            container.BindInterfacesAndSelf(new DamageCaster(_damageLayer, _hitPrefab));
         }
     }
 }

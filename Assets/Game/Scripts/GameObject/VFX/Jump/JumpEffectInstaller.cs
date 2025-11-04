@@ -10,10 +10,8 @@ namespace Game.Scripts.GameObject.VFX.Jump
 
         public override void Install(DiContainer container)
         {
-            var receiver = new AnimationEventReceiver();
-            var spriteAnimator = new SpriteAnimator(_animations, _spriteRenderer, receiver);
+            var spriteAnimator = new SpriteAnimator(_animations, _spriteRenderer);
             container.BindInterfacesAndSelf(spriteAnimator);
-            container.BindSingle(receiver);
 
         }
     }

@@ -559,3 +559,7 @@ MonoBehaviour:
   _character: {fileID: 1168726062001797579}
   _health: 100
   _attackEffect: {fileID: 4442827011764290, guid: 4f5a71e03aa40429bb18446af19f1dae, type: 3}
+  _damageLayer:
+    serializedVersion: 2
+    m_Bits: 256
+  _hitPrefab: {fileID: 4181674187146696, guid: 16c03e7f3ed9346499aed39e42987c26, type: 3}

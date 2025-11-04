@@ -9,6 +9,8 @@ namespace Game.Scripts.GameObject.Enemy
         [SerializeField] private CharacterController2D _character;
         [SerializeField] private int _health;
         [SerializeField] private Transform[] _waypoints;
+        [SerializeField] private LayerMask _damageLayer;
+        [SerializeField] private Transform _prefab;
 
         public override void Install(DiContainer container)
         {
@@ -18,6 +20,7 @@ namespace Game.Scripts.GameObject.Enemy
             container.BindInterfacesAndSelf(new EnemyBehaviour(_waypoints));
             container.BindInterfacesAndSelf(new HealthComponent(_health));
             container.BindInterfacesAndSelf(new CharacterDeathObserver());
+            container.BindInterfacesAndSelf(new DamageCaster(_damageLayer, _prefab));
         }
     }
 }

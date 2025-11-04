@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using UnityEngine;
 
@@ -5,10 +6,10 @@ namespace Gameplay
 {
     public class SpriteAnimator : IInitializeble, ITickable
     {
-        private readonly AnimationEventReceiver _animationEventReceiver;
+        public event Action<EventID> OnEventRaised;
+
         private readonly SpriteAnimation[] _animation;
         private readonly SpriteRenderer _spriteRenderer;
-
         public SpriteAnimation CurrentAnimation => _currentAnimation;
         private SpriteAnimation _currentAnimation;
 
@@ -18,11 +19,9 @@ namespace Gameplay
         private float FrameDuration => 1f / _fps;
         private float _fps;
 
-        public SpriteAnimator(SpriteAnimation[] animation, SpriteRenderer spriteRenderer,
-            AnimationEventReceiver animationEventReceiver)
+        public SpriteAnimator(SpriteAnimation[] animation, SpriteRenderer spriteRenderer)
         {
             _spriteRenderer = spriteRenderer;
-            _animationEventReceiver = animationEventReceiver;
             _animation = animation;
         }
 
@@ -61,7 +60,7 @@ namespace Gameplay
 
             foreach (EventID item in eventIds)
                 if (item != EventID.None)
-                    _animationEventReceiver.SendEvent(item);
+                    OnEventRaised?.Invoke(item);
         }
 
         public SpriteAnimator Play(AnimationID id)
