@@ -16,8 +16,8 @@ namespace Game.Scripts.GameObject.Enemy
         private readonly float _attackDistance = 2f;
         private readonly float _waypointReachDistance = 0.3f;
 
-        private int _currentPatrolIndex = 0;
         private Vector2[] _patrolPositions;
+        private int _currentPatrolIndex = 0;
         private bool _wasGrounded = true;
 
         public EnemyBehaviour(Transform[] patrolPoints)
