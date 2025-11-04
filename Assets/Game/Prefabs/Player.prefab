@@ -506,7 +506,7 @@ MonoBehaviour:
   _entity: {fileID: 2464818498196678020}
   _character: {fileID: 1168726062001797579}
   _damage: 100
-  _health: 100
+  _health: 50
   _damageLayer:
     serializedVersion: 2
     m_Bits: 1288
