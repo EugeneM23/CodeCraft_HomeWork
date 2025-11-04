@@ -11,13 +11,12 @@ namespace Game.Scripts.GameObject.Enemy
 
         public void Tick()
         {
-            Debug.Log("Enemy move tick");
             _character.Move(CurrentDirection);
         }
 
         public void SetDirection(Vector3 transformPosition)
         {
-            CurrentDirection = _character.transform.position - transformPosition;
+            CurrentDirection = transformPosition - _character.transform.position;
         }
     }
 }

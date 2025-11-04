@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Modules.PlayerController
@@ -5,14 +6,20 @@ namespace Modules.PlayerController
     internal class ImpulseComponent : IVelocity
     {
         private const float GROUND_FRICTION = 100;
-        private const float INPUT_COUNTER_FORCE = 60; // Сила противодействия инпута
+        private const float INPUT_COUNTER_FORCE = 60;
 
         private readonly CharacterController2D _character;
-        public event System.Action<float> OnImpulseEnd;
         private Vector2 _impulse;
         private bool _verticalApplied;
-        private float _initialImpulseSign; // Запоминаем начальное направление импульса
-        private bool _wasCountering; // Было ли противодействие
+        private float _initialImpulseSign;
+        private bool _wasCountering;
+
+        // Флаг для query-based подхода
+        private bool _hasJustEnded;
+        private float _endVelocity;
+
+        public bool HasJustEnded => _hasJustEnded;
+        public float EndVelocity => _endVelocity;
 
         public ImpulseComponent(CharacterController2D character)
         {
@@ -28,6 +35,7 @@ namespace Modules.PlayerController
             _verticalApplied = false;
             _initialImpulseSign = Mathf.Sign(value.x);
             _wasCountering = false;
+            _hasJustEnded = false;
         }
 
         private void Reset()
@@ -36,6 +44,12 @@ namespace Modules.PlayerController
             _verticalApplied = false;
             _initialImpulseSign = 0;
             _wasCountering = false;
+            _hasJustEnded = false;
+        }
+
+        public void AcknowledgeEnd()
+        {
+            _hasJustEnded = false;
         }
 
         public Vector2 GetVelocity()
@@ -50,7 +64,7 @@ namespace Modules.PlayerController
             if (Mathf.Approximately(_impulse.x, 0))
                 return 0;
 
-            float inputDirection = _character.MoveDirection;
+            float inputDirection = _character.MoveDirection.x;
 
             // Противодействие
             if (inputDirection != 0 && Mathf.Sign(inputDirection) != _initialImpulseSign)
@@ -61,15 +75,16 @@ namespace Modules.PlayerController
                 // Полное гашение
                 if (Mathf.Abs(_impulse.x) < 0.1f)
                 {
-                    // Передаём остаточную скорость в MoveComponent, чтобы тот продолжил плавно
-                    OnImpulseEnd?.Invoke(_character.Velocity.x);
+                    _endVelocity = _character.Velocity.x;
+                    _hasJustEnded = true;
                     _impulse.x = 0;
                     _initialImpulseSign = 0;
                 }
             }
             else if (inputDirection == 0 && _wasCountering)
             {
-                OnImpulseEnd?.Invoke(_character.Velocity.x);
+                _endVelocity = _character.Velocity.x;
+                _hasJustEnded = true;
                 _impulse.x = 0;
                 _initialImpulseSign = 0;
             }
@@ -79,7 +94,8 @@ namespace Modules.PlayerController
 
                 if (Mathf.Abs(_impulse.x) < 0.1f)
                 {
-                    OnImpulseEnd?.Invoke(_character.Velocity.x);
+                    _endVelocity = _character.Velocity.x;
+                    _hasJustEnded = true;
                     _impulse.x = 0;
                 }
             }
@@ -97,3 +113,4 @@ namespace Modules.PlayerController
         }
     }
 }
+

@@ -14,7 +14,6 @@ namespace Gameplay.Controllers
 
             if (right || left)
             {
-                Debug.Log("Jumpasdasds");
                 if (right)
                     _character.Dash(Vector2.right * 50f);
                 else if (left)

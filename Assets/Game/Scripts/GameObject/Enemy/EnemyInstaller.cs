@@ -8,16 +8,14 @@ namespace Game.Scripts.GameObject.Enemy
     {
         [SerializeField] private CharacterController2D _character;
         [SerializeField] private int _health;
+        [SerializeField] private Transform[] _waypoints;
 
         public override void Install(DiContainer container)
         {
             container.BindSingle(_character);
 
-            EnemyMoveController moveController = new EnemyMoveController();
-            container.BindInterfacesAndSelf(moveController);
-            container.BindInterfacesAndSelf(new Enemy(moveController));
-            container.BindInterfacesAndSelf(new EnemyBehaviour());
-            //container.BindInterfacesAndSelf(new AttackComponent());
+            container.BindInterfacesAndSelf(new Enemy());
+            container.BindInterfacesAndSelf(new EnemyBehaviour(_waypoints));
             container.BindInterfacesAndSelf(new HealthComponent(_health));
             container.BindInterfacesAndSelf(new CharacterDeathObserver());
         }

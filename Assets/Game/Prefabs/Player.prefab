@@ -437,6 +437,7 @@ MonoBehaviour:
   _layerMask:
     serializedVersion: 2
     m_Bits: 8
+  _settingPath: Game/Scripts/Modules/PlayerController/Configs/MoveConfig.json
 --- !u!114 &7304117886059908915
 MonoBehaviour:
   m_ObjectHideFlags: 0

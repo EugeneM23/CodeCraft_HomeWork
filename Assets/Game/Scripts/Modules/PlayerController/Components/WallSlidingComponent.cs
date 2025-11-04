@@ -16,10 +16,9 @@ namespace Modules.PlayerController
 
         public void Tick()
         {
-            // Определяем, скользим ли по стене
-            if (_character.IsOnWall && Mathf.Abs(_character.MoveDirection.Log(Color.green)) > 0.1f)
+            if (_character.IsOnWall && Mathf.Abs(_character.MoveDirection.x) > 0.1f)
             {
-                IsWallSliding = _character.MoveDirection * _character.WallDirection > 0;
+                IsWallSliding = _character.MoveDirection.x * _character.WallDirection > 0;
             }
             else
             {

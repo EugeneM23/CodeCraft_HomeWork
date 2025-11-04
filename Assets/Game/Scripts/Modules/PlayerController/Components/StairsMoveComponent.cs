@@ -10,24 +10,14 @@ namespace Modules.PlayerController
 
         public void Move(Vector2 directrion)
         {
-            if (CanMove()) return;
+            if (!_character.CanMove) return;
 
             Vector2 move = new Vector2(0, directrion.y);
             _character.transform.Translate(move * _character.Stats.MaxSpeed * Time.deltaTime);
         }
 
-        public bool CanMove()
-        {
-            foreach (var item in _character.MoveCondition)
-                if (!item.Invoke())
-                    return false;
-
-            return true;
-        }
-
         public void InheritVelocity(float obj)
         {
-            
         }
     }
 }

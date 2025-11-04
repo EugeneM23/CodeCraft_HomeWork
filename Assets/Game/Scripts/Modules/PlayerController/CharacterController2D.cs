@@ -1,18 +1,23 @@
 using System;
 using System.Collections.Generic;
-using Codice.Client.BaseCommands.Filters;
 using Game.Scripts.Modules.PlayerController.Data;
-using Gameplay;
 using UnityEngine;
 
 namespace Modules.PlayerController
 {
     public class CharacterController2D : MonoBehaviour
     {
+        public event Action OnDash;
+        public event Action OnSmash;
+        public event Action OnJump;
+        public event Action<Vector2> OnGrounded;
+        public event Action OnCollisionHit;
+
         [SerializeField] private Rigidbody2D _rigidbody2D;
         [SerializeField] private CapsuleCollider2D _capsuleCollider;
         [SerializeField] private SpriteRenderer _spriteRenderer;
         [SerializeField] private LayerMask _layerMask;
+        [SerializeField] private string _settingPath;
 
         private List<ITickable> _tickables;
         private IReadOnlyCollection<IVelocity> _velocities;
@@ -20,22 +25,17 @@ namespace Modules.PlayerController
         private CollisionComponent _collisionComponent;
         private SlopeSlideComponent _slopeSlideComponent;
         private WallSlidingComponent _wallSlidingComponent;
-        private IMoveComponent _moveComponent;
         private JumpComponent _jumpComponent;
         private ImpulseComponent _impulseComponent;
-        private SpriteFlipComponent _spriteFLip;
         private Vector2 _lastFrameVelocity;
 
-        public List<Func<bool>> MoveCondition = new();
+        private readonly List<Func<bool>> MoveCondition = new();
 
         public Vector2 LastFrameVelocity => _lastFrameVelocity;
-        public ServiceLocator ServiceLocator { get; private set; }
+        private ServiceLocator ServiceLocator { get; set; }
         public PlayerStats Stats { get; private set; }
-        public event Action OnDash;
-        public event Action OnSmash;
-        public event Action OnJump;
-        public event Action<Vector2> OnGrounded;
-        public event Action OnCollisionHit;
+
+        public string SettingPath => _settingPath;
         public bool IsOnStairs { get; set; }
         public CapsuleCollider2D Collider => _capsuleCollider;
         public Vector2 Velocity => _rigidbody2D.linearVelocity;
@@ -49,7 +49,8 @@ namespace Modules.PlayerController
         public bool IsWallSliding => _wallSlidingComponent.IsWallSliding;
         public float DistanceToGround => _collisionComponent.DistanceToGround;
         public SpriteRenderer SpriteRenderer => _spriteRenderer;
-        public float MoveDirection => Input.GetAxisRaw("Horizontal");
+        public Vector2 MoveDirection { get; private set; }
+        public bool CanMove { get; private set; }
 
         private void Awake()
         {
@@ -60,27 +61,22 @@ namespace Modules.PlayerController
 
             Stats = ServiceLocator.Get<PlayerStats>();
             Stats.LayerMask = _layerMask;
-            
+
             _tickables = ServiceLocator.GetAll<ITickable>();
             _velocities = ServiceLocator.GetAll<IVelocity>();
 
             _collisionComponent = ServiceLocator.Get<CollisionComponent>();
             _wallSlidingComponent = ServiceLocator.Get<WallSlidingComponent>();
-            _moveComponent = ServiceLocator.Get<MoveComponent>();
             _jumpComponent = ServiceLocator.Get<JumpComponent>();
             _impulseComponent = ServiceLocator.Get<ImpulseComponent>();
-            _spriteFLip = ServiceLocator.Get<SpriteFlipComponent>();
-        }
-
-        private void Start()
-        {
-            _impulseComponent.OnImpulseEnd += _moveComponent.InheritVelocity;
         }
 
         private void Update()
         {
             foreach (var tickable in _tickables)
                 tickable.Tick();
+
+            CanMove = CheckMoveCondition();
         }
 
         private void FixedUpdate()
@@ -96,7 +92,7 @@ namespace Modules.PlayerController
 
         public void Move(Vector2 direction)
         {
-            _moveComponent.Move(direction);
+            MoveDirection = direction;
         }
 
         public void Jump()
@@ -133,5 +129,14 @@ namespace Modules.PlayerController
         public void ResetVelocity() => _rigidbody2D.linearVelocity = Vector2.zero;
 
         public void AddMoveCondition(Func<bool> condition) => MoveCondition.Add(condition);
+
+        private bool CheckMoveCondition()
+        {
+            foreach (var item in MoveCondition)
+                if (item.Invoke())
+                    return false;
+
+            return true;
+        }
     }
 }

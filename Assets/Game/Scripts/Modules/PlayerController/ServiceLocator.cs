@@ -45,18 +45,19 @@ namespace Modules.PlayerController
 
         public void Initialize()
         {
-            Register(new ImpulseComponent(_character));
-            
+            var impulseComponent = new ImpulseComponent(_character);
+            Register(impulseComponent);
+
             Register(new CollisionComponent(_character));
             Register(new GravityComponent(_character));
-            Register(new MoveComponent(_character));
+            Register(new MoveComponent(_character, impulseComponent));
             Register(new WallSlidingComponent(_character));
             Register(new JumpComponent(_character));
             Register(new StairsMoveComponent(_character));
             Register(new MovingPlatformComponent(_character));
             Register(new SpriteFlipComponent(_character));
 
-            PlayerStats stats = ConfigReader.Rread(Path.Combine(Application.dataPath, SETING_PATH));
+            PlayerStats stats = ConfigReader.Rread(Path.Combine(Application.dataPath, _character.SettingPath));
             Register(stats);
         }
     }

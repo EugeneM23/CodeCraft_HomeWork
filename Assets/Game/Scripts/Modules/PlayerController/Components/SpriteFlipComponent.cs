@@ -15,8 +15,9 @@ namespace Modules.PlayerController
                 return;
             }
 
-            if (_character.Velocity.x < 0) _character.SpriteRenderer.flipX = true;
-            if (_character.Velocity.x > 0) _character.SpriteRenderer.flipX = false;
+            if (_character.MoveDirection.x < 0) _character.SpriteRenderer.flipX = true;
+            if (_character.MoveDirection.x > 0) _character.SpriteRenderer.flipX = false;
         }
     }
+    
 }

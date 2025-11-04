@@ -5,33 +5,32 @@ namespace Modules.PlayerController
     internal class MoveComponent : IVelocity, IMoveComponent
     {
         private readonly CharacterController2D _character;
+        private readonly ImpulseComponent _impulseComponent;
         private float _horizontalSpeed;
         private Vector2 _targetDirection;
 
-        public MoveComponent(CharacterController2D character) => _character = character;
+        public MoveComponent(CharacterController2D character, ImpulseComponent impulseComponent)
+        {
+            _character = character;
+            _impulseComponent = impulseComponent;
+        }
 
-        public void Move(Vector2 direction)
+        /*public void Move(Vector2 direction)
         {
             _targetDirection = direction;
-        }
+        }*/
 
-        public bool CanMove()
-        {
-            foreach (var item in _character.MoveCondition)
-                if (item.Invoke())
-                    return false;
-
-            return true;
-        }
-
-        public void InheritVelocity(float horizontal)
-        {
-            _horizontalSpeed = horizontal;
-        }
 
         public Vector2 GetVelocity()
         {
-            if (!CanMove()) return Vector2.zero;
+            _targetDirection = _character.MoveDirection;
+            if (!_character.CanMove) return Vector2.zero;
+
+            if (_impulseComponent.HasJustEnded)
+            {
+                _horizontalSpeed = _impulseComponent.EndVelocity;
+                _impulseComponent.AcknowledgeEnd();
+            }
 
             if (_character.IsOnWall && _character.WallDirection == _character.Velocity.x)
                 return Vector2.zero;
