@@ -17,7 +17,7 @@ namespace Gameplay
             
             _animator.Play(AnimationID.Idle);
 
-            if (Mathf.Abs(_character.Velocity.x) > 0.1f)
+            if (Mathf.Abs(_contoller.Velocity.x) > 0.1f)
                 _stateMachine.SetState<RunState>();
         }
     }

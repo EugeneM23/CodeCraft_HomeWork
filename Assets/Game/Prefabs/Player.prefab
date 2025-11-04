@@ -320,14 +320,12 @@ GameObject:
   - component: {fileID: 5643711827506904973}
   - component: {fileID: 4537528024654466014}
   - component: {fileID: 5626981465393170380}
-  - component: {fileID: 1168726062001797579}
-  - component: {fileID: 7304117886059908915}
-  - component: {fileID: 3698692355881946456}
   - component: {fileID: 3788572536378151966}
   - component: {fileID: 4355544034558131170}
-  - component: {fileID: 1646859192729148470}
   - component: {fileID: 2464818498196678020}
   - component: {fileID: 187488164384910502}
+  - component: {fileID: 9204874381127870231}
+  - component: {fileID: 1168726062001797579}
   m_Layer: 9
   m_Name: Player
   m_TagString: Character
@@ -419,54 +417,6 @@ CapsuleCollider2D:
   m_Offset: {x: 0, y: 0}
   m_Size: {x: 0.75, y: 1.3}
   m_Direction: 0
---- !u!114 &1168726062001797579
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7842712783245254731}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: abd83988b8cc44a88e486c54593817d7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _rigidbody2D: {fileID: 4537528024654466014}
-  _capsuleCollider: {fileID: 5626981465393170380}
-  _spriteRenderer: {fileID: 901116726241398886}
-  _layerMask:
-    serializedVersion: 2
-    m_Bits: 8
-  _settingPath: Game/Scripts/Modules/PlayerController/Configs/MoveConfig.json
---- !u!114 &7304117886059908915
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7842712783245254731}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0650ccfb29d24fd5b171c740e388d815, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _showDebug: 1
-  _toggleKey: 285
---- !u!114 &3698692355881946456
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7842712783245254731}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 02cf2598cfe14ab9977e6049be3c8d46, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  characterController2D: {fileID: 1168726062001797579}
-  _showDebug: 1
-  _toggleKey: 284
 --- !u!114 &3788572536378151966
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -481,8 +431,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   installers:
   - {fileID: 4355544034558131170}
-  - {fileID: 1646859192729148470}
   - {fileID: 187488164384910502}
+  - {fileID: 9204874381127870231}
 --- !u!114 &4355544034558131170
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -515,22 +465,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 195e397dd1a3245799a2eeae93f4aa94, type: 2}
   - {fileID: 11400000, guid: 349f755cbcbbb45f89caf3cbf0dd0442, type: 2}
   _spriteRenderer: {fileID: 901116726241398886}
---- !u!114 &1646859192729148470
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7842712783245254731}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0db16f4b24bc45fab14773af9c6f7177, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _jumpPrefab: {fileID: 6708921266048008112, guid: 8a383a4a291e746c38e74a89c179ee17, type: 3}
-  _rollPrefab: {fileID: 6708921266048008112, guid: a9f9356c9427c4cc5bf1351abc828f11, type: 3}
-  _smashPrefab: {fileID: 745031272938547566, guid: 43bef0fdbe1da48c5824d5b82ef8974a, type: 3}
-  _deathPrefab: {fileID: 5093879680652798486, guid: 3699dc9a41a7440dab313701db480222, type: 3}
 --- !u!114 &2464818498196678020
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -556,10 +490,46 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2877319ed06a42268e31a03e941e0209, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &9204874381127870231
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7842712783245254731}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a8531b1cb2241a68abcf19d3130dfe3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _entity: {fileID: 2464818498196678020}
   _character: {fileID: 1168726062001797579}
-  _health: 100
-  _attackEffect: {fileID: 4442827011764290, guid: 4f5a71e03aa40429bb18446af19f1dae, type: 3}
+  _damage: 100
+  _health: 1000
   _damageLayer:
     serializedVersion: 2
     m_Bits: 256
-  _hitPrefab: {fileID: 4181674187146696, guid: 16c03e7f3ed9346499aed39e42987c26, type: 3}
+  _hitEffect: {fileID: 4442827011764290, guid: 4f5a71e03aa40429bb18446af19f1dae, type: 3}
+  _jumpPrefab: {fileID: 6708921266048008112, guid: 8a383a4a291e746c38e74a89c179ee17, type: 3}
+  _rollPrefab: {fileID: 6708921266048008112, guid: a9f9356c9427c4cc5bf1351abc828f11, type: 3}
+  _smashPrefab: {fileID: 745031272938547566, guid: 43bef0fdbe1da48c5824d5b82ef8974a, type: 3}
+  _deathPrefab: {fileID: 5093879680652798486, guid: 3699dc9a41a7440dab313701db480222, type: 3}
+--- !u!114 &1168726062001797579
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7842712783245254731}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: abd83988b8cc44a88e486c54593817d7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _rigidbody2D: {fileID: 4537528024654466014}
+  _capsuleCollider: {fileID: 5626981465393170380}
+  _spriteRenderer: {fileID: 901116726241398886}
+  _layerMask:
+    serializedVersion: 2
+    m_Bits: 8
+  _settingPath: Game/Scripts/Modules/PlayerController/Configs/MoveConfig.json

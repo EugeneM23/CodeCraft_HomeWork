@@ -5,7 +5,7 @@ namespace Gameplay.Controllers
 {
     public class DashController : ITickable
     {
-        [Inject] private readonly CharacterController2D _character;
+        [Inject] private readonly Player _character;
 
         public void Tick()
         {

@@ -7,14 +7,17 @@ namespace Gameplay
     {
         protected SpriteAnimator _animator;
         protected StateMachine _stateMachine;
-        protected CharacterController2D _character;
+        protected CharacterController2D _contoller;
+        protected Character _character;
 
         [Inject]
-        public void Construct(SpriteAnimator animator, StateMachine stateMachine, CharacterController2D сharacter)
+        public void Construct(SpriteAnimator animator, StateMachine stateMachine, CharacterController2D controller,
+            Character player)
         {
+            _character = player;
             _animator = animator;
             _stateMachine = stateMachine;
-            _character = сharacter;
+            _contoller = controller;
         }
 
         public virtual void Enter()

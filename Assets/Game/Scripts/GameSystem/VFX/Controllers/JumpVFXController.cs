@@ -1,12 +1,15 @@
 using Modules.PlayerController;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace Gameplay
 {
     public class JumpVFXController : IInitializeble, IDisposable
     {
-        private Transform _prefab;
+        private readonly Transform _prefab;
+
         [Inject] private CharacterController2D _controller;
+        [Inject] private Character _character;
 
         public JumpVFXController(Transform prefab)
         {
@@ -15,7 +18,7 @@ namespace Gameplay
 
         private void SpawnEffect()
         {
-            float offset = _controller.transform.position.y - (_controller.Collider.size.y / 2);
+            float offset = _controller.transform.position.y - _controller.Collider.size.y / 2;
             Vector3 position = _controller.transform.position;
             position.y = offset;
 
@@ -23,8 +26,8 @@ namespace Gameplay
                 Quaternion.identity);
         }
 
-        public void Initialize() => _controller.OnJump += SpawnEffect;
+        public void Initialize() => _character.OnJump += SpawnEffect;
 
-        public void Dispose() => _controller.OnJump -= SpawnEffect;
+        public void Dispose() => _character.OnJump -= SpawnEffect;
     }
 }

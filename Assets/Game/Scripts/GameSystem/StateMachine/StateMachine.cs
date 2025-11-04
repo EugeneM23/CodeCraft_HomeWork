@@ -8,14 +8,17 @@ namespace Gameplay
 {
     public class StateMachine : IInitializeble, ITickable
     {
-        private CharacterController2D _сharacter;
         private readonly Dictionary<Type, BaseState> _states = new();
+
+        private Character _player;
+        private CharacterController2D _controller;
         private BaseState _currentState;
 
         [Inject]
-        public void Construct(List<BaseState> states, CharacterController2D character)
+        public void Construct(List<BaseState> states, CharacterController2D character, Character player)
         {
-            _сharacter = character;
+            _player = player;
+            _controller = character;
             foreach (BaseState state in states)
                 _states.Add(state.GetType(), state);
         }
@@ -24,9 +27,9 @@ namespace Gameplay
         {
             SetState<IdleState>();
 
-            _сharacter.OnDash += TransitionToDash;
-            _сharacter.OnJump += TransitionToJump;
-            _сharacter.OnSmash += TransitionToSmash;
+            _player.OnDash += TransitionToDash;
+            _player.OnJump += TransitionToJump;
+            _player.OnSmash += TransitionToSmash;
         }
 
         public void SetState<T>() where T : BaseState
@@ -41,14 +44,14 @@ namespace Gameplay
         public void Tick()
         {
             _currentState?.Tick();
-            
-            if (_сharacter.IsWallSliding)
+
+            if (_controller.IsWallSliding)
             {
                 SetState<WallSlideState>();
                 return;
             }
 
-            if (!_сharacter.IsGrounded)
+            if (!_controller.IsGrounded)
             {
                 SetState<FallMidState>();
                 return;
@@ -67,7 +70,7 @@ namespace Gameplay
 
         private void TransitionToDash()
         {
-            if (_сharacter.IsGrounded)
+            if (_controller.IsGrounded)
                 SetState<RollState>();
             else
                 SetState<DashState>();

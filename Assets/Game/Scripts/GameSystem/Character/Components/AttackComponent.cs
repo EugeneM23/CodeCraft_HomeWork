@@ -8,28 +8,36 @@ namespace Gameplay.Controllers
     {
         [Inject] private readonly StateMachine _stateMachine;
         [Inject] private readonly CharacterController2D _character;
-        [Inject] private readonly List<IAction> _actions;
+        [Inject] private readonly List<IEntityHitAction> _entityHitActions;
 
-        [Inject] private readonly DamageCaster _damageCaster;
+        [Inject] private readonly TargetSensor _targetSensor;
 
         private readonly float _attackTime = 0.2f;
         private float _attackTimer;
         private bool _isAttacking;
 
-        public interface IAction
+        public interface IEntityHitAction
         {
-            void Invoke();
+            void Invoke(RaycastHit2D hit, Entity entity);
         }
 
-        public void Initialize() => _damageCaster.OnHitTarget += HitTarget;
+        public interface IEnviromentHitAction
+        {
+            void Invoke(RaycastHit2D hit);
+        }
 
-        public void Dispose() => _damageCaster.OnHitTarget -= HitTarget;
+        public void Initialize() => _targetSensor.OnHitTarget += HitTarget;
+
+        public void Dispose() => _targetSensor.OnHitTarget -= HitTarget;
 
         private void HitTarget(RaycastHit2D hit)
         {
             if (hit.transform.TryGetComponent<Entity>(out var entity))
             {
-                entity.GetEntityComponent<IDamageable>().TakeDamage(100);
+                foreach (var item in _entityHitActions)
+                {
+                    item.Invoke(hit, entity);
+                }
             }
         }
 
@@ -42,9 +50,6 @@ namespace Gameplay.Controllers
             _attackTimer = 0f;
 
             _stateMachine.SetState<AttackState>();
-
-            foreach (var item in _actions)
-                item.Invoke();
         }
 
         public void Tick()

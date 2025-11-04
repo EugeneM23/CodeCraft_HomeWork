@@ -4,31 +4,30 @@ using UnityEngine;
 
 namespace Gameplay
 {
-    public class DamageCaster : IInitializeble, IDisposable
+    public class TargetSensor : IInitializeble, IDisposable
     {
         public event Action<RaycastHit2D> OnHitTarget;
+
         [Inject] private readonly SpriteAnimator _spriteAnimator;
         [Inject] private readonly CharacterController2D _character;
 
         private readonly LayerMask _layerMask;
-        private readonly Transform _prefab;
 
         private readonly float _castRadius = 0.5f;
         private readonly float _castDistance = 2f;
 
-        public DamageCaster(LayerMask layerMask, Transform prefab)
+        public TargetSensor(LayerMask layerMask)
         {
             _layerMask = layerMask;
-            _prefab = prefab;
         }
 
         public void Initialize()
         {
-            _spriteAnimator.OnEventRaised += DamageCast;
+            _spriteAnimator.OnEventRaised += Sens;
             Physics2D.queriesStartInColliders = false;
         }
 
-        private void DamageCast(EventID id)
+        private void Sens(EventID id)
         {
             if (id != EventID.CastDamage)
                 return;
@@ -44,7 +43,7 @@ namespace Gameplay
                 _layerMask
             );
 
-            if (hits.Length > 0) 
+            if (hits.Length > 0)
                 OnHitTarget?.Invoke(hits[0]);
 
             Debug.DrawRay(castOrigin, castDirection * _castDistance, Color.red, 0.5f);
@@ -52,7 +51,7 @@ namespace Gameplay
 
         public void Dispose()
         {
-            _spriteAnimator.OnEventRaised -= DamageCast;
+            _spriteAnimator.OnEventRaised -= Sens;
         }
     }
 }

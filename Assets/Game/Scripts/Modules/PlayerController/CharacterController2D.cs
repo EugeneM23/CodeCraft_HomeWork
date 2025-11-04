@@ -7,9 +7,6 @@ namespace Modules.PlayerController
 {
     public class CharacterController2D : MonoBehaviour
     {
-        public event Action OnDash;
-        public event Action OnSmash;
-        public event Action OnJump;
         public event Action<Vector2> OnGrounded;
         public event Action OnCollisionHit;
 
@@ -25,7 +22,6 @@ namespace Modules.PlayerController
         private CollisionComponent _collisionComponent;
         private SlopeSlideComponent _slopeSlideComponent;
         private WallSlidingComponent _wallSlidingComponent;
-        private JumpComponent _jumpComponent;
         private ImpulseComponent _impulseComponent;
         private Vector2 _lastFrameVelocity;
         private CharacterFacingComponent _facingComponent;
@@ -70,7 +66,6 @@ namespace Modules.PlayerController
 
             _collisionComponent = ServiceLocator.Get<CollisionComponent>();
             _wallSlidingComponent = ServiceLocator.Get<WallSlidingComponent>();
-            _jumpComponent = ServiceLocator.Get<JumpComponent>();
             _impulseComponent = ServiceLocator.Get<ImpulseComponent>();
             _facingComponent = ServiceLocator.Get<CharacterFacingComponent>();
         }
@@ -94,37 +89,7 @@ namespace Modules.PlayerController
             _rigidbody2D.linearVelocity = velocity;
         }
 
-        public void Move(Vector2 direction)
-        {
-            MoveDirection = direction;
-        }
-
-        public void Jump()
-        {
-            _jumpComponent.Jump();
-        }
-
-        public void CallJumpEvent()
-        {
-            OnJump?.Invoke();
-        }
-
-        public void TriggerGroundedEvent()
-        {
-            OnGrounded?.Invoke(_lastFrameVelocity);
-        }
-
-        public void Dash(Vector2 impulse)
-        {
-            OnDash?.Invoke();
-            _impulseComponent.AddImpulse(impulse);
-        }
-
-        public void Smash(Vector2 impulse)
-        {
-            OnSmash?.Invoke();
-            _impulseComponent.AddImpulse(impulse);
-        }
+        public void SetMoveDirection(Vector2 direction) => MoveDirection = direction;
 
         public void AddImpulse(Vector2 impulse)
         {
@@ -132,11 +97,11 @@ namespace Modules.PlayerController
             _impulseComponent.AddImpulse(impulse);
         }
 
+        public void TriggerGroundedEvent() => OnGrounded?.Invoke(_lastFrameVelocity);
+
         public void OnCollisionEnter2D(Collision2D other) => OnCollisionHit?.Invoke();
 
         public void ResetVelocity() => _rigidbody2D.linearVelocity = Vector2.zero;
-
-        public void AddMoveCondition(Func<bool> condition) => MoveCondition.Add(condition);
 
         private bool CheckMoveCondition()
         {
@@ -146,5 +111,7 @@ namespace Modules.PlayerController
 
             return true;
         }
+
+        public void AddMoveCondition(Func<bool> condition) => MoveCondition.Add(condition);
     }
 }

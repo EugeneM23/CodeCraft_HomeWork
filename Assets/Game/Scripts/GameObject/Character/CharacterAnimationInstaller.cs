@@ -1,8 +1,5 @@
-using Gameplay;
 using Gameplay.Controllers;
-using Modules.PlayerController;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Gameplay
 {
@@ -13,12 +10,8 @@ namespace Gameplay
 
         public override void Install(DiContainer container)
         {
-            var spriteAnimator = new SpriteAnimator(_animations, _spriteRenderer);
-            container.BindInterfacesAndSelf(spriteAnimator);
-
-            var stateMachine = new StateMachine();
-            container.BindInterfacesAndSelf(stateMachine);
-
+            container.BindInterfacesAndSelf(new SpriteAnimator(_animations, _spriteRenderer));
+            container.BindInterfacesAndSelf(new StateMachine());
             container.BindInterfacesAndSelf(new IdleState());
             container.BindInterfacesAndSelf(new RunState());
             container.BindInterfacesAndSelf(new JumpStartState());

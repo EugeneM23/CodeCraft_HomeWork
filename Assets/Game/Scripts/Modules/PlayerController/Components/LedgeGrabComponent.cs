@@ -21,7 +21,6 @@ namespace Modules.PlayerController
         public LedgeGrabComponent(CharacterController2D character)
         {
             _character = character;
-            _character.OnJump += ReleaseGrab;
         }
 
         public void Tick() => CheckLedges();

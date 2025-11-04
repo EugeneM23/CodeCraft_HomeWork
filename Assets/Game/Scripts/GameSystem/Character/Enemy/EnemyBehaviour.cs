@@ -7,9 +7,12 @@ namespace Game.Scripts.GameObject.Enemy
 {
     public class EnemyBehaviour : ITickable, IInitializeble
     {
-        [Inject] private readonly CharacterController2D _character;
+        [Inject] private readonly Entity _entity;
         [Inject] private readonly PlayerCharacterProvider _provider;
-        [Inject] private readonly StateMachine _stateMachine;
+
+        private CharacterController2D _controller;
+        private StateMachine _stateMachine;
+        private JumpComponent _jumpComponent;
 
         private readonly Transform[] _patrolPoints;
         private readonly float _chaseDistance = 10f;
@@ -25,26 +28,35 @@ namespace Game.Scripts.GameObject.Enemy
             _patrolPoints = patrolPoints;
         }
 
+        public void Initialize()
+        {
+            GetPatrolPoints();
+
+            _controller = _entity.GetEntityComponent<CharacterController2D>();
+            _stateMachine = _entity.GetEntityComponent<StateMachine>();
+            _jumpComponent = _entity.GetEntityComponent<JumpComponent>();
+        }
+
         public void Tick()
         {
-            var distance = Vector2.Distance(_character.transform.position, _provider.Player.transform.position);
+            var distance = Vector2.Distance(_controller.transform.position, _provider.Player.transform.position);
 
             // Проверяем потерю земли
-            if (_wasGrounded && !_character.IsGrounded)
+            if (_wasGrounded && !_controller.IsGrounded)
             {
-                _character.Jump();
+                _jumpComponent.Jump();
             }
 
-            _wasGrounded = _character.IsGrounded;
+            _wasGrounded = _controller.IsGrounded;
 
             // Если в воздухе - только двигаемся
-            if (!_character.IsGrounded)
+            if (!_controller.IsGrounded)
             {
                 if (distance < _chaseDistance)
                 {
-                    Vector2 direction = (_provider.Player.transform.position - _character.transform.position)
+                    Vector2 direction = (_provider.Player.transform.position - _controller.transform.position)
                         .normalized;
-                    _character.Move(direction);
+                    _controller.SetMoveDirection(direction);
                 }
 
                 return;
@@ -53,7 +65,7 @@ namespace Game.Scripts.GameObject.Enemy
             // Атака
             if (distance <= _attackDistance)
             {
-                _character.Move(Vector2.zero);
+                _controller.SetMoveDirection(Vector2.zero);
                 _stateMachine.SetState<AttackState>();
                 return;
             }
@@ -61,9 +73,9 @@ namespace Game.Scripts.GameObject.Enemy
             // Преследование
             if (distance < _chaseDistance)
             {
-                Vector2 direction = (_provider.Player.transform.position - _character.transform.position)
+                Vector2 direction = (_provider.Player.transform.position - _controller.transform.position)
                     .normalized;
-                _character.Move(direction);
+                _controller.SetMoveDirection(direction);
                 return;
             }
 
@@ -75,32 +87,30 @@ namespace Game.Scripts.GameObject.Enemy
         {
             if (_patrolPositions == null || _patrolPositions.Length == 0)
             {
-                _character.Move(Vector2.zero);
+                _controller.SetMoveDirection(Vector2.zero);
                 return;
             }
 
             Vector2 targetPoint = _patrolPositions[_currentPatrolIndex];
-            float distanceToWaypoint = Mathf.Abs(_character.transform.position.x - targetPoint.x);
-            Vector2 direction = (targetPoint - (Vector2)_character.transform.position).normalized;
+            float distanceToWaypoint = Mathf.Abs(_controller.transform.position.x - targetPoint.x);
+            Vector2 direction = (targetPoint - (Vector2)_controller.transform.position).normalized;
 
             if (distanceToWaypoint < _waypointReachDistance)
             {
                 _currentPatrolIndex = (_currentPatrolIndex + 1) % _patrolPositions.Length;
             }
 
-            _character.Move(direction);
+            _controller.SetMoveDirection(direction);
         }
 
-        public void Initialize()
+        private void GetPatrolPoints()
         {
             if (_patrolPoints != null && _patrolPoints.Length > 0)
             {
                 _patrolPositions = new Vector2[_patrolPoints.Length];
 
                 for (int i = 0; i < _patrolPoints.Length; i++)
-                {
                     _patrolPositions[i] = _patrolPoints[i].position;
-                }
             }
         }
     }

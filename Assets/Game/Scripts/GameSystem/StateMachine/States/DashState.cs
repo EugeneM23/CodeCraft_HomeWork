@@ -11,17 +11,17 @@ public class DashState : BaseState
     {
         _dashTimer = _dashDuration;
         _animator.PlayForce(AnimationID.Dash).CanBreak(false);
-        _character.OnCollisionHit += TransitToFall;
+        _contoller.OnCollisionHit += TransitToFall;
     }
 
     public override void Exit()
     {
-        _character.OnCollisionHit -= TransitToFall;
+        _contoller.OnCollisionHit -= TransitToFall;
     }
 
     public override void Tick()
     {
-        if (_character.IsWallSliding)
+        if (_contoller.IsWallSliding)
         {
             _stateMachine.SetState<WallSlideState>();
             return;

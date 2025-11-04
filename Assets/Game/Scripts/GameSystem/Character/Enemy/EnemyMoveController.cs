@@ -4,14 +4,14 @@ using UnityEngine;
 
 namespace Game.Scripts.GameObject.Enemy
 {
-    public class EnemyMoveController : IMoveController, ITickable
+    public class EnemyMoveController : ITickable
     {
         [Inject] private readonly CharacterController2D _character;
         public Vector2 CurrentDirection { get; private set; }
 
         public void Tick()
         {
-            _character.Move(CurrentDirection);
+            _character.SetMoveDirection(CurrentDirection);
         }
 
         public void SetDirection(Vector3 transformPosition)

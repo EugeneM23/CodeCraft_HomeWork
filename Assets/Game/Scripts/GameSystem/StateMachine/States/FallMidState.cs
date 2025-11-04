@@ -9,7 +9,7 @@ namespace Gameplay
         {
             base.Tick();
             _animator.Play(AnimationID.AirMid);
-            if (_character.IsGrounded) _stateMachine.SetState<LandingState>();
+            if (_contoller.IsGrounded) _stateMachine.SetState<LandingState>();
         }
     }
 }

@@ -6,7 +6,9 @@ namespace Gameplay
     public class RollVFXController : IInitializeble
     {
         [Inject] private CharacterController2D _controller;
-        private Transform _prefab;
+        [Inject] private Character _character;
+
+        private readonly Transform _prefab;
 
         public RollVFXController(Transform prefab)
         {
@@ -17,7 +19,7 @@ namespace Gameplay
         {
             if (!_controller.IsGrounded) return;
 
-            float offset = _controller.transform.position.y - (_controller.Collider.size.y / 2);
+            float offset = _controller.transform.position.y - _controller.Collider.size.y / 2;
             Vector3 position = _controller.transform.position;
             position.y = offset;
 
@@ -30,9 +32,7 @@ namespace Gameplay
 
         public void Initialize()
         {
-            _controller.OnDash += SpawnEffect;
+            _character.OnDash += SpawnEffect;
         }
     }
-
-    
 }

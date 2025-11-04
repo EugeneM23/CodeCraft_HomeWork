@@ -17,7 +17,6 @@ namespace Modules.PlayerController
         public SlopeSlideComponent(CharacterController2D character)
         {
             _character = character;
-            _character.OnJump += () => _slideVelocity = Vector2.zero;
         }
 
         public Vector2 GetVelocity()
