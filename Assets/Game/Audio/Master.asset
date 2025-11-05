@@ -25,6 +25,12 @@ MonoBehaviour:
     value: {fileID: 11400000, guid: 546b50a1f7f434c47aae1277bee68b30, type: 2}
   - identifier: landing
     value: {fileID: 11400000, guid: 2613a3b31b487496287fc1082431d5c8, type: 2}
+  - identifier: smash
+    value: {fileID: 11400000, guid: 41693ba6ddb9243cbb939b316781fa01, type: 2}
+  - identifier: throw
+    value: {fileID: 11400000, guid: 9f5bf34f735f34d71bf51159e51fa799, type: 2}
+  - identifier: collision
+    value: {fileID: 11400000, guid: a4ffbd56a81734d36825b29d02ab438c, type: 2}
   boolParameters: []
   intParameters: []
   floatParameters: []

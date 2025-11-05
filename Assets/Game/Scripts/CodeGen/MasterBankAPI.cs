@@ -13,6 +13,8 @@ namespace AudioEngine
         public const string DeathEvent = "master.death";
         public const string LandingEvent = "master.landing";
         public const string SmashEvent = "master.smash";
+        public const string ThrowEvent = "master.throw";
+        public const string CollisionEvent = "master.collision";
 
         ///Parameters
 

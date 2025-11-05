@@ -52,6 +52,8 @@ namespace Game.Scripts.GameObject.Enemy
             container.BindInterfacesAndSelf(new AttackSfxAttackAction());
             container.BindInterfacesAndSelf(new JumpSfxAttackAction());
             container.BindInterfacesAndSelf(new DeathSfxAction());
+            container.BindInterfacesAndSelf(new DashSfxAttackAction());
+            container.BindInterfacesAndSelf(new ThrowItemSfxAction());
             container.BindInterfacesAndSelf(new SmashSFXAction());
 
             container.BindInterfacesAndSelf(new LandingSFXComponent());

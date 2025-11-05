@@ -20,4 +20,4 @@ namespace Game.Scripts.GameObject.Enemy
                 MAX_FRIQUIENCY);
         }
     }
-}
+} 

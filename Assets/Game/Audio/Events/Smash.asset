@@ -20,7 +20,7 @@ MonoBehaviour:
   clip:
     rid: 4858561689069027943
   pitch:
-    rid: 4858561689069027944
+    rid: 4858561689069027974
   volume:
     rid: 4858561689069027945
   reverbZoneMix:
@@ -49,14 +49,10 @@ MonoBehaviour:
       type: {class: ClipConst, ns: AudioEngine, asm: AudioEngine}
       data:
         clip: {fileID: 8300000, guid: 8dfcae34791b3a447b81d6653208f596, type: 3}
-    - rid: 4858561689069027944
-      type: {class: FloatConst, ns: AudioEngine, asm: AudioEngine}
-      data:
-        value: 1
     - rid: 4858561689069027945
       type: {class: FloatConst, ns: AudioEngine, asm: AudioEngine}
       data:
-        value: 1
+        value: 0.5
     - rid: 4858561689069027946
       type: {class: FloatConst, ns: AudioEngine, asm: AudioEngine}
       data:
@@ -64,11 +60,11 @@ MonoBehaviour:
     - rid: 4858561689069027947
       type: {class: FloatConst, ns: AudioEngine, asm: AudioEngine}
       data:
-        value: 1
+        value: 2
     - rid: 4858561689069027948
       type: {class: FloatConst, ns: AudioEngine, asm: AudioEngine}
       data:
-        value: 500
+        value: 30
     - rid: 4858561689069027949
       type: {class: FloatConst, ns: AudioEngine, asm: AudioEngine}
       data:
@@ -77,3 +73,8 @@ MonoBehaviour:
       type: {class: FloatConst, ns: AudioEngine, asm: AudioEngine}
       data:
         value: 0
+    - rid: 4858561689069027974
+      type: {class: FloatRandom, ns: AudioEngine, asm: AudioEngine}
+      data:
+        minValue: 0.57
+        maxValue: 0.8

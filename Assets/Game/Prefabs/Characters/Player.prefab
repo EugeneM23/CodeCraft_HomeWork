@@ -327,6 +327,7 @@ GameObject:
   - component: {fileID: 9204874381127870231}
   - component: {fileID: 1168726062001797579}
   - component: {fileID: 6663216350268955131}
+  - component: {fileID: 9186673444636648091}
   m_Layer: 9
   m_Name: Player
   m_TagString: Character
@@ -567,3 +568,11 @@ MonoBehaviour:
   characterController2D: {fileID: 1168726062001797579}
   _showDebug: 1
   _toggleKey: 284
+--- !u!81 &9186673444636648091
+AudioListener:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7842712783245254731}
+  m_Enabled: 1
