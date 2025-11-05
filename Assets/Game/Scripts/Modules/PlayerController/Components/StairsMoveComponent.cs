@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Modules.PlayerController
 {
-    internal class StairsMoveComponent : IMoveComponent
+    public class StairsMoveComponent : IMoveComponent
     {
         private readonly CharacterController2D _character;
 

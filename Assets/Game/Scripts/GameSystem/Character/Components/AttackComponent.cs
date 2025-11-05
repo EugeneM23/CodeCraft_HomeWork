@@ -6,7 +6,7 @@ namespace Gameplay.Controllers
 {
     public class AttackComponent : ITickable, IInitializeble, IDisposable
     {
-        [Inject] private readonly StateMachine _stateMachine;
+        [Inject] private readonly AnimationFSM _animationFsm;
         [Inject] private readonly CharacterController2D _character;
         [Inject] private readonly List<IEntityHitAction> _entityHitActions;
 
@@ -49,7 +49,7 @@ namespace Gameplay.Controllers
             _isAttacking = true;
             _attackTimer = 0f;
 
-            _stateMachine.SetState<AttackState>();
+            _animationFsm.SetState<AttackState>();
         }
 
         public void Tick()

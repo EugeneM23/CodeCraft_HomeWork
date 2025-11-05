@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Game.Scripts.Modules.PlayerController.Data;
+using Gameplay;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -109,5 +110,6 @@ namespace Modules.PlayerController
         }
 
         public void AddMoveCondition(Func<bool> condition) => MoveCondition.Add(condition);
+
     }
 }

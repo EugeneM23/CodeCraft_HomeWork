@@ -40,7 +40,7 @@ namespace Gameplay.Controllers
             _timer += Time.deltaTime;
             if (_timer >= _animationTime)
             {
-                _stateMachine.SetState<IdleState>();
+                AnimationFsm.SetState<IdleState>();
             }
         }
     }

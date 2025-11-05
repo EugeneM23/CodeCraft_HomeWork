@@ -52,7 +52,7 @@ public class CameraFollow : MonoBehaviour
     {
         if (_provider.Player == null || isTransitioning) return;
 
-        Vector3 targetPos = _provider.Player.transform.position;
+        Vector3 targetPos = _provider.Player.Transfrom.position;
         targetPos.z = transform.position.z;
 
         float distance = Vector2.Distance(transform.position, targetPos);
@@ -95,7 +95,7 @@ public class CameraFollow : MonoBehaviour
 
         // Плавный переход к новому персонажу
         Vector3 startPos = transform.position;
-        Vector3 targetPos = _provider.Player.transform.position;
+        Vector3 targetPos = _provider.Player.Transfrom.position;
         targetPos.z = transform.position.z;
         targetPos = ClampToBoundaries(targetPos);
 
@@ -117,7 +117,7 @@ public class CameraFollow : MonoBehaviour
 
     private void SnapToPlayer()
     {
-        Vector3 targetPos = _provider.Player.transform.position;
+        Vector3 targetPos = _provider.Player.Transfrom.position;
         targetPos.z = transform.position.z;
         transform.position = ClampToBoundaries(targetPos);
     }

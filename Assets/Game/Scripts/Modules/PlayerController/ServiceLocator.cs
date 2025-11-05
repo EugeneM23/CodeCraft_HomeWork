@@ -43,7 +43,7 @@ namespace Modules.PlayerController
             Initialize();
         }
 
-        public void Initialize()
+        private void Initialize()
         {
             var impulseComponent = new ImpulseComponent(_character);
             Register(impulseComponent);

@@ -11,19 +11,19 @@ public class DashState : BaseState
     {
         _dashTimer = _dashDuration;
         _animator.PlayForce(AnimationID.Dash).CanBreak(false);
-        _contoller.OnCollisionHit += TransitToFall;
+        _character.OnCollisionHit += TransitToFall;
     }
 
     public override void Exit()
     {
-        _contoller.OnCollisionHit -= TransitToFall;
+        _character.OnCollisionHit -= TransitToFall;
     }
 
     public override void Tick()
     {
-        if (_contoller.IsWallSliding)
+        if (_character.IsWallSliding)
         {
-            _stateMachine.SetState<WallSlideState>();
+            AnimationFsm.SetState<WallSlideState>();
             return;
         }
 
@@ -33,5 +33,5 @@ public class DashState : BaseState
             TransitToFall();
     }
 
-    private void TransitToFall() => _stateMachine.SetState<FallMidState>();
+    private void TransitToFall() => AnimationFsm.SetState<FallMidState>();
 }

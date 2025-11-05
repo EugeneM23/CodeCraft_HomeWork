@@ -11,7 +11,7 @@ namespace Gameplay
         public override void Install(DiContainer container)
         {
             container.BindInterfacesAndSelf(new SpriteAnimator(_animations, _spriteRenderer));
-            container.BindInterfacesAndSelf(new StateMachine());
+            container.BindInterfacesAndSelf(new AnimationFSM());
             container.BindInterfacesAndSelf(new IdleState());
             container.BindInterfacesAndSelf(new RunState());
             container.BindInterfacesAndSelf(new JumpStartState());

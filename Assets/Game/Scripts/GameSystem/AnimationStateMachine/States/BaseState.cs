@@ -6,18 +6,15 @@ namespace Gameplay
     public class BaseState
     {
         protected SpriteAnimator _animator;
-        protected StateMachine _stateMachine;
-        protected CharacterController2D _contoller;
+        protected AnimationFSM AnimationFsm;
         protected Character _character;
 
         [Inject]
-        public void Construct(SpriteAnimator animator, StateMachine stateMachine, CharacterController2D controller,
-            Character player)
+        public void Construct(SpriteAnimator animator, AnimationFSM animationFsm, Character character)
         {
-            _character = player;
+            _character = character;
             _animator = animator;
-            _stateMachine = stateMachine;
-            _contoller = controller;
+            AnimationFsm = animationFsm;
         }
 
         public virtual void Enter()

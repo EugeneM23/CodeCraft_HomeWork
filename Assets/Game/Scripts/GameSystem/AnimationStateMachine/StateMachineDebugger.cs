@@ -5,7 +5,7 @@ using UnityEngine;
 
 internal class StateMachineDebugger : MonoBehaviour
 {
-    [Inject] private StateMachine _stateMachine;
+    [Inject] private AnimationFSM _animationFsm;
     [Inject] private SpriteAnimator _animator;
     [SerializeField] private bool _showDebug = true;
     [SerializeField] private KeyCode _toggleKey = KeyCode.F4;
@@ -32,16 +32,16 @@ internal class StateMachineDebugger : MonoBehaviour
 
     private void UpdateStateTracking()
     {
-        if (_stateMachine == null) return;
+        if (_animationFsm == null) return;
 
         try
         {
-            var currentStateField = typeof(StateMachine).GetField("_currentState",
+            var currentStateField = typeof(AnimationFSM).GetField("_currentState",
                 System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
 
             if (currentStateField != null)
             {
-                var currentState = currentStateField.GetValue(_stateMachine);
+                var currentState = currentStateField.GetValue(_animationFsm);
                 if (currentState != null)
                 {
                     Type newStateType = currentState.GetType();
@@ -98,7 +98,7 @@ internal class StateMachineDebugger : MonoBehaviour
 
     private void OnGUI()
     {
-        if (!_showDebug || _stateMachine == null) return;
+        if (!_showDebug || _animationFsm == null) return;
 
         InitializeStyles();
 
@@ -253,7 +253,7 @@ internal class StateMachineDebugger : MonoBehaviour
 #if UNITY_EDITOR
     private void OnDrawGizmos()
     {
-        if (_stateMachine == null || _currentStateType == null) return;
+        if (_animationFsm == null || _currentStateType == null) return;
 
         // Визуализация текущего состояния
         Vector3 debugPos = transform.position + Vector3.up * 2.5f;

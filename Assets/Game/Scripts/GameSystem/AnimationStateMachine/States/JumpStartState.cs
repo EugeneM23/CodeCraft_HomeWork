@@ -9,7 +9,7 @@ namespace Gameplay
             base.Tick();
             
             if (_animator.CurrentAnimation.CanInterrupt)
-                _stateMachine.SetState<FallMidState>();
+                AnimationFsm.SetState<FallMidState>();
         }
     }
 }

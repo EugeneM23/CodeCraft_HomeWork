@@ -10,9 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 6708921266048008112}
   - component: {fileID: 4878737706768346367}
-  - component: {fileID: 8514366258295164170}
-  - component: {fileID: 5590908311297847801}
-  - component: {fileID: 954756848665882}
+  - component: {fileID: 7654281030176452693}
+  - component: {fileID: 4338554599957004144}
   m_Layer: 0
   m_Name: RollDust
   m_TagString: Untagged
@@ -90,7 +89,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &8514366258295164170
+--- !u!114 &7654281030176452693
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -99,12 +98,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 4426153498857860807}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 597af640a5b840f4b9a722ea8b6559a0, type: 3}
+  m_Script: {fileID: 11500000, guid: 51aa66c538664b1fbf234a235584340d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  installers:
-  - {fileID: 954756848665882}
---- !u!114 &5590908311297847801
+  _spriteRenderer: {fileID: 4878737706768346367}
+  _animations:
+  - {fileID: 11400000, guid: 5869d463022794bbcae0eb4433f4a56a, type: 2}
+--- !u!114 &4338554599957004144
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -117,18 +117,3 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lifetime: 0.5
---- !u!114 &954756848665882
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4426153498857860807}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5813c77ec9004e12812c9441a7c67da9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _animations:
-  - {fileID: 11400000, guid: 5869d463022794bbcae0eb4433f4a56a, type: 2}
-  _spriteRenderer: {fileID: 4878737706768346367}

@@ -6,12 +6,12 @@ namespace Gameplay
     {
         [Inject] private readonly Character _character;
         [Inject] private readonly SpriteAnimator _animator;
-        [Inject] private readonly StateMachine _stateMachine;
+        [Inject] private readonly AnimationFSM _animationFsm;
 
         public void Tick()
         {
             if (Input.GetKeyDown(KeyCode.E))
-                _stateMachine.SetState<ThrowItemState>();
+                _animationFsm.SetState<ThrowItemState>();
         }
 
         public void Initialize() => _animator.OnEventRaised += ThrowItem;

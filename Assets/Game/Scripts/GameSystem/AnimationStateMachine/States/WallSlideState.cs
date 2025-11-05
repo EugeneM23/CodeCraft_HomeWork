@@ -8,8 +8,8 @@ namespace Gameplay
         {
             _animator.Play(AnimationID.WallSlide);
 
-            if (!_contoller.IsWallSliding) 
-                _stateMachine.SetState<IdleState>();
+            if (!_character.IsWallSliding) 
+                AnimationFsm.SetState<IdleState>();
         }
     }
 }

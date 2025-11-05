@@ -9,7 +9,7 @@ namespace Gameplay
         public override void Tick()
         {
             if (_animator.CurrentAnimation.CanInterrupt)
-                _stateMachine.SetState<IdleState>();
+                AnimationFsm.SetState<IdleState>();
         }
     }
 }

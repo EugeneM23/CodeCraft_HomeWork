@@ -11,7 +11,7 @@ namespace Game.Scripts.GameObject.Enemy
         [Inject] private readonly PlayerCharacterProvider _provider;
 
         private CharacterController2D _controller;
-        private StateMachine _stateMachine;
+        private AnimationFSM _animationFsm;
         private JumpComponent _jumpComponent;
 
         private readonly Transform[] _patrolPoints;
@@ -33,13 +33,13 @@ namespace Game.Scripts.GameObject.Enemy
             GetPatrolPoints();
 
             _controller = _entity.GetEntityComponent<CharacterController2D>();
-            _stateMachine = _entity.GetEntityComponent<StateMachine>();
+            _animationFsm = _entity.GetEntityComponent<AnimationFSM>();
             _jumpComponent = _entity.GetEntityComponent<JumpComponent>();
         }
 
         public void Tick()
         {
-            var distance = Vector2.Distance(_controller.transform.position, _provider.Player.transform.position);
+            var distance = Vector2.Distance(_controller.transform.position, _provider.Player.Transfrom.position);
 
             // Проверяем потерю земли
             if (_wasGrounded && !_controller.IsGrounded)
@@ -54,7 +54,7 @@ namespace Game.Scripts.GameObject.Enemy
             {
                 if (distance < _chaseDistance)
                 {
-                    Vector2 direction = (_provider.Player.transform.position - _controller.transform.position)
+                    Vector2 direction = (_provider.Player.Transfrom.position - _controller.transform.position)
                         .normalized;
                     _controller.SetMoveDirection(direction);
                 }
@@ -66,14 +66,14 @@ namespace Game.Scripts.GameObject.Enemy
             if (distance <= _attackDistance)
             {
                 _controller.SetMoveDirection(Vector2.zero);
-                _stateMachine.SetState<AttackState>();
+                _animationFsm.SetState<AttackState>();
                 return;
             }
 
             // Преследование
             if (distance < _chaseDistance)
             {
-                Vector2 direction = (_provider.Player.transform.position - _controller.transform.position)
+                Vector2 direction = (_provider.Player.Transfrom.position - _controller.transform.position)
                     .normalized;
                 _controller.SetMoveDirection(direction);
                 return;
