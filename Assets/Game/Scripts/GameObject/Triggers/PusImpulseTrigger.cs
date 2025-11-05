@@ -1,8 +1,9 @@
+using Modules.PlayerController;
 using UnityEngine;
 
-namespace Modules.PlayerController
+namespace Game.Scripts.GameObject.Triggers
 {
-    internal class PushTrigger : MonoBehaviour
+    internal class PusImpulseTrigger : MonoBehaviour
     {
         private void OnTriggerEnter2D(Collider2D other)
         {

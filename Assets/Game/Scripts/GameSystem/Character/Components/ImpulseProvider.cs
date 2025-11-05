@@ -12,4 +12,9 @@ public class ImpulseProvider : MonoBehaviour, IImpulse
     {
         _rigidbody.AddForce(power, ForceMode2D.Impulse);
     }
+
+    public void AddTorque(int power)
+    {
+        _rigidbody.AddTorque(power, ForceMode2D.Impulse);
+    }
 }

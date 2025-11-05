@@ -24,6 +24,7 @@ namespace Gameplay
             container.BindInterfacesAndSelf(new FrontFlipState());
             container.BindInterfacesAndSelf(new SmashState());
             container.BindInterfacesAndSelf(new AttackState());
+            container.BindInterfacesAndSelf(new ThrowItemState());
         }
     }
 }

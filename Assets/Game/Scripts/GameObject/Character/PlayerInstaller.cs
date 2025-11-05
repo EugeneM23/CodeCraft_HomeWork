@@ -1,4 +1,6 @@
+using System;
 using Gameplay.Controllers;
+using Modules.PlayerController;
 using UnityEngine;
 
 namespace Gameplay
@@ -16,6 +18,7 @@ namespace Gameplay
             container.BindInterfacesAndSelf(new DashController());
             container.BindInterfacesAndSelf(new SpawnPlayerAction());
             container.BindInterfacesAndSelf(new AttackController());
+            container.BindInterfacesAndSelf(new ThrowItemController());
             container.BindInterfacesAndSelf(new WallSmashDamageComponent());
         }
     }

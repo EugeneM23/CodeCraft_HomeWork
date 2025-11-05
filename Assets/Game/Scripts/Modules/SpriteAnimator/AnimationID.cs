@@ -20,6 +20,7 @@ namespace Gameplay
         KickC,
         PunchA,
         PunchB,
-        PunchC
+        PunchC,
+        ThrowItem
     }
 }

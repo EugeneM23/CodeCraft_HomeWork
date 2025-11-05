@@ -1,11 +1,10 @@
 fileFormatVersion: 2
-guid: 605582d2ad70345479c0294b58f2438d
+guid: cefe0a90f696042a7aedd3d7f4fae353
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -2141285589490821624
-    second: "\u041F\u0456\u043A\u0441\u0435\u043B\u044C\u043D\u0435 \u043B\u0435\u0437\u043E
-      \u043F\u0438\u043B\u043E\u0440\u0430\u043C\u0438_0"
+      213: 5843985864524226762
+    second: Chair_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -127,14 +126,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: "\u041F\u0456\u043A\u0441\u0435\u043B\u044C\u043D\u0435 \u043B\u0435\u0437\u043E
-        \u043F\u0438\u043B\u043E\u0440\u0430\u043C\u0438_0"
+      name: Chair_0
       rect:
         serializedVersion: 2
-        x: 3
+        x: 0
         y: 0
-        width: 1019
-        height: 1019
+        width: 1024
+        height: 1531
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -143,8 +141,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 8069cb3f910a842e0800000000000000
-      internalID: -2141285589490821624
+      spriteID: ac0ee575e220a1150800000000000000
+      internalID: 5843985864524226762
       vertices: []
       indices: 
       edges: []

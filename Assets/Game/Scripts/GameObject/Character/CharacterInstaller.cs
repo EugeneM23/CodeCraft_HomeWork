@@ -14,8 +14,8 @@ namespace Game.Scripts.GameObject.Enemy
         [SerializeField] private int _damage;
         [SerializeField] private int _health;
         [SerializeField] private LayerMask _damageLayer;
+        [SerializeField] private LayerMask _throwItemLayer;
         [SerializeField] private Transform _hitEffect;
-
         [SerializeField] private Transform _jumpPrefab;
         [SerializeField] private Transform _rollPrefab;
         [SerializeField] private Transform _smashPrefab;
@@ -30,6 +30,7 @@ namespace Game.Scripts.GameObject.Enemy
             container.BindInterfacesAndSelf(new AttackComponent());
             container.BindInterfacesAndSelf(new ImpulseComponent());
             container.BindInterfacesAndSelf(new JumpComponent());
+            container.BindInterfacesAndSelf(new ThrowItemComponent(_throwItemLayer));
             container.BindInterfacesAndSelf(new SmashComponent());
             container.BindInterfacesAndSelf(new TargetSensor(_damageLayer));
             container.BindInterfacesAndSelf(new DealDamageAction(_damage));

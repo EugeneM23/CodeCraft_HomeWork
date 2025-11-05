@@ -1,7 +1,8 @@
 using System;
+using Modules.PlayerController;
 using UnityEngine;
 
-namespace Modules.PlayerController
+namespace Game.Scripts.GameObject.Triggers
 {
     public class ThrowItemTrigger : MonoBehaviour
     {
@@ -10,17 +11,23 @@ namespace Modules.PlayerController
 
         private void OnTriggerStay2D(Collider2D other)
         {
-            Debug.Log("Stay");
+            Debug.Log(other.name);
             if (Input.GetKeyDown(KeyCode.E))
             {
                 if (other.TryGetComponent(out CharacterController2D player))
                 {
+                    Debug.Log("Throw Item");
                     _rigidbody.bodyType = RigidbodyType2D.Dynamic;
-                    Vector3 direction = (transform.position - player.transform.position).normalized;
-                    direction.y = 0;
+
+                    Vector2 direction = new Vector2(player.LookDirection, 0);
                     _rigidbody.AddForce(direction * _power, ForceMode2D.Impulse);
                 }
             }
+        }
+
+        private void OnCollisionEnter2D(Collision2D other)
+        {
+            Debug.Log(other.gameObject.name);
         }
     }
 }

@@ -30,7 +30,10 @@ namespace Gameplay
             _player.OnDash += TransitionToDash;
             _player.OnJump += TransitionToJump;
             _player.OnSmash += TransitionToSmash;
+            _player.OnItemThrow += TransitionToThrowItem;
         }
+
+        private void TransitionToThrowItem() => SetState<ThrowItemState>();
 
         public void SetState<T>() where T : BaseState
         {

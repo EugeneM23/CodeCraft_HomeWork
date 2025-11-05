@@ -7,6 +7,7 @@ namespace Gameplay
     public enum EventID
     {
         None,
-        CastDamage
+        CastDamage,
+        ThrowItem,
     }
 }
