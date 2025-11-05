@@ -10,7 +10,6 @@ namespace Gameplay
 
         private void OnTriggerEnter2D(Collider2D other)
         {
-            Debug.Log(other.gameObject.name);
             if (other.TryGetComponent(out Entity entity))
             {
                 Character character = entity.GetEntityComponent<Character>();

@@ -2,23 +2,42 @@ using Gameplay;
 using Modules.PlayerController;
 using UnityEngine;
 
-public class ThrowItemComponent
+public class ThrowItemComponent : ITickable
 {
     [Inject] private CharacterController2D _controller;
 
     private readonly LayerMask _entityMask;
     private readonly float _distance = 2f;
+    private readonly float _throwDuration = 0.1f;
 
     private bool _searchDone = true;
+    private float _throwTimer = 0f;
+    private bool _isThrowing = false;
 
     public ThrowItemComponent(LayerMask entityMask)
     {
         _entityMask = entityMask;
     }
 
+    public void Tick()
+    {
+        if (_isThrowing)
+        {
+            _throwTimer -= Time.deltaTime;
+
+            if (_throwTimer <= 0f)
+            {
+                _isThrowing = false;
+                _throwTimer = 0f;
+            }
+        }
+    }
+
     public void ThrowItem()
     {
         _searchDone = true;
+        _isThrowing = true;
+        _throwTimer = _throwDuration;
 
         Vector2 position = _controller.transform.position;
 
@@ -33,4 +52,6 @@ public class ThrowItemComponent
             item.GetComponent<ImpulseProvider>().AddTorque(50);
         }
     }
+
+    public bool IsThrowing() => _isThrowing;
 }

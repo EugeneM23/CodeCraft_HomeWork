@@ -29,6 +29,7 @@ namespace Gameplay
         public virtual void Initialize()
         {
             _characterController.AddMoveCondition(_attackComponent.IsAttacking);
+            _characterController.AddMoveCondition(_throwItemComponent.IsThrowing);
         }
 
         public void Attack() => _attackComponent.Attack();

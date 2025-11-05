@@ -3,7 +3,6 @@ using Gameplay.Controllers;
 using Gameplay.Controllers.AttackAction;
 using Modules.PlayerController;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Game.Scripts.GameObject.Enemy
 {

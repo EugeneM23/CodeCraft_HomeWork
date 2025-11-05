@@ -1,6 +1,5 @@
 using Modules.PlayerController;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace Gameplay
 {
