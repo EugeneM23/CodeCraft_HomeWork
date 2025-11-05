@@ -63,10 +63,7 @@ namespace Gameplay
 
             foreach (EventID item in eventIds)
                 if (item != EventID.None)
-                {
-                    Debug.Log(_currentFrame + " " + eventIds.ToString());
                     OnEventRaised?.Invoke(item);
-                }
         }
 
         public SpriteAnimator Play(AnimationID id)

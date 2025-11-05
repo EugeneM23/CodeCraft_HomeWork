@@ -1,11 +1,11 @@
 using AudioEngine;
 using Gameplay;
-using Gameplay.Controllers;
+using Modules.PlayerController;
 using UnityEngine;
 
 namespace Game.Scripts.GameObject.Enemy
 {
-    public class AttackSfxAttackAction : AttackComponent.IAttackAction, IInitializeble
+    public class DeathSfxAction : CharacterDeathObserver.IAction, IInitializeble
     {
         [Inject] private readonly Character _character;
         private float MAX_FRIQUIENCY = 0.1f;
@@ -14,9 +14,9 @@ namespace Game.Scripts.GameObject.Enemy
 
         public void Initialize() => _audioSystem = AudioSystem.Instance;
 
-        public void Invoke()
+        public void Invoke(CharacterController2D character)
         {
-            _audioSystem.PlayEvent(MasterBankAPI.SlashEvent, _character.Transfrom.position, Quaternion.identity,
+            _audioSystem.PlayEvent(MasterBankAPI.DeathEvent, _character.Transfrom.position, Quaternion.identity,
                 MAX_FRIQUIENCY);
         }
     }

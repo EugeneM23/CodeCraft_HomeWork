@@ -19,6 +19,12 @@ MonoBehaviour:
     value: {fileID: 11400000, guid: 8532bae28f68a48bc8b541fb69b0aa00, type: 2}
   - identifier: step
     value: {fileID: 11400000, guid: bc8c70b6477fc4a849062e6f7488eebc, type: 2}
+  - identifier: jump
+    value: {fileID: 11400000, guid: aabfd04f916f4487ca2d2e959bca26fa, type: 2}
+  - identifier: death
+    value: {fileID: 11400000, guid: 546b50a1f7f434c47aae1277bee68b30, type: 2}
+  - identifier: landing
+    value: {fileID: 11400000, guid: 2613a3b31b487496287fc1082431d5c8, type: 2}
   boolParameters: []
   intParameters: []
   floatParameters: []

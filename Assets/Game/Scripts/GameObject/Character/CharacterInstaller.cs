@@ -48,10 +48,14 @@ namespace Game.Scripts.GameObject.Enemy
             container.BindInterfacesAndSelf(new SpawnSmashEffectAction(_smashPrefab));
             container.BindInterfacesAndSelf(new SmashImpulseAction(_damageLayer));
             container.BindInterfacesAndSelf(new SpawnDeathEffectAction(_deathPrefab));
+
             container.BindInterfacesAndSelf(new AttackSfxAttackAction());
-            
+            container.BindInterfacesAndSelf(new JumpSfxAttackAction());
+            container.BindInterfacesAndSelf(new DeathSfxAction());
+            container.BindInterfacesAndSelf(new SmashSFXAction());
+
+            container.BindInterfacesAndSelf(new LandingSFXComponent());
             container.BindInterfacesAndSelf(new StepSFXComponent());
-            container.BindInterfacesAndSelf(new StepSFXController());
         }
     }
 }

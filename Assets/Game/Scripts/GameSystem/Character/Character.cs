@@ -39,6 +39,7 @@ namespace Gameplay
         {
             _characterController.OnGrounded += Grounded;
             _characterController.OnCollisionHit += ColisionHit;
+
             _characterController.AddMoveCondition(_attackComponent.IsAttacking);
             _characterController.AddMoveCondition(_throwItemComponent.IsThrowing);
         }
