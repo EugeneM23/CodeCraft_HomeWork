@@ -3,19 +3,18 @@ using UnityEngine;
 
 namespace Gameplay
 {
-    public class JumpVFXController : IInitializeble, IDisposable
+    public class SpawnJumpEffectAction : JumpComponent.IAction
     {
         private readonly Transform _prefab;
 
         [Inject] private CharacterController2D _controller;
-        [Inject] private Character _character;
 
-        public JumpVFXController(Transform prefab)
+        public SpawnJumpEffectAction(Transform prefab)
         {
             _prefab = prefab;
         }
 
-        private void SpawnEffect()
+        public void Invoke()
         {
             float offset = _controller.transform.position.y - _controller.Collider.size.y / 2;
             Vector3 position = _controller.transform.position;
@@ -24,9 +23,5 @@ namespace Gameplay
             SceneContext.Instance.Container.InstantiatePrefab(_prefab, position,
                 Quaternion.identity);
         }
-
-        public void Initialize() => _character.OnJump += SpawnEffect;
-
-        public void Dispose() => _character.OnJump -= SpawnEffect;
     }
 }

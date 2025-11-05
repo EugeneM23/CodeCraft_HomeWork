@@ -5,7 +5,7 @@ namespace Gameplay.Controllers
 {
     public class DashController : ITickable
     {
-        [Inject] private readonly Player _character;
+        [Inject] private readonly DashComponent _component;
 
         public void Tick()
         {
@@ -15,9 +15,9 @@ namespace Gameplay.Controllers
             if (right || left)
             {
                 if (right)
-                    _character.Dash(Vector2.right * 50f);
+                    _component.Dash(Vector2.right);
                 else if (left)
-                    _character.Dash(Vector2.left * 50f);
+                    _component.Dash(Vector2.left);
             }
         }
     }

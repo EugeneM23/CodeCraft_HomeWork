@@ -27,6 +27,7 @@ namespace Game.Scripts.GameObject.Enemy
             container.BindInterfacesAndSelf(new HealthComponent(_health));
             container.BindInterfacesAndSelf(new CharacterDeathObserver());
             container.BindInterfacesAndSelf(new AttackComponent());
+            container.BindInterfacesAndSelf(new DashComponent());
             container.BindInterfacesAndSelf(new ImpulseComponent());
             container.BindInterfacesAndSelf(new JumpComponent());
             container.BindInterfacesAndSelf(new ThrowItemComponent(_throwItemLayer));
@@ -35,9 +36,8 @@ namespace Game.Scripts.GameObject.Enemy
             container.BindInterfacesAndSelf(new DealDamageAction(_damage));
             container.BindInterfacesAndSelf(new SpawnHitEffectAction(_hitEffect));
 
-            container.BindInterfacesAndSelf(new JumpVFXController(_jumpPrefab));
-            container.BindInterfacesAndSelf(new RollVFXController(_rollPrefab));
-
+            container.BindInterfacesAndSelf(new SpawnDashEffectAction(_rollPrefab));
+            container.BindInterfacesAndSelf(new SpawnJumpEffectAction(_jumpPrefab));
             container.BindInterfacesAndSelf(new SpawnSmashEffectAction(_smashPrefab));
             container.BindInterfacesAndSelf(new SmashImpulseAction(_damageLayer));
             container.BindInterfacesAndSelf(new SpawnDeathEffectAction(_deathPrefab));

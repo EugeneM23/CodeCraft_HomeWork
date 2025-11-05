@@ -53,5 +53,5 @@ public class ThrowItemComponent : ITickable
         }
     }
 
-    public bool IsThrowing() => _isThrowing;
+    public bool IsThrowing() => _isThrowing && _controller.IsGrounded;
 }

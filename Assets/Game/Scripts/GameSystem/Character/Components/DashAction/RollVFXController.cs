@@ -1,21 +1,17 @@
+using Gameplay.Controllers;
 using Modules.PlayerController;
 using UnityEngine;
 
 namespace Gameplay
 {
-    public class RollVFXController : IInitializeble
+    public class SpawnDashEffectAction : DashComponent.IAction
     {
         [Inject] private CharacterController2D _controller;
-        [Inject] private Character _character;
-
         private readonly Transform _prefab;
 
-        public RollVFXController(Transform prefab)
-        {
-            _prefab = prefab;
-        }
+        public SpawnDashEffectAction(Transform prefab) => _prefab = prefab;
 
-        private void SpawnEffect()
+        public void Invoke()
         {
             if (!_controller.IsGrounded) return;
 
@@ -28,11 +24,6 @@ namespace Gameplay
             var spriteRenderer = prefab.GetComponent<SpriteRenderer>();
 
             if (_controller.Velocity.x < 0) spriteRenderer.flipX = true;
-        }
-
-        public void Initialize()
-        {
-            _character.OnDash += SpawnEffect;
         }
     }
 }
