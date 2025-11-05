@@ -1,4 +1,4 @@
 {
   "name": "Game",
-  "references":[ "Di", "SpriteAnimator", "CharacterController2D" ]
+  "references":[ "Di", "SpriteAnimator", "CharacterController2D", "AudioEngine" ]
 }

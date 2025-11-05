@@ -7,6 +7,7 @@ namespace Gameplay
 {
     public class Character : IInitializeble
     {
+        public event Action OnAttack;
         public event Action OnCollisionHit;
         public event Action<Vector2> OnGrounded;
         public event Action<StateType> OnDash;
@@ -15,7 +16,7 @@ namespace Gameplay
         public event Action<StateType> OnSmash;
 
         private CharacterController2D _characterController;
-        
+
         private AttackComponent _attackComponent;
         private ThrowItemComponent _throwItemComponent;
         public Transform Transfrom => _characterController.transform;
@@ -46,7 +47,11 @@ namespace Gameplay
 
         private void Grounded(Vector2 point) => OnGrounded?.Invoke(point);
 
-        public void Attack() => _attackComponent.Attack();
+        public void Attack()
+        {
+            if (_attackComponent.Attack())
+                OnAttack?.Invoke();
+        }
 
         public void ThrowItem()
         {

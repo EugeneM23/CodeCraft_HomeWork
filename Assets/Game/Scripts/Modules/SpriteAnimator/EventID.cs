@@ -9,5 +9,6 @@ namespace Gameplay
         None,
         CastDamage,
         ThrowItem,
+        Step
     }
 }

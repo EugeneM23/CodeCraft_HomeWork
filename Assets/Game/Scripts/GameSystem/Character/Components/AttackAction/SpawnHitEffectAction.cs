@@ -3,11 +3,11 @@ using UnityEngine;
 
 namespace Gameplay.Controllers.AttackAction
 {
-    public class SpawnHitEffectAction : AttackComponent.IEntityHitAction
+    public class SpawnHitEffectAttackAction : AttackComponent.IHitAction
     {
         private readonly Transform _prefab;
 
-        public SpawnHitEffectAction(Transform prefab)
+        public SpawnHitEffectAttackAction(Transform prefab)
         {
             _prefab = prefab;
         }

@@ -8,22 +8,22 @@ namespace Gameplay.Controllers
     {
         [Inject] private readonly AnimationFSM _animationFsm;
         [Inject] private readonly CharacterController2D _character;
-        [Inject] private readonly List<IEntityHitAction> _entityHitActions;
-
+        [Inject] private readonly List<IAttackAction> _attackActions;
+        [Inject] private readonly List<IHitAction> _hitActions;
         [Inject] private readonly TargetSensor _targetSensor;
 
         private readonly float _attackTime = 0.2f;
         private float _attackTimer;
         private bool _isAttacking;
 
-        public interface IEntityHitAction
+        public interface IAttackAction
         {
-            void Invoke(RaycastHit2D hit, Entity entity);
+            void Invoke();
         }
 
-        public interface IEnviromentHitAction
+        public interface IHitAction
         {
-            void Invoke(RaycastHit2D hit);
+            void Invoke(RaycastHit2D hit, Entity entity);
         }
 
         public void Initialize() => _targetSensor.OnHitTarget += HitTarget;
@@ -33,23 +33,23 @@ namespace Gameplay.Controllers
         private void HitTarget(RaycastHit2D hit)
         {
             if (hit.transform.TryGetComponent<Entity>(out var entity))
-            {
-                foreach (var item in _entityHitActions)
-                {
+                foreach (var item in _hitActions)
                     item.Invoke(hit, entity);
-                }
-            }
         }
 
-        public void Attack()
+        public bool Attack()
         {
             if (_isAttacking)
-                return;
+                return false;
 
             _isAttacking = true;
             _attackTimer = 0f;
 
+            foreach (var item in _attackActions)
+                item.Invoke();
+
             _animationFsm.SetState<AttackState>();
+            return true;
         }
 
         public void Tick()

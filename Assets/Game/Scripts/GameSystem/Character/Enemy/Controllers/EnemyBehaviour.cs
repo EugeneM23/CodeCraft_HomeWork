@@ -11,6 +11,7 @@ namespace Game.Scripts.GameObject.Enemy
         [Inject] private readonly PlayerCharacterProvider _provider;
 
         private CharacterController2D _controller;
+        private Character _character;
         private AnimationFSM _animationFsm;
         private JumpComponent _jumpComponent;
 
@@ -33,6 +34,7 @@ namespace Game.Scripts.GameObject.Enemy
             GetPatrolPoints();
 
             _controller = _entity.GetEntityComponent<CharacterController2D>();
+            _character = _entity.GetEntityComponent<Character>();
             _animationFsm = _entity.GetEntityComponent<AnimationFSM>();
             _jumpComponent = _entity.GetEntityComponent<JumpComponent>();
         }
@@ -66,7 +68,7 @@ namespace Game.Scripts.GameObject.Enemy
             if (distance <= _attackDistance)
             {
                 _controller.SetMoveDirection(Vector2.zero);
-                _animationFsm.SetState<AttackState>();
+                _character.Attack();
                 return;
             }
 

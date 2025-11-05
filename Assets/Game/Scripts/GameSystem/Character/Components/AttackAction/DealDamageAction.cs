@@ -2,11 +2,11 @@ using UnityEngine;
 
 namespace Gameplay.Controllers.AttackAction
 {
-    public class DealDamageAction : AttackComponent.IEntityHitAction
+    public class DealDamageAttackAction : AttackComponent.IHitAction
     {
         private readonly int _damage;
 
-        public DealDamageAction(int damage)
+        public DealDamageAttackAction(int damage)
         {
             _damage = damage;
         }

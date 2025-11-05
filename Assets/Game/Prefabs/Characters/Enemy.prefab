@@ -401,6 +401,10 @@ MonoBehaviour:
   _rollPrefab: {fileID: 6708921266048008112, guid: a9f9356c9427c4cc5bf1351abc828f11, type: 3}
   _smashPrefab: {fileID: 745031272938547566, guid: 43bef0fdbe1da48c5824d5b82ef8974a, type: 3}
   _deathPrefab: {fileID: 5093879680652798486, guid: 3699dc9a41a7440dab313701db480222, type: 3}
+  _attackSound:
+    bank: {fileID: 11400000, guid: bc96962c5ae2f437780288feb211759a, type: 2}
+    eventId: slash
+    identifier: master.slash
 --- !u!1 &8190304548250424996
 GameObject:
   m_ObjectHideFlags: 0

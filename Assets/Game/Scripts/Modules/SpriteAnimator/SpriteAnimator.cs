@@ -46,7 +46,10 @@ namespace Gameplay
         private void UpdateSprite()
         {
             _frameTime -= FrameDuration;
-            _spriteRenderer.sprite = _currentAnimation.Sprites[_currentFrame++];
+            _spriteRenderer.sprite = _currentAnimation.Sprites[_currentFrame];
+
+            _currentFrame++;
+
             if (_currentFrame >= _currentAnimation.Sprites.Length)
             {
                 _currentFrame = 0;
@@ -60,7 +63,10 @@ namespace Gameplay
 
             foreach (EventID item in eventIds)
                 if (item != EventID.None)
+                {
+                    Debug.Log(_currentFrame + " " + eventIds.ToString());
                     OnEventRaised?.Invoke(item);
+                }
         }
 
         public SpriteAnimator Play(AnimationID id)
