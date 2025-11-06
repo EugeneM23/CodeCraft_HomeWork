@@ -24,38 +24,52 @@ namespace Game.Scripts.GameObject.Enemy
         [SerializeField] private Transform _smashPrefab;
         [SerializeField] private Transform _deathPrefab;
 
-        [FormerlySerializedAs("_slashSound")] [SerializeField]
-        private AudioEventKey _attackSound;
-
         public override void Install(DiContainer container)
         {
+            // Core
             container.BindSingle(_entity);
             container.BindSingle(_character);
+
+            //Health
+            container.BindInterfacesAndSelf(new SpawnHitEffectHealthAction(_hitEffect));
             container.BindInterfacesAndSelf(new HealthComponent(_health));
             container.BindInterfacesAndSelf(new CharacterDeathObserver());
-            container.BindInterfacesAndSelf(new AttackComponent());
+
+            // Movement
             container.BindInterfacesAndSelf(new DashComponent());
             container.BindInterfacesAndSelf(new ImpulseComponent());
             container.BindInterfacesAndSelf(new JumpComponent());
-            container.BindInterfacesAndSelf(new ThrowItemComponent(_throwItemLayer));
-            container.BindInterfacesAndSelf(new SmashComponent());
+
+            // Attack
+            container.BindInterfacesAndSelf(new AttackComponent());
+            container.BindInterfacesAndSelf(new DealDamageAttackAction(_damage));
+            container.BindInterfacesAndSelf(new AttackSfxAttackAction());
             container.BindInterfacesAndSelf(new TargetSensor(_damageLayer));
 
-            container.BindInterfacesAndSelf(new DealDamageAttackAction(_damage));
-            container.BindInterfacesAndSelf(new SpawnHitEffectAttackAction(_hitEffect));
-            container.BindInterfacesAndSelf(new SpawnDashEffectAction(_rollPrefab));
-            container.BindInterfacesAndSelf(new SpawnJumpEffectAction(_jumpPrefab));
-            container.BindInterfacesAndSelf(new SpawnSmashEffectAction(_smashPrefab));
+
+            // Smash
+            container.BindInterfacesAndSelf(new SmashComponent());
             container.BindInterfacesAndSelf(new SmashImpulseAction(_damageLayer));
-            container.BindInterfacesAndSelf(new SpawnDeathEffectAction(_deathPrefab));
-
-            container.BindInterfacesAndSelf(new AttackSfxAttackAction());
-            container.BindInterfacesAndSelf(new JumpSfxAttackAction());
-            container.BindInterfacesAndSelf(new DeathSfxAction());
-            container.BindInterfacesAndSelf(new DashSfxAttackAction());
-            container.BindInterfacesAndSelf(new ThrowItemSfxAction());
             container.BindInterfacesAndSelf(new SmashSFXAction());
+            container.BindInterfacesAndSelf(new SpawnSmashEffectAction(_smashPrefab));
 
+            // Throw
+            container.BindInterfacesAndSelf(new ThrowItemComponent(_throwItemLayer));
+            container.BindInterfacesAndSelf(new ThrowItemSfxAction());
+
+            // Jump
+            container.BindInterfacesAndSelf(new SpawnJumpEffectAction(_jumpPrefab));
+            container.BindInterfacesAndSelf(new JumpSfxAttackAction());
+
+            // Dash
+            container.BindInterfacesAndSelf(new SpawnDashEffectAction(_rollPrefab));
+            container.BindInterfacesAndSelf(new DashSfxAttackAction());
+
+            // Death
+            container.BindInterfacesAndSelf(new SpawnDeathEffectAction(_deathPrefab));
+            container.BindInterfacesAndSelf(new DeathSfxAction());
+
+            // Environment / Misc
             container.BindInterfacesAndSelf(new LandingSFXComponent());
             container.BindInterfacesAndSelf(new StepSFXComponent());
         }

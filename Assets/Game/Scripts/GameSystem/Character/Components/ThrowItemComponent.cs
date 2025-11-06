@@ -7,7 +7,7 @@ public class ThrowItemComponent : ITickable
 {
     [Inject] private CharacterController2D _controller;
     [Inject] private List<IAction> _actions;
-    
+
     private readonly LayerMask _entityMask;
     private readonly float _distance = 2f;
     private readonly float _throwDuration = 0.1f;
@@ -40,7 +40,7 @@ public class ThrowItemComponent : ITickable
         }
     }
 
-    public void ThrowItem()
+    public bool ThrowItem()
     {
         _searchDone = true;
         _isThrowing = true;
@@ -57,10 +57,12 @@ public class ThrowItemComponent : ITickable
             Vector2 direction = new Vector2(_controller.LookDirection, 0);
             item.GetComponent<ImpulseProvider>().AddImpulse(direction * 50);
             item.GetComponent<ImpulseProvider>().AddTorque(50);
-
-            foreach (var action in _actions) 
+            foreach (var action in _actions)
                 action.Invoke();
+            return true;
         }
+
+        return false;
     }
 
     public bool IsThrowing() => _isThrowing && _controller.IsGrounded;

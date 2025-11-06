@@ -13,16 +13,16 @@ MonoBehaviour:
   m_Name: Slash
   m_EditorClassIdentifier: 
   _poolable: 1
-  duration: 0.99530613
+  duration: 0.5
   loop: 0
-  spartialBlend: 1
+  spartialBlend: 0
   output: {fileID: 0}
   clip:
     rid: 4858561689069027456
   pitch:
     rid: 4858561689069028206
   volume:
-    rid: 4858561689069028211
+    rid: 4858561689069028220
   reverbZoneMix:
     rid: 4858561689069027440
   rolloffMode: 0
@@ -73,9 +73,8 @@ MonoBehaviour:
     - rid: 4858561689069028206
       type: {class: FloatConst, ns: AudioEngine, asm: AudioEngine}
       data:
-        value: 0.67
-    - rid: 4858561689069028211
-      type: {class: FloatRandom, ns: AudioEngine, asm: AudioEngine}
+        value: 1
+    - rid: 4858561689069028220
+      type: {class: FloatConst, ns: AudioEngine, asm: AudioEngine}
       data:
-        minValue: 0.72
-        maxValue: 1
+        value: 0.2

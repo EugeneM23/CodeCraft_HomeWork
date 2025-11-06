@@ -5,7 +5,7 @@ namespace Gameplay.Controllers
 {
     public class MoveController : ITickable
     {
-        [Inject] private readonly CharacterController2D _character;
+        [Inject] private readonly Character _character;
 
         public void Tick()
         {

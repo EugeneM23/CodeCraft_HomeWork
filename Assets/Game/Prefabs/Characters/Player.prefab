@@ -515,15 +515,11 @@ MonoBehaviour:
   _throwItemLayer:
     serializedVersion: 2
     m_Bits: 2048
-  _hitEffect: {fileID: 4442827011764290, guid: 4f5a71e03aa40429bb18446af19f1dae, type: 3}
+  _hitEffect: {fileID: 4000013729035358, guid: b8ed3572416feb04fb8daebdc78762f7, type: 3}
   _jumpPrefab: {fileID: 6708921266048008112, guid: 8a383a4a291e746c38e74a89c179ee17, type: 3}
   _rollPrefab: {fileID: 6708921266048008112, guid: a9f9356c9427c4cc5bf1351abc828f11, type: 3}
   _smashPrefab: {fileID: 745031272938547566, guid: 43bef0fdbe1da48c5824d5b82ef8974a, type: 3}
   _deathPrefab: {fileID: 5093879680652798486, guid: 3699dc9a41a7440dab313701db480222, type: 3}
-  _attackSound:
-    bank: {fileID: 11400000, guid: bc96962c5ae2f437780288feb211759a, type: 2}
-    eventId: slash
-    identifier: master.slash
 --- !u!114 &1168726062001797579
 MonoBehaviour:
   m_ObjectHideFlags: 0

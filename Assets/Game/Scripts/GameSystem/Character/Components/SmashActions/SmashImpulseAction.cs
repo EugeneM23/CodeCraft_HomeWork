@@ -41,6 +41,7 @@ public class SmashImpulseAction : SmashComponent.IAction, ITickable
             {
                 Vector2 impulse = GetImpulseVector(component.transform);
                 component.AddImpulse(impulse);
+                component.AddTorque(10);
             }
         }
 

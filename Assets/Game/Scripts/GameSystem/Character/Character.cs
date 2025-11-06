@@ -56,8 +56,8 @@ namespace Gameplay
 
         public void ThrowItem()
         {
-            OnItemThrow?.Invoke(StateType.ThrowItem);
-            _throwItemComponent.ThrowItem();
+            if (_throwItemComponent.ThrowItem()) 
+                OnItemThrow?.Invoke(StateType.ThrowItem);
         }
 
         public void Jump(Vector2 power)
@@ -76,6 +76,11 @@ namespace Gameplay
         {
             _characterController.AddImpulse(power);
             OnDash?.Invoke(StateType.Dash);
+        }
+
+        public void SetMoveDirection(Vector2 direction)
+        {
+            _characterController.SetMoveDirection(direction);
         }
     }
 }

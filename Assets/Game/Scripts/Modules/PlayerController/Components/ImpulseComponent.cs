@@ -14,7 +14,6 @@ namespace Modules.PlayerController
         private float _initialImpulseSign;
         private bool _wasCountering;
 
-        // Флаг для query-based подхода
         private bool _hasJustEnded;
         private float _endVelocity;
 

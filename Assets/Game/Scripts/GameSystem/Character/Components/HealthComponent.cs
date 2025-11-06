@@ -1,4 +1,7 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Dynamic;
 
 namespace Gameplay
 {
@@ -6,8 +9,14 @@ namespace Gameplay
     {
         public event Action OnDeath;
 
+        [Inject] private List<IAction> _actions;
         private int _currentHealth;
         private int _maxHealth;
+
+        public interface IAction
+        {
+            void Invoke();
+        }
 
         public HealthComponent(int currentHealth)
         {
@@ -20,6 +29,9 @@ namespace Gameplay
             if (damage <= 0) return;
 
             _currentHealth -= damage;
+
+            foreach (var item in _actions)
+                item.Invoke();
 
             if (_currentHealth <= 0)
                 OnDeath?.Invoke();
