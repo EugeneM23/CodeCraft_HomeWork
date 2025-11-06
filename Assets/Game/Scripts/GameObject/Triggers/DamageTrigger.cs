@@ -33,7 +33,7 @@ namespace Gameplay
         {
             if (other.gameObject.TryGetComponent<Entity>(out var entity))
             {
-                _entitiesInTrigger.Remove(entity); // перестаём бить, когда выходит
+                _entitiesInTrigger.Remove(entity);
             }
         }
 

@@ -6,6 +6,9 @@ namespace Gameplay
 {
     public class BreakableSurfaceTrigger : MonoBehaviour
     {
+        private const float VELOCITY_LIMIT = 50;
+        private const float FORCE = 20;
+        private const float TORQUE = 50f;
         [SerializeField] private Transform _prefab;
 
         private void OnTriggerEnter2D(Collider2D other)
@@ -18,7 +21,7 @@ namespace Gameplay
                 {
                     var controller = entity.GetEntityComponent<CharacterController2D>();
 
-                    if (controller.LastFrameVelocity.magnitude > 50)
+                    if (controller.LastFrameVelocity.magnitude > VELOCITY_LIMIT)
                     {
                         Transform instantiate = Instantiate(_prefab, transform.position, Quaternion.identity);
                         Rigidbody2D[] components = instantiate.GetComponentsInChildren<Rigidbody2D>();
@@ -27,8 +30,8 @@ namespace Gameplay
                         {
                             Vector2 randomDir = Random.insideUnitCircle.normalized;
 
-                            rb.AddForce(randomDir * 20, ForceMode2D.Impulse);
-                            rb.AddTorque(50f);
+                            rb.AddForce(randomDir * FORCE, ForceMode2D.Impulse);
+                            rb.AddTorque(TORQUE);
                         }
 
                         Destroy(gameObject);

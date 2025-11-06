@@ -110,6 +110,5 @@ namespace Modules.PlayerController
         }
 
         public void AddMoveCondition(Func<bool> condition) => MoveCondition.Add(condition);
-
     }
 }

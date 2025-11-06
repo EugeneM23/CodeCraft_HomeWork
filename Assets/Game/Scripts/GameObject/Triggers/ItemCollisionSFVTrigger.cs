@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Game.Scripts.GameObject.Triggers
 {
-    public class ItemCollisionSFVTrigger : MonoBehaviour
+    public class ItemCollisionSFXTrigger : MonoBehaviour
     {
         private AudioSystem _audioSystem;
         private float MAX_FRIQUIENCY = 0.2f;
