@@ -4357,8 +4357,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e602cfd4bd79e43d092fec099e8fddc4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _limitvelocity: 50
-  _damage: 100
+  _limitvelocity: 10
+  _damage: 200
 --- !u!114 &1567019834
 MonoBehaviour:
   m_ObjectHideFlags: 0
