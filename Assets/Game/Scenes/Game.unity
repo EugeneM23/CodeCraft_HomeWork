@@ -244,7 +244,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e602cfd4bd79e43d092fec099e8fddc4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _limitvelocity: 10
+  _limitvelocity: 5
   _damage: 200
 --- !u!114 &30157689
 MonoBehaviour:
@@ -447,7 +447,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e602cfd4bd79e43d092fec099e8fddc4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _limitvelocity: 10
+  _limitvelocity: 5
   _damage: 200
 --- !u!114 &107040484
 MonoBehaviour:
@@ -2357,7 +2357,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e602cfd4bd79e43d092fec099e8fddc4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _limitvelocity: 10
+  _limitvelocity: 5
   _damage: 200
 --- !u!114 &689602567
 MonoBehaviour:
