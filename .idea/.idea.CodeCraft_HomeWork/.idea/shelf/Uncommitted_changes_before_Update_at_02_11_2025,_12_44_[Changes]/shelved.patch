@@ -1,0 +1,4776 @@
+Index: Assets/AssetPacks/Martial Hero/New Material.mat.meta
+===================================================================
+diff --git a/Assets/AssetPacks/Martial Hero/New Material.mat.meta b/Assets/AssetPacks/Martial Hero/New Material.mat.meta
+deleted file mode 100644
+--- a/Assets/AssetPacks/Martial Hero/New Material.mat.meta	(revision 279b2a51e6751079cb64b87ab8c388542941e2b4)
++++ /dev/null	(revision 279b2a51e6751079cb64b87ab8c388542941e2b4)
+@@ -1,8 +0,0 @@
+-fileFormatVersion: 2
+-guid: ad34e47cb40ab47559d137a13125cd35
+-NativeFormatImporter:
+-  externalObjects: {}
+-  mainObjectFileID: 2100000
+-  userData: 
+-  assetBundleName: 
+-  assetBundleVariant: 
+Index: Assets/AssetPacks/Martial Hero/Sprites/Death.png.meta
+===================================================================
+diff --git a/Assets/AssetPacks/Martial Hero/Sprites/Death.png.meta b/Assets/AssetPacks/Martial Hero/Sprites/Death.png.meta
+deleted file mode 100644
+--- a/Assets/AssetPacks/Martial Hero/Sprites/Death.png.meta	(revision 279b2a51e6751079cb64b87ab8c388542941e2b4)
++++ /dev/null	(revision 279b2a51e6751079cb64b87ab8c388542941e2b4)
+@@ -1,345 +0,0 @@
+-fileFormatVersion: 2
+-guid: 1db9a306592ac9545975fcdd51459943
+-AssetOrigin:
+-  serializedVersion: 1
+-  productId: 170422
+-  packageName: Martial Hero
+-  packageVersion: 1.0
+-  assetPath: Assets/Martial Hero/Sprites/Death.png
+-  uploadId: 372436
+-TextureImporter:
+-  internalIDToNameTable:
+-  - first:
+-      213: 6991849013916550155
+-    second: Death_0
+-  - first:
+-      213: -276728812324164698
+-    second: Death_1
+-  - first:
+-      213: 3156895337291164288
+-    second: Death_2
+-  - first:
+-      213: 1400002288684528572
+-    second: Death_3
+-  - first:
+-      213: -1891625820773287384
+-    second: Death_4
+-  - first:
+-      213: -5789737788129074030
+-    second: Death_5
+-  externalObjects: {}
+-  serializedVersion: 13
+-  mipmaps:
+-    mipMapMode: 0
+-    enableMipMap: 1
+-    sRGBTexture: 1
+-    linearTexture: 0
+-    fadeOut: 0
+-    borderMipMap: 0
+-    mipMapsPreserveCoverage: 0
+-    alphaTestReferenceValue: 0.5
+-    mipMapFadeDistanceStart: 1
+-    mipMapFadeDistanceEnd: 3
+-  bumpmap:
+-    convertToNormalMap: 0
+-    externalNormalMap: 0
+-    heightScale: 0.25
+-    normalMapFilter: 0
+-    flipGreenChannel: 0
+-  isReadable: 0
+-  streamingMipmaps: 0
+-  streamingMipmapsPriority: 0
+-  vTOnly: 0
+-  ignoreMipmapLimit: 0
+-  grayScaleToAlpha: 0
+-  generateCubemap: 6
+-  cubemapConvolution: 0
+-  seamlessCubemap: 0
+-  textureFormat: 1
+-  maxTextureSize: 2048
+-  textureSettings:
+-    serializedVersion: 2
+-    filterMode: 0
+-    aniso: 1
+-    mipBias: 0
+-    wrapU: 1
+-    wrapV: 1
+-    wrapW: 1
+-  nPOTScale: 0
+-  lightmap: 0
+-  compressionQuality: 50
+-  spriteMode: 2
+-  spriteExtrude: 1
+-  spriteMeshType: 1
+-  alignment: 0
+-  spritePivot: {x: 0.5, y: 0.5}
+-  spritePixelsToUnits: 100
+-  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+-  spriteGenerateFallbackPhysicsShape: 1
+-  alphaUsage: 1
+-  alphaIsTransparency: 1
+-  spriteTessellationDetail: -1
+-  textureType: 8
+-  textureShape: 1
+-  singleChannelComponent: 0
+-  flipbookRows: 1
+-  flipbookColumns: 1
+-  maxTextureSizeSet: 0
+-  compressionQualitySet: 0
+-  textureFormatSet: 0
+-  ignorePngGamma: 0
+-  applyGammaDecoding: 1
+-  swizzle: 50462976
+-  cookieLightType: 1
+-  platformSettings:
+-  - serializedVersion: 4
+-    buildTarget: DefaultTexturePlatform
+-    maxTextureSize: 2048
+-    resizeAlgorithm: 0
+-    textureFormat: -1
+-    textureCompression: 1
+-    compressionQuality: 50
+-    crunchedCompression: 0
+-    allowsAlphaSplitting: 0
+-    overridden: 0
+-    ignorePlatformSupport: 0
+-    androidETC2FallbackOverride: 0
+-    forceMaximumCompressionQuality_BC6H_BC7: 0
+-  - serializedVersion: 4
+-    buildTarget: Standalone
+-    maxTextureSize: 2048
+-    resizeAlgorithm: 0
+-    textureFormat: -1
+-    textureCompression: 1
+-    compressionQuality: 50
+-    crunchedCompression: 0
+-    allowsAlphaSplitting: 0
+-    overridden: 0
+-    ignorePlatformSupport: 0
+-    androidETC2FallbackOverride: 0
+-    forceMaximumCompressionQuality_BC6H_BC7: 0
+-  - serializedVersion: 4
+-    buildTarget: WindowsStoreApps
+-    maxTextureSize: 2048
+-    resizeAlgorithm: 0
+-    textureFormat: -1
+-    textureCompression: 1
+-    compressionQuality: 50
+-    crunchedCompression: 0
+-    allowsAlphaSplitting: 0
+-    overridden: 0
+-    ignorePlatformSupport: 0
+-    androidETC2FallbackOverride: 0
+-    forceMaximumCompressionQuality_BC6H_BC7: 0
+-  - serializedVersion: 4
+-    buildTarget: Lumin
+-    maxTextureSize: 2048
+-    resizeAlgorithm: 0
+-    textureFormat: -1
+-    textureCompression: 1
+-    compressionQuality: 50
+-    crunchedCompression: 0
+-    allowsAlphaSplitting: 0
+-    overridden: 0
+-    ignorePlatformSupport: 0
+-    androidETC2FallbackOverride: 0
+-    forceMaximumCompressionQuality_BC6H_BC7: 0
+-  - serializedVersion: 4
+-    buildTarget: WebGL
+-    maxTextureSize: 2048
+-    resizeAlgorithm: 0
+-    textureFormat: -1
+-    textureCompression: 1
+-    compressionQuality: 50
+-    crunchedCompression: 0
+-    allowsAlphaSplitting: 0
+-    overridden: 0
+-    ignorePlatformSupport: 0
+-    androidETC2FallbackOverride: 0
+-    forceMaximumCompressionQuality_BC6H_BC7: 0
+-  - serializedVersion: 4
+-    buildTarget: Android
+-    maxTextureSize: 2048
+-    resizeAlgorithm: 0
+-    textureFormat: -1
+-    textureCompression: 1
+-    compressionQuality: 50
+-    crunchedCompression: 0
+-    allowsAlphaSplitting: 0
+-    overridden: 0
+-    ignorePlatformSupport: 0
+-    androidETC2FallbackOverride: 0
+-    forceMaximumCompressionQuality_BC6H_BC7: 0
+-  - serializedVersion: 4
+-    buildTarget: iOS
+-    maxTextureSize: 2048
+-    resizeAlgorithm: 0
+-    textureFormat: -1
+-    textureCompression: 1
+-    compressionQuality: 50
+-    crunchedCompression: 0
+-    allowsAlphaSplitting: 0
+-    overridden: 0
+-    ignorePlatformSupport: 0
+-    androidETC2FallbackOverride: 0
+-    forceMaximumCompressionQuality_BC6H_BC7: 0
+-  spriteSheet:
+-    serializedVersion: 2
+-    sprites:
+-    - serializedVersion: 2
+-      name: Death_0
+-      rect:
+-        serializedVersion: 2
+-        x: 0
+-        y: 0
+-        width: 200
+-        height: 200
+-      alignment: 0
+-      pivot: {x: 0, y: 0}
+-      border: {x: 0, y: 0, z: 0, w: 0}
+-      customData: 
+-      outline: []
+-      physicsShape: []
+-      tessellationDetail: 0
+-      bones: []
+-      spriteID: 1241006749e522e4ca577e075619debd
+-      internalID: 6991849013916550155
+-      vertices: []
+-      indices: 
+-      edges: []
+-      weights: []
+-    - serializedVersion: 2
+-      name: Death_1
+-      rect:
+-        serializedVersion: 2
+-        x: 200
+-        y: 0
+-        width: 200
+-        height: 200
+-      alignment: 0
+-      pivot: {x: 0, y: 0}
+-      border: {x: 0, y: 0, z: 0, w: 0}
+-      customData: 
+-      outline: []
+-      physicsShape: []
+-      tessellationDetail: 0
+-      bones: []
+-      spriteID: 1908167410a326f44b9432d96f7dc9f8
+-      internalID: -276728812324164698
+-      vertices: []
+-      indices: 
+-      edges: []
+-      weights: []
+-    - serializedVersion: 2
+-      name: Death_2
+-      rect:
+-        serializedVersion: 2
+-        x: 400
+-        y: 0
+-        width: 200
+-        height: 200
+-      alignment: 0
+-      pivot: {x: 0, y: 0}
+-      border: {x: 0, y: 0, z: 0, w: 0}
+-      customData: 
+-      outline: []
+-      physicsShape: []
+-      tessellationDetail: 0
+-      bones: []
+-      spriteID: 63cc157cdaae30248a03872c5d935403
+-      internalID: 3156895337291164288
+-      vertices: []
+-      indices: 
+-      edges: []
+-      weights: []
+-    - serializedVersion: 2
+-      name: Death_3
+-      rect:
+-        serializedVersion: 2
+-        x: 600
+-        y: 0
+-        width: 200
+-        height: 200
+-      alignment: 0
+-      pivot: {x: 0, y: 0}
+-      border: {x: 0, y: 0, z: 0, w: 0}
+-      customData: 
+-      outline: []
+-      physicsShape: []
+-      tessellationDetail: 0
+-      bones: []
+-      spriteID: a3d23ab659547ca4db260cb98c926de9
+-      internalID: 1400002288684528572
+-      vertices: []
+-      indices: 
+-      edges: []
+-      weights: []
+-    - serializedVersion: 2
+-      name: Death_4
+-      rect:
+-        serializedVersion: 2
+-        x: 800
+-        y: 0
+-        width: 200
+-        height: 200
+-      alignment: 0
+-      pivot: {x: 0, y: 0}
+-      border: {x: 0, y: 0, z: 0, w: 0}
+-      customData: 
+-      outline: []
+-      physicsShape: []
+-      tessellationDetail: 0
+-      bones: []
+-      spriteID: 1a07db581131ff44397cb7950a42ac56
+-      internalID: -1891625820773287384
+-      vertices: []
+-      indices: 
+-      edges: []
+-      weights: []
+-    - serializedVersion: 2
+-      name: Death_5
+-      rect:
+-        serializedVersion: 2
+-        x: 1000
+-        y: 0
+-        width: 200
+-        height: 200
+-      alignment: 0
+-      pivot: {x: 0, y: 0}
+-      border: {x: 0, y: 0, z: 0, w: 0}
+-      customData: 
+-      outline: []
+-      physicsShape: []
+-      tessellationDetail: 0
+-      bones: []
+-      spriteID: 0e5a4644edb16d24481daf9370cc9404
+-      internalID: -5789737788129074030
+-      vertices: []
+-      indices: 
+-      edges: []
+-      weights: []
+-    outline: []
+-    customData: 
+-    physicsShape: []
+-    bones: []
+-    spriteID: 5e97eb03825dee720800000000000000
+-    internalID: 0
+-    vertices: []
+-    indices: 
+-    edges: []
+-    weights: []
+-    secondaryTextures: []
+-    spriteCustomMetadata:
+-      entries: []
+-    nameFileIdTable:
+-      Death_0: 6991849013916550155
+-      Death_1: -276728812324164698
+-      Death_2: 3156895337291164288
+-      Death_3: 1400002288684528572
+-      Death_4: -1891625820773287384
+-      Death_5: -5789737788129074030
+-  mipmapLimitGroupName: 
+-  pSDRemoveMatte: 0
+-  userData: 
+-  assetBundleName: 
+-  assetBundleVariant: 
+Index: Assets/AssetPacks/Martial Hero/License.txt.meta
+===================================================================
+diff --git a/Assets/AssetPacks/Martial Hero/License.txt.meta b/Assets/AssetPacks/Martial Hero/License.txt.meta
+deleted file mode 100644
+--- a/Assets/AssetPacks/Martial Hero/License.txt.meta	(revision 279b2a51e6751079cb64b87ab8c388542941e2b4)
++++ /dev/null	(revision 279b2a51e6751079cb64b87ab8c388542941e2b4)
+@@ -1,14 +0,0 @@
+-fileFormatVersion: 2
+-guid: b614013239360f24aabe9685b05b6bc3
+-TextScriptImporter:
+-  externalObjects: {}
+-  userData: 
+-  assetBundleName: 
+-  assetBundleVariant: 
+-AssetOrigin:
+-  serializedVersion: 1
+-  productId: 170422
+-  packageName: Martial Hero
+-  packageVersion: 1.0
+-  assetPath: Assets/Martial Hero/License.txt
+-  uploadId: 372436
+Index: Assets/AssetPacks/Martial Hero/Demo/Scene Demo.unity
+===================================================================
+diff --git a/Assets/AssetPacks/Martial Hero/Demo/Scene Demo.unity b/Assets/AssetPacks/Martial Hero/Demo/Scene Demo.unity
+deleted file mode 100644
+--- a/Assets/AssetPacks/Martial Hero/Demo/Scene Demo.unity	(revision 279b2a51e6751079cb64b87ab8c388542941e2b4)
++++ /dev/null	(revision 279b2a51e6751079cb64b87ab8c388542941e2b4)
+@@ -1,306 +0,0 @@
+-%YAML 1.1
+-%TAG !u! tag:unity3d.com,2011:
+---- !u!29 &1
+-OcclusionCullingSettings:
+-  m_ObjectHideFlags: 0
+-  serializedVersion: 2
+-  m_OcclusionBakeSettings:
+-    smallestOccluder: 5
+-    smallestHole: 0.25
+-    backfaceThreshold: 100
+-  m_SceneGUID: 00000000000000000000000000000000
+-  m_OcclusionCullingData: {fileID: 0}
+---- !u!104 &2
+-RenderSettings:
+-  m_ObjectHideFlags: 0
+-  serializedVersion: 9
+-  m_Fog: 0
+-  m_FogColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+-  m_FogMode: 3
+-  m_FogDensity: 0.01
+-  m_LinearFogStart: 0
+-  m_LinearFogEnd: 300
+-  m_AmbientSkyColor: {r: 0.212, g: 0.227, b: 0.259, a: 1}
+-  m_AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
+-  m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
+-  m_AmbientIntensity: 1
+-  m_AmbientMode: 3
+-  m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
+-  m_SkyboxMaterial: {fileID: 0}
+-  m_HaloStrength: 0.5
+-  m_FlareStrength: 1
+-  m_FlareFadeSpeed: 3
+-  m_HaloTexture: {fileID: 0}
+-  m_SpotCookie: {fileID: 10001, guid: 0000000000000000e000000000000000, type: 0}
+-  m_DefaultReflectionMode: 0
+-  m_DefaultReflectionResolution: 128
+-  m_ReflectionBounces: 1
+-  m_ReflectionIntensity: 1
+-  m_CustomReflection: {fileID: 0}
+-  m_Sun: {fileID: 0}
+-  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
+-  m_UseRadianceAmbientProbe: 0
+---- !u!157 &3
+-LightmapSettings:
+-  m_ObjectHideFlags: 0
+-  serializedVersion: 11
+-  m_GIWorkflowMode: 1
+-  m_GISettings:
+-    serializedVersion: 2
+-    m_BounceScale: 1
+-    m_IndirectOutputScale: 1
+-    m_AlbedoBoost: 1
+-    m_EnvironmentLightingMode: 0
+-    m_EnableBakedLightmaps: 0
+-    m_EnableRealtimeLightmaps: 0
+-  m_LightmapEditorSettings:
+-    serializedVersion: 12
+-    m_Resolution: 2
+-    m_BakeResolution: 40
+-    m_AtlasSize: 1024
+-    m_AO: 0
+-    m_AOMaxDistance: 1
+-    m_CompAOExponent: 1
+-    m_CompAOExponentDirect: 0
+-    m_ExtractAmbientOcclusion: 0
+-    m_Padding: 2
+-    m_LightmapParameters: {fileID: 0}
+-    m_LightmapsBakeMode: 1
+-    m_TextureCompression: 1
+-    m_FinalGather: 0
+-    m_FinalGatherFiltering: 1
+-    m_FinalGatherRayCount: 256
+-    m_ReflectionCompression: 2
+-    m_MixedBakeMode: 2
+-    m_BakeBackend: 1
+-    m_PVRSampling: 1
+-    m_PVRDirectSampleCount: 32
+-    m_PVRSampleCount: 512
+-    m_PVRBounces: 2
+-    m_PVREnvironmentSampleCount: 256
+-    m_PVREnvironmentReferencePointCount: 2048
+-    m_PVRFilteringMode: 1
+-    m_PVRDenoiserTypeDirect: 1
+-    m_PVRDenoiserTypeIndirect: 1
+-    m_PVRDenoiserTypeAO: 1
+-    m_PVRFilterTypeDirect: 0
+-    m_PVRFilterTypeIndirect: 0
+-    m_PVRFilterTypeAO: 0
+-    m_PVREnvironmentMIS: 1
+-    m_PVRCulling: 1
+-    m_PVRFilteringGaussRadiusDirect: 1
+-    m_PVRFilteringGaussRadiusIndirect: 5
+-    m_PVRFilteringGaussRadiusAO: 2
+-    m_PVRFilteringAtrousPositionSigmaDirect: 0.5
+-    m_PVRFilteringAtrousPositionSigmaIndirect: 2
+-    m_PVRFilteringAtrousPositionSigmaAO: 1
+-    m_ExportTrainingData: 0
+-    m_TrainingDataDestination: TrainingData
+-  m_LightingDataAsset: {fileID: 0}
+-  m_UseShadowmask: 1
+---- !u!196 &4
+-NavMeshSettings:
+-  serializedVersion: 2
+-  m_ObjectHideFlags: 0
+-  m_BuildSettings:
+-    serializedVersion: 2
+-    agentTypeID: 0
+-    agentRadius: 0.5
+-    agentHeight: 2
+-    agentSlope: 45
+-    agentClimb: 0.4
+-    ledgeDropHeight: 0
+-    maxJumpAcrossDistance: 0
+-    minRegionArea: 2
+-    manualCellSize: 0
+-    cellSize: 0.16666667
+-    manualTileSize: 0
+-    tileSize: 256
+-    accuratePlacement: 0
+-    debug:
+-      m_Flags: 0
+-  m_NavMeshData: {fileID: 0}
+---- !u!1 &708299913
+-GameObject:
+-  m_ObjectHideFlags: 0
+-  m_CorrespondingSourceObject: {fileID: 0}
+-  m_PrefabInstance: {fileID: 0}
+-  m_PrefabAsset: {fileID: 0}
+-  serializedVersion: 6
+-  m_Component:
+-  - component: {fileID: 708299916}
+-  - component: {fileID: 708299915}
+-  - component: {fileID: 708299914}
+-  m_Layer: 0
+-  m_Name: Martial Hero
+-  m_TagString: Untagged
+-  m_Icon: {fileID: 0}
+-  m_NavMeshLayer: 0
+-  m_StaticEditorFlags: 0
+-  m_IsActive: 1
+---- !u!95 &708299914
+-Animator:
+-  serializedVersion: 3
+-  m_ObjectHideFlags: 0
+-  m_CorrespondingSourceObject: {fileID: 0}
+-  m_PrefabInstance: {fileID: 0}
+-  m_PrefabAsset: {fileID: 0}
+-  m_GameObject: {fileID: 708299913}
+-  m_Enabled: 1
+-  m_Avatar: {fileID: 0}
+-  m_Controller: {fileID: 9100000, guid: 4f6fccd708afd8446b750eec3e30188d, type: 2}
+-  m_CullingMode: 0
+-  m_UpdateMode: 0
+-  m_ApplyRootMotion: 0
+-  m_LinearVelocityBlending: 0
+-  m_WarningMessage: 
+-  m_HasTransformHierarchy: 1
+-  m_AllowConstantClipSamplingOptimization: 1
+-  m_KeepAnimatorControllerStateOnDisable: 0
+---- !u!212 &708299915
+-SpriteRenderer:
+-  m_ObjectHideFlags: 0
+-  m_CorrespondingSourceObject: {fileID: 0}
+-  m_PrefabInstance: {fileID: 0}
+-  m_PrefabAsset: {fileID: 0}
+-  m_GameObject: {fileID: 708299913}
+-  m_Enabled: 1
+-  m_CastShadows: 0
+-  m_ReceiveShadows: 0
+-  m_DynamicOccludee: 1
+-  m_MotionVectors: 1
+-  m_LightProbeUsage: 1
+-  m_ReflectionProbeUsage: 1
+-  m_RenderingLayerMask: 1
+-  m_RendererPriority: 0
+-  m_Materials:
+-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+-  m_StaticBatchInfo:
+-    firstSubMesh: 0
+-    subMeshCount: 0
+-  m_StaticBatchRoot: {fileID: 0}
+-  m_ProbeAnchor: {fileID: 0}
+-  m_LightProbeVolumeOverride: {fileID: 0}
+-  m_ScaleInLightmap: 1
+-  m_ReceiveGI: 1
+-  m_PreserveUVs: 0
+-  m_IgnoreNormalsForChartDetection: 0
+-  m_ImportantGI: 0
+-  m_StitchLightmapSeams: 1
+-  m_SelectedEditorRenderState: 0
+-  m_MinimumChartSize: 4
+-  m_AutoUVMaxDistance: 0.5
+-  m_AutoUVMaxAngle: 89
+-  m_LightmapParameters: {fileID: 0}
+-  m_SortingLayerID: 0
+-  m_SortingLayer: 0
+-  m_SortingOrder: 0
+-  m_Sprite: {fileID: 4723107735738678597, guid: 0bd97e23f8b532a4f8969605a3b00a4e,
+-    type: 3}
+-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+-  m_FlipX: 0
+-  m_FlipY: 0
+-  m_DrawMode: 0
+-  m_Size: {x: 2, y: 2}
+-  m_AdaptiveModeThreshold: 0.5
+-  m_SpriteTileMode: 0
+-  m_WasSpriteAssigned: 1
+-  m_MaskInteraction: 0
+-  m_SpriteSortPoint: 0
+---- !u!4 &708299916
+-Transform:
+-  m_ObjectHideFlags: 0
+-  m_CorrespondingSourceObject: {fileID: 0}
+-  m_PrefabInstance: {fileID: 0}
+-  m_PrefabAsset: {fileID: 0}
+-  m_GameObject: {fileID: 708299913}
+-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+-  m_LocalPosition: {x: 0, y: -0.08, z: 0}
+-  m_LocalScale: {x: 1, y: 1, z: 1}
+-  m_Children: []
+-  m_Father: {fileID: 0}
+-  m_RootOrder: 1
+-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+---- !u!1 &2021107435
+-GameObject:
+-  m_ObjectHideFlags: 0
+-  m_CorrespondingSourceObject: {fileID: 0}
+-  m_PrefabInstance: {fileID: 0}
+-  m_PrefabAsset: {fileID: 0}
+-  serializedVersion: 6
+-  m_Component:
+-  - component: {fileID: 2021107438}
+-  - component: {fileID: 2021107437}
+-  - component: {fileID: 2021107436}
+-  m_Layer: 0
+-  m_Name: Main Camera
+-  m_TagString: MainCamera
+-  m_Icon: {fileID: 0}
+-  m_NavMeshLayer: 0
+-  m_StaticEditorFlags: 0
+-  m_IsActive: 1
+---- !u!81 &2021107436
+-AudioListener:
+-  m_ObjectHideFlags: 0
+-  m_CorrespondingSourceObject: {fileID: 0}
+-  m_PrefabInstance: {fileID: 0}
+-  m_PrefabAsset: {fileID: 0}
+-  m_GameObject: {fileID: 2021107435}
+-  m_Enabled: 1
+---- !u!20 &2021107437
+-Camera:
+-  m_ObjectHideFlags: 0
+-  m_CorrespondingSourceObject: {fileID: 0}
+-  m_PrefabInstance: {fileID: 0}
+-  m_PrefabAsset: {fileID: 0}
+-  m_GameObject: {fileID: 2021107435}
+-  m_Enabled: 1
+-  serializedVersion: 2
+-  m_ClearFlags: 1
+-  m_BackGroundColor: {r: 0.90588236, g: 0.8, b: 0.6313726, a: 0}
+-  m_projectionMatrixMode: 1
+-  m_GateFitMode: 2
+-  m_FOVAxisMode: 0
+-  m_SensorSize: {x: 36, y: 24}
+-  m_LensShift: {x: 0, y: 0}
+-  m_FocalLength: 50
+-  m_NormalizedViewPortRect:
+-    serializedVersion: 2
+-    x: 0
+-    y: 0
+-    width: 1
+-    height: 1
+-  near clip plane: 0.3
+-  far clip plane: 1000
+-  field of view: 60
+-  orthographic: 1
+-  orthographic size: 0.52
+-  m_Depth: -1
+-  m_CullingMask:
+-    serializedVersion: 2
+-    m_Bits: 4294967295
+-  m_RenderingPath: -1
+-  m_TargetTexture: {fileID: 0}
+-  m_TargetDisplay: 0
+-  m_TargetEye: 3
+-  m_HDR: 1
+-  m_AllowMSAA: 1
+-  m_AllowDynamicResolution: 0
+-  m_ForceIntoRT: 0
+-  m_OcclusionCulling: 1
+-  m_StereoConvergence: 10
+-  m_StereoSeparation: 0.022
+---- !u!4 &2021107438
+-Transform:
+-  m_ObjectHideFlags: 0
+-  m_CorrespondingSourceObject: {fileID: 0}
+-  m_PrefabInstance: {fileID: 0}
+-  m_PrefabAsset: {fileID: 0}
+-  m_GameObject: {fileID: 2021107435}
+-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+-  m_LocalPosition: {x: 0, y: 0, z: -10}
+-  m_LocalScale: {x: 1, y: 1, z: 1}
+-  m_Children: []
+-  m_Father: {fileID: 0}
+-  m_RootOrder: 0
+-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+Index: Assets/AssetPacks/Martial Hero/Sprites/Idle.png.meta
+===================================================================
+diff --git a/Assets/AssetPacks/Martial Hero/Sprites/Idle.png.meta b/Assets/AssetPacks/Martial Hero/Sprites/Idle.png.meta
+deleted file mode 100644
+--- a/Assets/AssetPacks/Martial Hero/Sprites/Idle.png.meta	(revision 279b2a51e6751079cb64b87ab8c388542941e2b4)
++++ /dev/null	(revision 279b2a51e6751079cb64b87ab8c388542941e2b4)
+@@ -1,397 +0,0 @@
+-fileFormatVersion: 2
+-guid: 0bd97e23f8b532a4f8969605a3b00a4e
+-AssetOrigin:
+-  serializedVersion: 1
+-  productId: 170422
+-  packageName: Martial Hero
+-  packageVersion: 1.0
+-  assetPath: Assets/Martial Hero/Sprites/Idle.png
+-  uploadId: 372436
+-TextureImporter:
+-  internalIDToNameTable:
+-  - first:
+-      213: 4723107735738678597
+-    second: Idle_0
+-  - first:
+-      213: -7385789195546760866
+-    second: Idle_1
+-  - first:
+-      213: 3234629978573100161
+-    second: Idle_2
+-  - first:
+-      213: 6373048116405451881
+-    second: Idle_3
+-  - first:
+-      213: 7264182050183361747
+-    second: Idle_4
+-  - first:
+-      213: -2834552850196481573
+-    second: Idle_5
+-  - first:
+-      213: 3278449094680734212
+-    second: Idle_6
+-  - first:
+-      213: 3384493420599841878
+-    second: Idle_7
+-  externalObjects: {}
+-  serializedVersion: 13
+-  mipmaps:
+-    mipMapMode: 0
+-    enableMipMap: 1
+-    sRGBTexture: 1
+-    linearTexture: 0
+-    fadeOut: 0
+-    borderMipMap: 0
+-    mipMapsPreserveCoverage: 0
+-    alphaTestReferenceValue: 0.5
+-    mipMapFadeDistanceStart: 1
+-    mipMapFadeDistanceEnd: 3
+-  bumpmap:
+-    convertToNormalMap: 0
+-    externalNormalMap: 0
+-    heightScale: 0.25
+-    normalMapFilter: 0
+-    flipGreenChannel: 0
+-  isReadable: 0
+-  streamingMipmaps: 0
+-  streamingMipmapsPriority: 0
+-  vTOnly: 0
+-  ignoreMipmapLimit: 0
+-  grayScaleToAlpha: 0
+-  generateCubemap: 6
+-  cubemapConvolution: 0
+-  seamlessCubemap: 0
+-  textureFormat: 1
+-  maxTextureSize: 2048
+-  textureSettings:
+-    serializedVersion: 2
+-    filterMode: 0
+-    aniso: 1
+-    mipBias: 0
+-    wrapU: 1
+-    wrapV: 1
+-    wrapW: 1
+-  nPOTScale: 0
+-  lightmap: 0
+-  compressionQuality: 50
+-  spriteMode: 2
+-  spriteExtrude: 1
+-  spriteMeshType: 1
+-  alignment: 0
+-  spritePivot: {x: 0.5, y: 0.5}
+-  spritePixelsToUnits: 100
+-  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+-  spriteGenerateFallbackPhysicsShape: 1
+-  alphaUsage: 1
+-  alphaIsTransparency: 1
+-  spriteTessellationDetail: -1
+-  textureType: 8
+-  textureShape: 1
+-  singleChannelComponent: 0
+-  flipbookRows: 1
+-  flipbookColumns: 1
+-  maxTextureSizeSet: 0
+-  compressionQualitySet: 0
+-  textureFormatSet: 0
+-  ignorePngGamma: 0
+-  applyGammaDecoding: 1
+-  swizzle: 50462976
+-  cookieLightType: 1
+-  platformSettings:
+-  - serializedVersion: 4
+-    buildTarget: DefaultTexturePlatform
+-    maxTextureSize: 2048
+-    resizeAlgorithm: 0
+-    textureFormat: -1
+-    textureCompression: 1
+-    compressionQuality: 50
+-    crunchedCompression: 0
+-    allowsAlphaSplitting: 0
+-    overridden: 0
+-    ignorePlatformSupport: 0
+-    androidETC2FallbackOverride: 0
+-    forceMaximumCompressionQuality_BC6H_BC7: 0
+-  - serializedVersion: 4
+-    buildTarget: Standalone
+-    maxTextureSize: 2048
+-    resizeAlgorithm: 0
+-    textureFormat: -1
+-    textureCompression: 1
+-    compressionQuality: 50
+-    crunchedCompression: 0
+-    allowsAlphaSplitting: 0
+-    overridden: 0
+-    ignorePlatformSupport: 0
+-    androidETC2FallbackOverride: 0
+-    forceMaximumCompressionQuality_BC6H_BC7: 0
+-  - serializedVersion: 4
+-    buildTarget: WindowsStoreApps
+-    maxTextureSize: 2048
+-    resizeAlgorithm: 0
+-    textureFormat: -1
+-    textureCompression: 1
+-    compressionQuality: 50
+-    crunchedCompression: 0
+-    allowsAlphaSplitting: 0
+-    overridden: 0
+-    ignorePlatformSupport: 0
+-    androidETC2FallbackOverride: 0
+-    forceMaximumCompressionQuality_BC6H_BC7: 0
+-  - serializedVersion: 4
+-    buildTarget: Lumin
+-    maxTextureSize: 2048
+-    resizeAlgorithm: 0
+-    textureFormat: -1
+-    textureCompression: 1
+-    compressionQuality: 50
+-    crunchedCompression: 0
+-    allowsAlphaSplitting: 0
+-    overridden: 0
+-    ignorePlatformSupport: 0
+-    androidETC2FallbackOverride: 0
+-    forceMaximumCompressionQuality_BC6H_BC7: 0
+-  - serializedVersion: 4
+-    buildTarget: WebGL
+-    maxTextureSize: 2048
+-    resizeAlgorithm: 0
+-    textureFormat: -1
+-    textureCompression: 1
+-    compressionQuality: 50
+-    crunchedCompression: 0
+-    allowsAlphaSplitting: 0
+-    overridden: 0
+-    ignorePlatformSupport: 0
+-    androidETC2FallbackOverride: 0
+-    forceMaximumCompressionQuality_BC6H_BC7: 0
+-  - serializedVersion: 4
+-    buildTarget: Android
+-    maxTextureSize: 2048
+-    resizeAlgorithm: 0
+-    textureFormat: -1
+-    textureCompression: 1
+-    compressionQuality: 50
+-    crunchedCompression: 0
+-    allowsAlphaSplitting: 0
+-    overridden: 0
+-    ignorePlatformSupport: 0
+-    androidETC2FallbackOverride: 0
+-    forceMaximumCompressionQuality_BC6H_BC7: 0
+-  - serializedVersion: 4
+-    buildTarget: iOS
+-    maxTextureSize: 2048
+-    resizeAlgorithm: 0
+-    textureFormat: -1
+-    textureCompression: 1
+-    compressionQuality: 50
+-    crunchedCompression: 0
+-    allowsAlphaSplitting: 0
+-    overridden: 0
+-    ignorePlatformSupport: 0
+-    androidETC2FallbackOverride: 0
+-    forceMaximumCompressionQuality_BC6H_BC7: 0
+-  spriteSheet:
+-    serializedVersion: 2
+-    sprites:
+-    - serializedVersion: 2
+-      name: Idle_0
+-      rect:
+-        serializedVersion: 2
+-        x: 0
+-        y: 0
+-        width: 200
+-        height: 200
+-      alignment: 0
+-      pivot: {x: 0, y: 0}
+-      border: {x: 0, y: 0, z: 0, w: 0}
+-      customData: 
+-      outline: []
+-      physicsShape: []
+-      tessellationDetail: 0
+-      bones: []
+-      spriteID: 54509633e25cadc41a63f658f4cd6c85
+-      internalID: 4723107735738678597
+-      vertices: []
+-      indices: 
+-      edges: []
+-      weights: []
+-    - serializedVersion: 2
+-      name: Idle_1
+-      rect:
+-        serializedVersion: 2
+-        x: 200
+-        y: 0
+-        width: 200
+-        height: 200
+-      alignment: 0
+-      pivot: {x: 0, y: 0}
+-      border: {x: 0, y: 0, z: 0, w: 0}
+-      customData: 
+-      outline: []
+-      physicsShape: []
+-      tessellationDetail: 0
+-      bones: []
+-      spriteID: 4c97d87c52db76b44923c039923ac4af
+-      internalID: -7385789195546760866
+-      vertices: []
+-      indices: 
+-      edges: []
+-      weights: []
+-    - serializedVersion: 2
+-      name: Idle_2
+-      rect:
+-        serializedVersion: 2
+-        x: 400
+-        y: 0
+-        width: 200
+-        height: 200
+-      alignment: 0
+-      pivot: {x: 0, y: 0}
+-      border: {x: 0, y: 0, z: 0, w: 0}
+-      customData: 
+-      outline: []
+-      physicsShape: []
+-      tessellationDetail: 0
+-      bones: []
+-      spriteID: 25fd6202dd8e3644f898a8c17eb5dc4e
+-      internalID: 3234629978573100161
+-      vertices: []
+-      indices: 
+-      edges: []
+-      weights: []
+-    - serializedVersion: 2
+-      name: Idle_3
+-      rect:
+-        serializedVersion: 2
+-        x: 600
+-        y: 0
+-        width: 200
+-        height: 200
+-      alignment: 0
+-      pivot: {x: 0, y: 0}
+-      border: {x: 0, y: 0, z: 0, w: 0}
+-      customData: 
+-      outline: []
+-      physicsShape: []
+-      tessellationDetail: 0
+-      bones: []
+-      spriteID: 615a3c46e58b9f74dad49c7dec130bfa
+-      internalID: 6373048116405451881
+-      vertices: []
+-      indices: 
+-      edges: []
+-      weights: []
+-    - serializedVersion: 2
+-      name: Idle_4
+-      rect:
+-        serializedVersion: 2
+-        x: 800
+-        y: 0
+-        width: 200
+-        height: 200
+-      alignment: 0
+-      pivot: {x: 0, y: 0}
+-      border: {x: 0, y: 0, z: 0, w: 0}
+-      customData: 
+-      outline: []
+-      physicsShape: []
+-      tessellationDetail: 0
+-      bones: []
+-      spriteID: 285ddc41ac6401c41a72765fa1fc13e2
+-      internalID: 7264182050183361747
+-      vertices: []
+-      indices: 
+-      edges: []
+-      weights: []
+-    - serializedVersion: 2
+-      name: Idle_5
+-      rect:
+-        serializedVersion: 2
+-        x: 1000
+-        y: 0
+-        width: 200
+-        height: 200
+-      alignment: 0
+-      pivot: {x: 0, y: 0}
+-      border: {x: 0, y: 0, z: 0, w: 0}
+-      customData: 
+-      outline: []
+-      physicsShape: []
+-      tessellationDetail: 0
+-      bones: []
+-      spriteID: e1b050ee2ca65bb4cb51a3371965114a
+-      internalID: -2834552850196481573
+-      vertices: []
+-      indices: 
+-      edges: []
+-      weights: []
+-    - serializedVersion: 2
+-      name: Idle_6
+-      rect:
+-        serializedVersion: 2
+-        x: 1200
+-        y: 0
+-        width: 200
+-        height: 200
+-      alignment: 0
+-      pivot: {x: 0, y: 0}
+-      border: {x: 0, y: 0, z: 0, w: 0}
+-      customData: 
+-      outline: []
+-      physicsShape: []
+-      tessellationDetail: 0
+-      bones: []
+-      spriteID: 53d5d677750c6d7469403908ce186b9f
+-      internalID: 3278449094680734212
+-      vertices: []
+-      indices: 
+-      edges: []
+-      weights: []
+-    - serializedVersion: 2
+-      name: Idle_7
+-      rect:
+-        serializedVersion: 2
+-        x: 1400
+-        y: 0
+-        width: 200
+-        height: 200
+-      alignment: 0
+-      pivot: {x: 0, y: 0}
+-      border: {x: 0, y: 0, z: 0, w: 0}
+-      customData: 
+-      outline: []
+-      physicsShape: []
+-      tessellationDetail: 0
+-      bones: []
+-      spriteID: f395378497c38054695c2e72a28fb064
+-      internalID: 3384493420599841878
+-      vertices: []
+-      indices: 
+-      edges: []
+-      weights: []
+-    outline: []
+-    customData: 
+-    physicsShape: []
+-    bones: []
+-    spriteID: 5e97eb03825dee720800000000000000
+-    internalID: 0
+-    vertices: []
+-    indices: 
+-    edges: []
+-    weights: []
+-    secondaryTextures: []
+-    spriteCustomMetadata:
+-      entries: []
+-    nameFileIdTable:
+-      Idle_0: 4723107735738678597
+-      Idle_1: -7385789195546760866
+-      Idle_2: 3234629978573100161
+-      Idle_3: 6373048116405451881
+-      Idle_4: 7264182050183361747
+-      Idle_5: -2834552850196481573
+-      Idle_6: 3278449094680734212
+-      Idle_7: 3384493420599841878
+-  mipmapLimitGroupName: 
+-  pSDRemoveMatte: 0
+-  userData: 
+-  assetBundleName: 
+-  assetBundleVariant: 
+Index: Assets/AssetPacks/Martial Hero/Animations.meta
+===================================================================
+diff --git a/Assets/AssetPacks/Martial Hero/Animations.meta b/Assets/AssetPacks/Martial Hero/Animations.meta
+deleted file mode 100644
+--- a/Assets/AssetPacks/Martial Hero/Animations.meta	(revision 279b2a51e6751079cb64b87ab8c388542941e2b4)
++++ /dev/null	(revision 279b2a51e6751079cb64b87ab8c388542941e2b4)
+@@ -1,8 +0,0 @@
+-fileFormatVersion: 2
+-guid: 719ff2752d06c432dbb911ffc5d92f35
+-folderAsset: yes
+-DefaultImporter:
+-  externalObjects: {}
+-  userData: 
+-  assetBundleName: 
+-  assetBundleVariant: 
+Index: Assets/AssetPacks/Martial Hero/New Material 1.mat.meta
+===================================================================
+diff --git a/Assets/AssetPacks/Martial Hero/New Material 1.mat.meta b/Assets/AssetPacks/Martial Hero/New Material 1.mat.meta
+deleted file mode 100644
+--- a/Assets/AssetPacks/Martial Hero/New Material 1.mat.meta	(revision 279b2a51e6751079cb64b87ab8c388542941e2b4)
++++ /dev/null	(revision 279b2a51e6751079cb64b87ab8c388542941e2b4)
+@@ -1,8 +0,0 @@
+-fileFormatVersion: 2
+-guid: 4015c120b39be49c392f38a947fb4a0a
+-NativeFormatImporter:
+-  externalObjects: {}
+-  mainObjectFileID: 2100000
+-  userData: 
+-  assetBundleName: 
+-  assetBundleVariant: 
+Index: Assets/AssetPacks/Martial Hero/Sprites/Attack1.png.meta
+===================================================================
+diff --git a/Assets/AssetPacks/Martial Hero/Sprites/Attack1.png.meta b/Assets/AssetPacks/Martial Hero/Sprites/Attack1.png.meta
+deleted file mode 100644
+--- a/Assets/AssetPacks/Martial Hero/Sprites/Attack1.png.meta	(revision 279b2a51e6751079cb64b87ab8c388542941e2b4)
++++ /dev/null	(revision 279b2a51e6751079cb64b87ab8c388542941e2b4)
+@@ -1,345 +0,0 @@
+-fileFormatVersion: 2
+-guid: c50b517797d93614aac4ca58aaf97355
+-AssetOrigin:
+-  serializedVersion: 1
+-  productId: 170422
+-  packageName: Martial Hero
+-  packageVersion: 1.0
+-  assetPath: Assets/Martial Hero/Sprites/Attack1.png
+-  uploadId: 372436
+-TextureImporter:
+-  internalIDToNameTable:
+-  - first:
+-      213: 6934013284892070054
+-    second: Attack1_0
+-  - first:
+-      213: -7957278214813060823
+-    second: Attack1_1
+-  - first:
+-      213: 1409549213185883415
+-    second: Attack1_2
+-  - first:
+-      213: 4976274401295337057
+-    second: Attack1_3
+-  - first:
+-      213: -5639509438907974925
+-    second: Attack1_4
+-  - first:
+-      213: 452926297546027425
+-    second: Attack1_5
+-  externalObjects: {}
+-  serializedVersion: 13
+-  mipmaps:
+-    mipMapMode: 0
+-    enableMipMap: 1
+-    sRGBTexture: 1
+-    linearTexture: 0
+-    fadeOut: 0
+-    borderMipMap: 0
+-    mipMapsPreserveCoverage: 0
+-    alphaTestReferenceValue: 0.5
+-    mipMapFadeDistanceStart: 1
+-    mipMapFadeDistanceEnd: 3
+-  bumpmap:
+-    convertToNormalMap: 0
+-    externalNormalMap: 0
+-    heightScale: 0.25
+-    normalMapFilter: 0
+-    flipGreenChannel: 0
+-  isReadable: 0
+-  streamingMipmaps: 0
+-  streamingMipmapsPriority: 0
+-  vTOnly: 0
+-  ignoreMipmapLimit: 0
+-  grayScaleToAlpha: 0
+-  generateCubemap: 6
+-  cubemapConvolution: 0
+-  seamlessCubemap: 0
+-  textureFormat: 1
+-  maxTextureSize: 2048
+-  textureSettings:
+-    serializedVersion: 2
+-    filterMode: 0
+-    aniso: 1
+-    mipBias: 0
+-    wrapU: 1
+-    wrapV: 1
+-    wrapW: 1
+-  nPOTScale: 0
+-  lightmap: 0
+-  compressionQuality: 50
+-  spriteMode: 2
+-  spriteExtrude: 1
+-  spriteMeshType: 1
+-  alignment: 0
+-  spritePivot: {x: 0.5, y: 0.5}
+-  spritePixelsToUnits: 100
+-  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+-  spriteGenerateFallbackPhysicsShape: 1
+-  alphaUsage: 1
+-  alphaIsTransparency: 1
+-  spriteTessellationDetail: -1
+-  textureType: 8
+-  textureShape: 1
+-  singleChannelComponent: 0
+-  flipbookRows: 1
+-  flipbookColumns: 1
+-  maxTextureSizeSet: 0
+-  compressionQualitySet: 0
+-  textureFormatSet: 0
+-  ignorePngGamma: 0
+-  applyGammaDecoding: 1
+-  swizzle: 50462976
+-  cookieLightType: 1
+-  platformSettings:
+-  - serializedVersion: 4
+-    buildTarget: DefaultTexturePlatform
+-    maxTextureSize: 2048
+-    resizeAlgorithm: 0
+-    textureFormat: -1
+-    textureCompression: 1
+-    compressionQuality: 50
+-    crunchedCompression: 0
+-    allowsAlphaSplitting: 0
+-    overridden: 0
+-    ignorePlatformSupport: 0
+-    androidETC2FallbackOverride: 0
+-    forceMaximumCompressionQuality_BC6H_BC7: 0
+-  - serializedVersion: 4
+-    buildTarget: Standalone
+-    maxTextureSize: 2048
+-    resizeAlgorithm: 0
+-    textureFormat: -1
+-    textureCompression: 1
+-    compressionQuality: 50
+-    crunchedCompression: 0
+-    allowsAlphaSplitting: 0
+-    overridden: 0
+-    ignorePlatformSupport: 0
+-    androidETC2FallbackOverride: 0
+-    forceMaximumCompressionQuality_BC6H_BC7: 0
+-  - serializedVersion: 4
+-    buildTarget: WindowsStoreApps
+-    maxTextureSize: 2048
+-    resizeAlgorithm: 0
+-    textureFormat: -1
+-    textureCompression: 1
+-    compressionQuality: 50
+-    crunchedCompression: 0
+-    allowsAlphaSplitting: 0
+-    overridden: 0
+-    ignorePlatformSupport: 0
+-    androidETC2FallbackOverride: 0
+-    forceMaximumCompressionQuality_BC6H_BC7: 0
+-  - serializedVersion: 4
+-    buildTarget: Lumin
+-    maxTextureSize: 2048
+-    resizeAlgorithm: 0
+-    textureFormat: -1
+-    textureCompression: 1
+-    compressionQuality: 50
+-    crunchedCompression: 0
+-    allowsAlphaSplitting: 0
+-    overridden: 0
+-    ignorePlatformSupport: 0
+-    androidETC2FallbackOverride: 0
+-    forceMaximumCompressionQuality_BC6H_BC7: 0
+-  - serializedVersion: 4
+-    buildTarget: WebGL
+-    maxTextureSize: 2048
+-    resizeAlgorithm: 0
+-    textureFormat: -1
+-    textureCompression: 1
+-    compressionQuality: 50
+-    crunchedCompression: 0
+-    allowsAlphaSplitting: 0
+-    overridden: 0
+-    ignorePlatformSupport: 0
+-    androidETC2FallbackOverride: 0
+-    forceMaximumCompressionQuality_BC6H_BC7: 0
+-  - serializedVersion: 4
+-    buildTarget: Android
+-    maxTextureSize: 2048
+-    resizeAlgorithm: 0
+-    textureFormat: -1
+-    textureCompression: 1
+-    compressionQuality: 50
+-    crunchedCompression: 0
+-    allowsAlphaSplitting: 0
+-    overridden: 0
+-    ignorePlatformSupport: 0
+-    androidETC2FallbackOverride: 0
+-    forceMaximumCompressionQuality_BC6H_BC7: 0
+-  - serializedVersion: 4
+-    buildTarget: iOS
+-    maxTextureSize: 2048
+-    resizeAlgorithm: 0
+-    textureFormat: -1
+-    textureCompression: 1
+-    compressionQuality: 50
+-    crunchedCompression: 0
+-    allowsAlphaSplitting: 0
+-    overridden: 0
+-    ignorePlatformSupport: 0
+-    androidETC2FallbackOverride: 0
+-    forceMaximumCompressionQuality_BC6H_BC7: 0
+-  spriteSheet:
+-    serializedVersion: 2
+-    sprites:
+-    - serializedVersion: 2
+-      name: Attack1_0
+-      rect:
+-        serializedVersion: 2
+-        x: 0
+-        y: 0
+-        width: 200
+-        height: 200
+-      alignment: 0
+-      pivot: {x: 0, y: 0}
+-      border: {x: 0, y: 0, z: 0, w: 0}
+-      customData: 
+-      outline: []
+-      physicsShape: []
+-      tessellationDetail: 0
+-      bones: []
+-      spriteID: e78da1292ae70694a8c236a65bdc478d
+-      internalID: 6934013284892070054
+-      vertices: []
+-      indices: 
+-      edges: []
+-      weights: []
+-    - serializedVersion: 2
+-      name: Attack1_1
+-      rect:
+-        serializedVersion: 2
+-        x: 200
+-        y: 0
+-        width: 200
+-        height: 200
+-      alignment: 0
+-      pivot: {x: 0, y: 0}
+-      border: {x: 0, y: 0, z: 0, w: 0}
+-      customData: 
+-      outline: []
+-      physicsShape: []
+-      tessellationDetail: 0
+-      bones: []
+-      spriteID: 573a64fa634fcc74795839e640a4e3d8
+-      internalID: -7957278214813060823
+-      vertices: []
+-      indices: 
+-      edges: []
+-      weights: []
+-    - serializedVersion: 2
+-      name: Attack1_2
+-      rect:
+-        serializedVersion: 2
+-        x: 400
+-        y: 0
+-        width: 200
+-        height: 200
+-      alignment: 0
+-      pivot: {x: 0, y: 0}
+-      border: {x: 0, y: 0, z: 0, w: 0}
+-      customData: 
+-      outline: []
+-      physicsShape: []
+-      tessellationDetail: 0
+-      bones: []
+-      spriteID: 5b342e6cd6f78994f9b83f6a994ce738
+-      internalID: 1409549213185883415
+-      vertices: []
+-      indices: 
+-      edges: []
+-      weights: []
+-    - serializedVersion: 2
+-      name: Attack1_3
+-      rect:
+-        serializedVersion: 2
+-        x: 600
+-        y: 0
+-        width: 200
+-        height: 200
+-      alignment: 0
+-      pivot: {x: 0, y: 0}
+-      border: {x: 0, y: 0, z: 0, w: 0}
+-      customData: 
+-      outline: []
+-      physicsShape: []
+-      tessellationDetail: 0
+-      bones: []
+-      spriteID: 0080ab60b1f13024e9217e457505ecee
+-      internalID: 4976274401295337057
+-      vertices: []
+-      indices: 
+-      edges: []
+-      weights: []
+-    - serializedVersion: 2
+-      name: Attack1_4
+-      rect:
+-        serializedVersion: 2
+-        x: 800
+-        y: 0
+-        width: 200
+-        height: 200
+-      alignment: 0
+-      pivot: {x: 0, y: 0}
+-      border: {x: 0, y: 0, z: 0, w: 0}
+-      customData: 
+-      outline: []
+-      physicsShape: []
+-      tessellationDetail: 0
+-      bones: []
+-      spriteID: e9ef0a7ca6ff9b848b057a54d88119c6
+-      internalID: -5639509438907974925
+-      vertices: []
+-      indices: 
+-      edges: []
+-      weights: []
+-    - serializedVersion: 2
+-      name: Attack1_5
+-      rect:
+-        serializedVersion: 2
+-        x: 1000
+-        y: 0
+-        width: 200
+-        height: 200
+-      alignment: 0
+-      pivot: {x: 0, y: 0}
+-      border: {x: 0, y: 0, z: 0, w: 0}
+-      customData: 
+-      outline: []
+-      physicsShape: []
+-      tessellationDetail: 0
+-      bones: []
+-      spriteID: 7b1a3505fb818d7459430780761aa7d8
+-      internalID: 452926297546027425
+-      vertices: []
+-      indices: 
+-      edges: []
+-      weights: []
+-    outline: []
+-    customData: 
+-    physicsShape: []
+-    bones: []
+-    spriteID: 5e97eb03825dee720800000000000000
+-    internalID: 0
+-    vertices: []
+-    indices: 
+-    edges: []
+-    weights: []
+-    secondaryTextures: []
+-    spriteCustomMetadata:
+-      entries: []
+-    nameFileIdTable:
+-      Attack1_0: 6934013284892070054
+-      Attack1_1: -7957278214813060823
+-      Attack1_2: 1409549213185883415
+-      Attack1_3: 4976274401295337057
+-      Attack1_4: -5639509438907974925
+-      Attack1_5: 452926297546027425
+-  mipmapLimitGroupName: 
+-  pSDRemoveMatte: 0
+-  userData: 
+-  assetBundleName: 
+-  assetBundleVariant: 
+Index: Assets/AssetPacks/Martial Hero/Sprites.meta
+===================================================================
+diff --git a/Assets/AssetPacks/Martial Hero/Sprites.meta b/Assets/AssetPacks/Martial Hero/Sprites.meta
+deleted file mode 100644
+--- a/Assets/AssetPacks/Martial Hero/Sprites.meta	(revision 279b2a51e6751079cb64b87ab8c388542941e2b4)
++++ /dev/null	(revision 279b2a51e6751079cb64b87ab8c388542941e2b4)
+@@ -1,8 +0,0 @@
+-fileFormatVersion: 2
+-guid: 2c7d9fe9af7dc4d43afd14e007caf1d8
+-folderAsset: yes
+-DefaultImporter:
+-  externalObjects: {}
+-  userData: 
+-  assetBundleName: 
+-  assetBundleVariant: 
+Index: Assets/AssetPacks/Martial Hero/Animations/PushAbilitySide.asset
+===================================================================
+diff --git a/Assets/AssetPacks/Martial Hero/Animations/PushAbilitySide.asset b/Assets/AssetPacks/Martial Hero/Animations/PushAbilitySide.asset
+deleted file mode 100644
+--- a/Assets/AssetPacks/Martial Hero/Animations/PushAbilitySide.asset	(revision 279b2a51e6751079cb64b87ab8c388542941e2b4)
++++ /dev/null	(revision 279b2a51e6751079cb64b87ab8c388542941e2b4)
+@@ -1,57 +0,0 @@
+-%YAML 1.1
+-%TAG !u! tag:unity3d.com,2011:
+---- !u!114 &11400000
+-MonoBehaviour:
+-  m_ObjectHideFlags: 0
+-  m_CorrespondingSourceObject: {fileID: 0}
+-  m_PrefabInstance: {fileID: 0}
+-  m_PrefabAsset: {fileID: 0}
+-  m_GameObject: {fileID: 0}
+-  m_Enabled: 1
+-  m_EditorHideFlags: 0
+-  m_Script: {fileID: 11500000, guid: 61caefda880f4a5d94965826455b144b, type: 3}
+-  m_Name: PushAbilitySide
+-  m_EditorClassIdentifier: 
+-  serializationData:
+-    SerializedFormat: 2
+-    SerializedBytes: 
+-    ReferencedUnityObjects: []
+-    SerializedBytesString: 
+-    Prefab: {fileID: 0}
+-    PrefabModificationsReferencedUnityObjects: []
+-    PrefabModifications: []
+-    SerializationNodes:
+-    - Name: _events
+-      Entry: 7
+-      Data: 0|Gameplay.SpriteAnimationEvent[], Assembly-CSharp
+-    - Name: 
+-      Entry: 12
+-      Data: 1
+-    - Name: 
+-      Entry: 7
+-      Data: Gameplay.SpriteAnimationEvent, Assembly-CSharp
+-    - Name: ID
+-      Entry: 3
+-      Data: 3
+-    - Name: Frame
+-      Entry: 3
+-      Data: 4
+-    - Name: 
+-      Entry: 8
+-      Data: 
+-    - Name: 
+-      Entry: 13
+-      Data: 
+-    - Name: 
+-      Entry: 8
+-      Data: 
+-  <Sprites>k__BackingField:
+-  - {fileID: 7441861488978599509, guid: aec5070f5cb24b24e9fbdf06b0d1faf8, type: 3}
+-  - {fileID: 8288915215451595207, guid: aec5070f5cb24b24e9fbdf06b0d1faf8, type: 3}
+-  - {fileID: 4668938655123782945, guid: aec5070f5cb24b24e9fbdf06b0d1faf8, type: 3}
+-  - {fileID: 5683539909772271658, guid: aec5070f5cb24b24e9fbdf06b0d1faf8, type: 3}
+-  - {fileID: 5764228812365489207, guid: aec5070f5cb24b24e9fbdf06b0d1faf8, type: 3}
+-  - {fileID: -1191510351576865934, guid: aec5070f5cb24b24e9fbdf06b0d1faf8, type: 3}
+-  <ID>k__BackingField: 7
+-  <FPS>k__BackingField: 30
+-  CanInterrupt: 1
+Index: Assets/AssetPacks/Martial Hero/License.txt
+===================================================================
+diff --git a/Assets/AssetPacks/Martial Hero/License.txt b/Assets/AssetPacks/Martial Hero/License.txt
+deleted file mode 100644
+--- a/Assets/AssetPacks/Martial Hero/License.txt	(revision 279b2a51e6751079cb64b87ab8c388542941e2b4)
++++ /dev/null	(revision 279b2a51e6751079cb64b87ab8c388542941e2b4)
+@@ -1,2 +0,0 @@
+-This pack - Martial Hero Asset Pack is Creative Commons Zero (CC-0).
+-Can be used in commercial and non-commercial projects.
+\ No newline at end of file
+Index: Assets/AssetPacks/Martial Hero/Demo/Scene Demo.unity.meta
+===================================================================
+diff --git a/Assets/AssetPacks/Martial Hero/Demo/Scene Demo.unity.meta b/Assets/AssetPacks/Martial Hero/Demo/Scene Demo.unity.meta
+deleted file mode 100644
+--- a/Assets/AssetPacks/Martial Hero/Demo/Scene Demo.unity.meta	(revision 279b2a51e6751079cb64b87ab8c388542941e2b4)
++++ /dev/null	(revision 279b2a51e6751079cb64b87ab8c388542941e2b4)
+@@ -1,14 +0,0 @@
+-fileFormatVersion: 2
+-guid: 6dd1420c08f52a847abe76fbb80b30a6
+-DefaultImporter:
+-  externalObjects: {}
+-  userData: 
+-  assetBundleName: 
+-  assetBundleVariant: 
+-AssetOrigin:
+-  serializedVersion: 1
+-  productId: 170422
+-  packageName: Martial Hero
+-  packageVersion: 1.0
+-  assetPath: Assets/Martial Hero/Demo/Scene Demo.unity
+-  uploadId: 372436
+Index: Assets/AssetPacks/Martial Hero.meta
+===================================================================
+diff --git a/Assets/AssetPacks/Martial Hero.meta b/Assets/AssetPacks/Martial Hero.meta
+deleted file mode 100644
+--- a/Assets/AssetPacks/Martial Hero.meta	(revision 279b2a51e6751079cb64b87ab8c388542941e2b4)
++++ /dev/null	(revision 279b2a51e6751079cb64b87ab8c388542941e2b4)
+@@ -1,8 +0,0 @@
+-fileFormatVersion: 2
+-guid: 53ff32a5de0944513bf5fe11325213e0
+-folderAsset: yes
+-DefaultImporter:
+-  externalObjects: {}
+-  userData: 
+-  assetBundleName: 
+-  assetBundleVariant: 
+Index: Assets/AssetPacks/Martial Hero/Sprites/Attack2.png.meta
+===================================================================
+diff --git a/Assets/AssetPacks/Martial Hero/Sprites/Attack2.png.meta b/Assets/AssetPacks/Martial Hero/Sprites/Attack2.png.meta
+deleted file mode 100644
+--- a/Assets/AssetPacks/Martial Hero/Sprites/Attack2.png.meta	(revision 279b2a51e6751079cb64b87ab8c388542941e2b4)
++++ /dev/null	(revision 279b2a51e6751079cb64b87ab8c388542941e2b4)
+@@ -1,345 +0,0 @@
+-fileFormatVersion: 2
+-guid: aec5070f5cb24b24e9fbdf06b0d1faf8
+-AssetOrigin:
+-  serializedVersion: 1
+-  productId: 170422
+-  packageName: Martial Hero
+-  packageVersion: 1.0
+-  assetPath: Assets/Martial Hero/Sprites/Attack2.png
+-  uploadId: 372436
+-TextureImporter:
+-  internalIDToNameTable:
+-  - first:
+-      213: 7441861488978599509
+-    second: Attack2_0
+-  - first:
+-      213: 8288915215451595207
+-    second: Attack2_1
+-  - first:
+-      213: 4668938655123782945
+-    second: Attack2_2
+-  - first:
+-      213: 5683539909772271658
+-    second: Attack2_3
+-  - first:
+-      213: 5764228812365489207
+-    second: Attack2_4
+-  - first:
+-      213: -1191510351576865934
+-    second: Attack2_5
+-  externalObjects: {}
+-  serializedVersion: 13
+-  mipmaps:
+-    mipMapMode: 0
+-    enableMipMap: 1
+-    sRGBTexture: 1
+-    linearTexture: 0
+-    fadeOut: 0
+-    borderMipMap: 0
+-    mipMapsPreserveCoverage: 0
+-    alphaTestReferenceValue: 0.5
+-    mipMapFadeDistanceStart: 1
+-    mipMapFadeDistanceEnd: 3
+-  bumpmap:
+-    convertToNormalMap: 0
+-    externalNormalMap: 0
+-    heightScale: 0.25
+-    normalMapFilter: 0
+-    flipGreenChannel: 0
+-  isReadable: 0
+-  streamingMipmaps: 0
+-  streamingMipmapsPriority: 0
+-  vTOnly: 0
+-  ignoreMipmapLimit: 0
+-  grayScaleToAlpha: 0
+-  generateCubemap: 6
+-  cubemapConvolution: 0
+-  seamlessCubemap: 0
+-  textureFormat: 1
+-  maxTextureSize: 2048
+-  textureSettings:
+-    serializedVersion: 2
+-    filterMode: 0
+-    aniso: 1
+-    mipBias: 0
+-    wrapU: 1
+-    wrapV: 1
+-    wrapW: 1
+-  nPOTScale: 0
+-  lightmap: 0
+-  compressionQuality: 50
+-  spriteMode: 2
+-  spriteExtrude: 1
+-  spriteMeshType: 1
+-  alignment: 0
+-  spritePivot: {x: 0.5, y: 0.5}
+-  spritePixelsToUnits: 100
+-  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+-  spriteGenerateFallbackPhysicsShape: 1
+-  alphaUsage: 1
+-  alphaIsTransparency: 1
+-  spriteTessellationDetail: -1
+-  textureType: 8
+-  textureShape: 1
+-  singleChannelComponent: 0
+-  flipbookRows: 1
+-  flipbookColumns: 1
+-  maxTextureSizeSet: 0
+-  compressionQualitySet: 0
+-  textureFormatSet: 0
+-  ignorePngGamma: 0
+-  applyGammaDecoding: 1
+-  swizzle: 50462976
+-  cookieLightType: 1
+-  platformSettings:
+-  - serializedVersion: 4
+-    buildTarget: DefaultTexturePlatform
+-    maxTextureSize: 2048
+-    resizeAlgorithm: 0
+-    textureFormat: -1
+-    textureCompression: 1
+-    compressionQuality: 50
+-    crunchedCompression: 0
+-    allowsAlphaSplitting: 0
+-    overridden: 0
+-    ignorePlatformSupport: 0
+-    androidETC2FallbackOverride: 0
+-    forceMaximumCompressionQuality_BC6H_BC7: 0
+-  - serializedVersion: 4
+-    buildTarget: Standalone
+-    maxTextureSize: 2048
+-    resizeAlgorithm: 0
+-    textureFormat: -1
+-    textureCompression: 1
+-    compressionQuality: 50
+-    crunchedCompression: 0
+-    allowsAlphaSplitting: 0
+-    overridden: 0
+-    ignorePlatformSupport: 0
+-    androidETC2FallbackOverride: 0
+-    forceMaximumCompressionQuality_BC6H_BC7: 0
+-  - serializedVersion: 4
+-    buildTarget: WindowsStoreApps
+-    maxTextureSize: 2048
+-    resizeAlgorithm: 0
+-    textureFormat: -1
+-    textureCompression: 1
+-    compressionQuality: 50
+-    crunchedCompression: 0
+-    allowsAlphaSplitting: 0
+-    overridden: 0
+-    ignorePlatformSupport: 0
+-    androidETC2FallbackOverride: 0
+-    forceMaximumCompressionQuality_BC6H_BC7: 0
+-  - serializedVersion: 4
+-    buildTarget: Lumin
+-    maxTextureSize: 2048
+-    resizeAlgorithm: 0
+-    textureFormat: -1
+-    textureCompression: 1
+-    compressionQuality: 50
+-    crunchedCompression: 0
+-    allowsAlphaSplitting: 0
+-    overridden: 0
+-    ignorePlatformSupport: 0
+-    androidETC2FallbackOverride: 0
+-    forceMaximumCompressionQuality_BC6H_BC7: 0
+-  - serializedVersion: 4
+-    buildTarget: WebGL
+-    maxTextureSize: 2048
+-    resizeAlgorithm: 0
+-    textureFormat: -1
+-    textureCompression: 1
+-    compressionQuality: 50
+-    crunchedCompression: 0
+-    allowsAlphaSplitting: 0
+-    overridden: 0
+-    ignorePlatformSupport: 0
+-    androidETC2FallbackOverride: 0
+-    forceMaximumCompressionQuality_BC6H_BC7: 0
+-  - serializedVersion: 4
+-    buildTarget: Android
+-    maxTextureSize: 2048
+-    resizeAlgorithm: 0
+-    textureFormat: -1
+-    textureCompression: 1
+-    compressionQuality: 50
+-    crunchedCompression: 0
+-    allowsAlphaSplitting: 0
+-    overridden: 0
+-    ignorePlatformSupport: 0
+-    androidETC2FallbackOverride: 0
+-    forceMaximumCompressionQuality_BC6H_BC7: 0
+-  - serializedVersion: 4
+-    buildTarget: iOS
+-    maxTextureSize: 2048
+-    resizeAlgorithm: 0
+-    textureFormat: -1
+-    textureCompression: 1
+-    compressionQuality: 50
+-    crunchedCompression: 0
+-    allowsAlphaSplitting: 0
+-    overridden: 0
+-    ignorePlatformSupport: 0
+-    androidETC2FallbackOverride: 0
+-    forceMaximumCompressionQuality_BC6H_BC7: 0
+-  spriteSheet:
+-    serializedVersion: 2
+-    sprites:
+-    - serializedVersion: 2
+-      name: Attack2_0
+-      rect:
+-        serializedVersion: 2
+-        x: 0
+-        y: 0
+-        width: 200
+-        height: 200
+-      alignment: 0
+-      pivot: {x: 0, y: 0}
+-      border: {x: 0, y: 0, z: 0, w: 0}
+-      customData: 
+-      outline: []
+-      physicsShape: []
+-      tessellationDetail: 0
+-      bones: []
+-      spriteID: 5aca8eb60f0ddf448bee1e1a035fe075
+-      internalID: 7441861488978599509
+-      vertices: []
+-      indices: 
+-      edges: []
+-      weights: []
+-    - serializedVersion: 2
+-      name: Attack2_1
+-      rect:
+-        serializedVersion: 2
+-        x: 200
+-        y: 0
+-        width: 200
+-        height: 200
+-      alignment: 0
+-      pivot: {x: 0, y: 0}
+-      border: {x: 0, y: 0, z: 0, w: 0}
+-      customData: 
+-      outline: []
+-      physicsShape: []
+-      tessellationDetail: 0
+-      bones: []
+-      spriteID: 8974ac2a5df0a7140bdfee6dc8ef9683
+-      internalID: 8288915215451595207
+-      vertices: []
+-      indices: 
+-      edges: []
+-      weights: []
+-    - serializedVersion: 2
+-      name: Attack2_2
+-      rect:
+-        serializedVersion: 2
+-        x: 400
+-        y: 0
+-        width: 200
+-        height: 200
+-      alignment: 0
+-      pivot: {x: 0, y: 0}
+-      border: {x: 0, y: 0, z: 0, w: 0}
+-      customData: 
+-      outline: []
+-      physicsShape: []
+-      tessellationDetail: 0
+-      bones: []
+-      spriteID: 44958fa11ea8d20488dbcd9c95e53319
+-      internalID: 4668938655123782945
+-      vertices: []
+-      indices: 
+-      edges: []
+-      weights: []
+-    - serializedVersion: 2
+-      name: Attack2_3
+-      rect:
+-        serializedVersion: 2
+-        x: 600
+-        y: 0
+-        width: 200
+-        height: 200
+-      alignment: 0
+-      pivot: {x: 0, y: 0}
+-      border: {x: 0, y: 0, z: 0, w: 0}
+-      customData: 
+-      outline: []
+-      physicsShape: []
+-      tessellationDetail: 0
+-      bones: []
+-      spriteID: 05a8d2c6fbddd5b438284ece079a6668
+-      internalID: 5683539909772271658
+-      vertices: []
+-      indices: 
+-      edges: []
+-      weights: []
+-    - serializedVersion: 2
+-      name: Attack2_4
+-      rect:
+-        serializedVersion: 2
+-        x: 800
+-        y: 0
+-        width: 200
+-        height: 200
+-      alignment: 0
+-      pivot: {x: 0, y: 0}
+-      border: {x: 0, y: 0, z: 0, w: 0}
+-      customData: 
+-      outline: []
+-      physicsShape: []
+-      tessellationDetail: 0
+-      bones: []
+-      spriteID: 8a8aa855b2cf79a48a5fb910da5cc024
+-      internalID: 5764228812365489207
+-      vertices: []
+-      indices: 
+-      edges: []
+-      weights: []
+-    - serializedVersion: 2
+-      name: Attack2_5
+-      rect:
+-        serializedVersion: 2
+-        x: 1000
+-        y: 0
+-        width: 200
+-        height: 200
+-      alignment: 0
+-      pivot: {x: 0, y: 0}
+-      border: {x: 0, y: 0, z: 0, w: 0}
+-      customData: 
+-      outline: []
+-      physicsShape: []
+-      tessellationDetail: 0
+-      bones: []
+-      spriteID: 82fc9b3ecfc2f0d4a8ea2a1ac1c0a9ff
+-      internalID: -1191510351576865934
+-      vertices: []
+-      indices: 
+-      edges: []
+-      weights: []
+-    outline: []
+-    customData: 
+-    physicsShape: []
+-    bones: []
+-    spriteID: 5e97eb03825dee720800000000000000
+-    internalID: 0
+-    vertices: []
+-    indices: 
+-    edges: []
+-    weights: []
+-    secondaryTextures: []
+-    spriteCustomMetadata:
+-      entries: []
+-    nameFileIdTable:
+-      Attack2_0: 7441861488978599509
+-      Attack2_1: 8288915215451595207
+-      Attack2_2: 4668938655123782945
+-      Attack2_3: 5683539909772271658
+-      Attack2_4: 5764228812365489207
+-      Attack2_5: -1191510351576865934
+-  mipmapLimitGroupName: 
+-  pSDRemoveMatte: 0
+-  userData: 
+-  assetBundleName: 
+-  assetBundleVariant: 
+Index: Assets/AssetPacks/Martial Hero/Demo.meta
+===================================================================
+diff --git a/Assets/AssetPacks/Martial Hero/Demo.meta b/Assets/AssetPacks/Martial Hero/Demo.meta
+deleted file mode 100644
+--- a/Assets/AssetPacks/Martial Hero/Demo.meta	(revision 279b2a51e6751079cb64b87ab8c388542941e2b4)
++++ /dev/null	(revision 279b2a51e6751079cb64b87ab8c388542941e2b4)
+@@ -1,8 +0,0 @@
+-fileFormatVersion: 2
+-guid: 61bf7d64f1b403e429b1f884516ef387
+-folderAsset: yes
+-DefaultImporter:
+-  externalObjects: {}
+-  userData: 
+-  assetBundleName: 
+-  assetBundleVariant: 
+Index: Assets/AssetPacks/Martial Hero/Sprites/Take Hit.png.meta
+===================================================================
+diff --git a/Assets/AssetPacks/Martial Hero/Sprites/Take Hit.png.meta b/Assets/AssetPacks/Martial Hero/Sprites/Take Hit.png.meta
+deleted file mode 100644
+--- a/Assets/AssetPacks/Martial Hero/Sprites/Take Hit.png.meta	(revision 279b2a51e6751079cb64b87ab8c388542941e2b4)
++++ /dev/null	(revision 279b2a51e6751079cb64b87ab8c388542941e2b4)
+@@ -1,293 +0,0 @@
+-fileFormatVersion: 2
+-guid: dafba786f4f5b8242bc098edbf954165
+-AssetOrigin:
+-  serializedVersion: 1
+-  productId: 170422
+-  packageName: Martial Hero
+-  packageVersion: 1.0
+-  assetPath: Assets/Martial Hero/Sprites/Take Hit.png
+-  uploadId: 372436
+-TextureImporter:
+-  internalIDToNameTable:
+-  - first:
+-      213: -7500690451134026123
+-    second: Take Hit_0
+-  - first:
+-      213: -889859373511162655
+-    second: Take Hit_1
+-  - first:
+-      213: -3088938797480143695
+-    second: Take Hit_2
+-  - first:
+-      213: -9206091644520726168
+-    second: Take Hit_3
+-  externalObjects: {}
+-  serializedVersion: 13
+-  mipmaps:
+-    mipMapMode: 0
+-    enableMipMap: 1
+-    sRGBTexture: 1
+-    linearTexture: 0
+-    fadeOut: 0
+-    borderMipMap: 0
+-    mipMapsPreserveCoverage: 0
+-    alphaTestReferenceValue: 0.5
+-    mipMapFadeDistanceStart: 1
+-    mipMapFadeDistanceEnd: 3
+-  bumpmap:
+-    convertToNormalMap: 0
+-    externalNormalMap: 0
+-    heightScale: 0.25
+-    normalMapFilter: 0
+-    flipGreenChannel: 0
+-  isReadable: 0
+-  streamingMipmaps: 0
+-  streamingMipmapsPriority: 0
+-  vTOnly: 0
+-  ignoreMipmapLimit: 0
+-  grayScaleToAlpha: 0
+-  generateCubemap: 6
+-  cubemapConvolution: 0
+-  seamlessCubemap: 0
+-  textureFormat: 1
+-  maxTextureSize: 2048
+-  textureSettings:
+-    serializedVersion: 2
+-    filterMode: 0
+-    aniso: 1
+-    mipBias: 0
+-    wrapU: 1
+-    wrapV: 1
+-    wrapW: 1
+-  nPOTScale: 0
+-  lightmap: 0
+-  compressionQuality: 50
+-  spriteMode: 2
+-  spriteExtrude: 1
+-  spriteMeshType: 1
+-  alignment: 0
+-  spritePivot: {x: 0.5, y: 0.5}
+-  spritePixelsToUnits: 100
+-  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+-  spriteGenerateFallbackPhysicsShape: 1
+-  alphaUsage: 1
+-  alphaIsTransparency: 1
+-  spriteTessellationDetail: -1
+-  textureType: 8
+-  textureShape: 1
+-  singleChannelComponent: 0
+-  flipbookRows: 1
+-  flipbookColumns: 1
+-  maxTextureSizeSet: 0
+-  compressionQualitySet: 0
+-  textureFormatSet: 0
+-  ignorePngGamma: 0
+-  applyGammaDecoding: 1
+-  swizzle: 50462976
+-  cookieLightType: 1
+-  platformSettings:
+-  - serializedVersion: 4
+-    buildTarget: DefaultTexturePlatform
+-    maxTextureSize: 2048
+-    resizeAlgorithm: 0
+-    textureFormat: -1
+-    textureCompression: 1
+-    compressionQuality: 50
+-    crunchedCompression: 0
+-    allowsAlphaSplitting: 0
+-    overridden: 0
+-    ignorePlatformSupport: 0
+-    androidETC2FallbackOverride: 0
+-    forceMaximumCompressionQuality_BC6H_BC7: 0
+-  - serializedVersion: 4
+-    buildTarget: Standalone
+-    maxTextureSize: 2048
+-    resizeAlgorithm: 0
+-    textureFormat: -1
+-    textureCompression: 1
+-    compressionQuality: 50
+-    crunchedCompression: 0
+-    allowsAlphaSplitting: 0
+-    overridden: 0
+-    ignorePlatformSupport: 0
+-    androidETC2FallbackOverride: 0
+-    forceMaximumCompressionQuality_BC6H_BC7: 0
+-  - serializedVersion: 4
+-    buildTarget: WindowsStoreApps
+-    maxTextureSize: 2048
+-    resizeAlgorithm: 0
+-    textureFormat: -1
+-    textureCompression: 1
+-    compressionQuality: 50
+-    crunchedCompression: 0
+-    allowsAlphaSplitting: 0
+-    overridden: 0
+-    ignorePlatformSupport: 0
+-    androidETC2FallbackOverride: 0
+-    forceMaximumCompressionQuality_BC6H_BC7: 0
+-  - serializedVersion: 4
+-    buildTarget: Lumin
+-    maxTextureSize: 2048
+-    resizeAlgorithm: 0
+-    textureFormat: -1
+-    textureCompression: 1
+-    compressionQuality: 50
+-    crunchedCompression: 0
+-    allowsAlphaSplitting: 0
+-    overridden: 0
+-    ignorePlatformSupport: 0
+-    androidETC2FallbackOverride: 0
+-    forceMaximumCompressionQuality_BC6H_BC7: 0
+-  - serializedVersion: 4
+-    buildTarget: WebGL
+-    maxTextureSize: 2048
+-    resizeAlgorithm: 0
+-    textureFormat: -1
+-    textureCompression: 1
+-    compressionQuality: 50
+-    crunchedCompression: 0
+-    allowsAlphaSplitting: 0
+-    overridden: 0
+-    ignorePlatformSupport: 0
+-    androidETC2FallbackOverride: 0
+-    forceMaximumCompressionQuality_BC6H_BC7: 0
+-  - serializedVersion: 4
+-    buildTarget: Android
+-    maxTextureSize: 2048
+-    resizeAlgorithm: 0
+-    textureFormat: -1
+-    textureCompression: 1
+-    compressionQuality: 50
+-    crunchedCompression: 0
+-    allowsAlphaSplitting: 0
+-    overridden: 0
+-    ignorePlatformSupport: 0
+-    androidETC2FallbackOverride: 0
+-    forceMaximumCompressionQuality_BC6H_BC7: 0
+-  - serializedVersion: 4
+-    buildTarget: iOS
+-    maxTextureSize: 2048
+-    resizeAlgorithm: 0
+-    textureFormat: -1
+-    textureCompression: 1
+-    compressionQuality: 50
+-    crunchedCompression: 0
+-    allowsAlphaSplitting: 0
+-    overridden: 0
+-    ignorePlatformSupport: 0
+-    androidETC2FallbackOverride: 0
+-    forceMaximumCompressionQuality_BC6H_BC7: 0
+-  spriteSheet:
+-    serializedVersion: 2
+-    sprites:
+-    - serializedVersion: 2
+-      name: Take Hit_0
+-      rect:
+-        serializedVersion: 2
+-        x: 0
+-        y: 0
+-        width: 200
+-        height: 200
+-      alignment: 0
+-      pivot: {x: 0, y: 0}
+-      border: {x: 0, y: 0, z: 0, w: 0}
+-      customData: 
+-      outline: []
+-      physicsShape: []
+-      tessellationDetail: 0
+-      bones: []
+-      spriteID: 8825231ebd244904d9b5d34362515633
+-      internalID: -7500690451134026123
+-      vertices: []
+-      indices: 
+-      edges: []
+-      weights: []
+-    - serializedVersion: 2
+-      name: Take Hit_1
+-      rect:
+-        serializedVersion: 2
+-        x: 200
+-        y: 0
+-        width: 200
+-        height: 200
+-      alignment: 0
+-      pivot: {x: 0, y: 0}
+-      border: {x: 0, y: 0, z: 0, w: 0}
+-      customData: 
+-      outline: []
+-      physicsShape: []
+-      tessellationDetail: 0
+-      bones: []
+-      spriteID: 45b16a5448a10e9409f45db5bcc32401
+-      internalID: -889859373511162655
+-      vertices: []
+-      indices: 
+-      edges: []
+-      weights: []
+-    - serializedVersion: 2
+-      name: Take Hit_2
+-      rect:
+-        serializedVersion: 2
+-        x: 400
+-        y: 0
+-        width: 200
+-        height: 200
+-      alignment: 0
+-      pivot: {x: 0, y: 0}
+-      border: {x: 0, y: 0, z: 0, w: 0}
+-      customData: 
+-      outline: []
+-      physicsShape: []
+-      tessellationDetail: 0
+-      bones: []
+-      spriteID: 85b00174507798e429dbdd52b7c2cacf
+-      internalID: -3088938797480143695
+-      vertices: []
+-      indices: 
+-      edges: []
+-      weights: []
+-    - serializedVersion: 2
+-      name: Take Hit_3
+-      rect:
+-        serializedVersion: 2
+-        x: 600
+-        y: 0
+-        width: 200
+-        height: 200
+-      alignment: 0
+-      pivot: {x: 0, y: 0}
+-      border: {x: 0, y: 0, z: 0, w: 0}
+-      customData: 
+-      outline: []
+-      physicsShape: []
+-      tessellationDetail: 0
+-      bones: []
+-      spriteID: d63cf4e4847315b4da19c355f5e4385d
+-      internalID: -9206091644520726168
+-      vertices: []
+-      indices: 
+-      edges: []
+-      weights: []
+-    outline: []
+-    customData: 
+-    physicsShape: []
+-    bones: []
+-    spriteID: 5e97eb03825dee720800000000000000
+-    internalID: 0
+-    vertices: []
+-    indices: 
+-    edges: []
+-    weights: []
+-    secondaryTextures: []
+-    spriteCustomMetadata:
+-      entries: []
+-    nameFileIdTable:
+-      Take Hit_0: -7500690451134026123
+-      Take Hit_1: -889859373511162655
+-      Take Hit_2: -3088938797480143695
+-      Take Hit_3: -9206091644520726168
+-  mipmapLimitGroupName: 
+-  pSDRemoveMatte: 0
+-  userData: 
+-  assetBundleName: 
+-  assetBundleVariant: 
+Index: Assets/AssetPacks/Martial Hero/Sprites/Fall.png.meta
+===================================================================
+diff --git a/Assets/AssetPacks/Martial Hero/Sprites/Fall.png.meta b/Assets/AssetPacks/Martial Hero/Sprites/Fall.png.meta
+deleted file mode 100644
+--- a/Assets/AssetPacks/Martial Hero/Sprites/Fall.png.meta	(revision 279b2a51e6751079cb64b87ab8c388542941e2b4)
++++ /dev/null	(revision 279b2a51e6751079cb64b87ab8c388542941e2b4)
+@@ -1,241 +0,0 @@
+-fileFormatVersion: 2
+-guid: ab9c6780bd1ac3c4fb318722a17a5862
+-AssetOrigin:
+-  serializedVersion: 1
+-  productId: 170422
+-  packageName: Martial Hero
+-  packageVersion: 1.0
+-  assetPath: Assets/Martial Hero/Sprites/Fall.png
+-  uploadId: 372436
+-TextureImporter:
+-  internalIDToNameTable:
+-  - first:
+-      213: -5966621866309598838
+-    second: Fall_0
+-  - first:
+-      213: -2069157278089061004
+-    second: Fall_1
+-  externalObjects: {}
+-  serializedVersion: 13
+-  mipmaps:
+-    mipMapMode: 0
+-    enableMipMap: 1
+-    sRGBTexture: 1
+-    linearTexture: 0
+-    fadeOut: 0
+-    borderMipMap: 0
+-    mipMapsPreserveCoverage: 0
+-    alphaTestReferenceValue: 0.5
+-    mipMapFadeDistanceStart: 1
+-    mipMapFadeDistanceEnd: 3
+-  bumpmap:
+-    convertToNormalMap: 0
+-    externalNormalMap: 0
+-    heightScale: 0.25
+-    normalMapFilter: 0
+-    flipGreenChannel: 0
+-  isReadable: 0
+-  streamingMipmaps: 0
+-  streamingMipmapsPriority: 0
+-  vTOnly: 0
+-  ignoreMipmapLimit: 0
+-  grayScaleToAlpha: 0
+-  generateCubemap: 6
+-  cubemapConvolution: 0
+-  seamlessCubemap: 0
+-  textureFormat: 1
+-  maxTextureSize: 2048
+-  textureSettings:
+-    serializedVersion: 2
+-    filterMode: 0
+-    aniso: 1
+-    mipBias: 0
+-    wrapU: 1
+-    wrapV: 1
+-    wrapW: 1
+-  nPOTScale: 0
+-  lightmap: 0
+-  compressionQuality: 50
+-  spriteMode: 2
+-  spriteExtrude: 1
+-  spriteMeshType: 1
+-  alignment: 0
+-  spritePivot: {x: 0.5, y: 0.5}
+-  spritePixelsToUnits: 100
+-  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+-  spriteGenerateFallbackPhysicsShape: 1
+-  alphaUsage: 1
+-  alphaIsTransparency: 1
+-  spriteTessellationDetail: -1
+-  textureType: 8
+-  textureShape: 1
+-  singleChannelComponent: 0
+-  flipbookRows: 1
+-  flipbookColumns: 1
+-  maxTextureSizeSet: 0
+-  compressionQualitySet: 0
+-  textureFormatSet: 0
+-  ignorePngGamma: 0
+-  applyGammaDecoding: 1
+-  swizzle: 50462976
+-  cookieLightType: 1
+-  platformSettings:
+-  - serializedVersion: 4
+-    buildTarget: DefaultTexturePlatform
+-    maxTextureSize: 2048
+-    resizeAlgorithm: 0
+-    textureFormat: -1
+-    textureCompression: 1
+-    compressionQuality: 50
+-    crunchedCompression: 0
+-    allowsAlphaSplitting: 0
+-    overridden: 0
+-    ignorePlatformSupport: 0
+-    androidETC2FallbackOverride: 0
+-    forceMaximumCompressionQuality_BC6H_BC7: 0
+-  - serializedVersion: 4
+-    buildTarget: Standalone
+-    maxTextureSize: 2048
+-    resizeAlgorithm: 0
+-    textureFormat: -1
+-    textureCompression: 1
+-    compressionQuality: 50
+-    crunchedCompression: 0
+-    allowsAlphaSplitting: 0
+-    overridden: 0
+-    ignorePlatformSupport: 0
+-    androidETC2FallbackOverride: 0
+-    forceMaximumCompressionQuality_BC6H_BC7: 0
+-  - serializedVersion: 4
+-    buildTarget: WindowsStoreApps
+-    maxTextureSize: 2048
+-    resizeAlgorithm: 0
+-    textureFormat: -1
+-    textureCompression: 1
+-    compressionQuality: 50
+-    crunchedCompression: 0
+-    allowsAlphaSplitting: 0
+-    overridden: 0
+-    ignorePlatformSupport: 0
+-    androidETC2FallbackOverride: 0
+-    forceMaximumCompressionQuality_BC6H_BC7: 0
+-  - serializedVersion: 4
+-    buildTarget: Lumin
+-    maxTextureSize: 2048
+-    resizeAlgorithm: 0
+-    textureFormat: -1
+-    textureCompression: 1
+-    compressionQuality: 50
+-    crunchedCompression: 0
+-    allowsAlphaSplitting: 0
+-    overridden: 0
+-    ignorePlatformSupport: 0
+-    androidETC2FallbackOverride: 0
+-    forceMaximumCompressionQuality_BC6H_BC7: 0
+-  - serializedVersion: 4
+-    buildTarget: WebGL
+-    maxTextureSize: 2048
+-    resizeAlgorithm: 0
+-    textureFormat: -1
+-    textureCompression: 1
+-    compressionQuality: 50
+-    crunchedCompression: 0
+-    allowsAlphaSplitting: 0
+-    overridden: 0
+-    ignorePlatformSupport: 0
+-    androidETC2FallbackOverride: 0
+-    forceMaximumCompressionQuality_BC6H_BC7: 0
+-  - serializedVersion: 4
+-    buildTarget: Android
+-    maxTextureSize: 2048
+-    resizeAlgorithm: 0
+-    textureFormat: -1
+-    textureCompression: 1
+-    compressionQuality: 50
+-    crunchedCompression: 0
+-    allowsAlphaSplitting: 0
+-    overridden: 0
+-    ignorePlatformSupport: 0
+-    androidETC2FallbackOverride: 0
+-    forceMaximumCompressionQuality_BC6H_BC7: 0
+-  - serializedVersion: 4
+-    buildTarget: iOS
+-    maxTextureSize: 2048
+-    resizeAlgorithm: 0
+-    textureFormat: -1
+-    textureCompression: 1
+-    compressionQuality: 50
+-    crunchedCompression: 0
+-    allowsAlphaSplitting: 0
+-    overridden: 0
+-    ignorePlatformSupport: 0
+-    androidETC2FallbackOverride: 0
+-    forceMaximumCompressionQuality_BC6H_BC7: 0
+-  spriteSheet:
+-    serializedVersion: 2
+-    sprites:
+-    - serializedVersion: 2
+-      name: Fall_0
+-      rect:
+-        serializedVersion: 2
+-        x: 0
+-        y: 0
+-        width: 200
+-        height: 200
+-      alignment: 0
+-      pivot: {x: 0, y: 0}
+-      border: {x: 0, y: 0, z: 0, w: 0}
+-      customData: 
+-      outline: []
+-      physicsShape: []
+-      tessellationDetail: 0
+-      bones: []
+-      spriteID: 7251e80878e64d44bbc9f0b3d4d9dea5
+-      internalID: -5966621866309598838
+-      vertices: []
+-      indices: 
+-      edges: []
+-      weights: []
+-    - serializedVersion: 2
+-      name: Fall_1
+-      rect:
+-        serializedVersion: 2
+-        x: 200
+-        y: 0
+-        width: 200
+-        height: 200
+-      alignment: 0
+-      pivot: {x: 0, y: 0}
+-      border: {x: 0, y: 0, z: 0, w: 0}
+-      customData: 
+-      outline: []
+-      physicsShape: []
+-      tessellationDetail: 0
+-      bones: []
+-      spriteID: 46bd82b1810e5b14dabd48417c2db770
+-      internalID: -2069157278089061004
+-      vertices: []
+-      indices: 
+-      edges: []
+-      weights: []
+-    outline: []
+-    customData: 
+-    physicsShape: []
+-    bones: []
+-    spriteID: 5e97eb03825dee720800000000000000
+-    internalID: 0
+-    vertices: []
+-    indices: 
+-    edges: []
+-    weights: []
+-    secondaryTextures: []
+-    spriteCustomMetadata:
+-      entries: []
+-    nameFileIdTable:
+-      Fall_0: -5966621866309598838
+-      Fall_1: -2069157278089061004
+-  mipmapLimitGroupName: 
+-  pSDRemoveMatte: 0
+-  userData: 
+-  assetBundleName: 
+-  assetBundleVariant: 
+Index: Assets/AssetPacks/Martial Hero/Sprites/Jump.png.meta
+===================================================================
+diff --git a/Assets/AssetPacks/Martial Hero/Sprites/Jump.png.meta b/Assets/AssetPacks/Martial Hero/Sprites/Jump.png.meta
+deleted file mode 100644
+--- a/Assets/AssetPacks/Martial Hero/Sprites/Jump.png.meta	(revision 279b2a51e6751079cb64b87ab8c388542941e2b4)
++++ /dev/null	(revision 279b2a51e6751079cb64b87ab8c388542941e2b4)
+@@ -1,241 +0,0 @@
+-fileFormatVersion: 2
+-guid: efffe4e87e655434db7d78f603ef99bf
+-AssetOrigin:
+-  serializedVersion: 1
+-  productId: 170422
+-  packageName: Martial Hero
+-  packageVersion: 1.0
+-  assetPath: Assets/Martial Hero/Sprites/Jump.png
+-  uploadId: 372436
+-TextureImporter:
+-  internalIDToNameTable:
+-  - first:
+-      213: 7460046300004610927
+-    second: Jump_0
+-  - first:
+-      213: 7034338576483803127
+-    second: Jump_1
+-  externalObjects: {}
+-  serializedVersion: 13
+-  mipmaps:
+-    mipMapMode: 0
+-    enableMipMap: 1
+-    sRGBTexture: 1
+-    linearTexture: 0
+-    fadeOut: 0
+-    borderMipMap: 0
+-    mipMapsPreserveCoverage: 0
+-    alphaTestReferenceValue: 0.5
+-    mipMapFadeDistanceStart: 1
+-    mipMapFadeDistanceEnd: 3
+-  bumpmap:
+-    convertToNormalMap: 0
+-    externalNormalMap: 0
+-    heightScale: 0.25
+-    normalMapFilter: 0
+-    flipGreenChannel: 0
+-  isReadable: 0
+-  streamingMipmaps: 0
+-  streamingMipmapsPriority: 0
+-  vTOnly: 0
+-  ignoreMipmapLimit: 0
+-  grayScaleToAlpha: 0
+-  generateCubemap: 6
+-  cubemapConvolution: 0
+-  seamlessCubemap: 0
+-  textureFormat: 1
+-  maxTextureSize: 2048
+-  textureSettings:
+-    serializedVersion: 2
+-    filterMode: 0
+-    aniso: 1
+-    mipBias: 0
+-    wrapU: 1
+-    wrapV: 1
+-    wrapW: 1
+-  nPOTScale: 0
+-  lightmap: 0
+-  compressionQuality: 50
+-  spriteMode: 2
+-  spriteExtrude: 1
+-  spriteMeshType: 1
+-  alignment: 0
+-  spritePivot: {x: 0.5, y: 0.5}
+-  spritePixelsToUnits: 100
+-  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+-  spriteGenerateFallbackPhysicsShape: 1
+-  alphaUsage: 1
+-  alphaIsTransparency: 1
+-  spriteTessellationDetail: -1
+-  textureType: 8
+-  textureShape: 1
+-  singleChannelComponent: 0
+-  flipbookRows: 1
+-  flipbookColumns: 1
+-  maxTextureSizeSet: 0
+-  compressionQualitySet: 0
+-  textureFormatSet: 0
+-  ignorePngGamma: 0
+-  applyGammaDecoding: 1
+-  swizzle: 50462976
+-  cookieLightType: 1
+-  platformSettings:
+-  - serializedVersion: 4
+-    buildTarget: DefaultTexturePlatform
+-    maxTextureSize: 2048
+-    resizeAlgorithm: 0
+-    textureFormat: -1
+-    textureCompression: 1
+-    compressionQuality: 50
+-    crunchedCompression: 0
+-    allowsAlphaSplitting: 0
+-    overridden: 0
+-    ignorePlatformSupport: 0
+-    androidETC2FallbackOverride: 0
+-    forceMaximumCompressionQuality_BC6H_BC7: 0
+-  - serializedVersion: 4
+-    buildTarget: Standalone
+-    maxTextureSize: 2048
+-    resizeAlgorithm: 0
+-    textureFormat: -1
+-    textureCompression: 1
+-    compressionQuality: 50
+-    crunchedCompression: 0
+-    allowsAlphaSplitting: 0
+-    overridden: 0
+-    ignorePlatformSupport: 0
+-    androidETC2FallbackOverride: 0
+-    forceMaximumCompressionQuality_BC6H_BC7: 0
+-  - serializedVersion: 4
+-    buildTarget: WindowsStoreApps
+-    maxTextureSize: 2048
+-    resizeAlgorithm: 0
+-    textureFormat: -1
+-    textureCompression: 1
+-    compressionQuality: 50
+-    crunchedCompression: 0
+-    allowsAlphaSplitting: 0
+-    overridden: 0
+-    ignorePlatformSupport: 0
+-    androidETC2FallbackOverride: 0
+-    forceMaximumCompressionQuality_BC6H_BC7: 0
+-  - serializedVersion: 4
+-    buildTarget: Lumin
+-    maxTextureSize: 2048
+-    resizeAlgorithm: 0
+-    textureFormat: -1
+-    textureCompression: 1
+-    compressionQuality: 50
+-    crunchedCompression: 0
+-    allowsAlphaSplitting: 0
+-    overridden: 0
+-    ignorePlatformSupport: 0
+-    androidETC2FallbackOverride: 0
+-    forceMaximumCompressionQuality_BC6H_BC7: 0
+-  - serializedVersion: 4
+-    buildTarget: WebGL
+-    maxTextureSize: 2048
+-    resizeAlgorithm: 0
+-    textureFormat: -1
+-    textureCompression: 1
+-    compressionQuality: 50
+-    crunchedCompression: 0
+-    allowsAlphaSplitting: 0
+-    overridden: 0
+-    ignorePlatformSupport: 0
+-    androidETC2FallbackOverride: 0
+-    forceMaximumCompressionQuality_BC6H_BC7: 0
+-  - serializedVersion: 4
+-    buildTarget: Android
+-    maxTextureSize: 2048
+-    resizeAlgorithm: 0
+-    textureFormat: -1
+-    textureCompression: 1
+-    compressionQuality: 50
+-    crunchedCompression: 0
+-    allowsAlphaSplitting: 0
+-    overridden: 0
+-    ignorePlatformSupport: 0
+-    androidETC2FallbackOverride: 0
+-    forceMaximumCompressionQuality_BC6H_BC7: 0
+-  - serializedVersion: 4
+-    buildTarget: iOS
+-    maxTextureSize: 2048
+-    resizeAlgorithm: 0
+-    textureFormat: -1
+-    textureCompression: 1
+-    compressionQuality: 50
+-    crunchedCompression: 0
+-    allowsAlphaSplitting: 0
+-    overridden: 0
+-    ignorePlatformSupport: 0
+-    androidETC2FallbackOverride: 0
+-    forceMaximumCompressionQuality_BC6H_BC7: 0
+-  spriteSheet:
+-    serializedVersion: 2
+-    sprites:
+-    - serializedVersion: 2
+-      name: Jump_0
+-      rect:
+-        serializedVersion: 2
+-        x: 0
+-        y: 0
+-        width: 200
+-        height: 200
+-      alignment: 0
+-      pivot: {x: 0, y: 0}
+-      border: {x: 0, y: 0, z: 0, w: 0}
+-      customData: 
+-      outline: []
+-      physicsShape: []
+-      tessellationDetail: 0
+-      bones: []
+-      spriteID: 97c9a7f45a28d5245a6beb6bf58f5711
+-      internalID: 7460046300004610927
+-      vertices: []
+-      indices: 
+-      edges: []
+-      weights: []
+-    - serializedVersion: 2
+-      name: Jump_1
+-      rect:
+-        serializedVersion: 2
+-        x: 200
+-        y: 0
+-        width: 200
+-        height: 200
+-      alignment: 0
+-      pivot: {x: 0, y: 0}
+-      border: {x: 0, y: 0, z: 0, w: 0}
+-      customData: 
+-      outline: []
+-      physicsShape: []
+-      tessellationDetail: 0
+-      bones: []
+-      spriteID: 22d353e35e8b4524ca3e688db7a56560
+-      internalID: 7034338576483803127
+-      vertices: []
+-      indices: 
+-      edges: []
+-      weights: []
+-    outline: []
+-    customData: 
+-    physicsShape: []
+-    bones: []
+-    spriteID: 5e97eb03825dee720800000000000000
+-    internalID: 0
+-    vertices: []
+-    indices: 
+-    edges: []
+-    weights: []
+-    secondaryTextures: []
+-    spriteCustomMetadata:
+-      entries: []
+-    nameFileIdTable:
+-      Jump_0: 7460046300004610927
+-      Jump_1: 7034338576483803127
+-  mipmapLimitGroupName: 
+-  pSDRemoveMatte: 0
+-  userData: 
+-  assetBundleName: 
+-  assetBundleVariant: 
+Index: Assets/AssetPacks/Martial Hero/Sprites/Take Hit - white silhouette.png.meta
+===================================================================
+diff --git a/Assets/AssetPacks/Martial Hero/Sprites/Take Hit - white silhouette.png.meta b/Assets/AssetPacks/Martial Hero/Sprites/Take Hit - white silhouette.png.meta
+deleted file mode 100644
+--- a/Assets/AssetPacks/Martial Hero/Sprites/Take Hit - white silhouette.png.meta	(revision 279b2a51e6751079cb64b87ab8c388542941e2b4)
++++ /dev/null	(revision 279b2a51e6751079cb64b87ab8c388542941e2b4)
+@@ -1,293 +0,0 @@
+-fileFormatVersion: 2
+-guid: 5f3849e414a15ef4bafea810f38d8e35
+-AssetOrigin:
+-  serializedVersion: 1
+-  productId: 170422
+-  packageName: Martial Hero
+-  packageVersion: 1.0
+-  assetPath: Assets/Martial Hero/Sprites/Take Hit - white silhouette.png
+-  uploadId: 372436
+-TextureImporter:
+-  internalIDToNameTable:
+-  - first:
+-      213: -8008791250619013794
+-    second: Take Hit - white silhouette_0
+-  - first:
+-      213: 3891156215361153934
+-    second: Take Hit - white silhouette_1
+-  - first:
+-      213: -7146689698409757683
+-    second: Take Hit - white silhouette_2
+-  - first:
+-      213: 8523606802079886837
+-    second: Take Hit - white silhouette_3
+-  externalObjects: {}
+-  serializedVersion: 13
+-  mipmaps:
+-    mipMapMode: 0
+-    enableMipMap: 1
+-    sRGBTexture: 1
+-    linearTexture: 0
+-    fadeOut: 0
+-    borderMipMap: 0
+-    mipMapsPreserveCoverage: 0
+-    alphaTestReferenceValue: 0.5
+-    mipMapFadeDistanceStart: 1
+-    mipMapFadeDistanceEnd: 3
+-  bumpmap:
+-    convertToNormalMap: 0
+-    externalNormalMap: 0
+-    heightScale: 0.25
+-    normalMapFilter: 0
+-    flipGreenChannel: 0
+-  isReadable: 0
+-  streamingMipmaps: 0
+-  streamingMipmapsPriority: 0
+-  vTOnly: 0
+-  ignoreMipmapLimit: 0
+-  grayScaleToAlpha: 0
+-  generateCubemap: 6
+-  cubemapConvolution: 0
+-  seamlessCubemap: 0
+-  textureFormat: 1
+-  maxTextureSize: 2048
+-  textureSettings:
+-    serializedVersion: 2
+-    filterMode: 0
+-    aniso: 1
+-    mipBias: 0
+-    wrapU: 1
+-    wrapV: 1
+-    wrapW: 1
+-  nPOTScale: 0
+-  lightmap: 0
+-  compressionQuality: 50
+-  spriteMode: 2
+-  spriteExtrude: 1
+-  spriteMeshType: 1
+-  alignment: 0
+-  spritePivot: {x: 0.5, y: 0.5}
+-  spritePixelsToUnits: 100
+-  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+-  spriteGenerateFallbackPhysicsShape: 1
+-  alphaUsage: 1
+-  alphaIsTransparency: 1
+-  spriteTessellationDetail: -1
+-  textureType: 8
+-  textureShape: 1
+-  singleChannelComponent: 0
+-  flipbookRows: 1
+-  flipbookColumns: 1
+-  maxTextureSizeSet: 0
+-  compressionQualitySet: 0
+-  textureFormatSet: 0
+-  ignorePngGamma: 0
+-  applyGammaDecoding: 1
+-  swizzle: 50462976
+-  cookieLightType: 1
+-  platformSettings:
+-  - serializedVersion: 4
+-    buildTarget: DefaultTexturePlatform
+-    maxTextureSize: 2048
+-    resizeAlgorithm: 0
+-    textureFormat: -1
+-    textureCompression: 1
+-    compressionQuality: 50
+-    crunchedCompression: 0
+-    allowsAlphaSplitting: 0
+-    overridden: 0
+-    ignorePlatformSupport: 0
+-    androidETC2FallbackOverride: 0
+-    forceMaximumCompressionQuality_BC6H_BC7: 0
+-  - serializedVersion: 4
+-    buildTarget: Standalone
+-    maxTextureSize: 2048
+-    resizeAlgorithm: 0
+-    textureFormat: -1
+-    textureCompression: 1
+-    compressionQuality: 50
+-    crunchedCompression: 0
+-    allowsAlphaSplitting: 0
+-    overridden: 0
+-    ignorePlatformSupport: 0
+-    androidETC2FallbackOverride: 0
+-    forceMaximumCompressionQuality_BC6H_BC7: 0
+-  - serializedVersion: 4
+-    buildTarget: WindowsStoreApps
+-    maxTextureSize: 2048
+-    resizeAlgorithm: 0
+-    textureFormat: -1
+-    textureCompression: 1
+-    compressionQuality: 50
+-    crunchedCompression: 0
+-    allowsAlphaSplitting: 0
+-    overridden: 0
+-    ignorePlatformSupport: 0
+-    androidETC2FallbackOverride: 0
+-    forceMaximumCompressionQuality_BC6H_BC7: 0
+-  - serializedVersion: 4
+-    buildTarget: Lumin
+-    maxTextureSize: 2048
+-    resizeAlgorithm: 0
+-    textureFormat: -1
+-    textureCompression: 1
+-    compressionQuality: 50
+-    crunchedCompression: 0
+-    allowsAlphaSplitting: 0
+-    overridden: 0
+-    ignorePlatformSupport: 0
+-    androidETC2FallbackOverride: 0
+-    forceMaximumCompressionQuality_BC6H_BC7: 0
+-  - serializedVersion: 4
+-    buildTarget: WebGL
+-    maxTextureSize: 2048
+-    resizeAlgorithm: 0
+-    textureFormat: -1
+-    textureCompression: 1
+-    compressionQuality: 50
+-    crunchedCompression: 0
+-    allowsAlphaSplitting: 0
+-    overridden: 0
+-    ignorePlatformSupport: 0
+-    androidETC2FallbackOverride: 0
+-    forceMaximumCompressionQuality_BC6H_BC7: 0
+-  - serializedVersion: 4
+-    buildTarget: Android
+-    maxTextureSize: 2048
+-    resizeAlgorithm: 0
+-    textureFormat: -1
+-    textureCompression: 1
+-    compressionQuality: 50
+-    crunchedCompression: 0
+-    allowsAlphaSplitting: 0
+-    overridden: 0
+-    ignorePlatformSupport: 0
+-    androidETC2FallbackOverride: 0
+-    forceMaximumCompressionQuality_BC6H_BC7: 0
+-  - serializedVersion: 4
+-    buildTarget: iOS
+-    maxTextureSize: 2048
+-    resizeAlgorithm: 0
+-    textureFormat: -1
+-    textureCompression: 1
+-    compressionQuality: 50
+-    crunchedCompression: 0
+-    allowsAlphaSplitting: 0
+-    overridden: 0
+-    ignorePlatformSupport: 0
+-    androidETC2FallbackOverride: 0
+-    forceMaximumCompressionQuality_BC6H_BC7: 0
+-  spriteSheet:
+-    serializedVersion: 2
+-    sprites:
+-    - serializedVersion: 2
+-      name: Take Hit - white silhouette_0
+-      rect:
+-        serializedVersion: 2
+-        x: 0
+-        y: 0
+-        width: 200
+-        height: 200
+-      alignment: 0
+-      pivot: {x: 0, y: 0}
+-      border: {x: 0, y: 0, z: 0, w: 0}
+-      customData: 
+-      outline: []
+-      physicsShape: []
+-      tessellationDetail: 0
+-      bones: []
+-      spriteID: 8f375b3c8e3935446bdafe30bf2b471f
+-      internalID: -8008791250619013794
+-      vertices: []
+-      indices: 
+-      edges: []
+-      weights: []
+-    - serializedVersion: 2
+-      name: Take Hit - white silhouette_1
+-      rect:
+-        serializedVersion: 2
+-        x: 200
+-        y: 0
+-        width: 200
+-        height: 200
+-      alignment: 0
+-      pivot: {x: 0, y: 0}
+-      border: {x: 0, y: 0, z: 0, w: 0}
+-      customData: 
+-      outline: []
+-      physicsShape: []
+-      tessellationDetail: 0
+-      bones: []
+-      spriteID: 3e6c80d7ec5972a45b36324f41958bd4
+-      internalID: 3891156215361153934
+-      vertices: []
+-      indices: 
+-      edges: []
+-      weights: []
+-    - serializedVersion: 2
+-      name: Take Hit - white silhouette_2
+-      rect:
+-        serializedVersion: 2
+-        x: 400
+-        y: 0
+-        width: 200
+-        height: 200
+-      alignment: 0
+-      pivot: {x: 0, y: 0}
+-      border: {x: 0, y: 0, z: 0, w: 0}
+-      customData: 
+-      outline: []
+-      physicsShape: []
+-      tessellationDetail: 0
+-      bones: []
+-      spriteID: c6501f96f8e096b45a62de19816877a8
+-      internalID: -7146689698409757683
+-      vertices: []
+-      indices: 
+-      edges: []
+-      weights: []
+-    - serializedVersion: 2
+-      name: Take Hit - white silhouette_3
+-      rect:
+-        serializedVersion: 2
+-        x: 600
+-        y: 0
+-        width: 200
+-        height: 200
+-      alignment: 0
+-      pivot: {x: 0, y: 0}
+-      border: {x: 0, y: 0, z: 0, w: 0}
+-      customData: 
+-      outline: []
+-      physicsShape: []
+-      tessellationDetail: 0
+-      bones: []
+-      spriteID: a5a9885cb3babf646828f45f1828a230
+-      internalID: 8523606802079886837
+-      vertices: []
+-      indices: 
+-      edges: []
+-      weights: []
+-    outline: []
+-    customData: 
+-    physicsShape: []
+-    bones: []
+-    spriteID: 5e97eb03825dee720800000000000000
+-    internalID: 0
+-    vertices: []
+-    indices: 
+-    edges: []
+-    weights: []
+-    secondaryTextures: []
+-    spriteCustomMetadata:
+-      entries: []
+-    nameFileIdTable:
+-      Take Hit - white silhouette_0: -8008791250619013794
+-      Take Hit - white silhouette_1: 3891156215361153934
+-      Take Hit - white silhouette_2: -7146689698409757683
+-      Take Hit - white silhouette_3: 8523606802079886837
+-  mipmapLimitGroupName: 
+-  pSDRemoveMatte: 0
+-  userData: 
+-  assetBundleName: 
+-  assetBundleVariant: 
+Index: Assets/AssetPacks/Martial Hero/Animations/PushAbilityUp.asset
+===================================================================
+diff --git a/Assets/AssetPacks/Martial Hero/Animations/PushAbilityUp.asset b/Assets/AssetPacks/Martial Hero/Animations/PushAbilityUp.asset
+deleted file mode 100644
+--- a/Assets/AssetPacks/Martial Hero/Animations/PushAbilityUp.asset	(revision 279b2a51e6751079cb64b87ab8c388542941e2b4)
++++ /dev/null	(revision 279b2a51e6751079cb64b87ab8c388542941e2b4)
+@@ -1,57 +0,0 @@
+-%YAML 1.1
+-%TAG !u! tag:unity3d.com,2011:
+---- !u!114 &11400000
+-MonoBehaviour:
+-  m_ObjectHideFlags: 0
+-  m_CorrespondingSourceObject: {fileID: 0}
+-  m_PrefabInstance: {fileID: 0}
+-  m_PrefabAsset: {fileID: 0}
+-  m_GameObject: {fileID: 0}
+-  m_Enabled: 1
+-  m_EditorHideFlags: 0
+-  m_Script: {fileID: 11500000, guid: 61caefda880f4a5d94965826455b144b, type: 3}
+-  m_Name: PushAbilityUp
+-  m_EditorClassIdentifier: 
+-  serializationData:
+-    SerializedFormat: 2
+-    SerializedBytes: 
+-    ReferencedUnityObjects: []
+-    SerializedBytesString: 
+-    Prefab: {fileID: 0}
+-    PrefabModificationsReferencedUnityObjects: []
+-    PrefabModifications: []
+-    SerializationNodes:
+-    - Name: _events
+-      Entry: 7
+-      Data: 0|Gameplay.SpriteAnimationEvent[], Assembly-CSharp
+-    - Name: 
+-      Entry: 12
+-      Data: 1
+-    - Name: 
+-      Entry: 7
+-      Data: Gameplay.SpriteAnimationEvent, Assembly-CSharp
+-    - Name: ID
+-      Entry: 3
+-      Data: 4
+-    - Name: Frame
+-      Entry: 3
+-      Data: 4
+-    - Name: 
+-      Entry: 8
+-      Data: 
+-    - Name: 
+-      Entry: 13
+-      Data: 
+-    - Name: 
+-      Entry: 8
+-      Data: 
+-  <Sprites>k__BackingField:
+-  - {fileID: 7441861488978599509, guid: aec5070f5cb24b24e9fbdf06b0d1faf8, type: 3}
+-  - {fileID: 8288915215451595207, guid: aec5070f5cb24b24e9fbdf06b0d1faf8, type: 3}
+-  - {fileID: 4668938655123782945, guid: aec5070f5cb24b24e9fbdf06b0d1faf8, type: 3}
+-  - {fileID: 5683539909772271658, guid: aec5070f5cb24b24e9fbdf06b0d1faf8, type: 3}
+-  - {fileID: 5764228812365489207, guid: aec5070f5cb24b24e9fbdf06b0d1faf8, type: 3}
+-  - {fileID: -1191510351576865934, guid: aec5070f5cb24b24e9fbdf06b0d1faf8, type: 3}
+-  <ID>k__BackingField: 8
+-  <FPS>k__BackingField: 30
+-  CanInterrupt: 1
+Index: Assets/AssetPacks/Martial Hero/Sprites/Run.png.meta
+===================================================================
+diff --git a/Assets/AssetPacks/Martial Hero/Sprites/Run.png.meta b/Assets/AssetPacks/Martial Hero/Sprites/Run.png.meta
+deleted file mode 100644
+--- a/Assets/AssetPacks/Martial Hero/Sprites/Run.png.meta	(revision 279b2a51e6751079cb64b87ab8c388542941e2b4)
++++ /dev/null	(revision 279b2a51e6751079cb64b87ab8c388542941e2b4)
+@@ -1,397 +0,0 @@
+-fileFormatVersion: 2
+-guid: 02be9b757efc1074bb374de531df0219
+-AssetOrigin:
+-  serializedVersion: 1
+-  productId: 170422
+-  packageName: Martial Hero
+-  packageVersion: 1.0
+-  assetPath: Assets/Martial Hero/Sprites/Run.png
+-  uploadId: 372436
+-TextureImporter:
+-  internalIDToNameTable:
+-  - first:
+-      213: 4944230376442633554
+-    second: Run_0
+-  - first:
+-      213: -2274363484027164459
+-    second: Run_1
+-  - first:
+-      213: 8284087734974297348
+-    second: Run_2
+-  - first:
+-      213: 5304202850863732263
+-    second: Run_3
+-  - first:
+-      213: 2833043080597125133
+-    second: Run_4
+-  - first:
+-      213: -2217414122262695004
+-    second: Run_5
+-  - first:
+-      213: -4440497016933152808
+-    second: Run_6
+-  - first:
+-      213: 8676454946275842879
+-    second: Run_7
+-  externalObjects: {}
+-  serializedVersion: 13
+-  mipmaps:
+-    mipMapMode: 0
+-    enableMipMap: 1
+-    sRGBTexture: 1
+-    linearTexture: 0
+-    fadeOut: 0
+-    borderMipMap: 0
+-    mipMapsPreserveCoverage: 0
+-    alphaTestReferenceValue: 0.5
+-    mipMapFadeDistanceStart: 1
+-    mipMapFadeDistanceEnd: 3
+-  bumpmap:
+-    convertToNormalMap: 0
+-    externalNormalMap: 0
+-    heightScale: 0.25
+-    normalMapFilter: 0
+-    flipGreenChannel: 0
+-  isReadable: 0
+-  streamingMipmaps: 0
+-  streamingMipmapsPriority: 0
+-  vTOnly: 0
+-  ignoreMipmapLimit: 0
+-  grayScaleToAlpha: 0
+-  generateCubemap: 6
+-  cubemapConvolution: 0
+-  seamlessCubemap: 0
+-  textureFormat: 1
+-  maxTextureSize: 2048
+-  textureSettings:
+-    serializedVersion: 2
+-    filterMode: 0
+-    aniso: 1
+-    mipBias: 0
+-    wrapU: 1
+-    wrapV: 1
+-    wrapW: 1
+-  nPOTScale: 0
+-  lightmap: 0
+-  compressionQuality: 50
+-  spriteMode: 2
+-  spriteExtrude: 1
+-  spriteMeshType: 1
+-  alignment: 0
+-  spritePivot: {x: 0.5, y: 0.5}
+-  spritePixelsToUnits: 100
+-  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+-  spriteGenerateFallbackPhysicsShape: 1
+-  alphaUsage: 1
+-  alphaIsTransparency: 1
+-  spriteTessellationDetail: -1
+-  textureType: 8
+-  textureShape: 1
+-  singleChannelComponent: 0
+-  flipbookRows: 1
+-  flipbookColumns: 1
+-  maxTextureSizeSet: 0
+-  compressionQualitySet: 0
+-  textureFormatSet: 0
+-  ignorePngGamma: 0
+-  applyGammaDecoding: 1
+-  swizzle: 50462976
+-  cookieLightType: 1
+-  platformSettings:
+-  - serializedVersion: 4
+-    buildTarget: DefaultTexturePlatform
+-    maxTextureSize: 2048
+-    resizeAlgorithm: 0
+-    textureFormat: -1
+-    textureCompression: 1
+-    compressionQuality: 50
+-    crunchedCompression: 0
+-    allowsAlphaSplitting: 0
+-    overridden: 0
+-    ignorePlatformSupport: 0
+-    androidETC2FallbackOverride: 0
+-    forceMaximumCompressionQuality_BC6H_BC7: 0
+-  - serializedVersion: 4
+-    buildTarget: Standalone
+-    maxTextureSize: 2048
+-    resizeAlgorithm: 0
+-    textureFormat: -1
+-    textureCompression: 1
+-    compressionQuality: 50
+-    crunchedCompression: 0
+-    allowsAlphaSplitting: 0
+-    overridden: 0
+-    ignorePlatformSupport: 0
+-    androidETC2FallbackOverride: 0
+-    forceMaximumCompressionQuality_BC6H_BC7: 0
+-  - serializedVersion: 4
+-    buildTarget: WindowsStoreApps
+-    maxTextureSize: 2048
+-    resizeAlgorithm: 0
+-    textureFormat: -1
+-    textureCompression: 1
+-    compressionQuality: 50
+-    crunchedCompression: 0
+-    allowsAlphaSplitting: 0
+-    overridden: 0
+-    ignorePlatformSupport: 0
+-    androidETC2FallbackOverride: 0
+-    forceMaximumCompressionQuality_BC6H_BC7: 0
+-  - serializedVersion: 4
+-    buildTarget: Lumin
+-    maxTextureSize: 2048
+-    resizeAlgorithm: 0
+-    textureFormat: -1
+-    textureCompression: 1
+-    compressionQuality: 50
+-    crunchedCompression: 0
+-    allowsAlphaSplitting: 0
+-    overridden: 0
+-    ignorePlatformSupport: 0
+-    androidETC2FallbackOverride: 0
+-    forceMaximumCompressionQuality_BC6H_BC7: 0
+-  - serializedVersion: 4
+-    buildTarget: WebGL
+-    maxTextureSize: 2048
+-    resizeAlgorithm: 0
+-    textureFormat: -1
+-    textureCompression: 1
+-    compressionQuality: 50
+-    crunchedCompression: 0
+-    allowsAlphaSplitting: 0
+-    overridden: 0
+-    ignorePlatformSupport: 0
+-    androidETC2FallbackOverride: 0
+-    forceMaximumCompressionQuality_BC6H_BC7: 0
+-  - serializedVersion: 4
+-    buildTarget: Android
+-    maxTextureSize: 2048
+-    resizeAlgorithm: 0
+-    textureFormat: -1
+-    textureCompression: 1
+-    compressionQuality: 50
+-    crunchedCompression: 0
+-    allowsAlphaSplitting: 0
+-    overridden: 0
+-    ignorePlatformSupport: 0
+-    androidETC2FallbackOverride: 0
+-    forceMaximumCompressionQuality_BC6H_BC7: 0
+-  - serializedVersion: 4
+-    buildTarget: iOS
+-    maxTextureSize: 2048
+-    resizeAlgorithm: 0
+-    textureFormat: -1
+-    textureCompression: 1
+-    compressionQuality: 50
+-    crunchedCompression: 0
+-    allowsAlphaSplitting: 0
+-    overridden: 0
+-    ignorePlatformSupport: 0
+-    androidETC2FallbackOverride: 0
+-    forceMaximumCompressionQuality_BC6H_BC7: 0
+-  spriteSheet:
+-    serializedVersion: 2
+-    sprites:
+-    - serializedVersion: 2
+-      name: Run_0
+-      rect:
+-        serializedVersion: 2
+-        x: 0
+-        y: 0
+-        width: 200
+-        height: 200
+-      alignment: 0
+-      pivot: {x: 0, y: 0}
+-      border: {x: 0, y: 0, z: 0, w: 0}
+-      customData: 
+-      outline: []
+-      physicsShape: []
+-      tessellationDetail: 0
+-      bones: []
+-      spriteID: 75e8676a4a70a564d83b30f60c22ce01
+-      internalID: 4944230376442633554
+-      vertices: []
+-      indices: 
+-      edges: []
+-      weights: []
+-    - serializedVersion: 2
+-      name: Run_1
+-      rect:
+-        serializedVersion: 2
+-        x: 200
+-        y: 0
+-        width: 200
+-        height: 200
+-      alignment: 0
+-      pivot: {x: 0, y: 0}
+-      border: {x: 0, y: 0, z: 0, w: 0}
+-      customData: 
+-      outline: []
+-      physicsShape: []
+-      tessellationDetail: 0
+-      bones: []
+-      spriteID: a081c94b054e6af468438cf467bd984e
+-      internalID: -2274363484027164459
+-      vertices: []
+-      indices: 
+-      edges: []
+-      weights: []
+-    - serializedVersion: 2
+-      name: Run_2
+-      rect:
+-        serializedVersion: 2
+-        x: 400
+-        y: 0
+-        width: 200
+-        height: 200
+-      alignment: 0
+-      pivot: {x: 0, y: 0}
+-      border: {x: 0, y: 0, z: 0, w: 0}
+-      customData: 
+-      outline: []
+-      physicsShape: []
+-      tessellationDetail: 0
+-      bones: []
+-      spriteID: d2394721b106fbe43b58d682b295c6c9
+-      internalID: 8284087734974297348
+-      vertices: []
+-      indices: 
+-      edges: []
+-      weights: []
+-    - serializedVersion: 2
+-      name: Run_3
+-      rect:
+-        serializedVersion: 2
+-        x: 600
+-        y: 0
+-        width: 200
+-        height: 200
+-      alignment: 0
+-      pivot: {x: 0, y: 0}
+-      border: {x: 0, y: 0, z: 0, w: 0}
+-      customData: 
+-      outline: []
+-      physicsShape: []
+-      tessellationDetail: 0
+-      bones: []
+-      spriteID: 3a7ef50a1da7a3d44a9cab8bd4ac8461
+-      internalID: 5304202850863732263
+-      vertices: []
+-      indices: 
+-      edges: []
+-      weights: []
+-    - serializedVersion: 2
+-      name: Run_4
+-      rect:
+-        serializedVersion: 2
+-        x: 800
+-        y: 0
+-        width: 200
+-        height: 200
+-      alignment: 0
+-      pivot: {x: 0, y: 0}
+-      border: {x: 0, y: 0, z: 0, w: 0}
+-      customData: 
+-      outline: []
+-      physicsShape: []
+-      tessellationDetail: 0
+-      bones: []
+-      spriteID: a043c34885573834dbaa8a8aa287b3b1
+-      internalID: 2833043080597125133
+-      vertices: []
+-      indices: 
+-      edges: []
+-      weights: []
+-    - serializedVersion: 2
+-      name: Run_5
+-      rect:
+-        serializedVersion: 2
+-        x: 1000
+-        y: 0
+-        width: 200
+-        height: 200
+-      alignment: 0
+-      pivot: {x: 0, y: 0}
+-      border: {x: 0, y: 0, z: 0, w: 0}
+-      customData: 
+-      outline: []
+-      physicsShape: []
+-      tessellationDetail: 0
+-      bones: []
+-      spriteID: 5e9221266cfcdbb49936cb1a8e434969
+-      internalID: -2217414122262695004
+-      vertices: []
+-      indices: 
+-      edges: []
+-      weights: []
+-    - serializedVersion: 2
+-      name: Run_6
+-      rect:
+-        serializedVersion: 2
+-        x: 1200
+-        y: 0
+-        width: 200
+-        height: 200
+-      alignment: 0
+-      pivot: {x: 0, y: 0}
+-      border: {x: 0, y: 0, z: 0, w: 0}
+-      customData: 
+-      outline: []
+-      physicsShape: []
+-      tessellationDetail: 0
+-      bones: []
+-      spriteID: 622315e5818aead4bb2a4b786c5358ae
+-      internalID: -4440497016933152808
+-      vertices: []
+-      indices: 
+-      edges: []
+-      weights: []
+-    - serializedVersion: 2
+-      name: Run_7
+-      rect:
+-        serializedVersion: 2
+-        x: 1400
+-        y: 0
+-        width: 200
+-        height: 200
+-      alignment: 0
+-      pivot: {x: 0, y: 0}
+-      border: {x: 0, y: 0, z: 0, w: 0}
+-      customData: 
+-      outline: []
+-      physicsShape: []
+-      tessellationDetail: 0
+-      bones: []
+-      spriteID: 9d8d7f4b8c3926e4f94caca5bb3d37d0
+-      internalID: 8676454946275842879
+-      vertices: []
+-      indices: 
+-      edges: []
+-      weights: []
+-    outline: []
+-    customData: 
+-    physicsShape: []
+-    bones: []
+-    spriteID: 5e97eb03825dee720800000000000000
+-    internalID: 0
+-    vertices: []
+-    indices: 
+-    edges: []
+-    weights: []
+-    secondaryTextures: []
+-    spriteCustomMetadata:
+-      entries: []
+-    nameFileIdTable:
+-      Run_0: 4944230376442633554
+-      Run_1: -2274363484027164459
+-      Run_2: 8284087734974297348
+-      Run_3: 5304202850863732263
+-      Run_4: 2833043080597125133
+-      Run_5: -2217414122262695004
+-      Run_6: -4440497016933152808
+-      Run_7: 8676454946275842879
+-  mipmapLimitGroupName: 
+-  pSDRemoveMatte: 0
+-  userData: 
+-  assetBundleName: 
+-  assetBundleVariant: 
+Index: Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/WallSlide/WallSlide.asset.meta
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/WallSlide/WallSlide.asset.meta b/Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/WallSlide/WallSlide.asset.meta
+new file mode 100644
+--- /dev/null	(date 1762079793630)
++++ b/Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/WallSlide/WallSlide.asset.meta	(date 1762079793630)
+@@ -0,0 +1,8 @@
++fileFormatVersion: 2
++guid: 86839e0e975394d06b9e3b61dea6d884
++NativeFormatImporter:
++  externalObjects: {}
++  mainObjectFileID: 11400000
++  userData: 
++  assetBundleName: 
++  assetBundleVariant: 
+Index: Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/WallSlide/WallSlide.asset
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/WallSlide/WallSlide.asset b/Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/WallSlide/WallSlide.asset
+new file mode 100644
+--- /dev/null	(date 1762079793630)
++++ b/Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/WallSlide/WallSlide.asset	(date 1762079793630)
+@@ -0,0 +1,40 @@
++%YAML 1.1
++%TAG !u! tag:unity3d.com,2011:
++--- !u!114 &11400000
++MonoBehaviour:
++  m_ObjectHideFlags: 0
++  m_CorrespondingSourceObject: {fileID: 0}
++  m_PrefabInstance: {fileID: 0}
++  m_PrefabAsset: {fileID: 0}
++  m_GameObject: {fileID: 0}
++  m_Enabled: 1
++  m_EditorHideFlags: 0
++  m_Script: {fileID: 11500000, guid: 61caefda880f4a5d94965826455b144b, type: 3}
++  m_Name: WallSlide
++  m_EditorClassIdentifier: 
++  serializationData:
++    SerializedFormat: 2
++    SerializedBytes: 
++    ReferencedUnityObjects: []
++    SerializedBytesString: 
++    Prefab: {fileID: 0}
++    PrefabModificationsReferencedUnityObjects: []
++    PrefabModifications: []
++    SerializationNodes:
++    - Name: _events
++      Entry: 7
++      Data: 0|Gameplay.SpriteAnimationEvent[], Modules
++    - Name: 
++      Entry: 12
++      Data: 0
++    - Name: 
++      Entry: 13
++      Data: 
++    - Name: 
++      Entry: 8
++      Data: 
++  <Sprites>k__BackingField: []
++  <ID>k__BackingField: 0
++  <Breaker>k__BackingField: 0
++  <FPS>k__BackingField: 0
++  CanInterrupt: 1
+Index: Assets/AssetPacks/Martial Hero/Animations/PushAbilityUp.asset.meta
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Assets/AssetPacks/Martial Hero/Animations/PushAbilityUp.asset.meta b/Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/JumpFall/FlyDown.asset.meta
+rename from Assets/AssetPacks/Martial Hero/Animations/PushAbilityUp.asset.meta
+rename to Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/JumpFall/FlyDown.asset.meta
+--- a/Assets/AssetPacks/Martial Hero/Animations/PushAbilityUp.asset.meta	(revision 279b2a51e6751079cb64b87ab8c388542941e2b4)
++++ b/Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/JumpFall/FlyDown.asset.meta	(date 1762079793629)
+@@ -1,5 +1,5 @@
+ fileFormatVersion: 2
+-guid: bc67a2bc03bba4364bafb10294bd453f
++guid: 3da6e5785199141baab503cde7d6d564
+ NativeFormatImporter:
+   externalObjects: {}
+   mainObjectFileID: 11400000
+Index: Assets/AssetPacks/Martial Hero/Animations/Fall.asset
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Assets/AssetPacks/Martial Hero/Animations/Fall.asset b/Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/JumpFall/FlyDown.asset
+rename from Assets/AssetPacks/Martial Hero/Animations/Fall.asset
+rename to Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/JumpFall/FlyDown.asset
+--- a/Assets/AssetPacks/Martial Hero/Animations/Fall.asset	(revision 279b2a51e6751079cb64b87ab8c388542941e2b4)
++++ b/Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/JumpFall/FlyDown.asset	(date 1762079793629)
+@@ -10,7 +10,7 @@
+   m_Enabled: 1
+   m_EditorHideFlags: 0
+   m_Script: {fileID: 11500000, guid: 61caefda880f4a5d94965826455b144b, type: 3}
+-  m_Name: Fall
++  m_Name: FlyDown
+   m_EditorClassIdentifier: 
+   serializationData:
+     SerializedFormat: 2
+@@ -23,7 +23,7 @@
+     SerializationNodes:
+     - Name: _events
+       Entry: 7
+-      Data: 0|Gameplay.SpriteAnimationEvent[], Assembly-CSharp
++      Data: 0|Gameplay.SpriteAnimationEvent[], Modules
+     - Name: 
+       Entry: 12
+       Data: 0
+@@ -34,8 +34,7 @@
+       Entry: 8
+       Data: 
+   <Sprites>k__BackingField:
+-  - {fileID: -5966621866309598838, guid: ab9c6780bd1ac3c4fb318722a17a5862, type: 3}
+-  - {fileID: -2069157278089061004, guid: ab9c6780bd1ac3c4fb318722a17a5862, type: 3}
+-  <ID>k__BackingField: 4
+-  <FPS>k__BackingField: 5
++  - {fileID: 21300000, guid: c2d39fcaa5d1b2445a50779a9c494d04, type: 3}
++  <ID>k__BackingField: 12
++  <FPS>k__BackingField: 10
+   CanInterrupt: 1
+Index: Assets/Game/Scripts/Modules/SpriteAnimator/SpriteAnimation.cs
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>using System;\nusing System.Collections.Generic;\nusing Sirenix.OdinInspector;\nusing Sirenix.Serialization;\nusing UnityEngine;\n\nnamespace Gameplay\n{\n    [CreateAssetMenu(fileName = \"Animation\", menuName = \"Game/Sprite Animation\")]\n    public class SpriteAnimation : SerializedScriptableObject\n    {\n        [field: SerializeField] public Sprite[] Sprites { get; private set; }\n        [field: SerializeField] public AnimationID ID { get; private set; }\n        [field: SerializeField] public float FPS { get; private set; }\n        public bool CanInterrupt = true;\n\n        [OdinSerialize] private SpriteAnimationEvent[] _events = Array.Empty<SpriteAnimationEvent>();\n\n        private List<EventID> _tempEvents = new(24);\n\n        public List<EventID> GetEvents(int currentFrame)\n        {\n            _tempEvents.Clear();\n\n            for (int i = 0; i < _events.Length; i++)\n            {\n                if (_events[i].Frame == currentFrame)\n                    _tempEvents.Add(_events[i].ID);\n            }\n\n            return _tempEvents;\n        }\n    }\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Assets/Game/Scripts/Modules/SpriteAnimator/SpriteAnimation.cs b/Assets/Game/Scripts/Modules/SpriteAnimator/SpriteAnimation.cs
+--- a/Assets/Game/Scripts/Modules/SpriteAnimator/SpriteAnimation.cs	(revision 279b2a51e6751079cb64b87ab8c388542941e2b4)
++++ b/Assets/Game/Scripts/Modules/SpriteAnimator/SpriteAnimation.cs	(date 1762079793637)
+@@ -11,6 +11,8 @@
+     {
+         [field: SerializeField] public Sprite[] Sprites { get; private set; }
+         [field: SerializeField] public AnimationID ID { get; private set; }
++
++        [field: SerializeField] public bool Breaker { get; private set; }
+         [field: SerializeField] public float FPS { get; private set; }
+         public bool CanInterrupt = true;
+ 
+Index: Assets/Game/Scripts/GameSystem/StateMachine/States/BaseState.cs
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Assets/Game/Scripts/GameSystem/StateMachine/States/BaseState.cs b/Assets/Game/Scripts/GameSystem/StateMachine/States/BaseState.cs
+new file mode 100644
+--- /dev/null	(date 1762079793633)
++++ b/Assets/Game/Scripts/GameSystem/StateMachine/States/BaseState.cs	(date 1762079793633)
+@@ -0,0 +1,41 @@
++using Modules.PlayerController;
++
++namespace Gameplay
++{
++    public abstract class BaseState
++    {
++        protected readonly SpriteAnimator _animator;
++        protected readonly StateMachine _stateMachine;
++        protected readonly PlayerController _player;
++
++        protected BaseState(SpriteAnimator animator, StateMachine stateMachine, PlayerController player)
++        {
++            _animator = animator;
++            _stateMachine = stateMachine;
++            _player = player;
++        }
++
++        public virtual void Enter()
++        {
++        }
++
++        public virtual void Exit()
++        {
++        }
++
++        public virtual void Tick()
++        {
++            if (_player.IsWallSliding)
++            {
++                _stateMachine.SetState<WallSlideState>();
++                return;
++            }
++
++            if (!_player.IsGrounded)
++            {
++                _stateMachine.SetState<FallMidState>();
++                return;
++            }
++        }
++    }
++}
+\ No newline at end of file
+Index: Assets/Game/Scripts/GameSystem/StateMachine/States/FallMidState.cs
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Assets/Game/Scripts/GameSystem/StateMachine/States/FallMidState.cs b/Assets/Game/Scripts/GameSystem/StateMachine/States/FallMidState.cs
+new file mode 100644
+--- /dev/null	(date 1762079793633)
++++ b/Assets/Game/Scripts/GameSystem/StateMachine/States/FallMidState.cs	(date 1762079793633)
+@@ -0,0 +1,21 @@
++using Modules.PlayerController;
++using UnityEngine;
++
++namespace Gameplay
++{
++    public class FallMidState : BaseState
++    {
++        public FallMidState(SpriteAnimator animator, StateMachine stateMachine, PlayerController player) : base(
++            animator,
++            stateMachine, player)
++        {
++        }
++
++        public override void Tick()
++        {
++            base.Tick();
++            _animator.Play(AnimationID.AirMid);
++            if (_player.IsGrounded) _stateMachine.SetState<LandingState>();
++        }
++    }
++}
+\ No newline at end of file
+Index: Assets/Game/Scripts/GameSystem/StateMachine/States/DashState.cs
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Assets/Game/Scripts/GameSystem/StateMachine/States/DashState.cs b/Assets/Game/Scripts/GameSystem/StateMachine/States/DashState.cs
+new file mode 100644
+--- /dev/null	(date 1762079793633)
++++ b/Assets/Game/Scripts/GameSystem/StateMachine/States/DashState.cs	(date 1762079793633)
+@@ -0,0 +1,40 @@
++using Gameplay;
++using Modules.PlayerController;
++using UnityEngine;
++
++public class DashState : BaseState
++{
++    private readonly float _dashDuration = 0.5f;
++    private float _dashTimer;
++
++    public DashState(SpriteAnimator animator, StateMachine stateMachine, PlayerController player)
++        : base(animator, stateMachine, player)
++    {
++    }
++
++    public override void Enter()
++    {
++        _dashTimer = _dashDuration; 
++        _animator.Play(AnimationID.Dash).Interrupt(false);
++        _player.OnCollisionHit += TransitToFall;
++    }
++
++    private void TransitToFall() => _stateMachine.SetState<FallMidState>();
++
++    public override void Tick()
++    {
++        base.Tick();
++        if (_player.IsWallSliding)
++        {
++            _stateMachine.SetState<WallSlideState>();
++            return;
++        }
++
++        _dashTimer -= Time.deltaTime;
++
++        if (_dashTimer <= 0f)
++            TransitToFall();
++    }
++
++    public override void Exit() => _player.OnCollisionHit -= TransitToFall;
++}
+\ No newline at end of file
+Index: Assets/Game/Scripts/GameSystem/StateMachine/States/LandingState.cs
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Assets/Game/Scripts/GameSystem/StateMachine/States/LandingState.cs b/Assets/Game/Scripts/GameSystem/StateMachine/States/LandingState.cs
+new file mode 100644
+--- /dev/null	(date 1762079793634)
++++ b/Assets/Game/Scripts/GameSystem/StateMachine/States/LandingState.cs	(date 1762079793634)
+@@ -0,0 +1,24 @@
++using Modules.PlayerController;
++
++namespace Gameplay
++{
++    public class LandingState : BaseState
++    {
++        public LandingState(SpriteAnimator animator, StateMachine stateMachine, PlayerController player) : base(
++            animator,
++            stateMachine, player)
++        {
++        }
++
++        public override void Enter()
++        {
++            _animator.Play(AnimationID.Landindg).Interrupt(false);
++        }
++
++        public override void Tick()
++        {
++            if (_animator.CurrentAnimation.CanInterrupt) 
++                _stateMachine.SetState<IdleState>();
++        }
++    }
++}
+\ No newline at end of file
+Index: .idea/.idea.CodeCraft_HomeWork/.idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<project version=\"4\">\n  <component name=\"AutoImportSettings\">\n    <option name=\"autoReloadType\" value=\"SELECTIVE\" />\n  </component>\n  <component name=\"ChangeListManager\">\n    <list default=\"true\" id=\"6f0b762c-5415-4a85-b17b-cc44fd47261d\" name=\"Changes\" comment=\"\">\n      <change beforePath=\"$PROJECT_DIR$/Assets/Game/Scripts/AnimationStateController.cs\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/Assets/Game/Scripts/AnimationStateController.cs\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/Assets/Game/Scripts/Modules/PlayerController/Components/SlopeSlideComponent.cs\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/Assets/Game/Scripts/Modules/PlayerController/Components/SlopeSlideComponent.cs\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/Assets/Game/Scripts/Modules/PlayerController/MoveController.asmdef\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/Assets/Game/Scripts/Modules/PlayerController/MoveController.asmdef\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/Assets/Game/Scripts/Modules/SpriteAnimator/AnimationID.cs\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/Assets/Game/Scripts/Modules/SpriteAnimator/AnimationID.cs\" afterDir=\"false\" />\n    </list>\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\n  </component>\n  <component name=\"DpaMonitoringSettings\">\n    <option name=\"firstShow\" value=\"false\" />\n  </component>\n  <component name=\"Git.Settings\">\n    <option name=\"RECENT_BRANCH_BY_REPOSITORY\">\n      <map>\n        <entry key=\"$PROJECT_DIR$\" value=\"detached\" />\n      </map>\n    </option>\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\n    <option name=\"RESET_MODE\" value=\"HARD\" />\n  </component>\n  <component name=\"GitHubPullRequestSearchHistory\">{\n  &quot;lastFilter&quot;: {\n    &quot;state&quot;: &quot;OPEN&quot;,\n    &quot;assignee&quot;: &quot;EugeneM23&quot;\n  }\n}</component>\n  <component name=\"GithubPullRequestsUISettings\">{\n  &quot;selectedUrlAndAccountId&quot;: {\n    &quot;url&quot;: &quot;https://github.com/EugeneM23/CodeCraft_HomeWork.git&quot;,\n    &quot;accountId&quot;: &quot;f7cb01d7-02f0-468f-9836-695165b60a25&quot;\n  }\n}</component>\n  <component name=\"HighlightingSettingsPerFile\">\n    <setting file=\"file://$PROJECT_DIR$/Library/PackageCache/com.unity.visualscripting@1b53f46e931b/Runtime/VisualScripting.State/StateMachine.cs\" root0=\"SKIP_HIGHLIGHTING\" />\n    <setting file=\"file://$USER_HOME$/Downloads/5. MVx Паттерны/MVx-Homework/Assets/Modules/UIComponents/FloatingAnimation.cs\" root0=\"SKIP_HIGHLIGHTING\" />\n    <setting file=\"file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/723ae1096b414639900dc6293535501b2f200/92/3ac0d547/Rigidbody2D.cs\" root0=\"SKIP_HIGHLIGHTING\" />\n    <setting file=\"file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/bc4b394796a146d5958dfc6ea6c36a72574000/0a/1caf13b4/ServerLocator.cs\" root0=\"FORCE_HIGHLIGHTING\" />\n    <setting file=\"file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/c6fcfbd931e348ecb5b0d76a4ac091c61df200/c6/5c4ee42a/Vector3.cs\" root0=\"SKIP_HIGHLIGHTING\" />\n    <setting file=\"file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/c6fcfbd931e348ecb5b0d76a4ac091c61df200/ec/e69633b6/Shader.cs\" root0=\"SKIP_HIGHLIGHTING\" />\n    <setting file=\"file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/c6fcfbd931e348ecb5b0d76a4ac091c61df200/fd/d635bfb4/Debug.cs\" root0=\"SKIP_HIGHLIGHTING\" />\n    <setting file=\"file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/3ea01e77be99618395f448b16bd7cc2bd4248bd9e5d8474964b2d97f39c5d74/System.cs\" root0=\"FORCE_HIGHLIGHTING\" />\n    <setting file=\"file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/7d303c2bf72cd4cec95665b89c457d265d2b8ef3ed6da17cd4f85587c2f9de7/System.Linq.cs\" root0=\"FORCE_HIGHLIGHTING\" />\n    <setting file=\"file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/da6a1787df247a0274ec8fc4840f41df092ee13874f55f87a9db568acab1bd2/System.Reflection.cs\" root0=\"FORCE_HIGHLIGHTING\" />\n  </component>\n  <component name=\"MetaFilesCheckinStateConfiguration\" checkMetaFiles=\"true\" />\n  <component name=\"ProjectColorInfo\">{\n  &quot;associatedIndex&quot;: 4\n}</component>\n  <component name=\"ProjectId\" id=\"31uuFBoEorPnTxvTyRslDA9G6He\" />\n  <component name=\"ProjectLevelVcsManager\">\n    <ConfirmationsSetting value=\"1\" id=\"Add\" />\n  </component>\n  <component name=\"ProjectViewState\">\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\n    <option name=\"showLibraryContents\" value=\"true\" />\n  </component>\n  <component name=\"PropertiesComponent\">{\n  &quot;keyToString&quot;: {\n    &quot;Attach to Unity Editor.Attach to Unity Editor.executor&quot;: &quot;Debug&quot;,\n    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,\n    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,\n    &quot;git-widget-placeholder&quot;: &quot;CharacterController&quot;,\n    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,\n    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,\n    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,\n    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,\n    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,\n    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.keymap&quot;,\n    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;\n  }\n}</component>\n  <component name=\"RunManager\" selected=\"Attach to Unity Editor.Attach to Unity Editor\">\n    <configuration name=\"Start Unity\" type=\"RunUnityExe\" factoryName=\"Unity Executable\">\n      <option name=\"EXE_PATH\" value=\"/Applications/Unity/Hub/Editor/6000.0.38f1/Unity.app/Contents/MacOS/Unity\" />\n      <option name=\"PROGRAM_PARAMETERS\" value=\"-projectPath $PROJECT_DIR$ -debugCodeOptimization\" />\n      <option name=\"WORKING_DIRECTORY\" value=\"$PROJECT_DIR$\" />\n      <option name=\"PASS_PARENT_ENVS\" value=\"1\" />\n      <option name=\"USE_EXTERNAL_CONSOLE\" value=\"0\" />\n      <method v=\"2\" />\n    </configuration>\n    <configuration name=\"Unit Tests (batch mode)\" type=\"RunUnityExe\" factoryName=\"Unity Executable\">\n      <option name=\"EXE_PATH\" value=\"/Applications/Unity/Hub/Editor/6000.0.38f1/Unity.app/Contents/MacOS/Unity\" />\n      <option name=\"PROGRAM_PARAMETERS\" value=\"-runTests -batchmode -projectPath $PROJECT_DIR$ -testResults Logs/results.xml -logFile Logs/Editor.log -testPlatform EditMode -debugCodeOptimization\" />\n      <option name=\"WORKING_DIRECTORY\" value=\"$PROJECT_DIR$\" />\n      <option name=\"PASS_PARENT_ENVS\" value=\"1\" />\n      <option name=\"USE_EXTERNAL_CONSOLE\" value=\"0\" />\n      <method v=\"2\" />\n    </configuration>\n    <configuration name=\"Attach to Unity Editor &amp; Play\" type=\"UNITY_DEBUG_RUN_CONFIGURATION\" factoryName=\"UNITY_ATTACH_AND_PLAY\" show_console_on_std_err=\"false\" show_console_on_std_out=\"false\" port=\"50000\" address=\"localhost\">\n      <option name=\"allowRunningInParallel\" value=\"false\" />\n      <option name=\"listenPortForConnections\" value=\"false\" />\n      <option name=\"pid\" />\n      <option name=\"projectPathOnTarget\" />\n      <option name=\"runtimes\">\n        <list />\n      </option>\n      <option name=\"selectedOptions\">\n        <list />\n      </option>\n      <method v=\"2\" />\n    </configuration>\n    <configuration name=\"Attach to Unity Editor\" type=\"UNITY_DEBUG_RUN_CONFIGURATION\" factoryName=\"Unity Debug\" show_console_on_std_err=\"false\" show_console_on_std_out=\"false\" port=\"50000\" address=\"localhost\">\n      <option name=\"allowRunningInParallel\" value=\"false\" />\n      <option name=\"listenPortForConnections\" value=\"false\" />\n      <option name=\"pid\" />\n      <option name=\"projectPathOnTarget\" />\n      <option name=\"runtimes\">\n        <list />\n      </option>\n      <option name=\"selectedOptions\">\n        <list />\n      </option>\n      <method v=\"2\" />\n    </configuration>\n  </component>\n  <component name=\"SpellCheckerSettings\" RuntimeDictionaries=\"0\" Folders=\"0\" CustomDictionaries=\"0\" DefaultDictionary=\"application-level\" UseSingleDictionary=\"true\" transferred=\"true\" />\n  <component name=\"TaskManager\">\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\n      <changelist id=\"6f0b762c-5415-4a85-b17b-cc44fd47261d\" name=\"Changes\" comment=\"\" />\n      <created>1756386172410</created>\n      <option name=\"number\" value=\"Default\" />\n      <option name=\"presentableId\" value=\"Default\" />\n      <updated>1756386172410</updated>\n      <workItem from=\"1756386173456\" duration=\"2722000\" />\n      <workItem from=\"1756831353029\" duration=\"7297000\" />\n      <workItem from=\"1758984060587\" duration=\"45286000\" />\n      <workItem from=\"1759852159875\" duration=\"10172000\" />\n      <workItem from=\"1760175523777\" duration=\"36357000\" />\n      <workItem from=\"1760279050424\" duration=\"13431000\" />\n      <workItem from=\"1760300339906\" duration=\"50870000\" />\n      <workItem from=\"1760441362687\" duration=\"5440000\" />\n      <workItem from=\"1760482141392\" duration=\"7676000\" />\n      <workItem from=\"1760529180623\" duration=\"17517000\" />\n      <workItem from=\"1760628816688\" duration=\"10869000\" />\n      <workItem from=\"1760640173201\" duration=\"58102000\" />\n      <workItem from=\"1760805290228\" duration=\"5936000\" />\n      <workItem from=\"1760862974908\" duration=\"21566000\" />\n      <workItem from=\"1761129343480\" duration=\"6925000\" />\n      <workItem from=\"1761242155255\" duration=\"3565000\" />\n      <workItem from=\"1761297126326\" duration=\"6223000\" />\n      <workItem from=\"1761328977212\" duration=\"36039000\" />\n      <workItem from=\"1761465958328\" duration=\"14550000\" />\n      <workItem from=\"1761812914064\" duration=\"5173000\" />\n      <workItem from=\"1761822134798\" duration=\"18776000\" />\n    </task>\n    <task id=\"LOCAL-00001\" summary=\"Update\">\n      <option name=\"closed\" value=\"true\" />\n      <created>1756386788840</created>\n      <option name=\"number\" value=\"00001\" />\n      <option name=\"presentableId\" value=\"LOCAL-00001\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1756386788840</updated>\n    </task>\n    <task id=\"LOCAL-00002\" summary=\"Revert &quot;Update&quot;&#10;&#10;This reverts commit f4bd0825\">\n      <option name=\"closed\" value=\"true\" />\n      <created>1760481187217</created>\n      <option name=\"number\" value=\"00002\" />\n      <option name=\"presentableId\" value=\"LOCAL-00002\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1760481187217</updated>\n    </task>\n    <task id=\"LOCAL-00003\" summary=\"Revert &quot;Update&quot;&#10;&#10;This reverts commit f4bd0825\">\n      <option name=\"closed\" value=\"true\" />\n      <created>1760481260961</created>\n      <option name=\"number\" value=\"00003\" />\n      <option name=\"presentableId\" value=\"LOCAL-00003\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1760481260961</updated>\n    </task>\n    <option name=\"localTasksCounter\" value=\"4\" />\n    <servers />\n  </component>\n  <component name=\"TypeScriptGeneratedFilesManager\">\n    <option name=\"version\" value=\"3\" />\n  </component>\n  <component name=\"UnityCheckinConfiguration\" checkUnsavedScenes=\"true\" />\n  <component name=\"UnityProjectConfiguration\" hasMinimizedUI=\"false\" />\n  <component name=\"UnityProjectDiscoverer\">\n    <option name=\"hasUnityReference\" value=\"true\" />\n    <option name=\"unityProject\" value=\"true\" />\n    <option name=\"unityProjectFolder\" value=\"true\" />\n  </component>\n  <component name=\"UnityUnitTestConfiguration\" currentTestLauncher=\"Both\" />\n  <component name=\"Vcs.Log.Tabs.Properties\">\n    <option name=\"RECENT_FILTERS\">\n      <map>\n        <entry key=\"Branch\">\n          <value>\n            <list>\n              <RecentGroup>\n                <option name=\"FILTER_VALUES\">\n                  <option value=\"CharacterController\" />\n                </option>\n              </RecentGroup>\n              <RecentGroup>\n                <option name=\"FILTER_VALUES\">\n                  <option value=\"origin/HomeWork_07_ComponentsWay\" />\n                </option>\n              </RecentGroup>\n              <RecentGroup>\n                <option name=\"FILTER_VALUES\">\n                  <option value=\"HomeWork_07_ComponentsWay\" />\n                </option>\n              </RecentGroup>\n            </list>\n          </value>\n        </entry>\n      </map>\n    </option>\n    <option name=\"TAB_STATES\">\n      <map>\n        <entry key=\"MAIN\">\n          <value>\n            <State>\n              <option name=\"FILTERS\">\n                <map>\n                  <entry key=\"branch\">\n                    <value>\n                      <list>\n                        <option value=\"CharacterController\" />\n                      </list>\n                    </value>\n                  </entry>\n                </map>\n              </option>\n            </State>\n          </value>\n        </entry>\n      </map>\n    </option>\n  </component>\n  <component name=\"VcsManagerConfiguration\">\n    <option name=\"CLEAR_INITIAL_COMMIT_MESSAGE\" value=\"true\" />\n    <MESSAGE value=\"Update\" />\n    <MESSAGE value=\"Revert &quot;Update&quot;&#10;&#10;This reverts commit f4bd0825\" />\n    <option name=\"LAST_COMMIT_MESSAGE\" value=\"Revert &quot;Update&quot;&#10;&#10;This reverts commit f4bd0825\" />\n  </component>\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/.idea.CodeCraft_HomeWork/.idea/workspace.xml b/.idea/.idea.CodeCraft_HomeWork/.idea/workspace.xml
+--- a/.idea/.idea.CodeCraft_HomeWork/.idea/workspace.xml	(revision 279b2a51e6751079cb64b87ab8c388542941e2b4)
++++ b/.idea/.idea.CodeCraft_HomeWork/.idea/workspace.xml	(date 1762080133619)
+@@ -5,10 +5,101 @@
+   </component>
+   <component name="ChangeListManager">
+     <list default="true" id="6f0b762c-5415-4a85-b17b-cc44fd47261d" name="Changes" comment="">
+-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/AnimationStateController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/AnimationStateController.cs" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Modules/PlayerController/Components/SlopeSlideComponent.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/Modules/PlayerController/Components/SlopeSlideComponent.cs" afterDir="false" />
++      <change afterPath="$PROJECT_DIR$/Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/Dash/Dash.asset" afterDir="false" />
++      <change afterPath="$PROJECT_DIR$/Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/JumpRise/JumpStart.asset" afterDir="false" />
++      <change afterPath="$PROJECT_DIR$/Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/Land/Land.asset" afterDir="false" />
++      <change afterPath="$PROJECT_DIR$/Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/Land/Land.asset.meta" afterDir="false" />
++      <change afterPath="$PROJECT_DIR$/Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/RunToIdle/RunToIdle.asset" afterDir="false" />
++      <change afterPath="$PROJECT_DIR$/Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/RunToIdle/RunToIdle.asset.meta" afterDir="false" />
++      <change afterPath="$PROJECT_DIR$/Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/WallSlide/WallSlide.asset" afterDir="false" />
++      <change afterPath="$PROJECT_DIR$/Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/WallSlide/WallSlide.asset.meta" afterDir="false" />
++      <change afterPath="$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/StateMachine/States.meta" afterDir="false" />
++      <change afterPath="$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/StateMachine/States/BaseState.cs" afterDir="false" />
++      <change afterPath="$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/StateMachine/States/BaseState.cs.meta" afterDir="false" />
++      <change afterPath="$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/StateMachine/States/DashState.cs" afterDir="false" />
++      <change afterPath="$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/StateMachine/States/DashState.cs.meta" afterDir="false" />
++      <change afterPath="$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/StateMachine/States/FallMidState.cs" afterDir="false" />
++      <change afterPath="$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/StateMachine/States/FallMidState.cs.meta" afterDir="false" />
++      <change afterPath="$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/StateMachine/States/IdleState.cs" afterDir="false" />
++      <change afterPath="$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/StateMachine/States/LandingState.cs" afterDir="false" />
++      <change afterPath="$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/StateMachine/States/LandingState.cs.meta" afterDir="false" />
++      <change afterPath="$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/StateMachine/States/RiseState.cs" afterDir="false" />
++      <change afterPath="$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/StateMachine/States/RiseState.cs.meta" afterDir="false" />
++      <change afterPath="$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/StateMachine/States/RunState.cs" afterDir="false" />
++      <change afterPath="$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/StateMachine/States/RunToIdleState.cs" afterDir="false" />
++      <change afterPath="$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/StateMachine/States/RunToIdleState.cs.meta" afterDir="false" />
++      <change afterPath="$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/StateMachine/WallSlideState.cs" afterDir="false" />
++      <change afterPath="$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/StateMachine/WallSlideState.cs.meta" afterDir="false" />
++      <change afterPath="$PROJECT_DIR$/Assets/Game/Scripts/Modules/PlayerController/Components/SpriteFlipComponent.cs" afterDir="false" />
++      <change afterPath="$PROJECT_DIR$/Assets/Game/Scripts/Modules/PlayerController/Components/SpriteFlipComponent.cs.meta" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/Assets/AssetPacks/DeadRevolver.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/AssetPacks/DeadRevolver.meta" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/WallSlide/WallSlide01.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/WallSlide/WallSlide01.png.meta" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/WallSlide/WallSlide02.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/WallSlide/WallSlide02.png.meta" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/WallSlide/WallSlide03.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/WallSlide/WallSlide03.png.meta" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/WallSlide/WallSlide04.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/WallSlide/WallSlide04.png.meta" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/WallSlide/WallSlide05.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/WallSlide/WallSlide05.png.meta" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/WallSlide/WallSlide06.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/WallSlide/WallSlide06.png.meta" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/Assets/AssetPacks/Martial Hero.meta" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/Assets/AssetPacks/Martial Hero/Animations.meta" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/Assets/AssetPacks/Martial Hero/Animations/Attack.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/JumpMid/Fly.asset" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/Assets/AssetPacks/Martial Hero/Animations/Attack.asset.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/JumpRise/JumpStart.asset.meta" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/Assets/AssetPacks/Martial Hero/Animations/Fall.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/JumpFall/FlyDown.asset" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/Assets/AssetPacks/Martial Hero/Animations/Fall.asset.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/JumpMid/Fly.asset.meta" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/Assets/AssetPacks/Martial Hero/Animations/Idle.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/Idle/Idle.asset" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/Assets/AssetPacks/Martial Hero/Animations/Idle.asset.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/Idle/Idle.asset.meta" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/Assets/AssetPacks/Martial Hero/Animations/PushAbilitySide.asset" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/Assets/AssetPacks/Martial Hero/Animations/PushAbilitySide.asset.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/Dash/Dash.asset.meta" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/Assets/AssetPacks/Martial Hero/Animations/PushAbilityUp.asset" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/Assets/AssetPacks/Martial Hero/Animations/PushAbilityUp.asset.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/JumpFall/FlyDown.asset.meta" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/Assets/AssetPacks/Martial Hero/Animations/Run.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/Run/Run.asset" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/Assets/AssetPacks/Martial Hero/Animations/Run.asset.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/Run/Run.asset.meta" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/Assets/AssetPacks/Martial Hero/Demo.meta" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/Assets/AssetPacks/Martial Hero/Demo/Scene Demo.unity" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/Assets/AssetPacks/Martial Hero/Demo/Scene Demo.unity.meta" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/Assets/AssetPacks/Martial Hero/License.txt" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/Assets/AssetPacks/Martial Hero/License.txt.meta" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/Assets/AssetPacks/Martial Hero/New Material 1.mat" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/Assets/AssetPacks/Martial Hero/New Material 1.mat.meta" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/Assets/AssetPacks/Martial Hero/New Material.mat" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/Assets/AssetPacks/Martial Hero/New Material.mat.meta" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/Assets/AssetPacks/Martial Hero/Sprites.meta" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/Assets/AssetPacks/Martial Hero/Sprites/Attack1.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/Assets/AssetPacks/Martial Hero/Sprites/Attack1.png.meta" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/Assets/AssetPacks/Martial Hero/Sprites/Attack2.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/Assets/AssetPacks/Martial Hero/Sprites/Attack2.png.meta" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/Assets/AssetPacks/Martial Hero/Sprites/Death.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/Assets/AssetPacks/Martial Hero/Sprites/Death.png.meta" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/Assets/AssetPacks/Martial Hero/Sprites/Fall.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/Assets/AssetPacks/Martial Hero/Sprites/Fall.png.meta" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/Assets/AssetPacks/Martial Hero/Sprites/Idle.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/Assets/AssetPacks/Martial Hero/Sprites/Idle.png.meta" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/Assets/AssetPacks/Martial Hero/Sprites/Jump.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/Assets/AssetPacks/Martial Hero/Sprites/Jump.png.meta" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/Assets/AssetPacks/Martial Hero/Sprites/Run.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/Assets/AssetPacks/Martial Hero/Sprites/Run.png.meta" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/Assets/AssetPacks/Martial Hero/Sprites/Take Hit - white silhouette.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/Assets/AssetPacks/Martial Hero/Sprites/Take Hit - white silhouette.png.meta" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/Assets/AssetPacks/Martial Hero/Sprites/Take Hit.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/Assets/AssetPacks/Martial Hero/Sprites/Take Hit.png.meta" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/Assets/Game/Scenes/Game.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scenes/Game.unity" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/GameObject/Player/Installers/AnimatonInstaller.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/GameObject/Player/Installers/AnimatonInstaller.cs" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/StateMachine/StateMachine.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/StateMachine/StateMachine.cs" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/StateMachine/States/IdleState.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/StateMachine/States/IdleState.cs.meta" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/StateMachine/States/RunState.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/GameSystem/StateMachine/States/RunState.cs.meta" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Modules/PlayerController/Components/CollisionComponent.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/Modules/PlayerController/Components/CollisionComponent.cs" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Modules/PlayerController/Components/ImpulseComponent.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/Modules/PlayerController/Components/ImpulseComponent.cs" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Modules/PlayerController/Components/JumpComponent.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/Modules/PlayerController/Components/JumpComponent.cs" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Modules/PlayerController/Components/MovingPlatformComponent.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/Modules/PlayerController/Components/MovingPlatformComponent.cs" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Modules/PlayerController/Components/WallSlidingComponent.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/Modules/PlayerController/Components/WallSlidingComponent.cs" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Modules/PlayerController/Configs/MoveConfig.json" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/Modules/PlayerController/Configs/MoveConfig.json" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Modules/PlayerController/Controllers/DashController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/Modules/PlayerController/Controllers/DashController.cs" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Modules/PlayerController/Data/PlayerStats.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/Modules/PlayerController/Data/PlayerStats.cs" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Modules/PlayerController/Enviroment/StairsTrigger.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/Modules/PlayerController/Enviroment/StairsTrigger.cs" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Modules/PlayerController/MoveController.asmdef" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/Modules/PlayerController/MoveController.asmdef" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Modules/PlayerController/PlayerController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/Modules/PlayerController/PlayerController.cs" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Modules/PlayerController/ServiceLocator.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/Modules/PlayerController/ServiceLocator.cs" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Modules/SpriteAnimator/AnimationID.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/Modules/SpriteAnimator/AnimationID.cs" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Modules/SpriteAnimator/SpriteAnimation.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/Modules/SpriteAnimator/SpriteAnimation.cs" afterDir="false" />
+     </list>
+     <option name="SHOW_DIALOG" value="false" />
+     <option name="HIGHLIGHT_CONFLICTS" value="true" />
+@@ -21,7 +112,7 @@
+   <component name="Git.Settings">
+     <option name="RECENT_BRANCH_BY_REPOSITORY">
+       <map>
+-        <entry key="$PROJECT_DIR$" value="detached" />
++        <entry key="$PROJECT_DIR$" value="CharacterController" />
+       </map>
+     </option>
+     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+@@ -68,7 +159,7 @@
+     &quot;Attach to Unity Editor.Attach to Unity Editor.executor&quot;: &quot;Debug&quot;,
+     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+-    &quot;git-widget-placeholder&quot;: &quot;CharacterController&quot;,
++    &quot;git-widget-placeholder&quot;: &quot;Merging HomeWork__07__ComponentsWay&quot;,
+     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+Index: Assets/Game/Scripts/GameSystem/StateMachine/States/IdleState.cs
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Assets/Game/Scripts/GameSystem/StateMachine/States/IdleState.cs b/Assets/Game/Scripts/GameSystem/StateMachine/States/IdleState.cs
+new file mode 100644
+--- /dev/null	(date 1762079793634)
++++ b/Assets/Game/Scripts/GameSystem/StateMachine/States/IdleState.cs	(date 1762079793634)
+@@ -0,0 +1,29 @@
++using Modules.PlayerController;
++using UnityEngine;
++
++namespace Gameplay
++{
++    public class IdleState : BaseState
++    {
++        public IdleState(SpriteAnimator animator, StateMachine stateMachine, PlayerController player) : base(animator,
++            stateMachine, player)
++        {
++        }
++
++        public override void Enter() => _player.OnJump += TransitToJump;
++
++        public override void Exit() => _player.OnJump -= TransitToJump;
++
++        private void TransitToJump() => _stateMachine.SetState<RiseState>();
++
++        public override void Tick()
++        {
++            base.Tick();
++            
++            _animator.Play(AnimationID.Idle);
++
++            if (Mathf.Abs(_player.Velocity.x) > 0.1f)
++                _stateMachine.SetState<RunState>();
++        }
++    }
++}
+\ No newline at end of file
+Index: Assets/Game/Scripts/GameSystem/StateMachine/States/RunState.cs
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Assets/Game/Scripts/GameSystem/StateMachine/States/RunState.cs b/Assets/Game/Scripts/GameSystem/StateMachine/States/RunState.cs
+new file mode 100644
+--- /dev/null	(date 1762079793634)
++++ b/Assets/Game/Scripts/GameSystem/StateMachine/States/RunState.cs	(date 1762079793634)
+@@ -0,0 +1,26 @@
++using Modules.PlayerController;
++using UnityEngine;
++
++namespace Gameplay
++{
++    public class RunState : BaseState
++    {
++        public RunState(SpriteAnimator animator, StateMachine stateMachine, PlayerController player) : base(animator,
++            stateMachine, player)
++        {
++        }
++
++        public override void Enter()
++        {
++            _animator.Play(AnimationID.Run);
++        }
++
++        public override void Tick()
++        {
++            base.Tick();
++
++            if (Mathf.Abs(_player.Velocity.x) < 0.1f && _player.MoveDirection == Vector2.zero)
++                _stateMachine.SetState<RunToIdleState>();
++        }
++    }
++}
+\ No newline at end of file
+Index: Assets/Game/Scripts/GameSystem/StateMachine/States/RiseState.cs
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Assets/Game/Scripts/GameSystem/StateMachine/States/RiseState.cs b/Assets/Game/Scripts/GameSystem/StateMachine/States/RiseState.cs
+new file mode 100644
+--- /dev/null	(date 1762079793634)
++++ b/Assets/Game/Scripts/GameSystem/StateMachine/States/RiseState.cs	(date 1762079793634)
+@@ -0,0 +1,24 @@
++using Modules.PlayerController;
++
++namespace Gameplay
++{
++    public class RiseState : BaseState
++    {
++        public RiseState(SpriteAnimator animator, StateMachine stateMachine, PlayerController player) : base(animator,
++            stateMachine, player)
++        {
++        }
++
++        public override void Enter()
++        {
++            _animator.Play(AnimationID.JumpRise).Interrupt(false);
++        }
++
++        public override void Tick()
++        {
++            base.Tick();
++            if (_animator.CurrentAnimation.CanInterrupt)
++                _stateMachine.SetState<FallMidState>();
++        }
++    }
++}
+\ No newline at end of file
+Index: Assets/Game/Scripts/GameSystem/StateMachine/WallSlideState.cs
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Assets/Game/Scripts/GameSystem/StateMachine/WallSlideState.cs b/Assets/Game/Scripts/GameSystem/StateMachine/WallSlideState.cs
+new file mode 100644
+--- /dev/null	(date 1762079793635)
++++ b/Assets/Game/Scripts/GameSystem/StateMachine/WallSlideState.cs	(date 1762079793635)
+@@ -0,0 +1,20 @@
++using Modules.PlayerController;
++
++namespace Gameplay
++{
++    public class WallSlideState : BaseState
++    {
++        public WallSlideState(SpriteAnimator animator, StateMachine stateMachine, PlayerController player) : base(
++            animator, stateMachine, player)
++        {
++        }
++
++        public override void Tick()
++        {
++            _animator.Play(AnimationID.WallSlide);
++
++            if (!_player.IsWallSliding) 
++                _stateMachine.SetState<IdleState>();
++        }
++    }
++}
+\ No newline at end of file
+Index: Assets/Game/Scripts/GameSystem/StateMachine/States/RunToIdleState.cs
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Assets/Game/Scripts/GameSystem/StateMachine/States/RunToIdleState.cs b/Assets/Game/Scripts/GameSystem/StateMachine/States/RunToIdleState.cs
+new file mode 100644
+--- /dev/null	(date 1762079793634)
++++ b/Assets/Game/Scripts/GameSystem/StateMachine/States/RunToIdleState.cs	(date 1762079793634)
+@@ -0,0 +1,21 @@
++using Modules.PlayerController;
++
++namespace Gameplay
++{
++    public class RunToIdleState : BaseState
++    {
++        public RunToIdleState(SpriteAnimator animator, StateMachine stateMachine, PlayerController player) : base(
++            animator,
++            stateMachine, player)
++        {
++        }
++
++        public override void Enter() => _animator.Play(AnimationID.RunToIdle).Interrupt(false);
++
++        public override void Tick()
++        {
++            if (_animator.CurrentAnimation.CanInterrupt)
++                _stateMachine.SetState<IdleState>();
++        }
++    }
++}
+\ No newline at end of file
+Index: Assets/Game/Scripts/GameSystem/StateMachine/WallSlideState.cs.meta
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Assets/Game/Scripts/GameSystem/StateMachine/WallSlideState.cs.meta b/Assets/Game/Scripts/GameSystem/StateMachine/WallSlideState.cs.meta
+new file mode 100644
+--- /dev/null	(date 1762079793635)
++++ b/Assets/Game/Scripts/GameSystem/StateMachine/WallSlideState.cs.meta	(date 1762079793635)
+@@ -0,0 +1,3 @@
++fileFormatVersion: 2
++guid: 915d17f12786484fb6abf4ed851cd245
++timeCreated: 1762077256
+\ No newline at end of file
+Index: Assets/Game/Scripts/GameSystem/StateMachine/States.meta
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Assets/Game/Scripts/GameSystem/StateMachine/States.meta b/Assets/Game/Scripts/GameSystem/StateMachine/States.meta
+new file mode 100644
+--- /dev/null	(date 1762079793633)
++++ b/Assets/Game/Scripts/GameSystem/StateMachine/States.meta	(date 1762079793633)
+@@ -0,0 +1,3 @@
++fileFormatVersion: 2
++guid: 24be47b44b1c481296ebbd60ff4162a3
++timeCreated: 1761996698
+\ No newline at end of file
+Index: Assets/Game/Scripts/GameSystem/StateMachine/States/RunToIdleState.cs.meta
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Assets/Game/Scripts/GameSystem/StateMachine/States/RunToIdleState.cs.meta b/Assets/Game/Scripts/GameSystem/StateMachine/States/RunToIdleState.cs.meta
+new file mode 100644
+--- /dev/null	(date 1762079793635)
++++ b/Assets/Game/Scripts/GameSystem/StateMachine/States/RunToIdleState.cs.meta	(date 1762079793635)
+@@ -0,0 +1,3 @@
++fileFormatVersion: 2
++guid: 5f3bb95065094e26b5c32ad1006ed5d9
++timeCreated: 1762074886
+\ No newline at end of file
+Index: Assets/Game/Scripts/GameSystem/StateMachine/States/DashState.cs.meta
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Assets/Game/Scripts/GameSystem/StateMachine/States/DashState.cs.meta b/Assets/Game/Scripts/GameSystem/StateMachine/States/DashState.cs.meta
+new file mode 100644
+--- /dev/null	(date 1762079793633)
++++ b/Assets/Game/Scripts/GameSystem/StateMachine/States/DashState.cs.meta	(date 1762079793633)
+@@ -0,0 +1,3 @@
++fileFormatVersion: 2
++guid: 4ffed2330ec1482b8a9d0b0a9b9d623b
++timeCreated: 1762009274
+\ No newline at end of file
+Index: Assets/Game/Scripts/GameSystem/StateMachine/States/BaseState.cs.meta
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Assets/Game/Scripts/GameSystem/StateMachine/States/BaseState.cs.meta b/Assets/Game/Scripts/GameSystem/StateMachine/States/BaseState.cs.meta
+new file mode 100644
+--- /dev/null	(date 1762079793633)
++++ b/Assets/Game/Scripts/GameSystem/StateMachine/States/BaseState.cs.meta	(date 1762079793633)
+@@ -0,0 +1,3 @@
++fileFormatVersion: 2
++guid: 77af0ec752b3404d84713f3b1aa599b6
++timeCreated: 1761996685
+\ No newline at end of file
+Index: Assets/Game/Scripts/GameSystem/StateMachine/States/RiseState.cs.meta
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Assets/Game/Scripts/GameSystem/StateMachine/States/RiseState.cs.meta b/Assets/Game/Scripts/GameSystem/StateMachine/States/RiseState.cs.meta
+new file mode 100644
+--- /dev/null	(date 1762079793634)
++++ b/Assets/Game/Scripts/GameSystem/StateMachine/States/RiseState.cs.meta	(date 1762079793634)
+@@ -0,0 +1,3 @@
++fileFormatVersion: 2
++guid: 73e4ab3dbacc423186a6d8fba95ab5bc
++timeCreated: 1761998216
+\ No newline at end of file
+Index: Assets/Game/Scripts/GameSystem/StateMachine/States/FallMidState.cs.meta
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Assets/Game/Scripts/GameSystem/StateMachine/States/FallMidState.cs.meta b/Assets/Game/Scripts/GameSystem/StateMachine/States/FallMidState.cs.meta
+new file mode 100644
+--- /dev/null	(date 1762079793633)
++++ b/Assets/Game/Scripts/GameSystem/StateMachine/States/FallMidState.cs.meta	(date 1762079793633)
+@@ -0,0 +1,3 @@
++fileFormatVersion: 2
++guid: d312a00d14eb4f07917732f9118d19dd
++timeCreated: 1762075611
+\ No newline at end of file
+Index: Assets/Game/Scripts/GameSystem/StateMachine/States/LandingState.cs.meta
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Assets/Game/Scripts/GameSystem/StateMachine/States/LandingState.cs.meta b/Assets/Game/Scripts/GameSystem/StateMachine/States/LandingState.cs.meta
+new file mode 100644
+--- /dev/null	(date 1762079793634)
++++ b/Assets/Game/Scripts/GameSystem/StateMachine/States/LandingState.cs.meta	(date 1762079793634)
+@@ -0,0 +1,3 @@
++fileFormatVersion: 2
++guid: dbe1c16af7be4175b6f6f3156d4a8afa
++timeCreated: 1762075606
+\ No newline at end of file
+Index: Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/Land/Land.asset
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/Land/Land.asset b/Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/Land/Land.asset
+new file mode 100644
+--- /dev/null	(date 1762079793629)
++++ b/Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/Land/Land.asset	(date 1762079793629)
+@@ -0,0 +1,41 @@
++%YAML 1.1
++%TAG !u! tag:unity3d.com,2011:
++--- !u!114 &11400000
++MonoBehaviour:
++  m_ObjectHideFlags: 0
++  m_CorrespondingSourceObject: {fileID: 0}
++  m_PrefabInstance: {fileID: 0}
++  m_PrefabAsset: {fileID: 0}
++  m_GameObject: {fileID: 0}
++  m_Enabled: 1
++  m_EditorHideFlags: 0
++  m_Script: {fileID: 11500000, guid: 61caefda880f4a5d94965826455b144b, type: 3}
++  m_Name: Land
++  m_EditorClassIdentifier: 
++  serializationData:
++    SerializedFormat: 2
++    SerializedBytes: 
++    ReferencedUnityObjects: []
++    SerializedBytesString: 
++    Prefab: {fileID: 0}
++    PrefabModificationsReferencedUnityObjects: []
++    PrefabModifications: []
++    SerializationNodes:
++    - Name: _events
++      Entry: 7
++      Data: 0|Gameplay.SpriteAnimationEvent[], Modules
++    - Name: 
++      Entry: 12
++      Data: 0
++    - Name: 
++      Entry: 13
++      Data: 
++    - Name: 
++      Entry: 8
++      Data: 
++  <Sprites>k__BackingField:
++  - {fileID: 21300000, guid: 334fd27f46f02a84abe2f6e32cb05a15, type: 3}
++  - {fileID: 21300000, guid: 511671a6f7aadb34eb1582432ec6920e, type: 3}
++  <ID>k__BackingField: 13
++  <FPS>k__BackingField: 16
++  CanInterrupt: 1
+Index: Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/Land/Land.asset.meta
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/Land/Land.asset.meta b/Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/Land/Land.asset.meta
+new file mode 100644
+--- /dev/null	(date 1762079793630)
++++ b/Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/Land/Land.asset.meta	(date 1762079793630)
+@@ -0,0 +1,8 @@
++fileFormatVersion: 2
++guid: 459a43b8f1e6d4f24951f2dfb1030df3
++NativeFormatImporter:
++  externalObjects: {}
++  mainObjectFileID: 11400000
++  userData: 
++  assetBundleName: 
++  assetBundleVariant: 
+Index: Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/Dash/Dash.asset
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/Dash/Dash.asset b/Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/Dash/Dash.asset
+new file mode 100644
+--- /dev/null	(date 1762079793628)
++++ b/Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/Dash/Dash.asset	(date 1762079793628)
+@@ -0,0 +1,47 @@
++%YAML 1.1
++%TAG !u! tag:unity3d.com,2011:
++--- !u!114 &11400000
++MonoBehaviour:
++  m_ObjectHideFlags: 0
++  m_CorrespondingSourceObject: {fileID: 0}
++  m_PrefabInstance: {fileID: 0}
++  m_PrefabAsset: {fileID: 0}
++  m_GameObject: {fileID: 0}
++  m_Enabled: 1
++  m_EditorHideFlags: 0
++  m_Script: {fileID: 11500000, guid: 61caefda880f4a5d94965826455b144b, type: 3}
++  m_Name: Dash
++  m_EditorClassIdentifier: 
++  serializationData:
++    SerializedFormat: 2
++    SerializedBytes: 
++    ReferencedUnityObjects: []
++    SerializedBytesString: 
++    Prefab: {fileID: 0}
++    PrefabModificationsReferencedUnityObjects: []
++    PrefabModifications: []
++    SerializationNodes:
++    - Name: _events
++      Entry: 7
++      Data: 0|Gameplay.SpriteAnimationEvent[], Modules
++    - Name: 
++      Entry: 12
++      Data: 0
++    - Name: 
++      Entry: 13
++      Data: 
++    - Name: 
++      Entry: 8
++      Data: 
++  <Sprites>k__BackingField:
++  - {fileID: 21300000, guid: 82e6b596188111043a307af9957bdff5, type: 3}
++  - {fileID: 21300000, guid: eeed59b6c20fcce44936bcef25f91ccd, type: 3}
++  - {fileID: 21300000, guid: 00fda886eae39e44d9a7e712524bfb76, type: 3}
++  - {fileID: 21300000, guid: 1970b22b3ddaa1c41ae9e6bfdbc018b9, type: 3}
++  - {fileID: 21300000, guid: 1970b22b3ddaa1c41ae9e6bfdbc018b9, type: 3}
++  - {fileID: 21300000, guid: 1970b22b3ddaa1c41ae9e6bfdbc018b9, type: 3}
++  - {fileID: 21300000, guid: 1970b22b3ddaa1c41ae9e6bfdbc018b9, type: 3}
++  <ID>k__BackingField: 14
++  <Breaker>k__BackingField: 1
++  <FPS>k__BackingField: 16
++  CanInterrupt: 1
+Index: Assets/AssetPacks/Martial Hero/Animations/PushAbilitySide.asset.meta
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Assets/AssetPacks/Martial Hero/Animations/PushAbilitySide.asset.meta b/Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/Dash/Dash.asset.meta
+rename from Assets/AssetPacks/Martial Hero/Animations/PushAbilitySide.asset.meta
+rename to Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/Dash/Dash.asset.meta
+--- a/Assets/AssetPacks/Martial Hero/Animations/PushAbilitySide.asset.meta	(revision 279b2a51e6751079cb64b87ab8c388542941e2b4)
++++ b/Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/Dash/Dash.asset.meta	(date 1762079793628)
+@@ -1,5 +1,5 @@
+ fileFormatVersion: 2
+-guid: 84d945c442c344f198b5b6996c228e96
++guid: 1627921612e5d4b3c82697cc2ea2fab5
+ NativeFormatImporter:
+   externalObjects: {}
+   mainObjectFileID: 11400000
+Index: Assets/AssetPacks/Martial Hero/Animations/Run.asset.meta
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Assets/AssetPacks/Martial Hero/Animations/Run.asset.meta b/Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/Run/Run.asset.meta
+rename from Assets/AssetPacks/Martial Hero/Animations/Run.asset.meta
+rename to Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/Run/Run.asset.meta
+--- a/Assets/AssetPacks/Martial Hero/Animations/Run.asset.meta	(revision 279b2a51e6751079cb64b87ab8c388542941e2b4)
++++ b/Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/Run/Run.asset.meta	(date 1762079793630)
+@@ -1,5 +1,5 @@
+ fileFormatVersion: 2
+-guid: 492eac0d011e842ffbb457c078cc1301
++guid: d9bd696f2097f440482ea6eb982f6501
+ NativeFormatImporter:
+   externalObjects: {}
+   mainObjectFileID: 11400000
+Index: Assets/AssetPacks/Martial Hero/Animations/Run.asset
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Assets/AssetPacks/Martial Hero/Animations/Run.asset b/Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/Run/Run.asset
+rename from Assets/AssetPacks/Martial Hero/Animations/Run.asset
+rename to Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/Run/Run.asset
+--- a/Assets/AssetPacks/Martial Hero/Animations/Run.asset	(revision 279b2a51e6751079cb64b87ab8c388542941e2b4)
++++ b/Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/Run/Run.asset	(date 1762079793630)
+@@ -23,7 +23,7 @@
+     SerializationNodes:
+     - Name: _events
+       Entry: 7
+-      Data: 0|Gameplay.SpriteAnimationEvent[], Assembly-CSharp
++      Data: 0|Gameplay.SpriteAnimationEvent[], Modules
+     - Name: 
+       Entry: 12
+       Data: 0
+@@ -34,14 +34,14 @@
+       Entry: 8
+       Data: 
+   <Sprites>k__BackingField:
+-  - {fileID: 4944230376442633554, guid: 02be9b757efc1074bb374de531df0219, type: 3}
+-  - {fileID: -2274363484027164459, guid: 02be9b757efc1074bb374de531df0219, type: 3}
+-  - {fileID: 8284087734974297348, guid: 02be9b757efc1074bb374de531df0219, type: 3}
+-  - {fileID: 5304202850863732263, guid: 02be9b757efc1074bb374de531df0219, type: 3}
+-  - {fileID: 2833043080597125133, guid: 02be9b757efc1074bb374de531df0219, type: 3}
+-  - {fileID: -2217414122262695004, guid: 02be9b757efc1074bb374de531df0219, type: 3}
+-  - {fileID: -4440497016933152808, guid: 02be9b757efc1074bb374de531df0219, type: 3}
+-  - {fileID: 8676454946275842879, guid: 02be9b757efc1074bb374de531df0219, type: 3}
++  - {fileID: 21300000, guid: 8675a077b52cbe7459e9def1666a1720, type: 3}
++  - {fileID: 21300000, guid: 7fe1cc9412f4e7547a2d8090013bbe5b, type: 3}
++  - {fileID: 21300000, guid: ac1ac9da72768cf429da83e5a57a6fe0, type: 3}
++  - {fileID: 21300000, guid: c44077605a5ccff428c47aacbee401bf, type: 3}
++  - {fileID: 21300000, guid: 936b1517b89c6df41998b0fcade9a198, type: 3}
++  - {fileID: 21300000, guid: 25776a9ec495e974bae25262b8783608, type: 3}
++  - {fileID: 21300000, guid: babdabf67c6556a4aa847b7ad5f38088, type: 3}
++  - {fileID: 21300000, guid: eb85796ed22fcf64ebf0a5bfed003dfc, type: 3}
+   <ID>k__BackingField: 2
+   <FPS>k__BackingField: 16
+   CanInterrupt: 1
+Index: Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/JumpRise/JumpStart.asset
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/JumpRise/JumpStart.asset b/Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/JumpRise/JumpStart.asset
+new file mode 100644
+--- /dev/null	(date 1762079793629)
++++ b/Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/JumpRise/JumpStart.asset	(date 1762079793629)
+@@ -0,0 +1,43 @@
++%YAML 1.1
++%TAG !u! tag:unity3d.com,2011:
++--- !u!114 &11400000
++MonoBehaviour:
++  m_ObjectHideFlags: 0
++  m_CorrespondingSourceObject: {fileID: 0}
++  m_PrefabInstance: {fileID: 0}
++  m_PrefabAsset: {fileID: 0}
++  m_GameObject: {fileID: 0}
++  m_Enabled: 1
++  m_EditorHideFlags: 0
++  m_Script: {fileID: 11500000, guid: 61caefda880f4a5d94965826455b144b, type: 3}
++  m_Name: JumpStart
++  m_EditorClassIdentifier: 
++  serializationData:
++    SerializedFormat: 2
++    SerializedBytes: 
++    ReferencedUnityObjects: []
++    SerializedBytesString: 
++    Prefab: {fileID: 0}
++    PrefabModificationsReferencedUnityObjects: []
++    PrefabModifications: []
++    SerializationNodes:
++    - Name: _events
++      Entry: 7
++      Data: 0|Gameplay.SpriteAnimationEvent[], Modules
++    - Name: 
++      Entry: 12
++      Data: 0
++    - Name: 
++      Entry: 13
++      Data: 
++    - Name: 
++      Entry: 8
++      Data: 
++  <Sprites>k__BackingField:
++  - {fileID: 21300000, guid: 9c2c724bea724a748970afee246ef1ed, type: 3}
++  - {fileID: 21300000, guid: 9c2c724bea724a748970afee246ef1ed, type: 3}
++  - {fileID: 21300000, guid: 9c2c724bea724a748970afee246ef1ed, type: 3}
++  - {fileID: 21300000, guid: 9c2c724bea724a748970afee246ef1ed, type: 3}
++  <ID>k__BackingField: 10
++  <FPS>k__BackingField: 16
++  CanInterrupt: 1
+Index: Assets/AssetPacks/Martial Hero/Animations/Attack.asset.meta
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Assets/AssetPacks/Martial Hero/Animations/Attack.asset.meta b/Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/JumpRise/JumpStart.asset.meta
+rename from Assets/AssetPacks/Martial Hero/Animations/Attack.asset.meta
+rename to Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/JumpRise/JumpStart.asset.meta
+--- a/Assets/AssetPacks/Martial Hero/Animations/Attack.asset.meta	(revision 279b2a51e6751079cb64b87ab8c388542941e2b4)
++++ b/Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/JumpRise/JumpStart.asset.meta	(date 1762079793629)
+@@ -1,5 +1,5 @@
+ fileFormatVersion: 2
+-guid: 6ee8d9e938d0143c896db2ad73ec0562
++guid: 8bcd2288e95c54721babbac1b77ef75e
+ NativeFormatImporter:
+   externalObjects: {}
+   mainObjectFileID: 11400000
+Index: Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/RunToIdle/RunToIdle.asset
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/RunToIdle/RunToIdle.asset b/Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/RunToIdle/RunToIdle.asset
+new file mode 100644
+--- /dev/null	(date 1762079793630)
++++ b/Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/RunToIdle/RunToIdle.asset	(date 1762079793630)
+@@ -0,0 +1,42 @@
++%YAML 1.1
++%TAG !u! tag:unity3d.com,2011:
++--- !u!114 &11400000
++MonoBehaviour:
++  m_ObjectHideFlags: 0
++  m_CorrespondingSourceObject: {fileID: 0}
++  m_PrefabInstance: {fileID: 0}
++  m_PrefabAsset: {fileID: 0}
++  m_GameObject: {fileID: 0}
++  m_Enabled: 1
++  m_EditorHideFlags: 0
++  m_Script: {fileID: 11500000, guid: 61caefda880f4a5d94965826455b144b, type: 3}
++  m_Name: RunToIdle
++  m_EditorClassIdentifier: 
++  serializationData:
++    SerializedFormat: 2
++    SerializedBytes: 
++    ReferencedUnityObjects: []
++    SerializedBytesString: 
++    Prefab: {fileID: 0}
++    PrefabModificationsReferencedUnityObjects: []
++    PrefabModifications: []
++    SerializationNodes:
++    - Name: _events
++      Entry: 7
++      Data: 0|Gameplay.SpriteAnimationEvent[], Modules
++    - Name: 
++      Entry: 12
++      Data: 0
++    - Name: 
++      Entry: 13
++      Data: 
++    - Name: 
++      Entry: 8
++      Data: 
++  <Sprites>k__BackingField:
++  - {fileID: 21300000, guid: 461d2a5c6bfa495418202c51b6fddacd, type: 3}
++  - {fileID: 21300000, guid: a9f61568d0e28394782b7f10e0da3e72, type: 3}
++  - {fileID: 21300000, guid: 02304637044eaa1438b649083c3067eb, type: 3}
++  <ID>k__BackingField: 9
++  <FPS>k__BackingField: 16
++  CanInterrupt: 1
+Index: Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/RunToIdle/RunToIdle.asset.meta
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/RunToIdle/RunToIdle.asset.meta b/Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/RunToIdle/RunToIdle.asset.meta
+new file mode 100644
+--- /dev/null	(date 1762079793630)
++++ b/Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/RunToIdle/RunToIdle.asset.meta	(date 1762079793630)
+@@ -0,0 +1,8 @@
++fileFormatVersion: 2
++guid: b0263685b915f46439440ceea6436367
++NativeFormatImporter:
++  externalObjects: {}
++  mainObjectFileID: 11400000
++  userData: 
++  assetBundleName: 
++  assetBundleVariant: 
+Index: Assets/AssetPacks/Martial Hero/Animations/Idle.asset
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Assets/AssetPacks/Martial Hero/Animations/Idle.asset b/Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/Idle/Idle.asset
+rename from Assets/AssetPacks/Martial Hero/Animations/Idle.asset
+rename to Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/Idle/Idle.asset
+--- a/Assets/AssetPacks/Martial Hero/Animations/Idle.asset	(revision 279b2a51e6751079cb64b87ab8c388542941e2b4)
++++ b/Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/Idle/Idle.asset	(date 1762079793628)
+@@ -23,7 +23,7 @@
+     SerializationNodes:
+     - Name: _events
+       Entry: 7
+-      Data: 0|Gameplay.SpriteAnimationEvent[], Assembly-CSharp
++      Data: 0|Gameplay.SpriteAnimationEvent[], Modules
+     - Name: 
+       Entry: 12
+       Data: 0
+@@ -34,14 +34,13 @@
+       Entry: 8
+       Data: 
+   <Sprites>k__BackingField:
+-  - {fileID: 4723107735738678597, guid: 0bd97e23f8b532a4f8969605a3b00a4e, type: 3}
+-  - {fileID: -7385789195546760866, guid: 0bd97e23f8b532a4f8969605a3b00a4e, type: 3}
+-  - {fileID: 3234629978573100161, guid: 0bd97e23f8b532a4f8969605a3b00a4e, type: 3}
+-  - {fileID: 6373048116405451881, guid: 0bd97e23f8b532a4f8969605a3b00a4e, type: 3}
+-  - {fileID: 7264182050183361747, guid: 0bd97e23f8b532a4f8969605a3b00a4e, type: 3}
+-  - {fileID: -2834552850196481573, guid: 0bd97e23f8b532a4f8969605a3b00a4e, type: 3}
+-  - {fileID: 3278449094680734212, guid: 0bd97e23f8b532a4f8969605a3b00a4e, type: 3}
+-  - {fileID: 3384493420599841878, guid: 0bd97e23f8b532a4f8969605a3b00a4e, type: 3}
++  - {fileID: 21300000, guid: 0ccd2b99e9b547b498330df9c7104170, type: 3}
++  - {fileID: 21300000, guid: 220c9309dbf73b348968f36e2539ba95, type: 3}
++  - {fileID: 21300000, guid: f3510eadfe4b42044aca97792c6d0316, type: 3}
++  - {fileID: 21300000, guid: cf98dbdd2a53fcd4587b4b327f851a53, type: 3}
++  - {fileID: 21300000, guid: 25c6bb483910bd04faa93d619fa90bd0, type: 3}
++  - {fileID: 21300000, guid: b437659f0a59b1e41b493cd3f77754e6, type: 3}
++  - {fileID: 21300000, guid: 6947463b1cdf5954fae76ba20a4a616a, type: 3}
+   <ID>k__BackingField: 0
+-  <FPS>k__BackingField: 10
++  <FPS>k__BackingField: 12
+   CanInterrupt: 1
+Index: Assets/AssetPacks/Martial Hero/Animations/Idle.asset.meta
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Assets/AssetPacks/Martial Hero/Animations/Idle.asset.meta b/Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/Idle/Idle.asset.meta
+rename from Assets/AssetPacks/Martial Hero/Animations/Idle.asset.meta
+rename to Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/Idle/Idle.asset.meta
+--- a/Assets/AssetPacks/Martial Hero/Animations/Idle.asset.meta	(revision 279b2a51e6751079cb64b87ab8c388542941e2b4)
++++ b/Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/Idle/Idle.asset.meta	(date 1762079793629)
+@@ -1,5 +1,5 @@
+ fileFormatVersion: 2
+-guid: 9cf73916da0b343a4ad944fa774ba143
++guid: 722de7090d2e447598bdefa6a998bc9f
+ NativeFormatImporter:
+   externalObjects: {}
+   mainObjectFileID: 11400000
+Index: Assets/Game/Scripts/Modules/PlayerController/Components/SpriteFlipComponent.cs
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Assets/Game/Scripts/Modules/PlayerController/Components/SpriteFlipComponent.cs b/Assets/Game/Scripts/Modules/PlayerController/Components/SpriteFlipComponent.cs
+new file mode 100644
+--- /dev/null	(date 1762079793636)
++++ b/Assets/Game/Scripts/Modules/PlayerController/Components/SpriteFlipComponent.cs	(date 1762079793636)
+@@ -0,0 +1,22 @@
++namespace Modules.PlayerController
++{
++    public class SpriteFlipComponent : ITickable
++    {
++        private readonly PlayerController _player;
++
++        public SpriteFlipComponent(PlayerController player) => _player = player;
++
++        public void Tick()
++        {
++            if (_player.WallDirection != 0 && _player.IsWallSliding && !_player.IsGrounded)
++            {
++                if (_player.WallDirection < 0) _player.SpriteRenderer.flipX = true;
++                if (_player.WallDirection > 0) _player.SpriteRenderer.flipX = false;
++                return;
++            }
++
++            if (_player.Velocity.x < 0) _player.SpriteRenderer.flipX = true;
++            if (_player.Velocity.x > 0) _player.SpriteRenderer.flipX = false;
++        }
++    }
++}
+\ No newline at end of file
+Index: Assets/Game/Scripts/Modules/PlayerController/Components/SpriteFlipComponent.cs.meta
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Assets/Game/Scripts/Modules/PlayerController/Components/SpriteFlipComponent.cs.meta b/Assets/Game/Scripts/Modules/PlayerController/Components/SpriteFlipComponent.cs.meta
+new file mode 100644
+--- /dev/null	(date 1762079793636)
++++ b/Assets/Game/Scripts/Modules/PlayerController/Components/SpriteFlipComponent.cs.meta	(date 1762079793636)
+@@ -0,0 +1,3 @@
++fileFormatVersion: 2
++guid: 6690d48e4ce14684aab202a2c80dd654
++timeCreated: 1762008232
+\ No newline at end of file
+Index: Assets/AssetPacks/Martial Hero/Animations/Fall.asset.meta
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Assets/AssetPacks/Martial Hero/Animations/Fall.asset.meta b/Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/JumpMid/Fly.asset.meta
+rename from Assets/AssetPacks/Martial Hero/Animations/Fall.asset.meta
+rename to Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/JumpMid/Fly.asset.meta
+--- a/Assets/AssetPacks/Martial Hero/Animations/Fall.asset.meta	(revision 279b2a51e6751079cb64b87ab8c388542941e2b4)
++++ b/Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/JumpMid/Fly.asset.meta	(date 1762079793629)
+@@ -1,5 +1,5 @@
+ fileFormatVersion: 2
+-guid: d28fe78b1e47b4b828415075e2b90586
++guid: 63b6f0fd0e24748afbc4e769edc954c0
+ NativeFormatImporter:
+   externalObjects: {}
+   mainObjectFileID: 11400000
+Index: Assets/AssetPacks/Martial Hero/Animations/Attack.asset
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Assets/AssetPacks/Martial Hero/Animations/Attack.asset b/Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/JumpMid/Fly.asset
+rename from Assets/AssetPacks/Martial Hero/Animations/Attack.asset
+rename to Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/JumpMid/Fly.asset
+--- a/Assets/AssetPacks/Martial Hero/Animations/Attack.asset	(revision 279b2a51e6751079cb64b87ab8c388542941e2b4)
++++ b/Assets/AssetPacks/DeadRevolver/PixelPrototypePlayerSprites/Art/Sprites/JumpMid/Fly.asset	(date 1762079793629)
+@@ -10,7 +10,7 @@
+   m_Enabled: 1
+   m_EditorHideFlags: 0
+   m_Script: {fileID: 11500000, guid: 61caefda880f4a5d94965826455b144b, type: 3}
+-  m_Name: Attack
++  m_Name: Fly
+   m_EditorClassIdentifier: 
+   serializationData:
+     SerializedFormat: 2
+@@ -34,12 +34,7 @@
+       Entry: 8
+       Data: 
+   <Sprites>k__BackingField:
+-  - {fileID: 6934013284892070054, guid: c50b517797d93614aac4ca58aaf97355, type: 3}
+-  - {fileID: -7957278214813060823, guid: c50b517797d93614aac4ca58aaf97355, type: 3}
+-  - {fileID: 1409549213185883415, guid: c50b517797d93614aac4ca58aaf97355, type: 3}
+-  - {fileID: 4976274401295337057, guid: c50b517797d93614aac4ca58aaf97355, type: 3}
+-  - {fileID: -5639509438907974925, guid: c50b517797d93614aac4ca58aaf97355, type: 3}
+-  - {fileID: 452926297546027425, guid: c50b517797d93614aac4ca58aaf97355, type: 3}
+-  <ID>k__BackingField: 5
+-  <FPS>k__BackingField: 20
++  - {fileID: 21300000, guid: 43f052f9f047ce4479506e404793bc11, type: 3}
++  <ID>k__BackingField: 11
++  <FPS>k__BackingField: 10
+   CanInterrupt: 1
