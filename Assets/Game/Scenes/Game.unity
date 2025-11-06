@@ -1643,8 +1643,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ed63ade40a04736b48b0af6b02bd046, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  smashMagnitude: 0.3
-  smashDuration: 0.25
+  smashMagnitude: 0.8
+  smashDuration: 0.5
   smashVelocityThreshold: -50
 --- !u!82 &519420037
 AudioSource:
@@ -6752,9 +6752,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c9276c4468d40018460486eaa5b112f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  smoothSpeed: 5
+  smoothSpeed: 15
   maxDistance: 10
-  transitionDelay: 2
+  transitionDelay: 0.4
   transitionDuration: 1
   boundaryTopLeft: {fileID: 0}
   boundaryBottomRight: {fileID: 0}
