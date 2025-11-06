@@ -447,8 +447,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e602cfd4bd79e43d092fec099e8fddc4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _limitvelocity: 50
-  _damage: 100
+  _limitvelocity: 10
+  _damage: 200
 --- !u!114 &107040484
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1265,8 +1265,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1c87faa9ddce4a29b13f989fa96e1235, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _damage: 5
-  _isIntervalDamage: 1
+  _damage: 50
+  _isIntervalDamage: 0
   _damageInterval: 1
 --- !u!61 &371281966
 BoxCollider2D:
@@ -2569,8 +2569,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1c87faa9ddce4a29b13f989fa96e1235, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _damage: 5
-  _isIntervalDamage: 1
+  _damage: 50
+  _isIntervalDamage: 0
   _damageInterval: 1
 --- !u!61 &763752441
 BoxCollider2D:
@@ -3471,8 +3471,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1c87faa9ddce4a29b13f989fa96e1235, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _damage: 5
-  _isIntervalDamage: 1
+  _damage: 50
+  _isIntervalDamage: 0
   _damageInterval: 1
 --- !u!61 &1088052529
 BoxCollider2D:
@@ -4105,8 +4105,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1c87faa9ddce4a29b13f989fa96e1235, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _damage: 5
-  _isIntervalDamage: 1
+  _damage: 50
+  _isIntervalDamage: 0
   _damageInterval: 1
 --- !u!61 &1516367178
 BoxCollider2D:
@@ -4262,8 +4262,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1c87faa9ddce4a29b13f989fa96e1235, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _damage: 5
-  _isIntervalDamage: 1
+  _damage: 50
+  _isIntervalDamage: 0
   _damageInterval: 1
 --- !u!61 &1540139235
 BoxCollider2D:
@@ -4621,8 +4621,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1c87faa9ddce4a29b13f989fa96e1235, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _damage: 5
-  _isIntervalDamage: 1
+  _damage: 50
+  _isIntervalDamage: 0
   _damageInterval: 1
 --- !u!61 &1568341637
 BoxCollider2D:
@@ -5133,8 +5133,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1c87faa9ddce4a29b13f989fa96e1235, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _damage: 5
-  _isIntervalDamage: 1
+  _damage: 50
+  _isIntervalDamage: 0
   _damageInterval: 1
 --- !u!61 &1678105420
 BoxCollider2D:
@@ -5333,8 +5333,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1c87faa9ddce4a29b13f989fa96e1235, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _damage: 5
-  _isIntervalDamage: 1
+  _damage: 50
+  _isIntervalDamage: 0
   _damageInterval: 1
 --- !u!61 &1685173715
 BoxCollider2D:
@@ -5648,8 +5648,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1c87faa9ddce4a29b13f989fa96e1235, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _damage: 5
-  _isIntervalDamage: 1
+  _damage: 50
+  _isIntervalDamage: 0
   _damageInterval: 1
 --- !u!61 &1718932543
 BoxCollider2D:
@@ -5925,8 +5925,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1c87faa9ddce4a29b13f989fa96e1235, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _damage: 5
-  _isIntervalDamage: 1
+  _damage: 50
+  _isIntervalDamage: 0
   _damageInterval: 1
 --- !u!61 &1853990846
 BoxCollider2D:
@@ -6250,8 +6250,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1c87faa9ddce4a29b13f989fa96e1235, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _damage: 5
-  _isIntervalDamage: 1
+  _damage: 50
+  _isIntervalDamage: 0
   _damageInterval: 1
 --- !u!61 &1970497669
 BoxCollider2D:
@@ -6493,8 +6493,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1c87faa9ddce4a29b13f989fa96e1235, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _damage: 5
-  _isIntervalDamage: 1
+  _damage: 50
+  _isIntervalDamage: 0
   _damageInterval: 1
 --- !u!61 &2114027142
 BoxCollider2D:
