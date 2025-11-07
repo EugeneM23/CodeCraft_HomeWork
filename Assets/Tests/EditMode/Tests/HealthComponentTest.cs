@@ -6,10 +6,9 @@ using UnityEngine;
 public class CharacterTests
 {
     [TestCaseSource(nameof(GetTakeDamageCases))]
-    public int TakeDamage(int damage)
+    public int  TakeDamage(int damage)
     {
-        //Arran ge
-
+        //Arrange
         HealthComponent healthComponent = new HealthComponent(100);
         MoveComponent moveComponent = new MoveComponent();
         Weapon weapon = new GameObject().AddComponent<Weapon>();
@@ -22,7 +21,7 @@ public class CharacterTests
 
         return character.CurrentHealth;
     }
- 
+
     public static IEnumerable<TestCaseData> GetTakeDamageCases()
     {
         yield return new TestCaseData(0).Returns(100);
