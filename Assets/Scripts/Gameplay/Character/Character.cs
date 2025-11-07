@@ -8,11 +8,19 @@ namespace Gameplay
     {
         public event Action<GameObject> DeSpawn;
 
-        [SerializeField] private HealthComponent _healthComponent;
+        [SerializeField] private HealthComponent  _healthComponent;
         [SerializeField] private MoveComponent _moveComponent;
-        [SerializeField] private Weapon _weapon;
+        [SerializeField] private Weapon  _weapon;
 
+        public int CurrentHealth => _healthComponent.CurrentHealth;
         private IMoveCondition _moveCondition;
+
+        public void Construct(MoveComponent moveComponent, HealthComponent healthComponent, Weapon weapon)
+        {
+            _moveComponent = moveComponent;
+            _healthComponent = healthComponent;
+            _weapon = weapon;
+        }
 
         public void Move(Vector3 direction)
         {

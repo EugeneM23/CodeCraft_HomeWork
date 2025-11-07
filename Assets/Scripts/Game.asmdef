@@ -1,7 +1,9 @@
 {
-    "name": "PrefabPool",
+    "name": "Game",
     "rootNamespace": "",
-    "references": [],
+    "references": [
+        "GUID:9c151b1f249404187b07bc0271380b9f"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

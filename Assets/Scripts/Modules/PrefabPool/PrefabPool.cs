@@ -5,7 +5,7 @@ namespace Modules.Pooling
 {
     public class PrefabPool : MonoBehaviour
     {
-        private Dictionary<string, Queue<GameObject>> _pools = new();
+        private readonly Dictionary<string, Queue<GameObject>> _pools = new();
 
         public T Spawn<T>(GameObject prefab) where T : MonoBehaviour
         {
