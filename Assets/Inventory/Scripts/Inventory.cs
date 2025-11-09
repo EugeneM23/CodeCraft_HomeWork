@@ -15,73 +15,188 @@ namespace Inventories
         public event Action<Item, Vector2Int> OnMoved;
         public event Action OnCleared;
 
-        public int Width => throw new NotImplementedException();
-        public int Height => throw new NotImplementedException();
-        public int Count => throw new NotImplementedException();
+        public int Width => _ceils.GetLength(0);
+        public int Height => _ceils.GetLength(1);
+        public int Count => _items.Count;
+
+        private List<Item> _items = new();
+
+        public Item[,] _ceils;
 
         public Inventory(in int width, in int height)
-            => throw new NotImplementedException();
+        {
+            _ceils = new Item[width, height];
+        }
 
         public Inventory(
             in int width,
             in int height,
             params KeyValuePair<Item, Vector2Int>[] items
-        ) : this(width, height) => throw new NotImplementedException();
+        ) : this(width, height)
+        {
+            foreach ((Item item, Vector2Int vector2Int) in items)
+                AddItem(item, vector2Int);
+        }
 
         public Inventory(
             in int width,
             in int height,
             params Item[] items
-        ) : this(width, height) => throw new NotImplementedException();
+        ) : this(width, height)
+        {
+            foreach (var item in items) AddItem(item);
+        }
 
         public Inventory(
             in int width,
             in int height,
             in IEnumerable<KeyValuePair<Item, Vector2Int>> items
-        ) : this(width, height) => throw new NotImplementedException();
+        ) : this(width, height)
+        {
+            foreach ((Item item, Vector2Int vector2Int) in items) AddItem(item, vector2Int);
+        }
 
         public Inventory(
             in int width,
             in int height,
             in IEnumerable<Item> items
-        ) : this(width, height) => throw new NotImplementedException();
+        ) : this(width, height)
+        {
+            foreach (var item in items)
+                AddItem(item);
+        }
 
         /// <summary>
         /// Checks for adding an item on a specified position
         /// </summary>
         public bool CanAddItem(in Item item, in Vector2Int position)
-            => throw new NotImplementedException();
+            => CanAddItem(item, position.x, position.y);
+       
+        public bool CanAddItem(in Item item)
+        {
+            throw new NotImplementedException();
+        }
 
         public bool CanAddItem(in Item item, in int posX, in int posY)
-            => throw new NotImplementedException();
+        {
+            if (item == null)
+                return false;
+            
+            if (_items.Contains(item))
+                return false;
+
+            if (Fit(item.Size, posX, posY))
+            {
+                for (int x = posX; x < item.Size.x; x++)
+                {
+                    for (int y = posY; y < item.Size.y; y++)
+                    {
+                        if (IsFree(new Vector2Int(x, y)))
+                        {
+                            _ceils[posX + x, posY + y] = item;
+                        }
+                    }
+                }
+
+                return true;
+            }
+
+            return false;
+        }
 
         /// <summary>
         /// Adds an item on a specified position if not exists
         /// </summary>
         public bool AddItem(in Item item, in Vector2Int position)
-            => throw new NotImplementedException();
+        {
+            return AddItem(item, position.x, position.y);
+        }
 
         public bool AddItem(in Item item, in int posX, in int posY)
-            => throw new NotImplementedException();
+        {
+            if (item.Size.x == 0 || posX + item.Size.x >= Width || item.Size.y == 0 || posY + item.Size.y >= Height)
+            {
+                OnAdded?.Invoke(null, Vector2Int.zero);
+                return false;
+            }
 
-        /// <summary>
-        /// Checks for adding an item on a free position
-        /// </summary>
-        public bool CanAddItem(in Item item)
-            => throw new NotImplementedException();
+            if (Fit(item.Size, posX, posY))
+            {
+                for (int x = posX; x < item.Size.x; x++)
+                {
+                    for (int y = posY; y < item.Size.y; y++)
+                    {
+                        if (IsFree(new Vector2Int(x, y)))
+                        {
+                            _ceils[posX + x, posY + y] = item;
+                        }
+                    }
+                }
+
+                _items.Add(item);
+                OnAdded?.Invoke(item, new Vector2Int(posX, posY));
+                return true;
+            }
+
+
+            OnAdded?.Invoke(null, Vector2Int.zero);
+            return false;
+        }
 
         /// <summary>
         /// Adds an item on a free position
         /// </summary>
         public bool AddItem(in Item item)
-            => throw new NotImplementedException();
+        {
+            if (FindFreePosition(item.Size, out Vector2Int position))
+            {
+                AddItem(item, position);
+                OnAdded?.Invoke(item, position);
+                return true;
+            }
+
+            return false;
+        }
+
+     
 
         /// <summary>
         /// Returns a free position for a specified item
         /// </summary>
         public bool FindFreePosition(in Vector2Int size, out Vector2Int freePosition)
-            => throw new NotImplementedException();
-        
+        {
+            freePosition = default;
+
+            for (int width = 0; width < Width; width++)
+            {
+                for (int height = 0; height < Height; height++)
+                {
+                    if (_ceils[width, height] == null)
+                    {
+                        if (Fit(size, width, height))
+                        {
+                            freePosition = new Vector2Int(width, height);
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        private bool Fit(Vector2Int size, int width, int height)
+        {
+            for (int x = width; x < width + size.x; x++)
+            {
+                for (int y = height; y < height + size.y; y++)
+                    if (_ceils[x, y] != null)
+                        return false;
+            }
+
+            return true;
+        }
+
         /// <summary>
         /// Checks if a specified item exists
         /// </summary>
@@ -101,10 +216,17 @@ namespace Inventories
         /// Checks if a position is free
         /// </summary>
         public bool IsFree(in Vector2Int position)
-            => throw new NotImplementedException();
+        {
+            return IsFree(position.x, position.y);
+        }
 
         public bool IsFree(in int x, in int y)
-            => throw new NotImplementedException();
+        {
+            if (_ceils[x, y] == null)
+                return true;
+
+            return false;
+        }
 
         /// <summary>
         /// Removes a specified item if exists
@@ -138,13 +260,13 @@ namespace Inventories
 
         public bool TryGetPositions(in Item item, out Vector2Int[] positions)
             => throw new NotImplementedException();
-        
+
         /// <summary>
         /// Clears all inventory items
         /// </summary>
         public void Clear()
             => throw new NotImplementedException();
-        
+
         /// <summary>
         /// Returns a count of items with a specified name
         /// </summary>
@@ -156,7 +278,7 @@ namespace Inventories
         /// </summary>
         public bool MoveItem(in Item item, in Vector2Int newPosition)
             => throw new NotImplementedException();
-        
+
         /// <summary>
         /// Reorganizes inventory space to make the free area uniform
         /// </summary>
@@ -170,9 +292,9 @@ namespace Inventories
             => throw new NotImplementedException();
 
         public IEnumerator<Item> GetEnumerator()
-            => throw new NotImplementedException();
+            => (IEnumerator<Item>)_ceils.GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator()
-            => throw new NotImplementedException();
+            => _ceils.GetEnumerator();
     }
 }

@@ -4,7 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6f0b762c-5415-4a85-b17b-cc44fd47261d" name="Changes" comment="" />
+    <list default="true" id="6f0b762c-5415-4a85-b17b-cc44fd47261d" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/Assets/Inventory/Scripts/Inventory.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Inventory/Scripts/Inventory.cs" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -203,6 +205,11 @@
             <list>
               <RecentGroup>
                 <option name="FILTER_VALUES">
+                  <option value="origin/HomeWork_02_Tests" />
+                </option>
+              </RecentGroup>
+              <RecentGroup>
+                <option name="FILTER_VALUES">
                   <option value="CharacterController" />
                 </option>
               </RecentGroup>
@@ -231,7 +238,7 @@
                   <entry key="branch">
                     <value>
                       <list>
-                        <option value="origin/HomeWork_07_ComponentsWay" />
+                        <option value="origin/HomeWork_02_Tests" />
                       </list>
                     </value>
                   </entry>
