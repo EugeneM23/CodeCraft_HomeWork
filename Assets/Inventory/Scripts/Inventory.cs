@@ -25,7 +25,7 @@ namespace Inventories
 
         public Inventory(in int width, in int height)
         {
-            Debug.Log("Creating Inventory");
+            //Debug.Log("Creating Inventory");
             _ceils = new Item[width, height];
         }
 
@@ -210,7 +210,9 @@ namespace Inventories
         /// Checks if a specified item exists
         /// </summary>
         public bool Contains(in Item item)
-            => throw new NotImplementedException();
+        {
+            return true;
+        }
 
         /// <summary>
         /// Checks if a specified position is occupied
@@ -219,7 +221,9 @@ namespace Inventories
             => throw new NotImplementedException();
 
         public bool IsOccupied(in int x, in int y)
-            => throw new NotImplementedException();
+        {
+            return true;
+        }
 
         /// <summary>
         /// Checks if a position is free

@@ -8,11 +8,11 @@ public class DebugInventory : MonoBehaviour
     [SerializeField] private Ceil _red;
     [SerializeField] private Ceil _green;
 
-    private Inventory _inventory;
+    //private Inventory _inventory;
 
     private void Start()
     {
-        _inventory = new Inventory(5, 5);
+        /*_inventory = new Inventory(5, 5);
 
         Item itemX = new Item("X", 3, 3);
         Item itemY = new Item("Y", 5, 5);
@@ -50,7 +50,7 @@ public class DebugInventory : MonoBehaviour
                     ceil._ceilText.text = $"{item.Name}";
                 }
             }
-        }
+        }*/
     }
 
     public Ceil Instant(Ceil prefab, int width, int height)
