@@ -5,7 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6f0b762c-5415-4a85-b17b-cc44fd47261d" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.CodeCraft_HomeWork/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.CodeCraft_HomeWork/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Ceil.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Ceil.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game.unity" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Inventory/Scripts/Inventory.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Inventory/Scripts/Inventory.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Inventory/Tests/InventoryTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Inventory/Tests/InventoryTests.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/debugInventory.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/debugInventory.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -37,6 +42,8 @@
   }
 }</component>
   <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/Assets/Inventory/Scripts/Inventory.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.test-framework@5ac417e07314/UnityEditor.TestRunner/TestRun/Tasks/BuildActionTaskBase.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$USER_HOME$/Downloads/5. MVx Паттерны/MVx-Homework/Assets/Modules/UIComponents/FloatingAnimation.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/5a41d6b7189842eca409fd0b1c3e3dcf17bf78/5c/92b8ec18/Action.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/723ae1096b414639900dc6293535501b2f200/92/3ac0d547/Rigidbody2D.cs" root0="SKIP_HIGHLIGHTING" />
@@ -150,6 +157,10 @@
       <workItem from="1761812914064" duration="5173000" />
       <workItem from="1761822134798" duration="18776000" />
       <workItem from="1762159432027" duration="101516000" />
+      <workItem from="1762685746442" duration="7574000" />
+      <workItem from="1762695533125" duration="434000" />
+      <workItem from="1762695971025" duration="3247000" />
+      <workItem from="1762700047284" duration="751000" />
     </task>
     <task id="LOCAL-00001" summary="Update">
       <option name="closed" value="true" />

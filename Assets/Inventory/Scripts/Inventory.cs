@@ -25,6 +25,7 @@ namespace Inventories
 
         public Inventory(in int width, in int height)
         {
+            Debug.Log("Creating Inventory");
             _ceils = new Item[width, height];
         }
 
@@ -70,38 +71,33 @@ namespace Inventories
         /// Checks for adding an item on a specified position
         /// </summary>
         public bool CanAddItem(in Item item, in Vector2Int position)
-            => CanAddItem(item, position.x, position.y);
-       
+        {
+            return CanAddItem(item, position.x, position.y);
+        }
+
         public bool CanAddItem(in Item item)
         {
-            throw new NotImplementedException();
+            if (item == null)
+                return false;
+
+            if (_items.Contains(item))
+                return false;
+
+            return FindFreePosition(item.Size, out _);
         }
 
         public bool CanAddItem(in Item item, in int posX, in int posY)
         {
             if (item == null)
                 return false;
-            
+
             if (_items.Contains(item))
                 return false;
 
-            if (Fit(item.Size, posX, posY))
-            {
-                for (int x = posX; x < item.Size.x; x++)
-                {
-                    for (int y = posY; y < item.Size.y; y++)
-                    {
-                        if (IsFree(new Vector2Int(x, y)))
-                        {
-                            _ceils[posX + x, posY + y] = item;
-                        }
-                    }
-                }
+            if (!IsPositionValid(item.Size, posX, posY))
+                return false;
 
-                return true;
-            }
-
-            return false;
+            return Fit(item.Size, posX, posY);
         }
 
         /// <summary>
@@ -114,33 +110,16 @@ namespace Inventories
 
         public bool AddItem(in Item item, in int posX, in int posY)
         {
-            if (item.Size.x == 0 || posX + item.Size.x >= Width || item.Size.y == 0 || posY + item.Size.y >= Height)
+            if (!CanAddItem(item, posX, posY))
             {
                 OnAdded?.Invoke(null, Vector2Int.zero);
                 return false;
             }
 
-            if (Fit(item.Size, posX, posY))
-            {
-                for (int x = posX; x < item.Size.x; x++)
-                {
-                    for (int y = posY; y < item.Size.y; y++)
-                    {
-                        if (IsFree(new Vector2Int(x, y)))
-                        {
-                            _ceils[posX + x, posY + y] = item;
-                        }
-                    }
-                }
-
-                _items.Add(item);
-                OnAdded?.Invoke(item, new Vector2Int(posX, posY));
-                return true;
-            }
-
-
-            OnAdded?.Invoke(null, Vector2Int.zero);
-            return false;
+            PlaceItemInGrid(item, posX, posY);
+            OnAdded?.Invoke(item, new Vector2Int(posX, posY));
+            _items.Add(item);
+            return true;
         }
 
         /// <summary>
@@ -148,36 +127,33 @@ namespace Inventories
         /// </summary>
         public bool AddItem(in Item item)
         {
-            if (FindFreePosition(item.Size, out Vector2Int position))
+            if (item == null)
+                return false;
+
+            if (!FindFreePosition(item.Size, out Vector2Int position))
             {
-                AddItem(item, position);
-                OnAdded?.Invoke(item, position);
-                return true;
+                OnAdded?.Invoke(null, Vector2Int.zero);
+                return false;
             }
 
-            return false;
+            return AddItem(item, position);
         }
-
-     
 
         /// <summary>
         /// Returns a free position for a specified item
         /// </summary>
         public bool FindFreePosition(in Vector2Int size, out Vector2Int freePosition)
         {
-            freePosition = default;
+            freePosition = Vector2Int.zero;
 
-            for (int width = 0; width < Width; width++)
+            for (int x = 0; x < Width; x++)
             {
-                for (int height = 0; height < Height; height++)
+                for (int y = 0; y < Height; y++)
                 {
-                    if (_ceils[width, height] == null)
+                    if (_ceils[x, y] == null && Fit(size, x, y))
                     {
-                        if (Fit(size, width, height))
-                        {
-                            freePosition = new Vector2Int(width, height);
-                            return true;
-                        }
+                        freePosition = new Vector2Int(x, y);
+                        return true;
                     }
                 }
             }
@@ -185,16 +161,49 @@ namespace Inventories
             return false;
         }
 
-        private bool Fit(Vector2Int size, int width, int height)
+        private bool Fit(Vector2Int size, int posX, int posY)
         {
-            for (int x = width; x < width + size.x; x++)
+            if (!IsPositionValid(size, posX, posY))
+                return false;
+
+            for (int x = posX; x < posX + size.x; x++)
             {
-                for (int y = height; y < height + size.y; y++)
+                for (int y = posY; y < posY + size.y; y++)
+                {
                     if (_ceils[x, y] != null)
                         return false;
+                }
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// Validates if the position and size are within grid bounds
+        /// </summary>
+        private bool IsPositionValid(Vector2Int size, int posX, int posY)
+        {
+            if (size.x <= 0 || size.y <= 0)
+                return false;
+
+            if (posX < 0 || posY < 0)
+                return false;
+
+            if (posX + size.x > Width || posY + size.y > Height)
+                return false;
+
+            return true;
+        }
+
+        private void PlaceItemInGrid(Item item, int posX, int posY)
+        {
+            for (int x = posX; x < posX + item.Size.x; x++)
+            {
+                for (int y = posY; y < posY + item.Size.y; y++)
+                {
+                    _ceils[x, y] = item;
+                }
+            }
         }
 
         /// <summary>

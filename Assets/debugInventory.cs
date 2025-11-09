@@ -15,15 +15,15 @@ public class DebugInventory : MonoBehaviour
         _inventory = new Inventory(5, 5);
 
         Item itemX = new Item("X", 3, 3);
-        Item itemY = new Item("Y", 1, 1);
+        Item itemY = new Item("Y", 5, 5);
         Item itemZ = new Item("Z", 1, 1);
         Item itemQ = new Item("Q", 2, 2);
 
         //_inventory.AddItem(itemX, 1, 1);
-        _inventory.AddItem(itemX);
-        _inventory.AddItem(itemY);
-        _inventory.AddItem(itemZ, 4, 0);
-        _inventory.AddItem(itemQ, 3, 3);
+        //_inventory.AddItem(itemX);
+       // _inventory.AddItem(itemY);
+        //_inventory.AddItem(itemZ, 4, 0);
+        //inventory.AddItem(itemQ, 3, 3);
 
         for (int widht = 0; widht < _inventory.Width; widht++)
         {
