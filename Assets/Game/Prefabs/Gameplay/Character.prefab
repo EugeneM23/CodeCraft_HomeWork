@@ -1404,6 +1404,7 @@ GameObject:
   - component: {fileID: 7921063292541329948}
   - component: {fileID: 5799167109798999352}
   - component: {fileID: 9195164326405358355}
+  - component: {fileID: 512425577752158489}
   m_Layer: 9
   m_Name: Character
   m_TagString: Player
@@ -1455,10 +1456,10 @@ Rigidbody:
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 0
-  m_IsKinematic: 0
+  m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 116
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
 --- !u!114 &7921063292541329948
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1502,7 +1503,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb3ce9d4cea846659e40d9b68a5ced90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _moveSpeed: 15
+  _moveSpeed: 5
+  _rotationSpeed: 15
+  _health: 100
+--- !u!114 &512425577752158489
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3578180279390331970}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6a795397fd0b4f69a4fdca48306ce65c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _joystick: {fileID: 0}
+  _character: {fileID: 5799167109798999352}
 --- !u!1 &3818262767236408140
 GameObject:
   m_ObjectHideFlags: 0

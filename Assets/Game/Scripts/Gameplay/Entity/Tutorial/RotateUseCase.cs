@@ -1,3 +1,4 @@
+using Atomic.Elements;
 using Atomic.Entities;
 using SampleGame;
 using Unity.Mathematics;
@@ -19,8 +20,7 @@ namespace Game.Scripts.Gameplay
         {
             if (targetRotation == quaternion.identity) return;
 
- 
-            float speed = entity.GetRotationSpeed();
+            float speed = entity.GetRotationSpeed().Value;
             Transform transform = entity.GetTransform();
 
             transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, speed * deltaTime);

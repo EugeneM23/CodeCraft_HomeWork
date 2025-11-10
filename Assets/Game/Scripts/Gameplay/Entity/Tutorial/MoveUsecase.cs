@@ -1,4 +1,5 @@
 using System;
+using Atomic.Elements;
 using Atomic.Entities;
 using SampleGame;
 using UnityEngine;
@@ -10,7 +11,7 @@ namespace Game.Scripts.Gameplay
         public static void Move(this IEntity entity, in Vector3 direction, in float deltaTime)
         {
             Transform transform = entity.GetTransform();
-            float speed = entity.GetMoveSpeed();
+            float speed = entity.GetMoveSpeed().Value;
 
             transform.position += direction * speed * deltaTime;
         }
