@@ -1,5 +1,7 @@
 using Atomic.Entities;
+using Game.Scripts.Gameplay;
 using Modules.Gameplay;
+using SampleGame;
 using UnityEngine;
 
 namespace Game.Gameplay
@@ -11,9 +13,15 @@ namespace Game.Gameplay
 
         public override void Install(IEntity entity)
         {
-            entity.AddValue("Transform", transform);
-            entity.AddValue("MoveSpeed", _moveSpeed);
-            entity.AddValue("RotationSpeed", _rotationSpeed);
+            entity.AddTransform(transform);
+            entity.AddMoveSpeed(_moveSpeed);
+            entity.AddRotationSpeed(_rotationSpeed);
+
+            entity.AddMoveAction((direction, deltaTime) =>
+            {
+                entity.Move(direction, deltaTime);
+                entity.Rotate(direction, deltaTime);
+            });
         }
     }
 }

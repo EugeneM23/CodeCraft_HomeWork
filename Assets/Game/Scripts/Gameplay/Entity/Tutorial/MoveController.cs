@@ -1,5 +1,7 @@
+using System;
 using Atomic.Entities;
 using Modules.Common;
+using SampleGame;
 using UnityEngine;
 
 namespace Game.Scripts.Gameplay
@@ -16,8 +18,7 @@ namespace Game.Scripts.Gameplay
             Vector3 direction = new Vector3(_joystick.Horizontal, 0, _joystick.Vertical);
             float deltaTime = Time.deltaTime;
 
-            _character.Move(direction, deltaTime);
-            _character.Rotate(direction, deltaTime);
+             _character.GetMoveAction().Invoke(direction, deltaTime);
         }
-    }
+    } 
 }

@@ -3,19 +3,17 @@ entityType: IEntity
 aggressiveInlining: true
 
 namespace: SampleGame
-className: SampleEntityAPI
-directory: Assets/Scripts/Codegen
- 
-imports:
-- UnityEngine
-- Atomic.Entities
+className:  EntityAPI
+directory: Assets/Game/Scripts/Gameplay/Entity/Tutorial/CodeGen
 
-tags:
-- Player
-- Enemy
-- Resource
+imports:
+  - UnityEngine
+  - Atomic.Entities
+  - System
 
 values:
-- Health: int
-- Speed: float
-- Transform: Transform
+  - MoveSpeed: float
+  - RotationSpeed: float
+  - Transform: Transform
+  - MoveAction : Action<Vector3, float> 
+ 
