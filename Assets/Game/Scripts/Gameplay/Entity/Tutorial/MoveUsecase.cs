@@ -6,7 +6,7 @@ namespace Game.Scripts.Gameplay
 {
     public static class MoveUseCase
     {
-        public static void Move(in IEntity entity, in Vector3 direction, in float deltaTime)
+        public static void Move(this IEntity entity, in Vector3 direction, in float deltaTime)
         {
             Transform transform = entity.GetValue<Transform>("Transform");
             float speed = entity.GetValue<float>("MoveSpeed");

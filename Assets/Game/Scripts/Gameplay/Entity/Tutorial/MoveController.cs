@@ -14,7 +14,10 @@ namespace Game.Scripts.Gameplay
         private void Move()
         {
             Vector3 direction = new Vector3(_joystick.Horizontal, 0, _joystick.Vertical);
-            MoveUseCase.Move(_character, direction, Time.deltaTime);
+            float deltaTime = Time.deltaTime;
+
+            _character.Move(direction, deltaTime);
+            _character.Rotate(direction, deltaTime);
         }
     }
 }
