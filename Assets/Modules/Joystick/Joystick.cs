@@ -12,7 +12,6 @@ namespace Modules.Common
         public event Action PointerDown;
         public event Action PointerUp;
 
-
         public float Horizontal
         {
             get { return (snapX) ? SnapFloat(input.x, AxisOptions.Horizontal) : input.x; }
@@ -22,7 +21,6 @@ namespace Modules.Common
         {
             get { return (snapY) ? SnapFloat(input.y, AxisOptions.Vertical) : input.y; }
         }
-
 
         public Vector2 Direction
         {
@@ -80,26 +78,19 @@ namespace Modules.Common
             get { return _pressed; }
         }
 
-        [SerializeField]
-        private float handleRange = 1;
+        [SerializeField] private float handleRange = 1;
 
-        [SerializeField]
-        private float deadZone = 0;
+        [SerializeField] private float deadZone = 0;
 
-        [SerializeField]
-        private AxisOptions axisOptions = AxisOptions.Both;
+        [SerializeField] private AxisOptions axisOptions = AxisOptions.Both;
 
-        [SerializeField]
-        private bool snapX = false;
+        [SerializeField] private bool snapX = false;
 
-        [SerializeField]
-        private bool snapY = false;
+        [SerializeField] private bool snapY = false;
 
-        [SerializeField]
-        private RectTransform background = null;
+        [SerializeField] private RectTransform background = null;
 
-        [SerializeField]
-        private RectTransform handle = null;
+        [SerializeField] private RectTransform handle = null;
 
         private Canvas canvas;
         private Camera cam;
