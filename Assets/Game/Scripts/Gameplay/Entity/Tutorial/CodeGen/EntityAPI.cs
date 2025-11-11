@@ -22,6 +22,7 @@ namespace SampleGame
 		public const int MoveSpeed = 526065662; // IValue<float>
 		public const int RotationSpeed = 1771316350; // IValue<float>
 		public const int Health = -915003867; // ReactiveInt
+		public const int MoveCondition = 1466174948; // IExpression<bool >
 
 
 		///Value Extensions
@@ -133,5 +134,23 @@ namespace SampleGame
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void SetHealth(this IEntity obj, ReactiveInt value) => obj.SetValue(Health, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static IExpression<bool > GetMoveCondition(this IEntity obj) => obj.GetValue<IExpression<bool >>(MoveCondition);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetMoveCondition(this IEntity obj, out IExpression<bool > value) => obj.TryGetValue(MoveCondition, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddMoveCondition(this IEntity obj, IExpression<bool > value) => obj.AddValue(MoveCondition, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasMoveCondition(this IEntity obj) => obj.HasValue(MoveCondition);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelMoveCondition(this IEntity obj) => obj.DelValue(MoveCondition);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetMoveCondition(this IEntity obj, IExpression<bool > value) => obj.SetValue(MoveCondition, value);
     }
 }

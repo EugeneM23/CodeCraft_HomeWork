@@ -20,11 +20,7 @@ namespace Game.Gameplay
 
         private void OnHealthChanged(int health)
         {
-            Debug.Log("OnHealthChanged");
-            if (health <= 0)
-                _gameObject.SetActive(false);
-            else
-                _gameObject.SetActive(true);
+            _gameObject.SetActive(health > 0);
         }
 
         public void Dispose(in IEntity entity)

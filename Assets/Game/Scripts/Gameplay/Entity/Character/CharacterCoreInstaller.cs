@@ -19,8 +19,9 @@ namespace Game.Gameplay
             entity.AddTransform(transform);
             entity.AddRotationSpeed(new BaseVariable<float>(_rotationSpeed));
             entity.AddHealth(new ReactiveInt(_health));
-
             entity.AddMoveSpeed(new BaseFunction<float>(() => Mathf.Max(2f, _moveSpeed * (_health / 100f))));
+
+            entity.AddMoveCondition(new AndExpression(entity.IsAlive));
 
             entity.AddMoveAction(new BaseAction<Vector3, float>((direction, deltaTime) =>
             {

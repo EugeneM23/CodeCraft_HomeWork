@@ -18,5 +18,6 @@ values:
   - MoveAction: IAction<Vector3, float>
   - MoveSpeed: IValue<float>
   - RotationSpeed: IValue<float>
-  - Health: ReactiveInt 
+  - Health: ReactiveInt
+  - MoveCondition: IExpression<bool >
  
