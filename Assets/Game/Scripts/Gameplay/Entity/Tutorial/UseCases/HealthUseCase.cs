@@ -2,7 +2,7 @@ using Atomic.Entities;
 using SampleGame;
 using UnityEngine;
 
-namespace Game.Scripts.Gameplay
+namespace Game
 {
     public static class HealthUseCase
     {

@@ -1,8 +1,5 @@
 using Atomic.Elements;
 using Atomic.Entities;
-using Game.Scripts.Gameplay;
-using Modules.Gameplay;
-using SampleGame;
 using UnityEngine;
 
 namespace Game.Gameplay
@@ -12,9 +9,11 @@ namespace Game.Gameplay
         [SerializeField] private float _moveSpeed = 15f;
         [SerializeField] private float _rotationSpeed = 15f;
         [SerializeField] private int _health = 100;
+        [SerializeField] private WeaponEntity _weapon;
 
         public override void Install(IEntity entity)
         {
+            entity.AddWeapon(_weapon);
             entity.AddGameObject(transform.gameObject);
             entity.AddTransform(transform);
             entity.AddRotationSpeed(new BaseVariable<float>(_rotationSpeed));

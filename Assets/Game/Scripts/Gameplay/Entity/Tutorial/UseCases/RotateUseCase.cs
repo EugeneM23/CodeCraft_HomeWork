@@ -4,7 +4,7 @@ using SampleGame;
 using Unity.Mathematics;
 using UnityEngine;
 
-namespace Game.Scripts.Gameplay
+namespace Game
 {
     public static class RotateUseCase
     {

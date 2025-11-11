@@ -9,7 +9,7 @@ using Atomic.Entities;
 using System;
 using Atomic.Elements;
 
-namespace SampleGame
+namespace Game
 {
 	public static class EntityAPI
 	{
@@ -22,7 +22,9 @@ namespace SampleGame
 		public const int MoveSpeed = 526065662; // IValue<float>
 		public const int RotationSpeed = 1771316350; // IValue<float>
 		public const int Health = -915003867; // ReactiveInt
-		public const int MoveCondition = 1466174948; // IExpression<bool >
+		public const int MoveCondition = 1466174948; // IExpression<bool>
+		public const int Weapon = 1855955664; // IWeaponEntity
+		public const int MoveDirection = -721923052; // IReactiveVariable<Vector3>
 
 
 		///Value Extensions
@@ -136,13 +138,13 @@ namespace SampleGame
 		public static void SetHealth(this IEntity obj, ReactiveInt value) => obj.SetValue(Health, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static IExpression<bool > GetMoveCondition(this IEntity obj) => obj.GetValue<IExpression<bool >>(MoveCondition);
+		public static IExpression<bool> GetMoveCondition(this IEntity obj) => obj.GetValue<IExpression<bool>>(MoveCondition);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool TryGetMoveCondition(this IEntity obj, out IExpression<bool > value) => obj.TryGetValue(MoveCondition, out value);
+		public static bool TryGetMoveCondition(this IEntity obj, out IExpression<bool> value) => obj.TryGetValue(MoveCondition, out value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool AddMoveCondition(this IEntity obj, IExpression<bool > value) => obj.AddValue(MoveCondition, value);
+		public static bool AddMoveCondition(this IEntity obj, IExpression<bool> value) => obj.AddValue(MoveCondition, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool HasMoveCondition(this IEntity obj) => obj.HasValue(MoveCondition);
@@ -151,6 +153,42 @@ namespace SampleGame
 		public static bool DelMoveCondition(this IEntity obj) => obj.DelValue(MoveCondition);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void SetMoveCondition(this IEntity obj, IExpression<bool > value) => obj.SetValue(MoveCondition, value);
+		public static void SetMoveCondition(this IEntity obj, IExpression<bool> value) => obj.SetValue(MoveCondition, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static IWeaponEntity GetWeapon(this IEntity obj) => obj.GetValue<IWeaponEntity>(Weapon);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetWeapon(this IEntity obj, out IWeaponEntity value) => obj.TryGetValue(Weapon, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddWeapon(this IEntity obj, IWeaponEntity value) => obj.AddValue(Weapon, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasWeapon(this IEntity obj) => obj.HasValue(Weapon);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelWeapon(this IEntity obj) => obj.DelValue(Weapon);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetWeapon(this IEntity obj, IWeaponEntity value) => obj.SetValue(Weapon, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static IReactiveVariable<Vector3> GetMoveDirection(this IEntity obj) => obj.GetValue<IReactiveVariable<Vector3>>(MoveDirection);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetMoveDirection(this IEntity obj, out IReactiveVariable<Vector3> value) => obj.TryGetValue(MoveDirection, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddMoveDirection(this IEntity obj, IReactiveVariable<Vector3> value) => obj.AddValue(MoveDirection, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasMoveDirection(this IEntity obj) => obj.HasValue(MoveDirection);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelMoveDirection(this IEntity obj) => obj.DelValue(MoveDirection);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetMoveDirection(this IEntity obj, IReactiveVariable<Vector3> value) => obj.SetValue(MoveDirection, value);
     }
 }

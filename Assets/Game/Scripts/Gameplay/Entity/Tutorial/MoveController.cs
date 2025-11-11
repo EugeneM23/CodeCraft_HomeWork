@@ -4,7 +4,7 @@ using Modules.Common;
 using SampleGame;
 using UnityEngine;
 
-namespace Game.Scripts.Gameplay
+namespace Game
 {
     public class MoveController : MonoBehaviour
     {

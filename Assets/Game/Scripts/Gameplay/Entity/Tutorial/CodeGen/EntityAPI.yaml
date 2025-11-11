@@ -2,7 +2,7 @@ header: EntityAPI
 entityType: IEntity
 aggressiveInlining: true
 
-namespace: SampleGame
+namespace: Game
 className: EntityAPI
 directory: Assets/Game/Scripts/Gameplay/Entity/Tutorial/CodeGen
 
@@ -19,5 +19,8 @@ values:
   - MoveSpeed: IValue<float>
   - RotationSpeed: IValue<float>
   - Health: ReactiveInt
-  - MoveCondition: IExpression<bool >
+  - MoveCondition: IExpression<bool>
+
+  - Weapon: IWeaponEntity 
+  - MoveDirection: IReactiveVariable<Vector3> 
  
