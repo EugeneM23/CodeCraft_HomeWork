@@ -8,11 +8,14 @@ using UnityEngine;
 using Atomic.Entities;
 using System;
 using Atomic.Elements;
+using Modules.Gameplay;
 
 namespace Game
 {
 	public static class EntityAPI
 	{
+		///Tags
+		public const int Damageable = 563499515;
 
 
 		///Values
@@ -25,6 +28,20 @@ namespace Game
 		public const int MoveCondition = 1466174948; // IExpression<bool>
 		public const int Weapon = 1855955664; // IWeaponEntity
 		public const int MoveDirection = -721923052; // IReactiveVariable<Vector3>
+		public const int Damage = 375673178; // IValue<int>
+		public const int CollisionReceiver = 905037854; // CollisionEventReceiver
+
+
+		///Tag Extensions
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasDamageableTag(this IEntity obj) => obj.HasTag(Damageable);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddDamageableTag(this IEntity obj) => obj.AddTag(Damageable);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelDamageableTag(this IEntity obj) => obj.DelTag(Damageable);
 
 
 		///Value Extensions
@@ -190,5 +207,41 @@ namespace Game
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void SetMoveDirection(this IEntity obj, IReactiveVariable<Vector3> value) => obj.SetValue(MoveDirection, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static IValue<int> GetDamage(this IEntity obj) => obj.GetValue<IValue<int>>(Damage);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetDamage(this IEntity obj, out IValue<int> value) => obj.TryGetValue(Damage, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddDamage(this IEntity obj, IValue<int> value) => obj.AddValue(Damage, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasDamage(this IEntity obj) => obj.HasValue(Damage);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelDamage(this IEntity obj) => obj.DelValue(Damage);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetDamage(this IEntity obj, IValue<int> value) => obj.SetValue(Damage, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static CollisionEventReceiver GetCollisionReceiver(this IEntity obj) => obj.GetValue<CollisionEventReceiver>(CollisionReceiver);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetCollisionReceiver(this IEntity obj, out CollisionEventReceiver value) => obj.TryGetValue(CollisionReceiver, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddCollisionReceiver(this IEntity obj, CollisionEventReceiver value) => obj.AddValue(CollisionReceiver, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasCollisionReceiver(this IEntity obj) => obj.HasValue(CollisionReceiver);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelCollisionReceiver(this IEntity obj) => obj.DelValue(CollisionReceiver);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetCollisionReceiver(this IEntity obj, CollisionEventReceiver value) => obj.SetValue(CollisionReceiver, value);
     }
 }

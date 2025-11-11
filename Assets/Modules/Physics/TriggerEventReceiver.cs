@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Modules.Gameplay
+namespace Game
 {
     public sealed class TriggerEventReceiver : MonoBehaviour
     {
@@ -18,4 +18,5 @@ namespace Modules.Gameplay
             this.OnExited?.Invoke(other);
         }
     }
+
 }

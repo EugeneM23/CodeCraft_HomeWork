@@ -13,5 +13,10 @@ namespace Game
             Debug.Log(health);
             return health > 0;
         }
+
+        public static void TakeDamage(this IEntity entity, int damage)
+        {
+            entity.GetHealth().Value -= damage;
+        }
     }
 }

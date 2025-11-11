@@ -13,6 +13,7 @@ namespace Game.Gameplay
 
         public override void Install(IEntity entity)
         {
+            entity.AddDamageableTag();
             entity.AddWeapon(_weapon);
             entity.AddGameObject(transform.gameObject);
             entity.AddTransform(transform);

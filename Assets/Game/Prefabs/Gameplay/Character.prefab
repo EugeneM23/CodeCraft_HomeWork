@@ -1522,7 +1522,7 @@ MonoBehaviour:
   _moveSpeed: 5
   _rotationSpeed: 15
   _health: 100
-  _weapon: {fileID: 0}
+  _weapon: {fileID: 5453555979236113461}
 --- !u!114 &512425577752158489
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -11,6 +11,10 @@ imports:
   - Atomic.Entities
   - System
   - Atomic.Elements
+  - Modules.Gameplay
+
+tags:
+  - Damageable
 
 values:
   - GameObject: GameObject
@@ -21,6 +25,8 @@ values:
   - Health: ReactiveInt
   - MoveCondition: IExpression<bool>
 
-  - Weapon: IWeaponEntity 
-  - MoveDirection: IReactiveVariable<Vector3> 
+  - Weapon: IWeaponEntity
+  - MoveDirection: IReactiveVariable<Vector3>
+  - Damage: IValue<int>
+  - CollisionReceiver: CollisionEventReceiver
  
