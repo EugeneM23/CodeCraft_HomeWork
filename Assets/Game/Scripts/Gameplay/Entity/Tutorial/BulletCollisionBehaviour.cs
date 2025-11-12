@@ -7,38 +7,31 @@ using UnityEngine;
 
 namespace Game
 {
-     public class BulletCollisionBehaviour : IEntityInit, IEntityDispose, IEntityUpdate
+    public class BulletCollisionBehaviour : IEntityInit, IEntityDispose, IEntityUpdate
     {
         private CollisionEventReceiver _collisionEventReceiver;
-        private IValue<int> _damage;
-        private IEntity _entity;
+        private IEntity _bullet;
         private float _lifeTime = 1f;
 
         public void Init(in IEntity entity)
         {
             _collisionEventReceiver = entity.GetCollisionReceiver();
-            _damage = entity.GetDamage();
-            _entity = entity;
+            _bullet = entity;
 
             _collisionEventReceiver.OnEntered += Destroy;
         }
 
         private void Destroy(Collision obj)
         {
-            if (obj.gameObject.TryGetComponent(out IEntity target) && target.HasDamageableTag())
-            {
-                target.TakeDamage(_damage.Value);
-            }
+            if (obj.gameObject.TryGetComponent(out IEntity target) && target.HasDamageableTag()) 
+                target.TakeDamage(_bullet.GetDamage().Value);
 
-
-            Dispose(_entity);
+            Dispose(_bullet);
         }
 
         public void Dispose(in IEntity entity)
         {
-            GameObject gameObject = entity.GetGameObject();
-            GameObject.Destroy(gameObject);
-
+            GameObject.Destroy(entity.GetGameObject());
             _collisionEventReceiver.OnEntered -= Destroy;
         }
 

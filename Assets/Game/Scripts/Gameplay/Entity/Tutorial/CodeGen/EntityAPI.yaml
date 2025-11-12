@@ -19,14 +19,20 @@ tags:
 values:
   - GameObject: GameObject
   - Transform: Transform
-  - MoveAction: IAction<Vector3, float>
-  - MoveSpeed: IValue<float>
   - RotationSpeed: IValue<float>
   - Health: ReactiveInt
-  - MoveCondition: IExpression<bool>
-
-  - Weapon: IWeaponEntity
+  - MoveSpeed: IValue<float>
+  - MoveAction: IAction<Vector3, float>
   - MoveDirection: IReactiveVariable<Vector3>
+  - MoveCondition: IExpression<bool>
+    
+  - Weapon: IEntity
+  - BulletPrefab: SceneEntity
+  - FirePoint: Transform
   - Damage: IValue<int>
+    
+  - Target: Transform
+    
   - CollisionReceiver: CollisionEventReceiver
+  - Animator: Animator
  

@@ -6,12 +6,15 @@ namespace Game
 {
     public static class FireUseCase
     {
-        public static IEntity Fire(this IWeaponEntity entity)
+        public static IEntity Fire(this IEntity weapon)
         {
-            var bulletPrefab = entity.GetBulletPrefab(); 
-            Transform firePoint = entity.GetFirePoint();
+            SceneEntity bulletPrefab = weapon.GetBulletPrefab();
+            Transform firePoint = weapon.GetFirePoint();
 
-             return SceneEntity.Instantiate(bulletPrefab, firePoint.position, firePoint.rotation); 
+            SceneEntity bullet = SceneEntity.Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
+            bullet.AddDamage(weapon.GetDamage());
+            
+            return bullet;
         }
     }
 }

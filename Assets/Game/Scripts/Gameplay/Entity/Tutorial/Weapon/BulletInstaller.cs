@@ -2,7 +2,6 @@ using Atomic.Elements;
 using Atomic.Entities;
 using Modules.Gameplay;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Game
 {
@@ -13,7 +12,6 @@ namespace Game
 
         public override void Install(IEntity entity)
         {
-            entity.AddDamage(new Const<int>(_damage));
             entity.AddMoveSpeed(new Const<float>(10f));
             entity.AddGameObject(transform.gameObject);
 

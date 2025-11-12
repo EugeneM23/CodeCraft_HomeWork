@@ -10,12 +10,12 @@ namespace Game
         {
             int health = entity.GetHealth().Value;
 
-            Debug.Log(health);
             return health > 0;
         }
 
         public static void TakeDamage(this IEntity entity, int damage)
         {
+            Debug.Log(damage);
             entity.GetHealth().Value -= damage;
         }
     }

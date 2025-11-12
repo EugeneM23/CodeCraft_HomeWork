@@ -10,7 +10,7 @@ namespace Game
     {
         public static void MoveSelf(this IEntity entity, float deltaTime)
         {
-            IReactiveVariable<Vector3> direction = entity.GetMoveDirection();
+            IReactiveValue<Vector3> direction = entity.GetMoveDirection();
             entity.Move(direction.Value, deltaTime);
         }
 
@@ -21,7 +21,7 @@ namespace Game
             Transform transform = entity.GetTransform();
             float speed = entity.GetMoveSpeed().Value;
 
-            transform.position += direction * speed * deltaTime;
+            transform.position += direction * speed * deltaTime; 
         }
     }
 }

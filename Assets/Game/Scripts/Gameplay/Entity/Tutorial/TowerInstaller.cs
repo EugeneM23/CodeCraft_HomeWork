@@ -1,34 +1,28 @@
+using System;
 using Atomic.Elements;
 using Atomic.Entities;
 using UnityEngine;
 
 namespace Game.Gameplay
 {
-    public sealed class CharacterCoreInstaller : SceneEntityInstaller
+    public sealed class TowerInstaller : SceneEntityInstaller
     {
-        [SerializeField] private Animator _animator;
-        [SerializeField] private float _moveSpeed = 15f;
+        [SerializeField] private Transform _target;
         [SerializeField] private float _rotationSpeed = 15f;
         [SerializeField] private int _health = 100;
         [SerializeField] private SceneEntity _weapon;
 
         public override void Install(IEntity entity)
         {
-            entity.AddAnimator(_animator);
+            entity.SetTarget(_target);
             entity.AddDamageableTag();
             entity.AddGameObject(transform.gameObject);
             entity.AddTransform(transform);
             entity.AddRotationSpeed(new BaseVariable<float>(_rotationSpeed));
             entity.AddHealth(new ReactiveInt(_health));
-            entity.AddMoveSpeed(new BaseFunction<float>(() => Mathf.Max(2f, _moveSpeed * (_health / 100f))));
-
-            entity.AddMoveCondition(new AndExpression(entity.IsAlive));
-            entity.AddMoveDirection(new ReactiveVariable<Vector3>());
 
             entity.AddBehaviour<DeathBehaviour>();
-            entity.AddBehaviour<MoveAnimBehaviour>();
-            entity.AddBehaviour<MoveBehaviour>();
-            entity.AddBehaviour<RotationBehaviour>();
+            entity.AddBehaviour<LookAtBehaviour>();
 
             entity.AddWeapon(_weapon);
         }

@@ -1,4 +1,5 @@
 using System;
+using Atomic.Elements;
 using Atomic.Entities;
 using Modules.Common;
 using SampleGame;
@@ -15,10 +16,12 @@ namespace Game
 
         private void Move()
         {
-            Vector3 direction = new Vector3(_joystick.Horizontal, 0, _joystick.Vertical);
-            float deltaTime = Time.deltaTime;
+            Vector3 direction = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
 
-             _character.GetMoveAction().Invoke(direction, deltaTime);
+            if (direction == Vector3.zero)
+                direction = new Vector3(_joystick.Horizontal, 0, _joystick.Vertical);
+
+            _character.GetMoveDirection().Value = direction;
         }
-    } 
+    }
 }

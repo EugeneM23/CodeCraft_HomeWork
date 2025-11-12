@@ -1,13 +1,12 @@
 using Atomic.Elements;
 using Atomic.Entities;
-using SampleGame;
 using UnityEngine;
 
 namespace Game.Gameplay
 {
     public class DeathBehaviour : IEntityInit, IEntityDispose
     {
-        private ReactiveInt  _health;
+        private ReactiveInt _health;
         private GameObject _gameObject;
 
         public void Init(in IEntity entity)
