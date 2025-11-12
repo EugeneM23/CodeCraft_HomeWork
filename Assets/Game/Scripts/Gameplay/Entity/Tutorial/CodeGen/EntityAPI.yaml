@@ -17,22 +17,32 @@ tags:
   - Damageable
 
 values:
+  # 🧩 Core
   - GameObject: GameObject
   - Transform: Transform
-  - RotationSpeed: IValue<float>
-  - Health: ReactiveInt
+  - Target: Transform
+
+  # 🌀 Movement
   - MoveSpeed: IValue<float>
-  - MoveAction: IAction<Vector3, float>
   - MoveDirection: IReactiveVariable<Vector3>
   - MoveCondition: IExpression<bool>
-    
+  - MoveAction: IAction<Vector3, float>
+  - RotationSpeed: IValue<float>
+
+  # ⚔️ Combat
   - Weapon: IEntity
   - BulletPrefab: SceneEntity
   - FirePoint: Transform
   - Damage: IValue<int>
-    
-  - Target: Transform
-    
+  - FireAction: IAction
+  - FireEvent: BaseEvent
+  - FireCondition: IFunction<bool>
+
+  # ❤️ Health
+  - Health: ReactiveInt
+
+  # ⚙️ Physics
   - CollisionReceiver: CollisionEventReceiver
+
+  # 🎬 Animation
   - Animator: Animator
- 

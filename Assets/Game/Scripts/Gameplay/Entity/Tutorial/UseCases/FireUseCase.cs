@@ -6,7 +6,7 @@ namespace Game
 {
     public static class FireUseCase
     {
-        public static IEntity Fire(this IEntity weapon)
+        public static IEntity Fire(IEntity weapon)
         {
             SceneEntity bulletPrefab = weapon.GetBulletPrefab();
             Transform firePoint = weapon.GetFirePoint();

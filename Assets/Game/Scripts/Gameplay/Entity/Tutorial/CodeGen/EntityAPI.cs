@@ -21,17 +21,20 @@ namespace Game
 		///Values
 		public const int GameObject = 1482111001; // GameObject
 		public const int Transform = -180157682; // Transform
-		public const int RotationSpeed = 1771316350; // IValue<float>
-		public const int Health = -915003867; // ReactiveInt
+		public const int Target = 1103309514; // Transform
 		public const int MoveSpeed = 526065662; // IValue<float>
-		public const int MoveAction = 1225226561; // IAction<Vector3, float>
 		public const int MoveDirection = -721923052; // IReactiveVariable<Vector3>
 		public const int MoveCondition = 1466174948; // IExpression<bool>
+		public const int MoveAction = 1225226561; // IAction<Vector3, float>
+		public const int RotationSpeed = 1771316350; // IValue<float>
 		public const int Weapon = 1855955664; // IEntity
 		public const int BulletPrefab = -918778767; // SceneEntity
 		public const int FirePoint = 397255013; // Transform
 		public const int Damage = 375673178; // IValue<int>
-		public const int Target = 1103309514; // Transform
+		public const int FireAction = 1186461126; // IAction
+		public const int FireEvent = -1683597082; // BaseEvent
+		public const int FireCondition = -280402907; // IFunction<bool>
+		public const int Health = -915003867; // ReactiveInt
 		public const int CollisionReceiver = 905037854; // CollisionEventReceiver
 		public const int Animator = -1714818978; // Animator
 
@@ -87,40 +90,22 @@ namespace Game
 		public static void SetTransform(this IEntity obj, Transform value) => obj.SetValue(Transform, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static IValue<float> GetRotationSpeed(this IEntity obj) => obj.GetValue<IValue<float>>(RotationSpeed);
+		public static Transform GetTarget(this IEntity obj) => obj.GetValue<Transform>(Target);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool TryGetRotationSpeed(this IEntity obj, out IValue<float> value) => obj.TryGetValue(RotationSpeed, out value);
+		public static bool TryGetTarget(this IEntity obj, out Transform value) => obj.TryGetValue(Target, out value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool AddRotationSpeed(this IEntity obj, IValue<float> value) => obj.AddValue(RotationSpeed, value);
+		public static bool AddTarget(this IEntity obj, Transform value) => obj.AddValue(Target, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool HasRotationSpeed(this IEntity obj) => obj.HasValue(RotationSpeed);
+		public static bool HasTarget(this IEntity obj) => obj.HasValue(Target);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool DelRotationSpeed(this IEntity obj) => obj.DelValue(RotationSpeed);
+		public static bool DelTarget(this IEntity obj) => obj.DelValue(Target);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void SetRotationSpeed(this IEntity obj, IValue<float> value) => obj.SetValue(RotationSpeed, value);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static ReactiveInt GetHealth(this IEntity obj) => obj.GetValue<ReactiveInt>(Health);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool TryGetHealth(this IEntity obj, out ReactiveInt value) => obj.TryGetValue(Health, out value);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool AddHealth(this IEntity obj, ReactiveInt value) => obj.AddValue(Health, value);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool HasHealth(this IEntity obj) => obj.HasValue(Health);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool DelHealth(this IEntity obj) => obj.DelValue(Health);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void SetHealth(this IEntity obj, ReactiveInt value) => obj.SetValue(Health, value);
+		public static void SetTarget(this IEntity obj, Transform value) => obj.SetValue(Target, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static IValue<float> GetMoveSpeed(this IEntity obj) => obj.GetValue<IValue<float>>(MoveSpeed);
@@ -139,24 +124,6 @@ namespace Game
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void SetMoveSpeed(this IEntity obj, IValue<float> value) => obj.SetValue(MoveSpeed, value);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static IAction<Vector3, float> GetMoveAction(this IEntity obj) => obj.GetValue<IAction<Vector3, float>>(MoveAction);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool TryGetMoveAction(this IEntity obj, out IAction<Vector3, float> value) => obj.TryGetValue(MoveAction, out value);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool AddMoveAction(this IEntity obj, IAction<Vector3, float> value) => obj.AddValue(MoveAction, value);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool HasMoveAction(this IEntity obj) => obj.HasValue(MoveAction);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool DelMoveAction(this IEntity obj) => obj.DelValue(MoveAction);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void SetMoveAction(this IEntity obj, IAction<Vector3, float> value) => obj.SetValue(MoveAction, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static IReactiveVariable<Vector3> GetMoveDirection(this IEntity obj) => obj.GetValue<IReactiveVariable<Vector3>>(MoveDirection);
@@ -193,6 +160,42 @@ namespace Game
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void SetMoveCondition(this IEntity obj, IExpression<bool> value) => obj.SetValue(MoveCondition, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static IAction<Vector3, float> GetMoveAction(this IEntity obj) => obj.GetValue<IAction<Vector3, float>>(MoveAction);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetMoveAction(this IEntity obj, out IAction<Vector3, float> value) => obj.TryGetValue(MoveAction, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddMoveAction(this IEntity obj, IAction<Vector3, float> value) => obj.AddValue(MoveAction, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasMoveAction(this IEntity obj) => obj.HasValue(MoveAction);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelMoveAction(this IEntity obj) => obj.DelValue(MoveAction);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetMoveAction(this IEntity obj, IAction<Vector3, float> value) => obj.SetValue(MoveAction, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static IValue<float> GetRotationSpeed(this IEntity obj) => obj.GetValue<IValue<float>>(RotationSpeed);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetRotationSpeed(this IEntity obj, out IValue<float> value) => obj.TryGetValue(RotationSpeed, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddRotationSpeed(this IEntity obj, IValue<float> value) => obj.AddValue(RotationSpeed, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasRotationSpeed(this IEntity obj) => obj.HasValue(RotationSpeed);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelRotationSpeed(this IEntity obj) => obj.DelValue(RotationSpeed);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetRotationSpeed(this IEntity obj, IValue<float> value) => obj.SetValue(RotationSpeed, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static IEntity GetWeapon(this IEntity obj) => obj.GetValue<IEntity>(Weapon);
@@ -267,22 +270,76 @@ namespace Game
 		public static void SetDamage(this IEntity obj, IValue<int> value) => obj.SetValue(Damage, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static Transform GetTarget(this IEntity obj) => obj.GetValue<Transform>(Target);
+		public static IAction GetFireAction(this IEntity obj) => obj.GetValue<IAction>(FireAction);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool TryGetTarget(this IEntity obj, out Transform value) => obj.TryGetValue(Target, out value);
+		public static bool TryGetFireAction(this IEntity obj, out IAction value) => obj.TryGetValue(FireAction, out value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool AddTarget(this IEntity obj, Transform value) => obj.AddValue(Target, value);
+		public static bool AddFireAction(this IEntity obj, IAction value) => obj.AddValue(FireAction, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool HasTarget(this IEntity obj) => obj.HasValue(Target);
+		public static bool HasFireAction(this IEntity obj) => obj.HasValue(FireAction);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool DelTarget(this IEntity obj) => obj.DelValue(Target);
+		public static bool DelFireAction(this IEntity obj) => obj.DelValue(FireAction);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void SetTarget(this IEntity obj, Transform value) => obj.SetValue(Target, value);
+		public static void SetFireAction(this IEntity obj, IAction value) => obj.SetValue(FireAction, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static BaseEvent GetFireEvent(this IEntity obj) => obj.GetValue<BaseEvent>(FireEvent);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetFireEvent(this IEntity obj, out BaseEvent value) => obj.TryGetValue(FireEvent, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddFireEvent(this IEntity obj, BaseEvent value) => obj.AddValue(FireEvent, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasFireEvent(this IEntity obj) => obj.HasValue(FireEvent);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelFireEvent(this IEntity obj) => obj.DelValue(FireEvent);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetFireEvent(this IEntity obj, BaseEvent value) => obj.SetValue(FireEvent, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static IFunction<bool> GetFireCondition(this IEntity obj) => obj.GetValue<IFunction<bool>>(FireCondition);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetFireCondition(this IEntity obj, out IFunction<bool> value) => obj.TryGetValue(FireCondition, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddFireCondition(this IEntity obj, IFunction<bool> value) => obj.AddValue(FireCondition, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasFireCondition(this IEntity obj) => obj.HasValue(FireCondition);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelFireCondition(this IEntity obj) => obj.DelValue(FireCondition);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetFireCondition(this IEntity obj, IFunction<bool> value) => obj.SetValue(FireCondition, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static ReactiveInt GetHealth(this IEntity obj) => obj.GetValue<ReactiveInt>(Health);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetHealth(this IEntity obj, out ReactiveInt value) => obj.TryGetValue(Health, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddHealth(this IEntity obj, ReactiveInt value) => obj.AddValue(Health, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasHealth(this IEntity obj) => obj.HasValue(Health);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelHealth(this IEntity obj) => obj.DelValue(Health);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetHealth(this IEntity obj, ReactiveInt value) => obj.SetValue(Health, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static CollisionEventReceiver GetCollisionReceiver(this IEntity obj) => obj.GetValue<CollisionEventReceiver>(CollisionReceiver);
