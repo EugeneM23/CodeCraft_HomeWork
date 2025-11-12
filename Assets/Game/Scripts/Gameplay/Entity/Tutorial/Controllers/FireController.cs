@@ -12,9 +12,7 @@ namespace Game
         private void Update()
         {
             if (Input.GetKeyDown(KeyCode.E))
-            {
-                _character.GetFireAction().Invoke();
-            }
+                _character.GetWeapon().GetFireAction().Invoke();
         }
     }
 }

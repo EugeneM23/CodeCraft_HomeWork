@@ -36,16 +36,17 @@ namespace Game.Gameplay
 
             // ⚔️ Combat
             entity.AddWeapon(_weapon);
+            
+            /*
             entity.AddFireEvent(new BaseEvent());
             entity.AddFireCondition(new BaseFunction<bool>(entity.IsAlive));
-
             entity.AddFireAction(new CharacterFireAction(entity));
+            */
 
             // ⚙️ Behaviours  
             entity.AddBehaviour<DeathBehaviour>();
             entity.AddBehaviour<MoveAnimBehaviour>();
-            entity.AddBehaviour<FireAnimBehaviour>();
-            entity.AddBehaviour<MoveBehaviour>();
+             entity.AddBehaviour<MoveBehaviour>();
             entity.AddBehaviour<RotationBehaviour>();
         }
     }

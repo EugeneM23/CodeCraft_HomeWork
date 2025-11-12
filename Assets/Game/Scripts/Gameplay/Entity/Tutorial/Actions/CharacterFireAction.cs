@@ -1,5 +1,6 @@
 using Atomic.Elements;
 using Atomic.Entities;
+using UnityEngine;
 
 namespace Game.Gameplay
 {
@@ -16,9 +17,9 @@ namespace Game.Gameplay
         {
             if (_entity.GetFireCondition().Invoke())
             {
-                FireUseCase.Fire(_entity.GetWeapon());
+                FireUseCase.Fire(_entity);
                 _entity.GetFireEvent().Invoke();
             }
         }
-    } 
+    }
 }

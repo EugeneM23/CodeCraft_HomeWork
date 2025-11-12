@@ -2871,6 +2871,14 @@ PrefabInstance:
       propertyPath: _damage
       value: 100
       objectReference: {fileID: 0}
+    - target: {fileID: 7604326583191949446, guid: 8c9bfd0f9949b4ed0b1b7e6c4a039d83, type: 3}
+      propertyPath: _animator
+      value: 
+      objectReference: {fileID: 676053041413999030}
+    - target: {fileID: 7604326583191949446, guid: 8c9bfd0f9949b4ed0b1b7e6c4a039d83, type: 3}
+      propertyPath: _character
+      value: 
+      objectReference: {fileID: 5799167109798999352}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
