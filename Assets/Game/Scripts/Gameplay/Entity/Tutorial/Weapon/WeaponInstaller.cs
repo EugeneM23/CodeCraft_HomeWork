@@ -1,7 +1,6 @@
 using Atomic.Elements;
 using Atomic.Entities;
 using Game.Gameplay;
-using SampleGame;
 using UnityEngine;
 
 namespace Game
@@ -16,10 +15,10 @@ namespace Game
 
         public override void Install(IEntity entity)
         {
-            entity.AddAnimator(_animator);
             entity.AddDamage(new Const<int>(_damage));
             entity.SetBulletPrefab(_bulletPrefab);
             entity.SetFirePoint(_firePoint);
+            entity.AddAnimator(_animator);
 
             entity.AddFireEvent(new BaseEvent());
             entity.AddFireCondition(new BaseFunction<bool>(_character.IsAlive));
