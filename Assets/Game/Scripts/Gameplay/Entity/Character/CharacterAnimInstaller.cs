@@ -17,6 +17,7 @@ namespace Game.Gameplay
         public override void Install(IEntity entity)
         {
             // TODO
+            // Debug
         }
     }
 }

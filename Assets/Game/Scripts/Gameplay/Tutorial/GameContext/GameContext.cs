@@ -2,7 +2,7 @@ using Atomic.Contexts;
 
 namespace Game
 {
-     public class GameContext : SingletonSceneContext<GameContext>, IGameContext
+    public class GameContext : SingletonSceneContext<GameContext>, IGameContext
     {
     }
 }

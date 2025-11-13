@@ -5,17 +5,20 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6f0b762c-5415-4a85-b17b-cc44fd47261d" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.CodeCraft_HomeWork/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.CodeCraft_HomeWork/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Entity/Tutorial/BulletCollisionBehaviour.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Entity/Tutorial/BulletCollisionBehaviour.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Entity/Tutorial/CodeGen/EntityAPI.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Entity/Tutorial/CodeGen/EntityAPI.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Entity/Tutorial/CodeGen/EntityAPI.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Entity/Tutorial/CodeGen/EntityAPI.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Entity/Tutorial/CodeGen/WeaponEntityAPI.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Entity/Tutorial/CodeGen/WeaponEntityAPI.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Entity/Tutorial/CodeGen/WeaponEntityAPI.yaml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Entity/Tutorial/CodeGen/WeaponEntityAPI.yaml.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Entity/Tutorial/UseCases/FireUseCase.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Entity/Tutorial/UseCases/FireUseCase.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Entity/Tutorial/UseCases/HealthUseCase.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Entity/Tutorial/UseCases/HealthUseCase.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Entity/Tutorial/Weapon/WeaponInstaller.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Entity/Tutorial/Weapon/WeaponInstaller.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Entity/Character/CharacterAnimInstaller.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Entity/Character/CharacterAnimInstaller.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Tutorial/CodeGen/GameContextAPI.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Tutorial/CodeGen/GameContextAPI.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Tutorial/CodeGen/GameContextAPI.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Tutorial/CodeGen/GameContextAPI.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Tutorial/Entity/Controllers/CharacterMoveController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Tutorial/Entity/Controllers/CharacterMoveController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Tutorial/GameContext/Camera.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Tutorial/PlayerContext/Camera.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Tutorial/GameContext/Camera/CameraFollowController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Tutorial/PlayerContext/Camera/CameraFollowController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Tutorial/GameContext/Camera/CameraFollowController.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Tutorial/PlayerContext/Camera/CameraFollowController.cs.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Tutorial/GameContext/CameraSystemInstaller.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Tutorial/PlayerContext/Camera/CameraSystemInstaller.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Tutorial/GameContext/CameraSystemInstaller.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Tutorial/PlayerContext/Camera/CameraSystemInstaller.cs.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Tutorial/GameContext/CharacterSystemInstaller.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Tutorial/PlayerContext/Camera/CharacterSystemInstaller.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Tutorial/GameContext/CharacterSystemInstaller.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Tutorial/PlayerContext/Camera/CharacterSystemInstaller.cs.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Tutorial/GameContext/GameContext.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Tutorial/GameContext/GameContext.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Tutorial/GameContext/GameContextInstaller.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Tutorial/GameContext/GameContextInstaller.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/GameScene.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/GameScene.unity" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -172,6 +175,7 @@
       <workItem from="1762776910500" duration="69000" />
       <workItem from="1762777004446" duration="2823000" />
       <workItem from="1762882712323" duration="2484000" />
+      <workItem from="1762939793419" duration="36236000" />
     </task>
     <task id="LOCAL-00001" summary="Update">
       <option name="closed" value="true" />

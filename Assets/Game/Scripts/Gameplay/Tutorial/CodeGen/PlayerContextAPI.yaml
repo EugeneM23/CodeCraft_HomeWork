@@ -1,9 +1,9 @@
 header: ContextAPI
-contextType: IContext
+contextType: IPlayerContext
 aggressiveInlining: true
 
 namespace: Game
-className: GameContextAPI
+className: PlayerContextAPI
 directory: Assets/Game/Scripts/Gameplay/Tutorial/CodeGen
 
 imports:
@@ -14,6 +14,10 @@ imports:
   - Atomic.Elements
   - Modules.Common
 
-
 values:
-  - BulletPool: IEntityPool
+  - Character: IEntity
+  - CharacterTransform: Transform
+  - CameraOffset: IValue<Vector3>
+  - Camera: Camera
+  - CameraSpeed: IValue<int>
+  - MoveJoystick: Joystick

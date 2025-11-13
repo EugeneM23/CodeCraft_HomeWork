@@ -1,16 +1,17 @@
 using System;
 using Atomic.Contexts;
 using Atomic.Entities;
+using Game.Scripts.Gameplay.Tutorial.PlayerContext;
 using UnityEngine;
 
 namespace Game
 {
     [Serializable]
-    public class CharacterSystemInstaller : IContextInstaller<IGameContext>
+    public class CharacterSystemInstaller : IContextInstaller<IPlayerContext>
     {
         [SerializeField] private SceneEntity _character;
 
-        public void Install(IGameContext context)
+        public void Install(IPlayerContext context)
         {
             context.AddCharacter(_character);
             context.AddCharacterTransform(_character.transform);
