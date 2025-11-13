@@ -1,18 +1,14 @@
-using System;
-using Atomic.Elements;
+using Atomic.Contexts;
 using Atomic.Entities;
 using Modules.Common;
-using SampleGame;
 using UnityEngine;
 
 namespace Game
 {
-    public class MoveController : MonoBehaviour
+    public class CharacterMoveController : IContextInit<IGameContext>, IContextLateUpdate
     {
-        [SerializeField] private Joystick _joystick;
-        [SerializeField] private SceneEntity _character;
-
-        private void Update() => Move();
+        private Joystick _joystick;
+        private IEntity _character;
 
         private void Move()
         {
@@ -23,5 +19,13 @@ namespace Game
 
             _character.GetMoveDirection().Value = direction;
         }
+
+        public void Init(IGameContext context)
+        {
+            _character = context.GetCharacter();
+            _joystick = context.GetMoveJoystick();
+        }
+
+        public void OnLateUpdate(IContext context, float deltaTime) => Move();
     }
 }

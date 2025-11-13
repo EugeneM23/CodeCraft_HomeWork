@@ -12,9 +12,12 @@ imports:
   - Atomic.Contexts
   - Atomic.Entities
   - Atomic.Elements
+  - Modules.Common
 
 
 values:
   - Character: IEntity
   - CameraOffset: IValue<Vector3>
   - Camera: Camera
+  - CameraSpeed: IValue<int>
+  - MoveJoystick: Joystick
