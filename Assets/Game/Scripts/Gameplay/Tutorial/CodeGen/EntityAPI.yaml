@@ -4,13 +4,13 @@ aggressiveInlining: true
 
 namespace: Game
 className: EntityAPI
-directory: Assets/Game/Scripts/Gameplay/Entity/Tutorial/CodeGen
+directory: Assets/Game/Scripts/Gameplay/Tutorial/CodeGen
 
 imports:
   - UnityEngine
   - Atomic.Entities
-  - System
   - Atomic.Elements
+  - System
   - Modules.Gameplay
 
 tags:

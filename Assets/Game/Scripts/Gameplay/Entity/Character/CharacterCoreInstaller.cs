@@ -36,12 +36,11 @@ namespace Game.Gameplay
 
             // ⚔️ Combat
             entity.AddWeapon(_weapon);
-            
 
             // ⚙️ Behaviours  
             entity.AddBehaviour<DeathBehaviour>();
             entity.AddBehaviour<MoveAnimBehaviour>();
-             entity.AddBehaviour<MoveBehaviour>();
+            entity.AddBehaviour<MoveBehaviour>();
             entity.AddBehaviour<RotationBehaviour>();
         }
     }

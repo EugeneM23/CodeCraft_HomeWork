@@ -1,0 +1,20 @@
+header: ContextAPI
+contextType: IContext
+aggressiveInlining: true
+
+namespace: Game
+className: GameContextAPI
+directory: Assets/Game/Scripts/Gameplay/Tutorial/CodeGen
+
+imports:
+  - System
+  - UnityEngine
+  - Atomic.Contexts
+  - Atomic.Entities
+  - Atomic.Elements
+
+
+values:
+  - Character: IEntity
+  - CameraOffset: IValue<Vector3>
+  - Camera: Camera
