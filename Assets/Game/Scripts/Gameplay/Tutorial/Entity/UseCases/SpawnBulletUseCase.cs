@@ -1,0 +1,27 @@
+using Atomic.Elements;
+using Atomic.Entities;
+using UnityEngine;
+
+namespace Game
+{
+    public static class SpawnBulletUseCase
+    {
+        public static IEntity SpawnBullet(IEntity weapon, IGameContext gameContext, Transform firePoint)
+        {
+            IEntity bullet = gameContext.GetBulletPool().Rent();
+
+            bullet.AddDamage(weapon.GetDamage());
+            bullet.GetTransform().SetPositionAndRotation(firePoint.position, firePoint.rotation);
+            bullet.GetMoveDirection().Value = bullet.GetTransform().forward;
+
+            bullet.GetBehaviour<BulletCollisionBehaviour>().Init(bullet);
+
+            return bullet;
+        }
+
+        public static void UnSpawnBullet(in IGameContext gameContext, in IEntity bullet)
+        {
+            gameContext.GetBulletPool().Return(bullet);
+        }
+    }
+}

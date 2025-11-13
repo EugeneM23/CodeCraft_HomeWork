@@ -24,6 +24,7 @@ namespace Game
 		public const int Camera = 1018227507; // Camera
 		public const int CameraSpeed = -1615506830; // IValue<int>
 		public const int MoveJoystick = -1686028204; // Joystick
+		public const int BulletPool = 1915726678; // IEntityPool
 
 
 		///Value Extensions
@@ -135,5 +136,23 @@ namespace Game
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void SetMoveJoystick(this IContext obj, Joystick value) => obj.SetValue(MoveJoystick, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static IEntityPool GetBulletPool(this IContext obj) => obj.GetValue<IEntityPool>(BulletPool);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetBulletPool(this IContext obj, out IEntityPool value) => obj.TryGetValue(BulletPool, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddBulletPool(this IContext obj, IEntityPool value) => obj.AddValue(BulletPool, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasBulletPool(this IContext obj) => obj.HasValue(BulletPool);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelBulletPool(this IContext obj) => obj.DelValue(BulletPool);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetBulletPool(this IContext obj, IEntityPool value) => obj.SetValue(BulletPool, value);
     }
 }

@@ -18,11 +18,9 @@ namespace Game
 
         private static void Rotate(in IEntity entity, in Quaternion targetRotation, in float deltaTime)
         {
-            if (targetRotation == quaternion.identity) return;
-
             float speed = entity.GetRotationSpeed().Value;
             Transform transform = entity.GetTransform();
-
+ 
             transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, speed * deltaTime);
         }
     }

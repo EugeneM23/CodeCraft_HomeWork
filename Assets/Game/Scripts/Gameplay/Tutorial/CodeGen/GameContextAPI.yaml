@@ -22,3 +22,4 @@ values:
   - Camera: Camera
   - CameraSpeed: IValue<int>
   - MoveJoystick: Joystick
+  - BulletPool: IEntityPool

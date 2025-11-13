@@ -6,19 +6,21 @@ namespace Game.Gameplay
 {
     public class CharacterFireAction : IAction
     {
-        private readonly IEntity _entity;
+        private readonly IEntity _weapon;
+        private readonly IGameContext _gameContext;
 
-        public CharacterFireAction(IEntity entity)
+        public CharacterFireAction(IEntity weapon, in IGameContext gameContext)
         {
-            _entity = entity;
+            _gameContext = gameContext;
+            _weapon = weapon;
         }
 
         public void Invoke()
         {
-            if (_entity.GetFireCondition().Invoke())
+            if (_weapon.GetFireCondition().Invoke())
             {
-                FireUseCase.Fire(_entity);
-                _entity.GetFireEvent().Invoke();
+                FireUseCase.Fire(_weapon, _gameContext);
+                _weapon.GetFireEvent().Invoke();
             }
         }
     }

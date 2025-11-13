@@ -146,6 +146,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _collisionEventReceiver: {fileID: 2807187463229867269}
   _damage: 10
+  _lifeTime: 1
 --- !u!114 &7004281855503442550
 MonoBehaviour:
   m_ObjectHideFlags: 0

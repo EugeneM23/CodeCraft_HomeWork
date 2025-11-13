@@ -21,6 +21,7 @@ values:
   - GameObject: GameObject
   - Transform: Transform
   - Target: Transform
+  - LifeTime: IValue<float>
 
   # 🌀 Movement
   - MoveSpeed: IValue<float>
@@ -31,7 +32,6 @@ values:
 
   # ⚔️ Combat
   - Weapon: IEntity
-  - BulletPrefab: SceneEntity
   - FirePoint: Transform
   - Damage: IValue<int>
   - FireAction: IAction

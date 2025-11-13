@@ -22,13 +22,13 @@ namespace Game
 		public const int GameObject = 1482111001; // GameObject
 		public const int Transform = -180157682; // Transform
 		public const int Target = 1103309514; // Transform
+		public const int LifeTime = 1688468960; // IValue<float>
 		public const int MoveSpeed = 526065662; // IValue<float>
 		public const int MoveDirection = -721923052; // IReactiveVariable<Vector3>
 		public const int MoveCondition = 1466174948; // IExpression<bool>
 		public const int MoveAction = 1225226561; // IAction<Vector3, float>
 		public const int RotationSpeed = 1771316350; // IValue<float>
 		public const int Weapon = 1855955664; // IEntity
-		public const int BulletPrefab = -918778767; // SceneEntity
 		public const int FirePoint = 397255013; // Transform
 		public const int Damage = 375673178; // IValue<int>
 		public const int FireAction = 1186461126; // IAction
@@ -106,6 +106,24 @@ namespace Game
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void SetTarget(this IEntity obj, Transform value) => obj.SetValue(Target, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static IValue<float> GetLifeTime(this IEntity obj) => obj.GetValue<IValue<float>>(LifeTime);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetLifeTime(this IEntity obj, out IValue<float> value) => obj.TryGetValue(LifeTime, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddLifeTime(this IEntity obj, IValue<float> value) => obj.AddValue(LifeTime, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasLifeTime(this IEntity obj) => obj.HasValue(LifeTime);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelLifeTime(this IEntity obj) => obj.DelValue(LifeTime);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetLifeTime(this IEntity obj, IValue<float> value) => obj.SetValue(LifeTime, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static IValue<float> GetMoveSpeed(this IEntity obj) => obj.GetValue<IValue<float>>(MoveSpeed);
@@ -214,24 +232,6 @@ namespace Game
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void SetWeapon(this IEntity obj, IEntity value) => obj.SetValue(Weapon, value);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static SceneEntity GetBulletPrefab(this IEntity obj) => obj.GetValue<SceneEntity>(BulletPrefab);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool TryGetBulletPrefab(this IEntity obj, out SceneEntity value) => obj.TryGetValue(BulletPrefab, out value);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool AddBulletPrefab(this IEntity obj, SceneEntity value) => obj.AddValue(BulletPrefab, value);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool HasBulletPrefab(this IEntity obj) => obj.HasValue(BulletPrefab);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool DelBulletPrefab(this IEntity obj) => obj.DelValue(BulletPrefab);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void SetBulletPrefab(this IEntity obj, SceneEntity value) => obj.SetValue(BulletPrefab, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Transform GetFirePoint(this IEntity obj) => obj.GetValue<Transform>(FirePoint);
