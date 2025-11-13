@@ -24,7 +24,7 @@ namespace Game
         {
             if (obj.gameObject.TryGetComponent(out IEntity target) && target.HasDamageableTag()) 
                 target.TakeDamage(_bullet.GetDamage().Value);
-
+            
             Dispose(_bullet);
         }
 

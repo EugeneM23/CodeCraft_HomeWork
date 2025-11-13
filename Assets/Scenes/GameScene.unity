@@ -15790,9 +15790,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 20c758846f244c1991ab002bfccaadcf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _character: {fileID: 1859666865}
-  _camera: {fileID: 4510875680707912767}
   _movementJoystick: {fileID: 757640612756630604}
+  _characterSystem:
+    _character: {fileID: 1859666865}
+  _cameraSystem:
+    _camera: {fileID: 4510875680707912767}
+    _cameraSpeed: 10
+    _character: {fileID: 1859666869}
 --- !u!114 &1225762021
 MonoBehaviour:
   m_ObjectHideFlags: 0

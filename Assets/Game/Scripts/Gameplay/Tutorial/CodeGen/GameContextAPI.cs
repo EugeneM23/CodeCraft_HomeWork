@@ -19,6 +19,7 @@ namespace Game
 
 		///Values
 		public const int Character = 294335127; // IEntity
+		public const int CharacterTransform = -557574193; // Transform
 		public const int CameraOffset = -1286660539; // IValue<Vector3>
 		public const int Camera = 1018227507; // Camera
 		public const int CameraSpeed = -1615506830; // IValue<int>
@@ -44,6 +45,24 @@ namespace Game
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void SetCharacter(this IContext obj, IEntity value) => obj.SetValue(Character, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Transform GetCharacterTransform(this IContext obj) => obj.GetValue<Transform>(CharacterTransform);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetCharacterTransform(this IContext obj, out Transform value) => obj.TryGetValue(CharacterTransform, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddCharacterTransform(this IContext obj, Transform value) => obj.AddValue(CharacterTransform, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasCharacterTransform(this IContext obj) => obj.HasValue(CharacterTransform);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelCharacterTransform(this IContext obj) => obj.DelValue(CharacterTransform);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetCharacterTransform(this IContext obj, Transform value) => obj.SetValue(CharacterTransform, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static IValue<Vector3> GetCameraOffset(this IContext obj) => obj.GetValue<IValue<Vector3>>(CameraOffset);

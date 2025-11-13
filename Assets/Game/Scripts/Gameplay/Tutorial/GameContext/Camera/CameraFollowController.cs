@@ -8,6 +8,7 @@ namespace Game
     public class CameraFollowController : IContextInit<IGameContext>, IContextLateUpdate
     {
         private IEntity _character;
+
         private IValue<Vector3> _offset;
         private Transform _camera;
         private IValue<int> _speed;

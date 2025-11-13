@@ -17,6 +17,7 @@ imports:
 
 values:
   - Character: IEntity
+  - CharacterTransform: Transform
   - CameraOffset: IValue<Vector3>
   - Camera: Camera
   - CameraSpeed: IValue<int>
