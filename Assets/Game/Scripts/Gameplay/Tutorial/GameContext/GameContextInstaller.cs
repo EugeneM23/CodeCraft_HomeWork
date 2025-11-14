@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Atomic.Contexts;
 using Game.Scripts.Gameplay.Tutorial.Bullet;
 using Modules.Common;
@@ -7,13 +8,12 @@ namespace Game
 {
     public class GameContextInstaller : SceneContextInstaller<IGameContext>
     {
-       
         [SerializeField] private BulletSystemInstaller _bulletInstaller;
 
         protected override void Install(IGameContext context)
         {
             _bulletInstaller.Install(context);
-
+            context.AddPlayers(new Dictionary<PlayerID, IPlayerContext>());
         }
     }
 }

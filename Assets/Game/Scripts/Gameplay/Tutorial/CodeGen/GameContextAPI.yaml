@@ -13,7 +13,9 @@ imports:
   - Atomic.Entities
   - Atomic.Elements
   - Modules.Common
+  - System.Collections.Generic
 
 
 values:
   - BulletPool: IEntityPool
+  - Players: IDictionary<PlayerID, IPlayerContext>  

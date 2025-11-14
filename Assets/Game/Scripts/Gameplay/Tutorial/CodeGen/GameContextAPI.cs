@@ -10,6 +10,7 @@ using Atomic.Contexts;
 using Atomic.Entities;
 using Atomic.Elements;
 using Modules.Common;
+using System.Collections.Generic;
 
 namespace Game
 {
@@ -19,6 +20,7 @@ namespace Game
 
 		///Values
 		public const int BulletPool = 1915726678; // IEntityPool
+		public const int Players = -369919430; // IDictionary<PlayerID, IPlayerContext>
 
 
 		///Value Extensions
@@ -40,5 +42,23 @@ namespace Game
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void SetBulletPool(this IContext obj, IEntityPool value) => obj.SetValue(BulletPool, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static IDictionary<PlayerID, IPlayerContext> GetPlayers(this IContext obj) => obj.GetValue<IDictionary<PlayerID, IPlayerContext>>(Players);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetPlayers(this IContext obj, out IDictionary<PlayerID, IPlayerContext> value) => obj.TryGetValue(Players, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddPlayers(this IContext obj, IDictionary<PlayerID, IPlayerContext> value) => obj.AddValue(Players, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasPlayers(this IContext obj) => obj.HasValue(Players);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelPlayers(this IContext obj) => obj.DelValue(Players);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetPlayers(this IContext obj, IDictionary<PlayerID, IPlayerContext> value) => obj.SetValue(Players, value);
     }
 }

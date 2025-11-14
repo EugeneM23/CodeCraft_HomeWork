@@ -1,7 +1,6 @@
 using Atomic.Contexts;
 using Atomic.Elements;
 using Atomic.Entities;
-using Game.Scripts.Gameplay.Tutorial.PlayerContext;
 using UnityEngine;
 
 namespace Game

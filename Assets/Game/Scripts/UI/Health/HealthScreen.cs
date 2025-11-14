@@ -1,4 +1,5 @@
 using DG.Tweening;
+using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -29,6 +30,7 @@ namespace Game.UI
             this.dynamicIndication.color = new Color(1, 1, 1, 0);
         }
 
+        [Button]
         public void ChangePercent(float percent)
         {
             switch (percent)
@@ -51,19 +53,19 @@ namespace Game.UI
             }
         }
 
+        [Button]
         public void TakeDamage(int damage)
         {
             if (this.takeDamageTween != null)
             {
                 this.takeDamageTween.Kill();
             }
-
             this.takeDamageTween = DOTween
                 .Sequence()
                 .Append(this.takeDamageView.DOFade(Mathf.Clamp(damage / 40.0f, 0.2f, 1.0f), 0.05f))
                 .Append(this.takeDamageView.DOFade(0, 0.2f));
         }
-        
+        [Button]
         private void StartCriticalTween()
         {
             if (this.criticalTween != null)
@@ -92,7 +94,7 @@ namespace Game.UI
         }
 
       
-        
+        [Button]
         private void SetCriticalInjure()
         {
             this.staticIndication.color = new Color(1, 1, 1, 0.8f);

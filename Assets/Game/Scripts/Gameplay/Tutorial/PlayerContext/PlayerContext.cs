@@ -1,6 +1,6 @@
 using Atomic.Contexts;
 
-namespace Game.Scripts.Gameplay.Tutorial.PlayerContext
+namespace Game
 {
     public class PlayerContext : SceneContext, IPlayerContext
     {
