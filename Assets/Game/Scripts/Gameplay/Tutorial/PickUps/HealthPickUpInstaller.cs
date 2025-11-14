@@ -1,13 +1,13 @@
 using Atomic.Elements;
 using Atomic.Entities;
-using Modules.Gameplay;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Game
 {
-    public class AmmoPickUpInstaller : SceneEntityInstaller
+    public class HealthPickUpInstaller : SceneEntityInstaller
     {
-        [SerializeField] private int _ammoAmount;
+        [SerializeField] private int _healthAmount = 100;
 
         public override void Install(IEntity entity)
         {
@@ -16,12 +16,7 @@ namespace Game
             entity.AddInteractAction(
                 new BaseAction<IEntity>((character =>
                 {
-                    IEntity weapon = character.GetWeapon();
-                    if (weapon == null) return;
-
-                    if (!weapon.TryGetAmmo(out ReactiveInt ammo)) return;
-
-                    ammo.Value += _ammoAmount;
+                    character.GetHealth().Value += _healthAmount;
                     gameObject.SetActive(false);
                 })));
         }
