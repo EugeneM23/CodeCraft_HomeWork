@@ -9,7 +9,7 @@ namespace Game
     {
         private Joystick _joystick;
         private IEntity _character;
-        
+
         public void Init(IPlayerContext context)
         {
             _character = context.GetCharacter();
@@ -20,11 +20,12 @@ namespace Game
         {
             Vector3 direction = new Vector3(_joystick.Horizontal, 0, _joystick.Vertical);
 
+            if (direction == Vector3.zero)
+                direction = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
+
             _character.GetMoveDirection().Value = direction;
         }
 
         public void OnLateUpdate(IContext context, float deltaTime) => Move();
-
-        
     }
 }

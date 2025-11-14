@@ -35,8 +35,10 @@ namespace Game
 		public const int FireAction = 1186461126; // IAction
 		public const int FireEvent = -1683597082; // BaseEvent
 		public const int FireCondition = -280402907; // IFunction<bool>
+		public const int Ammo = 1337839892; // ReactiveInt
 		public const int Health = -915003867; // ReactiveInt
 		public const int CollisionReceiver = 905037854; // CollisionEventReceiver
+		public const int TriggerEventReceiver = -484936241; // TriggerEventReceiver
 		public const int Animator = -1714818978; // Animator
 		public const int InteractAction = -1026843572; // IAction<IEntity>
 
@@ -335,6 +337,24 @@ namespace Game
 		public static void SetFireCondition(this IEntity obj, IFunction<bool> value) => obj.SetValue(FireCondition, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static ReactiveInt GetAmmo(this IEntity obj) => obj.GetValue<ReactiveInt>(Ammo);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetAmmo(this IEntity obj, out ReactiveInt value) => obj.TryGetValue(Ammo, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddAmmo(this IEntity obj, ReactiveInt value) => obj.AddValue(Ammo, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasAmmo(this IEntity obj) => obj.HasValue(Ammo);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelAmmo(this IEntity obj) => obj.DelValue(Ammo);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetAmmo(this IEntity obj, ReactiveInt value) => obj.SetValue(Ammo, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static ReactiveInt GetHealth(this IEntity obj) => obj.GetValue<ReactiveInt>(Health);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -369,6 +389,24 @@ namespace Game
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void SetCollisionReceiver(this IEntity obj, CollisionEventReceiver value) => obj.SetValue(CollisionReceiver, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static TriggerEventReceiver GetTriggerEventReceiver(this IEntity obj) => obj.GetValue<TriggerEventReceiver>(TriggerEventReceiver);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetTriggerEventReceiver(this IEntity obj, out TriggerEventReceiver value) => obj.TryGetValue(TriggerEventReceiver, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddTriggerEventReceiver(this IEntity obj, TriggerEventReceiver value) => obj.AddValue(TriggerEventReceiver, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasTriggerEventReceiver(this IEntity obj) => obj.HasValue(TriggerEventReceiver);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelTriggerEventReceiver(this IEntity obj) => obj.DelValue(TriggerEventReceiver);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetTriggerEventReceiver(this IEntity obj, TriggerEventReceiver value) => obj.SetValue(TriggerEventReceiver, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Animator GetAnimator(this IEntity obj) => obj.GetValue<Animator>(Animator);

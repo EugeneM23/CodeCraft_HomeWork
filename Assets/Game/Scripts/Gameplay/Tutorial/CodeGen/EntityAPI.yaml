@@ -38,12 +38,14 @@ values:
   - FireAction: IAction
   - FireEvent: BaseEvent
   - FireCondition: IFunction<bool>
+  - Ammo: ReactiveInt
 
   # ❤️ Health
   - Health: ReactiveInt
 
   # ⚙️ Physics
   - CollisionReceiver: CollisionEventReceiver
+  - TriggerEventReceiver: TriggerEventReceiver
 
   # 🎬 Animation
   - Animator: Animator

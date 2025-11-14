@@ -17,9 +17,11 @@ namespace Game.Gameplay
 
         public void Invoke()
         {
-            if (_weapon.GetFireCondition().Invoke())
+            if (_weapon.GetFireCondition().Invoke() && _weapon.GetAmmo().Value > 0)
             {
                 FireUseCase.Fire(_weapon, _gameContext);
+                _weapon.GetAmmo().Value--;
+                Debug.Log(_weapon.GetAmmo().Value);
                 _weapon.GetFireEvent().Invoke();
             }
         }
