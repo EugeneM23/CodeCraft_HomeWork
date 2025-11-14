@@ -14,10 +14,13 @@ namespace Game.Gameplay
         [Header("Health")] [SerializeField] private int _health = 100;
 
         [Header("Combat")] [SerializeField] private SceneEntity _weapon;
+        
+        [SerializeField] private TriggerEventReceiver _triggerReceiver;
 
         public override void Install(IEntity entity)
         {
             // 🧩 Core
+            entity.AddTriggerEventReceiver(_triggerReceiver);
             entity.AddGameObject(transform.gameObject);
             entity.AddTransform(transform);
             entity.AddDamageableTag();
@@ -42,6 +45,7 @@ namespace Game.Gameplay
             entity.AddBehaviour<MoveAnimBehaviour>();
             entity.AddBehaviour<MoveBehaviour>();
             entity.AddBehaviour<RotationBehaviour>();
+            entity.AddBehaviour<InteractBehaviour>();
         }
     }
 }

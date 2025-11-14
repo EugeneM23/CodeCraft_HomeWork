@@ -8,11 +8,10 @@ namespace Game
     public class AmmoPickUpInstaller : SceneEntityInstaller
     {
         [SerializeField] private int _ammoAmount;
-        [SerializeField] private TriggerEventReceiver  _receiver;
+        [SerializeField] private TriggerEventReceiver _receiver;
 
         public override void Install(IEntity entity)
         {
-            entity.AddTriggerEventReceiver(_receiver);
             entity.AddInteractableTag();
 
             entity.AddInteractAction(
@@ -26,8 +25,6 @@ namespace Game
                     ammo.Value += _ammoAmount;
                     gameObject.SetActive(false);
                 })));
-
-            entity.AddBehaviour(new AmmoCollisionBehaviour());
         }
     }
 }

@@ -20,7 +20,6 @@ namespace Game
         {
             if (!character.gameObject.TryGetComponent<SceneEntity>(out var entity)) return;
             _self.GetInteractAction()?.Invoke(entity);
-            
         }
 
         public void Dispose(in IEntity entity)
