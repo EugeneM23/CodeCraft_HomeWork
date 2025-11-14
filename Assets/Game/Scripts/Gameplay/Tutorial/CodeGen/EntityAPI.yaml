@@ -15,6 +15,7 @@ imports:
 
 tags:
   - Damageable
+  - Interactable
 
 values:
   # 🧩 Core
@@ -46,3 +47,8 @@ values:
 
   # 🎬 Animation
   - Animator: Animator
+  
+  # 🛠️ Interact 
+  - InteractAction: IAction<IEntity>
+    
+    

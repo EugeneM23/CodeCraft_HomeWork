@@ -18,4 +18,4 @@ imports:
 
 values:
   - BulletPool: IEntityPool
-  - Players: IDictionary<PlayerID, IPlayerContext>  
+  - Players: IDictionary<PlayerID, IPlayerContext>

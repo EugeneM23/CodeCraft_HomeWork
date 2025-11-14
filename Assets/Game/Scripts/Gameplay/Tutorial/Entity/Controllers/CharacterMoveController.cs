@@ -9,6 +9,12 @@ namespace Game
     {
         private Joystick _joystick;
         private IEntity _character;
+        
+        public void Init(IPlayerContext context)
+        {
+            _character = context.GetCharacter();
+            _joystick = context.GetMoveJoystick();
+        }
 
         private void Move()
         {
@@ -19,10 +25,6 @@ namespace Game
 
         public void OnLateUpdate(IContext context, float deltaTime) => Move();
 
-        public void Init(IPlayerContext context)
-        {
-            _character = context.GetCharacter();
-            _joystick = context.GetMoveJoystick();
-        }
+        
     }
 }

@@ -16,6 +16,7 @@ namespace Game
 	{
 		///Tags
 		public const int Damageable = 563499515;
+		public const int Interactable = 1077199658;
 
 
 		///Values
@@ -37,6 +38,7 @@ namespace Game
 		public const int Health = -915003867; // ReactiveInt
 		public const int CollisionReceiver = 905037854; // CollisionEventReceiver
 		public const int Animator = -1714818978; // Animator
+		public const int InteractAction = -1026843572; // IAction<IEntity>
 
 
 		///Tag Extensions
@@ -49,6 +51,15 @@ namespace Game
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool DelDamageableTag(this IEntity obj) => obj.DelTag(Damageable);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasInteractableTag(this IEntity obj) => obj.HasTag(Interactable);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddInteractableTag(this IEntity obj) => obj.AddTag(Interactable);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelInteractableTag(this IEntity obj) => obj.DelTag(Interactable);
 
 
 		///Value Extensions
@@ -376,5 +387,23 @@ namespace Game
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void SetAnimator(this IEntity obj, Animator value) => obj.SetValue(Animator, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static IAction<IEntity> GetInteractAction(this IEntity obj) => obj.GetValue<IAction<IEntity>>(InteractAction);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetInteractAction(this IEntity obj, out IAction<IEntity> value) => obj.TryGetValue(InteractAction, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddInteractAction(this IEntity obj, IAction<IEntity> value) => obj.AddValue(InteractAction, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasInteractAction(this IEntity obj) => obj.HasValue(InteractAction);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelInteractAction(this IEntity obj) => obj.DelValue(InteractAction);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetInteractAction(this IEntity obj, IAction<IEntity> value) => obj.SetValue(InteractAction, value);
     }
 }
