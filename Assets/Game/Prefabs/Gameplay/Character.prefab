@@ -1528,10 +1528,11 @@ MonoBehaviour:
   _triggerReceiver: {fileID: 5407131140334721219}
   _interactInstaller:
     _center: {fileID: 6992041410405490774}
-    _radius: 5
+    _radius: 1
     _layerMask:
       serializedVersion: 2
-      m_Bits: 2112
+      m_Bits: 64
+  _weaponRoot: {fileID: 0}
 --- !u!136 &2327616806689101226
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -2910,6 +2911,10 @@ PrefabInstance:
       propertyPath: _damage
       value: 10
       objectReference: {fileID: 0}
+    - target: {fileID: 7604326583191949446, guid: 8c9bfd0f9949b4ed0b1b7e6c4a039d83, type: 3}
+      propertyPath: _pickup
+      value: 
+      objectReference: {fileID: 3342775892168092990, guid: 6bbedbf51036a486ea7303826df41f8a, type: 3}
     - target: {fileID: 7604326583191949446, guid: 8c9bfd0f9949b4ed0b1b7e6c4a039d83, type: 3}
       propertyPath: _animator
       value: 

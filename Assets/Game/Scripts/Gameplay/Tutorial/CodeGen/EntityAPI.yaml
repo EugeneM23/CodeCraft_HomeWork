@@ -33,6 +33,8 @@ values:
 
   # ⚔️ Combat
   - Weapon: IEntity
+  - WeaponRoot: Transform
+  - PickUpPrefab: SceneEntity
   - FirePoint: Transform
   - Damage: IValue<int>
   - FireAction: IAction
@@ -54,7 +56,7 @@ values:
   - ShowUIAction: IAction<bool>
   - InteractAction: IAction<IEntity>
   - IsInteract: IReactiveVariable<bool>
-  - UITransform: Transform 
+  - UITransform: Transform
   - TargetInteractable: IReactiveVariable<IEntity>
     
     

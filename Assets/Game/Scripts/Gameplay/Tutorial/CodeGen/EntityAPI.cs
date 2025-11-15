@@ -30,6 +30,8 @@ namespace Game
 		public const int MoveAction = 1225226561; // IAction<Vector3, float>
 		public const int RotationSpeed = 1771316350; // IValue<float>
 		public const int Weapon = 1855955664; // IEntity
+		public const int WeaponRoot = 381533304; // Transform
+		public const int PickUpPrefab = 1763436596; // SceneEntity
 		public const int FirePoint = 397255013; // Transform
 		public const int Damage = 375673178; // IValue<int>
 		public const int FireAction = 1186461126; // IAction
@@ -249,6 +251,42 @@ namespace Game
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void SetWeapon(this IEntity obj, IEntity value) => obj.SetValue(Weapon, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Transform GetWeaponRoot(this IEntity obj) => obj.GetValue<Transform>(WeaponRoot);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetWeaponRoot(this IEntity obj, out Transform value) => obj.TryGetValue(WeaponRoot, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddWeaponRoot(this IEntity obj, Transform value) => obj.AddValue(WeaponRoot, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasWeaponRoot(this IEntity obj) => obj.HasValue(WeaponRoot);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelWeaponRoot(this IEntity obj) => obj.DelValue(WeaponRoot);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetWeaponRoot(this IEntity obj, Transform value) => obj.SetValue(WeaponRoot, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static SceneEntity GetPickUpPrefab(this IEntity obj) => obj.GetValue<SceneEntity>(PickUpPrefab);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetPickUpPrefab(this IEntity obj, out SceneEntity value) => obj.TryGetValue(PickUpPrefab, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddPickUpPrefab(this IEntity obj, SceneEntity value) => obj.AddValue(PickUpPrefab, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasPickUpPrefab(this IEntity obj) => obj.HasValue(PickUpPrefab);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelPickUpPrefab(this IEntity obj) => obj.DelValue(PickUpPrefab);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetPickUpPrefab(this IEntity obj, SceneEntity value) => obj.SetValue(PickUpPrefab, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Transform GetFirePoint(this IEntity obj) => obj.GetValue<Transform>(FirePoint);

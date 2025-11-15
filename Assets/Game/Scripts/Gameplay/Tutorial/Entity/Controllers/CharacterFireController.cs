@@ -11,7 +11,10 @@ namespace Game
         public void OnLateUpdate(IContext context, float deltaTime)
         {
             if (Input.GetKeyDown(KeyCode.E))
-                _character.GetWeapon().GetFireAction().Invoke();
+            {
+                if (_character.TryGetWeapon(out var weapon) && weapon != null)
+                    weapon.GetFireAction().Invoke();
+            }
         }
 
         public void Init(IPlayerContext context)

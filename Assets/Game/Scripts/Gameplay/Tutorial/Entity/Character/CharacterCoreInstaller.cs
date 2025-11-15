@@ -18,6 +18,7 @@ namespace Game.Gameplay
         [SerializeField] private TriggerEventReceiver _triggerReceiver;
 
         [SerializeField] private InteractInstaller _interactInstaller;
+        [SerializeField] private Transform _weaponRoot;
 
         public override void Install(IEntity entity)
         {
@@ -41,10 +42,11 @@ namespace Game.Gameplay
 
             // ⚔️ Combat
             entity.AddWeapon(_weapon);
+            entity.AddWeaponRoot(_weaponRoot);
 
             // ⚙️ Behaviours  
             entity.AddBehaviour<DeathBehaviour>();
-            entity.AddBehaviour<MoveAnimBehaviour>(); 
+            entity.AddBehaviour<MoveAnimBehaviour>();
             entity.AddBehaviour<MoveBehaviour>();
             entity.AddBehaviour<RotationBehaviour>();
 

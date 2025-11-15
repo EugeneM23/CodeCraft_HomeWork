@@ -20,7 +20,7 @@ namespace Game.Gameplay
 
         private void OnFire()
         {
-            _animator.SetTrigger(_fire);
+            //_animator.SetTrigger(_fire);
         }
 
         public void Dispose(in IEntity entity)

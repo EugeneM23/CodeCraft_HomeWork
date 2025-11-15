@@ -1,13 +1,12 @@
 using Atomic.Elements;
 using Atomic.Entities;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Game
 {
-    public class HealthPickUpInstaller : SceneEntityInstaller
+    public class WeaponPickUpInstaller : SceneEntityInstaller
     {
-        [SerializeField] private int _healthAmount = 100;
+        [SerializeField] private SceneEntity _weapon;
         [SerializeField] private GameObject _interactUI;
 
         public override void Install(IEntity entity)
@@ -17,6 +16,7 @@ namespace Game
                 _interactUI.SetActive(show);
                 entity.GetIsInteract().Value = show;
             }));
+
             entity.AddIsInteract(new ReactiveBool(false));
             entity.AddUITransform(_interactUI.transform);
 
@@ -26,11 +26,14 @@ namespace Game
             entity.AddInteractAction(
                 new BaseAction<IEntity>((character =>
                 {
-                    character.GetHealth().Value += _healthAmount;
+                    Transform weaponRoot = character.GetWeaponRoot();
+                    var weapon = SceneEntity.Create(_weapon, weaponRoot.position, weaponRoot.rotation,
+                        weaponRoot);
+                    character.SetWeapon(weapon);
                     gameObject.SetActive(false);
                 })));
 
             entity.AddBehaviour<RotationUIBehaviour>();
         }
     }
- }
+}
