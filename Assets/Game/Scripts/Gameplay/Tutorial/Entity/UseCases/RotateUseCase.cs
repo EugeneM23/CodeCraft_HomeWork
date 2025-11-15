@@ -29,5 +29,10 @@ namespace Game
         {
             transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, rotationSpeed * deltaTime);
         }
+
+        public static void Rotate(this Transform transform, in Quaternion targetRotation)
+        {
+            transform.rotation = targetRotation;
+        }
     }
 }

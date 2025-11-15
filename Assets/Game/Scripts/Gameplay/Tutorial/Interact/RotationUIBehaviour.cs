@@ -22,21 +22,17 @@ namespace Game
             _isInteracting.Unsubscribe(OnInteract);
         }
 
-        private void OnInteract(bool b)
-        {
-            Debug.Log(b);
-
-            _state = b;
-        }
+        private void OnInteract(bool show) => _state = show;
 
         public void OnUpdate(in IEntity entity, in float deltaTime)
         {
             if (_state)
             {
-                Debug.Log(Camera.main == null);
                 Vector3 directionToCamera = Camera.main.transform.position - _uITransform.position;
+                directionToCamera.x = 0;
                 Quaternion targetRotation = Quaternion.LookRotation(directionToCamera, Vector3.up);
-                RotateUseCase.Rotate(_uITransform, targetRotation, 100, deltaTime);
+                
+                RotateUseCase.Rotate(_uITransform, targetRotation);
             }
         }
     }

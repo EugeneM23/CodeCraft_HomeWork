@@ -19,6 +19,7 @@ namespace Game.Gameplay
             if (distance < 5)
             {
                 Vector3 direction = (_target.position - entity.GetTransform().position).normalized;
+                direction.y = 0;
                 entity.Rotate(direction, deltaTime);
             }
         }
