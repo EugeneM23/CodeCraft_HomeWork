@@ -20,8 +20,14 @@ namespace Game
         {
             float speed = entity.GetRotationSpeed().Value;
             Transform transform = entity.GetTransform();
- 
-            transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, speed * deltaTime);
+
+            Rotate(transform, targetRotation, speed, deltaTime);
+        }
+
+        public static void Rotate(this Transform transform, in Quaternion targetRotation, float rotationSpeed,
+            in float deltaTime)
+        {
+            transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, rotationSpeed * deltaTime);
         }
     }
 }

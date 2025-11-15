@@ -16,8 +16,8 @@ namespace Game
 
         public void Install(IEntity entity)
         {
-            //entity.AddBehaviour<InteractBehaviour>();
             entity.AddBehaviour(new DetectInteractableBehaviour(_center, _layerMask, _radius, _triggerInteraction));
+            entity.AddBehaviour<ShowInteractUIBehaviour>();
             entity.AddTargetInteractable(new ReactiveVariable<IEntity>());
         }
     }

@@ -40,7 +40,10 @@ namespace Game
 		public const int CollisionReceiver = 905037854; // CollisionEventReceiver
 		public const int TriggerEventReceiver = -484936241; // TriggerEventReceiver
 		public const int Animator = -1714818978; // Animator
+		public const int ShowUIAction = 1409166592; // IAction<bool>
 		public const int InteractAction = -1026843572; // IAction<IEntity>
+		public const int IsInteract = -173365543; // IReactiveVariable<bool>
+		public const int UITransform = 327940928; // Transform
 		public const int TargetInteractable = -990542098; // IReactiveVariable<IEntity>
 
 
@@ -428,6 +431,24 @@ namespace Game
 		public static void SetAnimator(this IEntity obj, Animator value) => obj.SetValue(Animator, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static IAction<bool> GetShowUIAction(this IEntity obj) => obj.GetValue<IAction<bool>>(ShowUIAction);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetShowUIAction(this IEntity obj, out IAction<bool> value) => obj.TryGetValue(ShowUIAction, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddShowUIAction(this IEntity obj, IAction<bool> value) => obj.AddValue(ShowUIAction, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasShowUIAction(this IEntity obj) => obj.HasValue(ShowUIAction);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelShowUIAction(this IEntity obj) => obj.DelValue(ShowUIAction);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetShowUIAction(this IEntity obj, IAction<bool> value) => obj.SetValue(ShowUIAction, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static IAction<IEntity> GetInteractAction(this IEntity obj) => obj.GetValue<IAction<IEntity>>(InteractAction);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -444,6 +465,42 @@ namespace Game
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void SetInteractAction(this IEntity obj, IAction<IEntity> value) => obj.SetValue(InteractAction, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static IReactiveVariable<bool> GetIsInteract(this IEntity obj) => obj.GetValue<IReactiveVariable<bool>>(IsInteract);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetIsInteract(this IEntity obj, out IReactiveVariable<bool> value) => obj.TryGetValue(IsInteract, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddIsInteract(this IEntity obj, IReactiveVariable<bool> value) => obj.AddValue(IsInteract, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasIsInteract(this IEntity obj) => obj.HasValue(IsInteract);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelIsInteract(this IEntity obj) => obj.DelValue(IsInteract);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetIsInteract(this IEntity obj, IReactiveVariable<bool> value) => obj.SetValue(IsInteract, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Transform GetUITransform(this IEntity obj) => obj.GetValue<Transform>(UITransform);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetUITransform(this IEntity obj, out Transform value) => obj.TryGetValue(UITransform, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddUITransform(this IEntity obj, Transform value) => obj.AddValue(UITransform, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasUITransform(this IEntity obj) => obj.HasValue(UITransform);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelUITransform(this IEntity obj) => obj.DelValue(UITransform);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetUITransform(this IEntity obj, Transform value) => obj.SetValue(UITransform, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static IReactiveVariable<IEntity> GetTargetInteractable(this IEntity obj) => obj.GetValue<IReactiveVariable<IEntity>>(TargetInteractable);

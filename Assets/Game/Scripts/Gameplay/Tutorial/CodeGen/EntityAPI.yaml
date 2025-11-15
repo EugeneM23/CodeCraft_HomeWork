@@ -50,8 +50,11 @@ values:
   # 🎬 Animation
   - Animator: Animator
   
-  # 🛠️ Interact 
+  # 🛠️ Interact
+  - ShowUIAction: IAction<bool>
   - InteractAction: IAction<IEntity>
+  - IsInteract: IReactiveVariable<bool>
+  - UITransform: Transform 
   - TargetInteractable: IReactiveVariable<IEntity>
     
     

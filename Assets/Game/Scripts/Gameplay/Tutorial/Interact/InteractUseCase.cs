@@ -22,7 +22,7 @@ namespace Game
             Interact(character, entity);
         }
 
-         public static bool FindClosestItem(
+        public static bool FindClosestItem(
             Transform origin,
             float radius,
             LayerMask layerMask,
@@ -55,7 +55,7 @@ namespace Game
             }
 
             ArrayPool<Collider>.Shared.Return(colliders);
-            
+
             // Отрисовка радиуса сферы
 #if UNITY_EDITOR
             Debug.DrawLine(center, center + Vector3.forward * radius, target != null ? Color.green : Color.red);
@@ -67,6 +67,11 @@ namespace Game
 #endif
 
             return target != null;
+        }
+
+        public static void ShowUI(IEntity entity, bool show)
+        {
+            entity.GetShowUIAction().Invoke(show);
         }
     }
 }

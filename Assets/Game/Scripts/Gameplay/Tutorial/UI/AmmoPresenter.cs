@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Game
 {
-    public class AmmoPresenter : Presenter
+    public class AmmoPresenter : Presenter 
     {
         [SerializeField] private StatView _statView;
         [SerializeField] private PlayerID ID;

@@ -8,9 +8,18 @@ namespace Game
     public class AmmoPickUpInstaller : SceneEntityInstaller
     {
         [SerializeField] private int _ammoAmount;
+        [SerializeField] private GameObject _interactUI;
 
         public override void Install(IEntity entity)
         {
+            entity.AddShowUIAction(new BaseAction<bool>((show) =>
+            {
+                _interactUI.SetActive(show);
+                entity.GetIsInteract().Value = show;
+            }));
+            entity.AddIsInteract(new ReactiveBool(false));
+            entity.AddUITransform(_interactUI.transform);
+
             entity.AddTransform(transform);
             entity.AddInteractableTag();
 
@@ -25,6 +34,8 @@ namespace Game
                     ammo.Value += _ammoAmount;
                     gameObject.SetActive(false);
                 })));
+
+            entity.AddBehaviour<RotationUIBehaviour>();
         }
     }
 }
