@@ -52,5 +52,6 @@ values:
   
   # 🛠️ Interact 
   - InteractAction: IAction<IEntity>
+  - TargetInteractable: IReactiveVariable<IEntity>
     
     

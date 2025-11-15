@@ -41,6 +41,7 @@ namespace Game
 		public const int TriggerEventReceiver = -484936241; // TriggerEventReceiver
 		public const int Animator = -1714818978; // Animator
 		public const int InteractAction = -1026843572; // IAction<IEntity>
+		public const int TargetInteractable = -990542098; // IReactiveVariable<IEntity>
 
 
 		///Tag Extensions
@@ -443,5 +444,23 @@ namespace Game
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void SetInteractAction(this IEntity obj, IAction<IEntity> value) => obj.SetValue(InteractAction, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static IReactiveVariable<IEntity> GetTargetInteractable(this IEntity obj) => obj.GetValue<IReactiveVariable<IEntity>>(TargetInteractable);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetTargetInteractable(this IEntity obj, out IReactiveVariable<IEntity> value) => obj.TryGetValue(TargetInteractable, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddTargetInteractable(this IEntity obj, IReactiveVariable<IEntity> value) => obj.AddValue(TargetInteractable, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasTargetInteractable(this IEntity obj) => obj.HasValue(TargetInteractable);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelTargetInteractable(this IEntity obj) => obj.DelValue(TargetInteractable);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetTargetInteractable(this IEntity obj, IReactiveVariable<IEntity> value) => obj.SetValue(TargetInteractable, value);
     }
 }

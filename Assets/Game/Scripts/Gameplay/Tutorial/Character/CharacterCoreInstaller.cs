@@ -14,8 +14,10 @@ namespace Game.Gameplay
         [Header("Health")] [SerializeField] private int _health = 100;
 
         [Header("Combat")] [SerializeField] private SceneEntity _weapon;
-        
+
         [SerializeField] private TriggerEventReceiver _triggerReceiver;
+
+        [SerializeField] private InteractInstaller _interactInstaller;
 
         public override void Install(IEntity entity)
         {
@@ -42,10 +44,12 @@ namespace Game.Gameplay
 
             // ⚙️ Behaviours  
             entity.AddBehaviour<DeathBehaviour>();
-            entity.AddBehaviour<MoveAnimBehaviour>();
+            entity.AddBehaviour<MoveAnimBehaviour>(); 
             entity.AddBehaviour<MoveBehaviour>();
             entity.AddBehaviour<RotationBehaviour>();
-            entity.AddBehaviour<InteractBehaviour>();
+
+            // 🛠️ Interact
+            _interactInstaller.Install(entity);
         }
     }
 }

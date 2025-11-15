@@ -14,8 +14,10 @@ namespace Game
         {
             context.AddCharacter(_character);
             context.AddCharacterTransform(_character.transform);
+
             context.AddController<CharacterMoveController>();
             context.AddController<CharacterFireController>();
+            context.AddController<CharacterInteractController>();
         }
     }
 }

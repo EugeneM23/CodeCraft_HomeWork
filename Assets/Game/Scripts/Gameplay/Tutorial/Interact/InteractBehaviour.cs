@@ -6,20 +6,20 @@ namespace Game
     public class InteractBehaviour : IEntityInit, IEntityDispose
     {
         private TriggerEventReceiver _triggerReceiver;
-        private IEntity _entity;
+        private IEntity _character;
 
         public void Init(in IEntity entity)
         {
-            _entity = entity;
+            _character = entity;
             _triggerReceiver = entity.GetTriggerEventReceiver();
             _triggerReceiver.OnEntered += Interact;
         }
 
         private void Interact(Collider collider)
         {
-            if (collider.TryGetComponent<IEntity>(out var other))
+            if (collider.TryGetComponent<IEntity>(out var target))
             {
-                InteractUseCase.Interact(_entity, other);
+                InteractUseCase.Interact(_character, target);
             }
         }
 

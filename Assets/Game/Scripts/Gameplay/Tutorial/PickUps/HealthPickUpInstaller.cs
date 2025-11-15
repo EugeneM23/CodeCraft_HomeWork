@@ -11,6 +11,7 @@ namespace Game
 
         public override void Install(IEntity entity)
         {
+            entity.AddTransform(transform);
             entity.AddInteractableTag();
 
             entity.AddInteractAction(
