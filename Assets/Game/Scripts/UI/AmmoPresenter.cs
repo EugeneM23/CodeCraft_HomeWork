@@ -20,12 +20,12 @@ namespace Game
 
         protected override void OnShow()
         {
-            _character.GetWeapon().GetAmmo().Observe(OnAmmoChanged);
+            _character.GetWeapon().Value.GetAmmo().Observe(OnAmmoChanged);
         }
 
         protected override void OnHide()
         {
-            _character.GetWeapon().GetAmmo().Unsubscribe(OnAmmoChanged);
+            _character.GetWeapon().Value.GetAmmo().Unsubscribe(OnAmmoChanged);
         }
 
         private void OnAmmoChanged(int ammo)

@@ -1,13 +1,12 @@
 using Atomic.Elements;
 using Atomic.Entities;
-using Modules.Gameplay;
 using UnityEngine;
 
 namespace Game
 {
-    public class AmmoPickUpInstaller : SceneEntityInstaller
+    public class WeaponPickUpInstaller : SceneEntityInstaller
     {
-        [SerializeField] private int _ammoAmount;
+        [SerializeField] private SceneEntity _weapon;
         [SerializeField] private GameObject _interactUI;
 
         public override void Install(IEntity entity)
@@ -17,6 +16,7 @@ namespace Game
                 _interactUI.SetActive(show);
                 entity.GetIsInteract().Value = show;
             }));
+
             entity.AddIsInteract(new ReactiveBool(false));
             entity.AddUITransform(_interactUI.transform);
 
@@ -26,12 +26,11 @@ namespace Game
             entity.AddInteractAction(
                 new BaseAction<IEntity>((character =>
                 {
-                    IEntity weapon = character.GetWeapon();
-                    if (weapon == null) return;
-
-                    if (!weapon.TryGetAmmo(out ReactiveInt ammo)) return;
-
-                    ammo.Value += _ammoAmount;
+                    Transform weaponRoot = character.GetWeaponRoot();
+                    SceneEntity weapon = SceneEntity.Create(_weapon, weaponRoot.position, weaponRoot.rotation,
+                        weaponRoot);
+                    
+                    character.GetWeapon().Value = weapon;
                     gameObject.SetActive(false);
                 })));
 

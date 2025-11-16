@@ -32,7 +32,7 @@ values:
   - RotationSpeed: IValue<float>
 
   # ⚔️ Combat
-  - Weapon: IEntity
+  - Weapon: IReactiveVariable<IEntity>
   - WeaponRoot: Transform
   - PickUpPrefab: SceneEntity
   - FirePoint: Transform
@@ -51,6 +51,9 @@ values:
 
   # 🎬 Animation
   - Animator: Animator
+    
+  - WeaponAnimator: RuntimeAnimatorController
+  - FistAnimator: RuntimeAnimatorController
   
   # 🛠️ Interact
   - ShowUIAction: IAction<bool>

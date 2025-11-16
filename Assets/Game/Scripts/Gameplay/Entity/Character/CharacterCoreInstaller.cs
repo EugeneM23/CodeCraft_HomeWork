@@ -7,6 +7,8 @@ namespace Game.Gameplay
     public sealed class CharacterCoreInstaller : SceneEntityInstaller
     {
         [Header("Animation")] [SerializeField] private Animator _animator;
+        [SerializeField] private RuntimeAnimatorController _weaponAnimator;
+        [SerializeField] private RuntimeAnimatorController _fistAnimator;
 
         [Header("Movement")] [SerializeField] private float _moveSpeed = 15f;
         [SerializeField] private float _rotationSpeed = 15f;
@@ -30,6 +32,8 @@ namespace Game.Gameplay
 
             // 🎬 Animation
             entity.AddAnimator(_animator);
+            entity.AddWeaponAnimator(_weaponAnimator);
+            entity.AddFistAnimator(_fistAnimator);
 
             // ❤️ Health
             entity.AddHealth(new ReactiveInt(_health));
@@ -41,7 +45,7 @@ namespace Game.Gameplay
             entity.AddMoveDirection(new ReactiveVariable<Vector3>());
 
             // ⚔️ Combat
-            entity.AddWeapon(_weapon);
+            entity.AddWeapon(new ReactiveVariable<IEntity>(_weapon));
             entity.AddWeaponRoot(_weaponRoot);
 
             // ⚙️ Behaviours  
@@ -49,6 +53,7 @@ namespace Game.Gameplay
             entity.AddBehaviour<MoveAnimBehaviour>();
             entity.AddBehaviour<MoveBehaviour>();
             entity.AddBehaviour<RotationBehaviour>();
+            entity.AddBehaviour<WeaponAnimBehaviour>();
 
             // 🛠️ Interact
             _interactInstaller.Install(entity);

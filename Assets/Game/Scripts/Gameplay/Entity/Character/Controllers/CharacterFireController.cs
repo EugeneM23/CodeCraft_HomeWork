@@ -13,7 +13,7 @@ namespace Game
             if (Input.GetKeyDown(KeyCode.E))
             {
                 if (_character.TryGetWeapon(out var weapon) && weapon != null)
-                    weapon.GetFireAction().Invoke();
+                    weapon.Value.GetFireAction().Invoke();
             }
         }
 

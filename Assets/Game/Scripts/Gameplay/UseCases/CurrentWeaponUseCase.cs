@@ -7,7 +7,7 @@ namespace Game
     {
         public static bool DropWeapon(IEntity character)
         {
-            IEntity weapon = character.GetWeapon();
+            IEntity weapon = character.GetWeapon().Value;
 
             if (weapon == null) return false;
 

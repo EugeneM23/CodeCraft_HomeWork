@@ -29,7 +29,7 @@ namespace Game
 		public const int MoveCondition = 1466174948; // IExpression<bool>
 		public const int MoveAction = 1225226561; // IAction<Vector3, float>
 		public const int RotationSpeed = 1771316350; // IValue<float>
-		public const int Weapon = 1855955664; // IEntity
+		public const int Weapon = 1855955664; // IReactiveVariable<IEntity>
 		public const int WeaponRoot = 381533304; // Transform
 		public const int PickUpPrefab = 1763436596; // SceneEntity
 		public const int FirePoint = 397255013; // Transform
@@ -42,6 +42,8 @@ namespace Game
 		public const int CollisionReceiver = 905037854; // CollisionEventReceiver
 		public const int TriggerEventReceiver = -484936241; // TriggerEventReceiver
 		public const int Animator = -1714818978; // Animator
+		public const int WeaponAnimator = -2049824321; // RuntimeAnimatorController
+		public const int FistAnimator = -1010237513; // RuntimeAnimatorController
 		public const int ShowUIAction = 1409166592; // IAction<bool>
 		public const int InteractAction = -1026843572; // IAction<IEntity>
 		public const int IsInteract = -173365543; // IReactiveVariable<bool>
@@ -235,13 +237,13 @@ namespace Game
 		public static void SetRotationSpeed(this IEntity obj, IValue<float> value) => obj.SetValue(RotationSpeed, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static IEntity GetWeapon(this IEntity obj) => obj.GetValue<IEntity>(Weapon);
+		public static IReactiveVariable<IEntity> GetWeapon(this IEntity obj) => obj.GetValue<IReactiveVariable<IEntity>>(Weapon);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool TryGetWeapon(this IEntity obj, out IEntity value) => obj.TryGetValue(Weapon, out value);
+		public static bool TryGetWeapon(this IEntity obj, out IReactiveVariable<IEntity> value) => obj.TryGetValue(Weapon, out value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool AddWeapon(this IEntity obj, IEntity value) => obj.AddValue(Weapon, value);
+		public static bool AddWeapon(this IEntity obj, IReactiveVariable<IEntity> value) => obj.AddValue(Weapon, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool HasWeapon(this IEntity obj) => obj.HasValue(Weapon);
@@ -250,7 +252,7 @@ namespace Game
 		public static bool DelWeapon(this IEntity obj) => obj.DelValue(Weapon);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void SetWeapon(this IEntity obj, IEntity value) => obj.SetValue(Weapon, value);
+		public static void SetWeapon(this IEntity obj, IReactiveVariable<IEntity> value) => obj.SetValue(Weapon, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Transform GetWeaponRoot(this IEntity obj) => obj.GetValue<Transform>(WeaponRoot);
@@ -467,6 +469,42 @@ namespace Game
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void SetAnimator(this IEntity obj, Animator value) => obj.SetValue(Animator, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static RuntimeAnimatorController GetWeaponAnimator(this IEntity obj) => obj.GetValue<RuntimeAnimatorController>(WeaponAnimator);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetWeaponAnimator(this IEntity obj, out RuntimeAnimatorController value) => obj.TryGetValue(WeaponAnimator, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddWeaponAnimator(this IEntity obj, RuntimeAnimatorController value) => obj.AddValue(WeaponAnimator, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasWeaponAnimator(this IEntity obj) => obj.HasValue(WeaponAnimator);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelWeaponAnimator(this IEntity obj) => obj.DelValue(WeaponAnimator);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetWeaponAnimator(this IEntity obj, RuntimeAnimatorController value) => obj.SetValue(WeaponAnimator, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static RuntimeAnimatorController GetFistAnimator(this IEntity obj) => obj.GetValue<RuntimeAnimatorController>(FistAnimator);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetFistAnimator(this IEntity obj, out RuntimeAnimatorController value) => obj.TryGetValue(FistAnimator, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddFistAnimator(this IEntity obj, RuntimeAnimatorController value) => obj.AddValue(FistAnimator, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasFistAnimator(this IEntity obj) => obj.HasValue(FistAnimator);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelFistAnimator(this IEntity obj) => obj.DelValue(FistAnimator);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetFistAnimator(this IEntity obj, RuntimeAnimatorController value) => obj.SetValue(FistAnimator, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static IAction<bool> GetShowUIAction(this IEntity obj) => obj.GetValue<IAction<bool>>(ShowUIAction);
