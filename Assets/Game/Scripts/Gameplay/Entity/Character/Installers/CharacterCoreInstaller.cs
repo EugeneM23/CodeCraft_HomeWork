@@ -1,30 +1,26 @@
 using Atomic.Elements;
 using Atomic.Entities;
+using Modules.Gameplay;
 using UnityEngine;
 
 namespace Game.Gameplay
 {
     public sealed class CharacterCoreInstaller : SceneEntityInstaller
     {
-        [Header("Animation")] [SerializeField] private Animator _animator;
-        [SerializeField] private RuntimeAnimatorController _weaponAnimator;
-        [SerializeField] private RuntimeAnimatorController _fistAnimator;
-
-        [Header("Movement")] [SerializeField] private float _moveSpeed = 15f;
+        [SerializeField] private float _moveSpeed = 15f;
         [SerializeField] private float _rotationSpeed = 15f;
-
-        [Header("Health")] [SerializeField] private int _health = 100;
-
-        [Header("Combat")] [SerializeField] private SceneEntity _weapon;
-
+        [SerializeField] private int _health = 100;
+        [SerializeField] private Animator _animator;
+        [SerializeField] private SceneEntity _weapon;
         [SerializeField] private TriggerEventReceiver _triggerReceiver;
-
         [SerializeField] private InteractInstaller _interactInstaller;
         [SerializeField] private Transform _weaponRoot;
+        [SerializeField] private Rigidbody _rb;
 
         public override void Install(IEntity entity)
         {
             // 🧩 Core
+            entity.AddRiggedBody(_rb);
             entity.AddTriggerEventReceiver(_triggerReceiver);
             entity.AddGameObject(transform.gameObject);
             entity.AddTransform(transform);
@@ -32,28 +28,26 @@ namespace Game.Gameplay
 
             // 🎬 Animation
             entity.AddAnimator(_animator);
-            entity.AddWeaponAnimator(_weaponAnimator);
-            entity.AddFistAnimator(_fistAnimator);
 
             // ❤️ Health
-            entity.AddHealth(new ReactiveInt(_health));
+            entity.AddHealth(new Health(_health, _health));
 
             // 🌀 Movement
             entity.AddRotationSpeed(new BaseVariable<float>(_rotationSpeed));
-            entity.AddMoveSpeed(new BaseFunction<float>(() => Mathf.Max(2f, _moveSpeed * (_health / 100f))));
-            entity.AddMoveCondition(new AndExpression(entity.IsAlive));
+            entity.AddMoveSpeed(new Const<float>(_moveSpeed));
+            entity.AddMoveCondition(new AndExpression(entity.GetHealth().Exists));
             entity.AddMoveDirection(new ReactiveVariable<Vector3>());
 
             // ⚔️ Combat
             entity.AddWeapon(new ReactiveVariable<IEntity>(_weapon));
             entity.AddWeaponRoot(_weaponRoot);
+            entity.AddFireCondition(new AndExpression(entity.GetHealth().Exists));
 
             // ⚙️ Behaviours  
             entity.AddBehaviour<DeathBehaviour>();
-            entity.AddBehaviour<MoveAnimBehaviour>();
-            entity.AddBehaviour<MoveBehaviour>();
-            entity.AddBehaviour<RotationBehaviour>();
-            entity.AddBehaviour<WeaponAnimBehaviour>();
+            entity.AddBehaviour<CharacterMoveBehaviour>();
+            entity.AddBehaviour<CharacterFireAnimBehaviour>();
+            entity.AddBehaviour<CharacterMoveAnimBehaviour>();
 
             // 🛠️ Interact
             _interactInstaller.Install(entity);

@@ -23,7 +23,8 @@ namespace Game
 		public const int GameObject = 1482111001; // GameObject
 		public const int Transform = -180157682; // Transform
 		public const int Target = 1103309514; // Transform
-		public const int LifeTime = 1688468960; // IValue<float>
+		public const int LifeTime = 1688468960; // Cooldown
+		public const int DestroyAction = 85938956; // IAction
 		public const int MoveSpeed = 526065662; // IValue<float>
 		public const int MoveDirection = -721923052; // IReactiveVariable<Vector3>
 		public const int MoveCondition = 1466174948; // IExpression<bool>
@@ -31,19 +32,17 @@ namespace Game
 		public const int RotationSpeed = 1771316350; // IValue<float>
 		public const int Weapon = 1855955664; // IReactiveVariable<IEntity>
 		public const int WeaponRoot = 381533304; // Transform
-		public const int PickUpPrefab = 1763436596; // SceneEntity
 		public const int FirePoint = 397255013; // Transform
 		public const int Damage = 375673178; // IValue<int>
 		public const int FireAction = 1186461126; // IAction
 		public const int FireEvent = -1683597082; // BaseEvent
-		public const int FireCondition = -280402907; // IFunction<bool>
-		public const int Ammo = 1337839892; // ReactiveInt
-		public const int Health = -915003867; // ReactiveInt
+		public const int FireCondition = -280402907; // IExpression<bool>
+		public const int Health = -915003867; // Health
 		public const int CollisionReceiver = 905037854; // CollisionEventReceiver
 		public const int TriggerEventReceiver = -484936241; // TriggerEventReceiver
+		public const int RiggedBody = 1421993665; // Rigidbody
 		public const int Animator = -1714818978; // Animator
-		public const int WeaponAnimator = -2049824321; // RuntimeAnimatorController
-		public const int FistAnimator = -1010237513; // RuntimeAnimatorController
+		public const int PickUpPrefab = 1763436596; // SceneEntity
 		public const int ShowUIAction = 1409166592; // IAction<bool>
 		public const int InteractAction = -1026843572; // IAction<IEntity>
 		public const int IsInteract = -173365543; // IReactiveVariable<bool>
@@ -129,13 +128,13 @@ namespace Game
 		public static void SetTarget(this IEntity obj, Transform value) => obj.SetValue(Target, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static IValue<float> GetLifeTime(this IEntity obj) => obj.GetValue<IValue<float>>(LifeTime);
+		public static Cooldown GetLifeTime(this IEntity obj) => obj.GetValue<Cooldown>(LifeTime);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool TryGetLifeTime(this IEntity obj, out IValue<float> value) => obj.TryGetValue(LifeTime, out value);
+		public static bool TryGetLifeTime(this IEntity obj, out Cooldown value) => obj.TryGetValue(LifeTime, out value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool AddLifeTime(this IEntity obj, IValue<float> value) => obj.AddValue(LifeTime, value);
+		public static bool AddLifeTime(this IEntity obj, Cooldown value) => obj.AddValue(LifeTime, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool HasLifeTime(this IEntity obj) => obj.HasValue(LifeTime);
@@ -144,7 +143,25 @@ namespace Game
 		public static bool DelLifeTime(this IEntity obj) => obj.DelValue(LifeTime);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void SetLifeTime(this IEntity obj, IValue<float> value) => obj.SetValue(LifeTime, value);
+		public static void SetLifeTime(this IEntity obj, Cooldown value) => obj.SetValue(LifeTime, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static IAction GetDestroyAction(this IEntity obj) => obj.GetValue<IAction>(DestroyAction);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetDestroyAction(this IEntity obj, out IAction value) => obj.TryGetValue(DestroyAction, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddDestroyAction(this IEntity obj, IAction value) => obj.AddValue(DestroyAction, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasDestroyAction(this IEntity obj) => obj.HasValue(DestroyAction);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelDestroyAction(this IEntity obj) => obj.DelValue(DestroyAction);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetDestroyAction(this IEntity obj, IAction value) => obj.SetValue(DestroyAction, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static IValue<float> GetMoveSpeed(this IEntity obj) => obj.GetValue<IValue<float>>(MoveSpeed);
@@ -273,24 +290,6 @@ namespace Game
 		public static void SetWeaponRoot(this IEntity obj, Transform value) => obj.SetValue(WeaponRoot, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static SceneEntity GetPickUpPrefab(this IEntity obj) => obj.GetValue<SceneEntity>(PickUpPrefab);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool TryGetPickUpPrefab(this IEntity obj, out SceneEntity value) => obj.TryGetValue(PickUpPrefab, out value);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool AddPickUpPrefab(this IEntity obj, SceneEntity value) => obj.AddValue(PickUpPrefab, value);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool HasPickUpPrefab(this IEntity obj) => obj.HasValue(PickUpPrefab);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool DelPickUpPrefab(this IEntity obj) => obj.DelValue(PickUpPrefab);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void SetPickUpPrefab(this IEntity obj, SceneEntity value) => obj.SetValue(PickUpPrefab, value);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Transform GetFirePoint(this IEntity obj) => obj.GetValue<Transform>(FirePoint);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -363,13 +362,13 @@ namespace Game
 		public static void SetFireEvent(this IEntity obj, BaseEvent value) => obj.SetValue(FireEvent, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static IFunction<bool> GetFireCondition(this IEntity obj) => obj.GetValue<IFunction<bool>>(FireCondition);
+		public static IExpression<bool> GetFireCondition(this IEntity obj) => obj.GetValue<IExpression<bool>>(FireCondition);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool TryGetFireCondition(this IEntity obj, out IFunction<bool> value) => obj.TryGetValue(FireCondition, out value);
+		public static bool TryGetFireCondition(this IEntity obj, out IExpression<bool> value) => obj.TryGetValue(FireCondition, out value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool AddFireCondition(this IEntity obj, IFunction<bool> value) => obj.AddValue(FireCondition, value);
+		public static bool AddFireCondition(this IEntity obj, IExpression<bool> value) => obj.AddValue(FireCondition, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool HasFireCondition(this IEntity obj) => obj.HasValue(FireCondition);
@@ -378,34 +377,16 @@ namespace Game
 		public static bool DelFireCondition(this IEntity obj) => obj.DelValue(FireCondition);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void SetFireCondition(this IEntity obj, IFunction<bool> value) => obj.SetValue(FireCondition, value);
+		public static void SetFireCondition(this IEntity obj, IExpression<bool> value) => obj.SetValue(FireCondition, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static ReactiveInt GetAmmo(this IEntity obj) => obj.GetValue<ReactiveInt>(Ammo);
+		public static Health GetHealth(this IEntity obj) => obj.GetValue<Health>(Health);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool TryGetAmmo(this IEntity obj, out ReactiveInt value) => obj.TryGetValue(Ammo, out value);
+		public static bool TryGetHealth(this IEntity obj, out Health value) => obj.TryGetValue(Health, out value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool AddAmmo(this IEntity obj, ReactiveInt value) => obj.AddValue(Ammo, value);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool HasAmmo(this IEntity obj) => obj.HasValue(Ammo);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool DelAmmo(this IEntity obj) => obj.DelValue(Ammo);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void SetAmmo(this IEntity obj, ReactiveInt value) => obj.SetValue(Ammo, value);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static ReactiveInt GetHealth(this IEntity obj) => obj.GetValue<ReactiveInt>(Health);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool TryGetHealth(this IEntity obj, out ReactiveInt value) => obj.TryGetValue(Health, out value);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool AddHealth(this IEntity obj, ReactiveInt value) => obj.AddValue(Health, value);
+		public static bool AddHealth(this IEntity obj, Health value) => obj.AddValue(Health, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool HasHealth(this IEntity obj) => obj.HasValue(Health);
@@ -414,7 +395,7 @@ namespace Game
 		public static bool DelHealth(this IEntity obj) => obj.DelValue(Health);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void SetHealth(this IEntity obj, ReactiveInt value) => obj.SetValue(Health, value);
+		public static void SetHealth(this IEntity obj, Health value) => obj.SetValue(Health, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static CollisionEventReceiver GetCollisionReceiver(this IEntity obj) => obj.GetValue<CollisionEventReceiver>(CollisionReceiver);
@@ -453,6 +434,24 @@ namespace Game
 		public static void SetTriggerEventReceiver(this IEntity obj, TriggerEventReceiver value) => obj.SetValue(TriggerEventReceiver, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Rigidbody GetRiggedBody(this IEntity obj) => obj.GetValue<Rigidbody>(RiggedBody);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetRiggedBody(this IEntity obj, out Rigidbody value) => obj.TryGetValue(RiggedBody, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddRiggedBody(this IEntity obj, Rigidbody value) => obj.AddValue(RiggedBody, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasRiggedBody(this IEntity obj) => obj.HasValue(RiggedBody);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelRiggedBody(this IEntity obj) => obj.DelValue(RiggedBody);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetRiggedBody(this IEntity obj, Rigidbody value) => obj.SetValue(RiggedBody, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Animator GetAnimator(this IEntity obj) => obj.GetValue<Animator>(Animator);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -471,40 +470,22 @@ namespace Game
 		public static void SetAnimator(this IEntity obj, Animator value) => obj.SetValue(Animator, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static RuntimeAnimatorController GetWeaponAnimator(this IEntity obj) => obj.GetValue<RuntimeAnimatorController>(WeaponAnimator);
+		public static SceneEntity GetPickUpPrefab(this IEntity obj) => obj.GetValue<SceneEntity>(PickUpPrefab);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool TryGetWeaponAnimator(this IEntity obj, out RuntimeAnimatorController value) => obj.TryGetValue(WeaponAnimator, out value);
+		public static bool TryGetPickUpPrefab(this IEntity obj, out SceneEntity value) => obj.TryGetValue(PickUpPrefab, out value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool AddWeaponAnimator(this IEntity obj, RuntimeAnimatorController value) => obj.AddValue(WeaponAnimator, value);
+		public static bool AddPickUpPrefab(this IEntity obj, SceneEntity value) => obj.AddValue(PickUpPrefab, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool HasWeaponAnimator(this IEntity obj) => obj.HasValue(WeaponAnimator);
+		public static bool HasPickUpPrefab(this IEntity obj) => obj.HasValue(PickUpPrefab);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool DelWeaponAnimator(this IEntity obj) => obj.DelValue(WeaponAnimator);
+		public static bool DelPickUpPrefab(this IEntity obj) => obj.DelValue(PickUpPrefab);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void SetWeaponAnimator(this IEntity obj, RuntimeAnimatorController value) => obj.SetValue(WeaponAnimator, value);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static RuntimeAnimatorController GetFistAnimator(this IEntity obj) => obj.GetValue<RuntimeAnimatorController>(FistAnimator);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool TryGetFistAnimator(this IEntity obj, out RuntimeAnimatorController value) => obj.TryGetValue(FistAnimator, out value);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool AddFistAnimator(this IEntity obj, RuntimeAnimatorController value) => obj.AddValue(FistAnimator, value);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool HasFistAnimator(this IEntity obj) => obj.HasValue(FistAnimator);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool DelFistAnimator(this IEntity obj) => obj.DelValue(FistAnimator);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void SetFistAnimator(this IEntity obj, RuntimeAnimatorController value) => obj.SetValue(FistAnimator, value);
+		public static void SetPickUpPrefab(this IEntity obj, SceneEntity value) => obj.SetValue(PickUpPrefab, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static IAction<bool> GetShowUIAction(this IEntity obj) => obj.GetValue<IAction<bool>>(ShowUIAction);

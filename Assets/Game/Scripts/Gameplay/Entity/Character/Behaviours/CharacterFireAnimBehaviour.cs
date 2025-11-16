@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Game.Gameplay
 {
-    public class FireAnimBehaviour : IEntityInit, IEntityDispose
+    public class CharacterFireAnimBehaviour : IEntityInit, IEntityDispose
     {
         private static readonly int _fire = Animator.StringToHash("Attack");
 
@@ -14,13 +14,13 @@ namespace Game.Gameplay
         public void Init(in IEntity entity)
         {
             _animator = entity.GetAnimator();
-            _fireEvent = entity.GetFireEvent();
+            _fireEvent = entity.GetWeapon().Value.GetFireEvent();
             _fireEvent.Subscribe(OnFire);
         }
 
         private void OnFire()
         {
-            //_animator.SetTrigger(_fire);
+            _animator.SetTrigger(_fire);
         }
 
         public void Dispose(in IEntity entity)

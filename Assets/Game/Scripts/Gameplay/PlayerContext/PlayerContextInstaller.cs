@@ -13,12 +13,12 @@ namespace Game
 
         protected override void Install(IPlayerContext context)
         {
+            GameContext.Instance.GetPlayers().Add(_playerID, context);
+            
             _characterSystem.Install(context);
             _cameraSystem.Install(context);
 
             context.AddMoveJoystick(_movementJoystick);
-
-            GameContext.Instance.GetPlayers().Add(_playerID, context);
         }
     }
 }

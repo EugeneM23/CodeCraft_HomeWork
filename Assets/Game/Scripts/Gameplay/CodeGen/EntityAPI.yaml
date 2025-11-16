@@ -4,7 +4,7 @@ aggressiveInlining: true
 
 namespace: Game
 className: EntityAPI
-directory: Assets/Game/Scripts/Gameplay/Tutorial/CodeGen
+directory: Assets/Game/Scripts/Gameplay/CodeGen
 
 imports:
   - UnityEngine
@@ -22,7 +22,8 @@ values:
   - GameObject: GameObject
   - Transform: Transform
   - Target: Transform
-  - LifeTime: IValue<float>
+  - LifeTime: Cooldown
+  - DestroyAction: IAction
 
   # 🌀 Movement
   - MoveSpeed: IValue<float>
@@ -34,28 +35,25 @@ values:
   # ⚔️ Combat
   - Weapon: IReactiveVariable<IEntity>
   - WeaponRoot: Transform
-  - PickUpPrefab: SceneEntity
   - FirePoint: Transform
   - Damage: IValue<int>
   - FireAction: IAction
   - FireEvent: BaseEvent
-  - FireCondition: IFunction<bool>
-  - Ammo: ReactiveInt
+  - FireCondition: IExpression<bool>
 
   # ❤️ Health
-  - Health: ReactiveInt
-
+  - Health: Health
+  
   # ⚙️ Physics
   - CollisionReceiver: CollisionEventReceiver
   - TriggerEventReceiver: TriggerEventReceiver
-
+  - RiggedBody: Rigidbody
+  
   # 🎬 Animation
   - Animator: Animator
-    
-  - WeaponAnimator: RuntimeAnimatorController
-  - FistAnimator: RuntimeAnimatorController
   
   # 🛠️ Interact
+  - PickUpPrefab: SceneEntity
   - ShowUIAction: IAction<bool>
   - InteractAction: IAction<IEntity>
   - IsInteract: IReactiveVariable<bool>

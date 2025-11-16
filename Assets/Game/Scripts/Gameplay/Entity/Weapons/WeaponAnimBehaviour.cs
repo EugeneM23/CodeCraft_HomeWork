@@ -18,9 +18,7 @@ namespace Game.Gameplay
             _character = entity;
 
             _animator = entity.GetAnimator();
-            _weaponAnimator = entity.GetWeaponAnimator();
-            _fistAnimator = entity.GetFistAnimator();
-
+            
             entity.GetWeapon().Observe(OnWeaponChanged);
         }
 

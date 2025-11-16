@@ -1,7 +1,5 @@
-using System;
 using Atomic.Elements;
 using Atomic.Entities;
-using SampleGame;
 using UnityEngine;
 
 namespace Game
@@ -21,7 +19,7 @@ namespace Game
             Transform transform = entity.GetTransform();
             float speed = entity.GetMoveSpeed().Value;
 
-            transform.position += direction * speed * deltaTime; 
+            transform.position += direction * speed * deltaTime;
         }
     }
 }

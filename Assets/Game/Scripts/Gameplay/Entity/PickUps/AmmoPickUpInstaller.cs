@@ -29,9 +29,7 @@ namespace Game
                     IEntity weapon = character.GetWeapon().Value;
                     if (weapon == null) return;
 
-                    if (!weapon.TryGetAmmo(out ReactiveInt ammo)) return;
 
-                    ammo.Value += _ammoAmount;
                     gameObject.SetActive(false);
                 })));
 

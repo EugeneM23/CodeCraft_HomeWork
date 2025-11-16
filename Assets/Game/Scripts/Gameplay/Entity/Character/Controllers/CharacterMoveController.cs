@@ -23,6 +23,9 @@ namespace Game
             if (direction == Vector3.zero)
                 direction = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
 
+            if (direction.magnitude > 1f)
+                direction.Normalize();
+
             _character.GetMoveDirection().Value = direction;
         }
 

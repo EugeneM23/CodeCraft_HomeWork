@@ -4,7 +4,7 @@ aggressiveInlining: true
 
 namespace: Game
 className: PlayerContextAPI
-directory: Assets/Game/Scripts/Gameplay/Tutorial/CodeGen
+directory: Assets/Game/Scripts/Gameplay/CodeGen
 
 imports:
   - System

@@ -13,21 +13,13 @@ namespace Game
         [SerializeField] private int _ammo = 10;
         [SerializeField] private Transform _firePoint;
 
-        private Animator _animator;
-
         public override void Install(IEntity entity)
         {
-            entity.AddPickUpPrefab(_pickup);
-            entity.AddTransform(this.gameObject.transform);
-            entity.AddAmmo(new ReactiveInt(_ammo));
+            entity.AddTransform(transform);
             entity.AddDamage(new Const<int>(_damage));
             entity.SetFirePoint(_firePoint);
-            entity.AddAnimator(_animator);
-
+            entity.AddFireAction(new WeaponFireAction(entity));
             entity.AddFireEvent(new BaseEvent());
-            entity.AddFireAction(new CharacterFireAction(entity, GameContext.Instance));
-
-            entity.AddBehaviour(new FireAnimBehaviour());
         }
     }
 }

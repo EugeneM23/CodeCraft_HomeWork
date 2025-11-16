@@ -8,7 +8,7 @@ namespace Game
 {
     public class AmmoPresenter : Presenter 
     {
-        [SerializeField] private StatView _statView;
+        /*[SerializeField] private StatView _statView;
         [SerializeField] private PlayerID ID;
 
         private IEntity _character;
@@ -31,6 +31,6 @@ namespace Game
         private void OnAmmoChanged(int ammo)
         {
             _statView.SetText(ammo.ToString());
-        }
+        }*/
     }
 }
