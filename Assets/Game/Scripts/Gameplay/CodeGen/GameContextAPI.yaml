@@ -18,4 +18,5 @@ imports:
 
 values:
   - BulletPool: IEntityPool
+  - WeaponCatalog: WeaponCatalog
   - Players: IDictionary<PlayerID, IPlayerContext>

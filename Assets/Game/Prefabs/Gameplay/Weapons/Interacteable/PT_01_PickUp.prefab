@@ -5316,7 +5316,7 @@ GameObject:
   - component: {fileID: 4768149462767010252}
   - component: {fileID: 7591637110814413021}
   m_Layer: 6
-  m_Name: PistolPickUp
+  m_Name: PT_01_PickUp
   m_TagString: Range
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

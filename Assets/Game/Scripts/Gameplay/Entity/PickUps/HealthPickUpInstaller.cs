@@ -24,7 +24,11 @@ namespace Game
             entity.AddInteractableTag();
 
             entity.AddInteractAction(
-                new BaseAction<IEntity>((character => { gameObject.SetActive(false); })));
+                new BaseAction<IEntity>((character =>
+                {
+                    character.GetHealth().Add(_healthAmount);
+                    gameObject.SetActive(false);
+                })));
 
             entity.AddBehaviour<RotationUIBehaviour>();
         }

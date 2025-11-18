@@ -20,6 +20,7 @@ namespace Game.Gameplay
         public void Invoke()
         {
             _weapon.GetFireEvent().Invoke();
+            _weapon.GetWeaponFireRate().Reset();
             SpawnBulletUseCase.SpawnBullet(_weapon, _gameContext, _firePoint);
         }
     }

@@ -7,21 +7,19 @@ namespace Game
 {
     public class CharacterFireController : IContextInit<IPlayerContext>, IContextLateUpdate
     {
-        private IEntity _character;
+        private IReactiveVariable<IEntity> _weapon;
 
         public void Init(IPlayerContext context)
         {
-            _character = context.GetCharacter();
+            _weapon = context.GetCharacter().GetWeapon();
         }
 
         public void OnLateUpdate(IContext context, float deltaTime)
         {
-            if (!_character.GetFireCondition().Value) return;
+            if (_weapon.Value == null || !_weapon.Value.GetFireCondition().Value) return;
 
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                _character.GetWeapon().Value.GetFireAction().Invoke();
-            }
+            if (Input.GetKey(KeyCode.Space))
+                _weapon.Value.GetFireAction().Invoke();
         }
     }
 }

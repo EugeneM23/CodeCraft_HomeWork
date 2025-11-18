@@ -33,6 +33,9 @@ values:
   - RotationSpeed: IValue<float>
 
   # ⚔️ Combat
+  - Ammo: Ammo
+  - WeaponId: WeaponID
+  - WeaponFireRate: Cooldown
   - Weapon: IReactiveVariable<IEntity>
   - WeaponRoot: Transform
   - FirePoint: Transform

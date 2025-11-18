@@ -1,7 +1,7 @@
+using System;
 using Atomic.Entities;
 using Atomic.Presenters;
 using Game.UI;
-using Modules.Gameplay;
 using UnityEngine;
 
 namespace Game
@@ -10,26 +10,23 @@ namespace Game
     {
         [SerializeField] private StatView _statView;
         [SerializeField] private PlayerID ID;
-        [SerializeField] private SceneEntity _sceneEntity;
 
         private IEntity _character;
 
         protected override void OnInit()
         {
-            /*
             _character = GameContext.Instance.GetPlayers()[ID].GetCharacter();
-            Debug.Log(_character.GetHealth() == null);
-        */
         }
 
         protected override void OnShow()
         {
-            _sceneEntity.GetHealth().OnHealthChanged += OnHealthChanged;
+            _character.GetHealth().OnHealthChanged += OnHealthChanged;
+            _statView.SetText(_character.GetHealth().GetCurrent().ToString());
         }
 
         protected override void OnHide()
         {
-            _sceneEntity.GetHealth().OnHealthChanged -= OnHealthChanged;
+            _character.GetHealth().OnHealthChanged -= OnHealthChanged;
         }
 
         private void OnHealthChanged(int health)

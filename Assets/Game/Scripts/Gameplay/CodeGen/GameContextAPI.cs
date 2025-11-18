@@ -20,6 +20,7 @@ namespace Game
 
 		///Values
 		public const int BulletPool = 1915726678; // IEntityPool
+		public const int WeaponCatalog = -1557559158; // WeaponCatalog
 		public const int Players = -369919430; // IDictionary<PlayerID, IPlayerContext>
 
 
@@ -42,6 +43,24 @@ namespace Game
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void SetBulletPool(this IContext obj, IEntityPool value) => obj.SetValue(BulletPool, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static WeaponCatalog GetWeaponCatalog(this IContext obj) => obj.GetValue<WeaponCatalog>(WeaponCatalog);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetWeaponCatalog(this IContext obj, out WeaponCatalog value) => obj.TryGetValue(WeaponCatalog, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddWeaponCatalog(this IContext obj, WeaponCatalog value) => obj.AddValue(WeaponCatalog, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasWeaponCatalog(this IContext obj) => obj.HasValue(WeaponCatalog);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelWeaponCatalog(this IContext obj) => obj.DelValue(WeaponCatalog);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetWeaponCatalog(this IContext obj, WeaponCatalog value) => obj.SetValue(WeaponCatalog, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static IDictionary<PlayerID, IPlayerContext> GetPlayers(this IContext obj) => obj.GetValue<IDictionary<PlayerID, IPlayerContext>>(Players);

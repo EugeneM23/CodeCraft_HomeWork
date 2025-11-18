@@ -17,7 +17,7 @@ GameObject:
   - component: {fileID: 7004281855503442550}
   - component: {fileID: 2807187463229867269}
   - component: {fileID: 1720412144135045913}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Bullet
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -146,6 +146,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _collisionEventReceiver: {fileID: 2807187463229867269}
   _damage: 10
+  _moveSpeed: 10
   _lifeTime: 1
 --- !u!114 &7004281855503442550
 MonoBehaviour:
@@ -192,7 +193,7 @@ Rigidbody:
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 4096
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 0

@@ -30,6 +30,9 @@ namespace Game
 		public const int MoveCondition = 1466174948; // IExpression<bool>
 		public const int MoveAction = 1225226561; // IAction<Vector3, float>
 		public const int RotationSpeed = 1771316350; // IValue<float>
+		public const int Ammo = 1337839892; // Ammo
+		public const int WeaponId = -1822610762; // WeaponID
+		public const int WeaponFireRate = -1052254408; // Cooldown
 		public const int Weapon = 1855955664; // IReactiveVariable<IEntity>
 		public const int WeaponRoot = 381533304; // Transform
 		public const int FirePoint = 397255013; // Transform
@@ -252,6 +255,60 @@ namespace Game
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void SetRotationSpeed(this IEntity obj, IValue<float> value) => obj.SetValue(RotationSpeed, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Ammo GetAmmo(this IEntity obj) => obj.GetValue<Ammo>(Ammo);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetAmmo(this IEntity obj, out Ammo value) => obj.TryGetValue(Ammo, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddAmmo(this IEntity obj, Ammo value) => obj.AddValue(Ammo, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasAmmo(this IEntity obj) => obj.HasValue(Ammo);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelAmmo(this IEntity obj) => obj.DelValue(Ammo);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetAmmo(this IEntity obj, Ammo value) => obj.SetValue(Ammo, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static WeaponID GetWeaponId(this IEntity obj) => obj.GetValue<WeaponID>(WeaponId);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetWeaponId(this IEntity obj, out WeaponID value) => obj.TryGetValue(WeaponId, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddWeaponId(this IEntity obj, WeaponID value) => obj.AddValue(WeaponId, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasWeaponId(this IEntity obj) => obj.HasValue(WeaponId);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelWeaponId(this IEntity obj) => obj.DelValue(WeaponId);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetWeaponId(this IEntity obj, WeaponID value) => obj.SetValue(WeaponId, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Cooldown GetWeaponFireRate(this IEntity obj) => obj.GetValue<Cooldown>(WeaponFireRate);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetWeaponFireRate(this IEntity obj, out Cooldown value) => obj.TryGetValue(WeaponFireRate, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddWeaponFireRate(this IEntity obj, Cooldown value) => obj.AddValue(WeaponFireRate, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasWeaponFireRate(this IEntity obj) => obj.HasValue(WeaponFireRate);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelWeaponFireRate(this IEntity obj) => obj.DelValue(WeaponFireRate);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetWeaponFireRate(this IEntity obj, Cooldown value) => obj.SetValue(WeaponFireRate, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static IReactiveVariable<IEntity> GetWeapon(this IEntity obj) => obj.GetValue<IReactiveVariable<IEntity>>(Weapon);

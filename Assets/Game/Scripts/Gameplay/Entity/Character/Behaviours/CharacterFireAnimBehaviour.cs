@@ -10,12 +10,18 @@ namespace Game.Gameplay
 
         private Animator _animator;
         private BaseEvent _fireEvent;
+        private IReactiveVariable<IEntity> _weapon;
 
         public void Init(in IEntity entity)
         {
+            _weapon = entity.GetWeapon();
             _animator = entity.GetAnimator();
-            _fireEvent = entity.GetWeapon().Value.GetFireEvent();
-            _fireEvent.Subscribe(OnFire);
+            _fireEvent = _weapon.Value.GetFireEvent();
+        }
+
+        private void OnWeaponChanged(IEntity weapon)
+        {
+            
         }
 
         private void OnFire()

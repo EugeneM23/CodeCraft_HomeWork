@@ -9,7 +9,7 @@ namespace Game.Gameplay
     {
         [SerializeField] private float _moveSpeed = 15f;
         [SerializeField] private float _rotationSpeed = 15f;
-        [SerializeField] private int _health = 100;
+        [SerializeField] private Health _health;
         [SerializeField] private Animator _animator;
         [SerializeField] private SceneEntity _weapon;
         [SerializeField] private TriggerEventReceiver _triggerReceiver;
@@ -30,7 +30,7 @@ namespace Game.Gameplay
             entity.AddAnimator(_animator);
 
             // ❤️ Health
-            entity.AddHealth(new Health(_health, _health));
+            entity.AddHealth(_health);
 
             // 🌀 Movement
             entity.AddRotationSpeed(new BaseVariable<float>(_rotationSpeed));

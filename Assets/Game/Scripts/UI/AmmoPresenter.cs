@@ -6,9 +6,9 @@ using UnityEngine;
 
 namespace Game
 {
-    public class AmmoPresenter : Presenter 
+    public class AmmoPresenter : Presenter
     {
-        /*[SerializeField] private StatView _statView;
+        [SerializeField] private StatView _statView;
         [SerializeField] private PlayerID ID;
 
         private IEntity _character;
@@ -16,21 +16,24 @@ namespace Game
         protected override void OnInit()
         {
             _character = GameContext.Instance.GetPlayers()[ID].GetCharacter();
+            
+            int count = _character.GetWeapon().Value.GetAmmo().GetCount();
+            _statView.SetText(0.ToString());
         }
 
         protected override void OnShow()
         {
-            _character.GetWeapon().Value.GetAmmo().Observe(OnAmmoChanged);
+            int count = _character.GetWeapon().Value.GetAmmo().GetCount();
+            _statView.SetText(count.ToString());
         }
 
         protected override void OnHide()
         {
-            _character.GetWeapon().Value.GetAmmo().Unsubscribe(OnAmmoChanged);
         }
 
         private void OnAmmoChanged(int ammo)
         {
             _statView.SetText(ammo.ToString());
-        }*/
+        }
     }
 }
