@@ -9,8 +9,7 @@ namespace Modules.Gameplay
     {
         public event Action OnStateChanged;
 
-        [SerializeField, Min(0)]
-        private int count;
+        [SerializeField, Min(0)] private int count;
 
         public Ammo(int count)
         {
@@ -41,5 +40,7 @@ namespace Modules.Gameplay
                 this.OnStateChanged?.Invoke();
             }
         }
+
+        public void SpendAll() => count = 0;
     }
 }

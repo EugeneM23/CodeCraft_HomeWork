@@ -12,16 +12,41 @@ namespace Game
         [SerializeField] private PlayerID ID;
 
         private IEntity _character;
+        private IReactiveVariable<IEntity> _weapon;
+        private IEntity _currentWeapon;
 
         protected override void OnInit()
         {
             _character = GameContext.Instance.GetPlayers()[ID].GetCharacter();
-            
-            int count = _character.GetWeapon().Value.GetAmmo().GetCount();
-            _statView.SetText(0.ToString());
+            _weapon = _character.GetWeapon();
+            _currentWeapon = _weapon.Value;
+            _weapon.Observe(OnWeaponChanged);
+        }
+
+        private void OnWeaponChanged(IEntity weapon)
+        {
+            if (_currentWeapon != null)
+                _currentWeapon.GetAmmo().OnStateChanged -= UpdateAmmo;
+
+            _currentWeapon = weapon;
+
+            if (_currentWeapon != null)
+            {
+                _currentWeapon.GetAmmo().OnStateChanged += UpdateAmmo;
+                UpdateAmmo();
+            }
+            else
+            {
+                _statView.SetText(0.ToString());
+            }
         }
 
         protected override void OnShow()
+        {
+            UpdateAmmo();
+        }
+
+        private void UpdateAmmo()
         {
             int count = _character.GetWeapon().Value.GetAmmo().GetCount();
             _statView.SetText(count.ToString());
@@ -29,11 +54,7 @@ namespace Game
 
         protected override void OnHide()
         {
-        }
-
-        private void OnAmmoChanged(int ammo)
-        {
-            _statView.SetText(ammo.ToString());
+            _character.GetWeapon().Value.GetAmmo().OnStateChanged -= UpdateAmmo;
         }
     }
 }

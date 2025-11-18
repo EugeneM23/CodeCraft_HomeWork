@@ -1,5 +1,6 @@
 using Atomic.Elements;
 using Atomic.Entities;
+using Modules.Gameplay;
 using UnityEngine;
 
 namespace Game
@@ -8,9 +9,11 @@ namespace Game
     {
         [SerializeField] private WeaponID _id;
         [SerializeField] private GameObject _interactUI;
+        [SerializeField] private Ammo _ammo;
 
         public override void Install(IEntity entity)
         {
+            entity.AddAmmo(_ammo);
             entity.AddShowUIAction(new BaseAction<bool>((show) =>
             {
                 _interactUI.SetActive(show);
@@ -28,12 +31,10 @@ namespace Game
                 {
                     Transform weaponRoot = character.GetWeaponRoot();
                     SceneEntity _weapon = GameContext.Instance.GetWeaponCatalog().GetWeapon(_id);
+
                     SceneEntity weapon = SceneEntity.Create(_weapon, weaponRoot.position, weaponRoot.rotation,
                         weaponRoot);
-
-                    Debug.Log(character == null);
-                    Debug.Log(character.GetWeapon() == null);
-                    Debug.Log(character.GetWeapon().Value == null);
+                    weapon.GetAmmo().Add(_ammo.GetCount());
                     character.GetWeapon().Value = weapon;
                     gameObject.SetActive(false);
                 })));

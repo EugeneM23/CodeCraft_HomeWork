@@ -6,6 +6,9 @@ TagManager:
   tags:
   - Character
   - Platform
+  - Range
+  - Enemy
+  - Melee
   layers:
   - Default
   - TransparentFX
@@ -19,8 +22,8 @@ TagManager:
   - Character
   - Platform
   - ThrowItem
-  - 
-  - 
+  - Bullet
+  - Weapon
   - 
   - 
   - 

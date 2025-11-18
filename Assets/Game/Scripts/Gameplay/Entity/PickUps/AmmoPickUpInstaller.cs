@@ -29,7 +29,7 @@ namespace Game
                     IEntity weapon = character.GetWeapon().Value;
                     if (weapon == null) return;
 
-
+                    weapon.GetAmmo().Add(_ammoAmount);
                     gameObject.SetActive(false);
                 })));
 

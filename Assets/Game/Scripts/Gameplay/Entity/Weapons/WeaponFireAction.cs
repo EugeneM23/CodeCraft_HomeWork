@@ -21,6 +21,8 @@ namespace Game.Gameplay
         {
             _weapon.GetFireEvent().Invoke();
             _weapon.GetWeaponFireRate().Reset();
+            _weapon.GetAmmo().Spend();
+            
             SpawnBulletUseCase.SpawnBullet(_weapon, _gameContext, _firePoint);
         }
     }

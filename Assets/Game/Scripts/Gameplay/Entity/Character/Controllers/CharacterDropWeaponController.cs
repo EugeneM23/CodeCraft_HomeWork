@@ -19,7 +19,7 @@ namespace Game
         {
             if (Input.GetKeyDown(KeyCode.G))
             {
-                CurrentWeaponUseCase.DropWeapon(_character, _gameContext);
+                DropWeaponUseCase.DropWeapon(_character, _gameContext);
             }
         }
     }

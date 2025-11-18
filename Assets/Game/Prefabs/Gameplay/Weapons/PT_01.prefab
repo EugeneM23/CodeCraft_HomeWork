@@ -10495,7 +10495,7 @@ MonoBehaviour:
     _duration: 0.2
   _damage: 10
   _ammo:
-    count: 10
+    count: 0
   _firePoint: {fileID: 1400432033415768503}
 --- !u!114 &5247850647910185787
 MonoBehaviour:

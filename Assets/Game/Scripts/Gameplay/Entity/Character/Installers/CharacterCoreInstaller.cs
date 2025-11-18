@@ -10,12 +10,15 @@ namespace Game.Gameplay
         [SerializeField] private float _moveSpeed = 15f;
         [SerializeField] private float _rotationSpeed = 15f;
         [SerializeField] private Health _health;
-        [SerializeField] private Animator _animator;
         [SerializeField] private SceneEntity _weapon;
         [SerializeField] private TriggerEventReceiver _triggerReceiver;
         [SerializeField] private InteractInstaller _interactInstaller;
         [SerializeField] private Transform _weaponRoot;
         [SerializeField] private Rigidbody _rb;
+        [SerializeField] private Animator _animator;
+
+        [SerializeField] private RuntimeAnimatorController _fistController;
+        [SerializeField] private RuntimeAnimatorController _weaponController;
 
         public override void Install(IEntity entity)
         {
@@ -48,6 +51,7 @@ namespace Game.Gameplay
             entity.AddBehaviour<CharacterMoveBehaviour>();
             entity.AddBehaviour<CharacterFireAnimBehaviour>();
             entity.AddBehaviour<CharacterMoveAnimBehaviour>();
+            entity.AddBehaviour(new CharacterSwitchAnimGraphBehaviour(_fistController, _weaponController));
 
             // 🛠️ Interact
             _interactInstaller.Install(entity);

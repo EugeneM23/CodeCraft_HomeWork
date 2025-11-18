@@ -24,7 +24,10 @@ namespace Game
             entity.AddTransform(transform);
             entity.AddFireAction(new WeaponFireAction(entity));
             entity.AddFireEvent(new BaseEvent());
-            entity.AddFireCondition(new AndExpression(entity.GetWeaponFireRate().IsExpired));
+
+            entity.AddFireCondition(new AndExpression());
+            entity.GetFireCondition().Append(() => _ammo.GetCount() > 0);
+            entity.GetFireCondition().Append(entity.GetWeaponFireRate().IsExpired);
 
             entity.AddBehaviour(new WeaponFireRateBehaviour());
         }

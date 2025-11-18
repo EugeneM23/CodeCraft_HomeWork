@@ -13,7 +13,10 @@ namespace Game
         [OdinSerialize] private Dictionary<WeaponID, SceneEntity> _weapons = new();
         [OdinSerialize] private Dictionary<WeaponID, SceneEntity> _pickUpWeapons = new();
 
-        public SceneEntity GetPickUpWeapon(WeaponID id) => _pickUpWeapons[id];
+        public SceneEntity GetPickUpWeapon(WeaponID id)
+        {
+            return SceneEntity.Create(_pickUpWeapons[id], transform.position, transform.rotation);
+        }
 
         public SceneEntity GetWeapon(WeaponID id) => _weapons[id];
     }
