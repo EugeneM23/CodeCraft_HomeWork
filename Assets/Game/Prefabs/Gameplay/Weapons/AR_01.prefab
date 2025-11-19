@@ -9797,15 +9797,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 122cc892058f495ebd53bbedae2ebd2c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _id: 1
+  _id: 2
   _fireRate:
     _current: 0
-    _duration: 0.05
+    _duration: 0.1
   _damage: 10
   _ammo:
     count: 0
   _firePoint: {fileID: 1400432033415768503}
-  _animSet: {fileID: 0}
   _animController: {fileID: 9100000, guid: 7dc6eb0d0bea94d6a8448ebd9e5dd972, type: 2}
 --- !u!114 &5247850647910185787
 MonoBehaviour:

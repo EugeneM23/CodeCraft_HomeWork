@@ -566,7 +566,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78df54809d3249bba90c1bb96f69551c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _id: 1
+  _id: 2
   _ammo:
     count: 150
 --- !u!1 &3055973873298147730

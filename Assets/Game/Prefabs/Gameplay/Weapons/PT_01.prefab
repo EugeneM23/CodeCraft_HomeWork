@@ -10492,12 +10492,11 @@ MonoBehaviour:
   _id: 1
   _fireRate:
     _current: 0
-    _duration: 0.2
+    _duration: 0.4
   _damage: 10
   _ammo:
     count: 0
   _firePoint: {fileID: 1400432033415768503}
-  _animSet: {fileID: 11400000, guid: 20379f29278b64046b884ca15561376d, type: 2}
   _animController: {fileID: 9100000, guid: c98aa805957f549baadf79dc0675cdc5, type: 2}
 --- !u!114 &5247850647910185787
 MonoBehaviour:

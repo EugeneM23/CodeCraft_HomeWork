@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 30697861feee4132bb42eab03b76f7b8, type: 3}
   m_Name: PT_01
   m_EditorClassIdentifier: 
-  _idle: {fileID: 0}
-  _run: {fileID: 0}
+  _idle: {fileID: 7400000, guid: 9294594496b964d6dbdf8d7e616b8f4d, type: 2}
+  _run: {fileID: 7400000, guid: e2b9163948205422a88e37f12df33456, type: 2}

@@ -9,31 +9,23 @@ namespace Game.Gameplay
     {
         [SerializeField] private float _moveSpeed = 15f;
         [SerializeField] private float _rotationSpeed = 15f;
-        [SerializeField] private Health _health;
+        [SerializeField] private int _health = 100;
         [SerializeField] private SceneEntity _weapon;
         [SerializeField] private TriggerEventReceiver _triggerReceiver;
-        [SerializeField] private InteractInstaller _interactInstaller;
         [SerializeField] private Transform _weaponRoot;
-        [SerializeField] private Rigidbody _rb;
-        [SerializeField] private Animator _animator;
 
-        [SerializeField] private RuntimeAnimatorController _fistController;
-        [SerializeField] private RuntimeAnimatorController _weaponController;
+        [SerializeField] private InteractInstaller _interactInstaller;
 
         public override void Install(IEntity entity)
         {
             // 🧩 Core
-            entity.AddRiggedBody(_rb);
             entity.AddTriggerEventReceiver(_triggerReceiver);
             entity.AddGameObject(transform.gameObject);
             entity.AddTransform(transform);
             entity.AddDamageableTag();
 
-            // 🎬 Animation
-            entity.AddAnimator(_animator);
-
             // ❤️ Health
-            entity.AddHealth(_health);
+            entity.AddHealth(new Health(_health, _health));
 
             // 🌀 Movement
             entity.AddRotationSpeed(new BaseVariable<float>(_rotationSpeed));
@@ -45,25 +37,14 @@ namespace Game.Gameplay
             entity.AddWeapon(new ReactiveVariable<IEntity>(_weapon));
             entity.AddWeaponRoot(_weaponRoot);
             entity.AddFireCondition(new AndExpression(entity.GetHealth().Exists));
+            entity.AddFireAction(new CharacterFireAction(entity));
 
             // ⚙️ Behaviours  
             entity.AddBehaviour<DeathBehaviour>();
             entity.AddBehaviour<CharacterMoveBehaviour>();
-            entity.AddBehaviour<FireAnimBehaviour>();
-            entity.AddBehaviour<CharacterMoveAnimBehaviour>();
-            entity.AddBehaviour(new CharacterSwitchAnimSetBehaviour());
-            entity.AddBehaviour(new DebugB());
 
             // 🛠️ Interact
             _interactInstaller.Install(entity);
-        }
-    }
-
-    public class DebugB : IEntityUpdate
-    {
-        public void OnUpdate(in IEntity entity, in float deltaTime)
-        {
-            Debug.Log(entity.GetWeapon().Value.Name);
         }
     }
 }
