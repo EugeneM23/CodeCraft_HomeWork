@@ -18,6 +18,9 @@ namespace Game
             return SceneEntity.Create(_pickUpWeapons[id], transform.position, transform.rotation);
         }
 
-        public SceneEntity GetWeapon(WeaponID id) => _weapons[id];
+        public SceneEntity GetWeapon(WeaponID id)
+        {
+            return SceneEntity.Create(_weapons[id], transform.position, transform.rotation);
+        }
     }
 }
