@@ -7,7 +7,12 @@ namespace Game
     {
         public static bool PickUpWeapon(IEntity character, IEntity sceneWeapon, GameContext gameContext)
         {
-            if (character.GetWeapon().Value.GetWeaponId() != WeaponID.Hand)
+            WeaponID id = character.GetWeapon().Value.GetWeaponId();
+            
+            if (id == WeaponID.Hand)
+                GameObject.Destroy(character.GetWeapon().Value.GetTransform().gameObject);
+
+            if (id != WeaponID.Hand)
                 DropWeaponUseCase.DropWeapon(character, gameContext);
 
             SceneEntity characterWeapon = gameContext.GetWeaponCatalog().GetWeapon(sceneWeapon.GetWeaponId());
