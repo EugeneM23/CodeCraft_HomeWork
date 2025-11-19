@@ -54,6 +54,8 @@ values:
   
   # 🎬 Animation
   - Animator: Animator
+  - WeaponAnimSet: AnimSet
+  - AnimationController: RuntimeAnimatorController
   
   # 🛠️ Interact
   - PickUpPrefab: SceneEntity

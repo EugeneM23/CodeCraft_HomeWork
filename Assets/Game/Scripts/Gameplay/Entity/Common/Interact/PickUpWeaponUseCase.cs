@@ -7,7 +7,7 @@ namespace Game
     {
         public static bool PickUpWeapon(IEntity character, IEntity sceneWeapon, GameContext gameContext)
         {
-            if (character.GetWeapon().Value != null) 
+            if (character.GetWeapon().Value.GetWeaponId() != WeaponID.Hand)
                 DropWeaponUseCase.DropWeapon(character, gameContext);
 
             SceneEntity characterWeapon = gameContext.GetWeaponCatalog().GetWeapon(sceneWeapon.GetWeaponId());
@@ -18,6 +18,12 @@ namespace Game
             Transform weaponRoot = character.GetWeaponRoot();
             weaponTransform.SetPositionAndRotation(weaponRoot.position, weaponRoot.rotation);
             weaponTransform.SetParent(weaponRoot);
+
+            var animator = character.GetAnimator();
+            animator.Play("Idle");
+            animator.runtimeAnimatorController = characterWeapon.GetAnimationController();
+            animator.Rebind();
+            animator.Update(0f);
 
             SceneEntity.Destroy(sceneWeapon);
 

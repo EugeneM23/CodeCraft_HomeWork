@@ -8,18 +8,28 @@ namespace Game
     {
         public static bool DropWeapon(IEntity character, GameContext gameContext)
         {
-            if (!character.TryGetWeapon(out IReactiveVariable<IEntity> weapon) || weapon.Value == null) return false;
+            if (!character.TryGetWeapon(out IReactiveVariable<IEntity> weapon) || weapon.Value.GetWeaponId() == WeaponID.Hand)
+                return false;
 
             Transform weaponTransform = weapon.Value.GetTransform();
             SceneEntity pickUpWeapon = gameContext.GetWeaponCatalog().GetPickUpWeapon(weapon.Value.GetWeaponId());
             pickUpWeapon.GetTransform().SetPositionAndRotation(weaponTransform.position, weaponTransform.rotation);
 
-            pickUpWeapon.GetAmmo().SpendAll();
-            pickUpWeapon.GetAmmo().Add(weapon.Value.GetAmmo().GetCount());
+            if (pickUpWeapon.TryGetAmmo(out var ammo))
+            {
+                ammo.SpendAll();
+                ammo.Add(weapon.Value.GetAmmo().GetCount());
+            }
 
             GameObject.Destroy(weaponTransform.gameObject);
 
-            character.GetWeapon().Value = null;
+            character.GetWeapon().Value = gameContext.GetWeaponCatalog().GetWeapon(WeaponID.Hand);
+            var animator = character.GetAnimator();
+            animator.Play("Idle");
+            animator.runtimeAnimatorController = character.GetWeapon().Value.GetAnimationController();
+            animator.Rebind();
+            animator.Update(0f);
+
 
             return true;
         }

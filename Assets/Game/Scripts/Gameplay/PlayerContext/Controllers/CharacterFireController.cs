@@ -19,7 +19,9 @@ namespace Game
             if (_weapon.Value == null || !_weapon.Value.GetFireCondition().Value) return;
 
             if (Input.GetKey(KeyCode.Space))
+            {
                 _weapon.Value.GetFireAction().Invoke();
+            }
         }
     }
 }

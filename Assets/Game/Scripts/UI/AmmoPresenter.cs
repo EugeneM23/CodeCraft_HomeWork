@@ -32,7 +32,9 @@ namespace Game
 
             if (_currentWeapon != null)
             {
-                _currentWeapon.GetAmmo().OnStateChanged += UpdateAmmo;
+                if (!weapon.TryGetAmmo(out var ammo)) return;
+                
+                ammo.OnStateChanged += UpdateAmmo;
                 UpdateAmmo();
             }
             else

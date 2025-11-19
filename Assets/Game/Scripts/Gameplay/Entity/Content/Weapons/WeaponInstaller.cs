@@ -13,9 +13,13 @@ namespace Game
         [SerializeField] private int _damage;
         [SerializeField] private Ammo _ammo;
         [SerializeField] private Transform _firePoint;
+        [SerializeField] private AnimSet _animSet;
+        [SerializeField] private RuntimeAnimatorController _animController;
 
         public override void Install(IEntity entity)
         {
+            entity.AddAnimationController(_animController);
+            entity.AddWeaponAnimSet(_animSet);
             entity.AddWeaponId(_id);
             entity.AddAmmo(_ammo);
             entity.AddDamage(new Const<int>(_damage));

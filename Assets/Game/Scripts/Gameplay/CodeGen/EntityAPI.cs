@@ -45,6 +45,8 @@ namespace Game
 		public const int TriggerEventReceiver = -484936241; // TriggerEventReceiver
 		public const int RiggedBody = 1421993665; // Rigidbody
 		public const int Animator = -1714818978; // Animator
+		public const int WeaponAnimSet = 1176554500; // AnimSet
+		public const int AnimationController = -1518513581; // RuntimeAnimatorController
 		public const int PickUpPrefab = 1763436596; // SceneEntity
 		public const int ShowUIAction = 1409166592; // IAction<bool>
 		public const int InteractAction = -1026843572; // IAction<IEntity>
@@ -525,6 +527,42 @@ namespace Game
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void SetAnimator(this IEntity obj, Animator value) => obj.SetValue(Animator, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static AnimSet GetWeaponAnimSet(this IEntity obj) => obj.GetValue<AnimSet>(WeaponAnimSet);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetWeaponAnimSet(this IEntity obj, out AnimSet value) => obj.TryGetValue(WeaponAnimSet, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddWeaponAnimSet(this IEntity obj, AnimSet value) => obj.AddValue(WeaponAnimSet, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasWeaponAnimSet(this IEntity obj) => obj.HasValue(WeaponAnimSet);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelWeaponAnimSet(this IEntity obj) => obj.DelValue(WeaponAnimSet);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetWeaponAnimSet(this IEntity obj, AnimSet value) => obj.SetValue(WeaponAnimSet, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static RuntimeAnimatorController GetAnimationController(this IEntity obj) => obj.GetValue<RuntimeAnimatorController>(AnimationController);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetAnimationController(this IEntity obj, out RuntimeAnimatorController value) => obj.TryGetValue(AnimationController, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddAnimationController(this IEntity obj, RuntimeAnimatorController value) => obj.AddValue(AnimationController, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasAnimationController(this IEntity obj) => obj.HasValue(AnimationController);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelAnimationController(this IEntity obj) => obj.DelValue(AnimationController);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetAnimationController(this IEntity obj, RuntimeAnimatorController value) => obj.SetValue(AnimationController, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static SceneEntity GetPickUpPrefab(this IEntity obj) => obj.GetValue<SceneEntity>(PickUpPrefab);

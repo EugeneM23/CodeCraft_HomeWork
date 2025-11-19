@@ -9805,6 +9805,8 @@ MonoBehaviour:
   _ammo:
     count: 0
   _firePoint: {fileID: 1400432033415768503}
+  _animSet: {fileID: 0}
+  _animController: {fileID: 9100000, guid: 7dc6eb0d0bea94d6a8448ebd9e5dd972, type: 2}
 --- !u!114 &5247850647910185787
 MonoBehaviour:
   m_ObjectHideFlags: 0

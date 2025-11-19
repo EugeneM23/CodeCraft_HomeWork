@@ -51,10 +51,19 @@ namespace Game.Gameplay
             entity.AddBehaviour<CharacterMoveBehaviour>();
             entity.AddBehaviour<FireAnimBehaviour>();
             entity.AddBehaviour<CharacterMoveAnimBehaviour>();
-            entity.AddBehaviour(new CharacterSwitchAnimGraphBehaviour(_fistController, _weaponController));
+            entity.AddBehaviour(new CharacterSwitchAnimSetBehaviour());
+            entity.AddBehaviour(new DebugB());
 
             // 🛠️ Interact
             _interactInstaller.Install(entity);
+        }
+    }
+
+    public class DebugB : IEntityUpdate
+    {
+        public void OnUpdate(in IEntity entity, in float deltaTime)
+        {
+            Debug.Log(entity.GetWeapon().Value.Name);
         }
     }
 }
