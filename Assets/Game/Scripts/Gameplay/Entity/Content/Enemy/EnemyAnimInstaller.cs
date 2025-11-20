@@ -16,7 +16,8 @@ namespace Game.Gameplay
         {
             entity.AddAnimationEventReceiver(_animationReceiver);
             entity.AddAnimator(_animator);
-            entity.AddBehaviour<CharacterMoveAnimBehaviour>();
+            entity.AddBehaviour<SwitchAnimatorBehaviour>();
+
         }
     }
 }

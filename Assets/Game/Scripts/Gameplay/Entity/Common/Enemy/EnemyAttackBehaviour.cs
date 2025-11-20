@@ -8,13 +8,12 @@ namespace Game.Gameplay
     {
         private IReactiveVariable<IEntity> _target;
         private Transform _enemyTransfrom;
-        private Animator _animator;
+        private bool _isAttaking;
 
         public void Init(in IEntity entity)
         {
             _target = entity.GetTarget();
             _enemyTransfrom = entity.GetTransform();
-            _animator = entity.GetAnimator();
         }
 
         public void OnUpdate(in IEntity entity, in float deltaTime)
@@ -25,8 +24,20 @@ namespace Game.Gameplay
 
             if (distance < 1)
             {
-                _animator.SetTrigger("Attack");
+                if (entity.GetWeapon().Value.GetFireCondition().Invoke())
+                {
+                    entity.GetFireAction().Invoke();
+                    entity.GetFireEvent().Invoke();
+                }
+
+                _isAttaking = true;
+            }
+            else
+            {
+                _isAttaking = false;
             }
         }
+
+        public bool CanMove() => !_isAttaking;
     }
 }

@@ -56,6 +56,7 @@ namespace Game
 		public const int TargetInteractable = -990542098; // IReactiveVariable<IEntity>
 		public const int PatrolPoints = 587900176; // Transform[]
 		public const int Target = 1103309514; // IReactiveVariable<IEntity>
+		public const int AudioSource = 907064781; // AudioSource
 
 
 		///Tag Extensions
@@ -719,5 +720,23 @@ namespace Game
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void SetTarget(this IEntity obj, IReactiveVariable<IEntity> value) => obj.SetValue(Target, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static AudioSource GetAudioSource(this IEntity obj) => obj.GetValue<AudioSource>(AudioSource);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetAudioSource(this IEntity obj, out AudioSource value) => obj.TryGetValue(AudioSource, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddAudioSource(this IEntity obj, AudioSource value) => obj.AddValue(AudioSource, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasAudioSource(this IEntity obj) => obj.HasValue(AudioSource);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelAudioSource(this IEntity obj) => obj.DelValue(AudioSource);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetAudioSource(this IEntity obj, AudioSource value) => obj.SetValue(AudioSource, value);
     }
 }

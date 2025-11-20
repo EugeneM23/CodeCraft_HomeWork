@@ -69,5 +69,8 @@ values:
   #AI
   - PatrolPoints: Transform[]
   - Target: IReactiveVariable<IEntity>
+  
+  #Sound
+  - AudioSource: AudioSource
     
     
