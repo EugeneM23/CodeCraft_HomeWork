@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Game
 {
-    public class CameraFollowController : IContextInit<IPlayerContext>, IContextLateUpdate
+    public class CameraFollowController : IContextInit<IPlayerContext>, IContextLateUpdate, IContextUpdate
     {
         private IEntity _character;
         private IValue<Vector3> _offset;
@@ -25,6 +25,11 @@ namespace Game
             _camera = context.GetCamera().transform;
             _speed = context.GetCameraSpeed();
 
+        }
+
+        public void OnUpdate(IContext context, float deltaTime)
+        {
+            
         }
     }
 }

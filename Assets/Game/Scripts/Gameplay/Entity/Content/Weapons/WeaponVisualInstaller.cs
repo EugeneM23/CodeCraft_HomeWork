@@ -14,7 +14,6 @@ namespace Game
         {
             entity.GetFireEvent().Subscribe(() =>
             {
-                Debug.Log("asdasd");
                 _audioSource.Play();
                 _particleSystem.Play();
             });

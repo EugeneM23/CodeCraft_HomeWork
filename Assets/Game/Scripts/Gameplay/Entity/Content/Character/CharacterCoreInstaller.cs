@@ -13,7 +13,7 @@ namespace Game.Gameplay
         [SerializeField] private SceneEntity _weapon;
         [SerializeField] private TriggerEventReceiver _triggerReceiver;
         [SerializeField] private Transform _weaponRoot;
-
+        [SerializeField] private Transform _characterRoot;
         [SerializeField] private InteractInstaller _interactInstaller;
 
         public override void Install(IEntity entity)
@@ -21,7 +21,7 @@ namespace Game.Gameplay
             // 🧩 Core
             entity.AddTriggerEventReceiver(_triggerReceiver);
             entity.AddGameObject(transform.gameObject);
-            entity.AddTransform(transform);
+            entity.AddTransform(_characterRoot);
             entity.AddDamageableTag();
 
             // ❤️ Health
@@ -42,6 +42,7 @@ namespace Game.Gameplay
             // ⚙️ Behaviours  
             entity.AddBehaviour<DeathBehaviour>();
             entity.AddBehaviour<CharacterMoveBehaviour>();
+            entity.AddBehaviour<CharacterRotateBehaviour>();
 
             // 🛠️ Interact
             _interactInstaller.Install(entity);

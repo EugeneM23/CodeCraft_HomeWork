@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Modules.Gameplay
 {
-     [Serializable]
+    [Serializable]
     public sealed class Health
     {
         public event Action OnStateChanged;
@@ -15,9 +15,8 @@ namespace Modules.Gameplay
         [SerializeField, Min(0), MaxValue(nameof(max))]
         private int current;
 
-        [SerializeField, Min(0)]
-        private int max;
-        
+        [SerializeField, Min(0)] private int max;
+
         public Health(int health, int max)
         {
             this.max = max;
@@ -51,7 +50,7 @@ namespace Modules.Gameplay
 
         public float GetPercent()
         {
-            return (float) this.current / this.max;
+            return (float)this.current / this.max;
         }
 
         [Button, HideInEditorMode]
@@ -61,12 +60,12 @@ namespace Modules.Gameplay
             {
                 return false;
             }
-            
+
             if (this.current == this.max)
             {
                 return false;
             }
-            
+
             this.current = Math.Min(this.current + range, this.max);
             this.OnStateChanged?.Invoke();
             this.OnHealthChanged?.Invoke(this.current);
@@ -90,7 +89,7 @@ namespace Modules.Gameplay
             this.OnStateChanged?.Invoke();
             this.OnHealthChanged?.Invoke(this.current);
 
-            if (this.current == 0) 
+            if (this.current == 0)
                 this.OnHealthEmpty?.Invoke();
 
             return true;
@@ -107,7 +106,7 @@ namespace Modules.Gameplay
             this.current = Math.Clamp(health, 0, this.max);
             this.OnStateChanged?.Invoke();
             this.OnHealthChanged?.Invoke(this.current);
-            
+
             if (this.current == 0)
             {
                 this.OnHealthEmpty?.Invoke();
@@ -131,7 +130,7 @@ namespace Modules.Gameplay
                 this.current = newHealth;
                 this.OnHealthChanged?.Invoke(newHealth);
             }
-            
+
             this.OnStateChanged?.Invoke();
         }
     }

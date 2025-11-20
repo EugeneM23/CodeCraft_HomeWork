@@ -30,7 +30,7 @@ namespace Game
 
         private void Destroy(Collision obj)
         {
-            if (obj.gameObject.TryGetComponent(out IEntity target) && target.HasDamageableTag())
+            if (obj.gameObject.TryGetComponent(out IEntity target) && target.HasDamageableTag()) 
                 target.GetHealth().Reduce(_bullet.GetDamage().Value);
 
             UnSpawn(_bullet);

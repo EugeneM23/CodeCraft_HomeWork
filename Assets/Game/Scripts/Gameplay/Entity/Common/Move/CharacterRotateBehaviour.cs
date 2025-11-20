@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Game.Gameplay
 {
-    public class CharacterMoveBehaviour : IEntityInit, IEntityUpdate
+    public class CharacterRotateBehaviour : IEntityInit, IEntityUpdate
     {
         private IExpression<bool> _moveCondition;
         private IValue<Vector3> _moveDirection;
@@ -21,7 +21,7 @@ namespace Game.Gameplay
                 return;
 
             Vector3 direction = _moveDirection.Value;
-            MoveUseCase.Move(entity, direction, deltaTime);
+            RotateUseCase.Rotate(entity, direction, deltaTime);
         }
     }
 }

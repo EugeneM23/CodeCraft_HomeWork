@@ -1,4 +1,3 @@
-using Atomic.Elements;
 using Atomic.Entities;
 using Modules.Gameplay;
 using UnityEngine;
@@ -15,14 +14,14 @@ namespace Game.Gameplay
             _health = entity.GetHealth();
             _gameObject = entity.GetGameObject();
 
-            _health.OnHealthChanged += OnHealthChanged;
+            _health.OnHealthEmpty += OnHealthEmpty;
         }
 
-        public void Dispose(in IEntity entity) => _health.OnHealthChanged -= OnHealthChanged;
+        public void Dispose(in IEntity entity) => _health.OnHealthEmpty -= OnHealthEmpty;
 
-        private void OnHealthChanged(int health)
+        private void OnHealthEmpty()
         {
-            _gameObject.SetActive(health > 0);
+            _gameObject.SetActive(false);
         }
     }
 }
