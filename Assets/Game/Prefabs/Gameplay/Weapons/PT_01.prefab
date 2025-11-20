@@ -10495,7 +10495,7 @@ MonoBehaviour:
     _duration: 0.4
   _damage: 10
   _ammo:
-    count: 0
+    count: 10
   _firePoint: {fileID: 1400432033415768503}
   _animController: {fileID: 9100000, guid: c98aa805957f549baadf79dc0675cdc5, type: 2}
 --- !u!114 &5247850647910185787

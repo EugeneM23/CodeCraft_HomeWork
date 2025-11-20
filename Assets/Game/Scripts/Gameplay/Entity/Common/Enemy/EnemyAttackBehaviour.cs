@@ -1,5 +1,6 @@
 using Atomic.Elements;
 using Atomic.Entities;
+using TMPro;
 using UnityEngine;
 
 namespace Game.Gameplay
@@ -9,9 +10,11 @@ namespace Game.Gameplay
         private IReactiveVariable<IEntity> _target;
         private Transform _enemyTransfrom;
         private bool _isAttaking;
+        private Animator _animator;
 
         public void Init(in IEntity entity)
         {
+            _animator = entity.GetAnimator();
             _target = entity.GetTarget();
             _enemyTransfrom = entity.GetTransform();
         }
@@ -37,7 +40,5 @@ namespace Game.Gameplay
                 _isAttaking = false;
             }
         }
-
-        public bool CanMove() => !_isAttaking;
     }
 }

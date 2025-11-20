@@ -33,25 +33,29 @@ namespace Game.Gameplay
 
             // 🌀 Movement
             entity.AddRotationSpeed(new BaseVariable<float>(_rotationSpeed));
-            
+
             entity.AddMoveCondition(new AndExpression(entity.GetHealth().Exists,
-                () => entity.GetBehaviour<EnemyAttackBehaviour>().CanMove()));
-            
+                () => entity.GetBehaviour<MeleeAttackBehaviour>().CanMove()));
+
             entity.AddMoveDirection(new ReactiveVariable<Vector3>());
 
             // ⚔️ Combat
             entity.AddWeapon(new ReactiveVariable<IEntity>(_weapon));
             entity.AddWeaponRoot(_weaponRoot);
+
             entity.AddFireCondition(new AndExpression(entity.GetHealth().Exists));
             entity.AddFireEvent(new BaseEvent());
             entity.AddFireAction(new CharacterFireAction(entity));
 
+            entity.AddMeleeAttackAction(new BaseAction(() => Debug.Log("asdasdasdasd----")));
+
             // ⚙️ Behaviours  
+            entity.AddBehaviour<MeleeAttackBehaviour>();
+            entity.AddBehaviour<EnemyAttackBehaviour>();
             entity.AddBehaviour<DeathBehaviour>();
             entity.AddBehaviour<CharacterRotateBehaviour>();
             entity.AddBehaviour<EnemyPatrolBehaviour>();
             entity.AddBehaviour<EnemyChaseBehaviour>();
-            entity.AddBehaviour<EnemyAttackBehaviour>();
             entity.AddBehaviour<CharacterMoveAnimBehaviour>();
         }
     }

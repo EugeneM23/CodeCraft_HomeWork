@@ -80789,14 +80789,14 @@ AnimationClip:
   m_Events:
   - time: 0.06666667
     functionName: ReceiveEvent
-    data: start_attack_event
+    data: melee_event
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
   - time: 1.0333333
     functionName: ReceiveEvent
-    data: fire_event
+    data: melee_event
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0

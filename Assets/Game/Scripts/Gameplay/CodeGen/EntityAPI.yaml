@@ -43,6 +43,9 @@ values:
   - FireAction: IAction
   - FireEvent: BaseEvent
   - FireCondition: IExpression<bool>
+  - MeleeAttackAction: IAction
+  - MeleeAttackEvent: BaseEvent
+  - MeleeAttackCondition: IExpression<bool>
 
   # Health
   - Health: Health

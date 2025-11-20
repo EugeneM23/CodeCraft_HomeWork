@@ -34,7 +34,6 @@ namespace Game.Gameplay
 
         private void OnAnimEvent(string evt)
         {
-            Debug.Log($"OnAnimEvent: {evt}");
             if (evt == MOVE_STEP_EVENT)
                 this.PlayMoveStep();
         }

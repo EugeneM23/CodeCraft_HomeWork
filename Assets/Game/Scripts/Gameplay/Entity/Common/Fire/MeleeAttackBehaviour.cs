@@ -1,29 +1,38 @@
 using Atomic.Elements;
 using Atomic.Entities;
 using Modules.Gameplay;
+using UnityEngine;
 
 namespace Game.Gameplay
 {
     public class MeleeAttackBehaviour : IEntityInit
     {
-        private IEntity _character;
-        private IReactiveVariable<IEntity> _target;
+        int attack = Animator.StringToHash("Attack");
+        private IAction _meleeAttackAction;
         private AnimationEventReceiver _animationEventReceiver;
+        private Animator _animator;
 
         public void Init(in IEntity entity)
         {
-            _character = entity;
-            _target = entity.GetTarget();
+            _animator = entity.GetAnimator();
+            _meleeAttackAction = entity.GetMeleeAttackAction();
             _animationEventReceiver = entity.GetAnimationEventReceiver();
             _animationEventReceiver.OnEvent += Invoke;
         }
 
-        public void Invoke(string eventName)
+        private void Invoke(string eventName)
         {
-            if (_target.Value == null) return;
+            if (eventName == "melee_event")
+            {
+                _meleeAttackAction.Invoke();
+            }
+        }
 
-            if (eventName == "fire_event")
-                _target.Value.GetHealth().Reduce(_character.GetDamage().Value);
+        public bool CanMove()
+        {
+            AnimatorStateInfo stateInfo = _animator.GetCurrentAnimatorStateInfo(1);
+
+            return stateInfo.shortNameHash != attack;
         }
     }
 }
