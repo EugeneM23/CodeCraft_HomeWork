@@ -17,12 +17,12 @@ namespace Game
 		///Tags
 		public const int Damageable = 563499515;
 		public const int Interactable = 1077199658;
+		public const int Player = -1615495341;
 
 
 		///Values
 		public const int GameObject = 1482111001; // GameObject
 		public const int Transform = -180157682; // Transform
-		public const int Target = 1103309514; // Transform
 		public const int LifeTime = 1688468960; // Cooldown
 		public const int DestroyAction = 85938956; // IAction
 		public const int MoveSpeed = 526065662; // IValue<float>
@@ -47,12 +47,15 @@ namespace Game
 		public const int Animator = -1714818978; // Animator
 		public const int WeaponAnimSet = 1176554500; // AnimSet
 		public const int AnimationController = -1518513581; // RuntimeAnimatorController
+		public const int AnimationEventReceiver = 1837262450; // AnimationEventReceiver
 		public const int PickUpPrefab = 1763436596; // SceneEntity
 		public const int ShowUIAction = 1409166592; // IAction<bool>
 		public const int InteractAction = -1026843572; // IAction<IEntity>
 		public const int IsInteract = -173365543; // IReactiveVariable<bool>
 		public const int UITransform = 327940928; // Transform
 		public const int TargetInteractable = -990542098; // IReactiveVariable<IEntity>
+		public const int PatrolPoints = 587900176; // Transform[]
+		public const int Target = 1103309514; // IReactiveVariable<IEntity>
 
 
 		///Tag Extensions
@@ -74,6 +77,15 @@ namespace Game
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool DelInteractableTag(this IEntity obj) => obj.DelTag(Interactable);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasPlayerTag(this IEntity obj) => obj.HasTag(Player);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddPlayerTag(this IEntity obj) => obj.AddTag(Player);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelPlayerTag(this IEntity obj) => obj.DelTag(Player);
 
 
 		///Value Extensions
@@ -113,24 +125,6 @@ namespace Game
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void SetTransform(this IEntity obj, Transform value) => obj.SetValue(Transform, value);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static Transform GetTarget(this IEntity obj) => obj.GetValue<Transform>(Target);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool TryGetTarget(this IEntity obj, out Transform value) => obj.TryGetValue(Target, out value);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool AddTarget(this IEntity obj, Transform value) => obj.AddValue(Target, value);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool HasTarget(this IEntity obj) => obj.HasValue(Target);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool DelTarget(this IEntity obj) => obj.DelValue(Target);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void SetTarget(this IEntity obj, Transform value) => obj.SetValue(Target, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Cooldown GetLifeTime(this IEntity obj) => obj.GetValue<Cooldown>(LifeTime);
@@ -565,6 +559,24 @@ namespace Game
 		public static void SetAnimationController(this IEntity obj, RuntimeAnimatorController value) => obj.SetValue(AnimationController, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static AnimationEventReceiver GetAnimationEventReceiver(this IEntity obj) => obj.GetValue<AnimationEventReceiver>(AnimationEventReceiver);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetAnimationEventReceiver(this IEntity obj, out AnimationEventReceiver value) => obj.TryGetValue(AnimationEventReceiver, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddAnimationEventReceiver(this IEntity obj, AnimationEventReceiver value) => obj.AddValue(AnimationEventReceiver, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasAnimationEventReceiver(this IEntity obj) => obj.HasValue(AnimationEventReceiver);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelAnimationEventReceiver(this IEntity obj) => obj.DelValue(AnimationEventReceiver);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetAnimationEventReceiver(this IEntity obj, AnimationEventReceiver value) => obj.SetValue(AnimationEventReceiver, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static SceneEntity GetPickUpPrefab(this IEntity obj) => obj.GetValue<SceneEntity>(PickUpPrefab);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -671,5 +683,41 @@ namespace Game
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void SetTargetInteractable(this IEntity obj, IReactiveVariable<IEntity> value) => obj.SetValue(TargetInteractable, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Transform[] GetPatrolPoints(this IEntity obj) => obj.GetValue<Transform[]>(PatrolPoints);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetPatrolPoints(this IEntity obj, out Transform[] value) => obj.TryGetValue(PatrolPoints, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddPatrolPoints(this IEntity obj, Transform[] value) => obj.AddValue(PatrolPoints, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasPatrolPoints(this IEntity obj) => obj.HasValue(PatrolPoints);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelPatrolPoints(this IEntity obj) => obj.DelValue(PatrolPoints);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetPatrolPoints(this IEntity obj, Transform[] value) => obj.SetValue(PatrolPoints, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static IReactiveVariable<IEntity> GetTarget(this IEntity obj) => obj.GetValue<IReactiveVariable<IEntity>>(Target);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetTarget(this IEntity obj, out IReactiveVariable<IEntity> value) => obj.TryGetValue(Target, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddTarget(this IEntity obj, IReactiveVariable<IEntity> value) => obj.AddValue(Target, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasTarget(this IEntity obj) => obj.HasValue(Target);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelTarget(this IEntity obj) => obj.DelValue(Target);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetTarget(this IEntity obj, IReactiveVariable<IEntity> value) => obj.SetValue(Target, value);
     }
 }

@@ -23,6 +23,7 @@ namespace Game.Gameplay
             entity.AddGameObject(transform.gameObject);
             entity.AddTransform(_characterRoot);
             entity.AddDamageableTag();
+            entity.AddPlayerTag();
 
             // ❤️ Health
             entity.AddHealth(new Health(_health, _health));

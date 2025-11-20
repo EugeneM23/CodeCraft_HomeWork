@@ -7,20 +7,26 @@ namespace Game.Gameplay
 {
     public sealed class EnemyCoreInstaller : SceneEntityInstaller
     {
-        [SerializeField] private float _rotationSpeed = 15f;
+        [SerializeField] private int _damage = 10;
         [SerializeField] private int _health = 100;
+        [SerializeField] private float _rotationSpeed = 15f;
         [SerializeField] private SceneEntity _weapon;
         [SerializeField] private TriggerEventReceiver _triggerReceiver;
         [SerializeField] private Transform _weaponRoot;
         [SerializeField] private Transform _characterRoot;
 
+        [SerializeField] private Transform[] _patrolPoints;
+
         public override void Install(IEntity entity)
         {
             // 🧩 Core
+            entity.AddDamage(new Const<int>(_damage));
             entity.AddTriggerEventReceiver(_triggerReceiver);
             entity.AddGameObject(transform.gameObject);
             entity.AddTransform(_characterRoot);
             entity.AddDamageableTag();
+            entity.AddPatrolPoints(_patrolPoints);
+            entity.AddTarget(new ReactiveVariable<IEntity>());
 
             // ❤️ Health
             entity.AddHealth(new Health(_health, _health));
@@ -34,12 +40,16 @@ namespace Game.Gameplay
             entity.AddWeapon(new ReactiveVariable<IEntity>(_weapon));
             entity.AddWeaponRoot(_weaponRoot);
             entity.AddFireCondition(new AndExpression(entity.GetHealth().Exists));
-            entity.AddFireAction(new CharacterFireAction(entity));
+            entity.AddFireAction(new MeleeAttackAction(entity));
 
             // ⚙️ Behaviours  
             entity.AddBehaviour<DeathBehaviour>();
             entity.AddBehaviour<CharacterRotateBehaviour>();
-            entity.AddBehaviour<EnemyMoveBehaviour>();
+            entity.AddBehaviour<EnemyPatrolBehaviour>();
+            entity.AddBehaviour<EnemyChaseBehaviour>();
+            entity.AddBehaviour<EnemyAttackBehaviour>();
+
+            entity.GetAnimationEventReceiver().Subscribe("fire_event", () => entity.GetFireAction().Invoke());
         }
     }
 }

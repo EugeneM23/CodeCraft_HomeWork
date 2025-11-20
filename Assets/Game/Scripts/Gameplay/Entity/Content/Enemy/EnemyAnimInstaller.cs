@@ -14,6 +14,7 @@ namespace Game.Gameplay
 
         public override void Install(IEntity entity)
         {
+            entity.AddAnimationEventReceiver(_animationReceiver);
             entity.AddAnimator(_animator);
             entity.AddBehaviour<CharacterMoveAnimBehaviour>();
         }

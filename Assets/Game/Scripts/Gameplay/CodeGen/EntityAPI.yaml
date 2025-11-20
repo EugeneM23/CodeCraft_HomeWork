@@ -16,23 +16,23 @@ imports:
 tags:
   - Damageable
   - Interactable
+  - Player
 
 values:
-  # 🧩 Core
+  # Core
   - GameObject: GameObject
   - Transform: Transform
-  - Target: Transform
   - LifeTime: Cooldown
   - DestroyAction: IAction
 
-  # 🌀 Movement
+  # Movement
   - MoveSpeed: IValue<float>
   - MoveDirection: IReactiveVariable<Vector3>
   - MoveCondition: IExpression<bool>
   - MoveAction: IAction<Vector3, float>
   - RotationSpeed: IValue<float>
 
-  # ⚔️ Combat
+  # Combat
   - Ammo: Ammo
   - WeaponId: WeaponID
   - WeaponFireRate: Cooldown
@@ -44,25 +44,30 @@ values:
   - FireEvent: BaseEvent
   - FireCondition: IExpression<bool>
 
-  # ❤️ Health
+  # Health
   - Health: Health
   
-  # ⚙️ Physics
+  # Physics
   - CollisionReceiver: CollisionEventReceiver
   - TriggerEventReceiver: TriggerEventReceiver
   - RiggedBody: Rigidbody
   
-  # 🎬 Animation
+  # Animation
   - Animator: Animator
   - WeaponAnimSet: AnimSet
   - AnimationController: RuntimeAnimatorController
+  - AnimationEventReceiver: AnimationEventReceiver
   
-  # 🛠️ Interact
+  # Interact
   - PickUpPrefab: SceneEntity
   - ShowUIAction: IAction<bool>
   - InteractAction: IAction<IEntity>
   - IsInteract: IReactiveVariable<bool>
   - UITransform: Transform
   - TargetInteractable: IReactiveVariable<IEntity>
+  
+  #AI
+  - PatrolPoints: Transform[]
+  - Target: IReactiveVariable<IEntity>
     
     
