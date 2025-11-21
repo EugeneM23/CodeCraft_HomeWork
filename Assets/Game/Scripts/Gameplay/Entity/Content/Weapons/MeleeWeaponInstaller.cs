@@ -24,7 +24,7 @@ namespace Game
 
             entity.AddWeaponFireRate(_fireRate);
             entity.AddFireAction(new MeleeWeaponFireAction(_fireRate));
-            entity.AddFireCondition(new AndExpression(() => true));
+            entity.AddFireCondition(new AndExpression(() => entity.GetWeaponFireRate().IsExpired()));
 
             entity.AddBehaviour(new WeaponCooldownBehaviour());
         }

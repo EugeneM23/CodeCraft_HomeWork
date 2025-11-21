@@ -81,3 +81,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _id: 0
   _animController: {fileID: 9100000, guid: cb7def12ed591468ebdc46c5accc3cdb, type: 2}
+  _fireRate:
+    _current: 0
+    _duration: 1

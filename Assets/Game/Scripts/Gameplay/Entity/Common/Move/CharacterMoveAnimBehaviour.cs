@@ -26,9 +26,13 @@ namespace Game.Gameplay
 
         private void OnMoveDirectionChanged(Vector3 direction)
         {
-            if (direction == Vector3.zero || !_character.GetMoveCondition().Invoke())
+            if (direction == Vector3.zero)
+            {
                 _animator.SetBool(IS_MOVING, false);
-            else
+                return;
+            }
+
+            if (_character.GetMoveCondition().Invoke())
                 _animator.SetBool(IS_MOVING, true);
         }
     }
