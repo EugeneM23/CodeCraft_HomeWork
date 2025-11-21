@@ -11,7 +11,7 @@ namespace Game
 
             bullet.AddDamage(weapon.GetDamage());
             bullet.GetTransform().SetPositionAndRotation(firePoint.position, firePoint.rotation);
-            bullet.GetMoveDirection().Value = firePoint.forward;
+            bullet.GetMoveDirection().Value = bullet.GetTransform().forward;
             bullet.GetLifeTime().Reset();
 
             return bullet;

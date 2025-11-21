@@ -25,7 +25,7 @@ namespace Game
             entity.GetMoveCondition().Append(_fireRate.IsExpired);
 
             entity.AddWeaponCooldown(_fireRate);
-            entity.AddFireAction(new MeleeWeaponFireAction(_fireRate));
+            entity.AddFireAction(new BaseAction(() => entity.GetWeaponCooldown().Reset()));
             entity.AddFireCondition(new AndExpression(() => entity.GetWeaponCooldown().IsExpired()));
 
             entity.OnUpdated += deltaTime => entity.GetWeaponCooldown().Tick(deltaTime);
