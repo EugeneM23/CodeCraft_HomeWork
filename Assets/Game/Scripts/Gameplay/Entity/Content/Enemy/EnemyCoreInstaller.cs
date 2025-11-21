@@ -8,6 +8,7 @@ namespace Game.Gameplay
     public sealed class EnemyCoreInstaller : SceneEntityInstaller
     {
         [SerializeField] private int _damage = 10;
+        [SerializeField] private float _moveSpeed = 1;
         [SerializeField] private int _health = 100;
         [SerializeField] private float _rotationSpeed = 15f;
         [SerializeField] private SceneEntity _weapon;
@@ -20,6 +21,7 @@ namespace Game.Gameplay
         public override void Install(IEntity entity)
         {
             // 🧩 Core
+            entity.AddMoveSpeed(new Const<float>(_moveSpeed));
             entity.AddDamage(new Const<int>(_damage));
             entity.AddTriggerEventReceiver(_triggerReceiver);
             entity.AddGameObject(transform.gameObject);
@@ -33,7 +35,10 @@ namespace Game.Gameplay
 
             // 🌀 Movement
             entity.AddRotationSpeed(new BaseVariable<float>(_rotationSpeed));
-            entity.AddMoveCondition(new AndExpression(entity.GetHealth().Exists));
+            
+            entity.AddMoveCondition(new AndExpression(entity.GetHealth().Exists,
+                () => entity.GetWeapon().Value.GetMoveCondition().Invoke()));
+            
             entity.AddMoveDirection(new ReactiveVariable<Vector3>());
 
             // ⚔️ Combat
@@ -48,7 +53,10 @@ namespace Game.Gameplay
             // ⚙️ Behaviours  
             entity.AddBehaviour<DeathBehaviour>();
             entity.AddBehaviour<CharacterRotateBehaviour>();
+
             entity.AddBehaviour<CharacterMoveAnimBehaviour>();
+            entity.AddBehaviour<CharacterMoveBehaviour>();
+
             entity.AddBehaviour<EnemyPatrolBehaviour>();
             entity.AddBehaviour<EnemyAttackBehaviour>();
             entity.AddBehaviour<EnemyChaseBehaviour>();
