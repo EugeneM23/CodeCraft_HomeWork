@@ -105,7 +105,7 @@ MonoBehaviour:
   _animController: {fileID: 22100000, guid: 7c5b95bb9cebe498c82f344aa4afc1b0, type: 2}
   _fireRate:
     _current: 0
-    _duration: 0.4
+    _duration: 0.3
 --- !u!114 &1708779625709847107
 MonoBehaviour:
   m_ObjectHideFlags: 0

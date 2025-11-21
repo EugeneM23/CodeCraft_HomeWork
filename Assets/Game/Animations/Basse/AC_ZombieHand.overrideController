@@ -7,5 +7,13 @@ AnimatorOverrideController:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: AC_ZombieHand
-  m_Controller: {fileID: 0}
-  m_Clips: []
+  m_Controller: {fileID: 9100000, guid: 55fb54f686ee24340bb8a7ea86e48720, type: 2}
+  m_Clips:
+  - m_OriginalClip: {fileID: 7400000, guid: bd926ec8a55954aa08e6614e66abc1ef, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: b90cfff60c41b4cd7857c2c2aee6c0ac, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: fc0b0e3c205140329237aa56209b9f65, type: 2}
+    m_OverrideClip: {fileID: -203655887218126122, guid: c4cdd08c791c34b5e8b611b7846355f0, type: 3}
+  - m_OriginalClip: {fileID: 7400000, guid: 9294594496b964d6dbdf8d7e616b8f4d, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 4a760a091665048d0987ca2908073f27, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: 14a5d48897a784ed4822d3b35120dc96, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: b90cfff60c41b4cd7857c2c2aee6c0ac, type: 2}
