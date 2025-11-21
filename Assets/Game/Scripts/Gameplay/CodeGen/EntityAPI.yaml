@@ -17,6 +17,8 @@ tags:
   - Damageable
   - Interactable
   - Player
+  - MeleeWeapon
+  - RangeWeapon
 
 values:
   # Core

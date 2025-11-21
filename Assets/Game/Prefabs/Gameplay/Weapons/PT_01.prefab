@@ -10494,10 +10494,9 @@ MonoBehaviour:
     _current: 0
     _duration: 0.4
   _damage: 10
-  _ammo:
-    count: 10
+  _ammo: 0
   _firePoint: {fileID: 1400432033415768503}
-  _animController: {fileID: 9100000, guid: c98aa805957f549baadf79dc0675cdc5, type: 2}
+  _animController: {fileID: 22100000, guid: 15adb737bb7694c9489259a26cdf7edb, type: 2}
 --- !u!114 &5247850647910185787
 MonoBehaviour:
   m_ObjectHideFlags: 0

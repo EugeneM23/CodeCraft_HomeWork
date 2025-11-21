@@ -18,6 +18,8 @@ namespace Game
 		public const int Damageable = 563499515;
 		public const int Interactable = 1077199658;
 		public const int Player = -1615495341;
+		public const int MeleeWeapon = 1696241262;
+		public const int RangeWeapon = 1026304482;
 
 
 		///Values
@@ -87,6 +89,24 @@ namespace Game
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool DelPlayerTag(this IEntity obj) => obj.DelTag(Player);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasMeleeWeaponTag(this IEntity obj) => obj.HasTag(MeleeWeapon);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddMeleeWeaponTag(this IEntity obj) => obj.AddTag(MeleeWeapon);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelMeleeWeaponTag(this IEntity obj) => obj.DelTag(MeleeWeapon);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasRangeWeaponTag(this IEntity obj) => obj.HasTag(RangeWeapon);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddRangeWeaponTag(this IEntity obj) => obj.AddTag(RangeWeapon);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelRangeWeaponTag(this IEntity obj) => obj.DelTag(RangeWeapon);
 
 
 		///Value Extensions

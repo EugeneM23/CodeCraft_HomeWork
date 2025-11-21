@@ -14,6 +14,7 @@ namespace Game
         public override void Install(IEntity entity)
         {
             //Core
+            entity.AddMeleeWeaponTag();
             entity.AddWeaponId(_id);
             entity.AddAnimationController(_animController);
             entity.AddTransform(transform);

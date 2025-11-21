@@ -43,7 +43,7 @@ namespace Game
 
         protected override void OnHide()
         {
-            _character.GetWeapon().Value.GetAmmo().OnStateChanged -= UpdateAmmo;
+            //_character.GetWeapon().Value.GetAmmo().OnStateChanged -= UpdateAmmo;
         }
     }
 }

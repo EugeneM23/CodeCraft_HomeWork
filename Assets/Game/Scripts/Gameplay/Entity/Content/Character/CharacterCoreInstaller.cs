@@ -42,6 +42,7 @@ namespace Game.Gameplay
             // ⚔️ Combat
             entity.AddWeapon(new ReactiveVariable<IEntity>(_weapon));
             entity.AddWeaponRoot(_weaponRoot);
+            
             entity.AddFireCondition(new AndExpression(entity.GetHealth().Exists));
             entity.AddFireAction(new CharacterFireAction(entity));
 

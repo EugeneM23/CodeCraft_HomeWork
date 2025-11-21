@@ -17,6 +17,8 @@ namespace Game
 
         public override void Install(IEntity entity)
         {
+            entity.AddRangeWeaponTag();
+            
             entity.AddAnimationController(_animController);
             entity.AddWeaponId(_id);
             entity.AddAmmo(new Ammo(_ammo));

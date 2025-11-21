@@ -6,7 +6,8 @@ namespace Game.Gameplay
 {
     public class CharacterFireAction : IAction
     {
-        private readonly int _attack = Animator.StringToHash("Attack");
+        private readonly int _fire = Animator.StringToHash("Fire");
+        private readonly int _melee = Animator.StringToHash("Melee");
         private readonly IEntity _character;
 
         public CharacterFireAction(IEntity character)
@@ -21,7 +22,15 @@ namespace Game.Gameplay
             if (!weapon.GetFireCondition().Invoke()) return;
 
             weapon.GetFireAction().Invoke();
-            _character.GetAnimator().SetTrigger(_attack);
+
+            if (weapon.HasRangeWeaponTag())
+            {
+                Debug.Log("asdsad");
+                _character.GetAnimator().Play(_fire, 1);
+            }
+
+            if (weapon.HasMeleeWeaponTag())
+                _character.GetAnimator().Play(_melee, 2);
         }
     }
 }
