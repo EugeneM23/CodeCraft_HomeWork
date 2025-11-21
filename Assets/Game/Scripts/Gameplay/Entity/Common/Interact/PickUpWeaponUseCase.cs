@@ -7,18 +7,15 @@ namespace Game
     {
         public static bool PickUpWeapon(IEntity character, IEntity sceneWeapon, GameContext gameContext)
         {
-            WeaponID id = character.GetWeapon().Value.GetWeaponId();
-
-            if (id == WeaponID.Hand)
-                GameObject.Destroy(character.GetWeapon().Value.GetTransform().gameObject);
-
-            if (id != WeaponID.Hand)
-                DropWeaponUseCase.DropWeapon(character, gameContext);
+            DropWeaponUseCase.DropWeapon(character, gameContext);
 
             SceneEntity characterWeapon = gameContext.GetWeaponCatalog().GetWeapon(sceneWeapon.GetWeaponId());
 
-            if (sceneWeapon.TryGetAmmo(out var ammo) && characterWeapon.TryGetAmmo(out var ammo2))
-                characterWeapon.GetAmmo().Add(ammo.GetCount());
+            if (sceneWeapon.TryGetAmmo(out var pickUpValue) && characterWeapon.TryGetAmmo(out var ammo))
+            {
+                ammo.SpendAll();
+                ammo.Add(pickUpValue.GetCount());
+            }
 
             Transform weaponTransform = characterWeapon.GetTransform();
             character.GetWeapon().Value = characterWeapon;
@@ -27,9 +24,9 @@ namespace Game
             weaponTransform.SetPositionAndRotation(weaponRoot.position, weaponRoot.rotation);
             weaponTransform.SetParent(weaponRoot);
 
-
             SceneEntity.Destroy(sceneWeapon);
 
+            character.GetHandWeapon().Value.GetGameObject().SetActive(false);
             return true;
         }
     }

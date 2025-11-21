@@ -19,6 +19,9 @@ namespace Game
 
         public void Dispose(in IEntity entity) => _weapon.Unsubscribe(OnWeaponChanged);
 
-        private void OnWeaponChanged(IEntity weapon) => SwitchAnimatorUseCase.Switch(_animator, weapon);
+        private void OnWeaponChanged(IEntity weapon)
+        {
+            SwitchAnimatorUseCase.Switch(_animator, weapon);
+        }
     }
 }

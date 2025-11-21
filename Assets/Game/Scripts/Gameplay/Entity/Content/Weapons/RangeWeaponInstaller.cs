@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Game
 {
-    public class WeaponInstaller : SceneEntityInstaller
+    public class RangeWeaponInstaller : SceneEntityInstaller
     {
         [SerializeField] private WeaponID _id;
         [SerializeField] private Cooldown _fireRate;
@@ -17,25 +17,29 @@ namespace Game
 
         public override void Install(IEntity entity)
         {
-            entity.AddRangeWeaponTag();
-            
-            entity.AddAnimationController(_animController);
+            //Core
             entity.AddWeaponId(_id);
+            entity.AddRangeWeaponTag();
+            entity.SetFirePoint(_firePoint);
             entity.AddAmmo(new Ammo(_ammo));
-            entity.AddDamage(new Const<int>(_damage));
-            entity.AddWeaponFireRate(_fireRate);
+
+            //Animation
+            entity.AddAnimationController(_animController);
             entity.AddTransform(transform);
+            
+            //Movement
             entity.AddMoveCondition(new AndExpression((() => true)));
 
-            entity.SetFirePoint(_firePoint);
+            //Fire
+            entity.AddDamage(new Const<int>(_damage));
+            entity.AddWeaponCooldown(_fireRate);
             entity.AddFireEvent(new BaseEvent());
-            entity.AddFireAction(new WeaponFireAction(entity));
-
+            entity.AddFireAction(new RangeWeaponFireAction(entity));
             entity.AddFireCondition(new AndExpression());
             entity.GetFireCondition().Append(() => entity.GetAmmo().GetCount() > 0);
-            entity.GetFireCondition().Append(entity.GetWeaponFireRate().IsExpired);
+            entity.GetFireCondition().Append(entity.GetWeaponCooldown().IsExpired);
 
-            entity.AddBehaviour(new WeaponCooldownBehaviour());
+            entity.OnUpdated += deltaTime => entity.GetWeaponCooldown().Tick(deltaTime);
         }
     }
 }

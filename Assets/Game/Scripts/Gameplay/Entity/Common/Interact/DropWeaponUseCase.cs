@@ -8,25 +8,29 @@ namespace Game
     {
         public static bool DropWeapon(IEntity character, GameContext gameContext)
         {
-            if (!character.TryGetWeapon(out IReactiveVariable<IEntity> weapon) ||
-                weapon.Value.GetWeaponId() == WeaponID.Hand)
-                return false;
+            IEntity weapon = character.GetWeapon().Value;
 
-            Transform weaponTransform = weapon.Value.GetTransform();
+            if (weapon.GetWeaponId() == WeaponID.Hand) return false;
+
+            Transform weaponTransform = weapon.GetTransform();
 
             SpawnPickUpWeapon(gameContext, weapon, weaponTransform);
+
             GameObject.Destroy(weaponTransform.gameObject);
-            character.GetWeapon().Value = gameContext.GetWeaponCatalog().GetWeapon(WeaponID.Hand);
+
+            character.GetHandWeapon().Value.GetGameObject().SetActive(true);
+            character.GetWeapon().Value = character.GetHandWeapon().Value;
+
             return true;
         }
 
-        private static void SpawnPickUpWeapon(GameContext gameContext, IReactiveVariable<IEntity> weapon,
+        private static void SpawnPickUpWeapon(GameContext gameContext, IEntity weapon,
             Transform weaponTransform)
         {
-            SceneEntity pickUpWeapon = gameContext.GetWeaponCatalog().GetPickUpWeapon(weapon.Value.GetWeaponId());
+            SceneEntity pickUpWeapon = gameContext.GetWeaponCatalog().GetPickUpWeapon(weapon.GetWeaponId());
             pickUpWeapon.GetTransform().SetPositionAndRotation(weaponTransform.position, weaponTransform.rotation);
 
-            if (!weapon.Value.TryGetAmmo(out var currentAmmo))
+            if (!weapon.TryGetAmmo(out var currentAmmo))
                 return;
 
             if (pickUpWeapon.TryGetAmmo(out var ammo))

@@ -34,8 +34,9 @@ namespace Game
 		public const int RotationSpeed = 1771316350; // IValue<float>
 		public const int Ammo = 1337839892; // Ammo
 		public const int WeaponId = -1822610762; // WeaponID
-		public const int WeaponFireRate = -1052254408; // Cooldown
+		public const int WeaponCooldown = 990812014; // Cooldown
 		public const int Weapon = 1855955664; // IReactiveVariable<IEntity>
+		public const int HandWeapon = 1077568457; // IReactiveVariable<IEntity>
 		public const int WeaponRoot = 381533304; // Transform
 		public const int FirePoint = 397255013; // Transform
 		public const int Damage = 375673178; // IValue<int>
@@ -47,7 +48,6 @@ namespace Game
 		public const int TriggerEventReceiver = -484936241; // TriggerEventReceiver
 		public const int RiggedBody = 1421993665; // Rigidbody
 		public const int Animator = -1714818978; // Animator
-		public const int WeaponAnimSet = 1176554500; // AnimSet
 		public const int AnimationController = -1518513581; // RuntimeAnimatorController
 		public const int AnimationEventReceiver = 1837262450; // AnimationEventReceiver
 		public const int PickUpPrefab = 1763436596; // SceneEntity
@@ -310,22 +310,22 @@ namespace Game
 		public static void SetWeaponId(this IEntity obj, WeaponID value) => obj.SetValue(WeaponId, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static Cooldown GetWeaponFireRate(this IEntity obj) => obj.GetValue<Cooldown>(WeaponFireRate);
+		public static Cooldown GetWeaponCooldown(this IEntity obj) => obj.GetValue<Cooldown>(WeaponCooldown);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool TryGetWeaponFireRate(this IEntity obj, out Cooldown value) => obj.TryGetValue(WeaponFireRate, out value);
+		public static bool TryGetWeaponCooldown(this IEntity obj, out Cooldown value) => obj.TryGetValue(WeaponCooldown, out value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool AddWeaponFireRate(this IEntity obj, Cooldown value) => obj.AddValue(WeaponFireRate, value);
+		public static bool AddWeaponCooldown(this IEntity obj, Cooldown value) => obj.AddValue(WeaponCooldown, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool HasWeaponFireRate(this IEntity obj) => obj.HasValue(WeaponFireRate);
+		public static bool HasWeaponCooldown(this IEntity obj) => obj.HasValue(WeaponCooldown);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool DelWeaponFireRate(this IEntity obj) => obj.DelValue(WeaponFireRate);
+		public static bool DelWeaponCooldown(this IEntity obj) => obj.DelValue(WeaponCooldown);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void SetWeaponFireRate(this IEntity obj, Cooldown value) => obj.SetValue(WeaponFireRate, value);
+		public static void SetWeaponCooldown(this IEntity obj, Cooldown value) => obj.SetValue(WeaponCooldown, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static IReactiveVariable<IEntity> GetWeapon(this IEntity obj) => obj.GetValue<IReactiveVariable<IEntity>>(Weapon);
@@ -344,6 +344,24 @@ namespace Game
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void SetWeapon(this IEntity obj, IReactiveVariable<IEntity> value) => obj.SetValue(Weapon, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static IReactiveVariable<IEntity> GetHandWeapon(this IEntity obj) => obj.GetValue<IReactiveVariable<IEntity>>(HandWeapon);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetHandWeapon(this IEntity obj, out IReactiveVariable<IEntity> value) => obj.TryGetValue(HandWeapon, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddHandWeapon(this IEntity obj, IReactiveVariable<IEntity> value) => obj.AddValue(HandWeapon, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasHandWeapon(this IEntity obj) => obj.HasValue(HandWeapon);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelHandWeapon(this IEntity obj) => obj.DelValue(HandWeapon);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetHandWeapon(this IEntity obj, IReactiveVariable<IEntity> value) => obj.SetValue(HandWeapon, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Transform GetWeaponRoot(this IEntity obj) => obj.GetValue<Transform>(WeaponRoot);
@@ -542,24 +560,6 @@ namespace Game
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void SetAnimator(this IEntity obj, Animator value) => obj.SetValue(Animator, value);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static AnimSet GetWeaponAnimSet(this IEntity obj) => obj.GetValue<AnimSet>(WeaponAnimSet);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool TryGetWeaponAnimSet(this IEntity obj, out AnimSet value) => obj.TryGetValue(WeaponAnimSet, out value);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool AddWeaponAnimSet(this IEntity obj, AnimSet value) => obj.AddValue(WeaponAnimSet, value);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool HasWeaponAnimSet(this IEntity obj) => obj.HasValue(WeaponAnimSet);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool DelWeaponAnimSet(this IEntity obj) => obj.DelValue(WeaponAnimSet);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void SetWeaponAnimSet(this IEntity obj, AnimSet value) => obj.SetValue(WeaponAnimSet, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static RuntimeAnimatorController GetAnimationController(this IEntity obj) => obj.GetValue<RuntimeAnimatorController>(AnimationController);

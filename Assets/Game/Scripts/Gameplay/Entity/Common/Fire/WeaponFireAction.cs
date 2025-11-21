@@ -4,12 +4,12 @@ using UnityEngine;
 
 namespace Game.Gameplay
 {
-    public class WeaponFireAction : IAction
+    public class RangeWeaponFireAction : IAction
     {
         private readonly IEntity _weapon;
         private readonly GameContext _gameContext;
 
-        public WeaponFireAction(IEntity weapon)
+        public RangeWeaponFireAction(IEntity weapon)
         {
             _weapon = weapon;
             _gameContext = GameContext.Instance;
@@ -20,8 +20,8 @@ namespace Game.Gameplay
             if (_weapon.TryGetAmmo(out var ammo))
                 ammo.Spend();
 
-            if (_weapon.TryGetWeaponFireRate(out var fireRate))
-                fireRate.Reset();
+            if (_weapon.TryGetWeaponCooldown(out var cooldown))
+                cooldown.Reset();
 
             if (_weapon.TryGetFirePoint(out var firePoint))
                 FireBulletUseCase.SpawnBullet(_weapon, _gameContext, firePoint);

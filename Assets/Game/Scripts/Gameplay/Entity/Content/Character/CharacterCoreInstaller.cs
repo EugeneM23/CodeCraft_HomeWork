@@ -13,6 +13,7 @@ namespace Game.Gameplay
         [SerializeField] private float _rotationSpeed = 15f;
         [SerializeField] private int _health = 100;
         [SerializeField] private SceneEntity _weapon;
+        [SerializeField] private SceneEntity _handWeapon;
         [SerializeField] private TriggerEventReceiver _triggerReceiver;
         [SerializeField] private Transform _weaponRoot;
         [SerializeField] private Transform _characterRoot;
@@ -21,11 +22,11 @@ namespace Game.Gameplay
         public override void Install(IEntity entity)
         {
             // 🧩 Core
+            entity.AddDamageableTag();
+            entity.AddPlayerTag();
             entity.AddTriggerEventReceiver(_triggerReceiver);
             entity.AddGameObject(transform.gameObject);
             entity.AddTransform(_characterRoot);
-            entity.AddDamageableTag();
-            entity.AddPlayerTag();
 
             // ❤️ Health
             entity.AddHealth(new Health(_health, _health));
@@ -41,8 +42,8 @@ namespace Game.Gameplay
 
             // ⚔️ Combat
             entity.AddWeapon(new ReactiveVariable<IEntity>(_weapon));
+            entity.AddHandWeapon(new ReactiveVariable<IEntity>(_weapon));
             entity.AddWeaponRoot(_weaponRoot);
-            
             entity.AddFireCondition(new AndExpression(entity.GetHealth().Exists));
             entity.AddFireAction(new CharacterFireAction(entity));
 

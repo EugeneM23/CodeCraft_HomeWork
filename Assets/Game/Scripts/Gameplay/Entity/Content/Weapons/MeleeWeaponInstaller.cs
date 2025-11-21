@@ -14,6 +14,7 @@ namespace Game
         public override void Install(IEntity entity)
         {
             //Core
+            entity.AddGameObject(transform.gameObject);
             entity.AddMeleeWeaponTag();
             entity.AddWeaponId(_id);
             entity.AddAnimationController(_animController);
@@ -23,11 +24,11 @@ namespace Game
             entity.AddMoveCondition(new AndExpression());
             entity.GetMoveCondition().Append(_fireRate.IsExpired);
 
-            entity.AddWeaponFireRate(_fireRate);
+            entity.AddWeaponCooldown(_fireRate);
             entity.AddFireAction(new MeleeWeaponFireAction(_fireRate));
-            entity.AddFireCondition(new AndExpression(() => entity.GetWeaponFireRate().IsExpired()));
+            entity.AddFireCondition(new AndExpression(() => entity.GetWeaponCooldown().IsExpired()));
 
-            entity.AddBehaviour(new WeaponCooldownBehaviour());
+            entity.OnUpdated += deltaTime => entity.GetWeaponCooldown().Tick(deltaTime);
         }
     }
 }

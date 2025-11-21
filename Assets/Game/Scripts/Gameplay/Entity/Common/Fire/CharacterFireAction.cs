@@ -23,11 +23,8 @@ namespace Game.Gameplay
 
             weapon.GetFireAction().Invoke();
 
-            if (weapon.HasRangeWeaponTag())
-            {
-                Debug.Log("asdsad");
+            if (weapon.HasRangeWeaponTag()) 
                 _character.GetAnimator().Play(_fire, 1);
-            }
 
             if (weapon.HasMeleeWeaponTag())
                 _character.GetAnimator().Play(_melee, 2);
