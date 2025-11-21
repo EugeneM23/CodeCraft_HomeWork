@@ -13,7 +13,7 @@ namespace Game
                 return false;
 
             Transform weaponTransform = weapon.Value.GetTransform();
-            
+
             SpawnPickUpWeapon(gameContext, weapon, weaponTransform);
             GameObject.Destroy(weaponTransform.gameObject);
             character.GetWeapon().Value = gameContext.GetWeaponCatalog().GetWeapon(WeaponID.Hand);
@@ -26,10 +26,13 @@ namespace Game
             SceneEntity pickUpWeapon = gameContext.GetWeaponCatalog().GetPickUpWeapon(weapon.Value.GetWeaponId());
             pickUpWeapon.GetTransform().SetPositionAndRotation(weaponTransform.position, weaponTransform.rotation);
 
+            if (!weapon.Value.TryGetAmmo(out var currentAmmo))
+                return;
+
             if (pickUpWeapon.TryGetAmmo(out var ammo))
             {
                 ammo.SpendAll();
-                ammo.Add(weapon.Value.GetAmmo().GetCount());
+                ammo.Add(currentAmmo.GetCount());
             }
         }
     }

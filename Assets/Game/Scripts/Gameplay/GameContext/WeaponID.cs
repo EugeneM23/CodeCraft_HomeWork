@@ -4,6 +4,7 @@ namespace Game
     {
         Hand,
         PT_01,
-        AR_01
+        AR_01,
+        Knife_01
     }
 }

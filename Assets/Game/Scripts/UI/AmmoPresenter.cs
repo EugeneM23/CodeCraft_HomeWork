@@ -25,27 +25,14 @@ namespace Game
 
         private void OnWeaponChanged(IEntity weapon)
         {
-            if (_currentWeapon != null)
-                _currentWeapon.GetAmmo().OnStateChanged -= UpdateAmmo;
+            if (_currentWeapon != null && _currentWeapon.TryGetAmmo(out var ammo))
+                ammo.OnStateChanged += UpdateAmmo;
 
             _currentWeapon = weapon;
-
-            if (_currentWeapon != null)
-            {
-                if (!weapon.TryGetAmmo(out var ammo)) return;
-                
-                ammo.OnStateChanged += UpdateAmmo;
-                UpdateAmmo();
-            }
-            else
-            {
-                _statView.SetText(0.ToString());
-            }
         }
 
         protected override void OnShow()
         {
-            UpdateAmmo();
         }
 
         private void UpdateAmmo()

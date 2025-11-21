@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using Atomic.Elements;
 using Atomic.Entities;
 using Modules.Gameplay;
@@ -31,7 +33,10 @@ namespace Game.Gameplay
             // 🌀 Movement
             entity.AddRotationSpeed(new BaseVariable<float>(_rotationSpeed));
             entity.AddMoveSpeed(new Const<float>(_moveSpeed));
-            entity.AddMoveCondition(new AndExpression(entity.GetHealth().Exists));
+
+            entity.AddMoveCondition(new AndExpression(entity.GetHealth().Exists,
+                () => entity.GetWeapon().Value.GetMoveCondition().Invoke()));
+
             entity.AddMoveDirection(new ReactiveVariable<Vector3>());
 
             // ⚔️ Combat

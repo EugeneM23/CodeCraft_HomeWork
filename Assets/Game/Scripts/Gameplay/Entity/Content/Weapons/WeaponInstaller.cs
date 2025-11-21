@@ -23,11 +23,12 @@ namespace Game
             entity.AddDamage(new Const<int>(_damage));
             entity.AddWeaponFireRate(_fireRate);
             entity.AddTransform(transform);
-            
+            entity.AddMoveCondition(new AndExpression((() => true)));
+
             entity.SetFirePoint(_firePoint);
             entity.AddFireEvent(new BaseEvent());
             entity.AddFireAction(new WeaponFireAction(entity));
-            
+
             entity.AddFireCondition(new AndExpression());
             entity.GetFireCondition().Append(() => entity.GetAmmo().GetCount() > 0);
             entity.GetFireCondition().Append(entity.GetWeaponFireRate().IsExpired);

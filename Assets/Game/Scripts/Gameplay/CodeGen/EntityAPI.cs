@@ -40,9 +40,6 @@ namespace Game
 		public const int FireAction = 1186461126; // IAction
 		public const int FireEvent = -1683597082; // BaseEvent
 		public const int FireCondition = -280402907; // IExpression<bool>
-		public const int MeleeAttackAction = -1365836177; // IAction
-		public const int MeleeAttackEvent = 41534113; // BaseEvent
-		public const int MeleeAttackCondition = -1770140745; // IExpression<bool>
 		public const int Health = -915003867; // Health
 		public const int CollisionReceiver = 905037854; // CollisionEventReceiver
 		public const int TriggerEventReceiver = -484936241; // TriggerEventReceiver
@@ -435,60 +432,6 @@ namespace Game
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void SetFireCondition(this IEntity obj, IExpression<bool> value) => obj.SetValue(FireCondition, value);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static IAction GetMeleeAttackAction(this IEntity obj) => obj.GetValue<IAction>(MeleeAttackAction);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool TryGetMeleeAttackAction(this IEntity obj, out IAction value) => obj.TryGetValue(MeleeAttackAction, out value);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool AddMeleeAttackAction(this IEntity obj, IAction value) => obj.AddValue(MeleeAttackAction, value);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool HasMeleeAttackAction(this IEntity obj) => obj.HasValue(MeleeAttackAction);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool DelMeleeAttackAction(this IEntity obj) => obj.DelValue(MeleeAttackAction);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void SetMeleeAttackAction(this IEntity obj, IAction value) => obj.SetValue(MeleeAttackAction, value);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static BaseEvent GetMeleeAttackEvent(this IEntity obj) => obj.GetValue<BaseEvent>(MeleeAttackEvent);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool TryGetMeleeAttackEvent(this IEntity obj, out BaseEvent value) => obj.TryGetValue(MeleeAttackEvent, out value);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool AddMeleeAttackEvent(this IEntity obj, BaseEvent value) => obj.AddValue(MeleeAttackEvent, value);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool HasMeleeAttackEvent(this IEntity obj) => obj.HasValue(MeleeAttackEvent);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool DelMeleeAttackEvent(this IEntity obj) => obj.DelValue(MeleeAttackEvent);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void SetMeleeAttackEvent(this IEntity obj, BaseEvent value) => obj.SetValue(MeleeAttackEvent, value);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static IExpression<bool> GetMeleeAttackCondition(this IEntity obj) => obj.GetValue<IExpression<bool>>(MeleeAttackCondition);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool TryGetMeleeAttackCondition(this IEntity obj, out IExpression<bool> value) => obj.TryGetValue(MeleeAttackCondition, out value);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool AddMeleeAttackCondition(this IEntity obj, IExpression<bool> value) => obj.AddValue(MeleeAttackCondition, value);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool HasMeleeAttackCondition(this IEntity obj) => obj.HasValue(MeleeAttackCondition);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool DelMeleeAttackCondition(this IEntity obj) => obj.DelValue(MeleeAttackCondition);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void SetMeleeAttackCondition(this IEntity obj, IExpression<bool> value) => obj.SetValue(MeleeAttackCondition, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Health GetHealth(this IEntity obj) => obj.GetValue<Health>(Health);
