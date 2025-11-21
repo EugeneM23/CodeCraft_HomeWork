@@ -3,7 +3,7 @@ using Modules.Gameplay;
 
 namespace Game
 {
-    public class WeaponFireRateBehaviour : IEntityUpdate, IEntityInit
+    public class WeaponCooldownBehaviour : IEntityUpdate, IEntityInit
     {
         private Cooldown _weaponRpm;
 

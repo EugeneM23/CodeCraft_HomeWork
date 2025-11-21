@@ -18,9 +18,9 @@ namespace Game
 
         public void OnLateUpdate(IContext context, float deltaTime)
         {
-            if (!_character.GetFireCondition().Invoke() || !_weapon.Value.GetFireCondition().Invoke()) return;
+            if (!_character.GetFireCondition().Invoke()) return;
 
-            if (Input.GetKey(KeyCode.Space)) 
+            if (Input.GetKey(KeyCode.Space))
                 _character.GetFireAction().Invoke();
         }
     }
