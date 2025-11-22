@@ -29,6 +29,7 @@ namespace Game
 		public const int DestroyAction = 85938956; // IAction
 		public const int MoveSpeed = 526065662; // IValue<float>
 		public const int MoveDirection = -721923052; // IReactiveVariable<Vector3>
+		public const int RotateDirection = -1044844011; // IReactiveVariable<Vector3>
 		public const int MoveCondition = 1466174948; // IExpression<bool>
 		public const int MoveAction = 1225226561; // IAction<Vector3, float>
 		public const int RotationSpeed = 1771316350; // IValue<float>
@@ -221,6 +222,24 @@ namespace Game
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void SetMoveDirection(this IEntity obj, IReactiveVariable<Vector3> value) => obj.SetValue(MoveDirection, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static IReactiveVariable<Vector3> GetRotateDirection(this IEntity obj) => obj.GetValue<IReactiveVariable<Vector3>>(RotateDirection);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetRotateDirection(this IEntity obj, out IReactiveVariable<Vector3> value) => obj.TryGetValue(RotateDirection, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddRotateDirection(this IEntity obj, IReactiveVariable<Vector3> value) => obj.AddValue(RotateDirection, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasRotateDirection(this IEntity obj) => obj.HasValue(RotateDirection);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelRotateDirection(this IEntity obj) => obj.DelValue(RotateDirection);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetRotateDirection(this IEntity obj, IReactiveVariable<Vector3> value) => obj.SetValue(RotateDirection, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static IExpression<bool> GetMoveCondition(this IEntity obj) => obj.GetValue<IExpression<bool>>(MoveCondition);

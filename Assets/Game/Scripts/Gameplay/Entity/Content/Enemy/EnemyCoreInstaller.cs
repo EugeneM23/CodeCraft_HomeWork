@@ -39,6 +39,7 @@ namespace Game.Gameplay
                 () => entity.GetWeapon().Value.GetMoveCondition().Invoke()));
 
             entity.AddMoveDirection(new ReactiveVariable<Vector3>());
+            entity.AddRotateDirection(new ReactiveVariable<Vector3>());
 
             // ⚔️ Combat
             entity.AddWeapon(new ReactiveVariable<IEntity>(_weapon));

@@ -30,6 +30,7 @@ values:
   # Movement
   - MoveSpeed: IValue<float>
   - MoveDirection: IReactiveVariable<Vector3>
+  - RotateDirection: IReactiveVariable<Vector3>
   - MoveCondition: IExpression<bool>
   - MoveAction: IAction<Vector3, float>
   - RotationSpeed: IValue<float>

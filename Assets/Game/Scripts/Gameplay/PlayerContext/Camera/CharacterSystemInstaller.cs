@@ -16,6 +16,7 @@ namespace Game
             context.AddCharacterTransform(_character.transform);
 
             context.AddController<CharacterMoveController>();
+            context.AddController<CharacterRotateController>();
             context.AddController<CharacterFireController>();
             context.AddController<CharacterInteractController>();
             context.AddController<CharacterDropWeaponController>();

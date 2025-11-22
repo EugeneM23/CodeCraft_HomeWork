@@ -174,5 +174,5 @@ MonoBehaviour:
     m_Bits: 256
   _cooldown:
     _current: 0
-    _duration: 0.3
+    _duration: 0.5
   _animController: {fileID: 22100000, guid: 7c5b95bb9cebe498c82f344aa4afc1b0, type: 2}

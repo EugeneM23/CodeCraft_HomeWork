@@ -24,6 +24,7 @@ namespace Game
 		public const int Camera = 1018227507; // Camera
 		public const int CameraSpeed = -1615506830; // IValue<int>
 		public const int MoveJoystick = -1686028204; // Joystick
+		public const int RotateJoystick = 17434633; // Joystick
 
 
 		///Value Extensions
@@ -135,5 +136,23 @@ namespace Game
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void SetMoveJoystick(this IPlayerContext obj, Joystick value) => obj.SetValue(MoveJoystick, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Joystick GetRotateJoystick(this IPlayerContext obj) => obj.GetValue<Joystick>(RotateJoystick);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetRotateJoystick(this IPlayerContext obj, out Joystick value) => obj.TryGetValue(RotateJoystick, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddRotateJoystick(this IPlayerContext obj, Joystick value) => obj.AddValue(RotateJoystick, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasRotateJoystick(this IPlayerContext obj) => obj.HasValue(RotateJoystick);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelRotateJoystick(this IPlayerContext obj) => obj.DelValue(RotateJoystick);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetRotateJoystick(this IPlayerContext obj, Joystick value) => obj.SetValue(RotateJoystick, value);
     }
 }

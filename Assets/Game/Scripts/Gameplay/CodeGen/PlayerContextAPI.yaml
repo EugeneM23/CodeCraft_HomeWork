@@ -21,3 +21,4 @@ values:
   - Camera: Camera
   - CameraSpeed: IValue<int>
   - MoveJoystick: Joystick
+  - RotateJoystick: Joystick
