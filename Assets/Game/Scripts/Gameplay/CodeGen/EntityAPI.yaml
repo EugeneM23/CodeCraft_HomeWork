@@ -43,6 +43,9 @@ values:
   - WeaponRoot: Transform
   - FirePoint: Transform
   - Damage: IValue<int>
+  - DamageRadius: IValue<float>
+  - DamageLayer: LayerMask
+  - DamageCastEnabled: IReactiveVariable<bool>
   - FireAction: IAction
   - FireEvent: BaseEvent
   - FireCondition: IExpression<bool>

@@ -102,10 +102,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _id: 3
-  _animController: {fileID: 22100000, guid: 7c5b95bb9cebe498c82f344aa4afc1b0, type: 2}
-  _fireRate:
+  _damage: 50
+  _damageRadius: 0.5
+  _damageLayer:
+    serializedVersion: 2
+    m_Bits: 256
+  _cooldown:
     _current: 0
     _duration: 0.3
+  _animController: {fileID: 22100000, guid: 7c5b95bb9cebe498c82f344aa4afc1b0, type: 2}
 --- !u!114 &1708779625709847107
 MonoBehaviour:
   m_ObjectHideFlags: 0

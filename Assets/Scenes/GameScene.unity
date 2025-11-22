@@ -62427,10 +62427,6 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1514997368305076773, guid: 23df5059d222046aaaf123747537eced, type: 3}
-      propertyPath: _moveSpeed
-      value: 0.6
-      objectReference: {fileID: 0}
-    - target: {fileID: 1514997368305076773, guid: 23df5059d222046aaaf123747537eced, type: 3}
       propertyPath: '_patrolPoints.Array.data[0]'
       value: 
       objectReference: {fileID: 1637330552}
@@ -62442,8 +62438,13 @@ PrefabInstance:
       propertyPath: m_Name
       value: Zombie (11)
       objectReference: {fileID: 0}
+    - target: {fileID: 7248292883590151669, guid: 23df5059d222046aaaf123747537eced, type: 3}
+      propertyPath: _damage
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 4514381913324615272, guid: 23df5059d222046aaaf123747537eced, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 23df5059d222046aaaf123747537eced, type: 3}

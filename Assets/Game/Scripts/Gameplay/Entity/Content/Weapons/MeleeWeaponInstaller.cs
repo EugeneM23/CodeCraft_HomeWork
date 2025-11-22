@@ -2,31 +2,45 @@ using Atomic.Elements;
 using Atomic.Entities;
 using Modules.Gameplay;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Game
 {
     public class MeleeWeaponInstaller : SceneEntityInstaller
     {
         [SerializeField] private WeaponID _id;
+        [SerializeField] private int _damage;
+        [SerializeField] private float _damageRadius = 0.5f;
+        [SerializeField] private LayerMask _damageLayer;
+        [SerializeField] private Cooldown _cooldown;
         [SerializeField] private RuntimeAnimatorController _animController;
-        [SerializeField] private Cooldown _fireRate;
 
         public override void Install(IEntity entity)
         {
             //Core
-            entity.AddGameObject(transform.gameObject);
-            entity.AddMeleeWeaponTag();
             entity.AddWeaponId(_id);
-            entity.AddAnimationController(_animController);
+            entity.AddMeleeWeaponTag();
             entity.AddTransform(transform);
+            entity.AddGameObject(transform.gameObject);
+            entity.AddAnimationController(_animController);
+
+            //Damage
+            entity.AddDamage(new Const<int>(_damage));
+            entity.AddDamageLayer(_damageLayer);
+            entity.AddDamageRadius(new Const<float>(_damageRadius));
+            entity.AddDamageCastEnabled(new ReactiveVariable<bool>());
 
             //Attack
             entity.AddMoveCondition(new AndExpression());
-            entity.GetMoveCondition().Append(_fireRate.IsExpired);
-
-            entity.AddWeaponCooldown(_fireRate);
-            entity.AddFireAction(new BaseAction(() => entity.GetWeaponCooldown().Reset()));
+            entity.AddWeaponCooldown(_cooldown);
+            entity.GetMoveCondition().Append(_cooldown.IsExpired);
+            entity.AddFireAction(new BaseAction(() =>
+            {
+                entity.GetDamageCastEnabled().Value = true;
+                entity.GetWeaponCooldown().Reset();
+            }));
             entity.AddFireCondition(new AndExpression(() => entity.GetWeaponCooldown().IsExpired()));
+            entity.AddBehaviour<DamageCastBehaviour>();
 
             entity.OnUpdated += deltaTime => entity.GetWeaponCooldown().Tick(deltaTime);
         }

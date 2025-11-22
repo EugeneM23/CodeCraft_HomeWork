@@ -80,7 +80,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _id: 0
-  _animController: {fileID: 9100000, guid: cb7def12ed591468ebdc46c5accc3cdb, type: 2}
-  _fireRate:
+  _damage: 10
+  _damageRadius: 0.5
+  _damageLayer:
+    serializedVersion: 2
+    m_Bits: 512
+  _cooldown:
     _current: 0
-    _duration: 1
+    _duration: 0.3
+  _animController: {fileID: 9100000, guid: cb7def12ed591468ebdc46c5accc3cdb, type: 2}

@@ -26,10 +26,7 @@ namespace Game.Gameplay
             if (distance < 1)
             {
                 if (entity.GetWeapon().Value.GetFireCondition().Invoke())
-                {
-                    Debug.Log("distance < 1");
                     entity.GetFireAction().Invoke();
-                }
 
                 _isAttaking = true;
             }
