@@ -47,6 +47,7 @@ namespace Game
 		public const int FireAction = 1186461126; // IAction
 		public const int FireEvent = -1683597082; // BaseEvent
 		public const int FireCondition = -280402907; // IExpression<bool>
+		public const int WeaponRecoil = -2067390962; // WeaponRecoil
 		public const int Health = -915003867; // Health
 		public const int CollisionReceiver = 905037854; // CollisionEventReceiver
 		public const int TriggerEventReceiver = -484936241; // TriggerEventReceiver
@@ -63,6 +64,8 @@ namespace Game
 		public const int PatrolPoints = 587900176; // Transform[]
 		public const int Target = 1103309514; // IReactiveVariable<IEntity>
 		public const int AudioSource = 907064781; // AudioSource
+		public const int IsIKEnable = 2098933742; // IReactiveVariable<bool>
+		public const int IKHandController = 1803539326; // IKHandController
 
 
 		///Tag Extensions
@@ -548,6 +551,24 @@ namespace Game
 		public static void SetFireCondition(this IEntity obj, IExpression<bool> value) => obj.SetValue(FireCondition, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static WeaponRecoil GetWeaponRecoil(this IEntity obj) => obj.GetValue<WeaponRecoil>(WeaponRecoil);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetWeaponRecoil(this IEntity obj, out WeaponRecoil value) => obj.TryGetValue(WeaponRecoil, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddWeaponRecoil(this IEntity obj, WeaponRecoil value) => obj.AddValue(WeaponRecoil, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasWeaponRecoil(this IEntity obj) => obj.HasValue(WeaponRecoil);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelWeaponRecoil(this IEntity obj) => obj.DelValue(WeaponRecoil);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetWeaponRecoil(this IEntity obj, WeaponRecoil value) => obj.SetValue(WeaponRecoil, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Health GetHealth(this IEntity obj) => obj.GetValue<Health>(Health);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -834,5 +855,41 @@ namespace Game
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void SetAudioSource(this IEntity obj, AudioSource value) => obj.SetValue(AudioSource, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static IReactiveVariable<bool> GetIsIKEnable(this IEntity obj) => obj.GetValue<IReactiveVariable<bool>>(IsIKEnable);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetIsIKEnable(this IEntity obj, out IReactiveVariable<bool> value) => obj.TryGetValue(IsIKEnable, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddIsIKEnable(this IEntity obj, IReactiveVariable<bool> value) => obj.AddValue(IsIKEnable, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasIsIKEnable(this IEntity obj) => obj.HasValue(IsIKEnable);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelIsIKEnable(this IEntity obj) => obj.DelValue(IsIKEnable);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetIsIKEnable(this IEntity obj, IReactiveVariable<bool> value) => obj.SetValue(IsIKEnable, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static IKHandController GetIKHandController(this IEntity obj) => obj.GetValue<IKHandController>(IKHandController);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetIKHandController(this IEntity obj, out IKHandController value) => obj.TryGetValue(IKHandController, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddIKHandController(this IEntity obj, IKHandController value) => obj.AddValue(IKHandController, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasIKHandController(this IEntity obj) => obj.HasValue(IKHandController);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelIKHandController(this IEntity obj) => obj.DelValue(IKHandController);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetIKHandController(this IEntity obj, IKHandController value) => obj.SetValue(IKHandController, value);
     }
 }

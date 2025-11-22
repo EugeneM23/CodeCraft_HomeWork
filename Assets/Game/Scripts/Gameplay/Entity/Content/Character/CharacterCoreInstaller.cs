@@ -18,6 +18,7 @@ namespace Game.Gameplay
         [SerializeField] private Transform _weaponRoot;
         [SerializeField] private Transform _characterRoot;
         [SerializeField] private InteractInstaller _interactInstaller;
+        [SerializeField] private WeaponRecoil _weaponRecoil;
 
         public override void Install(IEntity entity)
         {
@@ -47,11 +48,13 @@ namespace Game.Gameplay
             entity.AddWeaponRoot(_weaponRoot);
             entity.AddFireCondition(new AndExpression(entity.GetHealth().Exists));
             entity.AddFireAction(new CharacterFireAction(entity));
+            entity.AddWeaponRecoil(_weaponRecoil);
 
             // ⚙️ Behaviours  
             entity.AddBehaviour<DeathBehaviour>();
             entity.AddBehaviour<CharacterMoveBehaviour>();
             entity.AddBehaviour<CharacterRotateBehaviour>();
+
 
             // 🛠️ Interact
             _interactInstaller.Install(entity);

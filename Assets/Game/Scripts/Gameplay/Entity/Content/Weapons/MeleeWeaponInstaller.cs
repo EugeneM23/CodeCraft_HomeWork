@@ -43,6 +43,9 @@ namespace Game
             entity.AddBehaviour<DamageCastBehaviour>();
 
             entity.OnUpdated += deltaTime => entity.GetWeaponCooldown().Tick(deltaTime);
+
+            //IK
+            entity.AddIsIKEnable(new ReactiveBool(false));
         }
     }
 }

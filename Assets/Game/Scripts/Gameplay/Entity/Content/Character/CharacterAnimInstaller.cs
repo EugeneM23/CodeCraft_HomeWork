@@ -1,3 +1,4 @@
+using Atomic.Elements;
 using Atomic.Entities;
 using Modules.Gameplay;
 using UnityEngine;
@@ -8,6 +9,7 @@ namespace Game.Gameplay
     {
         [SerializeField] private Animator _animator;
         [SerializeField] private AnimationEventReceiver _animationReceiver;
+        [SerializeField] private IKHandController _IKController;
 
         public override void Install(IEntity entity)
         {
@@ -15,6 +17,10 @@ namespace Game.Gameplay
             entity.AddAnimator(_animator);
             entity.AddBehaviour<CharacterMoveAnimBehaviour>();
             entity.AddBehaviour<SwitchAnimatorBehaviour>();
+            entity.AddBehaviour<SwitchIKBehaviour>();
+
+            entity.AddIKHandController(_IKController);
+            entity.AddIsIKEnable(new ReactiveBool(true));
         }
     }
 }

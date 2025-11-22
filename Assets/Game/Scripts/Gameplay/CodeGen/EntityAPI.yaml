@@ -50,6 +50,7 @@ values:
   - FireAction: IAction
   - FireEvent: BaseEvent
   - FireCondition: IExpression<bool>
+  - WeaponRecoil: WeaponRecoil
 
   # Health
   - Health: Health
@@ -78,5 +79,9 @@ values:
   
   #Sound
   - AudioSource: AudioSource
+  
+  #IK
+  - IsIKEnable: IReactiveVariable<bool>
+  - IKHandController: IKHandController
     
     

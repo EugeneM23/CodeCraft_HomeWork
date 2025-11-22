@@ -26,7 +26,7 @@ namespace Game
             //Animation
             entity.AddAnimationController(_animController);
             entity.AddTransform(transform);
-            
+
             //Movement
             entity.AddMoveCondition(new AndExpression((() => true)));
 
@@ -40,6 +40,9 @@ namespace Game
             entity.GetFireCondition().Append(entity.GetWeaponCooldown().IsExpired);
 
             entity.OnUpdated += deltaTime => entity.GetWeaponCooldown().Tick(deltaTime);
+
+            //IK
+            entity.AddIsIKEnable(new ReactiveBool(true));
         }
     }
 }

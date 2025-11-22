@@ -24128,6 +24128,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1886816508}
+  - component: {fileID: 1886816509}
+  - component: {fileID: 1886816510}
   m_Layer: 9
   m_Name: WeponIk
   m_TagString: Untagged
@@ -24152,6 +24154,34 @@ Transform:
   - {fileID: 2099737160}
   m_Father: {fileID: 8578258690487757967}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1886816509
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1886816507}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64f86be2b06c4b62b30ee1296e78fd65, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rightHandIK: {fileID: 2099737161}
+  leftHandIK: {fileID: 1452885158}
+--- !u!114 &1886816510
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1886816507}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d5beeb881a244328438c66dc851f52a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  recoilDistance: 0.3
+  recoilDuration: 0.1
 --- !u!1001 &1886884175
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -26504,13 +26534,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2099737159}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.48264843, y: 0.52682054, z: -0.60673463, w: -0.34840155}
-  m_LocalPosition: {x: 0.082, y: -0.13, z: -0.347}
+  m_LocalRotation: {x: 0.3272505, y: -0.58066607, z: 0.32207024, w: 0.6723131}
+  m_LocalPosition: {x: 0.019, y: -0.188, z: -0.437}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1886816508}
-  m_LocalEulerAnglesHint: {x: -257.315, y: -84.518005, z: 22.988998}
+  m_LocalEulerAnglesHint: {x: -305.505, y: -78.935, z: 5.238}
 --- !u!114 &2099737161
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -46099,6 +46129,7 @@ MonoBehaviour:
     _layerMask:
       serializedVersion: 2
       m_Bits: 64
+  _weaponRecoil: {fileID: 1886816510}
 --- !u!1 &148607230007460783
 GameObject:
   m_ObjectHideFlags: 0
@@ -62673,7 +62704,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5104382976400029070, guid: 23df5059d222046aaaf123747537eced, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7248292883590151669, guid: 23df5059d222046aaaf123747537eced, type: 3}
       propertyPath: _damage
@@ -89120,6 +89151,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _animator: {fileID: 8427281546432402658}
   _animationReceiver: {fileID: 6388494154454759257}
+  _IKController: {fileID: 1886816509}
 --- !u!114 &7053772826793573032
 MonoBehaviour:
   m_ObjectHideFlags: 0
