@@ -6,32 +6,24 @@
   <component name="ChangeListManager">
     <list default="true" id="6f0b762c-5415-4a85-b17b-cc44fd47261d" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.CodeCraft_HomeWork/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.CodeCraft_HomeWork/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/CodeGen/EntityAPI.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/CodeGen/EntityAPI.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Entity/Character/CharacterAnimInstaller.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Entity/Character/Installers/CharacterAnimInstaller.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Entity/Character/CharacterAnimInstaller.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Entity/Character/Installers/CharacterAnimInstaller.cs.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Entity/Character/CharacterAudioInstaller.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Entity/Character/Installers/CharacterAudioInstaller.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Entity/Character/CharacterAudioInstaller.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Entity/Character/Installers/CharacterAudioInstaller.cs.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Entity/Character/CharacterCoreInstaller.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Entity/Character/Installers/CharacterCoreInstaller.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Entity/Character/CharacterCoreInstaller.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Entity/Character/Installers/CharacterCoreInstaller.cs.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Entity/Character/CharacterVfxInstaller.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Entity/Character/Installers/CharacterVfxInstaller.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Entity/Character/CharacterVfxInstaller.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Entity/Character/Installers/CharacterVfxInstaller.cs.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Entity/Character/Controllers/CharacterFireController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Entity/Character/Controllers/CharacterFireController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Entity/Character/Controllers/TestController.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Entity/Character/Controllers/TestController.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Entity/Character/FireAnimBehaviour.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Entity/Character/Behaviours/CharacterFireAnimBehaviour.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Entity/Character/FireAnimBehaviour.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Entity/Character/Behaviours/CharacterFireAnimBehaviour.cs.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Entity/Common/Attack/CharacterFireAction.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Entity/Common/Attack/CharacterFireAction.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Entity/Common/Move/MoveAnimaBehaviour.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Entity/Character/Behaviours/MoveAnimaBehaviour.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Entity/Common/Move/MoveAnimaBehaviour.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Entity/Character/Behaviours/MoveAnimaBehaviour.cs.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Entity/Common/Move/MoveBehaviour.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Entity/Character/Behaviours/CharacterMoveBehaviour.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Entity/Common/Move/MoveBehaviour.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Entity/Character/Behaviours/CharacterMoveBehaviour.cs.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Entity/Common/Move/MoveStepSoundBehaviour.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Entity/Character/Behaviours/MoveStepSoundBehaviour.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Entity/Common/Move/MoveStepSoundBehaviour.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Entity/Character/Behaviours/MoveStepSoundBehaviour.cs.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Entity/Common/Move/RotationBehaviour.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Entity/Common/Move/RotationBehaviour.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Entity/Weapons/WeaponInstaller.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Entity/Weapons/WeaponInstaller.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/GameScene.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/GameScene.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/TextMesh Pro/Resources/Fonts &amp; Materials/LiberationSans SDF - Fallback.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TextMesh Pro/Resources/Fonts &amp; Materials/LiberationSans SDF - Fallback.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/AssetPacks/PolygonApocalypse/Models/Characters.fbx.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/AssetPacks/PolygonApocalypse/Models/Characters.fbx.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Animations/Basse/AC_BaseCharacter.controller" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Animations/Basse/AC_BaseCharacter.controller" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Animations/Basse/AC_Knife_01.overrideController" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Animations/Basse/AC_Knife_01.overrideController" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Animations/Basse/AC_ZombieHand.overrideController" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Animations/Basse/AC_ZombieHand.overrideController" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Animations/Character/Character (Move).anim" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Animations/Character/Character (Move).anim" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Animations/Weapons/Handgun/Handgun@Walk01 - Backward [RM].anim" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Animations/Weapons/Handgun/Handgun@Walk01 - Backward [RM].anim" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Animations/Weapons/Handgun/Handgun@Walk01 - BackwardLeft [RM].anim" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Animations/Weapons/Handgun/Handgun@Walk01 - BackwardLeft [RM].anim" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Animations/Weapons/Handgun/Handgun@Walk01 - BackwardRight [RM].anim" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Animations/Weapons/Handgun/Handgun@Walk01 - BackwardRight [RM].anim" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Animations/Weapons/Handgun/Handgun@Walk01 - Forward [RM].anim" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Animations/Weapons/Handgun/Handgun@Walk01 - Forward [RM].anim" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Animations/Weapons/Handgun/Handgun@Walk01 - ForwardLeft [RM].anim" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Animations/Weapons/Handgun/Handgun@Walk01 - ForwardLeft [RM].anim" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Animations/Weapons/Handgun/Handgun@Walk01 - ForwardRight [RM].anim" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Animations/Weapons/Handgun/Handgun@Walk01 - ForwardRight [RM].anim" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Animations/Weapons/Handgun/Handgun@Walk01 - Left [RM].anim" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Animations/Weapons/Handgun/Handgun@Walk01 - Left [RM].anim" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Animations/Weapons/Handgun/Handgun@Walk01 - Right [RM].anim" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Animations/Weapons/Handgun/Handgun@Walk01 - Right [RM].anim" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Prefabs/Gameplay/Weapons/AR_01.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Prefabs/Gameplay/Weapons/AR_01.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Prefabs/Gameplay/Weapons/PT_01.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Prefabs/Gameplay/Weapons/PT_01.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Entity/Common/Move/CharacterMoveAnimBehaviour.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Entity/Common/Move/CharacterMoveAnimBehaviour.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Packages/manifest.json" beforeDir="false" afterPath="$PROJECT_DIR$/Packages/manifest.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Packages/packages-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/Packages/packages-lock.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -191,6 +183,7 @@
       <workItem from="1762939793419" duration="36236000" />
       <workItem from="1763065274757" duration="49631000" />
       <workItem from="1763318434055" duration="67000" />
+      <workItem from="1763824302453" duration="1362000" />
     </task>
     <task id="LOCAL-00001" summary="Update">
       <option name="closed" value="true" />

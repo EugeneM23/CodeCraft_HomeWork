@@ -9,9 +9,9 @@ AnimatorOverrideController:
   m_Name: AC_Knife_01
   m_Controller: {fileID: 9100000, guid: 55fb54f686ee24340bb8a7ea86e48720, type: 2}
   m_Clips:
-  - m_OriginalClip: {fileID: 7400000, guid: fc0b0e3c205140329237aa56209b9f65, type: 2}
-    m_OverrideClip: {fileID: 7400000, guid: fc0b0e3c205140329237aa56209b9f65, type: 2}
   - m_OriginalClip: {fileID: 7400000, guid: 9294594496b964d6dbdf8d7e616b8f4d, type: 2}
     m_OverrideClip: {fileID: 7400000, guid: 9294594496b964d6dbdf8d7e616b8f4d, type: 2}
   - m_OriginalClip: {fileID: 7400000, guid: 14a5d48897a784ed4822d3b35120dc96, type: 2}
     m_OverrideClip: {fileID: -203655887218126122, guid: ed7e09b47e35b41f498ea5a553773d97, type: 3}
+  - m_OriginalClip: {fileID: 7400000, guid: fc0b0e3c205140329237aa56209b9f65, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 9294594496b964d6dbdf8d7e616b8f4d, type: 2}
