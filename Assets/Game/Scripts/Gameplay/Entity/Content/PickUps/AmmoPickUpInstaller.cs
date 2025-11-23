@@ -22,6 +22,7 @@ namespace Game
 
             entity.AddTransform(transform);
             entity.AddInteractableTag();
+            entity.AddPickUpEvent(new BaseEvent());
 
             entity.AddInteractAction(
                 new BaseAction<IEntity>((character =>
@@ -30,9 +31,9 @@ namespace Game
                     if (weapon == null) return;
 
                     weapon.GetAmmo().Add(_ammoAmount);
+                    entity.GetPickUpEvent().Invoke();
                     gameObject.SetActive(false);
                 })));
-
         }
     }
 }

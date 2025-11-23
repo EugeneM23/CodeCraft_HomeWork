@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using Atomic.Contexts;
-using Game.Scripts.Gameplay.Tutorial.Bullet;
-using Modules.Common;
+using Atomic.Entities;
 using UnityEngine;
 
 namespace Game
@@ -10,12 +9,16 @@ namespace Game
     {
         [SerializeField] private BulletSystemInstaller _bulletInstaller;
         [SerializeField] private WeaponCatalog _weapons;
+        [SerializeField] private SceneEntity _audioPrefab;
 
         protected override void Install(IGameContext context)
         {
             _bulletInstaller.Install(context);
             context.AddWeaponCatalog(_weapons);
             context.AddPlayers(new Dictionary<PlayerID, IPlayerContext>());
+
+            GameObject audioRoot = new GameObject("AudioPool");
+            context.AddAudioPool(new SceneEntityPool(_audioPrefab, audioRoot.transform));
         }
     }
 }

@@ -5315,6 +5315,7 @@ GameObject:
   - component: {fileID: 6441061399187514151}
   - component: {fileID: 4768149462767010252}
   - component: {fileID: 7591637110814413021}
+  - component: {fileID: 449086947515589226}
   m_Layer: 6
   m_Name: PT_01_PickUp
   m_TagString: Range
@@ -5372,6 +5373,7 @@ MonoBehaviour:
   disposeValues: 1
   installers:
   - {fileID: 7591637110814413021}
+  - {fileID: 449086947515589226}
   _onlySelectedGizmos: 0
   _onlyEditModeGizmos: 0
 --- !u!54 &6441061399187514151
@@ -5436,7 +5438,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _id: 1
   _ammo:
-    count: 0
+    count: 15
+--- !u!114 &449086947515589226
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2223820721985032205}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e957f2852a774d8c81c2c6fda31fc6d3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _vfx: {fileID: 0}
+  _visual: {fileID: 0}
+  _audioSource: {fileID: 0}
+  _audioClip: {fileID: 8300000, guid: fbfeed636424c40a696bebd4b43b6896, type: 3}
 --- !u!1 &3055973873298147730
 GameObject:
   m_ObjectHideFlags: 0

@@ -20,6 +20,7 @@ namespace Game
 
 		///Values
 		public const int BulletPool = 1915726678; // IEntityPool
+		public const int AudioPool = -1361603774; // IEntityPool
 		public const int WeaponCatalog = -1557559158; // WeaponCatalog
 		public const int Players = -369919430; // IDictionary<PlayerID, IPlayerContext>
 
@@ -43,6 +44,24 @@ namespace Game
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void SetBulletPool(this IContext obj, IEntityPool value) => obj.SetValue(BulletPool, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static IEntityPool GetAudioPool(this IContext obj) => obj.GetValue<IEntityPool>(AudioPool);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetAudioPool(this IContext obj, out IEntityPool value) => obj.TryGetValue(AudioPool, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddAudioPool(this IContext obj, IEntityPool value) => obj.AddValue(AudioPool, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasAudioPool(this IContext obj) => obj.HasValue(AudioPool);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelAudioPool(this IContext obj) => obj.DelValue(AudioPool);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetAudioPool(this IContext obj, IEntityPool value) => obj.SetValue(AudioPool, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static WeaponCatalog GetWeaponCatalog(this IContext obj) => obj.GetValue<WeaponCatalog>(WeaponCatalog);

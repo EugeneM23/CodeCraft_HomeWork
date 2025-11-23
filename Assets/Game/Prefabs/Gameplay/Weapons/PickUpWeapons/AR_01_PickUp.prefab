@@ -445,11 +445,12 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5805928980614070902}
+  - component: {fileID: 4768149462767010252}
+  - component: {fileID: 6441061399187514151}
   - component: {fileID: 7658947868385536957}
   - component: {fileID: 3342775892168092990}
-  - component: {fileID: 6441061399187514151}
-  - component: {fileID: 4768149462767010252}
   - component: {fileID: 7591637110814413021}
+  - component: {fileID: 6679773289692890067}
   m_Layer: 6
   m_Name: AR_01_PickUp
   m_TagString: Range
@@ -473,6 +474,54 @@ Transform:
   - {fileID: 2650321569959023640}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 4.443, y: -33.572, z: 96.657}
+--- !u!65 &4768149462767010252
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2223820721985032205}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.089999996, y: 0.25, z: 0.40644488}
+  m_Center: {x: -5.3176674e-10, y: -0.000001315086, z: 0.13898481}
+--- !u!54 &6441061399187514151
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2223820721985032205}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!114 &7658947868385536957
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -504,56 +553,9 @@ MonoBehaviour:
   disposeValues: 1
   installers:
   - {fileID: 7591637110814413021}
+  - {fileID: 6679773289692890067}
   _onlySelectedGizmos: 0
   _onlyEditModeGizmos: 0
---- !u!54 &6441061399187514151
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2223820721985032205}
-  serializedVersion: 4
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 1
-  m_IsKinematic: 0
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 0
---- !u!65 &4768149462767010252
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2223820721985032205}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.089999996, y: 0.25, z: 0.40644488}
-  m_Center: {x: -5.3176674e-10, y: -0.000001315086, z: 0.13898481}
 --- !u!114 &7591637110814413021
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -569,6 +571,22 @@ MonoBehaviour:
   _id: 2
   _ammo:
     count: 150
+--- !u!114 &6679773289692890067
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2223820721985032205}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e957f2852a774d8c81c2c6fda31fc6d3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _vfx: {fileID: 0}
+  _visual: {fileID: 0}
+  _audioSource: {fileID: 0}
+  _audioClip: {fileID: 8300000, guid: fbfeed636424c40a696bebd4b43b6896, type: 3}
 --- !u!1 &3055973873298147730
 GameObject:
   m_ObjectHideFlags: 0

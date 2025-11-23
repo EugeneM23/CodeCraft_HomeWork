@@ -22,14 +22,15 @@ namespace Game
 
             entity.AddTransform(transform);
             entity.AddInteractableTag();
+            entity.AddPickUpEvent(new BaseEvent());
 
             entity.AddInteractAction(
                 new BaseAction<IEntity>((character =>
                 {
+                    entity.GetPickUpEvent().Invoke();
                     character.GetHealth().Add(_healthAmount);
                     gameObject.SetActive(false);
                 })));
-
         }
     }
 }

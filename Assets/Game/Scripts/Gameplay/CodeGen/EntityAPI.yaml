@@ -76,6 +76,7 @@ values:
   - IsInteract: IReactiveVariable<bool>
   - UITransform: Transform
   - TargetInteractable: IReactiveVariable<IEntity>
+  - PickUpEvent: BaseEvent
   
   #AI
   - PatrolPoints: Transform[]

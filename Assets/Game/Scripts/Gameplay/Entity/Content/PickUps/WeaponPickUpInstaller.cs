@@ -21,9 +21,11 @@ namespace Game
 
             entity.AddTransform(transform);
             entity.AddInteractableTag();
-
+            entity.AddPickUpEvent(new BaseEvent());
+            
             entity.AddInteractAction(new BaseAction<IEntity>(character =>
             {
+                entity.GetPickUpEvent().Invoke();
                 PickUpWeaponUseCase.PickUpWeapon(character, entity, _gameContext);
             }));
         }

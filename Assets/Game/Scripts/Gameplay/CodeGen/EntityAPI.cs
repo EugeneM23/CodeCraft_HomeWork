@@ -65,6 +65,7 @@ namespace Game
 		public const int IsInteract = -173365543; // IReactiveVariable<bool>
 		public const int UITransform = 327940928; // Transform
 		public const int TargetInteractable = -990542098; // IReactiveVariable<IEntity>
+		public const int PickUpEvent = -1876534383; // BaseEvent
 		public const int PatrolPoints = 587900176; // Transform[]
 		public const int Target = 1103309514; // IReactiveVariable<IEntity>
 		public const int AudioSource = 907064781; // AudioSource
@@ -877,6 +878,24 @@ namespace Game
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void SetTargetInteractable(this IEntity obj, IReactiveVariable<IEntity> value) => obj.SetValue(TargetInteractable, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static BaseEvent GetPickUpEvent(this IEntity obj) => obj.GetValue<BaseEvent>(PickUpEvent);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetPickUpEvent(this IEntity obj, out BaseEvent value) => obj.TryGetValue(PickUpEvent, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddPickUpEvent(this IEntity obj, BaseEvent value) => obj.AddValue(PickUpEvent, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasPickUpEvent(this IEntity obj) => obj.HasValue(PickUpEvent);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelPickUpEvent(this IEntity obj) => obj.DelValue(PickUpEvent);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetPickUpEvent(this IEntity obj, BaseEvent value) => obj.SetValue(PickUpEvent, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Transform[] GetPatrolPoints(this IEntity obj) => obj.GetValue<Transform[]>(PatrolPoints);

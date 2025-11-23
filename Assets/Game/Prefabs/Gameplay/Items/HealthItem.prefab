@@ -458,6 +458,7 @@ MonoBehaviour:
   _vfx: {fileID: 3922024436423282089}
   _visual: {fileID: 1816155109594164265}
   _audioSource: {fileID: 2298006360191853931}
+  _audioClip: {fileID: 8300000, guid: c2030a235a7cd4f398233cb679f7c4c8, type: 3}
 --- !u!65 &3100126443347532207
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -510,6 +511,7 @@ MonoBehaviour:
   disposeValues: 1
   installers:
   - {fileID: 3605461924348906491}
+  - {fileID: 393305246776948499}
   _onlySelectedGizmos: 0
   _onlyEditModeGizmos: 0
 --- !u!114 &9200552537943194964

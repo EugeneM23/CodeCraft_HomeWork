@@ -3,7 +3,7 @@ using Atomic.Contexts;
 using Atomic.Entities;
 using UnityEngine;
 
-namespace Game.Scripts.Gameplay.Tutorial.Bullet
+namespace Game
 {
     [Serializable]
     public class BulletSystemInstaller : IContextInstaller<IGameContext>

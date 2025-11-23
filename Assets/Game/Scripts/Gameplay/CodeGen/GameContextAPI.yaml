@@ -18,5 +18,6 @@ imports:
 
 values:
   - BulletPool: IEntityPool
+  - AudioPool: IEntityPool
   - WeaponCatalog: WeaponCatalog
   - Players: IDictionary<PlayerID, IPlayerContext>
