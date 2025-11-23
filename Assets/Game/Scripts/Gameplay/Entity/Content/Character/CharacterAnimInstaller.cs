@@ -17,7 +17,7 @@ namespace Game.Gameplay
             entity.AddAnimator(_animator);
             entity.AddBehaviour<CharacterMoveAnimBehaviour>();
             entity.AddBehaviour<SwitchAnimatorBehaviour>();
-            entity.AddBehaviour<SwitchIKBehaviour>();
+            //entity.AddBehaviour<SwitchIKBehaviour>();
 
             entity.AddIKHandController(_IKController);
             entity.AddIsIKEnable(new ReactiveBool(true));
