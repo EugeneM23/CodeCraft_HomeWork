@@ -1,9 +1,10 @@
 using Atomic.Elements;
 using Atomic.Entities;
+using Game.Gameplay;
 using Modules.Gameplay;
 using UnityEngine;
 
-namespace Game.Gameplay
+namespace Game
 {
     public sealed class EnemyCoreInstaller : SceneEntityInstaller
     {
@@ -32,6 +33,8 @@ namespace Game.Gameplay
 
             // ❤️ Health
             entity.AddHealth(new Health(_health, _health));
+            entity.AddDeathEvent(new BaseEvent());
+            entity.AddDeathAction(new BaseAction(() => entity.GetAnimator().Play("Death")));
 
             // 🌀 Movement
             entity.AddRotationSpeed(new BaseVariable<float>(_rotationSpeed));
@@ -51,7 +54,8 @@ namespace Game.Gameplay
             // ⚙️ Behaviours  
             entity.AddBehaviour<DeathBehaviour>();
             entity.AddBehaviour<CharacterRotateBehaviour>();
-            entity.AddBehaviour<CharacterMoveAnimBehaviour>();
+            entity.AddBehaviour<CharacterMoveBehaviour>();
+
             entity.AddBehaviour<EnemyPatrolBehaviour>();
             entity.AddBehaviour<EnemyAttackBehaviour>();
             entity.AddBehaviour<EnemyChaseBehaviour>();

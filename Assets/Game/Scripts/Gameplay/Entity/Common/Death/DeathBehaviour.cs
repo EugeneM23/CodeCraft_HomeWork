@@ -7,12 +7,12 @@ namespace Game.Gameplay
     public class DeathBehaviour : IEntityInit, IEntityDispose
     {
         private Health _health;
-        private GameObject _gameObject;
+        private IEntity _entity;
 
         public void Init(in IEntity entity)
         {
+            _entity = entity;
             _health = entity.GetHealth();
-            _gameObject = entity.GetGameObject();
 
             _health.OnHealthEmpty += OnHealthEmpty;
         }
@@ -21,7 +21,10 @@ namespace Game.Gameplay
 
         private void OnHealthEmpty()
         {
-            _gameObject.SetActive(false);
+            _entity.Disable();
+
+            if (_entity.TryGetDeathAction(out var action))
+                action.Invoke();
         }
     }
 }

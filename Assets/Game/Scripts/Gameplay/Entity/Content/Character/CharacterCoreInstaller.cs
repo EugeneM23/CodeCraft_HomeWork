@@ -31,6 +31,7 @@ namespace Game.Gameplay
 
             // ❤️ Health
             entity.AddHealth(new Health(_health, _health));
+            entity.AddDeathAction(new BaseAction(() => entity.GetAnimator().Play("Death")));
 
             // 🌀 Movement
             entity.AddRotationSpeed(new BaseVariable<float>(_rotationSpeed));
@@ -54,8 +55,7 @@ namespace Game.Gameplay
             entity.AddBehaviour<DeathBehaviour>();
             entity.AddBehaviour<CharacterMoveBehaviour>();
             entity.AddBehaviour<CharacterRotateBehaviour>();
-
-
+            
             // 🛠️ Interact
             _interactInstaller.Install(entity);
         }

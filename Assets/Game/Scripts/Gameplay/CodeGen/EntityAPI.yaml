@@ -54,6 +54,8 @@ values:
 
   # Health
   - Health: Health
+  - DeathEvent: BaseEvent
+  - DeathAction: IAction
   
   # Physics
   - CollisionReceiver: CollisionEventReceiver

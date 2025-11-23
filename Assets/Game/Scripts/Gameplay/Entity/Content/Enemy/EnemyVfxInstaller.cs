@@ -5,27 +5,21 @@ namespace Game.Gameplay
 {
     public sealed class EnemyVfxInstaller : SceneEntityInstaller
     {
-        [SerializeField]
-        private ParticleSystem _bulletBlood;
-        
-        [SerializeField]
-        private ParticleSystem _meleeBlood;
+        [SerializeField] private ParticleSystem _bulletBlood;
 
-        [SerializeField]
-        private ParticleSystem _deadBlood;
+        [SerializeField] private ParticleSystem _meleeBlood;
 
-        [SerializeField]
-        private Transform _groundPoint;
+        [SerializeField] private ParticleSystem _deadBlood;
 
-        [SerializeField]
-        private Transform _rootTransform;
+        [SerializeField] private Transform _groundPoint;
 
-        [SerializeField]
-        private ParticleSystem _deathBloodVfx;
+        [SerializeField] private Transform _rootTransform;
+
+        [SerializeField] private ParticleSystem _deathBloodVfx;
 
         public override void Install(IEntity entity)
         {
-            //TODO
+            entity.AddBehaviour(new HitEffectBehaviour(_bulletBlood));
         }
     }
 }

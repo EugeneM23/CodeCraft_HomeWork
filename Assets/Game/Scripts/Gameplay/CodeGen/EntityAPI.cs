@@ -49,6 +49,8 @@ namespace Game
 		public const int FireCondition = -280402907; // IExpression<bool>
 		public const int WeaponRecoil = -2067390962; // WeaponRecoil
 		public const int Health = -915003867; // Health
+		public const int DeathEvent = -1096613677; // BaseEvent
+		public const int DeathAction = 270611645; // IAction
 		public const int CollisionReceiver = 905037854; // CollisionEventReceiver
 		public const int TriggerEventReceiver = -484936241; // TriggerEventReceiver
 		public const int RiggedBody = 1421993665; // Rigidbody
@@ -585,6 +587,42 @@ namespace Game
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void SetHealth(this IEntity obj, Health value) => obj.SetValue(Health, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static BaseEvent GetDeathEvent(this IEntity obj) => obj.GetValue<BaseEvent>(DeathEvent);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetDeathEvent(this IEntity obj, out BaseEvent value) => obj.TryGetValue(DeathEvent, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddDeathEvent(this IEntity obj, BaseEvent value) => obj.AddValue(DeathEvent, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasDeathEvent(this IEntity obj) => obj.HasValue(DeathEvent);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelDeathEvent(this IEntity obj) => obj.DelValue(DeathEvent);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetDeathEvent(this IEntity obj, BaseEvent value) => obj.SetValue(DeathEvent, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static IAction GetDeathAction(this IEntity obj) => obj.GetValue<IAction>(DeathAction);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetDeathAction(this IEntity obj, out IAction value) => obj.TryGetValue(DeathAction, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddDeathAction(this IEntity obj, IAction value) => obj.AddValue(DeathAction, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasDeathAction(this IEntity obj) => obj.HasValue(DeathAction);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelDeathAction(this IEntity obj) => obj.DelValue(DeathAction);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetDeathAction(this IEntity obj, IAction value) => obj.SetValue(DeathAction, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static CollisionEventReceiver GetCollisionReceiver(this IEntity obj) => obj.GetValue<CollisionEventReceiver>(CollisionReceiver);

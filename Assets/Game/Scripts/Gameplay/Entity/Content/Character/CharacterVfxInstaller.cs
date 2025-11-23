@@ -22,7 +22,7 @@ namespace Game.Gameplay
 
         public override void Install(IEntity entity)
         {
-            // TODO
+            entity.AddBehaviour(new HitEffectBehaviour(_bulletBlood));
         }
     }
 }

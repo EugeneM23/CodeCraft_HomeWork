@@ -7,6 +7,8 @@ namespace Game.Gameplay
     public class EnemyPatrolBehaviour : IEntityInit, IEntityUpdate
     {
         private IReactiveVariable<Vector3> _moveDirection;
+        private IReactiveVariable<Vector3> _rotateDirection;
+        
         private IReactiveVariable<IEntity> _target;
         private int _currentPointIndex;
         private Transform[] _patrolPoints;
@@ -14,6 +16,7 @@ namespace Game.Gameplay
         public void Init(in IEntity entity)
         {
             _moveDirection = entity.GetMoveDirection();
+            _rotateDirection = entity.GetRotateDirection();
             _currentPointIndex = 0;
             _target = entity.GetTarget();
             _patrolPoints = entity.GetPatrolPoints();
@@ -27,6 +30,7 @@ namespace Game.Gameplay
             Vector3 direction = PatrolUseCase.GetDirectionToPatrolPoint(entity, _patrolPoints, ref _currentPointIndex);
 
             _moveDirection.Value = direction;
+            _rotateDirection.Value = direction;
         }
     }
 }

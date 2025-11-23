@@ -167,7 +167,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _id: 0
-  _damage: 10
+  _damage: 50
   _damageRadius: 0.5
   _damageLayer:
     serializedVersion: 2
