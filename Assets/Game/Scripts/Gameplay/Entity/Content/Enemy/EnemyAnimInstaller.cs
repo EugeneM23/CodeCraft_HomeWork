@@ -15,7 +15,7 @@ namespace Game.Gameplay
             entity.AddAnimator(_animator);
             entity.AddBehaviour<SwitchAnimatorBehaviour>();
             entity.AddBehaviour<CharacterMoveAnimBehaviour>();
-
+            entity.AddBehaviour<DeathAnimBehaviour>();
         }
     }
 }

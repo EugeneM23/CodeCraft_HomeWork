@@ -26,6 +26,7 @@ namespace Game.Gameplay
             entity.AddBehaviour(new HitSoundBehaviour(_damageClips, _audioSource));
             entity.AddBehaviour(new AttackSoundBehaviour(_damageClips, _audioSource));
             entity.AddBehaviour(new MoveStepSoundBehaviour(_moveStepClips));
+            entity.AddBehaviour(new DeathSoundBehaviour(_deathClips));
         }
     }
 }

@@ -14,9 +14,11 @@ namespace Game
         private IReactiveVariable<bool> _castEnabled;
         private float _castTimer;
         private bool _isCasting;
+        private IEntity _weapon;
 
         public void Init(in IEntity entity)
         {
+            _weapon = entity;
             _castEnabled = entity.GetDamageCastEnabled();
             _damage = entity.GetDamage();
             _damageRadius = entity.GetDamageRadius();
@@ -38,7 +40,8 @@ namespace Game
             }
 
             bool success =
-                DamageCastUseCase.Cast(entity.GetTransform(), _damageRadius.Value, _damage.Value, _damageLayer);
+                DamageCastUseCase.Cast(entity.GetTransform(), _damageRadius.Value, _damage.Value, _damageLayer,
+                    _weapon);
 
             if (success)
             {

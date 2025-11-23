@@ -56,6 +56,8 @@ values:
   - Health: Health
   - DeathEvent: BaseEvent
   - DeathAction: IAction
+  - DamageTakenEvent: BaseEvent<TakeDamageArgs>
+  - DeathTakenEvent: BaseEvent<TakeDamageArgs>
   
   # Physics
   - CollisionReceiver: CollisionEventReceiver

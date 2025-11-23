@@ -1,4 +1,3 @@
-using Atomic.Elements;
 using Atomic.Entities;
 using Modules.Gameplay;
 using UnityEngine;
@@ -17,10 +16,7 @@ namespace Game.Gameplay
             entity.AddAnimator(_animator);
             entity.AddBehaviour<CharacterMoveAnimBehaviour>();
             entity.AddBehaviour<SwitchAnimatorBehaviour>();
-            //entity.AddBehaviour<SwitchIKBehaviour>();
-
-            entity.AddIKHandController(_IKController);
-            entity.AddIsIKEnable(new ReactiveBool(true));
+            entity.AddBehaviour<DeathAnimBehaviour>();
         }
     }
 }

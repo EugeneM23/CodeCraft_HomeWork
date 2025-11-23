@@ -23,8 +23,8 @@ namespace Game.Gameplay
         {
             _entity.Disable();
 
-            if (_entity.TryGetDeathAction(out var action))
-                action.Invoke();
+            if (_entity.TryGetDeathTakenEvent(out var @event))
+                @event.Invoke(new TakeDamageArgs(_entity));
         }
     }
 }

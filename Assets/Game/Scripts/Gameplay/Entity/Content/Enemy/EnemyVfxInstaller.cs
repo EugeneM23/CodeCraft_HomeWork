@@ -19,7 +19,7 @@ namespace Game.Gameplay
 
         public override void Install(IEntity entity)
         {
-            entity.AddBehaviour(new HitEffectBehaviour(_bulletBlood));
+            entity.AddBehaviour(new TakeDamageBloodBehaviour(_bulletBlood, _meleeBlood, _rootTransform));
         }
     }
 }

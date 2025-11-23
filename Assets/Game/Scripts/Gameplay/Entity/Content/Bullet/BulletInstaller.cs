@@ -19,6 +19,7 @@ namespace Game
             _gameContext = GameContext.Instance;
 
             //Core
+            entity.AddRangeWeaponTag();
             entity.AddGameObject(transform.gameObject);
             entity.AddTransform(transform);
 

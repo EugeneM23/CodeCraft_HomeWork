@@ -8,7 +8,7 @@ namespace Game
     {
         private const int COLLIDER_BUFFER_SIZE = 32;
 
-        public static bool Cast(Transform t, float radius, int damage, LayerMask damageLayer)
+        public static bool Cast(Transform t, float radius, int damage, LayerMask damageLayer, IEntity weapon)
         {
             DrawSphereDebug(t.position, radius);
 
@@ -21,6 +21,7 @@ namespace Game
                 if (colliders[i].TryGetEntity(out IEntity entity) && entity.HasDamageableTag())
                 {
                     entity.GetHealth().Reduce(damage);
+                    entity.GetDamageTakenEvent().Invoke(new TakeDamageArgs(weapon));
                     return true;
                 }
             }

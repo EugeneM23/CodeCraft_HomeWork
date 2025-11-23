@@ -51,6 +51,8 @@ namespace Game
 		public const int Health = -915003867; // Health
 		public const int DeathEvent = -1096613677; // BaseEvent
 		public const int DeathAction = 270611645; // IAction
+		public const int DamageTakenEvent = -647889767; // BaseEvent<TakeDamageArgs>
+		public const int DeathTakenEvent = 542106238; // BaseEvent<TakeDamageArgs>
 		public const int CollisionReceiver = 905037854; // CollisionEventReceiver
 		public const int TriggerEventReceiver = -484936241; // TriggerEventReceiver
 		public const int RiggedBody = 1421993665; // Rigidbody
@@ -623,6 +625,42 @@ namespace Game
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void SetDeathAction(this IEntity obj, IAction value) => obj.SetValue(DeathAction, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static BaseEvent<TakeDamageArgs> GetDamageTakenEvent(this IEntity obj) => obj.GetValue<BaseEvent<TakeDamageArgs>>(DamageTakenEvent);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetDamageTakenEvent(this IEntity obj, out BaseEvent<TakeDamageArgs> value) => obj.TryGetValue(DamageTakenEvent, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddDamageTakenEvent(this IEntity obj, BaseEvent<TakeDamageArgs> value) => obj.AddValue(DamageTakenEvent, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasDamageTakenEvent(this IEntity obj) => obj.HasValue(DamageTakenEvent);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelDamageTakenEvent(this IEntity obj) => obj.DelValue(DamageTakenEvent);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetDamageTakenEvent(this IEntity obj, BaseEvent<TakeDamageArgs> value) => obj.SetValue(DamageTakenEvent, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static BaseEvent<TakeDamageArgs> GetDeathTakenEvent(this IEntity obj) => obj.GetValue<BaseEvent<TakeDamageArgs>>(DeathTakenEvent);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetDeathTakenEvent(this IEntity obj, out BaseEvent<TakeDamageArgs> value) => obj.TryGetValue(DeathTakenEvent, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddDeathTakenEvent(this IEntity obj, BaseEvent<TakeDamageArgs> value) => obj.AddValue(DeathTakenEvent, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasDeathTakenEvent(this IEntity obj) => obj.HasValue(DeathTakenEvent);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelDeathTakenEvent(this IEntity obj) => obj.DelValue(DeathTakenEvent);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetDeathTakenEvent(this IEntity obj, BaseEvent<TakeDamageArgs> value) => obj.SetValue(DeathTakenEvent, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static CollisionEventReceiver GetCollisionReceiver(this IEntity obj) => obj.GetValue<CollisionEventReceiver>(CollisionReceiver);

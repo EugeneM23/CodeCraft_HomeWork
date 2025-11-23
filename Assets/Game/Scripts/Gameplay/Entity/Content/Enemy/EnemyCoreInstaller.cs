@@ -33,8 +33,9 @@ namespace Game
 
             // ❤️ Health
             entity.AddHealth(new Health(_health, _health));
+            entity.AddDeathTakenEvent(new BaseEvent<TakeDamageArgs>());
+            entity.AddDamageTakenEvent(new BaseEvent<TakeDamageArgs>());
             entity.AddDeathEvent(new BaseEvent());
-            entity.AddDeathAction(new BaseAction(() => entity.GetAnimator().Play("Death")));
 
             // 🌀 Movement
             entity.AddRotationSpeed(new BaseVariable<float>(_rotationSpeed));
