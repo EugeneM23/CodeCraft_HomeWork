@@ -8,4 +8,24 @@ AnimatorOverrideController:
   m_PrefabAsset: {fileID: 0}
   m_Name: AC_Knife_01
   m_Controller: {fileID: 9100000, guid: 55fb54f686ee24340bb8a7ea86e48720, type: 2}
-  m_Clips: []
+  m_Clips:
+  - m_OriginalClip: {fileID: 7400022, guid: fa608feaf64a07040bef63f640abf835, type: 3}
+    m_OverrideClip: {fileID: 3094330708855449807, guid: 6deac83e30d8acd4cbb8c7d8a11545bd, type: 3}
+  - m_OriginalClip: {fileID: 7400024, guid: fa608feaf64a07040bef63f640abf835, type: 3}
+    m_OverrideClip: {fileID: 3094330708855449807, guid: a8e6c7cf678a13541a726c2ae9ec00e3, type: 3}
+  - m_OriginalClip: {fileID: 7400006, guid: 47f3e97642d383d4dbfc479141f81683, type: 3}
+    m_OverrideClip: {fileID: 3094330708855449807, guid: 02fe127be7c987640bef36b78efaf2cf, type: 3}
+  - m_OriginalClip: {fileID: 7400032, guid: fa608feaf64a07040bef63f640abf835, type: 3}
+    m_OverrideClip: {fileID: 3094330708855449807, guid: ca7bf50d255ff5749a3a9ff602076af8, type: 3}
+  - m_OriginalClip: {fileID: 7400030, guid: fa608feaf64a07040bef63f640abf835, type: 3}
+    m_OverrideClip: {fileID: 3094330708855449807, guid: 2d491dc6ab8cc5045919954fe2601203, type: 3}
+  - m_OriginalClip: {fileID: 7400004, guid: 47f3e97642d383d4dbfc479141f81683, type: 3}
+    m_OverrideClip: {fileID: 3094330708855449807, guid: 152af2cd00aaae34e816ebb8deb4b68e, type: 3}
+  - m_OriginalClip: {fileID: 7400028, guid: fa608feaf64a07040bef63f640abf835, type: 3}
+    m_OverrideClip: {fileID: 3094330708855449807, guid: 9f9dbe8815370164d8a2214328af4f13, type: 3}
+  - m_OriginalClip: {fileID: 7400026, guid: fa608feaf64a07040bef63f640abf835, type: 3}
+    m_OverrideClip: {fileID: 3094330708855449807, guid: 846fff649819bcf49b933d00ef6f703f, type: 3}
+  - m_OriginalClip: {fileID: 7400004, guid: 914b09da235eea34ebdc4e71d057e815, type: 3}
+    m_OverrideClip: {fileID: -2576967968662016515, guid: 56fd86b76fc74d24d83522069f5deb9b, type: 3}
+  - m_OriginalClip: {fileID: 7400000, guid: 14a5d48897a784ed4822d3b35120dc96, type: 2}
+    m_OverrideClip: {fileID: -203655887218126122, guid: ed7e09b47e35b41f498ea5a553773d97, type: 3}
