@@ -7,17 +7,11 @@ namespace Game
     public class HealthPickUpInstaller : SceneEntityInstaller
     {
         [SerializeField] private int _healthAmount = 100;
-        [SerializeField] private GameObject _interactUI;
 
         public override void Install(IEntity entity)
         {
-            entity.AddShowUIAction(new BaseAction<bool>((show) =>
-            {
-                _interactUI.SetActive(show);
-                entity.GetIsInteract().Value = show;
-            }));
+            entity.AddShowUIAction(new BaseAction<bool>((show) => { entity.GetIsInteract().Value = show; }));
             entity.AddIsInteract(new ReactiveBool(false));
-            entity.AddUITransform(_interactUI.transform);
 
             entity.AddTransform(transform);
             entity.AddInteractableTag();
