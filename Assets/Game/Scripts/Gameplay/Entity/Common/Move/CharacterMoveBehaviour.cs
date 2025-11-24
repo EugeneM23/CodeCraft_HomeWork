@@ -18,7 +18,9 @@ namespace Game.Gameplay
         public void OnUpdate(in IEntity entity, in float deltaTime)
         {
             if (!_moveCondition.Value)
+            {
                 return;
+            }
 
             Vector3 direction = _moveDirection.Value;
             MoveUseCase.Move(entity, direction, deltaTime);

@@ -22,6 +22,7 @@ namespace Game
 		public const int BulletPool = 1915726678; // IEntityPool
 		public const int AudioPool = -1361603774; // IEntityPool
 		public const int WeaponCatalog = -1557559158; // WeaponCatalog
+		public const int PlayerCharacter = -1319565175; // IReactiveVariable<IEntity>
 		public const int Players = -369919430; // IDictionary<PlayerID, IPlayerContext>
 
 
@@ -80,6 +81,24 @@ namespace Game
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void SetWeaponCatalog(this IContext obj, WeaponCatalog value) => obj.SetValue(WeaponCatalog, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static IReactiveVariable<IEntity> GetPlayerCharacter(this IContext obj) => obj.GetValue<IReactiveVariable<IEntity>>(PlayerCharacter);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetPlayerCharacter(this IContext obj, out IReactiveVariable<IEntity> value) => obj.TryGetValue(PlayerCharacter, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddPlayerCharacter(this IContext obj, IReactiveVariable<IEntity> value) => obj.AddValue(PlayerCharacter, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasPlayerCharacter(this IContext obj) => obj.HasValue(PlayerCharacter);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelPlayerCharacter(this IContext obj) => obj.DelValue(PlayerCharacter);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetPlayerCharacter(this IContext obj, IReactiveVariable<IEntity> value) => obj.SetValue(PlayerCharacter, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static IDictionary<PlayerID, IPlayerContext> GetPlayers(this IContext obj) => obj.GetValue<IDictionary<PlayerID, IPlayerContext>>(Players);

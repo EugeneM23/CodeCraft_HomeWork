@@ -17,8 +17,8 @@ namespace Game.Gameplay
         [SerializeField] private TriggerEventReceiver _triggerReceiver;
         [SerializeField] private Transform _weaponRoot;
         [SerializeField] private Transform _characterRoot;
+        [SerializeField] private Rigidbody _rigidbody;
         [SerializeField] private InteractInstaller _interactInstaller;
-        [SerializeField] private WeaponRecoil _weaponRecoil;
 
         public override void Install(IEntity entity)
         {
@@ -28,6 +28,8 @@ namespace Game.Gameplay
             entity.AddTriggerEventReceiver(_triggerReceiver);
             entity.AddGameObject(transform.gameObject);
             entity.AddTransform(_characterRoot);
+            entity.AddRiggedBody(_rigidbody);
+            entity.AddVelocity(new ReactiveFloat());
 
             // ❤️ Health
             entity.AddHealth(new Health(_health, _health));
@@ -37,7 +39,6 @@ namespace Game.Gameplay
             // 🌀 Movement
             entity.AddRotationSpeed(new BaseVariable<float>(_rotationSpeed));
             entity.AddMoveSpeed(new Const<float>(_moveSpeed));
-
             entity.AddMoveCondition(new AndExpression(entity.GetHealth().Exists,
                 () => entity.GetWeapon().Value.GetMoveCondition().Invoke()));
 
@@ -50,12 +51,12 @@ namespace Game.Gameplay
             entity.AddWeaponRoot(_weaponRoot);
             entity.AddFireCondition(new AndExpression(entity.GetHealth().Exists));
             entity.AddFireAction(new CharacterFireAction(entity));
-            entity.AddWeaponRecoil(_weaponRecoil);
 
             // ⚙️ Behaviours  
             entity.AddBehaviour<DeathBehaviour>();
             entity.AddBehaviour<CharacterMoveBehaviour>();
             entity.AddBehaviour<CharacterRotateBehaviour>();
+            entity.AddBehaviour<CharacterVelocityBehaviour>();
 
             // 🛠️ Interact
             _interactInstaller.Install(entity);

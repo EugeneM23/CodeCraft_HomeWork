@@ -1,53 +1,53 @@
-using System.Collections.Generic;
+using Atomic.Elements;
 using Atomic.Entities;
-using Modules.Gameplay;
 using UnityEngine;
 
 namespace Game.Gameplay
 {
-    public sealed class MoveStepSoundBehaviour : IEntityInit, IEntityDispose
+    public sealed class MoveStepSoundBehaviour : IEntityInit, IEntityUpdate
     {
-        private const string MOVE_STEP_EVENT = "move_step_event";
-
+        private const float TOLERANCE = 0.1f;
         private readonly AudioClip[] _audioClips;
-        private readonly List<AudioClip> availableClips = new();
-
+        private readonly float _stepTime;
         private AudioSource _audioSource;
-        private AnimationEventReceiver _eventReceiver;
-        
-        public MoveStepSoundBehaviour(AudioClip[] audioClips)
+        private IReactiveVariable<float> _velocity;
+
+        private float _timer;
+
+        public MoveStepSoundBehaviour(AudioClip[] audioClips, float stepTime = 0.35f)
         {
             _audioClips = audioClips;
+            _stepTime = stepTime;
         }
 
         public void Init(in IEntity entity)
         {
             _audioSource = entity.GetAudioSource();
-            _eventReceiver = entity.GetAnimationEventReceiver();
-            _eventReceiver.OnEvent += this.OnAnimEvent;
+            _velocity = entity.GetVelocity();
         }
 
-        public void Dispose(in IEntity entity)
+        public void OnUpdate(in IEntity entity, in float deltaTime)
         {
-            _eventReceiver.OnEvent -= this.OnAnimEvent;
-        }
+            if (_velocity.Value < TOLERANCE)
+            {
+                _timer = _stepTime;
+                return;
+            }
 
-        private void OnAnimEvent(string evt)
-        {
-            if (evt == MOVE_STEP_EVENT)
-                this.PlayMoveStep();
+            _timer -= deltaTime;
+
+            if (_timer <= 0)
+            {
+                PlayMoveStep();
+                _timer = _stepTime;
+            }
         }
 
         private void PlayMoveStep()
         {
-            if (this.availableClips.Count == 0)
-                this.availableClips.AddRange(_audioClips);
+            int randomIndex = Random.Range(0, _audioClips.Length);
 
-            int randomIndex = Random.Range(0, availableClips.Count);
-            AudioClip targetClip = this.availableClips[randomIndex];
-            this.availableClips.Remove(targetClip);
-
-            _audioSource.PlayOneShot(targetClip);
+            _audioSource.PlayOneShot(_audioClips[randomIndex], 0.5f);
         }
     }
 }

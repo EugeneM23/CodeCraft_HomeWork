@@ -5,18 +5,12 @@ using UnityEngine;
 
 namespace Game
 {
-    public class CameraFollowController : IContextInit<IPlayerContext>, IContextLateUpdate, IContextUpdate
+    public class CameraFollowController : IContextInit<IPlayerContext>, IContextLateUpdate
     {
         private IEntity _character;
         private IValue<Vector3> _offset;
         private Transform _camera;
         private IValue<int> _speed;
-
-
-        public void OnLateUpdate(IContext context, float deltaTime)
-        {
-            FollowObjectUseCase.Follow(_camera, _character.GetTransform(), deltaTime, _speed.Value, _offset.Value);
-        }
 
         public void Init(IPlayerContext context)
         {
@@ -24,12 +18,11 @@ namespace Game
             _offset = context.GetCameraOffset();
             _camera = context.GetCamera().transform;
             _speed = context.GetCameraSpeed();
-
         }
 
-        public void OnUpdate(IContext context, float deltaTime)
+        public void OnLateUpdate(IContext context, float deltaTime)
         {
-            
+            FollowObjectUseCase.Follow(_camera, _character.GetTransform(), deltaTime, _speed.Value, _offset.Value);
         }
     }
 }

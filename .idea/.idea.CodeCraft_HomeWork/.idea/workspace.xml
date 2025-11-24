@@ -4,27 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6f0b762c-5415-4a85-b17b-cc44fd47261d" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.CodeCraft_HomeWork/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.CodeCraft_HomeWork/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/AssetPacks/PolygonApocalypse/Models/Characters.fbx.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/AssetPacks/PolygonApocalypse/Models/Characters.fbx.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Animations/Basse/AC_BaseCharacter.controller" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Animations/Basse/AC_BaseCharacter.controller" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Animations/Basse/AC_Knife_01.overrideController" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Animations/Basse/AC_Knife_01.overrideController" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Animations/Basse/AC_ZombieHand.overrideController" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Animations/Basse/AC_ZombieHand.overrideController" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Animations/Character/Character (Move).anim" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Animations/Character/Character (Move).anim" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Animations/Weapons/Handgun/Handgun@Walk01 - Backward [RM].anim" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Animations/Weapons/Handgun/Handgun@Walk01 - Backward [RM].anim" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Animations/Weapons/Handgun/Handgun@Walk01 - BackwardLeft [RM].anim" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Animations/Weapons/Handgun/Handgun@Walk01 - BackwardLeft [RM].anim" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Animations/Weapons/Handgun/Handgun@Walk01 - BackwardRight [RM].anim" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Animations/Weapons/Handgun/Handgun@Walk01 - BackwardRight [RM].anim" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Animations/Weapons/Handgun/Handgun@Walk01 - Forward [RM].anim" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Animations/Weapons/Handgun/Handgun@Walk01 - Forward [RM].anim" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Animations/Weapons/Handgun/Handgun@Walk01 - ForwardLeft [RM].anim" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Animations/Weapons/Handgun/Handgun@Walk01 - ForwardLeft [RM].anim" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Animations/Weapons/Handgun/Handgun@Walk01 - ForwardRight [RM].anim" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Animations/Weapons/Handgun/Handgun@Walk01 - ForwardRight [RM].anim" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Animations/Weapons/Handgun/Handgun@Walk01 - Left [RM].anim" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Animations/Weapons/Handgun/Handgun@Walk01 - Left [RM].anim" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Animations/Weapons/Handgun/Handgun@Walk01 - Right [RM].anim" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Animations/Weapons/Handgun/Handgun@Walk01 - Right [RM].anim" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Prefabs/Gameplay/Weapons/AR_01.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Prefabs/Gameplay/Weapons/AR_01.prefab" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Prefabs/Gameplay/Weapons/PT_01.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Prefabs/Gameplay/Weapons/PT_01.prefab" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Entity/Common/Move/CharacterMoveAnimBehaviour.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Entity/Common/Move/CharacterMoveAnimBehaviour.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Packages/manifest.json" beforeDir="false" afterPath="$PROJECT_DIR$/Packages/manifest.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Packages/packages-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/Packages/packages-lock.json" afterDir="false" />
-    </list>
+    <list default="true" id="6f0b762c-5415-4a85-b17b-cc44fd47261d" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -55,7 +35,7 @@
   }
 }</component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="file://$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Entity/Character/Controllers/CharacterFireController.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/TestAnimIK.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.test-framework@5ac417e07314/UnityEditor.TestRunner/TestRun/Tasks/BuildActionTaskBase.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$USER_HOME$/Downloads/5. MVx Паттерны/MVx-Homework/Assets/Modules/UIComponents/FloatingAnimation.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/5a41d6b7189842eca409fd0b1c3e3dcf17bf78/5c/92b8ec18/Action.cs" root0="SKIP_HIGHLIGHTING" />
@@ -183,7 +163,7 @@
       <workItem from="1762939793419" duration="36236000" />
       <workItem from="1763065274757" duration="49631000" />
       <workItem from="1763318434055" duration="67000" />
-      <workItem from="1763824302453" duration="1362000" />
+      <workItem from="1763824302453" duration="26536000" />
     </task>
     <task id="LOCAL-00001" summary="Update">
       <option name="closed" value="true" />

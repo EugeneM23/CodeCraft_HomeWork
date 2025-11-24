@@ -20,4 +20,5 @@ values:
   - BulletPool: IEntityPool
   - AudioPool: IEntityPool
   - WeaponCatalog: WeaponCatalog
+  - PlayerCharacter: IReactiveVariable<IEntity>
   - Players: IDictionary<PlayerID, IPlayerContext>

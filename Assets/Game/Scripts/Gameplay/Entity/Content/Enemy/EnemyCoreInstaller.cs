@@ -41,9 +41,9 @@ namespace Game
             entity.AddRotationSpeed(new BaseVariable<float>(_rotationSpeed));
             entity.AddMoveCondition(new AndExpression(entity.GetHealth().Exists,
                 () => entity.GetWeapon().Value.GetMoveCondition().Invoke()));
-
             entity.AddMoveDirection(new ReactiveVariable<Vector3>());
             entity.AddRotateDirection(new ReactiveVariable<Vector3>());
+            entity.AddVelocity(new ReactiveFloat());
 
             // ⚔️ Combat
             entity.AddWeapon(new ReactiveVariable<IEntity>(_weapon));
@@ -56,7 +56,7 @@ namespace Game
             entity.AddBehaviour<DeathBehaviour>();
             entity.AddBehaviour<CharacterRotateBehaviour>();
             entity.AddBehaviour<CharacterMoveBehaviour>();
-
+            entity.AddBehaviour<CharacterVelocityBehaviour>();
             entity.AddBehaviour<EnemyPatrolBehaviour>();
             entity.AddBehaviour<EnemyAttackBehaviour>();
             entity.AddBehaviour<EnemyChaseBehaviour>();
