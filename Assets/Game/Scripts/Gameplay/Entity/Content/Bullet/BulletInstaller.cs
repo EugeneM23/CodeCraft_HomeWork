@@ -3,6 +3,7 @@ using Atomic.Elements;
 using Atomic.Entities;
 using Modules.Gameplay;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Game
 {

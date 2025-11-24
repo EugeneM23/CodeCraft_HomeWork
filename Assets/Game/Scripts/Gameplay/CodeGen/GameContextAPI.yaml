@@ -18,7 +18,8 @@ imports:
 
 values:
   - BulletPool: IEntityPool
+  - ShellPool: IEntityPool
   - AudioPool: IEntityPool
   - WeaponCatalog: WeaponCatalog
   - PlayerCharacter: IReactiveVariable<IEntity>
-  - Players: IDictionary<PlayerID, IPlayerContext>
+  - PlayerCamera: IEntity

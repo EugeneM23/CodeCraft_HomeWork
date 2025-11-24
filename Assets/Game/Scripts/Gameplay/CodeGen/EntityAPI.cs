@@ -41,6 +41,7 @@ namespace Game
 		public const int HandWeapon = 1077568457; // IReactiveVariable<IEntity>
 		public const int WeaponRoot = 381533304; // Transform
 		public const int FirePoint = 397255013; // Transform
+		public const int ShellPoint = 1300175571; // Transform
 		public const int Damage = 375673178; // IValue<int>
 		public const int DamageRadius = 945363216; // IValue<float>
 		public const int DamageLayer = 2001627032; // LayerMask
@@ -72,6 +73,7 @@ namespace Game
 		public const int AudioSource = 907064781; // AudioSource
 		public const int IsIKEnable = 2098933742; // IReactiveVariable<bool>
 		public const int IKHandController = 1803539326; // IKHandController
+		public const int CameraShakeEvent = 621067616; // BaseEvent
 
 
 		///Tag Extensions
@@ -447,6 +449,24 @@ namespace Game
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void SetFirePoint(this IEntity obj, Transform value) => obj.SetValue(FirePoint, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Transform GetShellPoint(this IEntity obj) => obj.GetValue<Transform>(ShellPoint);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetShellPoint(this IEntity obj, out Transform value) => obj.TryGetValue(ShellPoint, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddShellPoint(this IEntity obj, Transform value) => obj.AddValue(ShellPoint, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasShellPoint(this IEntity obj) => obj.HasValue(ShellPoint);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelShellPoint(this IEntity obj) => obj.DelValue(ShellPoint);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetShellPoint(this IEntity obj, Transform value) => obj.SetValue(ShellPoint, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static IValue<int> GetDamage(this IEntity obj) => obj.GetValue<IValue<int>>(Damage);
@@ -1005,5 +1025,23 @@ namespace Game
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void SetIKHandController(this IEntity obj, IKHandController value) => obj.SetValue(IKHandController, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static BaseEvent GetCameraShakeEvent(this IEntity obj) => obj.GetValue<BaseEvent>(CameraShakeEvent);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetCameraShakeEvent(this IEntity obj, out BaseEvent value) => obj.TryGetValue(CameraShakeEvent, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddCameraShakeEvent(this IEntity obj, BaseEvent value) => obj.AddValue(CameraShakeEvent, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasCameraShakeEvent(this IEntity obj) => obj.HasValue(CameraShakeEvent);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelCameraShakeEvent(this IEntity obj) => obj.DelValue(CameraShakeEvent);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetCameraShakeEvent(this IEntity obj, BaseEvent value) => obj.SetValue(CameraShakeEvent, value);
     }
 }

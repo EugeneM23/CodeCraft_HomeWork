@@ -28,7 +28,7 @@ namespace Game
                 new BaseAction<IEntity>((character =>
                 {
                     IEntity weapon = character.GetWeapon().Value;
-                    if (weapon == null) return;
+                    if (weapon == null || !weapon.TryGetAmmo(out var ammo)) return;
 
                     weapon.GetAmmo().Add(_ammoAmount);
                     entity.GetPickUpEvent().Invoke();

@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Atomic.Contexts;
 using Atomic.Elements;
 using Atomic.Entities;
@@ -8,6 +7,7 @@ namespace Game
 {
     public class GameContextInstaller : SceneContextInstaller<IGameContext>
     {
+        [SerializeField] private SceneEntity _camera;
         [SerializeField] private SceneEntity _player;
         [SerializeField] private BulletSystemInstaller _bulletInstaller;
         [SerializeField] private WeaponCatalog _weapons;
@@ -17,8 +17,8 @@ namespace Game
         {
             _bulletInstaller.Install(context);
 
+            context.AddPlayerCamera(_camera);
             context.AddWeaponCatalog(_weapons);
-            context.AddPlayers(new Dictionary<PlayerID, IPlayerContext>());
             context.AddPlayerCharacter(new ReactiveVariable<IEntity>(_player));
 
             GameObject audioRoot = new GameObject("AudioPool");

@@ -21,6 +21,7 @@ namespace Game
 		public const int Character = 294335127; // IEntity
 		public const int CharacterTransform = -557574193; // Transform
 		public const int CameraOffset = -1286660539; // IValue<Vector3>
+		public const int CameraRoot = 977661012; // Transform
 		public const int Camera = 1018227507; // Camera
 		public const int CameraSpeed = -1615506830; // IValue<int>
 		public const int MoveJoystick = -1686028204; // Joystick
@@ -82,6 +83,24 @@ namespace Game
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void SetCameraOffset(this IPlayerContext obj, IValue<Vector3> value) => obj.SetValue(CameraOffset, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Transform GetCameraRoot(this IPlayerContext obj) => obj.GetValue<Transform>(CameraRoot);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetCameraRoot(this IPlayerContext obj, out Transform value) => obj.TryGetValue(CameraRoot, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddCameraRoot(this IPlayerContext obj, Transform value) => obj.AddValue(CameraRoot, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasCameraRoot(this IPlayerContext obj) => obj.HasValue(CameraRoot);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelCameraRoot(this IPlayerContext obj) => obj.DelValue(CameraRoot);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetCameraRoot(this IPlayerContext obj, Transform value) => obj.SetValue(CameraRoot, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Camera GetCamera(this IPlayerContext obj) => obj.GetValue<Camera>(Camera);

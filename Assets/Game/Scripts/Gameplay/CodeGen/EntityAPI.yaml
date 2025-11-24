@@ -44,6 +44,7 @@ values:
   - HandWeapon: IReactiveVariable<IEntity>
   - WeaponRoot: Transform
   - FirePoint: Transform
+  - ShellPoint: Transform
   - Damage: IValue<int>
   - DamageRadius: IValue<float>
   - DamageLayer: LayerMask
@@ -89,5 +90,8 @@ values:
   #IK
   - IsIKEnable: IReactiveVariable<bool>
   - IKHandController: IKHandController
+    
+  #Camera
+  - CameraShakeEvent: BaseEvent
     
     

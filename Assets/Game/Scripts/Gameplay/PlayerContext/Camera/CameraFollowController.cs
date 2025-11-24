@@ -9,20 +9,20 @@ namespace Game
     {
         private IEntity _character;
         private IValue<Vector3> _offset;
-        private Transform _camera;
+        private Transform _cameraRoot;
         private IValue<int> _speed;
 
         public void Init(IPlayerContext context)
         {
             _character = context.GetCharacter();
             _offset = context.GetCameraOffset();
-            _camera = context.GetCamera().transform;
+            _cameraRoot = context.GetCameraRoot();
             _speed = context.GetCameraSpeed();
         }
 
         public void OnLateUpdate(IContext context, float deltaTime)
         {
-            FollowObjectUseCase.Follow(_camera, _character.GetTransform(), deltaTime, _speed.Value, _offset.Value);
+            CameraFollowUseCase.Follow(_cameraRoot, _character.GetTransform(), deltaTime, _speed.Value, _offset.Value);
         }
     }
 }

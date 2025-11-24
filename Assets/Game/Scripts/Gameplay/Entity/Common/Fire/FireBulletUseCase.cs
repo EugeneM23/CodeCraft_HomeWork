@@ -21,5 +21,16 @@ namespace Game
         {
             gameContext.GetBulletPool().Return(bullet);
         }
+        
+        public static IEntity SpawnShell(IEntity weapon, IGameContext gameContext, Transform shellPoint)
+        {
+            IEntity shell = gameContext.GetShellPool().Rent();
+
+            shell.GetTransform().SetPositionAndRotation(shellPoint.position, shellPoint.rotation);
+            shell.GetLifeTime().Reset();
+
+            return shell;
+        }
     }
+    
 }

@@ -18,6 +18,7 @@ values:
   - Character: IEntity
   - CharacterTransform: Transform
   - CameraOffset: IValue<Vector3>
+  - CameraRoot: Transform
   - Camera: Camera
   - CameraSpeed: IValue<int>
   - MoveJoystick: Joystick

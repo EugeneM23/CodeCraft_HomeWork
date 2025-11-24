@@ -20,10 +20,11 @@ namespace Game
 
 		///Values
 		public const int BulletPool = 1915726678; // IEntityPool
+		public const int ShellPool = 2051358104; // IEntityPool
 		public const int AudioPool = -1361603774; // IEntityPool
 		public const int WeaponCatalog = -1557559158; // WeaponCatalog
 		public const int PlayerCharacter = -1319565175; // IReactiveVariable<IEntity>
-		public const int Players = -369919430; // IDictionary<PlayerID, IPlayerContext>
+		public const int PlayerCamera = 298559249; // IEntity
 
 
 		///Value Extensions
@@ -45,6 +46,24 @@ namespace Game
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void SetBulletPool(this IContext obj, IEntityPool value) => obj.SetValue(BulletPool, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static IEntityPool GetShellPool(this IContext obj) => obj.GetValue<IEntityPool>(ShellPool);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetShellPool(this IContext obj, out IEntityPool value) => obj.TryGetValue(ShellPool, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddShellPool(this IContext obj, IEntityPool value) => obj.AddValue(ShellPool, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasShellPool(this IContext obj) => obj.HasValue(ShellPool);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelShellPool(this IContext obj) => obj.DelValue(ShellPool);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetShellPool(this IContext obj, IEntityPool value) => obj.SetValue(ShellPool, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static IEntityPool GetAudioPool(this IContext obj) => obj.GetValue<IEntityPool>(AudioPool);
@@ -101,21 +120,21 @@ namespace Game
 		public static void SetPlayerCharacter(this IContext obj, IReactiveVariable<IEntity> value) => obj.SetValue(PlayerCharacter, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static IDictionary<PlayerID, IPlayerContext> GetPlayers(this IContext obj) => obj.GetValue<IDictionary<PlayerID, IPlayerContext>>(Players);
+		public static IEntity GetPlayerCamera(this IContext obj) => obj.GetValue<IEntity>(PlayerCamera);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool TryGetPlayers(this IContext obj, out IDictionary<PlayerID, IPlayerContext> value) => obj.TryGetValue(Players, out value);
+		public static bool TryGetPlayerCamera(this IContext obj, out IEntity value) => obj.TryGetValue(PlayerCamera, out value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool AddPlayers(this IContext obj, IDictionary<PlayerID, IPlayerContext> value) => obj.AddValue(Players, value);
+		public static bool AddPlayerCamera(this IContext obj, IEntity value) => obj.AddValue(PlayerCamera, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool HasPlayers(this IContext obj) => obj.HasValue(Players);
+		public static bool HasPlayerCamera(this IContext obj) => obj.HasValue(PlayerCamera);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool DelPlayers(this IContext obj) => obj.DelValue(Players);
+		public static bool DelPlayerCamera(this IContext obj) => obj.DelValue(PlayerCamera);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void SetPlayers(this IContext obj, IDictionary<PlayerID, IPlayerContext> value) => obj.SetValue(Players, value);
+		public static void SetPlayerCamera(this IContext obj, IEntity value) => obj.SetValue(PlayerCamera, value);
     }
 }

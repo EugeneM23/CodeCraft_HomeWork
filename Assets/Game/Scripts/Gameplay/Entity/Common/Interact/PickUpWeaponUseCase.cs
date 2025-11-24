@@ -8,6 +8,7 @@ namespace Game
         public static bool PickUpWeapon(IEntity character, IEntity sceneWeapon, GameContext gameContext)
         {
             DropWeaponUseCase.DropWeapon(character, gameContext);
+            character.GetTargetInteractable().Value = null;
 
             SceneEntity characterWeapon = gameContext.GetWeaponCatalog().GetWeapon(sceneWeapon.GetWeaponId());
 

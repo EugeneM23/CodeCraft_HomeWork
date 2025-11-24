@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Game
 {
-    public static class FollowObjectUseCase
+    public static class CameraFollowUseCase
     {
         public static void Follow(
             in Transform source,
