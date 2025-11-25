@@ -12,6 +12,7 @@ imports:
   - Atomic.Elements
   - System
   - Modules.Gameplay
+  - HighlightPlus
 
 tags:
   - Damageable
@@ -80,18 +81,21 @@ values:
   - PickUpEvent: BaseEvent
   - PositionOffset: Vector3
   
-  #AI
+  # AI
   - PatrolPoints: Transform[]
   - Target: IReactiveVariable<IEntity>
   
-  #Sound
+  # Sound
   - AudioSource: AudioSource
   
-  #IK
+  # IK
   - IsIKEnable: IReactiveVariable<bool>
   - IKHandController: IKHandController
-    
-  #Camera
+  
+  # Camera
   - CameraShakeEvent: BaseEvent
+  
+  # Highlight
+  - Highlight: HighlightEffect
     
     

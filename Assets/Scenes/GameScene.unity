@@ -13011,6 +13011,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _vfx: {fileID: 157747339}
+  _highlight: {fileID: 0}
   _visual: {fileID: 274952384}
   _audioSource: {fileID: 1759263155}
   _audioClip: {fileID: 0}
@@ -53731,6 +53732,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: AmmoItem (2)
       objectReference: {fileID: 0}
+    - target: {fileID: 3999861814904877637, guid: c7863614b27b846a4b271fc4c579f124, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4635768041822679550, guid: c7863614b27b846a4b271fc4c579f124, type: 3}
       propertyPath: m_LocalPosition.x
       value: 13.906
@@ -59010,6 +59015,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _vfx: {fileID: 1085870425}
+  _highlight: {fileID: 0}
   _visual: {fileID: 660762109}
   _audioSource: {fileID: 422583006}
   _audioClip: {fileID: 0}
@@ -81431,6 +81437,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _vfx: {fileID: 627015956}
+  _highlight: {fileID: 0}
   _visual: {fileID: 370634483}
   _audioSource: {fileID: 1770338296}
   _audioClip: {fileID: 0}
@@ -82422,7 +82429,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5805928980614070902, guid: 363898e45e31f4e9f8b8ce19ce7b902a, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 10.497
+      value: 10.181
       objectReference: {fileID: 0}
     - target: {fileID: 5805928980614070902, guid: 363898e45e31f4e9f8b8ce19ce7b902a, type: 3}
       propertyPath: m_LocalPosition.y
@@ -82430,7 +82437,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5805928980614070902, guid: 363898e45e31f4e9f8b8ce19ce7b902a, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -11.655
+      value: -11.495
       objectReference: {fileID: 0}
     - target: {fileID: 5805928980614070902, guid: 363898e45e31f4e9f8b8ce19ce7b902a, type: 3}
       propertyPath: m_LocalRotation.w
@@ -82637,6 +82644,10 @@ PrefabInstance:
     - target: {fileID: 2835355164466344910, guid: c7863614b27b846a4b271fc4c579f124, type: 3}
       propertyPath: m_Name
       value: AmmoItem (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 3999861814904877637, guid: c7863614b27b846a4b271fc4c579f124, type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4635768041822679550, guid: c7863614b27b846a4b271fc4c579f124, type: 3}
       propertyPath: m_LocalPosition.x
@@ -116180,6 +116191,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _vfx: {fileID: 248641753}
+  _highlight: {fileID: 0}
   _visual: {fileID: 1521482769}
   _audioSource: {fileID: 464558166}
   _audioClip: {fileID: 0}
@@ -116723,29 +116735,9 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1710692057543926718, guid: 23df5059d222046aaaf123747537eced, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 1.677
-      objectReference: {fileID: 0}
-    - target: {fileID: 4668063995167171911, guid: 23df5059d222046aaaf123747537eced, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -0.113
-      objectReference: {fileID: 0}
-    - target: {fileID: 4668063995167171911, guid: 23df5059d222046aaaf123747537eced, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -1.408
-      objectReference: {fileID: 0}
     - target: {fileID: 5104382976400029070, guid: 23df5059d222046aaaf123747537eced, type: 3}
       propertyPath: m_Name
       value: Zombie (11)
-      objectReference: {fileID: 0}
-    - target: {fileID: 5104382976400029070, guid: 23df5059d222046aaaf123747537eced, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6664947197381005067, guid: 23df5059d222046aaaf123747537eced, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -1.949
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

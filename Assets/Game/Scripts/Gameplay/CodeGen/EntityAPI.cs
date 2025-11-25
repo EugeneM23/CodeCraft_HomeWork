@@ -9,6 +9,7 @@ using Atomic.Entities;
 using Atomic.Elements;
 using System;
 using Modules.Gameplay;
+using HighlightPlus;
 
 namespace Game
 {
@@ -74,6 +75,7 @@ namespace Game
 		public const int IsIKEnable = 2098933742; // IReactiveVariable<bool>
 		public const int IKHandController = 1803539326; // IKHandController
 		public const int CameraShakeEvent = 621067616; // BaseEvent
+		public const int Highlight = 1265195671; // HighlightEffect
 
 
 		///Tag Extensions
@@ -1043,5 +1045,23 @@ namespace Game
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void SetCameraShakeEvent(this IEntity obj, BaseEvent value) => obj.SetValue(CameraShakeEvent, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static HighlightEffect GetHighlight(this IEntity obj) => obj.GetValue<HighlightEffect>(Highlight);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetHighlight(this IEntity obj, out HighlightEffect value) => obj.TryGetValue(Highlight, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddHighlight(this IEntity obj, HighlightEffect value) => obj.AddValue(Highlight, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasHighlight(this IEntity obj) => obj.HasValue(Highlight);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelHighlight(this IEntity obj) => obj.DelValue(Highlight);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetHighlight(this IEntity obj, HighlightEffect value) => obj.SetValue(Highlight, value);
     }
 }
