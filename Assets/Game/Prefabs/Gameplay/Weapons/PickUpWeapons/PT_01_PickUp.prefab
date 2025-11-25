@@ -5455,7 +5455,8 @@ MonoBehaviour:
   _highlight: {fileID: 8224477472077091249}
   _visual: {fileID: 0}
   _audioSource: {fileID: 0}
-  _audioClip: {fileID: 8300000, guid: fbfeed636424c40a696bebd4b43b6896, type: 3}
+  _pickUpSound: {fileID: 0}
+  _dropSound: {fileID: 0}
 --- !u!1 &3055973873298147730
 GameObject:
   m_ObjectHideFlags: 0
@@ -5996,19 +5997,19 @@ MonoBehaviour:
   innerGlowColor: {r: 1, g: 1, b: 1, a: 1}
   innerGlowBlendMode: 0
   innerGlowVisibility: 0
-  targetFX: 0
-  targetFXStyle: 0
+  targetFX: 1
+  targetFXStyle: 10
   targetFXFrameWidth: 0.1
   targetFXCornerLength: 0.25
   targetFXFrameMinOpacity: 0
   targetFXGroundMinAltitude: -1000
   targetFXTexture: {fileID: 2800000, guid: 1de3c566a6c8c405b9f6f453137273ec, type: 3}
-  targetFXColor: {r: 1, g: 1, b: 1, a: 1}
+  targetFXColor: {r: 0.14544725, g: 1, b: 0, a: 1}
   targetFXCenter: {fileID: 0}
   targetFXRotationSpeed: 50
   targetFXRotationAngle: 0
   targetFXInitialScale: 4
-  targetFXEndScale: 1.5
+  targetFXEndScale: 1
   targetFXScaleToRenderBounds: 0
   targetFXUseEnclosingBounds: 0
   targetFXSquare: 1

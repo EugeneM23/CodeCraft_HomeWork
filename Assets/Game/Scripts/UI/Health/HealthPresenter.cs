@@ -4,6 +4,7 @@ using Atomic.Entities;
 using Atomic.Presenters;
 using Game.UI;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace Game
 {
@@ -13,15 +14,12 @@ namespace Game
         [SerializeField] private PlayerID ID;
 
         private IEntity _character;
-        private IReactiveVariable<IEntity> _weapon;
 
         protected override void OnInit()
         {
             _character = GameContext.Instance.GetPlayerCharacter().Value;
-            _weapon = _character.GetWeapon();
         }
 
-        
 
         protected override void OnShow()
         {

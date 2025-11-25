@@ -97,6 +97,7 @@ values:
   
   # Camera
   - CameraShakeEvent: BaseEvent
+  - CameraPoint: Transform
     
     # Highlight
     

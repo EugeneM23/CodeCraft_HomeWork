@@ -2,10 +2,11 @@ using System;
 using System.Collections.Generic;
 using Atomic.Elements;
 using Atomic.Entities;
+using Game.Gameplay;
 using Modules.Gameplay;
 using UnityEngine;
 
-namespace Game.Gameplay
+namespace Game
 {
     public sealed class CharacterCoreInstaller : SceneEntityInstaller
     {
@@ -19,6 +20,7 @@ namespace Game.Gameplay
         [SerializeField] private Transform _characterRoot;
         [SerializeField] private Rigidbody _rigidbody;
         [SerializeField] private InteractInstaller _interactInstaller;
+        [SerializeField] private Transform _cameraPoint;
 
         public override void Install(IEntity entity)
         {
@@ -57,6 +59,9 @@ namespace Game.Gameplay
             entity.AddBehaviour<CharacterMoveBehaviour>();
             entity.AddBehaviour<CharacterRotateBehaviour>();
             entity.AddBehaviour<CharacterVelocityBehaviour>();
+
+            //Camera
+            entity.AddCameraPoint(_cameraPoint);
 
             // 🛠️ Interact
             _interactInstaller.Install(entity);

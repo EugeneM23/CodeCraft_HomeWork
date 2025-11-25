@@ -62,7 +62,7 @@ namespace Game.UI
             }
             this.takeDamageTween = DOTween
                 .Sequence()
-                .Append(this.takeDamageView.DOFade(Mathf.Clamp(damage / 40.0f, 0.2f, 1.0f), 0.05f))
+                .Append(this.takeDamageView.DOFade(Mathf.Clamp(damage / 10.0f, 0.2f, 1.0f), 0.05f))
                 .Append(this.takeDamageView.DOFade(0, 0.2f));
         }
         [Button]

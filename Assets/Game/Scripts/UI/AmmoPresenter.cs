@@ -2,12 +2,14 @@ using Atomic.Elements;
 using Atomic.Entities;
 using Atomic.Presenters;
 using Game.UI;
+using Modules.Gameplay;
 using UnityEngine;
 
 namespace Game
 {
     public class AmmoPresenter : Presenter
     {
+        [SerializeField] private GameObject _infinityIcon;
         [SerializeField] private StatView _statView;
         [SerializeField] private PlayerID ID;
 
@@ -25,25 +27,29 @@ namespace Game
 
         private void OnWeaponChanged(IEntity weapon)
         {
-            if (_currentWeapon != null && _currentWeapon.TryGetAmmo(out var ammo))
+            if (_weapon.Value != null && _weapon.Value.TryGetAmmo(out Ammo ammo))
+            {
                 ammo.OnStateChanged += UpdateAmmo;
-
-            _currentWeapon = weapon;
-        }
-
-        protected override void OnShow()
-        {
+                _statView.gameObject.SetActive(true);
+                _infinityIcon.SetActive(false);
+                UpdateAmmo();
+            }
+            else
+            {
+                _infinityIcon.SetActive(true);
+                _statView.gameObject.SetActive(false);
+            }
         }
 
         private void UpdateAmmo()
         {
-            int count = _character.GetWeapon().Value.GetAmmo().GetCount();
+            int count = _weapon.Value.GetAmmo().GetCount();
             _statView.SetText(count.ToString());
         }
 
         protected override void OnHide()
         {
-            //_character.GetWeapon().Value.GetAmmo().OnStateChanged -= UpdateAmmo;
+            _weapon.Value.GetAmmo().OnStateChanged -= UpdateAmmo;
         }
     }
 }

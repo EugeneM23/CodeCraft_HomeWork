@@ -29,7 +29,10 @@ namespace Game
             if (item != null)
             {
                 if (item.TryGetHighlight(out var highlightEffect))
+                {
                     highlightEffect.enabled = true;
+                    highlightEffect.TargetFX();
+                }
 
                 _currentItem = item;
             }

@@ -77,6 +77,7 @@ namespace Game
 		public const int IsIKEnable = 2098933742; // IReactiveVariable<bool>
 		public const int IKHandController = 1803539326; // IKHandController
 		public const int CameraShakeEvent = 621067616; // BaseEvent
+		public const int CameraPoint = 657874848; // Transform
 
 
 		///Tag Extensions
@@ -1082,5 +1083,23 @@ namespace Game
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void SetCameraShakeEvent(this IEntity obj, BaseEvent value) => obj.SetValue(CameraShakeEvent, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Transform GetCameraPoint(this IEntity obj) => obj.GetValue<Transform>(CameraPoint);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetCameraPoint(this IEntity obj, out Transform value) => obj.TryGetValue(CameraPoint, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddCameraPoint(this IEntity obj, Transform value) => obj.AddValue(CameraPoint, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasCameraPoint(this IEntity obj) => obj.HasValue(CameraPoint);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelCameraPoint(this IEntity obj) => obj.DelValue(CameraPoint);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetCameraPoint(this IEntity obj, Transform value) => obj.SetValue(CameraPoint, value);
     }
 }

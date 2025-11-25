@@ -22,7 +22,7 @@ namespace Game
 
         public void OnLateUpdate(IContext context, float deltaTime)
         {
-            CameraFollowUseCase.Follow(_cameraRoot, _character.GetTransform(), deltaTime, _speed.Value, _offset.Value);
+            CameraFollowUseCase.Follow(_cameraRoot, _character.GetCameraPoint(), deltaTime, _speed.Value, _offset.Value);
         }
     }
 }
