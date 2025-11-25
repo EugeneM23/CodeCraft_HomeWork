@@ -22,7 +22,8 @@ namespace Game
             entity.AddTransform(transform);
             entity.AddInteractableTag();
             entity.AddPickUpEvent(new BaseEvent());
-            
+            entity.AddDropEvent(new BaseEvent());
+
             entity.AddInteractAction(new BaseAction<IEntity>(character =>
             {
                 entity.GetPickUpEvent().Invoke();

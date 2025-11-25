@@ -68,14 +68,15 @@ namespace Game
 		public const int UITransform = 327940928; // Transform
 		public const int TargetInteractable = -990542098; // IReactiveVariable<IEntity>
 		public const int PickUpEvent = -1876534383; // BaseEvent
+		public const int DropEvent = -1047317701; // BaseEvent
 		public const int PositionOffset = -1791312001; // Vector3
+		public const int Highlight = 1265195671; // HighlightEffect
 		public const int PatrolPoints = 587900176; // Transform[]
 		public const int Target = 1103309514; // IReactiveVariable<IEntity>
 		public const int AudioSource = 907064781; // AudioSource
 		public const int IsIKEnable = 2098933742; // IReactiveVariable<bool>
 		public const int IKHandController = 1803539326; // IKHandController
 		public const int CameraShakeEvent = 621067616; // BaseEvent
-		public const int Highlight = 1265195671; // HighlightEffect
 
 
 		///Tag Extensions
@@ -921,6 +922,24 @@ namespace Game
 		public static void SetPickUpEvent(this IEntity obj, BaseEvent value) => obj.SetValue(PickUpEvent, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static BaseEvent GetDropEvent(this IEntity obj) => obj.GetValue<BaseEvent>(DropEvent);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetDropEvent(this IEntity obj, out BaseEvent value) => obj.TryGetValue(DropEvent, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddDropEvent(this IEntity obj, BaseEvent value) => obj.AddValue(DropEvent, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasDropEvent(this IEntity obj) => obj.HasValue(DropEvent);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelDropEvent(this IEntity obj) => obj.DelValue(DropEvent);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetDropEvent(this IEntity obj, BaseEvent value) => obj.SetValue(DropEvent, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Vector3 GetPositionOffset(this IEntity obj) => obj.GetValue<Vector3>(PositionOffset);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -937,6 +956,24 @@ namespace Game
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void SetPositionOffset(this IEntity obj, Vector3 value) => obj.SetValue(PositionOffset, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static HighlightEffect GetHighlight(this IEntity obj) => obj.GetValue<HighlightEffect>(Highlight);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetHighlight(this IEntity obj, out HighlightEffect value) => obj.TryGetValue(Highlight, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddHighlight(this IEntity obj, HighlightEffect value) => obj.AddValue(Highlight, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasHighlight(this IEntity obj) => obj.HasValue(Highlight);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelHighlight(this IEntity obj) => obj.DelValue(Highlight);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetHighlight(this IEntity obj, HighlightEffect value) => obj.SetValue(Highlight, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Transform[] GetPatrolPoints(this IEntity obj) => obj.GetValue<Transform[]>(PatrolPoints);
@@ -1045,23 +1082,5 @@ namespace Game
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void SetCameraShakeEvent(this IEntity obj, BaseEvent value) => obj.SetValue(CameraShakeEvent, value);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static HighlightEffect GetHighlight(this IEntity obj) => obj.GetValue<HighlightEffect>(Highlight);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool TryGetHighlight(this IEntity obj, out HighlightEffect value) => obj.TryGetValue(Highlight, out value);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool AddHighlight(this IEntity obj, HighlightEffect value) => obj.AddValue(Highlight, value);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool HasHighlight(this IEntity obj) => obj.HasValue(Highlight);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool DelHighlight(this IEntity obj) => obj.DelValue(Highlight);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void SetHighlight(this IEntity obj, HighlightEffect value) => obj.SetValue(Highlight, value);
     }
 }

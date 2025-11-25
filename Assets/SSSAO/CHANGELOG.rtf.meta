@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: adec882d1d6e748649900df7b19f2cfa
+timeCreated: 1456642559
+licenseType: Store
+DefaultImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 57053
+  packageName: Simple SSAO
+  packageVersion: 1.4.3
+  assetPath: Assets/SSSAO/CHANGELOG.rtf
+  uploadId: 209573

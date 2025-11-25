@@ -1,6 +1,7 @@
 using Atomic.Entities;
 using HighlightPlus;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Game.Gameplay
 {
@@ -10,7 +11,11 @@ namespace Game.Gameplay
         [SerializeField] private HighlightEffect _highlight;
         [SerializeField] private GameObject _visual;
         [SerializeField] private AudioSource _audioSource;
-        [SerializeField] private AudioClip _audioClip;
+
+        [FormerlySerializedAs("_audioClip")] [SerializeField]
+        private AudioClip _pickUpSound;
+
+        [SerializeField] private AudioClip _dropSound;
 
         private IEntityPool _audioPool;
 
@@ -21,8 +26,11 @@ namespace Game.Gameplay
             {
                 IEntity go = GameContext.Instance.GetAudioPool().Rent();
                 go.GetLifeTime().Reset();
-                go.GetAudioSource().PlayOneShot(_audioClip);
+                go.GetAudioSource().PlayOneShot(_pickUpSound);
             };
+
+            if (entity.TryGetDropEvent(out var @event))
+                @event.OnEvent += () => { _audioSource.PlayOneShot(_dropSound); };
         }
     }
 }

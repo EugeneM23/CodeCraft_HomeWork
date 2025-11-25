@@ -79,7 +79,10 @@ values:
   - UITransform: Transform
   - TargetInteractable: IReactiveVariable<IEntity>
   - PickUpEvent: BaseEvent
+  - DropEvent: BaseEvent
   - PositionOffset: Vector3
+  - Highlight: HighlightEffect
+  
   
   # AI
   - PatrolPoints: Transform[]
@@ -94,8 +97,7 @@ values:
   
   # Camera
   - CameraShakeEvent: BaseEvent
-  
-  # Highlight
-  - Highlight: HighlightEffect
+    
+    # Highlight
     
     

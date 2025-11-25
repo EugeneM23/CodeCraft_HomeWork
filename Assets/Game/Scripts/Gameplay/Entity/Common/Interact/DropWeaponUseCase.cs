@@ -38,6 +38,9 @@ namespace Game
                 ammo.SpendAll();
                 ammo.Add(currentAmmo.GetCount());
             }
+
+            if (pickUpWeapon.TryGetDropEvent(out var @event))
+                @event.Invoke();
         }
     }
 }
