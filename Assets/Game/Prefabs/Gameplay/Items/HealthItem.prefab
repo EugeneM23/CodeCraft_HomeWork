@@ -249,7 +249,8 @@ MonoBehaviour:
   _highlight: {fileID: 1651670042090819658}
   _visual: {fileID: 1816155109594164265}
   _audioSource: {fileID: 2298006360191853931}
-  _audioClip: {fileID: 8300000, guid: c2030a235a7cd4f398233cb679f7c4c8, type: 3}
+  _pickUpSound: {fileID: 8300000, guid: c2030a235a7cd4f398233cb679f7c4c8, type: 3}
+  _dropSound: {fileID: 0}
 --- !u!65 &3100126443347532207
 BoxCollider:
   m_ObjectHideFlags: 0

@@ -589,7 +589,7 @@ MonoBehaviour:
   _visual: {fileID: 0}
   _audioSource: {fileID: 8450393538299582300}
   _pickUpSound: {fileID: 8300000, guid: fbfeed636424c40a696bebd4b43b6896, type: 3}
-  _dropSound: {fileID: 8300000, guid: 39a85a89122dc44df8b4839f669d1db7, type: 3}
+  _dropSound: {fileID: 8300000, guid: a76b32836dc7cc44aa9a52f0694ee199, type: 3}
 --- !u!1 &3055973873298147730
 GameObject:
   m_ObjectHideFlags: 0

@@ -12,9 +12,7 @@ namespace Game.Gameplay
         [SerializeField] private GameObject _visual;
         [SerializeField] private AudioSource _audioSource;
 
-        [FormerlySerializedAs("_audioClip")] [SerializeField]
-        private AudioClip _pickUpSound;
-
+        [SerializeField] private AudioClip _pickUpSound;
         [SerializeField] private AudioClip _dropSound;
 
         private IEntityPool _audioPool;

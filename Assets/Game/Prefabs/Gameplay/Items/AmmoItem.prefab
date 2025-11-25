@@ -4931,7 +4931,8 @@ MonoBehaviour:
   _highlight: {fileID: 3999861814904877637}
   _visual: {fileID: 561079485267714583}
   _audioSource: {fileID: 4390956879955064593}
-  _audioClip: {fileID: 8300000, guid: 1d470785c1bc647bba845d6a62236228, type: 3}
+  _pickUpSound: {fileID: 8300000, guid: 1d470785c1bc647bba845d6a62236228, type: 3}
+  _dropSound: {fileID: 0}
 --- !u!114 &975393490776826503
 MonoBehaviour:
   m_ObjectHideFlags: 0
