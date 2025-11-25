@@ -20,42 +20,20 @@ namespace Game
         {
             _collisionEventReceiver = entity.GetCollisionReceiver();
             _bullet = entity;
-
             _collisionEventReceiver.OnEntered += Destroy;
-
             _hitEffectPool = GameContext.Instance.GetHitEffectPool();
         }
 
-        public void Dispose(in IEntity entity)
-        {
-            _collisionEventReceiver.OnEntered -= Destroy;
-        }
+        public void Dispose(in IEntity entity) => _collisionEventReceiver.OnEntered -= Destroy;
 
-        private void Destroy(Collision obj)
+        private void Destroy(Collision collision)
         {
-            if (obj.gameObject.TryGetComponent(out IEntity target) && target.HasDamageableTag())
-            {
-                target.GetHealth().Reduce(_bullet.GetDamage().Value);
-                target.GetDamageTakenEvent().Invoke(new TakeDamageArgs(_bullet));
-            }
+            if (collision.gameObject.TryGetComponent(out IEntity target) && target.HasDamageableTag())
+                DamageUseCase.TakeDamage(target, new TakeDamageArgs(_bullet));
             else
-            {
-                ContactPoint contact = obj.GetContact(0);
-                Vector3 position = contact.point;
-                Vector3 normal = contact.normal;
-        
-                IEntity go = _hitEffectPool.Rent();
-                Transform effectTransform = go.GetTransform();
-                effectTransform.position = position;
-                effectTransform.rotation = Quaternion.LookRotation(normal);
-            }
+                SpawnParticleUseCase.SpawnEnviromentHit(collision, _hitEffectPool);
 
-            UnSpawn(_bullet);
-        }
-
-        private void UnSpawn(IEntity bullet)
-        {
-            FireBulletUseCase.UnSpawnBullet(_gameContext, bullet);
+            FireBulletUseCase.UnSpawnBullet(_gameContext, _bullet);
         }
     }
 }

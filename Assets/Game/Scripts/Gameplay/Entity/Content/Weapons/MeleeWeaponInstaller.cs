@@ -14,9 +14,11 @@ namespace Game
         [SerializeField] private LayerMask _damageLayer;
         [SerializeField] private Cooldown _cooldown;
         [SerializeField] private RuntimeAnimatorController _animController;
+        private GameContext _gameContext;
 
         public override void Install(IEntity entity)
         {
+            _gameContext = GameContext.Instance;
             //Core
             entity.AddWeaponId(_id);
             entity.AddMeleeWeaponTag();
@@ -34,13 +36,10 @@ namespace Game
             entity.AddMoveCondition(new AndExpression());
             entity.AddWeaponCooldown(_cooldown);
             entity.GetMoveCondition().Append(_cooldown.IsExpired);
-            entity.AddFireAction(new BaseAction(() =>
-            {
-                entity.GetDamageCastEnabled().Value = true;
-                entity.GetWeaponCooldown().Reset();
-            }));
+            
+            entity.AddFireAction(new BaseAction(() => { entity.GetWeaponCooldown().Reset(); }));
+            
             entity.AddFireCondition(new AndExpression(() => entity.GetWeaponCooldown().IsExpired()));
-            entity.AddBehaviour<DamageCastBehaviour>();
 
             entity.OnUpdated += deltaTime => entity.GetWeaponCooldown().Tick(deltaTime);
 

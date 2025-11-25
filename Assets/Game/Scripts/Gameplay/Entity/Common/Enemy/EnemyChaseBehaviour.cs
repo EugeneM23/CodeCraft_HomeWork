@@ -7,24 +7,24 @@ namespace Game.Gameplay
     public class EnemyChaseBehaviour : IEntityInit, IEntityUpdate
     {
         private IReactiveVariable<IEntity> _target;
-        private IReactiveVariable<Vector3> _moveDirection;
-        private IReactiveVariable<Vector3> _rotateDiraction;
-        private Transform _enemyTransfrom;
+        private IReactiveVariable<Vector3> _moveVector;
+        private IReactiveVariable<Vector3> _rotateVector;
+        private Transform _enemy;
 
         public void Init(in IEntity entity)
         {
             _target = entity.GetTarget();
-            _moveDirection = entity.GetMoveDirection();
-            _rotateDiraction = entity.GetRotateDirection();
-            _enemyTransfrom = entity.GetTransform();
+            _moveVector = entity.GetMoveDirection();
+            _rotateVector = entity.GetRotateDirection();
+            _enemy = entity.GetTransform();
         }
 
         public void OnUpdate(in IEntity entity, in float deltaTime)
         {
             if (_target.Value != null)
             {
-                _moveDirection.Value = DiractionUseCase.Get(_enemyTransfrom, _target.Value.GetTransform());
-                _rotateDiraction.Value = DiractionUseCase.Get(_enemyTransfrom, _target.Value.GetTransform());
+                _moveVector.Value = DirectionUseCase.Get(_enemy, _target.Value.GetTransform());
+                _rotateVector.Value = DirectionUseCase.Get(_enemy, _target.Value.GetTransform());
             }
         }
     }

@@ -17,7 +17,10 @@ namespace Game
             _weapon.Observe(OnWeaponChanged);
         }
 
-        public void Dispose(in IEntity entity) => _weapon.Unsubscribe(OnWeaponChanged);
+        public void Dispose(in IEntity entity)
+        {
+            _weapon.Unsubscribe(OnWeaponChanged);
+        }
 
         private void OnWeaponChanged(IEntity weapon)
         {

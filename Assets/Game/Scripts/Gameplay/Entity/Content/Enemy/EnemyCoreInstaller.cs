@@ -16,11 +16,13 @@ namespace Game
         [SerializeField] private TriggerEventReceiver _triggerReceiver;
         [SerializeField] private Transform _weaponRoot;
         [SerializeField] private Transform _characterRoot;
-
         [SerializeField] private Transform[] _patrolPoints;
+        private GameContext _gameContext;
 
         public override void Install(IEntity entity)
         {
+            _gameContext = GameContext.Instance;
+
             // 🧩 Core
             entity.AddMoveSpeed(new Const<float>(_moveSpeed));
             entity.AddDamage(new Const<int>(_damage));
@@ -60,6 +62,7 @@ namespace Game
             entity.AddBehaviour<EnemyPatrolBehaviour>();
             entity.AddBehaviour<EnemyAttackBehaviour>();
             entity.AddBehaviour<EnemyChaseBehaviour>();
+            entity.AddBehaviour(new DamageCastBehaviour(_gameContext));
         }
     }
 }

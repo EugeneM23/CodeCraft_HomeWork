@@ -10,7 +10,6 @@ namespace Game
 
         public override void Install(IEntity entity)
         {
-            //entity.AddBehaviour(new InteractMarkerTransformBehaviour(_positionOffset, transform, _view));
             entity.AddBehaviour(new InteractMarkerHighlightBehaviour());
         }
     }

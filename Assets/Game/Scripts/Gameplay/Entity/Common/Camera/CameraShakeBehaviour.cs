@@ -37,13 +37,13 @@ namespace Game
 
             if (_shakeTimeRemaining > 0)
             {
-                Vector3 newPosition = ShakeTransformUseCase.CalculateShakePositionWithDamping(
+                ShakeTransformUseCase.ShakePosition(
+                    _cameraTransform,
                     _originalPosition,
                     _shakeStrength,
                     _shakeTimeRemaining / _shakeDuration
                 );
 
-                _cameraTransform.localPosition = newPosition;
                 _shakeTimeRemaining -= deltaTime;
             }
             else

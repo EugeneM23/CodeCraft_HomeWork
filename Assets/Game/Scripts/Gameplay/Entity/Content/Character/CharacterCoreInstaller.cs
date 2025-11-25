@@ -21,9 +21,12 @@ namespace Game
         [SerializeField] private Rigidbody _rigidbody;
         [SerializeField] private InteractInstaller _interactInstaller;
         [SerializeField] private Transform _cameraPoint;
+        private GameContext _gameContext;
 
         public override void Install(IEntity entity)
         {
+            _gameContext = GameContext.Instance;
+            
             // 🧩 Core
             entity.AddDamageableTag();
             entity.AddPlayerTag();
@@ -59,6 +62,7 @@ namespace Game
             entity.AddBehaviour<CharacterMoveBehaviour>();
             entity.AddBehaviour<CharacterRotateBehaviour>();
             entity.AddBehaviour<CharacterVelocityBehaviour>();
+            entity.AddBehaviour(new DamageCastBehaviour(_gameContext));
 
             //Camera
             entity.AddCameraPoint(_cameraPoint);

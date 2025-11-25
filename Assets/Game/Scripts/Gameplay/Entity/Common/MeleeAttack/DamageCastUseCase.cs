@@ -8,13 +8,18 @@ namespace Game
     {
         private const int COLLIDER_BUFFER_SIZE = 32;
 
-        public static bool Cast(Transform t, float radius, int damage, LayerMask damageLayer, IEntity weapon)
+        public static bool Cast( IEntity weapon)
         {
-            DrawSphereDebug(t.position, radius);
+            Vector3 position = weapon.GetTransform().position;
+            float radius = weapon.GetDamageRadius().Value;
+            LayerMask damageLayer = weapon.GetDamageLayer();
+            int damage = weapon.GetDamage().Value;
+
+            DrawSphereDebug(position, radius);
 
             Collider[] colliders = ArrayPool<Collider>.Shared.Rent(COLLIDER_BUFFER_SIZE);
 
-            int count = Physics.OverlapSphereNonAlloc(t.position, radius, colliders, damageLayer);
+            int count = Physics.OverlapSphereNonAlloc(position, radius, colliders, damageLayer);
 
             for (int i = 0; i < count; i++)
             {
