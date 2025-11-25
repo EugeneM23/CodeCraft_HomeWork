@@ -12,6 +12,7 @@ namespace Game
         [SerializeField] private BulletSystemInstaller _bulletInstaller;
         [SerializeField] private WeaponCatalog _weapons;
         [SerializeField] private SceneEntity _audioPrefab;
+        [SerializeField] private SceneEntity _hitEffectPrefab; 
 
         protected override void Install(IGameContext context)
         {
@@ -23,6 +24,9 @@ namespace Game
 
             GameObject audioRoot = new GameObject("AudioPool");
             context.AddAudioPool(new SceneEntityPool(_audioPrefab, audioRoot.transform));
+            
+            GameObject hitEffectRoot = new GameObject("HitEffectPool");
+            context.AddHitEffectPool(new SceneEntityPool(_hitEffectPrefab, hitEffectRoot.transform));
         }
     }
 }

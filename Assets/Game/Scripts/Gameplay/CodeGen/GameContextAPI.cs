@@ -20,6 +20,7 @@ namespace Game
 
 		///Values
 		public const int BulletPool = 1915726678; // IEntityPool
+		public const int HitEffectPool = 667905863; // IEntityPool
 		public const int ShellPool = 2051358104; // IEntityPool
 		public const int AudioPool = -1361603774; // IEntityPool
 		public const int WeaponCatalog = -1557559158; // WeaponCatalog
@@ -46,6 +47,24 @@ namespace Game
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void SetBulletPool(this IContext obj, IEntityPool value) => obj.SetValue(BulletPool, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static IEntityPool GetHitEffectPool(this IContext obj) => obj.GetValue<IEntityPool>(HitEffectPool);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetHitEffectPool(this IContext obj, out IEntityPool value) => obj.TryGetValue(HitEffectPool, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddHitEffectPool(this IContext obj, IEntityPool value) => obj.AddValue(HitEffectPool, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasHitEffectPool(this IContext obj) => obj.HasValue(HitEffectPool);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelHitEffectPool(this IContext obj) => obj.DelValue(HitEffectPool);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetHitEffectPool(this IContext obj, IEntityPool value) => obj.SetValue(HitEffectPool, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static IEntityPool GetShellPool(this IContext obj) => obj.GetValue<IEntityPool>(ShellPool);

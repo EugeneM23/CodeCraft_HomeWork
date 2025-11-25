@@ -18,6 +18,7 @@ imports:
 
 values:
   - BulletPool: IEntityPool
+  - HitEffectPool: IEntityPool
   - ShellPool: IEntityPool
   - AudioPool: IEntityPool
   - WeaponCatalog: WeaponCatalog
