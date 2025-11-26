@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using Atomic.Elements;
 using Atomic.Entities;
 using Game.Gameplay;
@@ -14,19 +12,15 @@ namespace Game
         [SerializeField] private float _rotationSpeed = 15f;
         [SerializeField] private int _health = 100;
         [SerializeField] private SceneEntity _weapon;
-        [SerializeField] private SceneEntity _handWeapon;
         [SerializeField] private TriggerEventReceiver _triggerReceiver;
         [SerializeField] private Transform _weaponRoot;
         [SerializeField] private Transform _characterRoot;
         [SerializeField] private Rigidbody _rigidbody;
         [SerializeField] private InteractInstaller _interactInstaller;
         [SerializeField] private Transform _cameraPoint;
-        private GameContext _gameContext;
 
         public override void Install(IEntity entity)
         {
-            _gameContext = GameContext.Instance;
-            
             // 🧩 Core
             entity.AddDamageableTag();
             entity.AddPlayerTag();

@@ -14,11 +14,11 @@ namespace Game
         [SerializeField] private float _lifeTime = 1f;
         [SerializeField] private SceneEntity _hitPrefab;
         [SerializeField] private CollisionEventReceiver _collisionEventReceiver;
-        private GameContext _gameContext;
+        private GameFactory _factory;
 
         public override void Install(IEntity entity)
         {
-            _gameContext = GameContext.Instance;
+            _factory = GameContext.Instance.GetGameFactory();
 
             //Core
             entity.AddEntityID(gameObject.name.Replace("(Clone)", ""));
@@ -30,7 +30,7 @@ namespace Game
             //LifeTime
             entity.AddLifeTime(new Cooldown(_lifeTime));
             entity.AddBehaviour(new LifeTimeBehaviour());
-            entity.AddDestroyAction(new BaseAction(() => SpawnUseCase.UnSpawnBullet(_gameContext, entity)));
+            entity.AddDestroyAction(new BaseAction(() => _factory.Destroy(entity)));
 
             //Movement
             entity.AddMoveSpeed(new Const<float>(_moveSpeed));

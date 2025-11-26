@@ -1,8 +1,8 @@
 using Atomic.Elements;
 using Atomic.Entities;
+using Game.Gameplay;
 using Modules.Gameplay;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Game
 {
@@ -11,6 +11,7 @@ namespace Game
         [SerializeField] private WeaponID _id;
         [SerializeField] private int _damage;
         [SerializeField] private float _damageRadius = 0.5f;
+        [SerializeField] private CameraShakeArgs _shakeArgs;
         [SerializeField] private LayerMask _damageLayer;
         [SerializeField] private Cooldown _cooldown;
         [SerializeField] private RuntimeAnimatorController _animController;
@@ -19,6 +20,7 @@ namespace Game
         public override void Install(IEntity entity)
         {
             _gameContext = GameContext.Instance;
+
             //Core
             entity.AddWeaponId(_id);
             entity.AddMeleeWeaponTag();
@@ -36,13 +38,21 @@ namespace Game
             entity.AddMoveCondition(new AndExpression());
             entity.AddWeaponCooldown(_cooldown);
             entity.GetMoveCondition().Append(_cooldown.IsExpired);
+
+            entity.AddFireAction(new BaseAction(() =>
+            {
+                entity.GetWeaponCooldown().Reset();
+                entity.GetFireEvent().Invoke();
+            }));
             
-            entity.AddFireAction(new BaseAction(() => { entity.GetWeaponCooldown().Reset(); }));
-            
+            entity.AddFireEvent(new BaseEvent());
+
             entity.AddFireCondition(new AndExpression(() => entity.GetWeaponCooldown().IsExpired()));
 
-            entity.OnUpdated += deltaTime => entity.GetWeaponCooldown().Tick(deltaTime);
+            //CameraShake
+            entity.AddCameraShakeArgs(_shakeArgs);
 
+            entity.OnUpdated += deltaTime => entity.GetWeaponCooldown().Tick(deltaTime);
         }
     }
 }

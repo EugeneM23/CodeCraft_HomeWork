@@ -1,5 +1,6 @@
 using Atomic.Elements;
 using Atomic.Entities;
+using UnityEngine;
 
 namespace Game.Gameplay
 {
@@ -33,8 +34,6 @@ namespace Game.Gameplay
 
             if (_weapon.TryGetFireEvent(out var @event))
                 @event.Invoke();
-
-            _gameContext.GetPlayerCamera().GetCameraShakeEvent().Invoke();
         }
     }
 }

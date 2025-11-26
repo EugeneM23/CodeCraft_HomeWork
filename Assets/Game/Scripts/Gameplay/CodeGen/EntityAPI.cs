@@ -78,7 +78,8 @@ namespace Game
 		public const int PatrolPoints = 587900176; // Transform[]
 		public const int Target = 1103309514; // IReactiveVariable<IEntity>
 		public const int AudioSource = 907064781; // AudioSource
-		public const int CameraShakeEvent = 621067616; // BaseEvent
+		public const int CameraShakeArgs = -1117880016; // CameraShakeArgs
+		public const int CameraShakeEvent = 621067616; // BaseEvent<CameraShakeArgs>
 		public const int CameraPoint = 657874848; // Transform
 
 
@@ -1105,13 +1106,31 @@ namespace Game
 		public static void SetAudioSource(this IEntity obj, AudioSource value) => obj.SetValue(AudioSource, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static BaseEvent GetCameraShakeEvent(this IEntity obj) => obj.GetValue<BaseEvent>(CameraShakeEvent);
+		public static CameraShakeArgs GetCameraShakeArgs(this IEntity obj) => obj.GetValue<CameraShakeArgs>(CameraShakeArgs);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool TryGetCameraShakeEvent(this IEntity obj, out BaseEvent value) => obj.TryGetValue(CameraShakeEvent, out value);
+		public static bool TryGetCameraShakeArgs(this IEntity obj, out CameraShakeArgs value) => obj.TryGetValue(CameraShakeArgs, out value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool AddCameraShakeEvent(this IEntity obj, BaseEvent value) => obj.AddValue(CameraShakeEvent, value);
+		public static bool AddCameraShakeArgs(this IEntity obj, CameraShakeArgs value) => obj.AddValue(CameraShakeArgs, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasCameraShakeArgs(this IEntity obj) => obj.HasValue(CameraShakeArgs);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelCameraShakeArgs(this IEntity obj) => obj.DelValue(CameraShakeArgs);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetCameraShakeArgs(this IEntity obj, CameraShakeArgs value) => obj.SetValue(CameraShakeArgs, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static BaseEvent<CameraShakeArgs> GetCameraShakeEvent(this IEntity obj) => obj.GetValue<BaseEvent<CameraShakeArgs>>(CameraShakeEvent);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetCameraShakeEvent(this IEntity obj, out BaseEvent<CameraShakeArgs> value) => obj.TryGetValue(CameraShakeEvent, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddCameraShakeEvent(this IEntity obj, BaseEvent<CameraShakeArgs> value) => obj.AddValue(CameraShakeEvent, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool HasCameraShakeEvent(this IEntity obj) => obj.HasValue(CameraShakeEvent);
@@ -1120,7 +1139,7 @@ namespace Game
 		public static bool DelCameraShakeEvent(this IEntity obj) => obj.DelValue(CameraShakeEvent);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void SetCameraShakeEvent(this IEntity obj, BaseEvent value) => obj.SetValue(CameraShakeEvent, value);
+		public static void SetCameraShakeEvent(this IEntity obj, BaseEvent<CameraShakeArgs> value) => obj.SetValue(CameraShakeEvent, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Transform GetCameraPoint(this IEntity obj) => obj.GetValue<Transform>(CameraPoint);

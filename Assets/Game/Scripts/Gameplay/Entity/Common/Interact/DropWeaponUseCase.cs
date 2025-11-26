@@ -28,7 +28,7 @@ namespace Game
             Transform weaponTransform)
         {
             SceneEntity pickUpWeapon = gameContext.GetWeaponCatalog().GetPickUpWeapon(weapon.GetWeaponId());
-            pickUpWeapon.GetTransform().SetPositionAndRotation(weaponTransform.position, weaponTransform.rotation);
+            pickUpWeapon.GetTransform().SetPositionAndRotation(weaponTransform.position, Quaternion.identity);
 
             if (!weapon.TryGetAmmo(out var currentAmmo))
                 return;

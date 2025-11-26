@@ -99,7 +99,7 @@ GameObject:
   - component: {fileID: 3418872541097179993}
   - component: {fileID: 7779472713387022580}
   m_Layer: 0
-  m_Name: Hand
+  m_Name: Player_Hand
   m_TagString: Melee
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -169,6 +169,9 @@ MonoBehaviour:
   _id: 0
   _damage: 50
   _damageRadius: 0.5
+  _shakeArgs:
+    ShakeDuration: 0.05
+    ShakeStrength: 0.05
   _damageLayer:
     serializedVersion: 2
     m_Bits: 256

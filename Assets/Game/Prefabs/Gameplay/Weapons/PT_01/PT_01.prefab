@@ -10526,11 +10526,15 @@ MonoBehaviour:
     _current: 0
     _duration: 0.4
   _damage: 10
-  _ammo: 10
   _firePoint: {fileID: 1400432033415768503}
-  _shellPoint: {fileID: 8163746037085633107}
   _bulletPrefab: {fileID: 4751814292507788537, guid: 1f3ad6e72c1314ee0850eae794be3335, type: 3}
+  _hasAmmo: 1
+  _ammoCount: 50
+  _shellPoint: {fileID: 8163746037085633107}
   _shellPrefab: {fileID: 6826064965353340426, guid: 6bce5c4ecde3d4a9789fe3d4e4b1e614, type: 3}
+  _shakeArgs:
+    ShakeDuration: 0.1
+    ShakeStrength: 0.05
   _animController: {fileID: 22100000, guid: 15adb737bb7694c9489259a26cdf7edb, type: 2}
 --- !u!114 &5247850647910185787
 MonoBehaviour:

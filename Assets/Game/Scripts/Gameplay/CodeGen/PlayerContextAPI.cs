@@ -18,11 +18,11 @@ namespace Game
 
 
 		///Values
-		public const int Character = 294335127; // IEntity
+		public const int Character = 294335127; // IReactiveVariable<IEntity>
+		public const int Camera = 1018227507; // IEntity
 		public const int CharacterTransform = -557574193; // Transform
 		public const int CameraOffset = -1286660539; // IValue<Vector3>
 		public const int CameraRoot = 977661012; // Transform
-		public const int Camera = 1018227507; // Camera
 		public const int CameraSpeed = -1615506830; // IValue<int>
 		public const int MoveJoystick = -1686028204; // Joystick
 		public const int RotateJoystick = 17434633; // Joystick
@@ -31,13 +31,13 @@ namespace Game
 		///Value Extensions
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static IEntity GetCharacter(this IPlayerContext obj) => obj.GetValue<IEntity>(Character);
+		public static IReactiveVariable<IEntity> GetCharacter(this IPlayerContext obj) => obj.GetValue<IReactiveVariable<IEntity>>(Character);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool TryGetCharacter(this IPlayerContext obj, out IEntity value) => obj.TryGetValue(Character, out value);
+		public static bool TryGetCharacter(this IPlayerContext obj, out IReactiveVariable<IEntity> value) => obj.TryGetValue(Character, out value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool AddCharacter(this IPlayerContext obj, IEntity value) => obj.AddValue(Character, value);
+		public static bool AddCharacter(this IPlayerContext obj, IReactiveVariable<IEntity> value) => obj.AddValue(Character, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool HasCharacter(this IPlayerContext obj) => obj.HasValue(Character);
@@ -46,7 +46,25 @@ namespace Game
 		public static bool DelCharacter(this IPlayerContext obj) => obj.DelValue(Character);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void SetCharacter(this IPlayerContext obj, IEntity value) => obj.SetValue(Character, value);
+		public static void SetCharacter(this IPlayerContext obj, IReactiveVariable<IEntity> value) => obj.SetValue(Character, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static IEntity GetCamera(this IPlayerContext obj) => obj.GetValue<IEntity>(Camera);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetCamera(this IPlayerContext obj, out IEntity value) => obj.TryGetValue(Camera, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddCamera(this IPlayerContext obj, IEntity value) => obj.AddValue(Camera, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasCamera(this IPlayerContext obj) => obj.HasValue(Camera);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelCamera(this IPlayerContext obj) => obj.DelValue(Camera);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetCamera(this IPlayerContext obj, IEntity value) => obj.SetValue(Camera, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Transform GetCharacterTransform(this IPlayerContext obj) => obj.GetValue<Transform>(CharacterTransform);
@@ -101,24 +119,6 @@ namespace Game
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void SetCameraRoot(this IPlayerContext obj, Transform value) => obj.SetValue(CameraRoot, value);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static Camera GetCamera(this IPlayerContext obj) => obj.GetValue<Camera>(Camera);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool TryGetCamera(this IPlayerContext obj, out Camera value) => obj.TryGetValue(Camera, out value);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool AddCamera(this IPlayerContext obj, Camera value) => obj.AddValue(Camera, value);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool HasCamera(this IPlayerContext obj) => obj.HasValue(Camera);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool DelCamera(this IPlayerContext obj) => obj.DelValue(Camera);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void SetCamera(this IPlayerContext obj, Camera value) => obj.SetValue(Camera, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static IValue<int> GetCameraSpeed(this IPlayerContext obj) => obj.GetValue<IValue<int>>(CameraSpeed);

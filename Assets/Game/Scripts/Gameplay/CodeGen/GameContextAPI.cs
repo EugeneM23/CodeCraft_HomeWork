@@ -24,8 +24,7 @@ namespace Game
 		public const int ShellPool = 2051358104; // IEntityPool
 		public const int AudioPool = -1361603774; // IEntityPool
 		public const int WeaponCatalog = -1557559158; // WeaponCatalog
-		public const int PlayerCharacter = -1319565175; // IReactiveVariable<IEntity>
-		public const int PlayerCamera = 298559249; // IEntity
+		public const int PlayerContext = -122845622; // PlayerContext
 		public const int GamePools = -361051865; // ReactiveDictionary<string, SceneEntityPool>
 		public const int GameFactory = 907141881; // GameFactory
 
@@ -123,40 +122,22 @@ namespace Game
 		public static void SetWeaponCatalog(this IContext obj, WeaponCatalog value) => obj.SetValue(WeaponCatalog, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static IReactiveVariable<IEntity> GetPlayerCharacter(this IContext obj) => obj.GetValue<IReactiveVariable<IEntity>>(PlayerCharacter);
+		public static PlayerContext GetPlayerContext(this IContext obj) => obj.GetValue<PlayerContext>(PlayerContext);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool TryGetPlayerCharacter(this IContext obj, out IReactiveVariable<IEntity> value) => obj.TryGetValue(PlayerCharacter, out value);
+		public static bool TryGetPlayerContext(this IContext obj, out PlayerContext value) => obj.TryGetValue(PlayerContext, out value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool AddPlayerCharacter(this IContext obj, IReactiveVariable<IEntity> value) => obj.AddValue(PlayerCharacter, value);
+		public static bool AddPlayerContext(this IContext obj, PlayerContext value) => obj.AddValue(PlayerContext, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool HasPlayerCharacter(this IContext obj) => obj.HasValue(PlayerCharacter);
+		public static bool HasPlayerContext(this IContext obj) => obj.HasValue(PlayerContext);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool DelPlayerCharacter(this IContext obj) => obj.DelValue(PlayerCharacter);
+		public static bool DelPlayerContext(this IContext obj) => obj.DelValue(PlayerContext);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void SetPlayerCharacter(this IContext obj, IReactiveVariable<IEntity> value) => obj.SetValue(PlayerCharacter, value);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static IEntity GetPlayerCamera(this IContext obj) => obj.GetValue<IEntity>(PlayerCamera);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool TryGetPlayerCamera(this IContext obj, out IEntity value) => obj.TryGetValue(PlayerCamera, out value);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool AddPlayerCamera(this IContext obj, IEntity value) => obj.AddValue(PlayerCamera, value);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool HasPlayerCamera(this IContext obj) => obj.HasValue(PlayerCamera);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool DelPlayerCamera(this IContext obj) => obj.DelValue(PlayerCamera);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void SetPlayerCamera(this IContext obj, IEntity value) => obj.SetValue(PlayerCamera, value);
+		public static void SetPlayerContext(this IContext obj, PlayerContext value) => obj.SetValue(PlayerContext, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static ReactiveDictionary<string, SceneEntityPool> GetGamePools(this IContext obj) => obj.GetValue<ReactiveDictionary<string, SceneEntityPool>>(GamePools);

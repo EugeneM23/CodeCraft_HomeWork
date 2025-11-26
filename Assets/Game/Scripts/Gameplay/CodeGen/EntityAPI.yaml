@@ -95,7 +95,8 @@ values:
   - AudioSource: AudioSource
   
   # Camera
-  - CameraShakeEvent: BaseEvent
+  - CameraShakeArgs: CameraShakeArgs
+  - CameraShakeEvent: BaseEvent<CameraShakeArgs>
   - CameraPoint: Transform
     
     

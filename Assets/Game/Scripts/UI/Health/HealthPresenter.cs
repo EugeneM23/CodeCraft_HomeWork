@@ -17,7 +17,7 @@ namespace Game
 
         protected override void OnInit()
         {
-            _character = GameContext.Instance.GetPlayerCharacter().Value;
+            _character = GameContext.Instance.GetPlayerContext().GetCharacter().Value;
         }
 
 

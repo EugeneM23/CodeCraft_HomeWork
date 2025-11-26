@@ -11,7 +11,7 @@ namespace Game
 
         public void Init(IPlayerContext context)
         {
-            _character = context.GetCharacter();
+            _character = context.GetCharacter().Value;
         }
 
         public void OnUpdate(IContext context, float deltaTime)

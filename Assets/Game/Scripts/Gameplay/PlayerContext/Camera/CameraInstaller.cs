@@ -8,7 +8,7 @@ namespace Game
         public override void Install(IEntity entity)
         {
             entity.AddTransform(transform);
-            entity.AddCameraShakeEvent(new BaseEvent());
+            entity.AddCameraShakeEvent(new BaseEvent<CameraShakeArgs>());
 
             entity.AddBehaviour<CameraShakeBehaviour>();
         }

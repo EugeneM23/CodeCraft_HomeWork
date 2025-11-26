@@ -15,11 +15,11 @@ imports:
   - Modules.Common
 
 values:
-  - Character: IEntity
+  - Character: IReactiveVariable<IEntity>
+  - Camera: IEntity
   - CharacterTransform: Transform
   - CameraOffset: IValue<Vector3>
   - CameraRoot: Transform
-  - Camera: Camera
   - CameraSpeed: IValue<int>
   - MoveJoystick: Joystick
   - RotateJoystick: Joystick

@@ -1,5 +1,6 @@
 using Atomic.Elements;
 using Atomic.Entities;
+using UnityEngine;
 
 namespace Game
 {
@@ -11,7 +12,7 @@ namespace Game
 
         public void Init(in IEntity entity)
         {
-            _character = GameContext.Instance.GetPlayerCharacter();
+            _character = GameContext.Instance.GetPlayerContext().GetCharacter();
             _targetInteractable = _character.Value.GetTargetInteractable();
             _targetInteractable.Subscribe(OnTargetChanged);
         }

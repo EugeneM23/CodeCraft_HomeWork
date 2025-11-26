@@ -7,7 +7,7 @@ namespace Game
     public class CameraShakeBehaviour : IEntityUpdate, IEntityInit
     {
         private Transform _cameraTransform;
-        private BaseEvent _cameraShakeEvent;
+        private BaseEvent<CameraShakeArgs> _cameraShakeEvent;
 
         private bool _isShaking;
         private float _shakeTimeRemaining;
@@ -22,12 +22,12 @@ namespace Game
             _cameraTransform = entity.GetTransform();
         }
 
-        private void OnShake()
+        private void OnShake(CameraShakeArgs args)
         {
             _isShaking = true;
-            _shakeDuration = 0.1f;
+            _shakeDuration = args.ShakeDuration;
+            _shakeStrength = args.ShakeStrength;
             _shakeTimeRemaining = _shakeDuration;
-            _shakeStrength = 0.05f;
             _originalPosition = _cameraTransform.localPosition;
         }
 

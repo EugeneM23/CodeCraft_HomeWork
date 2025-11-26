@@ -15,13 +15,11 @@ namespace Game
 
         private IEntity _character;
         private IReactiveVariable<IEntity> _weapon;
-        private IEntity _currentWeapon;
 
         protected override void OnInit()
         {
-            _character = GameContext.Instance.GetPlayerCharacter().Value;
+            _character = GameContext.Instance.GetPlayerContext().GetCharacter().Value;
             _weapon = _character.GetWeapon();
-            _currentWeapon = _weapon.Value;
             _weapon.Observe(OnWeaponChanged);
         }
 
@@ -49,7 +47,8 @@ namespace Game
 
         protected override void OnHide()
         {
-            _weapon.Value.GetAmmo().OnStateChanged -= UpdateAmmo;
+            if (_weapon.Value.TryGetAmmo(out var ammo)) 
+                ammo.OnStateChanged -= UpdateAmmo;
         }
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using Atomic.Contexts;
+using Atomic.Elements;
 using Atomic.Entities;
 using UnityEngine;
 
@@ -12,7 +13,7 @@ namespace Game
 
         public void Install(IPlayerContext context)
         {
-            context.AddCharacter(_character);
+            context.AddCharacter(new ReactiveVariable<IEntity>(_character));
             context.AddCharacterTransform(_character.transform);
 
             context.AddController<CharacterMoveController>();
