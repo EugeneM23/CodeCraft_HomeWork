@@ -1,6 +1,5 @@
 using Atomic.Elements;
 using Atomic.Entities;
-using UnityEngine;
 
 namespace Game
 {
@@ -25,7 +24,9 @@ namespace Game
         private void OnTargetChanged(IEntity item)
         {
             if (_currentItem != null && _currentItem.TryGetHighlight(out var currentEffect))
+            {
                 currentEffect.enabled = false;
+            }
 
             if (item != null)
             {
