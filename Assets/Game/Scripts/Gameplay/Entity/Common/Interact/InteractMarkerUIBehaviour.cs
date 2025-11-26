@@ -4,15 +4,15 @@ using UnityEngine;
 
 namespace Game
 {
-    public class InteractMarkerBehaviour : IEntityInit, IEntityDispose, IEntityLateUpdate
+    public class InteractMarkerUIBehaviour : IEntityInit, IEntityDispose, IEntityLateUpdate
     {
-        private IReactiveVariable<IEntity> _targetInteractable;
-        private GameObject _view;
-        private Vector3 _positionOffset;
+        private readonly GameObject _view;
         private readonly GameContext _gameContext;
+        private IReactiveVariable<IEntity> _targetInteractable;
+        private Vector3 _positionOffset;
         private IEntity _camera;
 
-        public InteractMarkerBehaviour(GameObject view, GameContext gameContext)
+        public InteractMarkerUIBehaviour(GameObject view, GameContext gameContext)
         {
             _gameContext = gameContext;
             _view = view;

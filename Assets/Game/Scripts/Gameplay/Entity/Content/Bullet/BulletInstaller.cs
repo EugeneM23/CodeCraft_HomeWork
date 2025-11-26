@@ -21,9 +21,9 @@ namespace Game
             _factory = GameContext.Instance.GetGameFactory();
 
             //Core
+            entity.AddRangeWeaponTag();
             entity.AddEntityID(gameObject.name.Replace("(Clone)", ""));
             entity.AddBulletHitPrefab(_hitPrefab);
-            entity.AddRangeWeaponTag();
             entity.AddGameObject(transform.gameObject);
             entity.AddTransform(transform);
 

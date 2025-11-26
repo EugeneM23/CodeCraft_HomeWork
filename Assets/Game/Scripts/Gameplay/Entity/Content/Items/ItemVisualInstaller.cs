@@ -1,7 +1,6 @@
 using Atomic.Entities;
 using HighlightPlus;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Game.Gameplay
 {

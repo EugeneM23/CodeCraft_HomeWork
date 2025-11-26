@@ -38,7 +38,7 @@ values:
   - RotationSpeed: IValue<float>
   - Velocity: IReactiveVariable<float>
 
-  # Combat
+  # Weapon
   - BulletPrefab: SceneEntity
   - ShellPrefab: SceneEntity
   - BulletHitPrefab: SceneEntity

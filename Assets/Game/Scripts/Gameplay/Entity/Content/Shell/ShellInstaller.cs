@@ -21,7 +21,7 @@ namespace Game
             entity.AddRiggedBody(_rb);
             entity.AddGameObject(transform.gameObject);
             entity.AddTransform(transform);
-            entity.AddDestroyAction(new BaseAction(() => SpawnUseCase.UnSpawnShell(_gameFactory, entity)));
+            entity.AddDestroyAction(new BaseAction(() => SpawnUseCase.UnSpawnEntity(_gameFactory, entity)));
 
             //LifeTime
             entity.AddLifeTime(new Cooldown(_lifeTime));

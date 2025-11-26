@@ -104,6 +104,9 @@ MonoBehaviour:
   _id: 3
   _damage: 50
   _damageRadius: 0.5
+  _shakeArgs:
+    <ShakeDuration>k__BackingField: 0.1
+    <ShakeStrength>k__BackingField: 0.05
   _damageLayer:
     serializedVersion: 2
     m_Bits: 256

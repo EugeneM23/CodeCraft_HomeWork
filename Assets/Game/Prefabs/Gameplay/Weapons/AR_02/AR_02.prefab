@@ -19394,8 +19394,8 @@ MonoBehaviour:
   _shellPoint: {fileID: 5441659318418926944}
   _shellPrefab: {fileID: 6826064965353340426, guid: 6bce5c4ecde3d4a9789fe3d4e4b1e614, type: 3}
   _shakeArgs:
-    ShakeDuration: 0.2
-    ShakeStrength: 0.1
+    <ShakeDuration>k__BackingField: 0.1
+    <ShakeStrength>k__BackingField: 0.1
   _animController: {fileID: 22100000, guid: 9c9a6a7474fb34cadb2b2865c97f9bb0, type: 2}
 --- !u!114 &5247850647910185787
 MonoBehaviour:

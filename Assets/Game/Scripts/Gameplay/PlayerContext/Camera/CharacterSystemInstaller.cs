@@ -14,8 +14,7 @@ namespace Game
         public void Install(IPlayerContext context)
         {
             context.AddCharacter(new ReactiveVariable<IEntity>(_character));
-            context.AddCharacterTransform(_character.transform);
-
+            
             context.AddController<CharacterMoveController>();
             context.AddController<CharacterRotateController>();
             context.AddController<CharacterFireController>();

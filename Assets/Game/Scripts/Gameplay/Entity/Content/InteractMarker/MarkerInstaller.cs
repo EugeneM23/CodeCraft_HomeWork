@@ -13,7 +13,7 @@ namespace Game
             entity.AddTransform(transform);
             entity.AddPositionOffset(_positionOffset);
             entity.AddBehaviour(new InteractMarkerHighlightBehaviour());
-            entity.AddBehaviour(new InteractMarkerBehaviour(_view, GameContext.Instance));
+            entity.AddBehaviour(new InteractMarkerUIBehaviour(_view, GameContext.Instance));
         }
     }
 }

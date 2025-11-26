@@ -1,28 +1,24 @@
 using Atomic.Entities;
+using Modules.Gameplay;
 using UnityEngine;
 
 namespace Game
 {
     public static class SpawnUseCase
     {
-        public static void SpawnCollisionHit(Collision collision, GameFactory factory, IEntity bullet)
+        public static void SpawnCollisionHit(Collision collision, GameFactory gameFactory, IEntity bullet)
         {
             ContactPoint contact = collision.GetContact(0);
             Vector3 position = contact.point;
             Vector3 normal = contact.normal;
 
-            IEntity go = factory.Create(bullet.GetBulletHitPrefab());
+            IEntity go = gameFactory.Create(bullet.GetBulletHitPrefab());
             go.GetLifeTime().Reset();
             Transform effectTransform = go.GetTransform();
             effectTransform.position = position;
             effectTransform.rotation = Quaternion.LookRotation(normal);
         }
 
-        public static void UnSpawnCollisionHit(IGameContext gameContext, IEntity entity)
-        {
-            gameContext.GetHitEffectPool().Return(entity);
-            entity.GetLifeTime().Reset();
-        }
 
         public static IEntity SpawnBullet(IEntity weapon, GameFactory gameFactory, Transform firePoint)
         {
@@ -36,11 +32,6 @@ namespace Game
             return bullet;
         }
 
-        public static void UnSpawnBullet(in IGameContext gameContext, in IEntity bullet)
-        {
-            gameContext.GetBulletPool().Return(bullet);
-        }
-
         public static void SpawnShell(GameFactory gameFactory, IEntity weapon, Transform shellPoint, float impulse)
         {
             IEntity shell = gameFactory.Create(weapon.GetShellPrefab());
@@ -49,9 +40,12 @@ namespace Game
             shell.GetRiggedBody().AddForce((Vector3.up + shellPoint.right) * impulse, ForceMode.Impulse);
         }
 
-        public static void UnSpawnShell(in GameFactory factory, in IEntity shell)
+        public static void UnSpawnEntity(in GameFactory factory, in IEntity entity)
         {
-            factory.Destroy(shell);
+            if (entity.TryGetLifeTime(out Cooldown lifeTime))
+                lifeTime.Reset();
+
+            factory.Destroy(entity);
         }
     }
 }

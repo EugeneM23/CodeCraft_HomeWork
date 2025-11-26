@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Game
 {
-    public class HitInstaller : SceneEntityInstaller
+    public class HitEffectInstaller : SceneEntityInstaller
     {
         [SerializeField] private float _lifeTime = 3f;
         private IGameContext _gameContext;
@@ -16,7 +16,7 @@ namespace Game
             entity.AddEntityID(gameObject.name.Replace("(Clone)", ""));
             entity.AddTransform(transform);
             entity.AddLifeTime(new Cooldown(3f));
-            entity.AddDestroyAction(new BaseAction(() => _gameContext.GetGameFactory().Destroy(entity)));
+            entity.AddDestroyAction(new BaseAction(() => SpawnUseCase.UnSpawnEntity(_gameContext.GetGameFactory(), entity)));
             entity.AddBehaviour<LifeTimeBehaviour>();
         }
     }

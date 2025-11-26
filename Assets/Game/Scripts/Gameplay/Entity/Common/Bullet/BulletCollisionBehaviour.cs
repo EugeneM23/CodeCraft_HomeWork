@@ -27,7 +27,7 @@ namespace Game
             else
                 SpawnUseCase.SpawnCollisionHit(collision, _gameFactory, _bullet);
 
-            _gameFactory.Destroy(_bullet);
+            SpawnUseCase.UnSpawnEntity(_gameFactory, _bullet);
         }
     }
 }

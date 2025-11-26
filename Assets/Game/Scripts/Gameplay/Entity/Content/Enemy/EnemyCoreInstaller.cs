@@ -8,22 +8,30 @@ namespace Game
 {
     public sealed class EnemyCoreInstaller : SceneEntityInstaller
     {
+        [Header("Combat Settings")]
         [SerializeField] private int _damage = 10;
-        [SerializeField] private float _moveSpeed = 1;
-        [SerializeField] private int _health = 100;
-        [SerializeField] private float _rotationSpeed = 15f;
         [SerializeField] private SceneEntity _weapon;
-        [SerializeField] private TriggerEventReceiver _triggerReceiver;
         [SerializeField] private Transform _weaponRoot;
-        [SerializeField] private Transform _characterRoot;
+
+        [Header("Movement Settings")]
+        [SerializeField] private float _moveSpeed = 1;
+        [SerializeField] private float _rotationSpeed = 15f;
         [SerializeField] private Transform[] _patrolPoints;
+
+        [Header("Health Settings")]
+        [SerializeField] private int _health = 100;
+
+        [Header("Core Components")]
+        [SerializeField] private TriggerEventReceiver _triggerReceiver;
+        [SerializeField] private Transform _characterRoot;
+
         private GameContext _gameContext;
 
         public override void Install(IEntity entity)
         {
             _gameContext = GameContext.Instance;
 
-            // 🧩 Core
+            // Core
             entity.AddMoveSpeed(new Const<float>(_moveSpeed));
             entity.AddDamage(new Const<int>(_damage));
             entity.AddTriggerEventReceiver(_triggerReceiver);
@@ -33,36 +41,39 @@ namespace Game
             entity.AddPatrolPoints(_patrolPoints);
             entity.AddTarget(new ReactiveVariable<IEntity>());
 
-            // ❤️ Health
+            // Health
             entity.AddHealth(new Health(_health, _health));
             entity.AddDeathTakenEvent(new BaseEvent<TakeDamageArgs>());
             entity.AddDamageTakenEvent(new BaseEvent<TakeDamageArgs>());
             entity.AddDeathEvent(new BaseEvent());
+            entity.AddBehaviour<DeathBehaviour>();
 
-            // 🌀 Movement
+            // Movement
             entity.AddRotationSpeed(new BaseVariable<float>(_rotationSpeed));
-            entity.AddMoveCondition(new AndExpression(entity.GetHealth().Exists,
-                () => entity.GetWeapon().Value.GetMoveCondition().Invoke()));
+            entity.AddMoveCondition(new AndExpression(
+                entity.GetHealth().Exists,
+                () => entity.GetWeapon().Value.GetMoveCondition().Invoke()
+            ));
             entity.AddMoveDirection(new ReactiveVariable<Vector3>());
             entity.AddRotateDirection(new ReactiveVariable<Vector3>());
             entity.AddVelocity(new ReactiveFloat());
 
-            // ⚔️ Combat
+            entity.AddBehaviour<CharacterMoveBehaviour>();
+            entity.AddBehaviour<CharacterRotateBehaviour>();
+            entity.AddBehaviour<CharacterVelocityBehaviour>();
+
+            // Combat
             entity.AddWeapon(new ReactiveVariable<IEntity>(_weapon));
             entity.AddWeaponRoot(_weaponRoot);
             entity.AddFireCondition(new AndExpression(entity.GetHealth().Exists));
             entity.AddFireEvent(new BaseEvent());
             entity.AddFireAction(new CharacterFireAction(entity));
-
-            // ⚙️ Behaviours  
-            entity.AddBehaviour<DeathBehaviour>();
-            entity.AddBehaviour<CharacterRotateBehaviour>();
-            entity.AddBehaviour<CharacterMoveBehaviour>();
-            entity.AddBehaviour<CharacterVelocityBehaviour>();
-            entity.AddBehaviour<EnemyPatrolBehaviour>();
-            entity.AddBehaviour<EnemyAttackBehaviour>();
-            entity.AddBehaviour<EnemyChaseBehaviour>();
             entity.AddBehaviour(new DamageCastBehaviour());
+
+            // AI
+            entity.AddBehaviour<EnemyPatrolBehaviour>();
+            entity.AddBehaviour<EnemyChaseBehaviour>();
+            entity.AddBehaviour<EnemyAttackBehaviour>();
         }
     }
 }

@@ -9,12 +9,10 @@ namespace Game.Gameplay
         private const float IMPULSE = 2;
         private readonly IEntity _weapon;
         private readonly GameFactory _gameFactory;
-        private readonly GameContext _gameContext;
 
         public RangeWeaponFireAction(IEntity weapon, GameContext gameContext)
         {
             _gameFactory = gameContext.GetGameFactory();
-            _gameContext = gameContext;
             _weapon = weapon;
         }
 

@@ -20,7 +20,6 @@ namespace Game
 		///Values
 		public const int Character = 294335127; // IReactiveVariable<IEntity>
 		public const int Camera = 1018227507; // IEntity
-		public const int CharacterTransform = -557574193; // Transform
 		public const int CameraOffset = -1286660539; // IValue<Vector3>
 		public const int CameraRoot = 977661012; // Transform
 		public const int CameraSpeed = -1615506830; // IValue<int>
@@ -65,24 +64,6 @@ namespace Game
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void SetCamera(this IPlayerContext obj, IEntity value) => obj.SetValue(Camera, value);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static Transform GetCharacterTransform(this IPlayerContext obj) => obj.GetValue<Transform>(CharacterTransform);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool TryGetCharacterTransform(this IPlayerContext obj, out Transform value) => obj.TryGetValue(CharacterTransform, out value);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool AddCharacterTransform(this IPlayerContext obj, Transform value) => obj.AddValue(CharacterTransform, value);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool HasCharacterTransform(this IPlayerContext obj) => obj.HasValue(CharacterTransform);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool DelCharacterTransform(this IPlayerContext obj) => obj.DelValue(CharacterTransform);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void SetCharacterTransform(this IPlayerContext obj, Transform value) => obj.SetValue(CharacterTransform, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static IValue<Vector3> GetCameraOffset(this IPlayerContext obj) => obj.GetValue<IValue<Vector3>>(CameraOffset);

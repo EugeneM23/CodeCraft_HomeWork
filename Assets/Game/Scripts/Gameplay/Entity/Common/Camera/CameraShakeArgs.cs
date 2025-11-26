@@ -7,8 +7,7 @@ namespace Game
     [Serializable]
     public class CameraShakeArgs
     {
-        [FormerlySerializedAs("_shakeDuration")] [SerializeField] public float ShakeDuration;
-        [FormerlySerializedAs("_shakeStrength")] [SerializeField]
-        public float ShakeStrength;
+        [field: SerializeField] public float ShakeDuration { get; private set; }
+        [field: SerializeField] public float ShakeStrength { get; private set; }
     }
 }
