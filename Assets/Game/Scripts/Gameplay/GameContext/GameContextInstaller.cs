@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Atomic.Contexts;
 using Atomic.Elements;
 using Atomic.Entities;
@@ -9,24 +10,18 @@ namespace Game
     {
         [SerializeField] private SceneEntity _camera;
         [SerializeField] private SceneEntity _player;
-        [SerializeField] private BulletSystemInstaller _bulletInstaller;
         [SerializeField] private WeaponCatalog _weapons;
+        [SerializeField] private Transform _poolsParent;
         [SerializeField] private SceneEntity _audioPrefab;
-        [SerializeField] private SceneEntity _hitEffectPrefab; 
+        [SerializeField] private SceneEntity _hitEffectPrefab;
 
         protected override void Install(IGameContext context)
         {
-            _bulletInstaller.Install(context);
-
             context.AddPlayerCamera(_camera);
             context.AddWeaponCatalog(_weapons);
             context.AddPlayerCharacter(new ReactiveVariable<IEntity>(_player));
-
-            GameObject audioRoot = new GameObject("AudioPool");
-            context.AddAudioPool(new SceneEntityPool(_audioPrefab, audioRoot.transform));
-            
-            GameObject hitEffectRoot = new GameObject("HitEffectPool");
-            context.AddHitEffectPool(new SceneEntityPool(_hitEffectPrefab, hitEffectRoot.transform));
+            context.AddGameFactory(new GameFactory(_poolsParent));
+            context.GetGameFactory().RegisterNewPrefab(_audioPrefab, GameFactoryID.AudioSource.ToString());
         }
     }
 }

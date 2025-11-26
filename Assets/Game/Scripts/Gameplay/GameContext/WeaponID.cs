@@ -5,6 +5,7 @@ namespace Game
         Hand,
         PT_01,
         AR_01,
-        Knife_01
+        Knife_01,
+        AR_02
     }
 }

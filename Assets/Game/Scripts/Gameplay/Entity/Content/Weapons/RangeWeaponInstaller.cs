@@ -3,6 +3,7 @@ using Atomic.Entities;
 using Game.Gameplay;
 using Modules.Gameplay;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Game
 {
@@ -11,9 +12,12 @@ namespace Game
         [SerializeField] private WeaponID _id;
         [SerializeField] private Cooldown _fireRate;
         [SerializeField] private int _damage;
-        [SerializeField] private int _ammo;
+        [SerializeField] private bool _hasAmmo = true;
+        [SerializeField] private int _ammoCount = 50;
         [SerializeField] private Transform _firePoint;
         [SerializeField] private Transform _shellPoint;
+        [SerializeField] private SceneEntity _bulletPrefab;
+        [SerializeField] private SceneEntity _shellPrefab;
         [SerializeField] private RuntimeAnimatorController _animController;
 
         private GameContext _gameContext;
@@ -23,11 +27,13 @@ namespace Game
             _gameContext = GameContext.Instance;
 
             //Core
+            entity.AddBulletPrefab(_bulletPrefab);
+            entity.AddShellPrefab(_shellPrefab);
             entity.AddWeaponId(_id);
             entity.AddRangeWeaponTag();
             entity.AddFirePoint(_firePoint);
-            entity.AddShellPoint(_shellPoint);
-            entity.AddAmmo(new Ammo(_ammo));
+
+            
 
             //Animation
             entity.AddAnimationController(_animController);
@@ -42,14 +48,18 @@ namespace Game
             entity.AddFireEvent(new BaseEvent());
             entity.AddFireAction(new RangeWeaponFireAction(entity, _gameContext));
             entity.AddFireCondition(new AndExpression());
-            entity.GetFireCondition().Append(() => entity.GetAmmo().GetCount() > 0);
+            
+            if (_hasAmmo)
+            {
+                entity.AddAmmo(new Ammo(_ammoCount));
+                entity.GetFireCondition().Append(() => entity.GetAmmo().GetCount() > 0);
+                entity.AddShellPoint(_shellPoint);
+
+            }
+            
             entity.GetFireCondition().Append(entity.GetWeaponCooldown().IsExpired);
 
             entity.OnUpdated += deltaTime => entity.GetWeaponCooldown().Tick(deltaTime);
-
-
-            //IK
-            entity.AddIsIKEnable(new ReactiveBool(true));
         }
     }
 }

@@ -23,6 +23,7 @@ tags:
 
 values:
   # Core
+  - EntityID: string
   - GameObject: GameObject
   - Transform: Transform
   - LifeTime: Cooldown
@@ -38,6 +39,9 @@ values:
   - Velocity: IReactiveVariable<float>
 
   # Combat
+  - BulletPrefab: SceneEntity
+  - ShellPrefab: SceneEntity
+  - BulletHitPrefab: SceneEntity
   - Ammo: Ammo
   - WeaponId: WeaponID
   - WeaponCooldown: Cooldown
@@ -83,7 +87,6 @@ values:
   - PositionOffset: Vector3
   - Highlight: HighlightEffect
   
-  
   # AI
   - PatrolPoints: Transform[]
   - Target: IReactiveVariable<IEntity>
@@ -91,14 +94,8 @@ values:
   # Sound
   - AudioSource: AudioSource
   
-  # IK
-  - IsIKEnable: IReactiveVariable<bool>
-  - IKHandController: IKHandController
-  
   # Camera
   - CameraShakeEvent: BaseEvent
   - CameraPoint: Transform
-    
-    # Highlight
     
     

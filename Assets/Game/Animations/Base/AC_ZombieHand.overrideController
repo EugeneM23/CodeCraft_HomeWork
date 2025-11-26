@@ -9,8 +9,6 @@ AnimatorOverrideController:
   m_Name: AC_ZombieHand
   m_Controller: {fileID: 9100000, guid: 55fb54f686ee24340bb8a7ea86e48720, type: 2}
   m_Clips:
-  - m_OriginalClip: {fileID: 7400000, guid: 14a5d48897a784ed4822d3b35120dc96, type: 2}
-    m_OverrideClip: {fileID: 7400000, guid: b90cfff60c41b4cd7857c2c2aee6c0ac, type: 2}
   - m_OriginalClip: {fileID: 7400024, guid: fa608feaf64a07040bef63f640abf835, type: 3}
     m_OverrideClip: {fileID: -203655887218126122, guid: c4cdd08c791c34b5e8b611b7846355f0, type: 3}
   - m_OriginalClip: {fileID: 7400022, guid: fa608feaf64a07040bef63f640abf835, type: 3}
@@ -29,3 +27,5 @@ AnimatorOverrideController:
     m_OverrideClip: {fileID: -203655887218126122, guid: c4cdd08c791c34b5e8b611b7846355f0, type: 3}
   - m_OriginalClip: {fileID: 7400026, guid: fa608feaf64a07040bef63f640abf835, type: 3}
     m_OverrideClip: {fileID: -203655887218126122, guid: c4cdd08c791c34b5e8b611b7846355f0, type: 3}
+  - m_OriginalClip: {fileID: -203655887218126122, guid: ed7e09b47e35b41f498ea5a553773d97, type: 3}
+    m_OverrideClip: {fileID: 7400000, guid: b90cfff60c41b4cd7857c2c2aee6c0ac, type: 2}

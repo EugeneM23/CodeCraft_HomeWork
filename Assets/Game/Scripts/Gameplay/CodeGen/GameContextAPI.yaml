@@ -24,3 +24,5 @@ values:
   - WeaponCatalog: WeaponCatalog
   - PlayerCharacter: IReactiveVariable<IEntity>
   - PlayerCamera: IEntity
+  - GamePools: ReactiveDictionary<string, SceneEntityPool>
+  - GameFactory: GameFactory

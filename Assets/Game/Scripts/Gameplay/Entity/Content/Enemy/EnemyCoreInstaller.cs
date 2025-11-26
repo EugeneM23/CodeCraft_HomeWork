@@ -62,7 +62,7 @@ namespace Game
             entity.AddBehaviour<EnemyPatrolBehaviour>();
             entity.AddBehaviour<EnemyAttackBehaviour>();
             entity.AddBehaviour<EnemyChaseBehaviour>();
-            entity.AddBehaviour(new DamageCastBehaviour(_gameContext));
+            entity.AddBehaviour(new DamageCastBehaviour());
         }
     }
 }

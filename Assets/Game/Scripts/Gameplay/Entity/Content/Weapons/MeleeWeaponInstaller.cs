@@ -43,8 +43,6 @@ namespace Game
 
             entity.OnUpdated += deltaTime => entity.GetWeaponCooldown().Tick(deltaTime);
 
-            //IK
-            entity.AddIsIKEnable(new ReactiveBool(false));
         }
     }
 }

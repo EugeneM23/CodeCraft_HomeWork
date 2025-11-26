@@ -18,7 +18,7 @@ GameObject:
   - component: {fileID: 2807187463229867269}
   - component: {fileID: 1720412144135045913}
   m_Layer: 12
-  m_Name: Bullet_01
+  m_Name: Bullet_02
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -70,7 +70,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 273bd3f8144af4b4784b50a8d38d86d9, type: 2}
+  - {fileID: 2100000, guid: 5c134f783ba3d495f9b78117e49fcd8f, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -147,7 +147,7 @@ MonoBehaviour:
   _damage: 10
   _moveSpeed: 20
   _lifeTime: 1
-  _hitPrefab: {fileID: 5814017759711512355, guid: b34ef2dbb38014c32b6e4533c0611105, type: 3}
+  _hitPrefab: {fileID: 6664256835540992201, guid: f1be1da445f8e48c18ae89961025bee6, type: 3}
   _collisionEventReceiver: {fileID: 2807187463229867269}
 --- !u!114 &7004281855503442550
 MonoBehaviour:

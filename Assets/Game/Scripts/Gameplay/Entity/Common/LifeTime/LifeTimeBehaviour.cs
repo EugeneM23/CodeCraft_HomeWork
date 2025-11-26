@@ -19,10 +19,8 @@ namespace Game
         {
             _lifeTime.Tick(deltaTime);
 
-            if (_lifeTime.IsExpired())
-            {
+            if (_lifeTime.IsExpired()) 
                 _destroyAction.Invoke();
-            }
         }
     }
 }

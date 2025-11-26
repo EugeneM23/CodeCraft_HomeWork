@@ -26,6 +26,8 @@ namespace Game
 		public const int WeaponCatalog = -1557559158; // WeaponCatalog
 		public const int PlayerCharacter = -1319565175; // IReactiveVariable<IEntity>
 		public const int PlayerCamera = 298559249; // IEntity
+		public const int GamePools = -361051865; // ReactiveDictionary<string, SceneEntityPool>
+		public const int GameFactory = 907141881; // GameFactory
 
 
 		///Value Extensions
@@ -155,5 +157,41 @@ namespace Game
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void SetPlayerCamera(this IContext obj, IEntity value) => obj.SetValue(PlayerCamera, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static ReactiveDictionary<string, SceneEntityPool> GetGamePools(this IContext obj) => obj.GetValue<ReactiveDictionary<string, SceneEntityPool>>(GamePools);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetGamePools(this IContext obj, out ReactiveDictionary<string, SceneEntityPool> value) => obj.TryGetValue(GamePools, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddGamePools(this IContext obj, ReactiveDictionary<string, SceneEntityPool> value) => obj.AddValue(GamePools, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasGamePools(this IContext obj) => obj.HasValue(GamePools);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelGamePools(this IContext obj) => obj.DelValue(GamePools);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetGamePools(this IContext obj, ReactiveDictionary<string, SceneEntityPool> value) => obj.SetValue(GamePools, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static GameFactory GetGameFactory(this IContext obj) => obj.GetValue<GameFactory>(GameFactory);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetGameFactory(this IContext obj, out GameFactory value) => obj.TryGetValue(GameFactory, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddGameFactory(this IContext obj, GameFactory value) => obj.AddValue(GameFactory, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasGameFactory(this IContext obj) => obj.HasValue(GameFactory);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelGameFactory(this IContext obj) => obj.DelValue(GameFactory);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetGameFactory(this IContext obj, GameFactory value) => obj.SetValue(GameFactory, value);
     }
 }

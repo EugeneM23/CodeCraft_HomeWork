@@ -1,6 +1,5 @@
 using Atomic.Elements;
 using Atomic.Entities;
-using UnityEngine;
 
 namespace Game.Gameplay
 {
@@ -8,10 +7,12 @@ namespace Game.Gameplay
     {
         private const float IMPULSE = 2;
         private readonly IEntity _weapon;
+        private readonly GameFactory _gameFactory;
         private readonly GameContext _gameContext;
 
         public RangeWeaponFireAction(IEntity weapon, GameContext gameContext)
         {
+            _gameFactory = gameContext.GetGameFactory();
             _gameContext = gameContext;
             _weapon = weapon;
         }
@@ -25,15 +26,10 @@ namespace Game.Gameplay
                 cooldown.Reset();
 
             if (_weapon.TryGetFirePoint(out var firePoint))
-            {
-                FireBulletUseCase.SpawnBullet(_weapon, _gameContext, firePoint);
-            }
+                SpawnUseCase.SpawnBullet(_weapon, _gameFactory, firePoint);
 
             if (_weapon.TryGetShellPoint(out var shellPoint))
-            {
-                IEntity shell = FireBulletUseCase.SpawnShell(_weapon, _gameContext, shellPoint);
-                shell.GetRiggedBody().AddForce((Vector3.up + shellPoint.right) * IMPULSE, ForceMode.Impulse);
-            }
+                SpawnUseCase.SpawnShell(_gameFactory, _weapon, shellPoint, IMPULSE);
 
             if (_weapon.TryGetFireEvent(out var @event))
                 @event.Invoke();

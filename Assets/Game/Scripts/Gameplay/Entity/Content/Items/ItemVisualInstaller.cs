@@ -22,7 +22,7 @@ namespace Game.Gameplay
             entity.AddHighlight(_highlight);
             entity.GetPickUpEvent().OnEvent += () =>
             {
-                IEntity go = GameContext.Instance.GetAudioPool().Rent();
+                IEntity go = GameContext.Instance.GetGameFactory().Create(GameFactoryID.AudioSource.ToString());
                 go.GetLifeTime().Reset();
                 go.GetAudioSource().PlayOneShot(_pickUpSound);
             };

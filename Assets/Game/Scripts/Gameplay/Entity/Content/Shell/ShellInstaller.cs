@@ -10,17 +10,18 @@ namespace Game
         [SerializeField] private Rigidbody _rb;
 
         [SerializeField] private float _lifeTime = 3f;
-        private GameContext _gameContext;
+        private GameFactory _gameFactory;
 
         public override void Install(IEntity entity)
         {
-            _gameContext = GameContext.Instance;
+            _gameFactory = GameContext.Instance.GetGameFactory();
 
             //Core
+            entity.AddEntityID(GameFactoryID.Shell_01.ToString());
             entity.AddRiggedBody(_rb);
             entity.AddGameObject(transform.gameObject);
             entity.AddTransform(transform);
-            entity.AddDestroyAction(new BaseAction(() => _gameContext.GetShellPool().Return(entity)));
+            entity.AddDestroyAction(new BaseAction(() => SpawnUseCase.UnSpawnShell(_gameFactory, entity)));
 
             //LifeTime
             entity.AddLifeTime(new Cooldown(_lifeTime));

@@ -24,6 +24,7 @@ namespace Game
 
 
 		///Values
+		public const int EntityID = 875588450; // string
 		public const int GameObject = 1482111001; // GameObject
 		public const int Transform = -180157682; // Transform
 		public const int LifeTime = 1688468960; // Cooldown
@@ -35,6 +36,9 @@ namespace Game
 		public const int MoveAction = 1225226561; // IAction<Vector3, float>
 		public const int RotationSpeed = 1771316350; // IValue<float>
 		public const int Velocity = 1202631935; // IReactiveVariable<float>
+		public const int BulletPrefab = -918778767; // SceneEntity
+		public const int ShellPrefab = -2060891990; // SceneEntity
+		public const int BulletHitPrefab = 520091209; // SceneEntity
 		public const int Ammo = 1337839892; // Ammo
 		public const int WeaponId = -1822610762; // WeaponID
 		public const int WeaponCooldown = 990812014; // Cooldown
@@ -74,8 +78,6 @@ namespace Game
 		public const int PatrolPoints = 587900176; // Transform[]
 		public const int Target = 1103309514; // IReactiveVariable<IEntity>
 		public const int AudioSource = 907064781; // AudioSource
-		public const int IsIKEnable = 2098933742; // IReactiveVariable<bool>
-		public const int IKHandController = 1803539326; // IKHandController
 		public const int CameraShakeEvent = 621067616; // BaseEvent
 		public const int CameraPoint = 657874848; // Transform
 
@@ -129,6 +131,24 @@ namespace Game
 
 
 		///Value Extensions
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static string GetEntityID(this IEntity obj) => obj.GetValue<string>(EntityID);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetEntityID(this IEntity obj, out string value) => obj.TryGetValue(EntityID, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddEntityID(this IEntity obj, string value) => obj.AddValue(EntityID, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasEntityID(this IEntity obj) => obj.HasValue(EntityID);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelEntityID(this IEntity obj) => obj.DelValue(EntityID);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetEntityID(this IEntity obj, string value) => obj.SetValue(EntityID, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static GameObject GetGameObject(this IEntity obj) => obj.GetValue<GameObject>(GameObject);
@@ -327,6 +347,60 @@ namespace Game
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void SetVelocity(this IEntity obj, IReactiveVariable<float> value) => obj.SetValue(Velocity, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static SceneEntity GetBulletPrefab(this IEntity obj) => obj.GetValue<SceneEntity>(BulletPrefab);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetBulletPrefab(this IEntity obj, out SceneEntity value) => obj.TryGetValue(BulletPrefab, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddBulletPrefab(this IEntity obj, SceneEntity value) => obj.AddValue(BulletPrefab, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasBulletPrefab(this IEntity obj) => obj.HasValue(BulletPrefab);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelBulletPrefab(this IEntity obj) => obj.DelValue(BulletPrefab);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetBulletPrefab(this IEntity obj, SceneEntity value) => obj.SetValue(BulletPrefab, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static SceneEntity GetShellPrefab(this IEntity obj) => obj.GetValue<SceneEntity>(ShellPrefab);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetShellPrefab(this IEntity obj, out SceneEntity value) => obj.TryGetValue(ShellPrefab, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddShellPrefab(this IEntity obj, SceneEntity value) => obj.AddValue(ShellPrefab, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasShellPrefab(this IEntity obj) => obj.HasValue(ShellPrefab);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelShellPrefab(this IEntity obj) => obj.DelValue(ShellPrefab);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetShellPrefab(this IEntity obj, SceneEntity value) => obj.SetValue(ShellPrefab, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static SceneEntity GetBulletHitPrefab(this IEntity obj) => obj.GetValue<SceneEntity>(BulletHitPrefab);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetBulletHitPrefab(this IEntity obj, out SceneEntity value) => obj.TryGetValue(BulletHitPrefab, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddBulletHitPrefab(this IEntity obj, SceneEntity value) => obj.AddValue(BulletHitPrefab, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasBulletHitPrefab(this IEntity obj) => obj.HasValue(BulletHitPrefab);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelBulletHitPrefab(this IEntity obj) => obj.DelValue(BulletHitPrefab);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetBulletHitPrefab(this IEntity obj, SceneEntity value) => obj.SetValue(BulletHitPrefab, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Ammo GetAmmo(this IEntity obj) => obj.GetValue<Ammo>(Ammo);
@@ -1029,42 +1103,6 @@ namespace Game
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void SetAudioSource(this IEntity obj, AudioSource value) => obj.SetValue(AudioSource, value);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static IReactiveVariable<bool> GetIsIKEnable(this IEntity obj) => obj.GetValue<IReactiveVariable<bool>>(IsIKEnable);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool TryGetIsIKEnable(this IEntity obj, out IReactiveVariable<bool> value) => obj.TryGetValue(IsIKEnable, out value);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool AddIsIKEnable(this IEntity obj, IReactiveVariable<bool> value) => obj.AddValue(IsIKEnable, value);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool HasIsIKEnable(this IEntity obj) => obj.HasValue(IsIKEnable);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool DelIsIKEnable(this IEntity obj) => obj.DelValue(IsIKEnable);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void SetIsIKEnable(this IEntity obj, IReactiveVariable<bool> value) => obj.SetValue(IsIKEnable, value);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static IKHandController GetIKHandController(this IEntity obj) => obj.GetValue<IKHandController>(IKHandController);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool TryGetIKHandController(this IEntity obj, out IKHandController value) => obj.TryGetValue(IKHandController, out value);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool AddIKHandController(this IEntity obj, IKHandController value) => obj.AddValue(IKHandController, value);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool HasIKHandController(this IEntity obj) => obj.HasValue(IKHandController);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool DelIKHandController(this IEntity obj) => obj.DelValue(IKHandController);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void SetIKHandController(this IEntity obj, IKHandController value) => obj.SetValue(IKHandController, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static BaseEvent GetCameraShakeEvent(this IEntity obj) => obj.GetValue<BaseEvent>(CameraShakeEvent);

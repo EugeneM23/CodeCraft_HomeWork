@@ -11,10 +11,12 @@ namespace Game
 
         public override void Install(IEntity entity)
         {
+            entity.AddEntityID(GameFactoryID.AudioSource.ToString());
             entity.AddAudioSource(_audioSource);
             entity.AddLifeTime(new Cooldown(1f));
             entity.AddBehaviour<LifeTimeBehaviour>();
-            entity.AddDestroyAction(new BaseAction(() => GameContext.Instance.GetAudioPool().Return(entity)));
+            entity.AddDestroyAction(new BaseAction(() =>
+                GameContext.Instance.GetGameFactory().Destroy(entity)));
         }
     }
 }

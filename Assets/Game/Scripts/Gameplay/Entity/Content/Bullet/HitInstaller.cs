@@ -13,19 +13,11 @@ namespace Game
         public override void Install(IEntity entity)
         {
             _gameContext = GameContext.Instance;
+            entity.AddEntityID(gameObject.name.Replace("(Clone)", ""));
             entity.AddTransform(transform);
             entity.AddLifeTime(new Cooldown(3f));
-            entity.AddDestroyAction(new BaseAction(() => HitEffectUseCase.UnspawnHit(_gameContext, entity)));
+            entity.AddDestroyAction(new BaseAction(() => _gameContext.GetGameFactory().Destroy(entity)));
             entity.AddBehaviour<LifeTimeBehaviour>();
-        }
-    }
-
-    public static class HitEffectUseCase
-    {
-        public static void UnspawnHit(IGameContext gameContext, IEntity entity)
-        {
-            gameContext.GetHitEffectPool().Return(entity);
-            entity.GetLifeTime().Reset();
         }
     }
 }

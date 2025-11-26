@@ -9,24 +9,26 @@ namespace Game.Gameplay
         private readonly int _fire = Animator.StringToHash("Fire");
         private readonly int _melee = Animator.StringToHash("Melee");
         private readonly IEntity _character;
+        private readonly IReactiveVariable<IEntity> _weapon;
 
         public CharacterFireAction(IEntity character)
         {
             _character = character;
+            _weapon = _character.GetWeapon();
         }
 
         public void Invoke()
         {
             IEntity weapon = _character.GetWeapon().Value;
 
-            if (!weapon.GetFireCondition().Invoke()) return;
+            if (!_weapon.Value.GetFireCondition().Invoke()) return;
 
             weapon.GetFireAction().Invoke();
 
-            if (weapon.HasRangeWeaponTag()) 
+            if (_weapon.Value.HasRangeWeaponTag()) 
                 _character.GetAnimator().Play(_fire, 1);
 
-            if (weapon.HasMeleeWeaponTag())
+            if (_weapon.Value.HasMeleeWeaponTag())
                 _character.GetAnimator().Play(_melee, 2);
         }
     }

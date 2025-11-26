@@ -8,7 +8,6 @@ namespace Game.Gameplay
     {
         [SerializeField] private Animator _animator;
         [SerializeField] private AnimationEventReceiver _animationReceiver;
-        [SerializeField] private IKHandController _IKController;
 
         public override void Install(IEntity entity)
         {

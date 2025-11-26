@@ -62,7 +62,7 @@ namespace Game
             entity.AddBehaviour<CharacterMoveBehaviour>();
             entity.AddBehaviour<CharacterRotateBehaviour>();
             entity.AddBehaviour<CharacterVelocityBehaviour>();
-            entity.AddBehaviour(new DamageCastBehaviour(_gameContext));
+            entity.AddBehaviour(new DamageCastBehaviour());
 
             //Camera
             entity.AddCameraPoint(_cameraPoint);
