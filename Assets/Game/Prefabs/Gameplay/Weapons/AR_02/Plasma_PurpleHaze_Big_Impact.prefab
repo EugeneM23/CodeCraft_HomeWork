@@ -4790,6 +4790,7 @@ GameObject:
   - component: {fileID: 199988521645878930}
   - component: {fileID: 531043401270881185}
   - component: {fileID: 565656544416688108}
+  - component: {fileID: -2740335629211386013}
   m_Layer: 0
   m_Name: Plasma_PurpleHaze_Big_Impact
   m_TagString: FX
@@ -9662,6 +9663,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _lifeTime: 3
+--- !u!114 &-2740335629211386013
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1228869523896316}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 603a745f80e14d1d8cd57cf70a50187f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  entities:
+  - {fileID: 531043401270881185}
 --- !u!1 &1239764664278716
 GameObject:
   m_ObjectHideFlags: 0
