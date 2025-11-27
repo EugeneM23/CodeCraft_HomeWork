@@ -11,7 +11,7 @@ namespace Inventories
     /// Don't modify
     public sealed class InventoryTests
     {
-        /*[TestCase(5, 10)]
+        [TestCase(5, 10)]
         [TestCase(3, 2)]
         [TestCase(1, 100)]
         [TestCase(255, 1)]
@@ -587,76 +587,9 @@ namespace Inventories
 
             //Assert:
             Assert.Catch<ArgumentException>(() => inventory.CanAddItem(item, Vector2Int.zero));
-        }*/
-
-        [TestCaseSource(nameof(AddOnFreePositionSuccessfulCases))]
-        public void AddOnFreePositionSuccessful(Inventory inventory, Item item, Vector2Int expectedPosition)
-        {
-            //Arrange:
-            Item addedItem = null;
-            Vector2Int addedPosition = Vector2Int.zero;
-
-            inventory.OnAdded += (i, p) =>
-            {
-                addedItem = i;
-                addedPosition = p;
-            };
-            int count = inventory.Count;
-
-            //Pre-assert:
-            for (int x = expectedPosition.x; x < expectedPosition.x + item.Size.x; x++)
-            for (int y = expectedPosition.y; y < expectedPosition.y + item.Size.y; y++)
-            {
-                Assert.IsTrue(inventory.IsFree(x, y));
-            }
-
-            //Act:
-            bool success = inventory.AddItem(item);
-
-            //Assert:
-            Assert.IsTrue(success);
-            Assert.AreEqual(item, addedItem);
-            Assert.AreEqual(expectedPosition, addedPosition);
-
-            Assert.AreEqual(count + 1, inventory.Count);
-            Assert.IsTrue(inventory.Contains(item));
-
-            for (int x = expectedPosition.x; x < expectedPosition.x + item.Size.x; x++)
-            for (int y = expectedPosition.y; y < expectedPosition.y + item.Size.y; y++)
-            {
-                Assert.IsTrue(inventory.IsOccupied(x, y));
-            }
         }
 
-        private static IEnumerable<TestCaseData> AddOnFreePositionSuccessfulCases()
-        {
-            /*
-            yield return new TestCaseData(
-                new Inventory(width: 5, height: 5),
-                new Item("A", new Vector2Int(2, 2)),
-                new Vector2Int()
-            ).SetName("Empty Inventory");
-
-            yield return new TestCaseData(
-                new Inventory(width: 5, height: 5,
-                    new KeyValuePair<Item, Vector2Int>(new Item("X", 1, 1), new Vector2Int(1, 1))
-                ),
-                new Item("A", new Vector2Int(3, 3)),
-                new Vector2Int(2, 0)
-            ).SetName("Free Slot");
-            */
-
-            yield return new TestCaseData(new Inventory(width: 5, height: 5), new Item("A", new Vector2Int(5, 5)), new Vector2Int(0, 0)
-            ).SetName("Full Item");
-
-            /*yield return new TestCaseData(
-                new Inventory(width: 5, height: 5),
-                new Item(new Vector2Int(5, 5)),
-                new Vector2Int(0, 0)
-            ).SetName("Without name");*/
-        }
-
-        /*[TestCaseSource(nameof(AddOnFreePositionFailedCases))]
+        [TestCaseSource(nameof(AddOnFreePositionFailedCases))]
         public void AddOnFreePositionFailed(Inventory inventory, Item item)
         {
             //Arrange:
@@ -1144,56 +1077,6 @@ namespace Inventories
             yield return new TestCaseData(inventory, expected, actual).SetName("Sample");
         }
 
-        [TestCaseSource(nameof(MoveItemSuccessfulCases))]
-        public void MoveItemSuccessful(Inventory inventory, Item item, Vector2Int position)
-        {
-            //Arrange:
-            Item movedItem = default;
-            Vector2Int movedPosition = Vector2Int.zero;
-            inventory.OnMoved += (i, p) =>
-            {
-                movedItem = i;
-                movedPosition = p;
-            };
-
-            bool added = false;
-            bool removed = false;
-            inventory.OnAdded += (_, _) => added = true;
-            inventory.OnRemoved += (_, _) => removed = true;
-
-            //Act:
-            bool success = inventory.MoveItem(item, position);
-
-            //Assert:
-            Assert.IsTrue(success);
-            Assert.AreEqual(item, movedItem);
-            Assert.AreEqual(position, movedPosition);
-
-            foreach (var newPosition in inventory.GetPositions(item))
-            {
-                Assert.AreEqual(item, inventory.GetItem(newPosition));
-            }
-
-            Assert.IsFalse(added);
-            Assert.IsFalse(removed);
-        }
-
-        private static IEnumerable<TestCaseData> MoveItemSuccessfulCases()
-        {
-            var item1 = new Item(1, 1);
-            yield return new TestCaseData(
-                new Inventory(5, 5, new KeyValuePair<Item, Vector2Int>(item1, new Vector2Int(0, 0))),
-                item1,
-                new Vector2Int(1, 1)
-            ).SetName("Simple");
-
-            var item2 = new Item(2, 2);
-            yield return new TestCaseData(
-                new Inventory(5, 5, new KeyValuePair<Item, Vector2Int>(item2, new Vector2Int(0, 0))),
-                item2,
-                new Vector2Int(1, 1)
-            ).SetName("Intersects with itself");
-        }
 
         [Test]
         public void WhenMoveNullItemThenException()
@@ -1396,6 +1279,6 @@ namespace Inventories
                     { item7, item7, item7, item7, null }
                 }
             ).SetName("Medium");
-        }*/
+        }
     }
 }
