@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Codice.CM.Common.Purge;
+using UnityEditor;
 using UnityEngine;
 
 // ReSharper disable NotResolvedInText
@@ -417,25 +419,63 @@ namespace Inventories
             if (item == null)
                 throw new ArgumentNullException(nameof(item));
 
-            if (item.Name == "")
+            if (!_items.Contains(item))
                 return false;
+
+            RemoveItemFromGrid(item, out Vector2Int previousPositions);
 
             if (Fit(item.Size, newPosition.x, newPosition.y))
             {
-                Debug.Log("MoveItem");
                 PlaceItemInGrid(item, newPosition.x, newPosition.y);
                 OnMoved?.Invoke(item, newPosition);
                 return true;
             }
 
+            PlaceItemInGrid(item, previousPositions.x, previousPositions.y);
             return false;
+        }
+
+        public void RemoveItemFromGrid(Item item, out Vector2Int previousPositions)
+        {
+            Vector2Int[] positions = GetPositions(item);
+            previousPositions = positions[0];
+    
+            foreach (Vector2Int pos in positions)
+                _ceils[pos.x, pos.y] = null;
         }
 
         /// <summary>
         /// Reorganizes inventory space to make the free area uniform
         /// </summary>
         public void ReorganizeSpace()
-            => throw new NotImplementedException();
+        {
+            List<Item> allItems = new List<Item>(_items);
+
+            Clear();
+
+            // Сортируем: сначала по площади (убывание), потом по ширине, потом по высоте
+            List<Item> sortedList = allItems
+                .OrderByDescending(item => item.Size.x * item.Size.y) // площадь
+                .ThenByDescending(item => item.Size.x) // ширина
+                .ThenByDescending(item => item.Size.y) // высота
+                .ToList();
+
+            // Пытаемся разместить каждый предмет
+            foreach (var item in sortedList)
+            {
+                bool placed = false;
+                for (int y = 0; y < Height && !placed; y++)
+                {
+                    for (int x = 0; x < Width && !placed; x++)
+                    {
+                        if (AddItem(item, new Vector2Int(x, y)))
+                        {
+                            placed = true;
+                        }
+                    }
+                }
+            }
+        }
 
         /// <summary>
         /// Copies inventory items to a specified matrix
