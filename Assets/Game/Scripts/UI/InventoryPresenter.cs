@@ -13,7 +13,19 @@ public class InventoryPresenter : MonoBehaviour
     private void Start()
     {
         _bagInventory = _bag.inventory;
+        _bag.OnStateChanged += OnStateChanged;
 
+        foreach (Item item in _bagInventory)
+        {
+            ItemView itemView = _itemCatalog.GetItem(item);
+            Vector2Int[] positions = _bagInventory.GetPositions(item);
+            _view.AddItem(itemView, positions);
+        }
+    }
+
+    private void OnStateChanged()
+    {
+        _view.Clear();
         foreach (Item item in _bagInventory)
         {
             ItemView itemView = _itemCatalog.GetItem(item);

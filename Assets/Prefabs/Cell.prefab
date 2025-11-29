@@ -90,4 +90,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   backgroundImage: {fileID: 525445824762982183}
   normalSprite: {fileID: 21300000, guid: b7dfde2c80cf86643b7b89c8fce93392, type: 3}
-  highlightedSprite: {fileID: 21300000, guid: c037e2534784d4c45bf132534b5de2c3, type: 3}
+  highlightedSprite: {fileID: 21300000, guid: de0f023e1665cc04c89e3b9892429053, type: 3}

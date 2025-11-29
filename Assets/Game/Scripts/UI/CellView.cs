@@ -2,10 +2,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class CellView : MonoBehaviour,
-    IPointerEnterHandler,
-    IPointerExitHandler,
-    IDropHandler
+public class CellView : MonoBehaviour, IDropHandler
 {
     public Image backgroundImage;
     public Sprite normalSprite;
@@ -13,31 +10,18 @@ public class CellView : MonoBehaviour,
 
     private void Awake()
     {
-        if (backgroundImage == null)
-            backgroundImage = GetComponent<Image>();
+        backgroundImage = GetComponent<Image>();
     }
 
     public void Highlight(Sprite image)
     {
-        if (highlightedSprite != null)
-            backgroundImage.sprite = image;
+        backgroundImage.sprite = image;
     }
 
-    public void Unhighlight()
+    /*public void Unhighlight()
     {
-        if (normalSprite != null)
-            backgroundImage.sprite = normalSprite;
-    }
-
-    public void OnPointerEnter(PointerEventData eventData)
-    {
-        Highlight(highlightedSprite);
-    }
-
-    public void OnPointerExit(PointerEventData eventData)
-    {
-        Unhighlight();
-    }
+        backgroundImage.sprite = normalSprite;
+    }*/
 
     public void OnDrop(PointerEventData eventData)
     {
@@ -49,4 +33,9 @@ public class CellView : MonoBehaviour,
             item.transform.localPosition = Vector3.zero;
         }
     }
+
+    /*public void OnPointerDown(PointerEventData eventData)
+    {
+        Unhighlight();
+    }*/
 }
