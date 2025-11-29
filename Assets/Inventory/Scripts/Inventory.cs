@@ -17,20 +17,20 @@ namespace Inventories
         public event Action<Item, Vector2Int> OnMoved;
         public event Action OnCleared;
 
-        public int Width => _ceils.GetLength(0);
-        public int Height => _ceils.GetLength(1);
+        public int Width => _cells.GetLength(0);
+        public int Height => _cells.GetLength(1);
         public int Count => _items.Count;
 
         private List<Item> _items = new();
 
-        public Item[,] _ceils;
+        public Item[,] _cells;
 
         public Inventory(in int width, in int height)
         {
             if (width <= 0 || height <= 0)
                 throw new ArgumentOutOfRangeException();
 
-            _ceils = new Item[width, height];
+            _cells = new Item[width, height];
         }
 
         public Inventory(
@@ -178,7 +178,7 @@ namespace Inventories
             {
                 for (int x = 0; x < Width; x++)
                 {
-                    if (_ceils[x, y] == null && Fit(size, x, y))
+                    if (_cells[x, y] == null && Fit(size, x, y))
                     {
                         freePosition = new Vector2Int(x, y);
                         return true;
@@ -198,7 +198,7 @@ namespace Inventories
             {
                 for (int y = posY; y < posY + size.y; y++)
                 {
-                    if (_ceils[x, y] != null)
+                    if (_cells[x, y] != null)
                         return false;
                 }
             }
@@ -229,7 +229,7 @@ namespace Inventories
             {
                 for (int y = posY; y < posY + item.Size.y; y++)
                 {
-                    _ceils[x, y] = item;
+                    _cells[x, y] = item;
                 }
             }
         }
@@ -266,7 +266,7 @@ namespace Inventories
 
         public bool IsFree(in int x, in int y)
         {
-            if (_ceils[x, y] == null)
+            if (_cells[x, y] == null)
                 return true;
 
             return false;
@@ -285,8 +285,8 @@ namespace Inventories
                 {
                     for (int y = 0; y < Height; y++)
                     {
-                        if (_ceils[x, y] == item)
-                            _ceils[x, y] = null;
+                        if (_cells[x, y] == item)
+                            _cells[x, y] = null;
                     }
                 }
 
@@ -323,10 +323,10 @@ namespace Inventories
 
         public Item GetItem(in int x, in int y)
         {
-            if (_ceils[x, y] == null)
+            if (_cells[x, y] == null)
                 throw new NullReferenceException();
 
-            return _ceils[x, y];
+            return _cells[x, y];
         }
 
         public bool TryGetItem(in Vector2Int position, out Item item)
@@ -342,7 +342,7 @@ namespace Inventories
                 return false;
             }
 
-            item = _ceils[x, y];
+            item = _cells[x, y];
             return item != null;
         }
 
@@ -361,7 +361,7 @@ namespace Inventories
 
             for (int x = 0; x < Width; x++)
             for (int y = 0; y < Height; y++)
-                if (_ceils[x, y] == item)
+                if (_cells[x, y] == item)
                     positions.Add(new Vector2Int(x, y));
 
             return positions.ToArray();
@@ -389,9 +389,9 @@ namespace Inventories
 
             _items.Clear();
 
-            for (int i = 0; i < _ceils.GetLength(0); i++)
-            for (int j = 0; j < _ceils.GetLength(1); j++)
-                _ceils[i, j] = null;
+            for (int i = 0; i < _cells.GetLength(0); i++)
+            for (int j = 0; j < _cells.GetLength(1); j++)
+                _cells[i, j] = null;
 
             OnCleared?.Invoke();
         }
@@ -441,7 +441,7 @@ namespace Inventories
             previousPositions = positions[0];
     
             foreach (Vector2Int pos in positions)
-                _ceils[pos.x, pos.y] = null;
+                _cells[pos.x, pos.y] = null;
         }
 
         /// <summary>
@@ -482,7 +482,7 @@ namespace Inventories
         /// </summary>
         public void CopyTo(in Item[,] matrix)
         {
-            Array.Copy(_ceils, 0, matrix, 0, _ceils.Length);
+            Array.Copy(_cells, 0, matrix, 0, _cells.Length);
         }
 
         public IEnumerator<Item> GetEnumerator()

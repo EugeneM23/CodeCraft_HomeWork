@@ -1,7 +1,7 @@
 using TMPro;
 using UnityEngine;
 
-public class Ceil : MonoBehaviour
+public class Cell : MonoBehaviour
 {
     [SerializeField] public TMP_Text _ceilText;
 }

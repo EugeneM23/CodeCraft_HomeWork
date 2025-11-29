@@ -5,12 +5,12 @@ using UnityEngine;
 
 public class DebugInventory : MonoBehaviour
 {
-    [SerializeField] private Ceil empty;
-    [SerializeField] private Ceil free;
-    [SerializeField] private Ceil occupied;
+    [SerializeField] private Cell empty;
+    [SerializeField] private Cell free;
+    [SerializeField] private Cell occupied;
 
     private Inventory inv;
-    private List<Ceil> _ceilsView = new List<Ceil>();
+    private List<Cell> _ceilsView = new List<Cell>();
     private Item item;
 
     private void Start()
@@ -93,16 +93,16 @@ public class DebugInventory : MonoBehaviour
                 act(x, y);
     }
 
-    Ceil Spawn(Ceil prefab, int x, int y)
+    Cell Spawn(Cell prefab, int x, int y)
     {
-        Ceil ceil = Instantiate(
+        Cell cell = Instantiate(
             prefab,
             new Vector3(x, inv.Height - 1 - y, 0),
             Quaternion.identity,
             this.transform
         );
 
-        _ceilsView.Add(ceil);
-        return ceil;
+        _ceilsView.Add(cell);
+        return cell;
     }
 }
