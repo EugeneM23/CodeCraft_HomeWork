@@ -1,36 +1,97 @@
+using System;
 using System.Collections.Generic;
+using Inventories;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class InventoryView : MonoBehaviour
 {
-    [SerializeField] private GridToMatrix gridMatrix;
-    [SerializeField] private Sprite normalSprite;
-    [SerializeField] private Sprite highlightedSprite;
-    [SerializeField] private Sprite invalidSprite; // Для недоступных клеток
+    public event Action<Vector2Int, Item> OnMoveItem;
 
-    private readonly List<ItemView> _items = new();
+    [SerializeField] private GridToMatrix _gridToMatrix;
+    private CellView[,] _cellViews;
+    private Dictionary<Item, GridItem> _items = new();
 
-    public ItemView AddItem(ItemView itemView, Vector2Int[] positions)
+    public Item _selectedItem;
+    public Vector2Int _selectedItemRelativePosition;
+
+    private void Start()
     {
-        CellView cellView = gridMatrix.matrix[positions[0].x, positions[0].y];
+        Canvas.ForceUpdateCanvases();
+        LayoutRebuilder.ForceRebuildLayoutImmediate(_gridToMatrix.transform as RectTransform);
+        _cellViews = _gridToMatrix.BuildMatrix();
+        InitializeCells();
+    }
 
-        ItemView newItem = Instantiate(itemView, cellView.transform);
-        _items.Add(newItem);
+    private void InitializeCells()
+    {
+        for (int i = 0; i < _cellViews.GetLength(0); i++)
+        for (int j = 0; j < _cellViews.GetLength(1); j++)
+        {
+            _cellViews[i, j].position = new Vector2Int(i, j);
+            _cellViews[i, j].inventoryView = this;
+            _cellViews[i, j].OnCellClickedDown += SelectItem;
+            _cellViews[i, j].OnCellClickedUp += MoveItem;
+        }
+    }
 
-        RectTransform rt = newItem.GetComponent<RectTransform>();
-        rt.anchorMin = Vector2.zero;
-        rt.anchorMax = Vector2.one;
-        rt.offsetMin = Vector2.zero;
-        rt.offsetMax = Vector2.zero;
+    private void SelectItem(Item item, Vector2Int itemPosition)
+    {
+        if (item != null)
+        {
+            _selectedItem = item;
+            _selectedItemRelativePosition = itemPosition;
+        }
+    }
 
-        return newItem;
+    private void MoveItem(Vector2Int clickedPosition, Vector2Int itemRelativePosition)
+    {
+        if (_selectedItem == null) return;
+
+        Vector2Int targetPosition = new Vector2Int(
+            clickedPosition.x - _selectedItemRelativePosition.x,
+            clickedPosition.y - _selectedItemRelativePosition.y
+        );
+
+        OnMoveItem?.Invoke(targetPosition, _selectedItem);
+        _selectedItem = null;
     }
 
     public void Clear()
     {
-        for (int i = 0; i < _items.Count; i++)
-            Destroy(_items[i].gameObject);
+        for (int i = 0; i < _cellViews.GetLength(0); i++)
+        for (int j = 0; j < _cellViews.GetLength(1); j++)
+        {
+            _cellViews[i, j].Text.text = "";
+            _cellViews[i, j].Item = null;
+            _cellViews[i, j].itemPosition = Vector2Int.zero;
+        }
+
+        foreach (Item item in _items.Keys)
+            Destroy(_items[item].gameObject);
 
         _items.Clear();
     }
+
+    public void AddItem(Item item, Vector2Int[] positions)
+    {
+        Vector2Int minPosition = positions[0];
+        foreach (Vector2Int position in positions)
+        {
+            if (position.x < minPosition.x) minPosition.x = position.x;
+            if (position.y < minPosition.y) minPosition.y = position.y;
+        }
+
+        foreach (Vector2Int position in positions)
+        {
+            _cellViews[position.x, position.y].Text.text = item.Name;
+            _cellViews[position.x, position.y].Item = item;
+            _cellViews[position.x, position.y].itemPosition = new Vector2Int(
+                position.x - minPosition.x,
+                position.y - minPosition.y
+            );
+        }
+    }
 }
+
+public class GridItem : MonoBehaviour { }

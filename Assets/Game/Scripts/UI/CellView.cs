@@ -1,32 +1,33 @@
+using System;
+using Inventories;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
-public class CellView : MonoBehaviour, IDropHandler
+public class CellView : MonoBehaviour, IPointerDownHandler
 {
-    public Image backgroundImage;
+    public event Action<Item, Vector2Int> OnCellClickedDown;
+    public event Action<Vector2Int, Vector2Int> OnCellClickedUp;
+
+    public TMP_Text Text;
+    public Item Item;
+    public Vector2Int position;
+    public Vector2Int itemPosition;
+    public InventoryView inventoryView;
 
     private void Awake()
     {
-        backgroundImage = GetComponent<Image>();
+        Text.raycastTarget = false;
     }
 
-    public void Highlight(Sprite sprite)
+    public void OnPointerDown(PointerEventData eventData)
     {
-        if (backgroundImage != null && sprite != null)
+        if (inventoryView._selectedItem != null)
         {
-            backgroundImage.sprite = sprite;
+            OnCellClickedUp?.Invoke(position, Vector2Int.zero);
+            return;
         }
-    }
 
-    public void OnDrop(PointerEventData eventData)
-    {
-        var item = eventData.pointerDrag;
-
-        if (item != null)
-        {
-            item.transform.SetParent(transform);
-            item.transform.localPosition = Vector3.zero;
-        }
+        OnCellClickedDown?.Invoke(Item, itemPosition);
     }
 }

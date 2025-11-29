@@ -1,10 +1,13 @@
 using UnityEngine;
 using UnityEngine.UI;
 
+using UnityEngine;
+using UnityEngine.UI;
+
 public class GridToMatrix : MonoBehaviour
 {
     private GridLayoutGroup grid;
-    public CellView[,] matrix;   // теперь CellView!
+    public CellView[,] matrix;
 
     public int Rows { get; private set; }
     public int Columns { get; private set; }
@@ -15,7 +18,7 @@ public class GridToMatrix : MonoBehaviour
         BuildMatrix();
     }
 
-    public void BuildMatrix()
+    public CellView[,] BuildMatrix()
     {
         int total = transform.childCount;
 
@@ -56,6 +59,12 @@ public class GridToMatrix : MonoBehaviour
 
             matrix[row, col] = cell;
         }
+
+        // КРИТИЧЕСКИ ВАЖНО: принудительно обновляем layout
+        Canvas.ForceUpdateCanvases();
+        LayoutRebuilder.ForceRebuildLayoutImmediate(transform as RectTransform);
+        
+        return matrix;
     }
 
     public CellView GetCell(int row, int col)

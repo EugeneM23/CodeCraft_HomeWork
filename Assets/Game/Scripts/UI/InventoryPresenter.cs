@@ -1,65 +1,45 @@
-using Game.Scripts.UI;
 using Inventories;
+using Sirenix.OdinInspector;
 using UnityEngine;
-using System.Collections.Generic;
 
 public class InventoryPresenter : MonoBehaviour
 {
-    [SerializeField] private ItemCatalog _itemCatalog;
     [SerializeField] private InventoryView _view;
-    [SerializeField] private Bag _bag;
-
-    private Inventory _bagInventory;
-    private Dictionary<ItemView, Item> _viewToModelMap = new();
+    [SerializeField] private GridToMatrix _gridToMatrix;
+    private Inventory _inventory;
 
     private void Start()
     {
-        _bagInventory = _bag.inventory;
-        _bag.OnStateChanged += OnStateChanged;
-        
-        RenderInventory();
+        CellView[,] cellViews = _gridToMatrix.matrix;
+        _inventory = new Inventory(cellViews.GetLength(0), cellViews.GetLength(1));
+
+        _inventory.AddItem(new Item("x", 3, 3));
+        _inventory.AddItem(new Item("y", 2, 2));
+        _inventory.AddItem(new Item("z", 2, 2));
+
+        RenderState();
+        _view.OnMoveItem += MoveItem;
     }
 
-    private void RenderInventory()
+    private void MoveItem(Vector2Int position, Item item)
+    {
+        if (_inventory.MoveItem(item, position))
+            _view._selectedItem = null;
+
+        RenderState();
+    }
+
+    private void RenderState()
     {
         _view.Clear();
-        _viewToModelMap.Clear();
-
-
-        foreach (Item item in _bagInventory)
-        {
-            ItemView itemView = _itemCatalog.GetItem(item);
-            Vector2Int[] positions = _bagInventory.GetPositions(item);
-            
-            if (positions != null && positions.Length > 0)
-            {
-                ItemView instantiatedView = _view.AddItem(itemView, positions);
-                if (instantiatedView != null)
-                {
-                    _viewToModelMap[instantiatedView] = item;
-                }
-            }
-        }
+        foreach (Item item in _inventory)
+            _view.AddItem(item, _inventory.GetPositions(item));
     }
 
-    private void OnStateChanged()
+    [Button]
+    public void ReorganizeSpase()
     {
-        RenderInventory();
-    }
-
-
-    public bool TryMoveItem(ItemView itemView, Vector2Int newPosition)
-    {
-        if (!_viewToModelMap.TryGetValue(itemView, out Item item))
-            return false;
-
-        bool success = _bagInventory.MoveItem(item, newPosition);
-        
-        if (success)
-        {
-            RenderInventory();
-        }
-
-        return success;
+        _inventory.ReorganizeSpace();
+        RenderState();
     }
 }
