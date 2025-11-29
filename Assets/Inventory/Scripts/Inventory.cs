@@ -189,7 +189,7 @@ namespace Inventories
             return false;
         }
 
-        private bool Fit(Vector2Int size, int posX, int posY)
+        public bool Fit(Vector2Int size, int posX, int posY)
         {
             if (!IsPositionValid(size, posX, posY))
                 return false;

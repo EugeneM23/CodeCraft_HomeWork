@@ -5,23 +5,19 @@ using UnityEngine.UI;
 public class CellView : MonoBehaviour, IDropHandler
 {
     public Image backgroundImage;
-    public Sprite normalSprite;
-    public Sprite highlightedSprite;
 
     private void Awake()
     {
         backgroundImage = GetComponent<Image>();
     }
 
-    public void Highlight(Sprite image)
+    public void Highlight(Sprite sprite)
     {
-        backgroundImage.sprite = image;
+        if (backgroundImage != null && sprite != null)
+        {
+            backgroundImage.sprite = sprite;
+        }
     }
-
-    /*public void Unhighlight()
-    {
-        backgroundImage.sprite = normalSprite;
-    }*/
 
     public void OnDrop(PointerEventData eventData)
     {
@@ -33,9 +29,4 @@ public class CellView : MonoBehaviour, IDropHandler
             item.transform.localPosition = Vector3.zero;
         }
     }
-
-    /*public void OnPointerDown(PointerEventData eventData)
-    {
-        Unhighlight();
-    }*/
 }

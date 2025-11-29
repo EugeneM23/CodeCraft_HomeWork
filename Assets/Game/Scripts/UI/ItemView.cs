@@ -1,31 +1,27 @@
-using Game.Scripts.UI;
+using Inventories;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
 public class ItemView : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
-    [field: SerializeField] public ItemID ID { get; private set; }
-
-    public Image icon;
     private Transform originalParent;
     private Canvas canvas;
     private CanvasGroup canvasGroup;
+    private GridToMatrix gridMatrix;
+
+    private Item _modelItem;
 
     private void Awake()
     {
         canvas = GetComponentInParent<Canvas>();
         canvasGroup = gameObject.AddComponent<CanvasGroup>();
+        gridMatrix = FindObjectOfType<GridToMatrix>();
     }
 
     public void OnBeginDrag(PointerEventData eventData)
     {
         originalParent = transform.parent;
-
-        // Чтобы предмет отображался поверх всего UI
         transform.SetParent(canvas.transform);
-
-        // Чтобы не блокировал события на клетки
         canvasGroup.blocksRaycasts = false;
     }
 
@@ -44,20 +40,23 @@ public class ItemView : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
     {
         canvasGroup.blocksRaycasts = true;
 
-        // Проверяем, попали ли на клетку
         if (eventData.pointerEnter != null)
         {
             CellView cell = eventData.pointerEnter.GetComponent<CellView>();
-            if (cell != null)
+            if (cell != null && gridMatrix.TryGetCellPosition(cell, out int row, out int col))
             {
-                transform.SetParent(cell.transform);
-                transform.localPosition = Vector3.zero;
-                return;
+                // Пытаемся переместить предмет через презентор
+                //bool moved = presenter.TryMoveItem(this, new Vector2Int(row, col));
+                // if (moved)
+                // {
+                //     return;
+                // }
             }
         }
 
-        // Иначе возвращаемся назад
+        // Возвращаемся на исходную позицию
         transform.SetParent(originalParent);
         transform.localPosition = Vector3.zero;
+        transform.SetAsLastSibling(); // Убеждаемся что предмет рисуется поверх клеток
     }
 }

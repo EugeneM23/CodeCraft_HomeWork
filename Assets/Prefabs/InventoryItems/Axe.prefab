@@ -28,16 +28,16 @@ RectTransform:
   m_GameObject: {fileID: 3128493182507012119}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.7296875, y: 0.7296875, z: 0.7296875}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 1302.2899, y: 373.1449}
-  m_SizeDelta: {x: 75, y: 75}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 1922.2899, y: -18.855103}
+  m_SizeDelta: {x: 300, y: 300}
+  m_Pivot: {x: 0, y: 1}
 --- !u!222 &6768167715166564463
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -88,5 +88,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0bb4dea58da94b039f330e62d40228a6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <ID>k__BackingField: 0
-  icon: {fileID: 2469816095410946802}

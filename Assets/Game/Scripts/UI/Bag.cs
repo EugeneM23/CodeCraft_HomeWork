@@ -14,8 +14,8 @@ namespace Game.Scripts.UI
         private void Awake()
         {
             inventory = new Inventory(10, 10);
-            Item x = new Item(ItemID.Item_01.ToString(), 1, 1);
-            Item y = new Item(ItemID.Item_02.ToString(), 1, 1);
+            Item x = new Item(ItemID.Item_01.ToString(), 2, 2);
+            Item y = new Item(ItemID.Item_02.ToString(), 1, 2);
             Item z = new Item(ItemID.Item_02.ToString(), 1, 1);
 
             inventory.AddItem(x, 4, 0);
