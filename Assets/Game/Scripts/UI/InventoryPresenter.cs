@@ -1,9 +1,6 @@
+using UnityEngine;
 using Inventories;
 using Sirenix.OdinInspector;
-using UnityEngine;
-
-using UnityEngine;
-using Inventories;
 
 public class InventoryPresenter : MonoBehaviour
 {
@@ -21,14 +18,31 @@ public class InventoryPresenter : MonoBehaviour
         _inventory.AddItem(new Item("z", 2, 2));
 
         RenderState();
-        _view.OnItemMoved += OnItemMoved;
+        _view.OnItemDragged += TryMoveItem;
     }
 
-    private void OnItemMoved(Item item, Vector2Int newPosition)
+    private void TryMoveItem(Item item, Vector2Int fromPosition, Vector2Int toPosition)
     {
-        // View уже проверил и переместил визуально
-        // Теперь синхронизируем модель
-        _inventory.MoveItem(item, newPosition);
+        // Вычисляем смещение
+        Vector2Int offset = toPosition - fromPosition;
+
+        // Получаем текущие позиции предмета
+        Vector2Int[] currentPositions = _inventory.GetPositions(item);
+
+        // Проверяем, можно ли переместить (используем первую позицию как базовую)
+        Vector2Int firstPos = currentPositions[0];
+        Vector2Int newFirstPos = firstPos + offset;
+
+        // Проверяем через модель
+        if (_inventory.MoveItem(item, newFirstPos))
+        {
+            RenderState();
+        }
+        else
+        {
+            // Не удалось переместить - перерисовываем чтобы вернуть на место
+            RenderState();
+        }
     }
 
     private void RenderState()
@@ -36,7 +50,7 @@ public class InventoryPresenter : MonoBehaviour
         _view.Clear();
         foreach (Item item in _inventory)
         {
-            _view.AddItem(item, _inventory.GetPositions(item));
+            _view.DisplayItem(item, _inventory.GetPositions(item));
         }
     }
 
