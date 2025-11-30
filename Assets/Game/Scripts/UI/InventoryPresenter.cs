@@ -2,6 +2,9 @@ using Inventories;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
+using UnityEngine;
+using Inventories;
+
 public class InventoryPresenter : MonoBehaviour
 {
     [SerializeField] private InventoryView _view;
@@ -18,26 +21,27 @@ public class InventoryPresenter : MonoBehaviour
         _inventory.AddItem(new Item("z", 2, 2));
 
         RenderState();
-        _view.OnMoveItem += MoveItem;
+        _view.OnItemMoved += OnItemMoved;
     }
 
-    private void MoveItem(Vector2Int position, Item item)
+    private void OnItemMoved(Item item, Vector2Int newPosition)
     {
-        if (_inventory.MoveItem(item, position))
-            _view._selectedItem = null;
-
-        RenderState();
+        // View уже проверил и переместил визуально
+        // Теперь синхронизируем модель
+        _inventory.MoveItem(item, newPosition);
     }
 
     private void RenderState()
     {
         _view.Clear();
         foreach (Item item in _inventory)
+        {
             _view.AddItem(item, _inventory.GetPositions(item));
+        }
     }
 
     [Button]
-    public void ReorganizeSpase()
+    public void ReorganizeSpace()
     {
         _inventory.ReorganizeSpace();
         RenderState();

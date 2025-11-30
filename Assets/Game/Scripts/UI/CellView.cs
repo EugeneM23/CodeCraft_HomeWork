@@ -4,30 +4,26 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class CellView : MonoBehaviour, IPointerDownHandler
+public class CellView : MonoBehaviour
 {
-    public event Action<Item, Vector2Int> OnCellClickedDown;
-    public event Action<Vector2Int, Vector2Int> OnCellClickedUp;
-
     public TMP_Text Text;
-    public Item Item;
-    public Vector2Int position;
-    public Vector2Int itemPosition;
-    public InventoryView inventoryView;
+    public Vector2Int GridPosition; // Единственная позиция - позиция в сетке
+    public Item Item { get; private set; }
 
     private void Awake()
     {
         Text.raycastTarget = false;
     }
 
-    public void OnPointerDown(PointerEventData eventData)
+    public void SetItem(Item item)
     {
-        if (inventoryView._selectedItem != null)
-        {
-            OnCellClickedUp?.Invoke(position, Vector2Int.zero);
-            return;
-        }
+        Item = item;
+        Text.text = item != null ? item.Name : "";
+    }
 
-        OnCellClickedDown?.Invoke(Item, itemPosition);
+    public void Clear()
+    {
+        Item = null;
+        Text.text = "";
     }
 }

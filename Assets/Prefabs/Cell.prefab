@@ -206,7 +206,7 @@ MonoBehaviour:
   m_Sprite: {fileID: 21300000, guid: b7dfde2c80cf86643b7b89c8fce93392, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
-  m_FillCenter: 1
+  m_FillCenter: 0
   m_FillMethod: 4
   m_FillAmount: 1
   m_FillClockwise: 1
@@ -226,3 +226,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Text: {fileID: 207073618290608857}
+  position: {x: 0, y: 0}
+  itemPosition: {x: 0, y: 0}
+  inventoryView: {fileID: 0}
