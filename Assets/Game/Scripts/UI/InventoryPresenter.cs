@@ -7,14 +7,16 @@ public class InventoryPresenter : MonoBehaviour
     [SerializeField] private InventoryView _view;
     [SerializeField] private GridToMatrix _gridToMatrix;
     private Inventory _inventory;
+    private Item _testitem;
 
     private void Start()
     {
         CellView[,] cellViews = _gridToMatrix.matrix;
         _inventory = new Inventory(cellViews.GetLength(0), cellViews.GetLength(1));
 
-        _inventory.AddItem(new Item("x", 3, 3));
-        _inventory.AddItem(new Item("y", 2, 2));
+        _testitem = new Item("x", 3, 3);
+        _inventory.AddItem(_testitem);
+        _inventory.AddItem(new Item("y", 1, 3));
         _inventory.AddItem(new Item("z", 2, 2));
 
         RenderState();
@@ -58,6 +60,13 @@ public class InventoryPresenter : MonoBehaviour
     public void ReorganizeSpace()
     {
         _inventory.ReorganizeSpace();
+        RenderState();
+    }
+
+    [Button]
+    public void RemoveItem()
+    {
+        _inventory.RemoveItem(_testitem);
         RenderState();
     }
 }

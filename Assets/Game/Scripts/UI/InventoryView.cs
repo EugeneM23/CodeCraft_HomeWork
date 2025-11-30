@@ -52,38 +52,51 @@ public class InventoryView : MonoBehaviour
 
     private InventoryItem SpawnItemContainer(Item item, Vector2Int[] positions)
     {
-        // Находим границы
+        // Находим границы предмета
         Vector2Int min = positions[0];
         Vector2Int max = positions[0];
-        
-        foreach (Vector2Int pos in positions)
+
+        foreach (var p in positions)
         {
-            if (pos.x < min.x) min.x = pos.x;
-            if (pos.y < min.y) min.y = pos.y;
-            if (pos.x > max.x) max.x = pos.x;
-            if (pos.y > max.y) max.y = pos.y;
+            if (p.x < min.x) min.x = p.x;
+            if (p.y < min.y) min.y = p.y;
+            if (p.x > max.x) max.x = p.x;
+            if (p.y > max.y) max.y = p.y;
         }
 
-        // Спавним контейнер
-        InventoryItem container = Instantiate(_itemContainerPrefab, transform);
-        RectTransform rect = container.RectTransform;
-        
-        // Размер одной ячейки
-        Vector2 cellSize = _cells[0, 0].GetComponent<RectTransform>().sizeDelta;
-        
-        // Размер контейнера
-        rect.sizeDelta = new Vector2(
-            cellSize.x * (max.x - min.x + 1),
-            cellSize.y * (max.y - min.y + 1)
+        // ВАЖНО: cols = ширина (по X), rows = высота (по Y)
+        int cols = max.y - min.y + 1;   // количество колонок (ширина)
+        int rows = max.x - min.x + 1;   // количество рядов (высота)
+
+        // Создаём контейнер
+        InventoryItem cont = Instantiate(_itemContainerPrefab, transform);
+        RectTransform contRect = cont.RectTransform;
+        contRect.localScale = Vector3.one;
+        contRect.pivot = new Vector2(0.5f, 0.5f);
+
+        // Размер ячейки
+        RectTransform cellRect = _cells[0, 0].GetComponent<RectTransform>();
+        Vector2 cellSize = cellRect.sizeDelta;
+
+        // Устанавливаем размер контейнера
+        // cols * cellSize.x = ширина (по горизонтали)
+        // rows * cellSize.y = высота (по вертикали)
+        contRect.sizeDelta = new Vector2(
+            cols * cellSize.x,  // ширина
+            rows * cellSize.y   // высота
         );
-        
-        // Позиция (центр между первой и последней ячейкой)
-        RectTransform firstRect = _cells[min.x, min.y].GetComponent<RectTransform>();
-        RectTransform lastRect = _cells[max.x, max.y].GetComponent<RectTransform>();
-        
-        rect.position = (firstRect.position + lastRect.position) / 2f;
-        
-        _itemContainers[item] = container;
-        return container;
+
+        // Вычисляем позицию центра
+        RectTransform first = _cells[min.x, min.y].GetComponent<RectTransform>();
+        RectTransform last  = _cells[max.x, max.y].GetComponent<RectTransform>();
+
+        Vector3 localFirst = contRect.parent.InverseTransformPoint(first.position);
+        Vector3 localLast  = contRect.parent.InverseTransformPoint(last.position);
+
+        Vector3 center = (localFirst + localLast) * 0.5f;
+        contRect.localPosition = center;
+
+        _itemContainers[item] = cont;
+        return cont;
     }
 }
