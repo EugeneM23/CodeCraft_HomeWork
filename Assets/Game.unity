@@ -232,7 +232,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _gridToMatrix: {fileID: 1414830585}
-  _selectedItemRelativePosition: {x: 0, y: 0}
+  _itemContainerPrefab: {fileID: 3334073297244301008, guid: 4c15baa75d82b483abb917b275ec412d, type: 3}
+  _itemCatalog: {fileID: 1476617733}
 --- !u!114 &1476617728
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -247,6 +248,124 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _view: {fileID: 1476617727}
   _gridToMatrix: {fileID: 1414830585}
+--- !u!114 &1476617732
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1476617722}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e92cd8a221d435aa6b93a6681276702, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  inventoryView: {fileID: 1476617727}
+  canvas: {fileID: 2068645393}
+--- !u!114 &1476617733
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1476617722}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c281f87208ed411eaf81516040082f45, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects:
+    - {fileID: 21300000, guid: 4446f6c35ba726642ad46f70751b290e, type: 3}
+    - {fileID: 21300000, guid: 748a65a228e31ef41b675acfda3b1b63, type: 3}
+    - {fileID: 21300000, guid: 6448b82046e9dd542ab37ce629da1cf1, type: 3}
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes:
+    - Name: _items
+      Entry: 7
+      Data: 0|System.Collections.Generic.Dictionary`2[[Inventories.ItemID, Inventory],[InventoryItemData,
+        Assembly-CSharp]], mscorlib
+    - Name: comparer
+      Entry: 7
+      Data: 1|System.Collections.Generic.EnumEqualityComparer`1[[Inventories.ItemID,
+        Inventory]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 12
+      Data: 3
+    - Name: 
+      Entry: 7
+      Data: 
+    - Name: $k
+      Entry: 3
+      Data: 2
+    - Name: $v
+      Entry: 7
+      Data: 2|InventoryItemData, Assembly-CSharp
+    - Name: Icon
+      Entry: 10
+      Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 
+    - Name: $k
+      Entry: 3
+      Data: 3
+    - Name: $v
+      Entry: 7
+      Data: 3|InventoryItemData, Assembly-CSharp
+    - Name: Icon
+      Entry: 10
+      Data: 1
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 
+    - Name: $k
+      Entry: 3
+      Data: 1
+    - Name: $v
+      Entry: 7
+      Data: 4|InventoryItemData, Assembly-CSharp
+    - Name: Icon
+      Entry: 10
+      Data: 2
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
 --- !u!1 &1611256434
 GameObject:
   m_ObjectHideFlags: 0
@@ -1951,7 +2070,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4106740165009739368, guid: ca26113ee5ee845f2823ec1f23970cae, type: 3}
       propertyPath: m_FillCenter
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4106740165009739368, guid: ca26113ee5ee845f2823ec1f23970cae, type: 3}
       propertyPath: m_RaycastPadding.x
@@ -1992,6 +2111,10 @@ PrefabInstance:
     - target: {fileID: 4336694460658252327, guid: ca26113ee5ee845f2823ec1f23970cae, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4352055343973533725, guid: ca26113ee5ee845f2823ec1f23970cae, type: 3}
+      propertyPath: m_FillCenter
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4352055343973533725, guid: ca26113ee5ee845f2823ec1f23970cae, type: 3}
       propertyPath: m_RaycastPadding.x
@@ -4238,6 +4361,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 8596267301424617161, guid: ca26113ee5ee845f2823ec1f23970cae, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1476617727}
+    - targetCorrespondingSourceObject: {fileID: 8596267301424617161, guid: ca26113ee5ee845f2823ec1f23970cae, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1476617732}
+    - targetCorrespondingSourceObject: {fileID: 8596267301424617161, guid: ca26113ee5ee845f2823ec1f23970cae, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1476617733}
   m_SourcePrefab: {fileID: 100100000, guid: ca26113ee5ee845f2823ec1f23970cae, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

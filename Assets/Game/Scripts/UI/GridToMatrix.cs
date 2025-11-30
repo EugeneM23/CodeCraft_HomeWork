@@ -1,9 +1,8 @@
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections.Generic;
 
-using UnityEngine;
-using UnityEngine.UI;
-
+[RequireComponent(typeof(GridLayoutGroup))]
 public class GridToMatrix : MonoBehaviour
 {
     private GridLayoutGroup grid;
@@ -15,78 +14,87 @@ public class GridToMatrix : MonoBehaviour
     private void Awake()
     {
         grid = GetComponent<GridLayoutGroup>();
-        BuildMatrix();
     }
 
+    /// <summary>
+    /// Строит матрицу только из реально существующих CellView в трансформе, учитывая настройки GridLayoutGroup.
+    /// Возвращает массив [Columns, Rows].
+    /// </summary>
     public CellView[,] BuildMatrix()
     {
-        int total = transform.childCount;
+        // Форсим layout чтобы дочерние RectTransform имели актуальные данные
+        Canvas.ForceUpdateCanvases();
+        LayoutRebuilder.ForceRebuildLayoutImmediate(transform as RectTransform);
 
-        // Вычисляем количество строк и столбцов
-        switch (grid.constraint)
+        // Собираем список реальных CellView (в порядке GetChild)
+        List<CellView> cells = new List<CellView>(transform.childCount);
+        for (int i = 0; i < transform.childCount; i++)
         {
-            case GridLayoutGroup.Constraint.FixedColumnCount:
-                Columns = grid.constraintCount;
-                Rows = Mathf.CeilToInt((float)total / Columns);
-                break;
-
-            case GridLayoutGroup.Constraint.FixedRowCount:
-                Rows = grid.constraintCount;
-                Columns = Mathf.CeilToInt((float)total / Rows);
-                break;
-
-            default:
-                Columns = Mathf.CeilToInt(Mathf.Sqrt(total));
-                Rows = Mathf.CeilToInt((float)total / Columns);
-                break;
+            var child = transform.GetChild(i);
+            var cell = child.GetComponent<CellView>();
+            if (cell != null)
+                cells.Add(cell);
         }
 
-        matrix = new CellView[Rows, Columns];
+        int total = cells.Count;
+
+        // Определяем Columns/Rows по constraint
+        if (grid.constraint == GridLayoutGroup.Constraint.FixedColumnCount)
+        {
+            Columns = Mathf.Max(1, grid.constraintCount);
+            Rows = Mathf.CeilToInt((float)total / Columns);
+        }
+        else if (grid.constraint == GridLayoutGroup.Constraint.FixedRowCount)
+        {
+            Rows = Mathf.Max(1, grid.constraintCount);
+            Columns = Mathf.CeilToInt((float)total / Rows);
+        }
+        else // Unconstrained — попробуем вычислить колонки по ширине, иначе sqrt fallback
+        {
+            var rect = (transform as RectTransform).rect;
+            float cellW = grid.cellSize.x + grid.spacing.x;
+            int guessCols = 0;
+            if (cellW > 0f)
+                guessCols = Mathf.FloorToInt(Mathf.Max(1f, rect.width / cellW));
+            if (guessCols <= 0) guessCols = Mathf.CeilToInt(Mathf.Sqrt(Mathf.Max(1, total)));
+            Columns = Mathf.Max(1, guessCols);
+            Rows = Mathf.CeilToInt((float)total / Columns);
+        }
+
+        // Создаём матрицу точно под существующие ячейки
+        matrix = new CellView[Columns, Rows];
+
+        // Важно учитывать startAxis: Horizontal — заполнение по строкам (горизонтально), 
+        // Vertical — заполнение по столбцам (снизу-верх/сверху-вниз затем следующий столбец).
+        bool startAxisHorizontal = grid.startAxis == GridLayoutGroup.Axis.Horizontal;
 
         for (int i = 0; i < total; i++)
         {
-            int row = i / Columns;
-            int col = i % Columns;
+            int x, y;
 
-            Transform child = transform.GetChild(i);
-            CellView cell = child.GetComponent<CellView>();
-
-            if (cell == null)
+            if (startAxisHorizontal)
             {
-                Debug.LogWarning($"Объект {child.name} не содержит CellView!");
+                // стандартный случай: заполнение по строкам (лево→право, затем вниз)
+                x = i % Columns;
+                y = i / Columns;
+            }
+            else
+            {
+                // заполнение по колонкам (верх→низ, затем следующая колонка)
+                // При этом Rows уже рассчитан как Ceil(total / Columns) или фиксированное значение
+                x = i / Rows;
+                y = i % Rows;
+            }
+
+            // Защита на случай, если вдруг вышли за границы
+            if (x >= Columns || y >= Rows)
+            {
                 continue;
             }
 
-            matrix[row, col] = cell;
+            matrix[x, y] = cells[i];
         }
 
-        // КРИТИЧЕСКИ ВАЖНО: принудительно обновляем layout
-        Canvas.ForceUpdateCanvases();
-        LayoutRebuilder.ForceRebuildLayoutImmediate(transform as RectTransform);
-        
         return matrix;
-    }
-
-    public CellView GetCell(int row, int col)
-    {
-        if (row < 0 || col < 0 || row >= Rows || col >= Columns)
-            return null;
-
-        return matrix[row, col];
-    }
-
-    public bool TryGetCellPosition(CellView cell, out int row, out int col)
-    {
-        for (int r = 0; r < Rows; r++)
-        for (int c = 0; c < Columns; c++)
-            if (matrix[r, c] == cell)
-            {
-                row = r;
-                col = c;
-                return true;
-            }
-
-        row = col = -1;
-        return false;
     }
 }

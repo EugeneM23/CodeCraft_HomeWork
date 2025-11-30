@@ -1,6 +1,7 @@
 using UnityEngine;
 using Inventories;
 using Sirenix.OdinInspector;
+using UnityEditor;
 
 public class InventoryPresenter : MonoBehaviour
 {
@@ -14,10 +15,17 @@ public class InventoryPresenter : MonoBehaviour
         CellView[,] cellViews = _gridToMatrix.matrix;
         _inventory = new Inventory(cellViews.GetLength(0), cellViews.GetLength(1));
 
-        _testitem = new Item("x", 3, 3);
-        _inventory.AddItem(_testitem);
-        _inventory.AddItem(new Item("y", 1, 3));
-        _inventory.AddItem(new Item("z", 2, 2));
+        Item item1 = new Item(ItemID.Ring.ToString(), 1, 1);
+        Item item2 = new Item(ItemID.AR_01.ToString(), 4, 2);
+        Item item3 = new Item(ItemID.AR_02.ToString(), 4, 2);
+
+        item1.ItemID = ItemID.Ring;
+        item2.ItemID = ItemID.AR_01;
+        item3.ItemID = ItemID.AR_02;
+
+        _inventory.AddItem(item1);
+        _inventory.AddItem(item2);
+        _inventory.AddItem(item3);
 
         RenderState();
         _view.OnItemDragged += TryMoveItem;

@@ -5,6 +5,7 @@ namespace Inventories
     ///Don't modify 
     public sealed class Item
     {
+        public ItemID ItemID;
         private static int ID_GEN;
 
         public string Name => this.name;

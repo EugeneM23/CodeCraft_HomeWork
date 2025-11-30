@@ -8,13 +8,14 @@ public class DragController : MonoBehaviour
 {
     [SerializeField] private InventoryView inventoryView;
     [SerializeField] private Canvas canvas;
-    
+    [SerializeField] private InventoryPresenter _presenter;
+
     private GraphicRaycaster raycaster;
     private EventSystem eventSystem;
-    
+
     private Item draggedItem;
     private Vector2Int dragStartPosition;
-    private InventoryItem draggedContainer;
+    private InventoryItem _inventoryItem;
     private Vector2 dragOffset;
     private Vector2 originalContainerPosition; // Начальная позиция контейнера
 
@@ -22,7 +23,7 @@ public class DragController : MonoBehaviour
     {
         raycaster = FindObjectOfType<GraphicRaycaster>();
         eventSystem = EventSystem.current;
-        
+
         if (canvas == null)
             canvas = FindObjectOfType<Canvas>();
     }
@@ -36,15 +37,15 @@ public class DragController : MonoBehaviour
             {
                 draggedItem = cell.Item;
                 dragStartPosition = cell.GridPosition;
-                draggedContainer = cell.InventoryItem;
-                
-                if (draggedContainer != null)
+                _inventoryItem = cell.InventoryItem;
+
+                if (_inventoryItem != null)
                 {
-                    draggedContainer.transform.SetAsLastSibling();
-                    
+                    _inventoryItem.transform.SetAsLastSibling();
+
                     // Сохраняем начальную позицию
-                    originalContainerPosition = draggedContainer.RectTransform.localPosition;
-                    
+                    originalContainerPosition = _inventoryItem.RectTransform.localPosition;
+
                     // Вычисляем offset между позицией контейнера и курсором
                     Vector2 localPoint;
                     RectTransformUtility.ScreenPointToLocalPointInRectangle(
@@ -53,14 +54,14 @@ public class DragController : MonoBehaviour
                         canvas.worldCamera,
                         out localPoint
                     );
-                    
-                    dragOffset = (Vector2)draggedContainer.RectTransform.localPosition - localPoint;
+
+                    dragOffset = (Vector2)_inventoryItem.RectTransform.localPosition - localPoint;
                 }
             }
         }
 
         // Перемещаем контейнер за курсором с учетом offset
-        if (draggedContainer != null)
+        if (_inventoryItem != null)
         {
             Vector2 localPoint;
             RectTransformUtility.ScreenPointToLocalPointInRectangle(
@@ -69,7 +70,8 @@ public class DragController : MonoBehaviour
                 canvas.worldCamera,
                 out localPoint
             );
-            draggedContainer.RectTransform.localPosition = localPoint + dragOffset;
+            _inventoryItem.RectTransform.localPosition = localPoint + dragOffset;
+            _inventoryItem.EnableBackGround(false);
         }
 
         if (Input.GetMouseButtonUp(0) && draggedItem != null)
@@ -83,12 +85,12 @@ public class DragController : MonoBehaviour
             else
             {
                 // Если не попали на ячейку - возвращаем на место
-                if (draggedContainer != null)
-                    draggedContainer.RectTransform.localPosition = originalContainerPosition;
+                if (_inventoryItem != null)
+                    _inventoryItem.RectTransform.localPosition = originalContainerPosition;
             }
-            
+
             draggedItem = null;
-            draggedContainer = null;
+            _inventoryItem = null;
         }
     }
 

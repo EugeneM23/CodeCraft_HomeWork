@@ -1,30 +1,28 @@
 using Inventories;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
+using UnityEngine.UI;
 
 public class CellView : MonoBehaviour
 {
-    public TMP_Text Text;
+    [SerializeField] private Image _backGround;
+    [SerializeField] private Sprite _emptyCell;
+    [SerializeField] private Sprite _occupiedCell;
+
     public Vector2Int GridPosition;
     public Item Item { get; private set; }
     public InventoryItem InventoryItem { get; private set; }
-
-    private void Awake()
-    {
-        Text.raycastTarget = false;
-    }
 
     public void SetItem(Item item, InventoryItem inventoryItem)
     {
         Item = item;
         InventoryItem = inventoryItem;
-        Text.text = item != null ? item.Name : "";
     }
 
     public void Clear()
     {
         Item = null;
         InventoryItem = null;
-        Text.text = "";
     }
 }
