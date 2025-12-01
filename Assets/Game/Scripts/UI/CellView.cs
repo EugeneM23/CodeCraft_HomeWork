@@ -25,4 +25,14 @@ public class CellView : MonoBehaviour
         Item = null;
         InventoryItem = null;
     }
+
+    public void Highlight()
+    {
+        _backGround.sprite = _occupiedCell;
+    }
+
+    public void UnHighlight()
+    {
+        _backGround.sprite = _emptyCell;
+    }
 }

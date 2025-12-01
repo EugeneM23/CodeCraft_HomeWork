@@ -18,6 +18,8 @@ public class DragController : MonoBehaviour
     private InventoryItem _inventoryItem;
     private Vector2 dragOffset;
     private Vector2 originalContainerPosition; // Начальная позиция контейнера
+    private CellView _currentSelected;
+    private List<CellView> cellsUnderRect;
 
     private void Start()
     {
@@ -70,8 +72,23 @@ public class DragController : MonoBehaviour
                 canvas.worldCamera,
                 out localPoint
             );
+
             _inventoryItem.RectTransform.localPosition = localPoint + dragOffset;
             _inventoryItem.EnableBackGround(false);
+
+           
+
+            if (cellsUnderRect != null)
+            {
+                foreach (var item in cellsUnderRect)
+                    item.UnHighlight();
+            }
+
+
+            cellsUnderRect = GetCellsUnderRect(_inventoryItem.RectTransform);
+
+            foreach (var item in cellsUnderRect)
+                item.Highlight();
         }
 
         if (Input.GetMouseButtonUp(0) && draggedItem != null)
@@ -111,5 +128,38 @@ public class DragController : MonoBehaviour
         }
 
         return null;
+    }
+
+    private List<CellView> GetCellsUnderRect(RectTransform itemRect)
+    {
+        List<CellView> cells = new List<CellView>();
+
+        // Получаем world rect предмета
+        Rect itemWorldRect = GetWorldRect(itemRect);
+
+        foreach (CellView cell in inventoryView._cells)
+        {
+            Rect cellWorldRect = GetWorldRect(cell.GetComponent<RectTransform>());
+
+            if (itemWorldRect.Overlaps(cellWorldRect))
+            {
+                cells.Add(cell);
+            }
+        }
+
+        return cells;
+    }
+
+    private Rect GetWorldRect(RectTransform rt)
+    {
+        Vector3[] corners = new Vector3[4];
+        rt.GetWorldCorners(corners);
+
+        return new Rect(
+            corners[0].x,
+            corners[0].y,
+            corners[2].x - corners[0].x,
+            corners[2].y - corners[0].y
+        );
     }
 }
