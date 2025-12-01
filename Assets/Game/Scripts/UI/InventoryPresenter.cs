@@ -8,7 +8,7 @@ public class InventoryPresenter : MonoBehaviour
     [SerializeField] private int _columns = 4;
     [SerializeField] private int _rows = 7;
 
-    private Inventory _inventory;
+    public Inventory _inventory;
 
     private void Start()
     {
@@ -48,6 +48,9 @@ public class InventoryPresenter : MonoBehaviour
     }
 
     [Button] public void Reorganize() { _inventory.ReorganizeSpace(); Render(); }
+    
+    
+    
 
     private void OnDestroy() => _view.OnItemDragged -= OnItemDragged;
 }

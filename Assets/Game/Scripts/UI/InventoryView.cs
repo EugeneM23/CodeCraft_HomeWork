@@ -94,20 +94,40 @@ public class InventoryView : MonoBehaviour
         if (_cells == null || positions == null || positions.Length == 0)
             return;
 
+        // Создаём визуальный контейнер
         InventoryItem inventoryItem = SpawnInventoryItem(item, positions);
 
+        // Ставим иконку
         if (_itemCatalog.GetItemData(item.ItemID, out var data))
             inventoryItem.SetIcon(data.Icon);
 
+        // Находим левый верхний угол предмета
+        Vector2Int min = positions[0];
+        foreach (var p in positions)
+        {
+            if (p.x < min.x) min.x = p.x;
+            if (p.y < min.y) min.y = p.y;
+        }
+
+        // Заполняем клетки
         foreach (Vector2Int pos in positions)
         {
             if (pos.x >= 0 && pos.x < _cells.GetLength(0) &&
                 pos.y >= 0 && pos.y < _cells.GetLength(1))
             {
-                _cells[pos.x, pos.y].SetItem(item, inventoryItem);
+                CellView cell = _cells[pos.x, pos.y];
+
+                cell.SetItem(item, inventoryItem);
+
+                // 🔥 ВОТ ТУТ ЗАПИСЫВАЕМ ЛОКАЛЬНУЮ ПОЗИЦИЮ СООТВЕТСТВЕННО РАЗМЕРУ ПРЕДМЕТА
+                cell.ItemMatrixPosition = new Vector2Int(
+                    pos.x - min.x,
+                    pos.y - min.y
+                );
             }
         }
     }
+
 
     private InventoryItem SpawnInventoryItem(Item item, Vector2Int[] positions)
     {

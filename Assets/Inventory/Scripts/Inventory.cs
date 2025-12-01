@@ -264,6 +264,14 @@ namespace Inventories
             return IsFree(position.x, position.y);
         }
 
+        public bool IsFree(in Vector2Int position, Item item)
+        {
+            if (_cells[position.x, position.y] != null && _cells[position.x, position.y].Equals(item))
+                return true;
+
+            return IsFree(position.x, position.y);
+        }
+
         public bool IsFree(in int x, in int y)
         {
             if (_cells[x, y] == null)
@@ -439,7 +447,7 @@ namespace Inventories
         {
             Vector2Int[] positions = GetPositions(item);
             previousPositions = positions[0];
-    
+
             foreach (Vector2Int pos in positions)
                 _cells[pos.x, pos.y] = null;
         }
