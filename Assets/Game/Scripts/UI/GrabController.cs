@@ -39,7 +39,6 @@ public class DragController : MonoBehaviour
 
     private void StartDrag()
     {
-        // Если уже тащим что-то - игнорируем
         if (_draggedItem != null) return;
 
         CellView cell = GetCellUnderMouse();
@@ -90,11 +89,8 @@ public class DragController : MonoBehaviour
             moved = _presenter._inventory.MoveItem(_draggedItem, targetPosition);
         }
 
-        // Если не переместилось - возвращаем на место
-        // Если переместилось - InventoryItem будет уничтожен в RedrawItem, поэтому сразу очищаем ссылку
         if (moved)
         {
-            // Сразу очищаем, т.к. объект будет уничтожен
             _draggedItem = null;
             _inventoryItem = null;
         }

@@ -18,7 +18,14 @@ public class InventoryPresenter : MonoBehaviour
 
         _view.InitializeGrid(_columns, _rows);
 
-        AddTestItems();
+        Item ring = new Item(ItemID.Ring.ToString(), 1, 1) { ItemID = ItemID.Ring };
+        Item ar1 = new Item(ItemID.AR_01.ToString(), 4, 2) { ItemID = ItemID.AR_01 };
+        Item ar2 = new Item(ItemID.AR_02.ToString(), 4, 2) { ItemID = ItemID.AR_02 };
+
+        _inventory.AddItem(ring);
+        _inventory.AddItem(ar1);
+        _inventory.AddItem(ar2);
+        
         RenderAll();
     }
 
@@ -31,19 +38,15 @@ public class InventoryPresenter : MonoBehaviour
     {
         Vector2Int[] positions = _inventory.GetPositions(item);
         
-        // Очищаем старые клетки
         ClearItemCells(item);
         
-        // Удаляем старый контейнер
         _view.RemoveItemContainer(item);
         
-        // Отображаем заново
         DisplayItem(item, positions);
     }
 
     private void RenderAll()
     {
-        Debug.Log("Render All");
         _view.Clear();
 
         foreach (Item item in _inventory)
@@ -110,16 +113,7 @@ public class InventoryPresenter : MonoBehaviour
         );
     }
 
-    private void AddTestItems()
-    {
-        Item ring = new Item(ItemID.Ring.ToString(), 1, 1) { ItemID = ItemID.Ring };
-        Item ar1 = new Item(ItemID.AR_01.ToString(), 4, 2) { ItemID = ItemID.AR_01 };
-        Item ar2 = new Item(ItemID.AR_02.ToString(), 4, 2) { ItemID = ItemID.AR_02 };
-
-        _inventory.AddItem(ring);
-        _inventory.AddItem(ar1);
-        _inventory.AddItem(ar2);
-    }
+    
 
     [Button]
     public void Reorganize()
