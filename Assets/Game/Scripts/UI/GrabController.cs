@@ -4,15 +4,8 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using Inventories;
 
-using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.UI;
-using System.Collections.Generic;
-using Inventories;
-
 public class DragController : MonoBehaviour
 {
-    [SerializeField] private InventoryView _inventoryView;
     [SerializeField] private Canvas _canvas;
     [SerializeField] private InventoryPresenter _presenter;
     [SerializeField] private CellHighlighter _cellHighlighter;
@@ -21,7 +14,6 @@ public class DragController : MonoBehaviour
     private EventSystem _eventSystem;
 
     private Item _draggedItem;
-    private Vector2Int _dragStartPosition;
     private Vector2Int _dragAnchor;
     private InventoryItem _inventoryItem;
     private Vector2 _dragOffset;
@@ -35,20 +27,25 @@ public class DragController : MonoBehaviour
 
     private void Update()
     {
-        HandleMouseDown();
-        HandleDragging();
-        HandleMouseUp();
+        if (Input.GetMouseButtonDown(0))
+            StartDrag();
+
+        if (_draggedItem != null && Input.GetMouseButton(0))
+            UpdateDrag();
+
+        if (Input.GetMouseButtonUp(0) && _draggedItem != null)
+            EndDrag();
     }
 
-    private void HandleMouseDown()
+    private void StartDrag()
     {
-        if (!Input.GetMouseButtonDown(0)) return;
+        // Если уже тащим что-то - игнорируем
+        if (_draggedItem != null) return;
 
         CellView cell = GetCellUnderMouse();
-        if (cell?.Item == null) return;
+        if (cell?.Item == null || cell.InventoryItem == null) return;
 
         _draggedItem = cell.Item;
-        _dragStartPosition = cell.GridPosition;
         _dragAnchor = cell.ItemMatrixPosition;
         _inventoryItem = cell.InventoryItem;
 
@@ -56,16 +53,16 @@ public class DragController : MonoBehaviour
         _originalPosition = _inventoryItem.RectTransform.localPosition;
 
         RectTransformUtility.ScreenPointToLocalPointInRectangle(
-            _canvas.transform as RectTransform, 
-            Input.mousePosition, 
-            _canvas.worldCamera, 
+            _canvas.transform as RectTransform,
+            Input.mousePosition,
+            _canvas.worldCamera,
             out Vector2 localPoint
         );
 
         _dragOffset = (Vector2)_inventoryItem.RectTransform.localPosition - localPoint;
     }
 
-    private void HandleDragging()
+    private void UpdateDrag()
     {
         if (_inventoryItem == null) return;
 
@@ -82,30 +79,33 @@ public class DragController : MonoBehaviour
         _cellHighlighter.HighlightCells(_draggedItem, GetCellUnderMouse(), _dragAnchor);
     }
 
-    private void HandleMouseUp()
+    private void EndDrag()
     {
-        if (!Input.GetMouseButtonUp(0) || _draggedItem == null) return;
-
         CellView cell = GetCellUnderMouse();
+        bool moved = false;
 
         if (cell != null)
         {
-            Vector2Int targetTopLeft = cell.GridPosition - _dragAnchor;
-            
-            // Просто пытаемся переместить - inventory сам решит, можно ли
-            bool moved = _presenter._inventory.MoveItem(_draggedItem, targetTopLeft);
-            
-            if (!moved) 
-                _inventoryItem.RectTransform.localPosition = _originalPosition;
-            
-        }
-        else
-        {
-            _inventoryItem.RectTransform.localPosition = _originalPosition;
+            Vector2Int targetPosition = cell.GridPosition - _dragAnchor;
+            moved = _presenter._inventory.MoveItem(_draggedItem, targetPosition);
         }
 
-        _draggedItem = null;
-        _inventoryItem = null;
+        // Если не переместилось - возвращаем на место
+        // Если переместилось - InventoryItem будет уничтожен в RedrawItem, поэтому сразу очищаем ссылку
+        if (moved)
+        {
+            // Сразу очищаем, т.к. объект будет уничтожен
+            _draggedItem = null;
+            _inventoryItem = null;
+        }
+        else if (_inventoryItem != null)
+        {
+            _inventoryItem.RectTransform.localPosition = _originalPosition;
+            _inventoryItem.EnableBackGround(true);
+            _draggedItem = null;
+            _inventoryItem = null;
+        }
+
         _cellHighlighter.ClearHighlights();
     }
 
