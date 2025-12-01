@@ -6,29 +6,26 @@ using Inventories;
 
 public class DragController : MonoBehaviour
 {
-    [SerializeField] private InventoryView inventoryView;
-    [SerializeField] private Canvas canvas;
+    [SerializeField] private InventoryView _inventoryView;
+    [SerializeField] private Canvas _canvas;
     [SerializeField] private InventoryPresenter _presenter;
+    [SerializeField] private CellHighlighter _cellHighlighter;
 
-    private GraphicRaycaster raycaster;
-    private EventSystem eventSystem;
+    private GraphicRaycaster _raycaster;
+    private EventSystem _eventSystem;
 
-    private Item draggedItem;
-    private Vector2Int dragStartPosition;
-    private Vector2Int dragAnchor; // смещение внутри предмета при захвате
+    private Item _draggedItem;
+    private Vector2Int _dragStartPosition;
+    private Vector2Int _dragAnchor;
     private InventoryItem _inventoryItem;
-    private Vector2 dragOffset;
-    private Vector2 originalContainerPosition;
-
-    private List<CellView> highlightedCells = new();
+    private Vector2 _dragOffset;
+    private Vector2 _originalPosition;
 
     private void Start()
     {
-        raycaster = FindObjectOfType<GraphicRaycaster>();
-        eventSystem = EventSystem.current;
-
-        if (canvas == null)
-            canvas = FindObjectOfType<Canvas>();
+        _raycaster = FindObjectOfType<GraphicRaycaster>();
+        _eventSystem = EventSystem.current;
+        _canvas ??= FindObjectOfType<Canvas>();
     }
 
     private void Update()
@@ -43,28 +40,24 @@ public class DragController : MonoBehaviour
         if (!Input.GetMouseButtonDown(0)) return;
 
         CellView cell = GetCellUnderMouse();
-        if (cell == null || cell.Item == null) return;
+        if (cell?.Item == null) return;
 
-        draggedItem = cell.Item;
-        dragStartPosition = cell.GridPosition;
-        dragAnchor = cell.ItemMatrixPosition;
-
+        _draggedItem = cell.Item;
+        _dragStartPosition = cell.GridPosition;
+        _dragAnchor = cell.ItemMatrixPosition;
         _inventoryItem = cell.InventoryItem;
 
-        if (_inventoryItem != null)
-        {
-            _inventoryItem.transform.SetAsLastSibling();
-            originalContainerPosition = _inventoryItem.RectTransform.localPosition;
+        _inventoryItem.transform.SetAsLastSibling();
+        _originalPosition = _inventoryItem.RectTransform.localPosition;
 
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                canvas.transform as RectTransform,
-                Input.mousePosition,
-                canvas.worldCamera,
-                out Vector2 localPoint
-            );
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            _canvas.transform as RectTransform,
+            Input.mousePosition,
+            _canvas.worldCamera,
+            out Vector2 localPoint
+        );
 
-            dragOffset = (Vector2)_inventoryItem.RectTransform.localPosition - localPoint;
-        }
+        _dragOffset = (Vector2)_inventoryItem.RectTransform.localPosition - localPoint;
     }
 
     private void HandleDragging()
@@ -72,181 +65,54 @@ public class DragController : MonoBehaviour
         if (_inventoryItem == null) return;
 
         RectTransformUtility.ScreenPointToLocalPointInRectangle(
-            canvas.transform as RectTransform,
+            _canvas.transform as RectTransform,
             Input.mousePosition,
-            canvas.worldCamera,
+            _canvas.worldCamera,
             out Vector2 localPoint
         );
 
-        _inventoryItem.RectTransform.localPosition = localPoint + dragOffset;
+        _inventoryItem.RectTransform.localPosition = localPoint + _dragOffset;
         _inventoryItem.EnableBackGround(false);
 
-        CellView cellUnderMouse = GetCellUnderMouse();
-        HighlightCells(cellUnderMouse);
+        _cellHighlighter.HighlightCells(_draggedItem, GetCellUnderMouse(), _dragAnchor);
     }
 
     private void HandleMouseUp()
     {
-        if (!Input.GetMouseButtonUp(0) || draggedItem == null) return;
+        if (!Input.GetMouseButtonUp(0) || _draggedItem == null) return;
 
         CellView cell = GetCellUnderMouse();
 
         if (cell != null)
         {
-            Vector2Int targetTopLeft = cell.GridPosition - dragAnchor;
+            Vector2Int targetTopLeft = cell.GridPosition - _dragAnchor;
+            (int width, int height) = _cellHighlighter.GetItemDimensions(_draggedItem);
 
-            if (CanPlaceItem(draggedItem, targetTopLeft))
-            {
-                inventoryView.RequestMoveItem(draggedItem, dragStartPosition, cell.GridPosition);
-            }
+            if (_cellHighlighter.CanPlaceItemAt(_draggedItem, targetTopLeft, width, height))
+                _inventoryView.RequestMoveItem(_draggedItem, _dragStartPosition, cell.GridPosition);
             else
-            {
-                if (_inventoryItem != null)
-                    _inventoryItem.RectTransform.localPosition = originalContainerPosition;
-            }
+                _inventoryItem.RectTransform.localPosition = _originalPosition;
         }
         else
         {
-            if (_inventoryItem != null)
-                _inventoryItem.RectTransform.localPosition = originalContainerPosition;
+            _inventoryItem.RectTransform.localPosition = _originalPosition;
         }
 
-        draggedItem = null;
+        _draggedItem = null;
         _inventoryItem = null;
-
-        ClearHighlights();
+        _cellHighlighter.ClearHighlights();
     }
 
     private CellView GetCellUnderMouse()
     {
-        PointerEventData pointerData = new PointerEventData(eventSystem)
-        {
-            position = Input.mousePosition
-        };
+        PointerEventData pointerData = new(_eventSystem) { position = Input.mousePosition };
+        List<RaycastResult> results = new();
+        _raycaster.Raycast(pointerData, results);
 
-        List<RaycastResult> results = new List<RaycastResult>();
-        raycaster.Raycast(pointerData, results);
-
-        foreach (RaycastResult result in results)
-        {
+        foreach (var result in results)
             if (result.gameObject.TryGetComponent(out CellView cellView))
                 return cellView;
-        }
 
         return null;
     }
-
-    private void HighlightCells(CellView hoveredCell)
-    {
-        ClearHighlights();
-
-        if (draggedItem == null || hoveredCell == null) return;
-
-        Vector2Int[] positions = _presenter._inventory.GetPositions(draggedItem);
-        if (positions == null || positions.Length == 0) return;
-
-        Vector2Int min = positions[0];
-        Vector2Int max = positions[0];
-        foreach (var p in positions)
-        {
-            if (p.x < min.x) min.x = p.x;
-            if (p.y < min.y) min.y = p.y;
-            if (p.x > max.x) max.x = p.x;
-            if (p.y > max.y) max.y = p.y;
-        }
-
-        int width = max.x - min.x + 1;
-        int height = max.y - min.y + 1;
-
-        Vector2Int topLeft = hoveredCell.GridPosition - dragAnchor;
-
-        // Проверяем, свободны ли все клетки с учётом перетаскиваемого предмета
-        bool allFree = true;
-        for (int y = 0; y < height; y++)
-        {
-            for (int x = 0; x < width; x++)
-            {
-                Vector2Int pos = new Vector2Int(topLeft.x + x, topLeft.y + y);
-                if (!IsInsideGrid(pos) || !_presenter._inventory.IsFree(pos, draggedItem))
-                {
-                    allFree = false;
-                    break;
-                }
-            }
-            if (!allFree) break;
-        }
-
-        // Подсвечиваем клетки
-        for (int y = 0; y < height; y++)
-        {
-            for (int x = 0; x < width; x++)
-            {
-                Vector2Int pos = new Vector2Int(topLeft.x + x, topLeft.y + y);
-                if (!IsInsideGrid(pos)) continue;
-
-                CellView cell = inventoryView._cells[pos.x, pos.y];
-                if (allFree)
-                    cell.Highlight();
-                else
-                    cell.SetErrorHighlight();
-
-                highlightedCells.Add(cell);
-            }
-        }
-    }
-
-
-    private bool IsInsideGrid(Vector2Int pos)
-    {
-        return inventoryView != null &&
-               inventoryView._cells != null &&
-               pos.x >= 0 &&
-               pos.y >= 0 &&
-               pos.x < inventoryView._cells.GetLength(0) &&
-               pos.y < inventoryView._cells.GetLength(1);
-    }
-
-    private void ClearHighlights()
-    {
-        foreach (var c in highlightedCells)
-        {
-            if (c != null)
-                c.UnHighlight();
-        }
-
-        highlightedCells.Clear();
-    }
-
-    // Простейший метод для DragController, чтобы проверить возможность поставить предмет
-    private bool CanPlaceItem(Item item, Vector2Int topLeft)
-    {
-        Vector2Int[] positions = _presenter._inventory.GetPositions(item);
-        if (positions == null || positions.Length == 0) return false;
-
-        Vector2Int min = positions[0];
-        Vector2Int max = positions[0];
-        foreach (var p in positions)
-        {
-            if (p.x < min.x) min.x = p.x;
-            if (p.y < min.y) min.y = p.y;
-            if (p.x > max.x) max.x = p.x;
-            if (p.y > max.y) max.y = p.y;
-        }
-
-        int width = max.x - min.x + 1;
-        int height = max.y - min.y + 1;
-
-        for (int y = 0; y < height; y++)
-        {
-            for (int x = 0; x < width; x++)
-            {
-                Vector2Int pos = new Vector2Int(topLeft.x + x, topLeft.y + y);
-                if (!IsInsideGrid(pos) || !_presenter._inventory.IsFree(pos, item))
-                    return false;
-            }
-        }
-
-        return true;
-    }
-
 }
