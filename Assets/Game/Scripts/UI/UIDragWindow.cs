@@ -6,6 +6,7 @@ public class UIDragWindow : MonoBehaviour, IPointerDownHandler, IDragHandler
     private Vector2 offset;
     private RectTransform rectTransform;
     private Canvas canvas;
+    private bool _enable;
 
     private void Awake()
     {
@@ -15,6 +16,14 @@ public class UIDragWindow : MonoBehaviour, IPointerDownHandler, IDragHandler
 
     public void OnPointerDown(PointerEventData eventData)
     {
+        _enable = true;
+        if (eventData.pointerCurrentRaycast.gameObject != this.gameObject)
+        {
+            _enable = false;
+            return;
+        }
+
+
         RectTransformUtility.ScreenPointToLocalPointInRectangle(
             rectTransform,
             eventData.position,
@@ -25,6 +34,10 @@ public class UIDragWindow : MonoBehaviour, IPointerDownHandler, IDragHandler
 
     public void OnDrag(PointerEventData eventData)
     {
+        if (eventData.pointerCurrentRaycast.gameObject != this.gameObject) return;
+
+        if (!_enable) return;
+
         if (RectTransformUtility.ScreenPointToLocalPointInRectangle(
                 canvas.transform as RectTransform,
                 eventData.position,
@@ -34,5 +47,9 @@ public class UIDragWindow : MonoBehaviour, IPointerDownHandler, IDragHandler
             rectTransform.anchoredPosition = mousePos - offset;
         }
     }
-    
+
+    public void OnPointerUp(PointerEventData eventData)
+    {
+        throw new System.NotImplementedException();
+    }
 }

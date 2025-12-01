@@ -4,6 +4,12 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using Inventories;
 
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
+using System.Collections.Generic;
+using Inventories;
+
 public class DragController : MonoBehaviour
 {
     [SerializeField] private InventoryView _inventoryView;
@@ -25,7 +31,6 @@ public class DragController : MonoBehaviour
     {
         _raycaster = FindObjectOfType<GraphicRaycaster>();
         _eventSystem = EventSystem.current;
-        _canvas ??= FindObjectOfType<Canvas>();
     }
 
     private void Update()
@@ -51,9 +56,9 @@ public class DragController : MonoBehaviour
         _originalPosition = _inventoryItem.RectTransform.localPosition;
 
         RectTransformUtility.ScreenPointToLocalPointInRectangle(
-            _canvas.transform as RectTransform,
-            Input.mousePosition,
-            _canvas.worldCamera,
+            _canvas.transform as RectTransform, 
+            Input.mousePosition, 
+            _canvas.worldCamera, 
             out Vector2 localPoint
         );
 
@@ -86,12 +91,13 @@ public class DragController : MonoBehaviour
         if (cell != null)
         {
             Vector2Int targetTopLeft = cell.GridPosition - _dragAnchor;
-            (int width, int height) = _cellHighlighter.GetItemDimensions(_draggedItem);
-
-            if (_cellHighlighter.CanPlaceItemAt(_draggedItem, targetTopLeft, width, height))
-                _inventoryView.RequestMoveItem(_draggedItem, _dragStartPosition, cell.GridPosition);
-            else
+            
+            // Просто пытаемся переместить - inventory сам решит, можно ли
+            bool moved = _presenter._inventory.MoveItem(_draggedItem, targetTopLeft);
+            
+            if (!moved) 
                 _inventoryItem.RectTransform.localPosition = _originalPosition;
+            
         }
         else
         {

@@ -13,25 +13,23 @@ public class InventoryPresenter : MonoBehaviour
     private void Start()
     {
         _inventory = new Inventory(_columns, _rows);
+        _inventory.OnMoved += OnItemMoved;
+        
         _view.InitializeGrid(_columns, _rows);
-        _view.OnItemDragged += OnItemDragged;
 
         AddTestItems();
-        Render();
+        UpdateView();
     }
 
-    private void OnItemDragged(Item item, Vector2Int from, Vector2Int to)
+    private void OnItemMoved(Item item, Vector2Int newPosition)
     {
-        Vector2Int offset = to - from;
-        Vector2Int currentPos = _inventory.GetPositions(item)[0];
-        
-        _inventory.MoveItem(item, currentPos + offset);
-        Render();
+        _view.RedrawItem(item, _inventory.GetPositions(item));
     }
 
-    private void Render()
+    private void UpdateView()
     {
         _view.Clear();
+        
         foreach (Item item in _inventory)
             _view.DisplayItem(item, _inventory.GetPositions(item));
     }
@@ -47,10 +45,16 @@ public class InventoryPresenter : MonoBehaviour
         _inventory.AddItem(ar2);
     }
 
-    [Button] public void Reorganize() { _inventory.ReorganizeSpace(); Render(); }
-    
-    
-    
+    [Button] 
+    public void Reorganize() 
+    { 
+        _inventory.ReorganizeSpace(); 
+        UpdateView(); 
+    }
 
-    private void OnDestroy() => _view.OnItemDragged -= OnItemDragged;
+    private void OnDestroy()
+    {
+        if (_inventory != null)
+            _inventory.OnMoved -= OnItemMoved;
+    }
 }
