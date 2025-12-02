@@ -6,14 +6,12 @@ public class InventoryItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
 {
     [SerializeField] private Image _background;
     [SerializeField] private Image _itemImage;
-    private Image _image;
 
     public RectTransform RectTransform { get; private set; }
 
     private void Awake()
     {
         RectTransform = GetComponent<RectTransform>();
-        _image = GetComponent<Image>();
     }
 
     public void SetIcon(Sprite sprite)
@@ -29,14 +27,14 @@ public class InventoryItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     public void OnPointerEnter(PointerEventData eventData)
     {
         Color color = _background.color;
-        color.a = 1f; // вместо 255
-        _background.color = color; // присваиваем обратно
+        color.a = 1f;
+        _background.color = color;
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
         Color color = _background.color;
-        color.a = 0f; // полностью прозрачный
-        _background.color = color; // присваиваем обратно
+        color.a = 0f;
+        _background.color = color;
     }
 }

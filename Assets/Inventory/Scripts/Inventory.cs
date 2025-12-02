@@ -249,11 +249,13 @@ namespace Inventories
         /// Checks if a specified position is occupied
         /// </summary>
         public bool IsOccupied(in Vector2Int position)
-            => throw new NotImplementedException();
+        {
+            return IsOccupied(position.x, position.y);
+        }
 
         public bool IsOccupied(in int x, in int y)
         {
-            return true;
+            return _cells[x, y] == null;
         }
 
         /// <summary>

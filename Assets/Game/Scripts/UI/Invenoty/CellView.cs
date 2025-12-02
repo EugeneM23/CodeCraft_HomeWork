@@ -28,9 +28,9 @@ public class CellView : MonoBehaviour
         InventoryItem = null;
     }
 
-    public void Highlight()
+    public void Highlight(bool isCorrect)
     {
-        _backGround.sprite = _occupiedCell;
+        _backGround.sprite = isCorrect ? _occupiedCell : _arroredCell;
     }
 
     public void UnHighlight()

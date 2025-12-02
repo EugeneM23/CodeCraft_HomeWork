@@ -554,9 +554,17 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8713304369800779955, guid: 085485a3e8d9840348af1331b233e232, type: 3}
+      propertyPath: _rows
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 8713304369800779955, guid: 085485a3e8d9840348af1331b233e232, type: 3}
       propertyPath: _canvas
       value: 
       objectReference: {fileID: 2068645393}
+    - target: {fileID: 8713304369800779955, guid: 085485a3e8d9840348af1331b233e232, type: 3}
+      propertyPath: _columns
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 8713304369800779955, guid: 085485a3e8d9840348af1331b233e232, type: 3}
       propertyPath: _itemCatalog
       value: 
