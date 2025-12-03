@@ -28,6 +28,8 @@ public class GrabController : MonoBehaviour
         if (Input.GetMouseButtonDown(0)) StartDrag();
         if (Input.GetMouseButton(0) && _grabItem != null) UpdateDrag();
         if (Input.GetMouseButtonUp(0)) EndDrag();
+
+        Debug.Log(_grabItem == null);
     }
 
     private void StartDrag()
@@ -36,6 +38,7 @@ public class GrabController : MonoBehaviour
 
         if (cellView == null || cellView.Item == null) return;
 
+        _presenter = GetComponentInParent<InventoryPresenter>();
         _grabItem = cellView.Item;
         _matrixPosition = cellView.ItemMatrixPosition;
         _inventoryItem = cellView.InventoryItem;
@@ -45,6 +48,8 @@ public class GrabController : MonoBehaviour
 
         _dragOffset = _inventoryItem.RectTransform.anchoredPosition - localPoint;
         _startPosition = _inventoryItem.RectTransform.anchoredPosition;
+
+        _presenter.RemoveItem(_grabItem);
     }
 
     private void UpdateDrag()
@@ -59,6 +64,8 @@ public class GrabController : MonoBehaviour
             CellView currentCell = GetCellUnderMouse();
             if (currentCell != null)
             {
+                _presenter = currentCell.GetComponentInParent<InventoryPresenter>();
+                
                 Vector2Int currentPosition = currentCell.GridPosition;
                 _presenter.HighlightCells(_grabItem, currentPosition, _matrixPosition, currentCell);
             }
@@ -73,18 +80,24 @@ public class GrabController : MonoBehaviour
 
             if (cellView != null)
             {
+                _presenter = cellView.GetComponentInParent<InventoryPresenter>();
+
                 Vector2Int targetPos = cellView.GridPosition - _matrixPosition;
+                _presenter.AddItem(_grabItem, targetPos);
+                
+                _inventoryItem.transform.parent = _presenter.GridParent;
 
                 if (!_presenter.MoveItem(_grabItem, targetPos))
                     _inventoryItem.RectTransform.anchoredPosition = _startPosition;
 
                 _matrixPosition = Vector2Int.zero;
-                _grabItem = null;
             }
             else
             {
                 _inventoryItem.RectTransform.anchoredPosition = _startPosition;
             }
+
+            _grabItem = null;
         }
 
         _presenter.ClearHighlights();

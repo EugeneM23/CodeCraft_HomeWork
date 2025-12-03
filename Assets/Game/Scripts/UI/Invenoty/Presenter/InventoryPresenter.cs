@@ -10,7 +10,8 @@ public partial class InventoryPresenter : MonoBehaviour
     [SerializeField] private InventoryItemCatalog _itemCatalog;
     [SerializeField] private int _columns = 4;
     [SerializeField] private int _rows = 7;
-
+    [SerializeField] public Transform GridParent;
+    
     public Inventory _inventory;
 
     private void Start()
@@ -33,7 +34,7 @@ public partial class InventoryPresenter : MonoBehaviour
     public void AddItem(Item item, Vector2Int startPosition)
     {
         _inventory.AddItem(item, startPosition);
-        UpdateView();
+        //UpdateView();
     }
 
     [Button]
