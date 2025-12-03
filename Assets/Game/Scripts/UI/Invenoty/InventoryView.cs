@@ -16,7 +16,7 @@ public class InventoryView : MonoBehaviour
     public Vector2 CellSize => _cellSize;
     public Vector2 Spacing => _spacing;
 
-    public void InitializeGrid(int columns, int rows)
+    public void InitializeGrid(int columns, int rows, InventoryPresenter presenter)
     {
         Cells = new CellView[columns, rows];
 
@@ -35,32 +35,24 @@ public class InventoryView : MonoBehaviour
                     -y * (_cellSize.y + _spacing.y)
                 );
 
+                cell.SetPresenter(presenter);
                 Cells[x, y] = cell;
             }
         }
     }
 
-    public void SetCellData(Vector2Int pos, Item item, InventoryItem container, Vector2Int matrixPos)
+    public void SetCellData(Vector2Int pos, Item item, InventoryItem container, Vector2Int matrixPos,
+        InventoryPresenter inventoryPresenter)
     {
         CellView cell = Cells[pos.x, pos.y];
         cell.SetItem(item, container);
+        cell.SetPresenter(inventoryPresenter);
         cell.ItemMatrixPosition = matrixPos;
     }
 
-    public void ClearCell(Vector2Int pos)
-    {
-        Cells[pos.x, pos.y].Clear();
-    }
+    public void ClearCell(Vector2Int pos) => Cells[pos.x, pos.y].Clear();
 
-    public CellView GetCell(Vector2Int pos)
-    {
-        return Cells[pos.x, pos.y];
-    }
-
-    public InventoryItem GetItemContainer(Item item)
-    {
-        return _itemContainers[item];
-    }
+    public InventoryItem GetItemContainer(Item item) => _itemContainers[item];
 
     public InventoryItem CreateItemContainer(Item item, Vector2 size, Vector2 position)
     {
@@ -76,7 +68,7 @@ public class InventoryView : MonoBehaviour
         return container;
     }
 
-    public Vector2 GetCellPosition(Vector2Int gridPos)
+    public Vector2 GetCellRectPosition(Vector2Int gridPos)
     {
         return Cells[gridPos.x, gridPos.y].GetComponent<RectTransform>().anchoredPosition;
     }
@@ -95,7 +87,7 @@ public class InventoryView : MonoBehaviour
         _itemContainers.Clear();
     }
 
-    public void RemoveItem(Item item, Vector2Int[] cellsPositions)
+    public void RemoveItemFromGrid(Item item, Vector2Int[] cellsPositions)
     {
         if (_itemContainers.ContainsKey(item))
         {
@@ -107,10 +99,5 @@ public class InventoryView : MonoBehaviour
             _itemContainers.Remove(item);
             Destroy(container.gameObject);
         }
-    }
-
-    public void AddItem(Item item, Vector2Int startPosition)
-    {
-        
     }
 }

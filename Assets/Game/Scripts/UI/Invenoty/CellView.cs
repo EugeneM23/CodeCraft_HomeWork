@@ -9,12 +9,15 @@ public class CellView : MonoBehaviour
     [SerializeField] private Image _backGround;
     [SerializeField] private Sprite _emptyCell;
     [SerializeField] private Sprite _occupiedCell;
-    [SerializeField] private Sprite _arroredCell; 
+    [SerializeField] private Sprite _arroredCell;
+
+    private InventoryPresenter _presenter;
 
     public Vector2Int ItemMatrixPosition;
     public Vector2Int GridPosition;
     public Item Item { get; private set; }
     public InventoryItem InventoryItem { get; private set; }
+    public InventoryPresenter Presenter => _presenter;
 
     public void SetItem(Item item, InventoryItem inventoryItem)
     {
@@ -37,8 +40,6 @@ public class CellView : MonoBehaviour
     {
         _backGround.sprite = _emptyCell;
     }
-    public void SetErrorHighlight()
-    {
-        _backGround.sprite = _arroredCell;
-    }
+
+    public void SetPresenter(InventoryPresenter presenter) => _presenter = presenter;
 }

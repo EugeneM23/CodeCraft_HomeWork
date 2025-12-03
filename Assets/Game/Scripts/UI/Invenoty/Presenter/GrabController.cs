@@ -2,11 +2,14 @@ using System.Collections.Generic;
 using Inventories;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class GrabController : MonoBehaviour
 {
-    [SerializeField] private InventoryPresenter _presenter;
+    private InventoryPresenter _startPresenter;
+    private InventoryPresenter _currentPresenter;
+
     [SerializeField] private RectTransform _canvasRect;
     [SerializeField] private InventoryItem _itemRect;
 
@@ -39,7 +42,10 @@ public class GrabController : MonoBehaviour
 
         if (cellView == null || cellView.Item == null) return;
 
-        _startMatrixPosition = _presenter.GetPosition(cellView.Item);
+        _startPresenter = cellView.Presenter;
+        _currentPresenter = cellView.Presenter;
+
+        _startMatrixPosition = _startPresenter.GetItemPosition(cellView.Item);
         _grabItem = cellView.Item;
         _matrixPosition = cellView.ItemMatrixPosition;
         _inventoryItem = cellView.InventoryItem;
@@ -47,7 +53,7 @@ public class GrabController : MonoBehaviour
         _inventoryItem = CreateInteractItem(_inventoryItem);
         _inventoryItem.EnableBackGround(false);
 
-        _presenter.RemoveItem(_grabItem);
+        _startPresenter.RemoveItem(_grabItem);
 
         RectTransformUtility.ScreenPointToLocalPointInRectangle(
             _canvasRect, Input.mousePosition, null, out Vector2 localPoint);
@@ -68,7 +74,7 @@ public class GrabController : MonoBehaviour
         cloneRect.anchorMax = sourceRect.anchorMax;
         cloneRect.pivot = sourceRect.pivot;
         cloneRect.sizeDelta = sourceRect.sizeDelta;
-        cloneRect.localScale = sourceRect.localScale;
+        cloneRect.localScale = sourceRect.localScale * 1.1f;
 
         // Позицию тоже копируем
         cloneRect.anchoredPosition = sourceRect.anchoredPosition;
@@ -90,12 +96,13 @@ public class GrabController : MonoBehaviour
             CellView currentCell = GetCellUnderMouse();
             if (currentCell != null)
             {
+                _currentPresenter = currentCell.Presenter;
                 Vector2Int currentPosition = currentCell.GridPosition;
-                _presenter.HighlightCells(_grabItem, currentPosition, _matrixPosition, currentCell);
+                _currentPresenter.HighlightCells(_grabItem, currentPosition, _matrixPosition, currentCell);
             }
             else
             {
-                _presenter.ClearHighlights();
+                _currentPresenter.ClearHighlights();
             }
         }
     }
@@ -110,30 +117,31 @@ public class GrabController : MonoBehaviour
 
             if (cellView != null)
             {
-                _presenter = cellView.GetComponentInParent<InventoryPresenter>();
+                _currentPresenter = cellView.Presenter;
 
                 Vector2Int targetPos = cellView.GridPosition - _matrixPosition;
 
                 Destroy(_inventoryItem.gameObject);
-                bool success = _presenter.AddItem(_grabItem, targetPos);
+                bool success = _currentPresenter.AddItem(_grabItem, targetPos);
 
                 if (success)
-                    _presenter.MoveItem(_grabItem, targetPos);
+                    _currentPresenter.MoveItem(_grabItem, targetPos);
                 else
-                    _presenter.AddItem(_grabItem, _startMatrixPosition);
+                    _startPresenter.AddItem(_grabItem, _startMatrixPosition);
 
                 _matrixPosition = Vector2Int.zero;
             }
             else
             {
                 Destroy(_inventoryItem.gameObject);
-                _presenter.AddItem(_grabItem, _startMatrixPosition);
+                _startPresenter.AddItem(_grabItem, _startMatrixPosition);
             }
 
             _grabItem = null;
         }
 
-        _presenter.ClearHighlights();
+        _startPresenter.ClearHighlights();
+        _currentPresenter.ClearHighlights();
     }
 
     private CellView GetCellUnderMouse()

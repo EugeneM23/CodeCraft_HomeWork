@@ -18,7 +18,7 @@ public class InventoryPresenter : MonoBehaviour
     private void Start()
     {
         _inventory = new Inventory(_columns, _rows);
-        _view.InitializeGrid(_columns, _rows);
+        _view.InitializeGrid(_columns, _rows, this);
 
         _inventory.AddItem(new Item(ItemID.AR_01.ToString(), 4, 2) { ItemID = ItemID.AR_01 });
         _inventory.AddItem(new Item(ItemID.AR_02.ToString(), 4, 2) { ItemID = ItemID.AR_02 });
@@ -30,7 +30,7 @@ public class InventoryPresenter : MonoBehaviour
     {
         Vector2Int[] cells = _inventory.GetPositions(item);
         _inventory.RemoveItem(item);
-        _view.RemoveItem(item, cells);
+        _view.RemoveItemFromGrid(item, cells);
     }
 
     public bool AddItem(Item item, Vector2Int startPosition)
@@ -134,8 +134,8 @@ public class InventoryPresenter : MonoBehaviour
         Vector2Int min = GetMinPosition(positions);
         Vector2Int max = GetMaxPosition(positions);
 
-        Vector2 size = CalculateItemSize(min, max);
-        Vector2 position = _view.GetCellPosition(min);
+        Vector2 size = GetViewItemSize(min, max);
+        Vector2 position = _view.GetCellRectPosition(min);
 
         InventoryItem container = _view.CreateItemContainer(item, size, position);
 
@@ -143,19 +143,19 @@ public class InventoryPresenter : MonoBehaviour
             container.SetIcon(data.Icon);
 
         foreach (Vector2Int pos in positions)
-            _view.SetCellData(pos, item, container, pos - min);
+            _view.SetCellData(pos, item, container, pos - min, this);
     }
 
     private void UpdateItemPosition(Item item, Vector2Int[] positions)
     {
         Vector2Int min = GetMinPosition(positions);
-        Vector2 position = _view.GetCellPosition(min);
+        Vector2 position = _view.GetCellRectPosition(min);
 
         InventoryItem container = _view.GetItemContainer(item);
         container.RectTransform.anchoredPosition = position;
 
         foreach (Vector2Int pos in positions)
-            _view.SetCellData(pos, item, container, pos - min);
+            _view.SetCellData(pos, item, container, pos - min, this);
     }
 
     private Vector2Int GetMinPosition(Vector2Int[] positions)
@@ -184,7 +184,7 @@ public class InventoryPresenter : MonoBehaviour
         return max;
     }
 
-    private Vector2 CalculateItemSize(Vector2Int min, Vector2Int max)
+    private Vector2 GetViewItemSize(Vector2Int min, Vector2Int max)
     {
         int cols = max.x - min.x + 1;
         int rows = max.y - min.y + 1;
@@ -195,8 +195,5 @@ public class InventoryPresenter : MonoBehaviour
         );
     }
 
-    public Vector2Int GetPosition(Item cellViewItem)
-    {
-        return _inventory.GetPositions(cellViewItem)[0];
-    }
+    public Vector2Int GetItemPosition(Item cellViewItem) => _inventory.GetPositions(cellViewItem)[0];
 }
