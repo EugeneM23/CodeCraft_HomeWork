@@ -10,8 +10,8 @@ public class InventoryView : MonoBehaviour
     [SerializeField] private Vector2 _cellSize = new(100f, 100f);
     [SerializeField] private Vector2 _spacing = new(5f, 5f);
 
+    private readonly Dictionary<Item, InventoryItem> _itemContainers = new();
     public CellView[,] Cells { get; private set; }
-    private Dictionary<Item, InventoryItem> _itemContainers = new();
 
     public Vector2 CellSize => _cellSize;
     public Vector2 Spacing => _spacing;
@@ -93,5 +93,24 @@ public class InventoryView : MonoBehaviour
                 Destroy(container.gameObject);
 
         _itemContainers.Clear();
+    }
+
+    public void RemoveItem(Item item, Vector2Int[] cellsPositions)
+    {
+        if (_itemContainers.ContainsKey(item))
+        {
+            InventoryItem container = _itemContainers[item];
+
+            foreach (Vector2Int position in cellsPositions)
+                ClearCell(position);
+
+            _itemContainers.Remove(item);
+            Destroy(container.gameObject);
+        }
+    }
+
+    public void AddItem(Item item, Vector2Int startPosition)
+    {
+        
     }
 }

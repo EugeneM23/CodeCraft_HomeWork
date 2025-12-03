@@ -48,8 +48,4 @@ public class UIDragWindow : MonoBehaviour, IPointerDownHandler, IDragHandler
         }
     }
 
-    public void OnPointerUp(PointerEventData eventData)
-    {
-        throw new System.NotImplementedException();
-    }
 }

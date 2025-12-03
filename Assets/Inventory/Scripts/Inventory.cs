@@ -93,7 +93,7 @@ namespace Inventories
 
             if (item.Size.x <= 0 || item.Size.y <= 0)
                 throw new ArgumentException();
-//
+            
             return CanAddItem(item, position.x, position.y);
         }
 
@@ -113,8 +113,8 @@ namespace Inventories
             if (item == null)
                 return false;
 
-            if (_items.Contains(item))
-                return false;
+            /*if (_items.Contains(item))
+                return false;*/
 
             if (!IsPositionValid(item.Size, posX, posY))
                 return false;

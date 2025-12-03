@@ -8,6 +8,7 @@ public class InventoryItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     [SerializeField] private Image _itemImage;
 
     public RectTransform RectTransform { get; private set; }
+    public Sprite Icon => _itemImage.sprite;
 
     private void Awake()
     {
