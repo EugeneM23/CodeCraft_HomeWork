@@ -5,6 +5,7 @@ using UnityEngine;
 public class BackPack : MonoBehaviour
 {
     [SerializeField] private InventoryPresenter _presenter;
+    private Item _item;
 
     private void Start()
     {
@@ -20,8 +21,16 @@ public class BackPack : MonoBehaviour
     [Button]
     public void AddItem()
     {
-        Item item = new Item(ItemID.AR_02.ToString(), 3, 2);
-        item.ItemID = ItemID.AR_02;
-        _presenter.AddItem(item);
+        _item = new Item(ItemID.AR_02.ToString(), 3, 2)
+        {
+            ItemID = ItemID.AR_02
+        };
+        _presenter.AddItem(_item);
+    }
+
+    [Button]
+    public void RemoveItem()
+    {
+        _presenter.RemoveItem(_item);
     }
 }

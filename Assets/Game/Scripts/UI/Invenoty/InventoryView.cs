@@ -110,4 +110,10 @@ public class InventoryView : MonoBehaviour
     {
         _inventoryItems[draggedInventoryItem.Item] = null;
     }
+
+    public void RemoveInventoryItem(Item item)
+    {
+        InventoryItem inventoryItem = _inventoryItems[item];
+        Destroy(inventoryItem.gameObject);
+    }
 }

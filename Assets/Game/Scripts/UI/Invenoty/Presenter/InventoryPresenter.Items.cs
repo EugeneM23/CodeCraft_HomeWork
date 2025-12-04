@@ -28,6 +28,14 @@ public partial class InventoryPresenter
         Vector2Int[] positions = _inventory.GetPositions(item);
         _inventory.RemoveItem(item);
         _view.ClearCells(positions);
+        _view.RemoveInventoryItem(item);
+    }
+
+    public void RemoveFromModelItem(Item item)
+    {
+        Vector2Int[] positions = _inventory.GetPositions(item);
+        _inventory.RemoveItem(item);
+        _view.ClearCells(positions);
     }
 
     private bool TryAddToInventory(Item item, Vector2Int startPosition)

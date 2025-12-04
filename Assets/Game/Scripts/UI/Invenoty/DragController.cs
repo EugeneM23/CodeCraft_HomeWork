@@ -47,7 +47,7 @@ public class DragController : MonoBehaviour
         if (cell == null || cell.InventoryItem == null) return;
 
         InitializeDragState(cell);
-        _currentPresenter.RemoveItem(_draggedInventoryItem.Item);
+        _currentPresenter.RemoveFromModelItem(_draggedInventoryItem.Item);
         _draggedInventoryItem.EnableDrag(true);
     }
 
