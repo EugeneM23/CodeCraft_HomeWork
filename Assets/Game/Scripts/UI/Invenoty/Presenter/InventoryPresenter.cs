@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Inventories;
@@ -13,29 +14,23 @@ public class InventoryPresenter : MonoBehaviour
     private Inventory _inventory;
 
     private readonly List<CellView> _highlightedCells = new();
-    private Item _testItem;
 
-    private void Start()
+    private void Awake()
     {
         _inventory = new Inventory(_columns, _rows);
         _view.InitializeGrid(_columns, _rows, this);
 
-        _inventory.AddItem(new Item(ItemID.AR_01.ToString(), 4, 2) { ItemID = ItemID.AR_01 });
-        _inventory.AddItem(new Item(ItemID.AR_02.ToString(), 4, 2) { ItemID = ItemID.AR_02 });
-
         UpdateView();
     }
 
-    public void RemoveItem(Item item)
+    public bool AddItem(Item item, Vector2Int startPosition = default)
     {
-        Vector2Int[] cells = _inventory.GetPositions(item);
-        _inventory.RemoveItem(item);
-        _view.RemoveItemFromGrid(item, cells);
-    }
+        bool success;
+        if (startPosition == default) 
+            success =_inventory.AddItem(item);
+        else
+            success =_inventory.AddItem(item, startPosition);
 
-    public bool AddItem(Item item, Vector2Int startPosition)
-    {
-        bool success = _inventory.AddItem(item, startPosition);
         if (!success) return false;
 
         Vector2Int[] positions = _inventory.GetPositions(item);
@@ -44,25 +39,20 @@ public class InventoryPresenter : MonoBehaviour
         return true;
     }
 
+    private bool CanAddItem(Item item, Vector2Int position) => _inventory.CanAddItem(item, position);
+
+    public void RemoveItem(Item item)
+    {
+        Vector2Int[] cells = _inventory.GetPositions(item);
+        _inventory.RemoveItem(item);
+        _view.RemoveItemFromGrid(item, cells);
+    }
+
     [Button]
     public void Reorganize()
     {
         _inventory.ReorganizeSpace();
         UpdateView();
-    }
-
-    [Button]
-    public void AddTestItem()
-    {
-        _testItem = new Item(ItemID.Ring.ToString(), 1, 1) { ItemID = ItemID.Ring };
-        _inventory.AddItem(_testItem);
-        CreateViewItem(_testItem, _inventory.GetPositions(_testItem));
-    }
-
-    [Button]
-    public void RemoveTestItem()
-    {
-        RemoveItem(_testItem);
     }
 
     public void ClearHighlights()
@@ -102,28 +92,23 @@ public class InventoryPresenter : MonoBehaviour
             cell.Highlight(isCorrect);
     }
 
-    private bool CanAddItem(Item item, Vector2Int position)
+    public bool MoveItem(Item item, Vector2Int targetPos)
     {
-        return _inventory.CanAddItem(item, position);
-    }
-
-    public bool MoveItem(Item draggedItem, Vector2Int targetPos)
-    {
-        Vector2Int[] oldPositions = _inventory.GetPositions(draggedItem);
+        Vector2Int[] oldPositions = _inventory.GetPositions(item);
 
         foreach (Vector2Int pos in oldPositions)
             _view.ClearCell(pos);
 
-        bool success = _inventory.MoveItem(draggedItem, targetPos);
+        bool success = _inventory.MoveItem(item, targetPos);
 
-        UpdateItemPosition(draggedItem, _inventory.GetPositions(draggedItem));
+        UpdateViewItemPosition(item, _inventory.GetPositions(item));
 
         return success;
     }
 
     private void UpdateView()
     {
-        _view.Clear();
+        _view.ClearGrid();
 
         foreach (Item item in _inventory)
             CreateViewItem(item, _inventory.GetPositions(item));
@@ -133,29 +118,28 @@ public class InventoryPresenter : MonoBehaviour
     {
         Vector2Int min = GetMinPosition(positions);
         Vector2Int max = GetMaxPosition(positions);
-
         Vector2 size = GetViewItemSize(min, max);
         Vector2 position = _view.GetCellRectPosition(min);
 
-        InventoryItem container = _view.CreateItemContainer(item, size, position);
+        InventoryItem inventoryItem = _view.CreateInventoryItem(item, size, position);
 
         if (_itemCatalog.GetItemData(item.ItemID, out var data))
-            container.SetIcon(data.Icon);
+            inventoryItem.SetIcon(data.Icon);
 
         foreach (Vector2Int pos in positions)
-            _view.SetCellData(pos, item, container, pos - min, this);
+            _view.SetCellData(pos, item, inventoryItem, pos - min);
     }
 
-    private void UpdateItemPosition(Item item, Vector2Int[] positions)
+    private void UpdateViewItemPosition(Item item, Vector2Int[] positions)
     {
         Vector2Int min = GetMinPosition(positions);
         Vector2 position = _view.GetCellRectPosition(min);
 
-        InventoryItem container = _view.GetItemContainer(item);
-        container.RectTransform.anchoredPosition = position;
+        InventoryItem inventoryItem = _view.GetInventoryItem(item);
+        inventoryItem.RectTransform.anchoredPosition = position;
 
         foreach (Vector2Int pos in positions)
-            _view.SetCellData(pos, item, container, pos - min, this);
+            _view.SetCellData(pos, item, inventoryItem, pos - min);
     }
 
     private Vector2Int GetMinPosition(Vector2Int[] positions)
@@ -190,8 +174,8 @@ public class InventoryPresenter : MonoBehaviour
         int rows = max.y - min.y + 1;
 
         return new Vector2(
-            cols * _view.CellSize.x + (cols - 1) * _view.Spacing.x,
-            rows * _view.CellSize.y + (rows - 1) * _view.Spacing.y
+            cols * _view.CellSize.x + (cols - 1),
+            rows * _view.CellSize.y + (rows - 1)
         );
     }
 

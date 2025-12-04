@@ -7,39 +7,42 @@ using UnityEngine.UI;
 public class CellView : MonoBehaviour
 {
     [SerializeField] private Image _backGround;
-    [SerializeField] private Sprite _emptyCell;
-    [SerializeField] private Sprite _occupiedCell;
-    [SerializeField] private Sprite _arroredCell;
+    [SerializeField] private Sprite _emptySprite;
+    [SerializeField] private Sprite _freeSprite;
+    [SerializeField] private Sprite _errorSprite;
 
+    public Vector2Int _gridPosition;
     private InventoryPresenter _presenter;
-
-    public Vector2Int ItemMatrixPosition;
-    public Vector2Int GridPosition;
-    public Item Item { get; private set; }
-    public InventoryItem InventoryItem { get; private set; }
+    public Vector2Int _itemMatrixPosition;
+    private Item _item;
+    private InventoryItem _inventoryItem;
+    public Vector2Int ItemMatrixPosition => _itemMatrixPosition;
+    public Vector2Int GridPosition => _gridPosition;
+    public InventoryItem InventoryItem => _inventoryItem;
     public InventoryPresenter Presenter => _presenter;
+    public Item Item => _item;
 
-    public void SetItem(Item item, InventoryItem inventoryItem)
+    public void Construct(InventoryPresenter presenter, Vector2Int gridPosition)
     {
-        Item = item;
-        InventoryItem = inventoryItem;
+        _presenter = presenter;
+        _gridPosition = gridPosition;
+    }
+
+    public void Construct(Item item, InventoryItem inventoryItem, Vector2Int matrixPos)
+    {
+        _item = item;
+        _inventoryItem = inventoryItem;
+        _itemMatrixPosition = matrixPos;
     }
 
     public void Clear()
     {
-        Item = null;
-        InventoryItem = null;
+        _item = null;
+        _inventoryItem = null;
+        _itemMatrixPosition = default;
     }
 
-    public void Highlight(bool isCorrect)
-    {
-        _backGround.sprite = isCorrect ? _occupiedCell : _arroredCell;
-    }
+    public void Highlight(bool isCorrect) => _backGround.sprite = isCorrect ? _freeSprite : _errorSprite;
 
-    public void UnHighlight()
-    {
-        _backGround.sprite = _emptyCell;
-    }
-
-    public void SetPresenter(InventoryPresenter presenter) => _presenter = presenter;
+    public void UnHighlight() => _backGround.sprite = _emptySprite;
 }
