@@ -1,3 +1,4 @@
+using System;
 using Inventories;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -12,8 +13,16 @@ public class InventoryItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     public Sprite Icon => _itemImage.sprite;
     public Item Item => _item;
     private Item _item;
+    private bool _isDragEnable;
+    private Vector3 _dragOffset;
 
     private void Awake() => RectTransform = GetComponent<RectTransform>();
+
+    private void Update()
+    {
+        if (_isDragEnable)
+            transform.position = Input.mousePosition + _dragOffset;
+    }
 
     public void SetItem(Item item) => _item = item;
 
@@ -33,5 +42,12 @@ public class InventoryItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
         Color color = _background.color;
         color.a = 0f;
         _background.color = color;
+    }
+
+    public void EnableDrag(bool isEnable, Vector2 offset = default)
+    {
+        _isDragEnable = isEnable;
+
+        _dragOffset = transform.position - Input.mousePosition;
     }
 }

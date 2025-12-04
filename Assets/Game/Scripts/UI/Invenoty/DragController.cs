@@ -41,6 +41,9 @@ public class DragController : MonoBehaviour
 
         _itemMatrixPosition = cell.ItemMatrixPosition;
         _draggedInventoryItem = cell.InventoryItem;
+
+        _draggedInventoryItem.EnableDrag(true);
+
         _startPosition = _currentPresenter.GetItemPosition(cell.Item);
 
 
@@ -55,28 +58,27 @@ public class DragController : MonoBehaviour
 
     private void UpdateDrag()
     {
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(
-            _parent, Input.mousePosition, null, out Vector2 localPoint);
-
-        _draggedInventoryItem.RectTransform.anchoredPosition = localPoint + _dragOffset;
-
         CellView cell = GetCellUnderMouse();
 
         if (cell != null)
         {
-            _currentPresenter = cell.Presenter;
+            if (cell.Presenter != _currentPresenter)
+            {
+                _currentPresenter = cell.Presenter;
+                _draggedInventoryItem.transform.parent = _currentPresenter.transform;
+            }
 
             _currentPresenter.HighlightCells(_draggedInventoryItem.Item, cell.GridPosition, _itemMatrixPosition, cell);
         }
         else
-        {
             _currentPresenter.ClearHighlights();
-        }
     }
 
     private void EndDrag()
     {
         if (!_isDragging) return;
+
+        _draggedInventoryItem.EnableDrag(false);
 
         _isDragging = false;
         _draggedInventoryItem.EnableBackGround(true);
