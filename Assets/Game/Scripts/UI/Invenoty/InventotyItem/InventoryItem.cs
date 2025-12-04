@@ -28,7 +28,6 @@ public class InventoryItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
 
     public void SetIcon(Sprite sprite) => _itemImage.sprite = sprite;
 
-    public void EnableBackGround(bool enable) => _background.enabled = enable;
 
     public void OnPointerEnter(PointerEventData eventData)
     {
@@ -47,7 +46,7 @@ public class InventoryItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     public void EnableDrag(bool isEnable, Vector2 offset = default)
     {
         _isDragEnable = isEnable;
-
+        _background.enabled = isEnable;
         _dragOffset = transform.position - Input.mousePosition;
     }
 }

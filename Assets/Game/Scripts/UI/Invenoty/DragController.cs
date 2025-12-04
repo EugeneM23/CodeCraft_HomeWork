@@ -14,8 +14,7 @@ public class DragController : MonoBehaviour
 
     private InventoryItem _draggedInventoryItem;
     private Vector2Int _itemMatrixPosition;
-    private Vector2Int _startPosition;
-    private Vector2 _dragOffset;
+    private Vector2Int _startPositioOnGrid;
     private bool _isDragging;
 
     private void Start()
@@ -37,23 +36,18 @@ public class DragController : MonoBehaviour
         if (cell == null || cell.Item == null) return;
 
         _isDragging = true;
-        _startPresenter = _currentPresenter = cell.Presenter;
 
+        //Save start state
         _itemMatrixPosition = cell.ItemMatrixPosition;
+        _startPresenter = cell.Presenter;
+        _currentPresenter = cell.Presenter;
         _draggedInventoryItem = cell.InventoryItem;
+        _startPositioOnGrid = _currentPresenter.GetItemPosition(cell.Item);
 
-        _draggedInventoryItem.EnableDrag(true);
-
-        _startPosition = _currentPresenter.GetItemPosition(cell.Item);
-
-
-        _draggedInventoryItem.EnableBackGround(false);
         _currentPresenter.RemoveItemFromInventory(cell.Item);
 
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(
-            _parent, Input.mousePosition, null, out Vector2 localPoint);
-
-        _dragOffset = _draggedInventoryItem.RectTransform.anchoredPosition - localPoint;
+        _draggedInventoryItem = cell.InventoryItem;
+        _draggedInventoryItem.EnableDrag(true);
     }
 
     private void UpdateDrag()
@@ -78,20 +72,17 @@ public class DragController : MonoBehaviour
     {
         if (!_isDragging) return;
 
-        _draggedInventoryItem.EnableDrag(false);
-
-        _isDragging = false;
-        _draggedInventoryItem.EnableBackGround(true);
+        _draggedInventoryItem.EnableDrag(_isDragging = false);
 
         CellView cell = GetCellUnderMouse();
-        Vector2Int targetPosition = cell != null ? cell.GridPosition - _itemMatrixPosition : _startPosition;
+        Vector2Int targetPosition = cell != null ? cell.GridPosition - _itemMatrixPosition : _startPositioOnGrid;
         InventoryPresenter targetPresenter = cell != null ? cell.Presenter : _startPresenter;
 
         bool success =
             targetPresenter.AddItemToInventory(_draggedInventoryItem.Item, _draggedInventoryItem, targetPosition);
 
         if (!success)
-            _startPresenter.AddItemToInventory(_draggedInventoryItem.Item, _draggedInventoryItem, _startPosition);
+            _startPresenter.AddItemToInventory(_draggedInventoryItem.Item, _draggedInventoryItem, _startPositioOnGrid);
 
         _startPresenter.ClearHighlights();
         _currentPresenter.ClearHighlights();
