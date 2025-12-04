@@ -41,6 +41,7 @@ public class InventoryView : MonoBehaviour
     public InventoryItem CreateInventoryItem(Item item, Vector2 size, Vector2 position)
     {
         InventoryItem container = Instantiate(_itemContainerPrefab, _gridContainer);
+        container.SetItem(item);
         RectTransform rect = container.RectTransform;
 
         rect.localScale = Vector3.one;
@@ -52,15 +53,17 @@ public class InventoryView : MonoBehaviour
         return container;
     }
 
-    public void CreateDragItem(Item item, Vector2 position, Vector2 size)
-    {
-        
-    }
-
     public void SetCellData(Vector2Int pos, Item item, InventoryItem container, Vector2Int matrixPos)
     {
         CellView cell = Cells[pos.x, pos.y];
         cell.Construct(item, container, matrixPos);
+    }
+
+    public void ReparentInventoryItem(InventoryItem inventoryItem, Vector2 position)
+    {
+        inventoryItem.RectTransform.SetParent(_gridContainer, false);
+        inventoryItem.RectTransform.anchoredPosition = position;
+        inventoryItem.RectTransform.localScale = Vector3.one;
     }
 
     public InventoryItem GetInventoryItem(Item item) => _inventoryItems[item];
@@ -86,6 +89,12 @@ public class InventoryView : MonoBehaviour
 
     public void ClearCell(Vector2Int pos) => Cells[pos.x, pos.y].Clear();
 
+    public void ClearCell(Vector2Int[] positions)
+    {
+        foreach (var pos in positions)
+            ClearCell(pos);
+    }
+
     public void RemoveItemFromGrid(Item item, Vector2Int[] cellsPositions)
     {
         if (_inventoryItems.ContainsKey(item))
@@ -99,4 +108,6 @@ public class InventoryView : MonoBehaviour
             Destroy(container.gameObject);
         }
     }
+
+    
 }

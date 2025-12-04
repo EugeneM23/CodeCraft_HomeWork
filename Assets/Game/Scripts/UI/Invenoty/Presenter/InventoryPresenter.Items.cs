@@ -19,6 +19,32 @@ public partial class InventoryPresenter
         return true;
     }
 
+    public bool AddItemToInventory(Item item, InventoryItem inventoryItem, Vector2Int startPosition = default)
+    {
+        bool success = startPosition == default
+            ? _inventory.AddItem(item)
+            : _inventory.AddItem(item, startPosition);
+
+        if (!success) return false;
+
+        Vector2Int[] positions = _inventory.GetPositions(item);
+        Vector2Int min = GetMinPosition(positions);
+        Vector2 position = _view.GetCellRectPosition(min);
+
+        _view.ReparentInventoryItem(inventoryItem, position);
+        FillCellsData(item, inventoryItem, positions);
+
+        return true;
+    }
+
+    private void FillCellsData(Item item, InventoryItem inventoryItem, Vector2Int[] positions)
+    {
+        Vector2Int min = GetMinPosition(positions);
+
+        foreach (Vector2Int pos in positions)
+            _view.SetCellData(pos, item, inventoryItem, pos - min);
+    }
+
     public void RemoveItem(Item item)
     {
         Vector2Int[] cells = _inventory.GetPositions(item);
@@ -28,6 +54,8 @@ public partial class InventoryPresenter
 
     public void RemoveItemFromInventory(Item item)
     {
+        Vector2Int[] positions = _inventory.GetPositions(item);
+        _view.ClearCell(positions);
         _inventory.RemoveItem(item);
     }
 

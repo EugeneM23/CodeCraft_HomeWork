@@ -11,8 +11,8 @@ public class CellView : MonoBehaviour
     [SerializeField] private Sprite _freeSprite;
     [SerializeField] private Sprite _errorSprite;
 
-    public Vector2Int _gridPosition;
     private InventoryPresenter _presenter;
+    public Vector2Int _gridPosition;
     public Vector2Int _itemMatrixPosition;
     private Item _item;
     private InventoryItem _inventoryItem;

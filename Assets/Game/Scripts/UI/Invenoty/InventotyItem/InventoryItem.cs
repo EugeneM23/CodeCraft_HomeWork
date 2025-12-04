@@ -1,3 +1,4 @@
+using Inventories;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -9,21 +10,16 @@ public class InventoryItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
 
     public RectTransform RectTransform { get; private set; }
     public Sprite Icon => _itemImage.sprite;
+    public Item Item => _item;
+    private Item _item;
 
-    private void Awake()
-    {
-        RectTransform = GetComponent<RectTransform>();
-    }
+    private void Awake() => RectTransform = GetComponent<RectTransform>();
 
-    public void SetIcon(Sprite sprite)
-    {
-        _itemImage.sprite = sprite;
-    }
+    public void SetItem(Item item) => _item = item;
 
-    public void EnableBackGround(bool enable)
-    {
-        _background.enabled = enable;
-    }
+    public void SetIcon(Sprite sprite) => _itemImage.sprite = sprite;
+
+    public void EnableBackGround(bool enable) => _background.enabled = enable;
 
     public void OnPointerEnter(PointerEventData eventData)
     {
