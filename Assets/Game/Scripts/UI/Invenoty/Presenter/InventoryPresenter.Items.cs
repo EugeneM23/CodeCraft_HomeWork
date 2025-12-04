@@ -1,0 +1,42 @@
+using Inventories;
+using UnityEngine;
+
+public partial class InventoryPresenter
+{
+    public bool AddItem(Item item, Vector2Int startPosition = default)
+    {
+        bool success;
+        if (startPosition == default)
+            success = _inventory.AddItem(item);
+        else
+            success = _inventory.AddItem(item, startPosition);
+
+        if (!success) return false;
+
+        Vector2Int[] positions = _inventory.GetPositions(item);
+        CreateViewItem(item, positions);
+
+        return true;
+    }
+
+    public void RemoveItem(Item item)
+    {
+        Vector2Int[] cells = _inventory.GetPositions(item);
+        _inventory.RemoveItem(item);
+        _view.RemoveItemFromGrid(item, cells);
+    }
+
+    public bool MoveItem(Item item, Vector2Int targetPos)
+    {
+        Vector2Int[] oldPositions = _inventory.GetPositions(item);
+
+        foreach (Vector2Int pos in oldPositions)
+            _view.ClearCell(pos);
+
+        bool success = _inventory.MoveItem(item, targetPos);
+
+        UpdateViewItemPosition(item, _inventory.GetPositions(item));
+
+        return success;
+    }
+}
