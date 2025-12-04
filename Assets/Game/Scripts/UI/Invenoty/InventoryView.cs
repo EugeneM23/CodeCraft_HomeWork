@@ -52,6 +52,11 @@ public class InventoryView : MonoBehaviour
         return container;
     }
 
+    public void CreateDragItem(Item item, Vector2 position, Vector2 size)
+    {
+        
+    }
+
     public void SetCellData(Vector2Int pos, Item item, InventoryItem container, Vector2Int matrixPos)
     {
         CellView cell = Cells[pos.x, pos.y];

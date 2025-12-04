@@ -26,6 +26,11 @@ public partial class InventoryPresenter
         _view.RemoveItemFromGrid(item, cells);
     }
 
+    public void RemoveItemFromInventory(Item item)
+    {
+        _inventory.RemoveItem(item);
+    }
+
     public bool MoveItem(Item item, Vector2Int targetPos)
     {
         Vector2Int[] oldPositions = _inventory.GetPositions(item);

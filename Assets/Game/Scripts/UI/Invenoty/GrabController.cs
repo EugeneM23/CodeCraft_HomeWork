@@ -21,7 +21,6 @@ public class GrabController : MonoBehaviour
     private Vector2Int _startMatrixPosition;
     private InventoryItem _inventoryItem;
     private Vector2 _dragOffset;
-    private Vector2 _startPosition;
 
     private void Start()
     {
@@ -50,20 +49,21 @@ public class GrabController : MonoBehaviour
         _matrixPosition = cellView.ItemMatrixPosition;
         _inventoryItem = cellView.InventoryItem;
 
-        _inventoryItem = CreateInteractItem(_inventoryItem);
+        //_inventoryItem = CreateInteractItem(_inventoryItem);
         _inventoryItem.EnableBackGround(false);
 
-        _startPresenter.RemoveItem(_grabItem);
+        _startPresenter.RemoveItemFromInventory(_grabItem);
 
         RectTransformUtility.ScreenPointToLocalPointInRectangle(
             _canvasRect, Input.mousePosition, null, out Vector2 localPoint);
 
         _dragOffset = _inventoryItem.RectTransform.anchoredPosition - localPoint;
-        _startPosition = _inventoryItem.RectTransform.anchoredPosition;
     }
 
     private InventoryItem CreateInteractItem(InventoryItem inventoryItem)
     {
+        //_currentPresenter.CreateDragItem(_itemRect, inventoryItem.RectTransform.parent);
+        
         InventoryItem clone = Instantiate(_itemRect, inventoryItem.RectTransform.parent);
 
         RectTransform cloneRect = clone.GetComponent<RectTransform>();
