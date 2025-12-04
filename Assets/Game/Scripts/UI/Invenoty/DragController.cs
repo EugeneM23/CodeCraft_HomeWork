@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Game.Scripts.UI.Equipment;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -8,15 +7,10 @@ public class DragController : MonoBehaviour
 {
     [SerializeField] private RectTransform _parent;
 
-    private InventoryPresenter _startPresenter;
     private InventoryPresenter _currentPresenter;
-
     private EventSystem _eventSystem;
     private GraphicRaycaster _raycaster;
-
     private InventoryItem _draggedInventoryItem;
-    private Vector2Int _itemMatrixPosition;
-    private Vector2Int _startPositionOnGrid;
     private bool _isDragging;
 
     private void Start()
@@ -35,14 +29,6 @@ public class DragController : MonoBehaviour
     private void StartDrag()
     {
         CellView cell = GetCellUnderMouse();
-        EquipmentSlot slot = GetEquipmentCellUnderMouse();
-
-        if (slot != null && slot.CurrentItem != null)
-        {
-            _draggedInventoryItem = slot.CurrentItem;
-            _draggedInventoryItem.EnableDrag(true);
-            _isDragging = true;
-        }
 
         if (cell == null || cell.InventoryItem == null) return;
 
@@ -61,13 +47,13 @@ public class DragController : MonoBehaviour
             _currentPresenter.HighlightCells(
                 _draggedInventoryItem.Item,
                 cell.GridPosition,
-                _itemMatrixPosition,
+                _draggedInventoryItem.GetSavedMatrixPosition(),
                 cell
             );
         }
         else
         {
-            _currentPresenter.ClearHighlights();
+            _currentPresenter?.ClearHighlights();
         }
     }
 
@@ -77,15 +63,6 @@ public class DragController : MonoBehaviour
 
         _draggedInventoryItem.EnableDrag(false);
         _isDragging = false;
-
-        EquipmentSlot slot = GetEquipmentCellUnderMouse();
-
-        if (slot != null && _draggedInventoryItem.Item.ItemTipe == slot.ItemTipe)
-        {
-            slot.AddItem(_draggedInventoryItem);
-            _currentPresenter.RemoveFromViewItem(_draggedInventoryItem);
-            return;
-        }
 
         CellView cell = GetCellUnderMouse();
         TryPlaceItem(cell);
@@ -97,11 +74,15 @@ public class DragController : MonoBehaviour
     private void InitializeDragState(CellView cell)
     {
         _isDragging = true;
-        _itemMatrixPosition = cell.ItemMatrixPosition;
-        _startPresenter = cell.Presenter;
         _currentPresenter = cell.Presenter;
         _draggedInventoryItem = cell.InventoryItem;
-        _startPositionOnGrid = _currentPresenter.GetItemPosition(_draggedInventoryItem.Item);
+        
+        _draggedInventoryItem.SaveState(
+            _draggedInventoryItem.transform.parent,
+            _draggedInventoryItem.transform.position,
+            _currentPresenter.GetItemPosition(_draggedInventoryItem.Item),
+            cell.ItemMatrixPosition
+        );
     }
 
     private void UpdateCurrentPresenter(CellView cell)
@@ -120,13 +101,15 @@ public class DragController : MonoBehaviour
 
         if (targetCell != null)
         {
-            targetPosition = targetCell.GridPosition - _itemMatrixPosition;
+            targetPosition = targetCell.GridPosition - _draggedInventoryItem.GetSavedMatrixPosition();
             targetPresenter = targetCell.Presenter;
         }
         else
         {
-            targetPosition = _startPositionOnGrid;
-            targetPresenter = _startPresenter;
+            Transform savedParent = _draggedInventoryItem.GetSavedParent();
+            targetPresenter = savedParent?.GetComponentInParent<InventoryPresenter>();
+            if (targetPresenter == null) return;
+            targetPosition = _draggedInventoryItem.GetSavedGridPosition();
         }
 
         bool placed = targetPresenter.MoveItem(
@@ -137,23 +120,34 @@ public class DragController : MonoBehaviour
 
         if (!placed)
         {
-            _startPresenter.MoveItem(
+            _draggedInventoryItem.RestoreState();
+            Transform savedParent = _draggedInventoryItem.GetSavedParent();
+            InventoryPresenter savedPresenter = savedParent?.GetComponentInParent<InventoryPresenter>();
+            savedPresenter?.MoveItem(
                 _draggedInventoryItem.Item,
                 _draggedInventoryItem,
-                _startPositionOnGrid
+                _draggedInventoryItem.GetSavedGridPosition()
             );
         }
         else
         {
-            _startPresenter.RemoveFromViewItem(_draggedInventoryItem);
-            _currentPresenter.AddViewItemToView(_draggedInventoryItem);
+            _draggedInventoryItem.ClearSavedState();
+            Transform savedParent = _draggedInventoryItem.GetSavedParent();
+            InventoryPresenter savedPresenter = savedParent?.GetComponentInParent<InventoryPresenter>();
+            
+            if (savedPresenter != null && savedPresenter != targetPresenter)
+            {
+                savedPresenter.RemoveFromViewItem(_draggedInventoryItem);
+                targetPresenter.AddViewItemToView(_draggedInventoryItem);
+            }
         }
     }
 
     private void ClearAllHighlights()
     {
-        _startPresenter.ClearHighlights();
-        _currentPresenter.ClearHighlights();
+        _currentPresenter?.ClearHighlights();
+        Transform savedParent = _draggedInventoryItem?.GetSavedParent();
+        savedParent?.GetComponentInParent<InventoryPresenter>()?.ClearHighlights();
     }
 
     private CellView GetCellUnderMouse()
@@ -166,21 +160,6 @@ public class DragController : MonoBehaviour
         {
             if (result.gameObject.TryGetComponent(out CellView cell))
                 return cell;
-        }
-
-        return null;
-    }
-
-    private EquipmentSlot GetEquipmentCellUnderMouse()
-    {
-        PointerEventData pointerData = new(_eventSystem) { position = Input.mousePosition };
-        List<RaycastResult> results = new();
-        _raycaster.Raycast(pointerData, results);
-
-        foreach (RaycastResult result in results)
-        {
-            if (result.gameObject.TryGetComponent(out EquipmentSlot slot))
-                return slot;
         }
 
         return null;
