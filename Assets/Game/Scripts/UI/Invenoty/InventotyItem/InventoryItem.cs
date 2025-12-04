@@ -10,7 +10,6 @@ public class InventoryItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     [SerializeField] private Image _itemImage;
 
     public RectTransform RectTransform { get; private set; }
-    public Sprite Icon => _itemImage.sprite;
     public Item Item => _item;
     private Item _item;
     private bool _isDragEnable;
@@ -28,7 +27,6 @@ public class InventoryItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
 
     public void SetIcon(Sprite sprite) => _itemImage.sprite = sprite;
 
-
     public void OnPointerEnter(PointerEventData eventData)
     {
         Color color = _background.color;
@@ -45,8 +43,10 @@ public class InventoryItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
 
     public void EnableDrag(bool isEnable, Vector2 offset = default)
     {
+        _background.enabled = !isEnable;
+
+        transform.SetAsLastSibling();
         _isDragEnable = isEnable;
-        _background.enabled = isEnable;
         _dragOffset = transform.position - Input.mousePosition;
     }
 }

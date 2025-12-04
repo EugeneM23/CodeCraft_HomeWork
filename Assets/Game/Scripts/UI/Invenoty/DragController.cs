@@ -14,7 +14,7 @@ public class DragController : MonoBehaviour
 
     private InventoryItem _draggedInventoryItem;
     private Vector2Int _itemMatrixPosition;
-    private Vector2Int _startPositioOnGrid;
+    private Vector2Int _startPositionOnGrid;
     private bool _isDragging;
 
     private void Start()
@@ -35,20 +35,9 @@ public class DragController : MonoBehaviour
         CellView cell = GetCellUnderMouse();
         if (cell == null || cell.InventoryItem == null) return;
 
-        SetStartState(cell);
-
-        _currentPresenter.RemoveItemFromInventory(_draggedInventoryItem.Item);
+        InitializeDragState(cell);
+        _currentPresenter.RemoveItem(_draggedInventoryItem.Item);
         _draggedInventoryItem.EnableDrag(true);
-    }
-
-    private void SetStartState(CellView cell)
-    {
-        _isDragging = true;
-        _itemMatrixPosition = cell.ItemMatrixPosition;
-        _startPresenter = cell.Presenter;
-        _currentPresenter = cell.Presenter;
-        _draggedInventoryItem = cell.InventoryItem;
-        _startPositioOnGrid = _currentPresenter.GetItemPosition(_draggedInventoryItem.Item);
     }
 
     private void UpdateDrag()
@@ -57,37 +46,94 @@ public class DragController : MonoBehaviour
 
         if (cell != null)
         {
-            if (cell.Presenter != _currentPresenter)
-            {
-                _currentPresenter = cell.Presenter;
-                _draggedInventoryItem.transform.parent = _currentPresenter.transform;
-            }
-
-            _currentPresenter.HighlightCells(_draggedInventoryItem.Item, cell.GridPosition, _itemMatrixPosition, cell);
+            UpdateCurrentPresenter(cell);
+            _currentPresenter.HighlightCells(
+                _draggedInventoryItem.Item,
+                cell.GridPosition,
+                _itemMatrixPosition,
+                cell
+            );
         }
         else
+        {
             _currentPresenter.ClearHighlights();
+        }
     }
 
     private void EndDrag()
     {
         if (!_isDragging) return;
 
-        _draggedInventoryItem.EnableDrag(_isDragging = false);
+        _draggedInventoryItem.EnableDrag(false);
+        _isDragging = false;
 
         CellView cell = GetCellUnderMouse();
-        Vector2Int targetPosition = cell != null ? cell.GridPosition - _itemMatrixPosition : _startPositioOnGrid;
-        InventoryPresenter targetPresenter = cell != null ? cell.Presenter : _startPresenter;
+        TryPlaceItem(cell);
 
-        bool success =
-            targetPresenter.AddItemToInventory(_draggedInventoryItem.Item, _draggedInventoryItem, targetPosition);
+        ClearAllHighlights();
+        _draggedInventoryItem = null;
+    }
 
-        if (!success)
-            _startPresenter.AddItemToInventory(_draggedInventoryItem.Item, _draggedInventoryItem, _startPositioOnGrid);
+    private void InitializeDragState(CellView cell)
+    {
+        _isDragging = true;
+        _itemMatrixPosition = cell.ItemMatrixPosition;
+        _startPresenter = cell.Presenter;
+        _currentPresenter = cell.Presenter;
+        _draggedInventoryItem = cell.InventoryItem;
+        _startPositionOnGrid = _currentPresenter.GetItemPosition(_draggedInventoryItem.Item);
+    }
 
+    private void UpdateCurrentPresenter(CellView cell)
+    {
+        if (cell.Presenter != _currentPresenter)
+        {
+            _currentPresenter = cell.Presenter;
+            _draggedInventoryItem.transform.SetParent(_currentPresenter.transform);
+        }
+    }
+
+    private void TryPlaceItem(CellView targetCell)
+    {
+        Vector2Int targetPosition;
+        InventoryPresenter targetPresenter;
+
+        if (targetCell != null)
+        {
+            targetPosition = targetCell.GridPosition - _itemMatrixPosition;
+            targetPresenter = targetCell.Presenter;
+        }
+        else
+        {
+            targetPosition = _startPositionOnGrid;
+            targetPresenter = _startPresenter;
+        }
+
+        bool placed = targetPresenter.MoveItem(
+            _draggedInventoryItem.Item,
+            _draggedInventoryItem,
+            targetPosition
+        );
+
+        if (!placed)
+        {
+            _startPresenter.MoveItem(
+                _draggedInventoryItem.Item,
+                _draggedInventoryItem,
+                _startPositionOnGrid
+            );
+        }
+        else
+        {
+            _startPresenter.RemoveFromViewItem(_draggedInventoryItem);
+            _currentPresenter.AddViewItemToView(_draggedInventoryItem);
+        }
+    }
+
+    private void ClearAllHighlights()
+    {
         _startPresenter.ClearHighlights();
         _currentPresenter.ClearHighlights();
-        _draggedInventoryItem = null;
     }
 
     private CellView GetCellUnderMouse()
@@ -96,9 +142,11 @@ public class DragController : MonoBehaviour
         List<RaycastResult> results = new();
         _raycaster.Raycast(pointerData, results);
 
-        foreach (var result in results)
+        foreach (RaycastResult result in results)
+        {
             if (result.gameObject.TryGetComponent(out CellView cell))
                 return cell;
+        }
 
         return null;
     }

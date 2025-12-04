@@ -8,59 +8,60 @@ public partial class InventoryPresenter
         _view.ClearGrid();
 
         foreach (Item item in _inventory)
-            CreateViewItem(item, _inventory.GetPositions(item));
+        {
+            Vector2Int[] positions = _inventory.GetPositions(item);
+            CreateViewItem(item, positions);
+        }
     }
 
     private void CreateViewItem(Item item, Vector2Int[] positions)
     {
-        Vector2Int min = GetMinPosition(positions);
-        Vector2Int max = GetMaxPosition(positions);
-        Vector2 size = GetViewItemSize(min, max);
-        Vector2 position = _view.GetCellRectPosition(min);
-
-        InventoryItem inventoryItem = _view.CreateInventoryItem(item, size, position);
+        ItemBounds bounds = CalculateBounds(positions);
+        InventoryItem inventoryItem = _view.CreateInventoryItem(item, bounds.Size, bounds.Position);
 
         if (_itemCatalog.GetItemData(item.ItemID, out var data))
             inventoryItem.SetIcon(data.Icon);
 
-        foreach (Vector2Int pos in positions)
-            _view.SetCellData(pos, inventoryItem, pos - min);
+        _view.AssignItemToCell(inventoryItem, positions, bounds.Min);
     }
 
-    private Vector2Int GetMinPosition(Vector2Int[] positions)
+    private ItemBounds CalculateBounds(Vector2Int[] positions)
     {
         Vector2Int min = positions[0];
-
-        foreach (Vector2Int p in positions)
-        {
-            if (p.x < min.x) min.x = p.x;
-            if (p.y < min.y) min.y = p.y;
-        }
-
-        return min;
-    }
-
-    private Vector2Int GetMaxPosition(Vector2Int[] positions)
-    {
         Vector2Int max = positions[0];
 
-        foreach (Vector2Int p in positions)
+        for (int i = 1; i < positions.Length; i++)
         {
+            Vector2Int p = positions[i];
+            if (p.x < min.x) min.x = p.x;
+            if (p.y < min.y) min.y = p.y;
             if (p.x > max.x) max.x = p.x;
             if (p.y > max.y) max.y = p.y;
         }
 
-        return max;
-    }
-
-    private Vector2 GetViewItemSize(Vector2Int min, Vector2Int max)
-    {
         int cols = max.x - min.x + 1;
         int rows = max.y - min.y + 1;
-
-        return new Vector2(
+        Vector2 size = new Vector2(
             cols * _view.CellSize.x + (cols - 1),
             rows * _view.CellSize.y + (rows - 1)
         );
+
+        return new ItemBounds(min, max, size, _view.GetCellPosition(min));
+    }
+
+    private readonly struct ItemBounds
+    {
+        public readonly Vector2Int Min;
+        public readonly Vector2Int Max;
+        public readonly Vector2 Size;
+        public readonly Vector2 Position;
+
+        public ItemBounds(Vector2Int min, Vector2Int max, Vector2 size, Vector2 position)
+        {
+            Min = min;
+            Max = max;
+            Size = size;
+            Position = position;
+        }
     }
 }
