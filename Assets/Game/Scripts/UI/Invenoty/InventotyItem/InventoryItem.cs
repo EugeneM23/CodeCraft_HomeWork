@@ -1,4 +1,3 @@
-using System;
 using Inventories;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -8,14 +7,13 @@ public class InventoryItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
 {
     [SerializeField] private Image _background;
     [SerializeField] private Image _itemImage;
+    [SerializeField] private RectTransform _rectTransform;
 
-    public RectTransform RectTransform { get; private set; }
+    public RectTransform RectTransform => _rectTransform;
     public Item Item => _item;
     private Item _item;
     private bool _isDragEnable;
     private Vector3 _dragOffset;
-
-    private void Awake() => RectTransform = GetComponent<RectTransform>();
 
     private void Update()
     {
@@ -48,5 +46,14 @@ public class InventoryItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
         transform.SetAsLastSibling();
         _isDragEnable = isEnable;
         _dragOffset = transform.position - Input.mousePosition;
+    }
+    
+    public void SetSize(Vector2 cellSize)
+    {
+        Vector2 correctSize = new Vector2(
+            _item.Size.x * cellSize.x + (_item.Size.x - 1),
+            _item.Size.y * cellSize.y + (_item.Size.y - 1)
+        );
+        _rectTransform.sizeDelta = correctSize;
     }
 }

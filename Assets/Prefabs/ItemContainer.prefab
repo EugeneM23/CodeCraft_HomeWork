@@ -211,3 +211,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _background: {fileID: 8304158806905660621}
   _itemImage: {fileID: 1691885995291618795}
+  _rectTransform: {fileID: 6379091871092702191}

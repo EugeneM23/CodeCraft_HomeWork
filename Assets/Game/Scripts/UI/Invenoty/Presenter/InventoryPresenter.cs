@@ -10,6 +10,7 @@ public partial class InventoryPresenter : MonoBehaviour
     [SerializeField] private int _rows = 7;
     private Inventory _inventory;
     private readonly List<CellView> _highlightedCells = new();
+    public Vector2 CellSize => _view.CellSize;
 
     private void Awake()
     {

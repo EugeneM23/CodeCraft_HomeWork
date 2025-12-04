@@ -1,7 +1,4 @@
-using Inventories;
-using TMPro;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class CellView : MonoBehaviour
@@ -12,8 +9,8 @@ public class CellView : MonoBehaviour
     [SerializeField] private Sprite _errorSprite;
 
     private InventoryPresenter _presenter;
-    public Vector2Int _gridPosition;
-    public Vector2Int _itemMatrixPosition;
+    private Vector2Int _gridPosition;
+    private Vector2Int _itemMatrixPosition;
     private InventoryItem _inventoryItem;
     public Vector2Int ItemMatrixPosition => _itemMatrixPosition;
     public Vector2Int GridPosition => _gridPosition;

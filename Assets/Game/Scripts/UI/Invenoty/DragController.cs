@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Game.Scripts.UI.Equipment;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -9,6 +10,7 @@ public class DragController : MonoBehaviour
 
     private InventoryPresenter _startPresenter;
     private InventoryPresenter _currentPresenter;
+
     private EventSystem _eventSystem;
     private GraphicRaycaster _raycaster;
 
@@ -33,6 +35,15 @@ public class DragController : MonoBehaviour
     private void StartDrag()
     {
         CellView cell = GetCellUnderMouse();
+        EquipmentSlot slot = GetEquipmentCellUnderMouse();
+
+        if (slot != null && slot.CurrentItem != null)
+        {
+            _draggedInventoryItem = slot.CurrentItem;
+            _draggedInventoryItem.EnableDrag(true);
+            _isDragging = true;
+        }
+
         if (cell == null || cell.InventoryItem == null) return;
 
         InitializeDragState(cell);
@@ -66,6 +77,15 @@ public class DragController : MonoBehaviour
 
         _draggedInventoryItem.EnableDrag(false);
         _isDragging = false;
+
+        EquipmentSlot slot = GetEquipmentCellUnderMouse();
+
+        if (slot != null && _draggedInventoryItem.Item.ItemTipe == slot.ItemTipe)
+        {
+            slot.AddItem(_draggedInventoryItem);
+            _currentPresenter.RemoveFromViewItem(_draggedInventoryItem);
+            return;
+        }
 
         CellView cell = GetCellUnderMouse();
         TryPlaceItem(cell);
@@ -146,6 +166,21 @@ public class DragController : MonoBehaviour
         {
             if (result.gameObject.TryGetComponent(out CellView cell))
                 return cell;
+        }
+
+        return null;
+    }
+
+    private EquipmentSlot GetEquipmentCellUnderMouse()
+    {
+        PointerEventData pointerData = new(_eventSystem) { position = Input.mousePosition };
+        List<RaycastResult> results = new();
+        _raycaster.Raycast(pointerData, results);
+
+        foreach (RaycastResult result in results)
+        {
+            if (result.gameObject.TryGetComponent(out EquipmentSlot slot))
+                return slot;
         }
 
         return null;
