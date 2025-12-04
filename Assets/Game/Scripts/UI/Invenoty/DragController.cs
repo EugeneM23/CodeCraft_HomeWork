@@ -33,7 +33,7 @@ public class DragController : MonoBehaviour
     private void StartDrag()
     {
         CellView cell = GetCellUnderMouse();
-        if (cell == null || cell.Item == null) return;
+        if (cell == null || cell.InventoryItem == null) return;
 
         _isDragging = true;
 
@@ -46,7 +46,6 @@ public class DragController : MonoBehaviour
 
         _currentPresenter.RemoveItemFromInventory(cell.Item);
 
-        _draggedInventoryItem = cell.InventoryItem;
         _draggedInventoryItem.EnableDrag(true);
     }
 
