@@ -24,19 +24,7 @@ public partial class InventoryPresenter
             inventoryItem.SetIcon(data.Icon);
 
         foreach (Vector2Int pos in positions)
-            _view.SetCellData(pos, item, inventoryItem, pos - min);
-    }
-
-    private void UpdateViewItemPosition(Item item, Vector2Int[] positions)
-    {
-        Vector2Int min = GetMinPosition(positions);
-        Vector2 position = _view.GetCellRectPosition(min);
-
-        InventoryItem inventoryItem = _view.GetInventoryItem(item);
-        inventoryItem.RectTransform.anchoredPosition = position;
-
-        foreach (Vector2Int pos in positions)
-            _view.SetCellData(pos, item, inventoryItem, pos - min);
+            _view.SetCellData(pos, inventoryItem, pos - min);
     }
 
     private Vector2Int GetMinPosition(Vector2Int[] positions)

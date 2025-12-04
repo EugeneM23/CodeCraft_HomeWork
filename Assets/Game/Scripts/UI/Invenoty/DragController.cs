@@ -35,18 +35,20 @@ public class DragController : MonoBehaviour
         CellView cell = GetCellUnderMouse();
         if (cell == null || cell.InventoryItem == null) return;
 
-        _isDragging = true;
+        SetStartState(cell);
 
-        //Save start state
+        _currentPresenter.RemoveItemFromInventory(_draggedInventoryItem.Item);
+        _draggedInventoryItem.EnableDrag(true);
+    }
+
+    private void SetStartState(CellView cell)
+    {
+        _isDragging = true;
         _itemMatrixPosition = cell.ItemMatrixPosition;
         _startPresenter = cell.Presenter;
         _currentPresenter = cell.Presenter;
         _draggedInventoryItem = cell.InventoryItem;
-        _startPositioOnGrid = _currentPresenter.GetItemPosition(cell.Item);
-
-        _currentPresenter.RemoveItemFromInventory(cell.Item);
-
-        _draggedInventoryItem.EnableDrag(true);
+        _startPositioOnGrid = _currentPresenter.GetItemPosition(_draggedInventoryItem.Item);
     }
 
     private void UpdateDrag()

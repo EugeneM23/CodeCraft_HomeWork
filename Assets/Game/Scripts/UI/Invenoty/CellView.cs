@@ -14,13 +14,11 @@ public class CellView : MonoBehaviour
     private InventoryPresenter _presenter;
     public Vector2Int _gridPosition;
     public Vector2Int _itemMatrixPosition;
-    private Item _item;
     private InventoryItem _inventoryItem;
     public Vector2Int ItemMatrixPosition => _itemMatrixPosition;
     public Vector2Int GridPosition => _gridPosition;
     public InventoryItem InventoryItem => _inventoryItem;
     public InventoryPresenter Presenter => _presenter;
-    public Item Item => _item;
 
     public void Construct(InventoryPresenter presenter, Vector2Int gridPosition)
     {
@@ -28,16 +26,14 @@ public class CellView : MonoBehaviour
         _gridPosition = gridPosition;
     }
 
-    public void Construct(Item item, InventoryItem inventoryItem, Vector2Int matrixPos)
+    public void Construct(InventoryItem inventoryItem, Vector2Int matrixPos)
     {
-        _item = item;
         _inventoryItem = inventoryItem;
         _itemMatrixPosition = matrixPos;
     }
 
     public void Clear()
     {
-        _item = null;
         _inventoryItem = null;
         _itemMatrixPosition = default;
     }

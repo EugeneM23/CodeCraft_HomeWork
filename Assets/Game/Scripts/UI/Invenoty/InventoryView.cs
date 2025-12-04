@@ -53,10 +53,10 @@ public class InventoryView : MonoBehaviour
         return container;
     }
 
-    public void SetCellData(Vector2Int pos, Item item, InventoryItem container, Vector2Int matrixPos)
+    public void SetCellData(Vector2Int pos, InventoryItem container, Vector2Int matrixPos)
     {
         CellView cell = Cells[pos.x, pos.y];
-        cell.Construct(item, container, matrixPos);
+        cell.Construct( container, matrixPos);
     }
 
     public void ReparentInventoryItem(InventoryItem inventoryItem, Vector2 position)
@@ -94,20 +94,5 @@ public class InventoryView : MonoBehaviour
         foreach (var pos in positions)
             ClearCell(pos);
     }
-
-    public void RemoveItemFromGrid(Item item, Vector2Int[] cellsPositions)
-    {
-        if (_inventoryItems.ContainsKey(item))
-        {
-            InventoryItem container = _inventoryItems[item];
-
-            foreach (Vector2Int position in cellsPositions)
-                ClearCell(position);
-
-            _inventoryItems.Remove(item);
-            Destroy(container.gameObject);
-        }
-    }
-
     
 }

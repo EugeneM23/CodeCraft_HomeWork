@@ -32,24 +32,17 @@ public partial class InventoryPresenter
         Vector2 position = _view.GetCellRectPosition(min);
 
         _view.ReparentInventoryItem(inventoryItem, position);
-        FillCellsData(item, inventoryItem, positions);
+        FillCellsData(inventoryItem, positions);
 
         return true;
     }
 
-    private void FillCellsData(Item item, InventoryItem inventoryItem, Vector2Int[] positions)
+    private void FillCellsData(InventoryItem inventoryItem, Vector2Int[] positions)
     {
         Vector2Int min = GetMinPosition(positions);
 
         foreach (Vector2Int pos in positions)
-            _view.SetCellData(pos, item, inventoryItem, pos - min);
-    }
-
-    public void RemoveItem(Item item)
-    {
-        Vector2Int[] cells = _inventory.GetPositions(item);
-        _inventory.RemoveItem(item);
-        _view.RemoveItemFromGrid(item, cells);
+            _view.SetCellData(pos, inventoryItem, pos - min);
     }
 
     public void RemoveItemFromInventory(Item item)
@@ -57,19 +50,5 @@ public partial class InventoryPresenter
         Vector2Int[] positions = _inventory.GetPositions(item);
         _view.ClearCell(positions);
         _inventory.RemoveItem(item);
-    }
-
-    public bool MoveItem(Item item, Vector2Int targetPos)
-    {
-        Vector2Int[] oldPositions = _inventory.GetPositions(item);
-
-        foreach (Vector2Int pos in oldPositions)
-            _view.ClearCell(pos);
-
-        bool success = _inventory.MoveItem(item, targetPos);
-
-        UpdateViewItemPosition(item, _inventory.GetPositions(item));
-
-        return success;
     }
 }
