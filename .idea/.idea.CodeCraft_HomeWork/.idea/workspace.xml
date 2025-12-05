@@ -4,7 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6f0b762c-5415-4a85-b17b-cc44fd47261d" name="Changes" comment="" />
+    <list default="true" id="6f0b762c-5415-4a85-b17b-cc44fd47261d" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/UI/Invenoty/Drag/DragController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/UI/Invenoty/Drag/DragController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/UI/Invenoty/Drag/DragController.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/UI/Invenoty/Drag/DragController.cs.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/UI/Invenoty/Drag/NewDragController.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/UI/Invenoty/Drag/NewDragController.cs.meta" beforeDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -37,6 +42,7 @@
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/Assets/Cell.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/DebugInventory.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Game/Scripts/UI/Invenoty/Presenter/InventoryPresenter.HighlightsCells.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Inventory/Scripts/Inventory.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Inventory/Tests/AddOnFreePositionTests.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.test-framework@5ac417e07314/UnityEditor.TestRunner/TestRun/Tasks/BuildActionTaskBase.cs" root0="SKIP_HIGHLIGHTING" />
@@ -161,6 +167,7 @@
       <workItem from="1762695971025" duration="3247000" />
       <workItem from="1762700047284" duration="1841000" />
       <workItem from="1764414600115" duration="129323000" />
+      <workItem from="1764857459023" duration="49093000" />
     </task>
     <task id="LOCAL-00001" summary="Update">
       <option name="closed" value="true" />

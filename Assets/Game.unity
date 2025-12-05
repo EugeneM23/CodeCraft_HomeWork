@@ -361,11 +361,6 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 1365938420390733315, guid: 085485a3e8d9840348af1331b233e232, type: 3}
   m_PrefabInstance: {fileID: 5281948526111422405}
   m_PrefabAsset: {fileID: 0}
---- !u!224 &1279356717 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 617154645694257059, guid: 085485a3e8d9840348af1331b233e232, type: 3}
-  m_PrefabInstance: {fileID: 2003383225}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &1476617733 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3896440542098759801, guid: 085485a3e8d9840348af1331b233e232, type: 3}
@@ -499,8 +494,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _view: {fileID: 1787361612}
   _itemCatalog: {fileID: 48203814}
-  _columns: 7
-  _rows: 7
+  _columns: 5
+  _rows: 3
 --- !u!1001 &2003383225
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -521,21 +516,13 @@ PrefabInstance:
       propertyPath: m_RaycastTarget
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 2447515955548276294, guid: 085485a3e8d9840348af1331b233e232, type: 3}
-      propertyPath: _canvas
-      value: 
-      objectReference: {fileID: 2068645393}
-    - target: {fileID: 2447515955548276294, guid: 085485a3e8d9840348af1331b233e232, type: 3}
-      propertyPath: _cellHighlighter
-      value: 
-      objectReference: {fileID: 0}
     - target: {fileID: 3896440542098759801, guid: 085485a3e8d9840348af1331b233e232, type: 3}
       propertyPath: serializationData.Prefab
       value: 
       objectReference: {fileID: 3896440542098759801, guid: 085485a3e8d9840348af1331b233e232, type: 3}
     - target: {fileID: 3896440542098759801, guid: 085485a3e8d9840348af1331b233e232, type: 3}
       propertyPath: serializationData.PrefabModifications.Array.size
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3896440542098759801, guid: 085485a3e8d9840348af1331b233e232, type: 3}
       propertyPath: 'serializationData.PrefabModifications.Array.data[0]'
@@ -543,12 +530,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3896440542098759801, guid: 085485a3e8d9840348af1331b233e232, type: 3}
       propertyPath: serializationData.PrefabModificationsReferencedUnityObjects.Array.size
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3896440542098759801, guid: 085485a3e8d9840348af1331b233e232, type: 3}
       propertyPath: 'serializationData.PrefabModificationsReferencedUnityObjects.Array.data[0]'
       value: 
-      objectReference: {fileID: 9173757791638715115, guid: a9fd30c0df17c43f9a2f4fd2ab4c3b7a, type: 3}
+      objectReference: {fileID: 8027571100345638807, guid: 117ea7f96d7014a738e16b8debf2b314, type: 3}
     - target: {fileID: 4825307699389709397, guid: 085485a3e8d9840348af1331b233e232, type: 3}
       propertyPath: m_Name
       value: Inventory (1)
@@ -633,34 +620,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 8713304369800779955, guid: 085485a3e8d9840348af1331b233e232, type: 3}
-      propertyPath: _rows
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 8713304369800779955, guid: 085485a3e8d9840348af1331b233e232, type: 3}
-      propertyPath: _canvas
-      value: 
-      objectReference: {fileID: 2068645393}
-    - target: {fileID: 8713304369800779955, guid: 085485a3e8d9840348af1331b233e232, type: 3}
-      propertyPath: _columns
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 8713304369800779955, guid: 085485a3e8d9840348af1331b233e232, type: 3}
-      propertyPath: GridParent
-      value: 
-      objectReference: {fileID: 1279356717}
-    - target: {fileID: 8713304369800779955, guid: 085485a3e8d9840348af1331b233e232, type: 3}
-      propertyPath: _itemCatalog
-      value: 
-      objectReference: {fileID: 48203814}
-    - target: {fileID: 8713304369800779955, guid: 085485a3e8d9840348af1331b233e232, type: 3}
-      propertyPath: _dragController
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 8713304369800779955, guid: 085485a3e8d9840348af1331b233e232, type: 3}
-      propertyPath: _cellHighlighter
-      value: 
-      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 8917206151100535543, guid: 085485a3e8d9840348af1331b233e232, type: 3}
     - {fileID: 2447515955548276294, guid: 085485a3e8d9840348af1331b233e232, type: 3}
@@ -673,11 +632,6 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 1787361617}
   m_SourcePrefab: {fileID: 100100000, guid: 085485a3e8d9840348af1331b233e232, type: 3}
---- !u!224 &2056678239 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 617154645694257059, guid: 085485a3e8d9840348af1331b233e232, type: 3}
-  m_PrefabInstance: {fileID: 5281948526111422405}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2068645390
 GameObject:
   m_ObjectHideFlags: 0
@@ -801,6 +755,14 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 525.58
       objectReference: {fileID: 0}
+    - target: {fileID: 850816996919089284, guid: 085485a3e8d9840348af1331b233e232, type: 3}
+      propertyPath: _cellSize.x
+      value: 75
+      objectReference: {fileID: 0}
+    - target: {fileID: 850816996919089284, guid: 085485a3e8d9840348af1331b233e232, type: 3}
+      propertyPath: _cellSize.y
+      value: 75
+      objectReference: {fileID: 0}
     - target: {fileID: 1365938420390733315, guid: 085485a3e8d9840348af1331b233e232, type: 3}
       propertyPath: m_SizeDelta.x
       value: 400
@@ -825,14 +787,6 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 2447515955548276294, guid: 085485a3e8d9840348af1331b233e232, type: 3}
-      propertyPath: _canvas
-      value: 
-      objectReference: {fileID: 2068645393}
-    - target: {fileID: 2447515955548276294, guid: 085485a3e8d9840348af1331b233e232, type: 3}
-      propertyPath: _cellHighlighter
-      value: 
-      objectReference: {fileID: 0}
     - target: {fileID: 2532343631921062341, guid: 085485a3e8d9840348af1331b233e232, type: 3}
       propertyPath: m_IsActive
       value: 1
@@ -843,7 +797,7 @@ PrefabInstance:
       objectReference: {fileID: 3896440542098759801, guid: 085485a3e8d9840348af1331b233e232, type: 3}
     - target: {fileID: 3896440542098759801, guid: 085485a3e8d9840348af1331b233e232, type: 3}
       propertyPath: serializationData.PrefabModifications.Array.size
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3896440542098759801, guid: 085485a3e8d9840348af1331b233e232, type: 3}
       propertyPath: 'serializationData.PrefabModifications.Array.data[0]'
@@ -851,12 +805,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3896440542098759801, guid: 085485a3e8d9840348af1331b233e232, type: 3}
       propertyPath: serializationData.PrefabModificationsReferencedUnityObjects.Array.size
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3896440542098759801, guid: 085485a3e8d9840348af1331b233e232, type: 3}
       propertyPath: 'serializationData.PrefabModificationsReferencedUnityObjects.Array.data[0]'
       value: 
-      objectReference: {fileID: 9173757791638715115, guid: a9fd30c0df17c43f9a2f4fd2ab4c3b7a, type: 3}
+      objectReference: {fileID: 8027571100345638807, guid: 117ea7f96d7014a738e16b8debf2b314, type: 3}
     - target: {fileID: 4109495605749167123, guid: 085485a3e8d9840348af1331b233e232, type: 3}
       propertyPath: m_Name
       value: Slot
@@ -957,34 +911,6 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 8713304369800779955, guid: 085485a3e8d9840348af1331b233e232, type: 3}
-      propertyPath: _rows
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 8713304369800779955, guid: 085485a3e8d9840348af1331b233e232, type: 3}
-      propertyPath: _canvas
-      value: 
-      objectReference: {fileID: 2068645393}
-    - target: {fileID: 8713304369800779955, guid: 085485a3e8d9840348af1331b233e232, type: 3}
-      propertyPath: _columns
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 8713304369800779955, guid: 085485a3e8d9840348af1331b233e232, type: 3}
-      propertyPath: GridParent
-      value: 
-      objectReference: {fileID: 2056678239}
-    - target: {fileID: 8713304369800779955, guid: 085485a3e8d9840348af1331b233e232, type: 3}
-      propertyPath: _itemCatalog
-      value: 
-      objectReference: {fileID: 1476617733}
-    - target: {fileID: 8713304369800779955, guid: 085485a3e8d9840348af1331b233e232, type: 3}
-      propertyPath: _dragController
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 8713304369800779955, guid: 085485a3e8d9840348af1331b233e232, type: 3}
-      propertyPath: _cellHighlighter
-      value: 
-      objectReference: {fileID: 0}
     - target: {fileID: 8960356953953039898, guid: 085485a3e8d9840348af1331b233e232, type: 3}
       propertyPath: m_Sprite
       value: 
@@ -1076,7 +1002,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _view: {fileID: 7756850200214645757}
   _itemCatalog: {fileID: 1476617733}
-  _columns: 4
+  _columns: 7
   _rows: 7
 --- !u!114 &7756850200214645764
 MonoBehaviour:

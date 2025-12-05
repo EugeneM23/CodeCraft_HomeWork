@@ -1,167 +1,184 @@
-// using System.Collections.Generic;
-// using UnityEngine;
-// using UnityEngine.EventSystems;
-// using UnityEngine.UI;
-//
-// public class DragController : MonoBehaviour
-// {
-//     [SerializeField] private RectTransform _parent;
-//
-//     private InventoryPresenter _currentPresenter;
-//     private EventSystem _eventSystem;
-//     private GraphicRaycaster _raycaster;
-//     private InventoryItem _draggedInventoryItem;
-//     private bool _isDragging;
-//
-//     private void Start()
-//     {
-//         _raycaster = FindObjectOfType<GraphicRaycaster>();
-//         _eventSystem = EventSystem.current;
-//     }
-//
-//     private void Update()
-//     {
-//         if (Input.GetMouseButtonDown(0)) StartDrag();
-//         if (Input.GetMouseButton(0) && _isDragging) UpdateDrag();
-//         if (Input.GetMouseButtonUp(0)) EndDrag();
-//     }
-//
-//     private void StartDrag()
-//     {
-//         CellView cell = GetCellUnderMouse();
-//
-//         if (cell == null || cell.InventoryItem == null) return;
-//
-//         InitializeDragState(cell);
-//         _currentPresenter.RemoveFromModelItem(_draggedInventoryItem.Item);
-//         _draggedInventoryItem.EnableDrag(true);
-//     }
-//
-//     private void UpdateDrag()
-//     {
-//         CellView cell = GetCellUnderMouse();
-//
-//         if (cell != null)
-//         {
-//             UpdateCurrentPresenter(cell);
-//             _currentPresenter.HighlightCells(
-//                 _draggedInventoryItem.Item,
-//                 cell.GridPosition,
-//                 _draggedInventoryItem.GetSavedMatrixPosition(),
-//                 cell
-//             );
-//         }
-//         else
-//         {
-//             _currentPresenter?.ClearHighlights();
-//         }
-//     }
-//
-//     private void EndDrag()
-//     {
-//         if (!_isDragging) return;
-//
-//         _draggedInventoryItem.EnableDrag(false);
-//         _isDragging = false;
-//
-//         CellView cell = GetCellUnderMouse();
-//         TryPlaceItem(cell);
-//
-//         ClearAllHighlights();
-//         _draggedInventoryItem = null;
-//     }
-//
-//     private void InitializeDragState(CellView cell)
-//     {
-//         _isDragging = true;
-//         _currentPresenter = cell.Presenter;
-//         _draggedInventoryItem = cell.InventoryItem;
-//         
-//         _draggedInventoryItem.SaveState(
-//             _draggedInventoryItem.transform.parent,
-//             _draggedInventoryItem.transform.position,
-//             _currentPresenter.GetItemPosition(_draggedInventoryItem.Item),
-//             cell.ItemMatrixPosition
-//         );
-//     }
-//
-//     private void UpdateCurrentPresenter(CellView cell)
-//     {
-//         if (cell.Presenter != _currentPresenter)
-//         {
-//             _currentPresenter = cell.Presenter;
-//             _draggedInventoryItem.transform.SetParent(_currentPresenter.transform);
-//         }
-//     }
-//
-//     private void TryPlaceItem(CellView targetCell)
-//     {
-//         Vector2Int targetPosition;
-//         InventoryPresenter targetPresenter;
-//
-//         if (targetCell != null)
-//         {
-//             targetPosition = targetCell.GridPosition - _draggedInventoryItem.GetSavedMatrixPosition();
-//             targetPresenter = targetCell.Presenter;
-//         }
-//         else
-//         {
-//             Transform savedParent = _draggedInventoryItem.GetSavedParent();
-//             targetPresenter = savedParent?.GetComponentInParent<InventoryPresenter>();
-//             if (targetPresenter == null) return;
-//             targetPosition = _draggedInventoryItem.GetSavedGridPosition();
-//         }
-//
-//         bool placed = targetPresenter.MoveItem(
-//             _draggedInventoryItem.Item,
-//             _draggedInventoryItem,
-//             targetPosition
-//         );
-//
-//         if (!placed)
-//         {
-//             _draggedInventoryItem.RestoreState();
-//             Transform savedParent = _draggedInventoryItem.GetSavedParent();
-//             InventoryPresenter savedPresenter = savedParent?.GetComponentInParent<InventoryPresenter>();
-//             savedPresenter?.MoveItem(
-//                 _draggedInventoryItem.Item,
-//                 _draggedInventoryItem,
-//                 _draggedInventoryItem.GetSavedGridPosition()
-//             );
-//         }
-//         else
-//         {
-//             _draggedInventoryItem.ClearSavedState();
-//             Transform savedParent = _draggedInventoryItem.GetSavedParent();
-//             InventoryPresenter savedPresenter = savedParent?.GetComponentInParent<InventoryPresenter>();
-//             
-//             if (savedPresenter != null && savedPresenter != targetPresenter)
-//             {
-//                 savedPresenter.RemoveFromViewItem(_draggedInventoryItem);
-//                 targetPresenter.AddViewItemToView(_draggedInventoryItem);
-//             }
-//         }
-//     }
-//
-//     private void ClearAllHighlights()
-//     {
-//         _currentPresenter?.ClearHighlights();
-//         Transform savedParent = _draggedInventoryItem?.GetSavedParent();
-//         savedParent?.GetComponentInParent<InventoryPresenter>()?.ClearHighlights();
-//     }
-//
-//     private CellView GetCellUnderMouse()
-//     {
-//         PointerEventData pointerData = new(_eventSystem) { position = Input.mousePosition };
-//         List<RaycastResult> results = new();
-//         _raycaster.Raycast(pointerData, results);
-//
-//         foreach (RaycastResult result in results)
-//         {
-//             if (result.gameObject.TryGetComponent(out CellView cell))
-//                 return cell;
-//         }
-//
-//         return null;
-//     }
-// }
+using System.Collections.Generic;
+using Game.Scripts.UI.Equipment;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
+
+public class DragController : MonoBehaviour
+{
+    [SerializeField] private DragItem _dragItemPrefab;
+
+    private GraphicRaycaster _raycaster;
+    private EventSystem _eventSystem;
+
+    private DragItem _currentDragItem;
+    private bool _isDragging;
+    private EquipmentSlot _sourceSlot;
+    private Vector3 _dragOffset;
+
+    private void Start()
+    {
+        _raycaster = FindObjectOfType<GraphicRaycaster>();
+        _eventSystem = EventSystem.current;
+    }
+
+    private void Update()
+    {
+        if (Input.GetMouseButtonDown(0))
+            StartDrag();
+
+        if (Input.GetMouseButton(0) && _isDragging)
+            UpdateDrag();
+
+        if (Input.GetMouseButtonUp(0))
+            EndDrag();
+    }
+
+    private void StartDrag()
+    {
+        if (TryDragFromInventoryCell())
+            return;
+
+        TryDragFromEquipmentSlot();
+    }
+
+    private void UpdateDrag()
+    {
+        _currentDragItem.transform.position = Input.mousePosition;
+    }
+
+    private void EndDrag()
+    {
+        if (!_isDragging)
+            return;
+
+        _isDragging = false;
+
+        if (TryDropOnInventoryCell())
+            return;
+
+        if (TryDropOnEquipmentSlot())
+            return;
+
+        ReturnToOriginalPosition();
+    }
+
+    private bool TryDragFromInventoryCell()
+    {
+        if (!TryGetCellUnderMouse(out CellView cell) || cell.InventoryItem == null)
+            return false;
+
+        _currentDragItem = CreateDragItem(cell.transform.parent, cell.InventoryItem.RectTransform.sizeDelta);
+
+        _currentDragItem.Presenter = cell.Presenter;
+        _currentDragItem.Item = cell.InventoryItem.Item;
+        _currentDragItem.StartPosition = cell.Presenter.GetItemPosition(cell.InventoryItem.Item);
+        _currentDragItem.SetIcon(cell.InventoryItem.Icon);
+
+        cell.Presenter.RemoveItem(cell.InventoryItem.Item);
+
+        _dragOffset = default;
+        _isDragging = true;
+
+        return true;
+    }
+
+    private bool TryDragFromEquipmentSlot()
+    {
+        if (!TryGetSlotUnderMouse(out EquipmentSlot slot) || slot.CurrentItem == null)
+            return false;
+
+        _sourceSlot = slot;
+        _currentDragItem = CreateDragItem(slot.transform.parent, slot.GetComponent<RectTransform>().sizeDelta);
+        _currentDragItem.SetIcon(slot.Icon);
+        _currentDragItem.Item = slot.CurrentItem;
+        _currentDragItem.Presenter = slot.Presenter;
+
+        slot.Presenter.RemoveItem(slot.CurrentItem);
+        slot.RemoveItem();
+        _isDragging = true;
+        return true;
+    }
+
+    private bool TryDropOnInventoryCell()
+    {
+        if (!TryGetCellUnderMouse(out CellView cell))
+            return false;
+
+        bool added = cell.Presenter.AddItem(_currentDragItem.Item, _currentDragItem.MatrixPosition);
+
+        if (!added)
+        {
+            ReturnToOriginalPosition();
+        }
+
+        Destroy(_currentDragItem.gameObject);
+        return true;
+    }
+
+    private bool TryDropOnEquipmentSlot()
+    {
+        if (!TryGetSlotUnderMouse(out EquipmentSlot slot))
+            return false;
+
+        if (slot.ItemTipe != _currentDragItem.Item.ItemTipe)
+            return false;
+
+        if (slot.CurrentItem != null)
+            _currentDragItem.Presenter.AddItem(slot.CurrentItem);
+
+        slot.AddItem(_currentDragItem.Item, _currentDragItem.Icon);
+        _sourceSlot = slot;
+
+        Destroy(_currentDragItem.gameObject);
+        return true;
+    }
+
+    private void ReturnToOriginalPosition()
+    {
+        if (_currentDragItem.Presenter is EquipmentPresenter)
+        {
+            _sourceSlot.AddItem(_currentDragItem.Item, _currentDragItem.Icon);
+        }
+        else
+        {
+            _currentDragItem.Presenter.AddItem(_currentDragItem.Item, _currentDragItem.StartPosition);
+        }
+
+        Destroy(_currentDragItem.gameObject);
+    }
+
+    private bool TryGetCellUnderMouse(out CellView cellView)
+    {
+        return TryGetComponentUnderMouse(out cellView);
+    }
+
+    private bool TryGetSlotUnderMouse(out EquipmentSlot slot)
+    {
+        return TryGetComponentUnderMouse(out slot);
+    }
+
+    private bool TryGetComponentUnderMouse<T>(out T component) where T : Component
+    {
+        component = null;
+
+        PointerEventData pointerData = new(_eventSystem) { position = Input.mousePosition };
+        List<RaycastResult> results = new();
+        _raycaster.Raycast(pointerData, results);
+
+        foreach (RaycastResult result in results)
+        {
+            if (result.gameObject.TryGetComponent(out component))
+                return true;
+        }
+
+        return false;
+    }
+
+    private DragItem CreateDragItem(Transform parent, Vector2 size)
+    {
+        var item = Instantiate(_dragItemPrefab, parent);
+        item.GetComponent<RectTransform>().sizeDelta = size;
+        return item;
+    }
+}
