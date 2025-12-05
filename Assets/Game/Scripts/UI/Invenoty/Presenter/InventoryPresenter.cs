@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Inventories;
 using UnityEngine;
 
-public partial class InventoryPresenter : MonoBehaviour
+public partial class InventoryPresenter : MonoBehaviour, IInventoryCollection
 {
     [SerializeField] private InventoryView _view;
     [SerializeField] private InventoryItemCatalog _itemCatalog;
@@ -22,4 +22,11 @@ public partial class InventoryPresenter : MonoBehaviour
 
     private bool CanAddItem(Item item, Vector2Int position) => _inventory.CanAddItem(item, position);
     public Vector2Int GetItemPosition(Item cellViewItem) => _inventory.GetPositions(cellViewItem)[0];
+}
+
+public interface IInventoryCollection
+{
+    bool AddItem(Item item, Vector2Int startPosition = default);
+    void RemoveItem(Item item);
+    Vector2Int GetItemPosition(Item cellViewItem);
 }

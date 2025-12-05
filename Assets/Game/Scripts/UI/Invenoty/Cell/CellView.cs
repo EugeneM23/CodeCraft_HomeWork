@@ -8,16 +8,16 @@ public class CellView : MonoBehaviour
     [SerializeField] private Sprite _freeSprite;
     [SerializeField] private Sprite _errorSprite;
 
-    private InventoryPresenter _presenter;
+    private IInventoryCollection _presenter;
     private Vector2Int _gridPosition;
     private Vector2Int _itemMatrixPosition;
     private InventoryItem _inventoryItem;
     public Vector2Int ItemMatrixPosition => _itemMatrixPosition;
     public Vector2Int GridPosition => _gridPosition;
     public InventoryItem InventoryItem => _inventoryItem;
-    public InventoryPresenter Presenter => _presenter;
+    public IInventoryCollection Presenter => _presenter;
 
-    public void Construct(InventoryPresenter presenter, Vector2Int gridPosition)
+    public void Construct(IInventoryCollection presenter, Vector2Int gridPosition)
     {
         _presenter = presenter;
         _gridPosition = gridPosition;

@@ -1,34 +1,36 @@
 using Inventories;
+using Sirenix.OdinInspector;
+using Sirenix.Serialization;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Game.Scripts.UI.Equipment
 {
-    public class EquipmentSlot : MonoBehaviour
+    public class EquipmentSlot : SerializedMonoBehaviour
     {
+        [OdinSerialize] private IInventoryCollection _presenter;
         [SerializeField] private ItemType _itemType;
+        [SerializeField] private Image _itemSlot;
+
+        public IInventoryCollection Presenter => _presenter;
+        public Sprite Icon => _itemSlot.sprite;
         public ItemType ItemTipe => _itemType;
-        public InventoryItem CurrentItem => _currentItem;
+        public Item CurrentItem { get; set; }
 
-        private InventoryItem _currentItem;
-        private Vector2 _itemSize;
+        private Item _item;
 
-        public void AddItem(InventoryItem item)
+        public void AddItem(Item item, Sprite icon)
         {
-            _currentItem = item;
+            CurrentItem = item;
+            _itemSlot.enabled = true;
+            _item = item;
+            _itemSlot.sprite = icon;
+        }
 
-            RectTransform itemRect = item.GetComponent<RectTransform>();
-            RectTransform slotRect = GetComponent<RectTransform>();
-
-            _itemSize = itemRect.sizeDelta;
-            itemRect.SetParent(slotRect, false);
-
-            itemRect.sizeDelta = slotRect.sizeDelta;
-
-            itemRect.anchoredPosition = Vector2.zero;
-
-            itemRect.anchorMin = slotRect.anchorMin;
-            itemRect.anchorMax = slotRect.anchorMax;
-            itemRect.pivot = slotRect.pivot;
+        public void RemoveItem()
+        {
+            CurrentItem = null;
+            _itemSlot.enabled = false;
         }
     }
 }

@@ -19,11 +19,8 @@ public partial class InventoryPresenter
         ItemBounds bounds = CalculateBounds(positions);
         InventoryItem inventoryItem = _view.CreateInventoryItem(item, bounds.Size, bounds.Position);
 
-        Debug.Log(item.ItemID);
-        if (_itemCatalog.GetItemData(item.ItemID, out var data))
-        {
+        if (_itemCatalog.GetItemData(item.ItemID, out var data)) 
             inventoryItem.SetIcon(data.Icon);
-        }
 
         _view.AssignItemToCell(inventoryItem, positions, bounds.Min);
     }

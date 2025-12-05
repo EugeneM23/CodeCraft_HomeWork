@@ -11,7 +11,8 @@ public class InventoryItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
 
     public RectTransform RectTransform => _rectTransform;
     public Item Item => _item;
-    
+    public Sprite Icon => _itemImage.sprite;
+
     private Item _item;
     private bool _isDragEnable;
     private Vector3 _dragOffset;
@@ -48,7 +49,7 @@ public class InventoryItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
         _isDragEnable = isEnable;
         _dragOffset = transform.position - Input.mousePosition;
     }
-    
+
     public void SaveState(Transform parent, Vector3 position, Vector2Int gridPosition, Vector2Int matrixPosition)
     {
         _savedState = new DragState
