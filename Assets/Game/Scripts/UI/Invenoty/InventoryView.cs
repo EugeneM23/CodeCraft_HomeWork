@@ -25,7 +25,7 @@ public class InventoryView : MonoBehaviour
     private void CreateCell(InventoryPresenter presenter, int x, int y)
     {
         CellView cell = Instantiate(_cellPrefab, _gridContainer);
-        cell.Construct(presenter, new Vector2Int(x, y));
+        cell.Construct(presenter, new Vector2Int(x, y), Cells);
 
         RectTransform rect = cell.GetComponent<RectTransform>();
         rect.sizeDelta = _cellSize;

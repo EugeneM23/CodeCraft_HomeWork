@@ -105,7 +105,7 @@ public class NewDragController : MonoBehaviour
         if (!TryGetCellUnderMouse(out CellView cell))
             return false;
 
-        bool added = cell.Presenter.AddItem(_currentDragItem.Item, cell.GridPosition);
+        bool added = cell.Presenter.AddItem(_currentDragItem.Item, _currentDragItem.MatrixPosition);
 
         if (!added)
         {
