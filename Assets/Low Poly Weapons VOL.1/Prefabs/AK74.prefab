@@ -242,7 +242,7 @@ MeshRenderer:
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 28f0b13c7e9707746b5e0b3336181560, type: 2}
+  - {fileID: 2100000, guid: aa887d90e4d5a4d16a27b98562436b71, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -309,10 +309,10 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: b54b3c1ec452044628a81d5a559751fb, type: 3}
-  m_Resource: {fileID: 8300000, guid: b54b3c1ec452044628a81d5a559751fb, type: 3}
+  m_audioClip: {fileID: 8300000, guid: bd596346bfc3b45fe86766471e755820, type: 3}
+  m_Resource: {fileID: 8300000, guid: bd596346bfc3b45fe86766471e755820, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 0.182
+  m_Volume: 0.832
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -460,7 +460,7 @@ MeshRenderer:
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 28f0b13c7e9707746b5e0b3336181560, type: 2}
+  - {fileID: 2100000, guid: aa887d90e4d5a4d16a27b98562436b71, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
