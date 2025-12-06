@@ -8,6 +8,8 @@ public class DragController : MonoBehaviour
 {
     [SerializeField] private DragItem _dragItemPrefab;
     [SerializeField] private GameObject _pickUpPrefab;
+    [SerializeField] private InventoryPresenter _sourcePresentor;
+    [SerializeField] private RectTransform _dragArea;
 
     private GraphicRaycaster _raycaster;
     private EventSystem _eventSystem;
@@ -45,12 +47,19 @@ public class DragController : MonoBehaviour
 
         if (TryRaycastUnderMouse(out var hit))
         {
+            if (EventSystem.current.IsPointerOverGameObject()) return;
+
             if (hit.collider.gameObject.TryGetComponent(out WeaponMarker marker))
             {
                 Destroy(hit.collider.gameObject);
-                CreateDragItem(this.transform, new Vector2(4, 2));
-            }
 
+                _currentDragItem = CreateDragItem(this._dragArea.transform, new Vector2(300, 150));
+
+                _currentDragItem.Item = marker.GetItem();
+                _currentDragItem.SetIcon(marker.Icon);
+                _currentDragItem.Presenter = _sourcePresentor;
+                _isDragging = true;
+            }
         }
     }
 
@@ -72,6 +81,13 @@ public class DragController : MonoBehaviour
         if (TryDropOnEquipmentSlot())
             return;
 
+        if (IsPointerOverUI())
+        {
+            ReturnToOriginalPosition();
+            Debug.Log("End drag");
+            return;
+        }
+
         if (TryRaycastUnderMouse(out RaycastHit hit))
         {
             var lookRotation = Quaternion.LookRotation(Vector3.right, hit.normal) * Quaternion.Euler(0, 0, 90);
@@ -81,6 +97,26 @@ public class DragController : MonoBehaviour
         }
 
         ReturnToOriginalPosition();
+    }
+
+    private bool IsPointerOverUI()
+    {
+        PointerEventData pointerData = new(_eventSystem) { position = Input.mousePosition };
+        List<RaycastResult> results = new();
+        _raycaster.Raycast(pointerData, results);
+    
+        foreach (RaycastResult result in results)
+        {
+            if (_currentDragItem != null && result.gameObject.transform.IsChildOf(_currentDragItem.transform))
+                continue;
+            
+            if (result.gameObject == _currentDragItem?.gameObject)
+                continue;
+            
+            return true; 
+        }
+    
+        return false;
     }
 
     private bool TryDragFromInventoryCell()

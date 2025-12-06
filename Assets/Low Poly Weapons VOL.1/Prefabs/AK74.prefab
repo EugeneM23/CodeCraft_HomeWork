@@ -276,6 +276,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0fa84783d20a428185a38a9c1db40342, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _catalog: {fileID: 0}
+  Icon: {fileID: 9173757791638715115, guid: a9fd30c0df17c43f9a2f4fd2ab4c3b7a, type: 3}
 --- !u!65 &2348306063049553928
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -310,7 +312,7 @@ AudioSource:
   m_audioClip: {fileID: 8300000, guid: b54b3c1ec452044628a81d5a559751fb, type: 3}
   m_Resource: {fileID: 8300000, guid: b54b3c1ec452044628a81d5a559751fb, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 1
+  m_Volume: 0.182
   m_Pitch: 1
   Loop: 0
   Mute: 0
