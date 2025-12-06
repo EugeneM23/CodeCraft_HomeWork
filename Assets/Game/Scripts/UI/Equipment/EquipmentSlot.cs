@@ -24,6 +24,8 @@ namespace Game.Scripts.UI.Equipment
 
         public void AddItem(Item item, Sprite icon)
         {
+            _addItemAudio.pitch = Random.Range(0.5f, 1.2f);
+
             _addItemAudio.Play();
 
             CurrentItem = item;
@@ -34,6 +36,8 @@ namespace Game.Scripts.UI.Equipment
 
         public void RemoveItem()
         {
+            _removeItemAudio.pitch = Random.Range(0.5f, 1.2f);
+
             _removeItemAudio.Play();
             CurrentItem = null;
             _itemSlot.enabled = false;

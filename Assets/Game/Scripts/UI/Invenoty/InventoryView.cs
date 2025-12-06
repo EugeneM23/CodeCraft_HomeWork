@@ -58,6 +58,7 @@ public class InventoryView : MonoBehaviour
 
     public void AssignItemToCell(InventoryItem inventoryItem, Vector2Int[] positions, Vector2Int minPosition)
     {
+        _placeItemAudio.pitch = Random.Range(0.5f, 1.2f);
         _placeItemAudio.Play();
 
         foreach (Vector2Int pos in positions)
@@ -69,7 +70,6 @@ public class InventoryView : MonoBehaviour
 
     public void PlaceInventoryItem(InventoryItem inventoryItem, Vector2Int[] positions)
     {
-
         Vector2Int minPos = positions[0];
         foreach (Vector2Int p in positions)
         {
