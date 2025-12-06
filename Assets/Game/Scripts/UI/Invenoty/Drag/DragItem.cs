@@ -1,8 +1,7 @@
-using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
-using System.Collections.Generic;
 using Inventories;
 
 public class DragItem : MonoBehaviour
@@ -17,70 +16,45 @@ public class DragItem : MonoBehaviour
 
     private readonly List<CellView> _highlightedCells = new();
 
-    public void SetIcon(Sprite icon)
-    {
-        _itemIcon.sprite = icon;
-    }
+    public void SetIcon(Sprite icon) => _itemIcon.sprite = icon;
 
     private void Update()
     {
-        CheckUICellUnderMouse();
-    }
+        ClearHighlight();
 
-    private void CheckUICellUnderMouse()
-    {
-        ClearHighlightedCells();
-
-        PointerEventData eventData = new PointerEventData(EventSystem.current);
-        eventData.position = Input.mousePosition;
-
-        List<RaycastResult> results = new List<RaycastResult>();
-        EventSystem.current.RaycastAll(eventData, results);
-
-        CellView cell = null;
-
-        foreach (var r in results)
-        {
-            var cv = r.gameObject.GetComponent<CellView>();
-            if (cv != null)
-            {
-                cv.Highlight(true); // временная подсветка центральной клетки
-                cell = cv;
-
-                Vector2Int size = Item.Size;
-                Vector2Int center = cv.GridPosition;
-
-                // Верхняя левая клетка области
-                int startX = center.x - size.x / 2;
-                int startY = center.y; // верхняя строка = центральная клетка
-
-                MatrixPosition = new Vector2Int(startX, startY);
-
-                // Debug для проверки
-                Debug.Log($"[DragItem] Item.Size = {size}");
-                Debug.Log($"[DragItem] Center Cell = {center}");
-                Debug.Log($"[DragItem] Computed Start (top-left) = {MatrixPosition}");
-
-                break; // берём только первую CellView под мышью
-            }
-        }
-
-        if (cell == null)
-            return;
+        CellView cell = GetCellUnderMouse();
+        if (cell == null) return;
 
         HighlightArea(cell);
     }
 
+    private CellView GetCellUnderMouse()
+    {
+        PointerEventData eventData = new(EventSystem.current) { position = Input.mousePosition };
+        List<RaycastResult> results = new();
+        EventSystem.current.RaycastAll(eventData, results);
+
+        foreach (var result in results)
+        {
+            CellView cell = result.gameObject.GetComponent<CellView>();
+            if (cell != null) return cell;
+        }
+
+        return null;
+    }
+
     private void HighlightArea(CellView centerCell)
     {
-        Vector2Int size = Item.Size;
         CellView[,] matrix = centerCell.InventoryMatrix;
         Vector2Int center = centerCell.GridPosition;
+        Vector2Int size = Item.Size;
 
         int startX = center.x - size.x / 2;
-        int startY = center.y; // верхняя строка = центральная клетка
+        int startY = center.y;
 
-        bool allFree = true;
+        MatrixPosition = new Vector2Int(startX, startY);
+
+        bool canPlace = true;
 
         for (int x = 0; x < size.x; x++)
         {
@@ -89,40 +63,31 @@ public class DragItem : MonoBehaviour
                 int gx = startX + x;
                 int gy = startY + y;
 
-                // Проверка выхода за границы
-                if (gx < 0 || gy < 0 ||
-                    gx >= matrix.GetLength(0) ||
-                    gy >= matrix.GetLength(1))
+                if (gx < 0 || gy < 0 || gx >= matrix.GetLength(0) || gy >= matrix.GetLength(1))
                 {
-                    allFree = false;
+                    canPlace = false;
                     continue;
                 }
 
-                CellView c = matrix[gx, gy];
-                _highlightedCells.Add(c);
+                CellView cell = matrix[gx, gy];
+                _highlightedCells.Add(cell);
 
-                if (c.InventoryItem != null)
-                    allFree = false;
-
-                Debug.Log($"[DragItem] Highlight Cell = ({gx},{gy})");
+                if (cell.InventoryItem != null)
+                    canPlace = false;
             }
         }
 
-        // Подсветка всех ячеек области
-        foreach (var c in _highlightedCells)
-            c.Highlight(allFree);
+        foreach (var cell in _highlightedCells)
+            cell.Highlight(canPlace);
     }
 
-    private void ClearHighlightedCells()
+    private void ClearHighlight()
     {
-        foreach (var c in _highlightedCells)
-            c.UnHighlight();
+        foreach (var cell in _highlightedCells)
+            cell.UnHighlight();
 
         _highlightedCells.Clear();
     }
 
-    private void OnDestroy()
-    {
-        ClearHighlightedCells();
-    }
+    private void OnDestroy() => ClearHighlight();
 }

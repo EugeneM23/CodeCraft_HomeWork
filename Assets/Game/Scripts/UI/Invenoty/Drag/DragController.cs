@@ -7,6 +7,7 @@ using UnityEngine.UI;
 public class DragController : MonoBehaviour
 {
     [SerializeField] private DragItem _dragItemPrefab;
+    [SerializeField] private GameObject _pickUpPrefab;
 
     private GraphicRaycaster _raycaster;
     private EventSystem _eventSystem;
@@ -39,7 +40,18 @@ public class DragController : MonoBehaviour
         if (TryDragFromInventoryCell())
             return;
 
-        TryDragFromEquipmentSlot();
+        if (TryDragFromEquipmentSlot())
+            return;
+
+        if (TryRaycastUnderMouse(out var hit))
+        {
+            if (hit.collider.gameObject.TryGetComponent(out WeaponMarker marker))
+            {
+                Destroy(hit.collider.gameObject);
+                CreateDragItem(this.transform, new Vector2(4, 2));
+            }
+
+        }
     }
 
     private void UpdateDrag()
@@ -59,6 +71,14 @@ public class DragController : MonoBehaviour
 
         if (TryDropOnEquipmentSlot())
             return;
+
+        if (TryRaycastUnderMouse(out RaycastHit hit))
+        {
+            var lookRotation = Quaternion.LookRotation(Vector3.right, hit.normal) * Quaternion.Euler(0, 0, 90);
+            Instantiate(_pickUpPrefab, hit.point, lookRotation);
+            Destroy(_currentDragItem.gameObject);
+            return;
+        }
 
         ReturnToOriginalPosition();
     }
@@ -150,15 +170,15 @@ public class DragController : MonoBehaviour
 
     private bool TryGetCellUnderMouse(out CellView cellView)
     {
-        return TryGetComponentUnderMouse(out cellView);
+        return TryGetUIComponentUnderMouse(out cellView);
     }
 
     private bool TryGetSlotUnderMouse(out EquipmentSlot slot)
     {
-        return TryGetComponentUnderMouse(out slot);
+        return TryGetUIComponentUnderMouse(out slot);
     }
 
-    private bool TryGetComponentUnderMouse<T>(out T component) where T : Component
+    private bool TryGetUIComponentUnderMouse<T>(out T component) where T : Component
     {
         component = null;
 
@@ -173,6 +193,12 @@ public class DragController : MonoBehaviour
         }
 
         return false;
+    }
+
+    private bool TryRaycastUnderMouse(out RaycastHit hit)
+    {
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        return Physics.Raycast(ray, out hit);
     }
 
     private DragItem CreateDragItem(Transform parent, Vector2 size)

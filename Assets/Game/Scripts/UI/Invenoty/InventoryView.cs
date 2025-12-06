@@ -8,6 +8,7 @@ public class InventoryView : MonoBehaviour
     [SerializeField] private InventoryItem _itemContainerPrefab;
     [SerializeField] private RectTransform _gridContainer;
     [SerializeField] private Vector2 _cellSize = new(100f, 100f);
+    [SerializeField] private AudioSource _placeItemAudio;
 
     private readonly Dictionary<Item, InventoryItem> _inventoryItems = new();
     public CellView[,] Cells { get; private set; }
@@ -57,6 +58,8 @@ public class InventoryView : MonoBehaviour
 
     public void AssignItemToCell(InventoryItem inventoryItem, Vector2Int[] positions, Vector2Int minPosition)
     {
+        _placeItemAudio.Play();
+
         foreach (Vector2Int pos in positions)
         {
             CellView cell = Cells[pos.x, pos.y];
@@ -66,6 +69,7 @@ public class InventoryView : MonoBehaviour
 
     public void PlaceInventoryItem(InventoryItem inventoryItem, Vector2Int[] positions)
     {
+
         Vector2Int minPos = positions[0];
         foreach (Vector2Int p in positions)
         {
