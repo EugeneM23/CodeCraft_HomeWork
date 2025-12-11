@@ -206,7 +206,7 @@ public class DragController : MonoBehaviour
         if (!TryGetSlotUnderMouse(out EquipmentSlot slot))
             return false;
 
-        if (slot.ItemTipe != _currentDragItem.Item.ItemTipe)
+        if (slot.ItemTipe != _currentDragItem.Item.ItemType)
             return false;
 
         if (slot.CurrentItem != null)

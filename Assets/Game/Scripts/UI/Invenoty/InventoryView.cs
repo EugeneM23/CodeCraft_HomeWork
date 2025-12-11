@@ -51,11 +51,6 @@ public class InventoryView : MonoBehaviour
         return container;
     }
 
-    public void AddInventoryItem(InventoryItem item)
-    {
-        _inventoryItems[item.Item] = item;
-    }
-
     public void AssignItemToCell(InventoryItem inventoryItem, Vector2Int[] positions, Vector2Int minPosition)
     {
         _placeItemAudio.pitch = Random.Range(0.5f, 1.2f);
@@ -66,23 +61,6 @@ public class InventoryView : MonoBehaviour
             CellView cell = Cells[pos.x, pos.y];
             cell.Construct(inventoryItem, pos - minPosition);
         }
-    }
-
-    public void PlaceInventoryItem(InventoryItem inventoryItem, Vector2Int[] positions)
-    {
-        Vector2Int minPos = positions[0];
-        foreach (Vector2Int p in positions)
-        {
-            if (p.x < minPos.x) minPos.x = p.x;
-            if (p.y < minPos.y) minPos.y = p.y;
-        }
-
-        Vector2 position = GetCellPosition(minPos);
-        inventoryItem.RectTransform.SetParent(_gridContainer, false);
-        inventoryItem.RectTransform.anchoredPosition = position;
-        inventoryItem.RectTransform.localScale = Vector3.one;
-
-        AssignItemToCell(inventoryItem, positions, minPos);
     }
 
     public Vector2 GetCellPosition(Vector2Int gridPos)
@@ -108,11 +86,6 @@ public class InventoryView : MonoBehaviour
     {
         foreach (Vector2Int pos in positions)
             Cells[pos.x, pos.y].Clear();
-    }
-
-    public void RemoveInventoryItem(InventoryItem draggedInventoryItem)
-    {
-        _inventoryItems[draggedInventoryItem.Item] = null;
     }
 
     public void RemoveInventoryItem(Item item)
