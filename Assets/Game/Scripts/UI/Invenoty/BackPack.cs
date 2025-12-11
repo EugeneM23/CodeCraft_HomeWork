@@ -30,6 +30,7 @@ public class BackPack : MonoBehaviour
             ItemID = ItemID.AR_02
         };
         _presenter.AddItem(_item);
+        Debug.Log(_item.ItemID);
     }
 
     [Button]

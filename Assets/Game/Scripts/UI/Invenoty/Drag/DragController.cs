@@ -17,7 +17,7 @@ public class DragController : MonoBehaviour
     private DragItem _currentDragItem;
     private bool _isDragging;
     private EquipmentSlot _sourceSlot;
-    private WeaponMarker _sourceWeaponMarker; // Сохраняем ссылку на маркер
+    private WeaponMarker _sourceWeaponMarker;
     private Vector3 _dragOffset;
 
     private void Start()
@@ -52,7 +52,6 @@ public class DragController : MonoBehaviour
 
             if (hit.collider.gameObject.TryGetComponent(out WeaponMarker marker))
             {
-                // НЕ удаляем маркер сразу, только сохраняем ссылку
                 _sourceWeaponMarker = marker;
 
                 _currentDragItem = CreateDragItem(this._dragArea.transform, new Vector2(300, 150));
@@ -93,14 +92,14 @@ public class DragController : MonoBehaviour
         {
             var lookRotation = Quaternion.LookRotation(Vector3.right, hit.normal) * Quaternion.Euler(0, 0, 90);
             Instantiate(_pickUpPrefab, hit.point, lookRotation);
-            
+
             // Удаляем маркер только если успешно создали объект в мире
             if (_sourceWeaponMarker != null)
             {
                 Destroy(_sourceWeaponMarker.gameObject);
                 _sourceWeaponMarker = null;
             }
-            
+
             Destroy(_currentDragItem.gameObject);
             return;
         }
@@ -113,18 +112,18 @@ public class DragController : MonoBehaviour
         PointerEventData pointerData = new(_eventSystem) { position = Input.mousePosition };
         List<RaycastResult> results = new();
         _raycaster.Raycast(pointerData, results);
-    
+
         foreach (RaycastResult result in results)
         {
             if (_currentDragItem != null && result.gameObject.transform.IsChildOf(_currentDragItem.transform))
                 continue;
-            
+
             if (result.gameObject == _currentDragItem?.gameObject)
                 continue;
-            
-            return true; 
+
+            return true;
         }
-    
+
         return false;
     }
 
@@ -164,7 +163,7 @@ public class DragController : MonoBehaviour
         slot.RemoveItem();
         _isDragging = true;
         _sourceWeaponMarker = null; // Обнуляем, так как тащим из экипировки
-        
+
         return true;
     }
 
@@ -184,11 +183,11 @@ public class DragController : MonoBehaviour
                 Destroy(_sourceWeaponMarker.gameObject);
                 _sourceWeaponMarker = null;
             }
-            
+
             Destroy(_currentDragItem.gameObject);
             return true;
         }
-        
+
         // Не удалось добавить
         if (_sourceWeaponMarker != null)
         {
@@ -196,7 +195,7 @@ public class DragController : MonoBehaviour
             Destroy(_currentDragItem.gameObject);
             return true;
         }
-        
+
         // Если тащили из инвентаря/экипировки - возвращаем false для возврата на место
         return false;
     }

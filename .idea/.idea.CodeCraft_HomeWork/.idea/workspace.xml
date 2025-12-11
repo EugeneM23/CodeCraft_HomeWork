@@ -4,23 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6f0b762c-5415-4a85-b17b-cc44fd47261d" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.CodeCraft_HomeWork/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.CodeCraft_HomeWork/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/UI/Invenoty/BackPack.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/UI/Invenoty/BackPack.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/UI/Invenoty/Drag/DragController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/UI/Invenoty/Drag/DragController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/UI/Invenoty/InventoryView.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/UI/Invenoty/InventoryView.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/UI/Invenoty/Presenter/InventoryPresenter.Buttons.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/UI/Invenoty/Presenter/InventoryPresenter.Buttons.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/UI/Invenoty/Presenter/InventoryPresenter.HighlightsCells.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/UI/Invenoty/Presenter/InventoryPresenter.HighlightsCells.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/UI/Invenoty/Presenter/InventoryPresenter.Items.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/UI/Invenoty/Presenter/InventoryPresenter.Items.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/UI/Invenoty/Presenter/InventoryPresenter.View.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/UI/Invenoty/Presenter/InventoryPresenter.View.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/UI/Invenoty/Presenter/InventoryPresenter.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/UI/Invenoty/Presenter/InventoryPresenter.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Inventory/Scripts/Item.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Inventory/Scripts/Item.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Inventory/Scripts/ItemID.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Inventory/Scripts/ItemID.cs" afterDir="false" />
-    </list>
+    <list default="true" id="6f0b762c-5415-4a85-b17b-cc44fd47261d" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -242,12 +226,12 @@
             <list>
               <RecentGroup>
                 <option name="FILTER_VALUES">
-                  <option value="origin/Inventory_View" />
+                  <option value="Inventory_View" />
                 </option>
               </RecentGroup>
               <RecentGroup>
                 <option name="FILTER_VALUES">
-                  <option value="Inventory_View" />
+                  <option value="origin/Inventory_View" />
                 </option>
               </RecentGroup>
               <RecentGroup>
@@ -295,7 +279,7 @@
                   <entry key="branch">
                     <value>
                       <list>
-                        <option value="origin/Inventory_View" />
+                        <option value="Inventory_View" />
                       </list>
                     </value>
                   </entry>
