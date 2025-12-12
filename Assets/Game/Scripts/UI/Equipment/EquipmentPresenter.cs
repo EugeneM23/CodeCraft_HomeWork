@@ -7,10 +7,9 @@ namespace Game.Scripts.UI.Equipment
     {
         [SerializeField] private Equipment _equipment;
 
-        public bool AddItem(Item item, Vector2Int startPosition = default)
+        public void AddItem(Item item, Vector2Int startPosition = default)
         {
             _equipment.AddItem(item, startPosition);
-            return true;
         }
 
         public void RemoveItem(Item item)

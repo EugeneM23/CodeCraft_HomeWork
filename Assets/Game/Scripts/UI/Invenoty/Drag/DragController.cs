@@ -17,7 +17,7 @@ public class DragController : MonoBehaviour
     private DragItem _currentDragItem;
     private bool _isDragging;
     private EquipmentSlot _sourceSlot;
-    private WeaponMarker _sourceWeaponMarker;
+    private SceneItem _sourceSceneItem;
     private Vector3 _dragOffset;
 
     private void Start()
@@ -29,13 +29,24 @@ public class DragController : MonoBehaviour
     private void Update()
     {
         if (Input.GetMouseButtonDown(0))
+        {
+            if (TryGetCellUnderMouse(out var cell) && cell.InventoryItem != null)
+            {
+                Debug.Log(cell.InventoryItem.Item.uniqueId);
+                _sourcePresentor.RemoveItem(cell.InventoryItem.Item.uniqueId);
+            }
+            Debug.Log(cell.InventoryItem);
+        }
+
+
+        /*if (Input.GetMouseButtonDown(0))
             StartDrag();
 
         if (Input.GetMouseButton(0) && _isDragging)
             UpdateDrag();
 
         if (Input.GetMouseButtonUp(0))
-            EndDrag();
+            EndDrag();*/
     }
 
     private void StartDrag()
@@ -50,14 +61,14 @@ public class DragController : MonoBehaviour
         {
             if (EventSystem.current.IsPointerOverGameObject()) return;
 
-            if (hit.collider.gameObject.TryGetComponent(out WeaponMarker marker))
+            if (hit.collider.gameObject.TryGetComponent(out SceneItem sceneItem))
             {
-                _sourceWeaponMarker = marker;
+                _sourceSceneItem = sceneItem;
 
                 _currentDragItem = CreateDragItem(this._dragArea.transform, new Vector2(300, 150));
 
-                _currentDragItem.Item = marker.GetItem();
-                _currentDragItem.SetIcon(marker.Icon);
+                _currentDragItem.Item = sceneItem.Item;
+                _currentDragItem.SetIcon(sceneItem.Item.Icon);
                 _currentDragItem.Presenter = _sourcePresentor;
                 _isDragging = true;
             }
@@ -91,13 +102,13 @@ public class DragController : MonoBehaviour
         if (TryRaycastUnderMouse(out RaycastHit hit))
         {
             var lookRotation = Quaternion.LookRotation(Vector3.right, hit.normal) * Quaternion.Euler(0, 0, 90);
-            Instantiate(_pickUpPrefab, hit.point, lookRotation);
+            SceneItem go = Instantiate(_pickUpPrefab, hit.point, lookRotation).GetComponent<SceneItem>();
+            go.Item = _currentDragItem.Item;
 
-            // Удаляем маркер только если успешно создали объект в мире
-            if (_sourceWeaponMarker != null)
+            if (_sourceSceneItem != null)
             {
-                Destroy(_sourceWeaponMarker.gameObject);
-                _sourceWeaponMarker = null;
+                Destroy(_sourceSceneItem.gameObject);
+                _sourceSceneItem = null;
             }
 
             Destroy(_currentDragItem.gameObject);
@@ -135,15 +146,15 @@ public class DragController : MonoBehaviour
         _currentDragItem = CreateDragItem(cell.transform.parent, cell.InventoryItem.RectTransform.sizeDelta);
 
         _currentDragItem.Presenter = cell.Presenter;
-        _currentDragItem.Item = cell.InventoryItem.Item;
-        _currentDragItem.StartPosition = cell.Presenter.GetItemPosition(cell.InventoryItem.Item);
+        _currentDragItem.Item = cell.InventoryItem.Item.Item;
+        _currentDragItem.StartPosition = cell.Presenter.GetItemPosition(cell.InventoryItem.Item.Item);
         _currentDragItem.SetIcon(cell.InventoryItem.Icon);
 
-        cell.Presenter.RemoveItem(cell.InventoryItem.Item);
+        cell.Presenter.RemoveItem(cell.InventoryItem.Item.Item);
 
         _dragOffset = default;
         _isDragging = true;
-        _sourceWeaponMarker = null; // Обнуляем, так как тащим из инвентаря
+        _sourceSceneItem = null; // Обнуляем, так как тащим из инвентаря
 
         return true;
     }
@@ -162,41 +173,42 @@ public class DragController : MonoBehaviour
         slot.Presenter.RemoveItem(slot.CurrentItem);
         slot.RemoveItem();
         _isDragging = true;
-        _sourceWeaponMarker = null; // Обнуляем, так как тащим из экипировки
+        _sourceSceneItem = null; // Обнуляем, так как тащим из экипировки
 
         return true;
     }
 
     private bool TryDropOnInventoryCell()
     {
-        if (!TryGetCellUnderMouse(out CellView cell))
-            return false;
-
-        // Пытаемся добавить ТОЛЬКО в указанную позицию
-        bool added = cell.Presenter.AddItem(_currentDragItem.Item, _currentDragItem.MatrixPosition);
-
-        if (added)
-        {
-            // Успешно добавили - удаляем маркер если он был
-            if (_sourceWeaponMarker != null)
-            {
-                Destroy(_sourceWeaponMarker.gameObject);
-                _sourceWeaponMarker = null;
-            }
-
-            Destroy(_currentDragItem.gameObject);
-            return true;
-        }
-
-        // Не удалось добавить
-        if (_sourceWeaponMarker != null)
-        {
-            // Если тащили из мира - просто удаляем DragItem, маркер остается
-            Destroy(_currentDragItem.gameObject);
-            return true;
-        }
-
-        // Если тащили из инвентаря/экипировки - возвращаем false для возврата на место
+        // if (!TryGetCellUnderMouse(out CellView cell))
+        //     return false;
+        //
+        // // Пытаемся добавить ТОЛЬКО в указанную позицию
+        // bool added = cell.Presenter.AddItem(_currentDragItem.Item, _currentDragItem.MatrixPosition);
+        //
+        // if (added)
+        // {
+        //     // Успешно добавили - удаляем маркер если он был
+        //     if (_sourceSceneItem != null)
+        //     {
+        //         Destroy(_sourceSceneItem.gameObject);
+        //         _sourceSceneItem = null;
+        //     }
+        //
+        //     Destroy(_currentDragItem.gameObject);
+        //     return true;
+        // }
+        //
+        // // Не удалось добавить
+        // if (_sourceSceneItem != null)
+        // {
+        //     // Если тащили из мира - просто удаляем DragItem, маркер остается
+        //     Destroy(_currentDragItem.gameObject);
+        //     return true;
+        // }
+        //
+        // // Если тащили из инвентаря/экипировки - возвращаем false для возврата на место
+        // return false;
         return false;
     }
 
@@ -214,11 +226,10 @@ public class DragController : MonoBehaviour
         slot.AddItem(_currentDragItem.Item, _currentDragItem.Icon);
         _sourceSlot = slot;
 
-        // Успешно добавили в слот - удаляем маркер если он был
-        if (_sourceWeaponMarker != null)
+        if (_sourceSceneItem != null)
         {
-            Destroy(_sourceWeaponMarker.gameObject);
-            _sourceWeaponMarker = null;
+            Destroy(_sourceSceneItem.gameObject);
+            _sourceSceneItem = null;
         }
 
         Destroy(_currentDragItem.gameObject);
@@ -232,7 +243,7 @@ public class DragController : MonoBehaviour
         {
             _sourceSlot.AddItem(_currentDragItem.Item, _currentDragItem.Icon);
         }
-        else if (_sourceWeaponMarker == null) // Если не из мира, значит из инвентаря
+        else if (_sourceSceneItem == null) // Если не из мира, значит из инвентаря
         {
             _currentDragItem.Presenter.AddItem(_currentDragItem.Item, _currentDragItem.StartPosition);
         }

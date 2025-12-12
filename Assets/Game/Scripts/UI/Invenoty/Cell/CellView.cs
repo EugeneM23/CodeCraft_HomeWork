@@ -15,7 +15,12 @@ public class CellView : MonoBehaviour
     private InventoryItem _inventoryItem;
     public CellView[,] InventoryMatrix => _inventoryMatrix;
     public Vector2Int GridPosition => _gridPosition;
-    public InventoryItem InventoryItem => _inventoryItem;
+    public InventoryItem InventoryItem
+    {
+        get => _inventoryItem;
+        set => _inventoryItem = value;
+    }
+
     public IInventoryCollection Presenter => _presenter;
 
     public void Construct(IInventoryCollection presenter, Vector2Int gridPosition, CellView[,] cells)

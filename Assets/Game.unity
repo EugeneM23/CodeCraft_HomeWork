@@ -124,17 +124,6 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 6447791256577935817, guid: 085485a3e8d9840348af1331b233e232, type: 3}
   m_PrefabInstance: {fileID: 2003383225}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &48203814 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3896440542098759801, guid: 085485a3e8d9840348af1331b233e232, type: 3}
-  m_PrefabInstance: {fileID: 2003383225}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1787361611}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c281f87208ed411eaf81516040082f45, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &54124627
 GameObject:
   m_ObjectHideFlags: 0
@@ -972,7 +961,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _view: {fileID: 1787361612}
-  _itemCatalog: {fileID: 48203814}
   _columns: 5
   _rows: 3
 --- !u!82 &1787361621
@@ -1413,7 +1401,6 @@ GameObject:
   - component: {fileID: 679921831513461687}
   - component: {fileID: 1521936123479235184}
   - component: {fileID: 4792944625163628353}
-  - component: {fileID: 9178248304952006588}
   - component: {fileID: 7756850200214645762}
   - component: {fileID: 7756850200214645763}
   - component: {fileID: 7756850200214645764}
@@ -1735,6 +1722,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _presenter: {fileID: 7756850200214645763}
+  _items:
+  - {fileID: 11400000, guid: 46162189118124311ad016055c895131, type: 2}
+  - {fileID: 11400000, guid: 46162189118124311ad016055c895131, type: 2}
 --- !u!114 &7756850200214645763
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1748,7 +1738,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _view: {fileID: 4792944625163628353}
-  _itemCatalog: {fileID: 9178248304952006588}
   _columns: 7
   _rows: 7
 --- !u!114 &7756850200214645764
@@ -1788,110 +1777,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &9178248304952006588
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 845462845197929360}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c281f87208ed411eaf81516040082f45, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  serializationData:
-    SerializedFormat: 2
-    SerializedBytes: 
-    ReferencedUnityObjects:
-    - {fileID: 9173757791638715115, guid: a9fd30c0df17c43f9a2f4fd2ab4c3b7a, type: 3}
-    - {fileID: 8027571100345638807, guid: 117ea7f96d7014a738e16b8debf2b314, type: 3}
-    - {fileID: 21300000, guid: 6448b82046e9dd542ab37ce629da1cf1, type: 3}
-    SerializedBytesString: 
-    Prefab: {fileID: 0}
-    PrefabModificationsReferencedUnityObjects: []
-    PrefabModifications: []
-    SerializationNodes:
-    - Name: _items
-      Entry: 7
-      Data: 0|System.Collections.Generic.Dictionary`2[[Inventories.ItemID, Inventory],[InventoryItemData,
-        Assembly-CSharp]], mscorlib
-    - Name: comparer
-      Entry: 7
-      Data: 1|System.Collections.Generic.EnumEqualityComparer`1[[Inventories.ItemID,
-        Inventory]], mscorlib
-    - Name: 
-      Entry: 12
-      Data: 0
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 12
-      Data: 3
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
-      Data: 2
-    - Name: $v
-      Entry: 7
-      Data: 2|InventoryItemData, Assembly-CSharp
-    - Name: Icon
-      Entry: 10
-      Data: 0
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
-      Data: 3
-    - Name: $v
-      Entry: 7
-      Data: 3|InventoryItemData, Assembly-CSharp
-    - Name: Icon
-      Entry: 10
-      Data: 1
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
-      Data: 1
-    - Name: $v
-      Entry: 7
-      Data: 4|InventoryItemData, Assembly-CSharp
-    - Name: Icon
-      Entry: 10
-      Data: 2
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
 --- !u!82 &9178248304952006589
 AudioSource:
   m_ObjectHideFlags: 0
