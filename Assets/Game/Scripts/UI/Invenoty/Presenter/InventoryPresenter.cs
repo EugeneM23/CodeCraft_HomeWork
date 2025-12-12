@@ -20,29 +20,44 @@ public class InventoryPresenter : MonoBehaviour, IInventoryCollection
         UpdateView();
     }
 
-    public void AddItem(Item item, Vector2Int startPosition = default)
+    private void FixedUpdate()
+    {
+        for (int i = 0; i < _inventory._cells.GetLength(0); i++)
+        {
+            for (int j = 0; j < _inventory._cells.GetLength(1); j++)
+            {
+                _view._cells[i, j].Highlight(_inventory._cells[i, j] != null);
+            }
+        }
+
+        foreach (ItemInstance item in _inventory)
+        {
+            Debug.Log(item.uniqueId);
+        }
+    }
+
+    public bool AddItem(ItemData itemData, Vector2Int startPosition = default)
     {
         ItemInstance instance;
 
         if (startPosition == default)
         {
-            instance = _inventory.AddItem(item);
+            instance = _inventory.AddItem(itemData);
         }
         else
         {
-            instance = _inventory.AddItem(item, startPosition);
+            instance = _inventory.AddItem(itemData, startPosition);
         }
 
         if (instance != null)
         {
-            Vector2Int[] positions = _inventory.GetItemGridPositions(item);
+            Vector2Int[] positions = _inventory.GetItemGridPositions(instance);
             _view.CreateInventoryItem(instance, positions);
+            return true;
         }
-    }
 
-    public void RemoveItem(Item item)
-    {
-        throw new NotImplementedException();
+
+        return false;
     }
 
     private void OnAddedItem(ItemInstance instance, Vector2Int position)
@@ -71,13 +86,15 @@ public class InventoryPresenter : MonoBehaviour, IInventoryCollection
         Debug.Log(_inventory.Count);
     }
 
-    public Vector2Int GetItemPosition(Item item) => _inventory.GetItemGridPositions(item)[0];
+    public Vector2Int GetItemPosition(ItemInstance instance)
+        => instance.GridPosition;
 
     public void RemoveItem(string id)
     {
         _inventory.RemoveInstance(id);
         _view.RemoveItem(id);
     }
+
 
     [Button]
     public void Reorganize()

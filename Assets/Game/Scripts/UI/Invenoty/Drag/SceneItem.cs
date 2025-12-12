@@ -3,5 +3,5 @@ using UnityEngine;
 
 public class SceneItem : MonoBehaviour
 {
-    public Item Item { get; set; }
+    public ItemData ItemData { get; set; }
 }

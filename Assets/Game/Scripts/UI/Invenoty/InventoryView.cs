@@ -10,7 +10,7 @@ public class InventoryView : MonoBehaviour
     [SerializeField] private Vector2 _cellSize = new(100f, 100f);
 
     private readonly Dictionary<string, InventoryItem> _inventoryItems = new();
-    private CellView[,] _cells;
+    public CellView[,] _cells;
 
     public void InitializeGrid(int columns, int rows, InventoryPresenter presenter)
     {
@@ -43,7 +43,7 @@ public class InventoryView : MonoBehaviour
 
         inventoryItem.transform.position = _cells[positions[0].x, positions[0].y].transform.position;
 
-        inventoryItem.SetItem(instance);
+        inventoryItem.SetupItem(instance, _cellSize);
         _inventoryItems[instance.uniqueId] = inventoryItem;
 
         foreach (Vector2Int pos in positions)

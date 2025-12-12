@@ -27,26 +27,43 @@ namespace Inventories
             _items = new Dictionary<string, ItemInstance>();
         }
 
-        public ItemInstance AddItem(in Item item, Vector2Int? position = null)
+        public ItemInstance AddItem(in ItemData itemData, Vector2Int? position = null)
         {
             Vector2Int targetPosition;
+            ItemInstance instance = null;
             if (position.HasValue)
             {
                 targetPosition = position.Value;
+                if (Fit(itemData.Size, targetPosition.x, targetPosition.y))
+                {
+                    instance = new ItemInstance(itemData);
+                    instance.GridPosition = targetPosition;
+                    PlaceInstanceInGrid(instance, targetPosition.x, targetPosition.y);
+
+                    _items.Add(instance.uniqueId, instance);
+
+                    OnAdded?.Invoke(instance, targetPosition);
+                }
+                else
+                {
+                    Debug.Log("Can't place item");
+                    return null;
+                }
             }
             else
             {
-                if (!FindFreePosition(item.Size, out targetPosition))
-                    return null;
+                if (FindFreePosition(itemData.Size, out targetPosition))
+                {
+                    instance = new ItemInstance(itemData);
+                    instance.GridPosition = targetPosition;
+                    PlaceInstanceInGrid(instance, targetPosition.x, targetPosition.y);
+
+                    _items.Add(instance.uniqueId, instance);
+
+                    OnAdded?.Invoke(instance, targetPosition);
+                }
             }
 
-            item.GridPosition = targetPosition;
-            ItemInstance instance = new ItemInstance(item);
-
-            PlaceInstanceInGrid(instance, targetPosition.x, targetPosition.y);
-            _items.Add(instance.uniqueId, instance);
-
-            OnAdded?.Invoke(instance, targetPosition);
 
             return instance;
         }
@@ -106,10 +123,10 @@ namespace Inventories
 
         private void PlaceInstanceInGrid(ItemInstance instance, int posX, int posY)
         {
-            Item item = instance.Item;
-            for (int x = posX; x < posX + item.Size.x; x++)
+            ItemData itemData = instance.itemData;
+            for (int x = posX; x < posX + itemData.Size.x; x++)
             {
-                for (int y = posY; y < posY + item.Size.y; y++)
+                for (int y = posY; y < posY + itemData.Size.y; y++)
                 {
                     _cells[x, y] = instance;
                 }
@@ -118,26 +135,33 @@ namespace Inventories
 
         public bool RemoveInstance(string id)
         {
-            if (!_items.ContainsKey(id))
-                return false;
+            if (!_items.TryGetValue(id, out var item))
+                throw new KeyNotFoundException();
+
+            Vector2Int[] positions = GetItemGridPositions(item);
+
+            foreach (var position in positions)
+            {
+                _cells[position.x, position.y] = null;
+            }
 
             _items.Remove(id);
 
             return true;
         }
 
-        public Vector2Int[] GetItemGridPositions(Item item)
+        public Vector2Int[] GetItemGridPositions(ItemInstance instance)
         {
-            int cellCount = item.Size.x * item.Size.y;
+            ItemData itemData = instance.itemData;
+            int cellCount = itemData.Size.x * itemData.Size.y;
             Vector2Int[] positions = new Vector2Int[cellCount];
 
             int index = 0;
-            for (int x = item.GridPosition.x; x < item.GridPosition.x + item.Size.x; x++)
+            for (int x = instance.GridPosition.x; x < instance.GridPosition.x + itemData.Size.x; x++)
             {
-                for (int y = item.GridPosition.y; y < item.GridPosition.y + item.Size.y; y++)
+                for (int y = instance.GridPosition.y; y < instance.GridPosition.y + itemData.Size.y; y++)
                 {
-                    positions[index] = new Vector2Int(x, y);
-                    index++;
+                    positions[index++] = new Vector2Int(x, y);
                 }
             }
 

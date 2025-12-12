@@ -8,7 +8,7 @@ public class DragItem : MonoBehaviour
 {
     [SerializeField] private Image _itemIcon;
 
-    public Item Item { get; set; }
+    public ItemData ItemData { get; set; }
     public Sprite Icon => _itemIcon.sprite;
     public IInventoryCollection Presenter { get; set; }
     public Vector2Int MatrixPosition { get; set; }
@@ -47,7 +47,7 @@ public class DragItem : MonoBehaviour
     {
         CellView[,] matrix = centerCell.InventoryMatrix;
         Vector2Int center = centerCell.GridPosition;
-        Vector2Int size = Item.Size;
+        Vector2Int size = ItemData.Size;
 
         int startX = center.x - size.x / 2;
         int startY = center.y;

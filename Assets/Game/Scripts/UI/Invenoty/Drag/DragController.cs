@@ -28,7 +28,7 @@ public class DragController : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        /*if (Input.GetMouseButtonDown(0))
         {
             if (TryGetCellUnderMouse(out var cell) && cell.InventoryItem != null)
             {
@@ -36,17 +36,17 @@ public class DragController : MonoBehaviour
                 _sourcePresentor.RemoveItem(cell.InventoryItem.Item.uniqueId);
             }
             Debug.Log(cell.InventoryItem);
-        }
+        }*/
 
 
-        /*if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0))
             StartDrag();
 
         if (Input.GetMouseButton(0) && _isDragging)
             UpdateDrag();
 
         if (Input.GetMouseButtonUp(0))
-            EndDrag();*/
+            EndDrag();
     }
 
     private void StartDrag()
@@ -67,10 +67,12 @@ public class DragController : MonoBehaviour
 
                 _currentDragItem = CreateDragItem(this._dragArea.transform, new Vector2(300, 150));
 
-                _currentDragItem.Item = sceneItem.Item;
-                _currentDragItem.SetIcon(sceneItem.Item.Icon);
+                _currentDragItem.ItemData = sceneItem.ItemData;
+                _currentDragItem.SetIcon(sceneItem.ItemData.Icon);
                 _currentDragItem.Presenter = _sourcePresentor;
                 _isDragging = true;
+                
+                Destroy(_sourceSceneItem.gameObject);
             }
         }
     }
@@ -103,7 +105,7 @@ public class DragController : MonoBehaviour
         {
             var lookRotation = Quaternion.LookRotation(Vector3.right, hit.normal) * Quaternion.Euler(0, 0, 90);
             SceneItem go = Instantiate(_pickUpPrefab, hit.point, lookRotation).GetComponent<SceneItem>();
-            go.Item = _currentDragItem.Item;
+            go.ItemData = _currentDragItem.ItemData;
 
             if (_sourceSceneItem != null)
             {
@@ -146,11 +148,11 @@ public class DragController : MonoBehaviour
         _currentDragItem = CreateDragItem(cell.transform.parent, cell.InventoryItem.RectTransform.sizeDelta);
 
         _currentDragItem.Presenter = cell.Presenter;
-        _currentDragItem.Item = cell.InventoryItem.Item.Item;
-        _currentDragItem.StartPosition = cell.Presenter.GetItemPosition(cell.InventoryItem.Item.Item);
+        _currentDragItem.ItemData = cell.InventoryItem.Item.itemData;
+        _currentDragItem.StartPosition = cell.Presenter.GetItemPosition(cell.InventoryItem.Item);
         _currentDragItem.SetIcon(cell.InventoryItem.Icon);
 
-        cell.Presenter.RemoveItem(cell.InventoryItem.Item.Item);
+        cell.Presenter.RemoveItem(cell.InventoryItem.Item.uniqueId);
 
         _dragOffset = default;
         _isDragging = true;
@@ -161,55 +163,51 @@ public class DragController : MonoBehaviour
 
     private bool TryDragFromEquipmentSlot()
     {
-        if (!TryGetSlotUnderMouse(out EquipmentSlot slot) || slot.CurrentItem == null)
+        if (!TryGetSlotUnderMouse(out EquipmentSlot slot) || slot.CurrentItemData == null)
             return false;
 
         _sourceSlot = slot;
         _currentDragItem = CreateDragItem(slot.transform.parent, slot.GetComponent<RectTransform>().sizeDelta);
         _currentDragItem.SetIcon(slot.Icon);
-        _currentDragItem.Item = slot.CurrentItem;
+        _currentDragItem.ItemData = slot.CurrentItemData;
         _currentDragItem.Presenter = slot.Presenter;
 
-        slot.Presenter.RemoveItem(slot.CurrentItem);
         slot.RemoveItem();
         _isDragging = true;
-        _sourceSceneItem = null; // Обнуляем, так как тащим из экипировки
+        _sourceSceneItem = null;
 
         return true;
     }
 
     private bool TryDropOnInventoryCell()
     {
-        // if (!TryGetCellUnderMouse(out CellView cell))
-        //     return false;
-        //
-        // // Пытаемся добавить ТОЛЬКО в указанную позицию
-        // bool added = cell.Presenter.AddItem(_currentDragItem.Item, _currentDragItem.MatrixPosition);
-        //
-        // if (added)
-        // {
-        //     // Успешно добавили - удаляем маркер если он был
-        //     if (_sourceSceneItem != null)
-        //     {
-        //         Destroy(_sourceSceneItem.gameObject);
-        //         _sourceSceneItem = null;
-        //     }
-        //
-        //     Destroy(_currentDragItem.gameObject);
-        //     return true;
-        // }
-        //
-        // // Не удалось добавить
-        // if (_sourceSceneItem != null)
-        // {
-        //     // Если тащили из мира - просто удаляем DragItem, маркер остается
-        //     Destroy(_currentDragItem.gameObject);
-        //     return true;
-        // }
-        //
-        // // Если тащили из инвентаря/экипировки - возвращаем false для возврата на место
-        // return false;
-        return false;
+        if (!TryGetCellUnderMouse(out CellView cell))
+            return false;
+
+        bool succes = cell.Presenter.AddItem(_currentDragItem.ItemData, _currentDragItem.MatrixPosition);
+
+        Debug.Log(succes);
+        Destroy(_currentDragItem.gameObject);
+        _sourceSceneItem = null;
+
+        if (succes)
+        {
+            if (_sourceSceneItem != null)
+            {
+                Destroy(_sourceSceneItem.gameObject);
+                _sourceSceneItem = null;
+            }
+        }
+
+        if (_sourceSceneItem != null)
+        {
+            // Если тащили из мира - просто удаляем DragItem, маркер остается
+            Destroy(_currentDragItem.gameObject);
+            return true;
+        }
+
+        // Если тащили из инвентаря/экипировки - возвращаем false для возврата на место
+        return succes;
     }
 
     private bool TryDropOnEquipmentSlot()
@@ -217,13 +215,13 @@ public class DragController : MonoBehaviour
         if (!TryGetSlotUnderMouse(out EquipmentSlot slot))
             return false;
 
-        if (slot.ItemTipe != _currentDragItem.Item.ItemType)
+        if (slot.ItemTipe != _currentDragItem.ItemData.ItemType)
             return false;
 
-        if (slot.CurrentItem != null)
-            _currentDragItem.Presenter.AddItem(slot.CurrentItem);
+        if (slot.CurrentItemData != null)
+            _currentDragItem.Presenter.AddItem(slot.CurrentItemData);
 
-        slot.AddItem(_currentDragItem.Item, _currentDragItem.Icon);
+        slot.AddItem(_currentDragItem.ItemData, _currentDragItem.Icon);
         _sourceSlot = slot;
 
         if (_sourceSceneItem != null)
@@ -238,15 +236,8 @@ public class DragController : MonoBehaviour
 
     private void ReturnToOriginalPosition()
     {
-        // Если тащили из экипировки или инвентаря - возвращаем назад
-        if (_currentDragItem.Presenter is EquipmentPresenter)
-        {
-            _sourceSlot.AddItem(_currentDragItem.Item, _currentDragItem.Icon);
-        }
-        else if (_sourceSceneItem == null) // Если не из мира, значит из инвентаря
-        {
-            _currentDragItem.Presenter.AddItem(_currentDragItem.Item, _currentDragItem.StartPosition);
-        }
+        if (_sourceSceneItem == null) 
+            _currentDragItem.Presenter.AddItem(_currentDragItem.ItemData, _currentDragItem.StartPosition);
 
         Destroy(_currentDragItem.gameObject);
     }

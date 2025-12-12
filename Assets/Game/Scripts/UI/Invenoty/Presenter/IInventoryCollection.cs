@@ -3,7 +3,7 @@ using UnityEngine;
 
 public interface IInventoryCollection
 {
-    void AddItem(Item item, Vector2Int startPosition = default);
-    void RemoveItem(Item item);
-    Vector2Int GetItemPosition(Item cellViewItem);
+    bool AddItem(ItemData itemData, Vector2Int startPosition = default);
+    void RemoveItem(string id);
+    Vector2Int GetItemPosition(ItemInstance item);
 }

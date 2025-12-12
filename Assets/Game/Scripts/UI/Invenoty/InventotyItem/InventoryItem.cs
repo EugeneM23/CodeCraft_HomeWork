@@ -17,16 +17,16 @@ public class InventoryItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     private bool _isDragEnable;
     private Vector3 _dragOffset;
 
-    public void SetItem(ItemInstance item)
+    public void SetupItem(ItemInstance item, Vector2 cellSize)
     {
         _item = item;
-        _itemImage.sprite = item.Item.Icon;
+        _itemImage.sprite = item.itemData.Icon;
 
-        Vector2 delta = _rectTransform.sizeDelta;
-        delta.x *= item.Item.Size.x;
-        delta.y *= item.Item.Size.y;
+        cellSize.x *= item.itemData.Size.x;
+        cellSize.y *= item.itemData.Size.y;
+        Vector2 delta = new Vector2(cellSize.x, cellSize.y);
+
         _rectTransform.sizeDelta = delta;
-        
     }
 
     public void OnPointerEnter(PointerEventData eventData)

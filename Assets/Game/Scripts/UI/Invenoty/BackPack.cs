@@ -5,7 +5,7 @@ using UnityEngine;
 public class BackPack : MonoBehaviour
 {
     [SerializeField] private InventoryPresenter _presenter;
-    [SerializeField] private Item[] _items;
+    [SerializeField] private ItemData[] _items;
 
     private void Start()
     {

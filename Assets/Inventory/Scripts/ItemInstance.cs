@@ -1,3 +1,4 @@
+using UnityEngine;
 using UnityEngine.Serialization;
 
 namespace Inventories
@@ -6,12 +7,14 @@ namespace Inventories
     public class ItemInstance
     {
         public string uniqueId;
-        public Item Item;
+        public ItemData itemData;
 
-        public ItemInstance(Item type)
+        public ItemInstance(ItemData type)
         {
-            Item = type;
+            itemData = type;
             uniqueId = System.Guid.NewGuid().ToString();
         }
+
+        public Vector2Int GridPosition { get; set; }
     }
 }
