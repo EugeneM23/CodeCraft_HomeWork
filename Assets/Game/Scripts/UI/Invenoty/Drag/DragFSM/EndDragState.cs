@@ -1,7 +1,5 @@
 using Game.Scripts.UI.Equipment;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
 public class EndDragState : BaseState
 {
@@ -26,6 +24,11 @@ public class EndDragState : BaseState
         DropItemToScene();
     }
 
+    public override void Exit()
+    {
+        _fsm.UnHighlight();
+    }
+
     private bool TryPlaceInCell()
     {
         if (!_fsm.TryGetComponentUnderMouse(out CellView cellView))
@@ -45,10 +48,28 @@ public class EndDragState : BaseState
         if (!_fsm.TryGetComponentUnderMouse(out EquipmentSlot slot))
             return false;
 
+        if (slot.InventoryItem != null)
+            AddItemToOccupiedSlot(slot);
+        else
+            AddItemToEmptySlot(slot);
+
+        return true;
+    }
+
+    private void AddItemToOccupiedSlot(EquipmentSlot slot)
+    {
+        _fsm.AddItemToInventory(slot.InventoryItem, default);
+        GameObject.Destroy(slot.InventoryItem.gameObject);
+        slot.AddItem(_fsm.CurrenDragItem);
+
+        _fsm.SetState<IdleDragState>();
+    }
+
+    private void AddItemToEmptySlot(EquipmentSlot slot)
+    {
         slot.AddItem(_fsm.CurrenDragItem);
         _fsm.CurrenDragItem = null;
         _fsm.SetState<IdleDragState>();
-        return true;
     }
 
     private bool IsOverUI()

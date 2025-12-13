@@ -190,5 +190,10 @@ namespace Inventories
 
         IEnumerator IEnumerable.GetEnumerator()
             => GetEnumerator();
+
+        public bool IsFree(Vector2Int cellIndex)
+        {
+            return _cells[cellIndex.x, cellIndex.y] == null;
+        }
     }
 }

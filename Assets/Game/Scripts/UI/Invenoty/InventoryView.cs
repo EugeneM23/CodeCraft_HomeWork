@@ -62,4 +62,9 @@ public class InventoryView : MonoBehaviour
 
         _inventoryItems.Remove(id);
     }
+
+    public CellView GetCell(Vector2Int cellIndex)
+    {
+        return _cells[cellIndex.x, cellIndex.y];
+    }
 }

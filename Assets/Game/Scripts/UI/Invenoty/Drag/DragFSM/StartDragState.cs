@@ -21,6 +21,12 @@ public class StartDragState : BaseState
         _fsm.SetState<IdleDragState>();
     }
 
+    public override void Exit()
+    {
+        if (_fsm.CurrenDragItem != null)
+            _fsm.CurrenDragItem.DisableBackGround();
+    }
+
     private bool TryStartDragFromCell()
     {
         if (!_fsm.TryGetComponentUnderMouse<CellView>(out var cell))
@@ -33,10 +39,10 @@ public class StartDragState : BaseState
         _fsm.DragOffset = _fsm.CurrenDragItem.transform.position - Input.mousePosition;
         _fsm.DragItemCell = _fsm.GetDragItemCell(_fsm.CurrenDragItem, Input.mousePosition);
         _fsm.StartDragCell = cell.GridPosition - _fsm.DragItemCell;
-        
+
         _fsm.RemoveItemFromInventory(_fsm.CurrenDragItem);
         _fsm.SetState<UpdateDragState>();
-        
+
         return true;
     }
 
@@ -46,8 +52,9 @@ public class StartDragState : BaseState
             return false;
 
         _fsm.CurrenDragItem = slot.InventoryItem;
+        slot.RemoveItem();
         _fsm.SetState<UpdateDragState>();
-        
+
         return true;
     }
 
@@ -57,7 +64,7 @@ public class StartDragState : BaseState
             return false;
 
         Debug.Log("Dragging scene");
-        
+
         return true;
     }
 }

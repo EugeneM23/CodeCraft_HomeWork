@@ -15,27 +15,7 @@ namespace Game.Scripts.UI.Equipment
         [SerializeField] private AudioSource _addItemAudio;
         [SerializeField] private AudioSource _removeItemAudio;
 
-        public IInventoryCollection Presenter => _presenter;
-        public Sprite Icon => _itemSlot.sprite;
-        public ItemType ItemTipe => _itemType;
-        public ItemData CurrentItemData { get; set; }
-
-        private ItemData _itemData;
-
         public InventoryItem InventoryItem;
-
-        public void AddItem(ItemData itemData)
-        {
-            _addItemAudio.pitch = Random.Range(0.5f, 1.2f);
-
-            _addItemAudio.Play();
-
-
-            // CurrentItemData = itemData;
-            // _itemSlot.enabled = true;
-            // _itemData = itemData;
-            // _itemSlot.sprite = itemData.Icon;
-        }
 
         public void AddItem(InventoryItem item)
         {
@@ -52,8 +32,8 @@ namespace Game.Scripts.UI.Equipment
             _removeItemAudio.pitch = Random.Range(0.5f, 1.2f);
 
             _removeItemAudio.Play();
-            CurrentItemData = null;
             _itemSlot.enabled = false;
+            InventoryItem = null;
         }
     }
 }

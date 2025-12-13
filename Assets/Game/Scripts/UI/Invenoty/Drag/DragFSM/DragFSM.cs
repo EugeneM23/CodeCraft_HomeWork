@@ -7,6 +7,7 @@ using UnityEngine.UI;
 public class DragFSM : MonoBehaviour
 {
     [SerializeField] private InventoryPresenter _inventoryPresenter;
+    
     private Dictionary<Type, IState> _states;
     private IState _currentState;
     private RaycastDetector _raycastDetector;
@@ -85,4 +86,36 @@ public class DragFSM : MonoBehaviour
 
         return new Vector2Int(cellX, cellY);
     }
+
+    public void Highlight(Vector2Int cellIndex)
+    {
+        Vector2Int size = CurrenDragItem.Item.itemData.Size;
+
+        // Вычисляем начальную позицию предмета, учитывая смещение от точки захвата
+        Vector2Int startPosition = new Vector2Int(
+            cellIndex.x - DragItemCell.x,
+            cellIndex.y - DragItemCell.y
+        );
+
+        // Создаем массив всех клеточек, которые занимает предмет
+        Vector2Int[] cells = new Vector2Int[size.x * size.y];
+        int index = 0;
+
+        for (int y = 0; y < size.y; y++)
+        {
+            for (int x = 0; x < size.x; x++)
+            {
+                cells[index] = new Vector2Int(
+                    startPosition.x + x,
+                    startPosition.y + y
+                );
+                index++;
+            }
+        }
+
+        _inventoryPresenter.Highlight(cells);
+    }
+
+    public void UnHighlight() =>
+        _inventoryPresenter.UnHighlight();
 }

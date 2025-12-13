@@ -8,9 +8,12 @@ public class InventoryPresenter : MonoBehaviour, IInventoryCollection
     [SerializeField] private int _columns = 4;
     [SerializeField] private int _rows = 7;
     private Inventory _inventory;
+    private Vector2Int[] _highlightedCells;
 
     private void Awake()
     {
+        _highlightedCells = new Vector2Int[_columns * _rows];
+
         _inventory = new Inventory(_columns, _rows);
         _view.InitializeGrid(_columns, _rows, this);
     }
@@ -53,5 +56,32 @@ public class InventoryPresenter : MonoBehaviour, IInventoryCollection
     {
         // _inventory.ReorganizeSpace();
         // UpdateView();
+    }
+
+    public void Highlight(Vector2Int[] cells)
+    {
+        UnHighlight();
+
+        _highlightedCells = cells;
+
+        foreach (Vector2Int cellIndex in cells)
+            if (!IsValidCell(cellIndex) || !_inventory.IsFree(cellIndex))
+                return;
+
+        foreach (Vector2Int cellIndex in cells)
+            _view.GetCell(cellIndex).Highlight(true);
+    }
+
+    public void UnHighlight()
+    {
+        foreach (Vector2Int cellIndex in _highlightedCells)
+            if (IsValidCell(cellIndex))
+                _view.GetCell(cellIndex).UnHighlight();
+    }
+
+    private bool IsValidCell(Vector2Int cellIndex)
+    {
+        return cellIndex.x >= 0 && cellIndex.x < _columns &&
+               cellIndex.y >= 0 && cellIndex.y < _rows;
     }
 }

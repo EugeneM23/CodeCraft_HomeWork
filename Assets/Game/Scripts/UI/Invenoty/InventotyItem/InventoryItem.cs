@@ -43,4 +43,9 @@ public class InventoryItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
         color.a = 0f;
         _background.color = color;
     }
+
+    public void DisableBackGround()
+    {
+        _background.enabled = false;
+    }
 }
