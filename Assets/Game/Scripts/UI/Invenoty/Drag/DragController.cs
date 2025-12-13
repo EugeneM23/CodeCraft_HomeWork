@@ -16,7 +16,6 @@ public class DragController : MonoBehaviour
 
     private DragItem _currentDragItem;
     private bool _isDragging;
-    private EquipmentSlot _sourceSlot;
     private SceneItem _sourceSceneItem;
     private Vector3 _dragOffset;
 
@@ -38,6 +37,7 @@ public class DragController : MonoBehaviour
             Debug.Log(cell.InventoryItem);
         }*/
 
+        Debug.Log(_sourceSceneItem);
 
         if (Input.GetMouseButtonDown(0))
             StartDrag();
@@ -65,14 +65,12 @@ public class DragController : MonoBehaviour
             {
                 _sourceSceneItem = sceneItem;
 
-                _currentDragItem = CreateDragItem(this._dragArea.transform, new Vector2(300, 150));
+                _currentDragItem = CreateDragItem(_dragArea.transform, new Vector2(300, 150));
 
                 _currentDragItem.ItemData = sceneItem.ItemData;
                 _currentDragItem.SetIcon(sceneItem.ItemData.Icon);
                 _currentDragItem.Presenter = _sourcePresentor;
                 _isDragging = true;
-                
-                Destroy(_sourceSceneItem.gameObject);
             }
         }
     }
@@ -108,10 +106,7 @@ public class DragController : MonoBehaviour
             go.ItemData = _currentDragItem.ItemData;
 
             if (_sourceSceneItem != null)
-            {
                 Destroy(_sourceSceneItem.gameObject);
-                _sourceSceneItem = null;
-            }
 
             Destroy(_currentDragItem.gameObject);
             return;
@@ -156,7 +151,7 @@ public class DragController : MonoBehaviour
 
         _dragOffset = default;
         _isDragging = true;
-        _sourceSceneItem = null; // Обнуляем, так как тащим из инвентаря
+        _sourceSceneItem = null;
 
         return true;
     }
@@ -166,7 +161,6 @@ public class DragController : MonoBehaviour
         if (!TryGetSlotUnderMouse(out EquipmentSlot slot) || slot.CurrentItemData == null)
             return false;
 
-        _sourceSlot = slot;
         _currentDragItem = CreateDragItem(slot.transform.parent, slot.GetComponent<RectTransform>().sizeDelta);
         _currentDragItem.SetIcon(slot.Icon);
         _currentDragItem.ItemData = slot.CurrentItemData;
@@ -174,7 +168,6 @@ public class DragController : MonoBehaviour
 
         slot.RemoveItem();
         _isDragging = true;
-        _sourceSceneItem = null;
 
         return true;
     }
@@ -186,27 +179,15 @@ public class DragController : MonoBehaviour
 
         bool succes = cell.Presenter.AddItem(_currentDragItem.ItemData, _currentDragItem.MatrixPosition);
 
-        Debug.Log(succes);
         Destroy(_currentDragItem.gameObject);
-        _sourceSceneItem = null;
 
         if (succes)
         {
             if (_sourceSceneItem != null)
-            {
                 Destroy(_sourceSceneItem.gameObject);
-                _sourceSceneItem = null;
-            }
         }
 
-        if (_sourceSceneItem != null)
-        {
-            // Если тащили из мира - просто удаляем DragItem, маркер остается
-            Destroy(_currentDragItem.gameObject);
-            return true;
-        }
 
-        // Если тащили из инвентаря/экипировки - возвращаем false для возврата на место
         return succes;
     }
 
@@ -218,11 +199,17 @@ public class DragController : MonoBehaviour
         if (slot.ItemTipe != _currentDragItem.ItemData.ItemType)
             return false;
 
-        if (slot.CurrentItemData != null)
+        if (slot.CurrentItemData != null && _sourceSceneItem != null)
+        {
+            Destroy(_currentDragItem.gameObject);
+            _currentDragItem = null;
+            return false;
+        }
+
+        if (slot.CurrentItemData != null && _currentDragItem.Presenter != null)
             _currentDragItem.Presenter.AddItem(slot.CurrentItemData);
 
-        slot.AddItem(_currentDragItem.ItemData, _currentDragItem.Icon);
-        _sourceSlot = slot;
+        slot.AddItem(_currentDragItem.ItemData);
 
         if (_sourceSceneItem != null)
         {
@@ -236,7 +223,9 @@ public class DragController : MonoBehaviour
 
     private void ReturnToOriginalPosition()
     {
-        if (_sourceSceneItem == null) 
+        if (_currentDragItem == null) return;
+
+        if (_currentDragItem.Presenter != null)
             _currentDragItem.Presenter.AddItem(_currentDragItem.ItemData, _currentDragItem.StartPosition);
 
         Destroy(_currentDragItem.gameObject);

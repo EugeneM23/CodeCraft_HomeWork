@@ -1,4 +1,3 @@
-using System;
 using Inventories;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -14,10 +13,6 @@ public class InventoryPresenter : MonoBehaviour, IInventoryCollection
     {
         _inventory = new Inventory(_columns, _rows);
         _view.InitializeGrid(_columns, _rows, this);
-
-        _inventory.OnAdded += OnAddedItem;
-
-        UpdateView();
     }
 
     private void FixedUpdate()
@@ -28,11 +23,6 @@ public class InventoryPresenter : MonoBehaviour, IInventoryCollection
             {
                 _view._cells[i, j].Highlight(_inventory._cells[i, j] != null);
             }
-        }
-
-        foreach (ItemInstance item in _inventory)
-        {
-            Debug.Log(item.uniqueId);
         }
     }
 
@@ -60,27 +50,6 @@ public class InventoryPresenter : MonoBehaviour, IInventoryCollection
         return false;
     }
 
-    private void OnAddedItem(ItemInstance instance, Vector2Int position)
-    {
-    }
-
-    private void UpdateView()
-    {
-        /*_view.ClearGrid();
-        }*/
-
-        // foreach (ItemInstance instance in _inventory)
-        // {
-        //     Vector2Int[] positions = _inventory.GetItemGridPositions(instance.Item);
-        //     ItemBounds bounds = CalculateBounds(positions);
-        //     InventoryItem inventoryItem = _view.CreateInventoryItem(instance, bounds.Size, bounds.Position);
-        //
-        //     inventoryItem.SetItem(instance);
-        //
-        //     _view.AssignItemToCell(inventoryItem, positions, bounds.Min);
-        // }
-    }
-
     private void Update()
     {
         Debug.Log(_inventory.Count);
@@ -94,7 +63,6 @@ public class InventoryPresenter : MonoBehaviour, IInventoryCollection
         _inventory.RemoveInstance(id);
         _view.RemoveItem(id);
     }
-
 
     [Button]
     public void Reorganize()

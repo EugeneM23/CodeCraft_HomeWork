@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c9798ef1b3744cde8da8e22fa024cb70, type: 3}
   m_Name: Item_AR_02
   m_EditorClassIdentifier: 
-  _itemID: 0
-  _name: AR_01
-  _icon: {fileID: 9173757791638715115, guid: a9fd30c0df17c43f9a2f4fd2ab4c3b7a, type: 3}
-  _size: {x: 4, y: 2}
-  _itemType: 0
+  ItemID: 
+  Name: AR_02
+  Icon: {fileID: 8027571100345638807, guid: 117ea7f96d7014a738e16b8debf2b314, type: 3}
+  Size: {x: 4, y: 2}
+  ItemType: 0

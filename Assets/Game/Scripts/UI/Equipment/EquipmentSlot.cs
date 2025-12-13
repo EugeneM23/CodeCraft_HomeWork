@@ -21,7 +21,7 @@ namespace Game.Scripts.UI.Equipment
 
         private ItemData _itemData;
 
-        public void AddItem(ItemData itemData, Sprite icon)
+        public void AddItem(ItemData itemData)
         {
             _addItemAudio.pitch = Random.Range(0.5f, 1.2f);
 
@@ -30,7 +30,7 @@ namespace Game.Scripts.UI.Equipment
             CurrentItemData = itemData;
             _itemSlot.enabled = true;
             _itemData = itemData;
-            _itemSlot.sprite = icon;
+            _itemSlot.sprite = itemData.Icon;
         }
 
         public void RemoveItem()
