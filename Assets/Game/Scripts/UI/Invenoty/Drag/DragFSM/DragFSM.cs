@@ -9,11 +9,8 @@ public class DragFSM : MonoBehaviour
     [SerializeField] private InventoryPresenter _inventoryPresenter;
     private Dictionary<Type, IState> _states;
     private IState _currentState;
+    private RaycastDetector _raycastDetector;
 
-    private GraphicRaycaster _raycaster;
-    private EventSystem _eventSystem;
-
-    //Drag
     public Vector3 DragOffset;
     public InventoryItem CurrenDragItem;
     public Vector2Int DragItemCell { get; set; }
@@ -21,15 +18,17 @@ public class DragFSM : MonoBehaviour
 
     private void Start()
     {
-        _raycaster = FindObjectOfType<GraphicRaycaster>();
-        _eventSystem = EventSystem.current;
+        GraphicRaycaster raycaster = FindObjectOfType<GraphicRaycaster>();
+        EventSystem eventSystem = EventSystem.current;
+
+        _raycastDetector = new RaycastDetector(raycaster, eventSystem);
 
         _states = new()
         {
-            [typeof(StartDragState)] = new StartDragState(this, _raycaster, _eventSystem),
-            [typeof(UpdateDragState)] = new UpdateDragState(this, _raycaster, _eventSystem),
-            [typeof(EndDragState)] = new EndDragState(this, _raycaster, _eventSystem),
-            [typeof(IdleDragState)] = new IdleDragState(this, _raycaster, _eventSystem),
+            [typeof(StartDragState)] = new StartDragState(this),
+            [typeof(UpdateDragState)] = new UpdateDragState(this),
+            [typeof(EndDragState)] = new EndDragState(this),
+            [typeof(IdleDragState)] = new IdleDragState(this),
         };
 
         SetState<IdleDragState>();
@@ -39,6 +38,8 @@ public class DragFSM : MonoBehaviour
     {
         if (_currentState is ITickable tickable)
             tickable.Tick();
+
+        _raycastDetector.SetIgnoredItem(CurrenDragItem);
     }
 
     public void SetState<T>() where T : IState
@@ -50,29 +51,7 @@ public class DragFSM : MonoBehaviour
 
     public bool TryGetComponentUnderMouse<T>(out T component) where T : Component
     {
-        component = null;
-
-        PointerEventData pointerData = new(_eventSystem) { position = Input.mousePosition };
-        List<RaycastResult> results = new();
-        _raycaster.Raycast(pointerData, results);
-
-        foreach (RaycastResult result in results)
-        {
-            if (result.gameObject.TryGetComponent(out component))
-                return true;
-        }
-
-        if (EventSystem.current.IsPointerOverGameObject()) return false;
-
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-        RaycastHit hit;
-        if (Physics.Raycast(ray, out hit) && hit.collider.gameObject.TryGetComponent(out component))
-        {
-            return true;
-        }
-
-        return false;
+        return _raycastDetector.TryGetComponent(out component);
     }
 
     public void RemoveItemFromInventory(InventoryItem inventoryItem)
@@ -82,8 +61,7 @@ public class DragFSM : MonoBehaviour
 
     public bool AddItemToInventory(InventoryItem inventoryItem, Vector2Int position)
     {
-        bool success = _inventoryPresenter.AddItem(inventoryItem.Item.itemData, position);
-        return success;
+        return _inventoryPresenter.AddItem(inventoryItem.Item.itemData, position);
     }
 
     public Vector2Int GetDragItemCell(InventoryItem item, Vector2 clickPosition)

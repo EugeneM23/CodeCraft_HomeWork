@@ -2,6 +2,7 @@ using Inventories;
 using Sirenix.OdinInspector;
 using Sirenix.Serialization;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Game.Scripts.UI.Equipment
@@ -21,20 +22,29 @@ namespace Game.Scripts.UI.Equipment
 
         private ItemData _itemData;
 
-        private InventoryItem _inventoryItem;
+        public InventoryItem InventoryItem;
 
         public void AddItem(ItemData itemData)
         {
             _addItemAudio.pitch = Random.Range(0.5f, 1.2f);
 
             _addItemAudio.Play();
-            
-            
+
 
             // CurrentItemData = itemData;
             // _itemSlot.enabled = true;
             // _itemData = itemData;
             // _itemSlot.sprite = itemData.Icon;
+        }
+
+        public void AddItem(InventoryItem item)
+        {
+            _addItemAudio.pitch = Random.Range(0.5f, 1.2f);
+
+            _addItemAudio.Play();
+
+            InventoryItem = item;
+            item.Background.position = transform.position;
         }
 
         public void RemoveItem()

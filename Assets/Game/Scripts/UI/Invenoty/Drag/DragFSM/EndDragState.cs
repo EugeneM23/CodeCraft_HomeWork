@@ -5,27 +5,70 @@ using UnityEngine.UI;
 
 public class EndDragState : BaseState
 {
-    public EndDragState(DragFSM fsm, GraphicRaycaster raycaster, EventSystem eventSystem) : base(fsm, raycaster,
-        eventSystem)
+    public EndDragState(DragFSM fsm) : base(fsm)
     {
     }
 
     public override void Enter()
     {
-        if (_fsm.TryGetComponentUnderMouse(out CellView cellView))
-        {
-            if (!_fsm.AddItemToInventory(_fsm.CurrenDragItem, cellView.GridPosition - _fsm.DragItemCell))
-                _fsm.AddItemToInventory(_fsm.CurrenDragItem, _fsm.StartDragCell);
+        if (TryPlaceInCell())
+            return;
 
-            GameObject.Destroy(_fsm.CurrenDragItem.gameObject);
+        if (TryPlaceInEquipmentSlot())
+            return;
+
+        if (IsOverUI())
+        {
+            ReturnItemToInventory();
+            return;
         }
 
-        if (_fsm.TryGetComponentUnderMouse(out EquipmentSlot slot))
-        {
-            slot.AddItem(_fsm.CurrenDragItem.Item.itemData);
-            GameObject.Destroy(_fsm.CurrenDragItem.gameObject);
-        }
+        DropItemToScene();
+    }
 
+    private bool TryPlaceInCell()
+    {
+        if (!_fsm.TryGetComponentUnderMouse(out CellView cellView))
+            return false;
+
+        Vector2Int targetPosition = cellView.GridPosition - _fsm.DragItemCell;
+
+        if (!_fsm.AddItemToInventory(_fsm.CurrenDragItem, targetPosition))
+            _fsm.AddItemToInventory(_fsm.CurrenDragItem, _fsm.StartDragCell);
+
+        DestroyItemAndReturnToIdle();
+        return true;
+    }
+
+    private bool TryPlaceInEquipmentSlot()
+    {
+        if (!_fsm.TryGetComponentUnderMouse(out EquipmentSlot slot))
+            return false;
+
+        slot.AddItem(_fsm.CurrenDragItem);
+        _fsm.CurrenDragItem = null;
+        _fsm.SetState<IdleDragState>();
+        return true;
+    }
+
+    private bool IsOverUI()
+    {
+        return _fsm.TryGetComponentUnderMouse(out RectTransform _);
+    }
+
+    private void ReturnItemToInventory()
+    {
+        _fsm.AddItemToInventory(_fsm.CurrenDragItem, _fsm.StartDragCell);
+        DestroyItemAndReturnToIdle();
+    }
+
+    private void DropItemToScene()
+    {
+        DestroyItemAndReturnToIdle();
+    }
+
+    private void DestroyItemAndReturnToIdle()
+    {
         GameObject.Destroy(_fsm.CurrenDragItem.gameObject);
         _fsm.SetState<IdleDragState>();
     }

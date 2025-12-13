@@ -13,6 +13,7 @@ public class InventoryItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     public ItemInstance Item => _item;
     public Sprite Icon => _itemImage.sprite;
 
+    public Transform Background => _background.transform;
     private ItemInstance _item;
     private bool _isDragEnable;
     private Vector3 _dragOffset;

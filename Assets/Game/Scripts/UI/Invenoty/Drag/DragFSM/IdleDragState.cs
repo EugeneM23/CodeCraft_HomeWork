@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 public class IdleDragState : BaseState, ITickable
 {
-    public IdleDragState(DragFSM fsm, GraphicRaycaster raycaster, EventSystem eventSystem) : base(fsm, raycaster, eventSystem)
+    public IdleDragState(DragFSM fsm) : base(fsm)
     {
     }
 

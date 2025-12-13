@@ -1,11 +1,8 @@
 using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
 public class UpdateDragState : BaseState, ITickable
 {
-    public UpdateDragState(DragFSM fsm, GraphicRaycaster raycaster, EventSystem eventSystem) : base(fsm, raycaster,
-        eventSystem)
+    public UpdateDragState(DragFSM fsm) : base(fsm)
     {
     }
 
