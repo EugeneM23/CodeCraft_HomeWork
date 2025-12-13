@@ -15,17 +15,6 @@ public class InventoryPresenter : MonoBehaviour, IInventoryCollection
         _view.InitializeGrid(_columns, _rows, this);
     }
 
-    private void FixedUpdate()
-    {
-        for (int i = 0; i < _inventory._cells.GetLength(0); i++)
-        {
-            for (int j = 0; j < _inventory._cells.GetLength(1); j++)
-            {
-                _view._cells[i, j].Highlight(_inventory._cells[i, j] != null);
-            }
-        }
-    }
-
     public bool AddItem(ItemData itemData, Vector2Int startPosition = default)
     {
         ItemInstance instance;
@@ -48,11 +37,6 @@ public class InventoryPresenter : MonoBehaviour, IInventoryCollection
 
 
         return false;
-    }
-
-    private void Update()
-    {
-        Debug.Log(_inventory.Count);
     }
 
     public Vector2Int GetItemPosition(ItemInstance instance)

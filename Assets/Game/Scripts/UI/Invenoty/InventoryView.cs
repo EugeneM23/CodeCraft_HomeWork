@@ -10,7 +10,7 @@ public class InventoryView : MonoBehaviour
     [SerializeField] private Vector2 _cellSize = new(100f, 100f);
 
     private readonly Dictionary<string, InventoryItem> _inventoryItems = new();
-    public CellView[,] _cells;
+    private CellView[,] _cells;
 
     public void InitializeGrid(int columns, int rows, InventoryPresenter presenter)
     {
@@ -54,7 +54,12 @@ public class InventoryView : MonoBehaviour
 
     public void RemoveItem(string id)
     {
-        InventoryItem inventoryItem = _inventoryItems[id];
-        Destroy(inventoryItem.gameObject);
+        InventoryItem item = _inventoryItems[id];
+
+        foreach (CellView cell in _cells)
+            if (cell.InventoryItem == item)
+                cell.Clear();
+
+        _inventoryItems.Remove(id);
     }
 }

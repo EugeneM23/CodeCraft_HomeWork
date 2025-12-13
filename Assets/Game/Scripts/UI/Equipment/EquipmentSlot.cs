@@ -21,16 +21,20 @@ namespace Game.Scripts.UI.Equipment
 
         private ItemData _itemData;
 
+        private InventoryItem _inventoryItem;
+
         public void AddItem(ItemData itemData)
         {
             _addItemAudio.pitch = Random.Range(0.5f, 1.2f);
 
             _addItemAudio.Play();
+            
+            
 
-            CurrentItemData = itemData;
-            _itemSlot.enabled = true;
-            _itemData = itemData;
-            _itemSlot.sprite = itemData.Icon;
+            // CurrentItemData = itemData;
+            // _itemSlot.enabled = true;
+            // _itemData = itemData;
+            // _itemSlot.sprite = itemData.Icon;
         }
 
         public void RemoveItem()

@@ -1,8 +1,10 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class IdleDragState : BaseState, ITickable
 {
-    public IdleDragState(DragFSM fsm) : base(fsm)
+    public IdleDragState(DragFSM fsm, GraphicRaycaster raycaster, EventSystem eventSystem) : base(fsm, raycaster, eventSystem)
     {
     }
 
