@@ -36,7 +36,6 @@ public class RaycastDetector
     private bool TryGetUIComponent<T>(out T component) where T : Component
     {
         component = null;
-
         List<RaycastResult> results = GetUIRaycastResults();
 
         foreach (RaycastResult result in results)
@@ -54,7 +53,6 @@ public class RaycastDetector
     private bool TryGetSceneComponent<T>(out T component) where T : Component
     {
         component = null;
-
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
         if (Physics.Raycast(ray, out RaycastHit hit))
@@ -78,8 +76,12 @@ public class RaycastDetector
 
     private List<RaycastResult> GetUIRaycastResults()
     {
-        PointerEventData pointerData = new(_eventSystem) { position = Input.mousePosition };
-        List<RaycastResult> results = new();
+        PointerEventData pointerData = new PointerEventData(_eventSystem)
+        {
+            position = Input.mousePosition
+        };
+
+        List<RaycastResult> results = new List<RaycastResult>();
         _raycaster.Raycast(pointerData, results);
         return results;
     }

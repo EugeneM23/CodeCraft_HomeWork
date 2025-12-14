@@ -9,43 +9,45 @@ public class InventoryItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     [SerializeField] private Image _itemImage;
     [SerializeField] private RectTransform _rectTransform;
 
+    private ItemInstance _item;
+
     public RectTransform RectTransform => _rectTransform;
     public ItemInstance Item => _item;
     public Sprite Icon => _itemImage.sprite;
-
     public Transform Background => _background.transform;
-    private ItemInstance _item;
-    private bool _isDragEnable;
-    private Vector3 _dragOffset;
 
     public void SetupItem(ItemInstance item, Vector2 cellSize)
     {
         _item = item;
         _itemImage.sprite = item.itemData.Icon;
 
-        cellSize.x *= item.itemData.Size.x;
-        cellSize.y *= item.itemData.Size.y;
-        Vector2 delta = new Vector2(cellSize.x, cellSize.y);
+        Vector2 itemSize = new Vector2(
+            cellSize.x * item.itemData.Size.x,
+            cellSize.y * item.itemData.Size.y
+        );
 
-        _rectTransform.sizeDelta = delta;
+        _rectTransform.sizeDelta = itemSize;
     }
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        Color color = _background.color;
-        color.a = 1f;
-        _background.color = color;
+        SetBackgroundAlpha(1f);
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        Color color = _background.color;
-        color.a = 0f;
-        _background.color = color;
+        SetBackgroundAlpha(0f);
     }
 
     public void DisableBackGround()
     {
         _background.enabled = false;
+    }
+
+    private void SetBackgroundAlpha(float alpha)
+    {
+        Color color = _background.color;
+        color.a = alpha;
+        _background.color = color;
     }
 }

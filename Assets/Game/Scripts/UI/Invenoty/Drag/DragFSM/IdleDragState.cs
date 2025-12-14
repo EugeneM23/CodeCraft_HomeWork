@@ -1,6 +1,4 @@
 using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
 public class IdleDragState : BaseState, ITickable
 {
@@ -10,9 +8,7 @@ public class IdleDragState : BaseState, ITickable
 
     public void Tick()
     {
-        if (Input.GetMouseButtonDown(0))
-        {
+        if (Input.GetMouseButtonDown(0)) 
             _fsm.SetState<StartDragState>();
-        }
     }
 }

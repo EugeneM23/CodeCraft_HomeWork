@@ -15,7 +15,9 @@ public class BackPack : MonoBehaviour
         Inventory = new Inventory(_columns, _rows);
         _presenter.Inventory = Inventory;
 
-        foreach (var item in _items)
+        foreach (ItemData item in _items)
+        {
             Inventory.AddItem(item);
+        }
     }
 }

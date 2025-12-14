@@ -23,27 +23,25 @@ public class StartDragState : BaseState
 
     public override void Exit()
     {
-        if (_fsm.CurrenDragItem != null)
-            _fsm.CurrenDragItem.DisableBackGround();
+        if (_fsm.CurrentDragItem != null)
+            _fsm.CurrentDragItem.DisableBackGround();
     }
 
     private bool TryStartDragFromCell()
     {
-        if (!_fsm.TryGetComponentUnderMouse<CellView>(out var cell))
+        if (!_fsm.TryGetComponentUnderMouse(out CellView cell))
             return false;
 
         if (cell.InventoryItem == null)
             return false;
 
-        _fsm.CurrenDragItem = cell.InventoryItem;
-        _fsm.DragOffset = _fsm.CurrenDragItem.transform.position - Input.mousePosition;
-        _fsm.DragItemCell = _fsm.GetDragItemCell(_fsm.CurrenDragItem, Input.mousePosition);
-        _fsm.StartDragCell = cell.GridPosition - _fsm.DragItemCell;
+        _fsm.CurrentDragItem = cell.InventoryItem;
+        _fsm.DragOffset = _fsm.CurrentDragItem.transform.position - Input.mousePosition;
+        _fsm.DragItemCell = _fsm.GetDragItemCell(_fsm.CurrentDragItem, Input.mousePosition);
         _fsm.StartDragInventory = cell.Inventory;
-        _fsm.CurrenDragItem.transform.parent = _fsm.CurrenDragItem.transform.root;
+        _fsm.CurrentDragItem.transform.parent = _fsm.CurrentDragItem.transform.root;
 
-        cell.Inventory.RemoveItem(_fsm.CurrenDragItem.Item.uniqueId);
-
+        cell.Inventory.RemoveItem(_fsm.CurrentDragItem.Item.uniqueId);
         _fsm.SetState<UpdateDragState>();
 
         return true;
@@ -51,13 +49,13 @@ public class StartDragState : BaseState
 
     private bool TryStartDragFromEquipmentSlot()
     {
-        if (!_fsm.TryGetComponentUnderMouse<EquipmentSlot>(out var slot))
+        if (!_fsm.TryGetComponentUnderMouse(out EquipmentSlot slot))
             return false;
 
-        _fsm.CurrenDragItem = slot.InventoryItem;
-        _fsm.CurrenDragItem.transform.parent = _fsm.CurrenDragItem.transform.root;
-        _fsm.DragOffset = _fsm.CurrenDragItem.transform.position - Input.mousePosition;
-        _fsm.DragItemCell = _fsm.GetDragItemCell(_fsm.CurrenDragItem, Input.mousePosition);
+        _fsm.CurrentDragItem = slot.InventoryItem;
+        _fsm.CurrentDragItem.transform.parent = _fsm.CurrentDragItem.transform.root;
+        _fsm.DragOffset = _fsm.CurrentDragItem.transform.position - Input.mousePosition;
+        _fsm.DragItemCell = _fsm.GetDragItemCell(_fsm.CurrentDragItem, Input.mousePosition);
 
         slot.RemoveItem();
         _fsm.SetState<UpdateDragState>();
@@ -67,10 +65,8 @@ public class StartDragState : BaseState
 
     private bool TryStartDragFromScene()
     {
-        if (!_fsm.TryGetComponentUnderMouse<SceneItem>(out var sceneItem))
+        if (!_fsm.TryGetComponentUnderMouse(out SceneItem sceneItem))
             return false;
-
-        Debug.Log("Dragging scene");
 
         return true;
     }

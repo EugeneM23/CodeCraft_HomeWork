@@ -36,7 +36,7 @@ public class EndDragState : BaseState
 
         Vector2Int targetPosition = cellView.GridPosition - _fsm.DragItemCell;
 
-        if (!cellView.Inventory.AddItem(_fsm.CurrenDragItem.Item.itemData, targetPosition))
+        if (!cellView.Inventory.AddItem(_fsm.CurrentDragItem.Item.itemData, targetPosition))
             ReturnItemToInventory();
 
         DestroyItemAndReturnToIdle();
@@ -48,18 +48,13 @@ public class EndDragState : BaseState
         if (!_fsm.TryGetComponentUnderMouse(out EquipmentSlot slot))
             return false;
 
-        AddItemToSlot(slot);
-
-        return true;
-    }
-
-    private void AddItemToSlot(EquipmentSlot slot)
-    {
-        if (!slot.AddItem(_fsm.CurrenDragItem))
+        if (!slot.AddItem(_fsm.CurrentDragItem))
             ReturnItemToInventory();
 
-        _fsm.CurrenDragItem = null;
+        _fsm.CurrentDragItem = null;
         _fsm.SetState<IdleDragState>();
+
+        return true;
     }
 
     private bool IsOverUI()
@@ -69,19 +64,18 @@ public class EndDragState : BaseState
 
     private void ReturnItemToInventory()
     {
-        _fsm.StartDragInventory.AddItem(_fsm.CurrenDragItem.Item.itemData);
+        _fsm.StartDragInventory.AddItem(_fsm.CurrentDragItem.Item.itemData);
         DestroyItemAndReturnToIdle();
     }
 
     private void DropItemToScene()
     {
-        Debug.Log("Drop Item To Scene");
         DestroyItemAndReturnToIdle();
     }
 
     private void DestroyItemAndReturnToIdle()
     {
-        GameObject.Destroy(_fsm.CurrenDragItem.gameObject);
+        GameObject.Destroy(_fsm.CurrentDragItem.gameObject);
         _fsm.SetState<IdleDragState>();
     }
 }

@@ -1,13 +1,13 @@
 using Inventories;
-using Sirenix.OdinInspector;
 using UnityEngine;
 
 public class InventoryPresenter : MonoBehaviour
 {
     [SerializeField] private InventoryView _view;
-    public Inventory Inventory { get; set; }
 
     private Vector2Int[] _highlightedCells;
+
+    public Inventory Inventory { get; set; }
 
     private void Start()
     {
@@ -15,8 +15,8 @@ public class InventoryPresenter : MonoBehaviour
         _view.InitializeGrid(Inventory.Width, Inventory.Height, Inventory);
         UpdateView();
 
-        Inventory.OnRemoved += OnItemRemoved;
         Inventory.OnAdded += OnItemAdded;
+        Inventory.OnRemoved += OnItemRemoved;
         Inventory.OnHighlight += Highlight;
         Inventory.OnUnHighlight += UnHighlight;
     }
@@ -33,7 +33,6 @@ public class InventoryPresenter : MonoBehaviour
     private void OnItemAdded(ItemInstance itemInstance)
     {
         Vector2Int[] positions = Inventory.GetItemGridPositions(itemInstance);
-
         _view.AddItem(itemInstance, positions);
     }
 
@@ -42,22 +41,16 @@ public class InventoryPresenter : MonoBehaviour
         _view.RemoveItem(itemInstance.uniqueId);
     }
 
-    [Button]
-    public void Reorganize()
-    {
-        // _inventory.ReorganizeSpace();
-        // UpdateView();
-    }
-
     private void Highlight(Vector2Int[] cells)
     {
         UnHighlight();
-
         _highlightedCells = cells;
 
         foreach (Vector2Int cellIndex in cells)
+        {
             if (!IsValidCell(cellIndex) || !Inventory.IsFree(cellIndex))
                 return;
+        }
 
         foreach (Vector2Int cellIndex in cells)
             _view.GetCell(cellIndex).Highlight(true);
@@ -66,8 +59,10 @@ public class InventoryPresenter : MonoBehaviour
     private void UnHighlight()
     {
         foreach (Vector2Int cellIndex in _highlightedCells)
+        {
             if (IsValidCell(cellIndex))
                 _view.GetCell(cellIndex).UnHighlight();
+        }
     }
 
     private bool IsValidCell(Vector2Int cellIndex)

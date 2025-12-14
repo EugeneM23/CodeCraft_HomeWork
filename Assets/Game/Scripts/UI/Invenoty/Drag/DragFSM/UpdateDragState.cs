@@ -10,19 +10,24 @@ public class UpdateDragState : BaseState, ITickable
 
     public void Tick()
     {
-        _fsm.CurrenDragItem.transform.position = Input.mousePosition + _fsm.DragOffset;
+        _fsm.CurrentDragItem.transform.position = Input.mousePosition + _fsm.DragOffset;
 
-        if (_fsm.TryGetComponentUnderMouse(out CellView cell) && cell.GridPosition != _currentCell)
+        if (_fsm.TryGetComponentUnderMouse(out CellView cell))
         {
-            _currentCell = cell.GridPosition;
-            _fsm.Highlight(_currentCell);
+            if (cell.GridPosition != _currentCell)
+            {
+                _currentCell = cell.GridPosition;
+                _fsm.Highlight(_currentCell);
+            }
         }
 
         if (_fsm.TryGetComponentUnderMouse(out BackPack backPack))
         {
             if (_fsm.CurrentInventory != backPack.Inventory)
             {
-                _fsm.CurrentInventory?.UnHighlight();
+                if (_fsm.CurrentInventory != null)
+                    _fsm.CurrentInventory.UnHighlight();
+
                 _fsm.CurrentInventory = backPack.Inventory;
             }
         }
