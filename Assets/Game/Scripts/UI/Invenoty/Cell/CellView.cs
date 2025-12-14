@@ -1,6 +1,5 @@
 using System.Collections;
 using Inventories;
-using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -19,7 +18,7 @@ public class CellView : MonoBehaviour
 
     public InventoryItem InventoryItem { get; set; }
 
-    [ShowInInspector] public Inventory Inventory { get; private set; }
+    public Inventory Inventory { get; private set; }
 
     public void Construct(Inventory inventory, Vector2Int gridPosition)
     {

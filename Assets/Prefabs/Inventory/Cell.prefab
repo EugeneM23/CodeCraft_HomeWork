@@ -92,4 +92,4 @@ MonoBehaviour:
   _emptySprite: {fileID: 21300000, guid: 107304ea0aa3d964eb464680ba0bee4a, type: 3}
   _freeSprite: {fileID: 21300000, guid: 2b630b2eaaa10c14281491f8ac097eb5, type: 3}
   _errorSprite: {fileID: 21300000, guid: 65a589c61f93b5f4295fd46d8c7b888a, type: 3}
-  _fadeDuration: 0.5
+  _fadeDuration: 0.2
