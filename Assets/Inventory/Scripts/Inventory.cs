@@ -11,12 +11,14 @@ namespace Inventories
         public int Height => _cells.GetLength(1);
         public int Count => _items.Count;
 
-        public event Action<ItemInstance, Vector2Int> OnAdded;
-        public event Action<ItemInstance, Vector2Int> OnRemoved;
+        public event Action<ItemInstance> OnAdded;
+        public event Action<ItemInstance> OnRemoved;
         public event Action OnCleared;
+        public event Action<Vector2Int[]> OnHighlight;
+        public event Action OnUnHighlight;
 
         private readonly Dictionary<string, ItemInstance> _items;
-        public ItemInstance[,] _cells;
+        private readonly ItemInstance[,] _cells;
 
         public Inventory(in int width, in int height)
         {
@@ -27,45 +29,57 @@ namespace Inventories
             _items = new Dictionary<string, ItemInstance>();
         }
 
-        public ItemInstance AddItem(in ItemData itemData, Vector2Int? position = null)
+        public bool AddItem(in ItemData itemData, Vector2Int position)
         {
-            Vector2Int targetPosition;
-            ItemInstance instance = null;
-            if (position.HasValue)
+            ItemInstance instance;
+            if (Fit(itemData.Size, position.x, position.y))
             {
-                targetPosition = position.Value;
-                if (Fit(itemData.Size, targetPosition.x, targetPosition.y))
-                {
-                    instance = new ItemInstance(itemData);
-                    instance.GridPosition = targetPosition;
-                    PlaceInstanceInGrid(instance, targetPosition.x, targetPosition.y);
+                instance = new ItemInstance(itemData);
+                instance.GridPosition = position;
 
-                    _items.Add(instance.uniqueId, instance);
+                PlaceInstanceInGrid(instance, position.x, position.y);
 
-                    OnAdded?.Invoke(instance, targetPosition);
-                }
-                else
-                {
-                    Debug.Log("Can't place item");
-                    return null;
-                }
-            }
-            else
-            {
-                if (FindFreePosition(itemData.Size, out targetPosition))
-                {
-                    instance = new ItemInstance(itemData);
-                    instance.GridPosition = targetPosition;
-                    PlaceInstanceInGrid(instance, targetPosition.x, targetPosition.y);
+                _items.Add(instance.uniqueId, instance);
 
-                    _items.Add(instance.uniqueId, instance);
-
-                    OnAdded?.Invoke(instance, targetPosition);
-                }
+                OnAdded?.Invoke(instance);
+                return true;
             }
 
+            return false;
+        }
 
-            return instance;
+        public bool AddItem(in ItemData itemData)
+        {
+            if (FindFreePosition(itemData.Size, out var targetPosition))
+            {
+                ItemInstance instance = new ItemInstance(itemData);
+                instance.GridPosition = targetPosition;
+                PlaceInstanceInGrid(instance, targetPosition.x, targetPosition.y);
+
+                _items.Add(instance.uniqueId, instance);
+
+                OnAdded?.Invoke(instance);
+                return true;
+            }
+
+            return false;
+        }
+
+        public bool RemoveItem(string id)
+        {
+            if (!_items.TryGetValue(id, out var item))
+                throw new KeyNotFoundException();
+
+            Vector2Int[] positions = GetItemGridPositions(item);
+
+            foreach (var position in positions)
+                _cells[position.x, position.y] = null;
+
+            _items.Remove(id);
+
+            OnRemoved?.Invoke(item);
+
+            return true;
         }
 
         public bool FindFreePosition(in Vector2Int size, out Vector2Int freePosition)
@@ -133,23 +147,6 @@ namespace Inventories
             }
         }
 
-        public bool RemoveInstance(string id)
-        {
-            if (!_items.TryGetValue(id, out var item))
-                throw new KeyNotFoundException();
-
-            Vector2Int[] positions = GetItemGridPositions(item);
-
-            foreach (var position in positions)
-            {
-                _cells[position.x, position.y] = null;
-            }
-
-            _items.Remove(id);
-
-            return true;
-        }
-
         public Vector2Int[] GetItemGridPositions(ItemInstance instance)
         {
             ItemData itemData = instance.itemData;
@@ -195,5 +192,9 @@ namespace Inventories
         {
             return _cells[cellIndex.x, cellIndex.y] == null;
         }
+
+        public void Highlight(Vector2Int[] cells) => OnHighlight?.Invoke(cells);
+
+        public void UnHighlight() => OnUnHighlight?.Invoke();
     }
 }

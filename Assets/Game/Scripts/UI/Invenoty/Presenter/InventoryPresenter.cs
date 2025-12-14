@@ -2,49 +2,44 @@ using Inventories;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-public class InventoryPresenter : MonoBehaviour, IInventoryCollection
+public class InventoryPresenter : MonoBehaviour
 {
     [SerializeField] private InventoryView _view;
-    [SerializeField] private int _columns = 4;
-    [SerializeField] private int _rows = 7;
-    private Inventory _inventory;
+    public Inventory Inventory { get; set; }
+
     private Vector2Int[] _highlightedCells;
 
-    private void Awake()
+    private void Start()
     {
-        _highlightedCells = new Vector2Int[_columns * _rows];
+        _highlightedCells = new Vector2Int[4];
+        _view.InitializeGrid(Inventory.Width, Inventory.Height, Inventory);
+        UpdateView();
 
-        _inventory = new Inventory(_columns, _rows);
-        _view.InitializeGrid(_columns, _rows, this);
+        Inventory.OnRemoved += OnItemRemoved;
+        Inventory.OnAdded += OnItemAdded;
+        Inventory.OnHighlight += Highlight;
+        Inventory.OnUnHighlight += UnHighlight;
     }
 
-    public bool AddItem(ItemData itemData, Vector2Int startPosition = default)
+    private void UpdateView()
     {
-        ItemInstance instance;
-
-        if (startPosition == default)
-            instance = _inventory.AddItem(itemData);
-        else
-            instance = _inventory.AddItem(itemData, startPosition);
-
-        if (instance != null)
+        foreach (ItemInstance item in Inventory)
         {
-            Vector2Int[] positions = _inventory.GetItemGridPositions(instance);
-            _view.CreateInventoryItem(instance, positions);
-            return true;
+            Vector2Int[] itemGridPositions = Inventory.GetItemGridPositions(item);
+            _view.AddItem(item, itemGridPositions);
         }
-
-
-        return false;
     }
 
-    public Vector2Int GetItemPosition(ItemInstance instance)
-        => instance.GridPosition;
-
-    public void RemoveItem(string id)
+    private void OnItemAdded(ItemInstance itemInstance)
     {
-        _inventory.RemoveInstance(id);
-        _view.RemoveItem(id);
+        Vector2Int[] positions = Inventory.GetItemGridPositions(itemInstance);
+
+        _view.AddItem(itemInstance, positions);
+    }
+
+    private void OnItemRemoved(ItemInstance itemInstance)
+    {
+        _view.RemoveItem(itemInstance.uniqueId);
     }
 
     [Button]
@@ -54,21 +49,21 @@ public class InventoryPresenter : MonoBehaviour, IInventoryCollection
         // UpdateView();
     }
 
-    public void Highlight(Vector2Int[] cells)
+    private void Highlight(Vector2Int[] cells)
     {
         UnHighlight();
 
         _highlightedCells = cells;
 
         foreach (Vector2Int cellIndex in cells)
-            if (!IsValidCell(cellIndex) || !_inventory.IsFree(cellIndex))
+            if (!IsValidCell(cellIndex) || !Inventory.IsFree(cellIndex))
                 return;
 
         foreach (Vector2Int cellIndex in cells)
             _view.GetCell(cellIndex).Highlight(true);
     }
 
-    public void UnHighlight()
+    private void UnHighlight()
     {
         foreach (Vector2Int cellIndex in _highlightedCells)
             if (IsValidCell(cellIndex))
@@ -77,7 +72,7 @@ public class InventoryPresenter : MonoBehaviour, IInventoryCollection
 
     private bool IsValidCell(Vector2Int cellIndex)
     {
-        return cellIndex.x >= 0 && cellIndex.x < _columns &&
-               cellIndex.y >= 0 && cellIndex.y < _rows;
+        return cellIndex.x >= 0 && cellIndex.x < Inventory.Width &&
+               cellIndex.y >= 0 && cellIndex.y < Inventory.Height;
     }
 }

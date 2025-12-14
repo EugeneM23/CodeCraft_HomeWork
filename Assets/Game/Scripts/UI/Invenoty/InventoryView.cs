@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Inventories;
 using UnityEngine;
@@ -12,7 +13,7 @@ public class InventoryView : MonoBehaviour
     private readonly Dictionary<string, InventoryItem> _inventoryItems = new();
     private CellView[,] _cells;
 
-    public void InitializeGrid(int columns, int rows, InventoryPresenter presenter)
+    public void InitializeGrid(int columns, int rows, Inventory inventory)
     {
         _cells = new CellView[columns, rows];
 
@@ -20,15 +21,15 @@ public class InventoryView : MonoBehaviour
         {
             for (int x = 0; x < columns; x++)
             {
-                CreateCell(presenter, x, y);
+                CreateCell(inventory, x, y);
             }
         }
     }
 
-    private void CreateCell(InventoryPresenter presenter, int x, int y)
+    private void CreateCell(Inventory inventory, int x, int y)
     {
         CellView cell = Instantiate(_cellPrefab, _gridContainer);
-        cell.Construct(presenter, new Vector2Int(x, y), _cells);
+        cell.Construct(inventory, new Vector2Int(x, y));
 
         RectTransform rect = cell.GetComponent<RectTransform>();
         rect.sizeDelta = _cellSize;
@@ -37,7 +38,7 @@ public class InventoryView : MonoBehaviour
         _cells[x, y] = cell;
     }
 
-    public void CreateInventoryItem(ItemInstance instance, Vector2Int[] positions)
+    public void AddItem(ItemInstance instance, Vector2Int[] positions)
     {
         InventoryItem inventoryItem = Instantiate(_itemContainerPrefab, _gridContainer);
 

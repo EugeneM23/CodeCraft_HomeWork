@@ -36,8 +36,8 @@ public class EndDragState : BaseState
 
         Vector2Int targetPosition = cellView.GridPosition - _fsm.DragItemCell;
 
-        if (!_fsm.AddItemToInventory(_fsm.CurrenDragItem, targetPosition))
-            _fsm.AddItemToInventory(_fsm.CurrenDragItem, _fsm.StartDragCell);
+        if (!cellView.Inventory.AddItem(_fsm.CurrenDragItem.Item.itemData, targetPosition))
+            ReturnItemToInventory();
 
         DestroyItemAndReturnToIdle();
         return true;
@@ -48,26 +48,16 @@ public class EndDragState : BaseState
         if (!_fsm.TryGetComponentUnderMouse(out EquipmentSlot slot))
             return false;
 
-        if (slot.InventoryItem != null)
-            AddItemToOccupiedSlot(slot);
-        else
-            AddItemToEmptySlot(slot);
+        AddItemToSlot(slot);
 
         return true;
     }
 
-    private void AddItemToOccupiedSlot(EquipmentSlot slot)
+    private void AddItemToSlot(EquipmentSlot slot)
     {
-        _fsm.AddItemToInventory(slot.InventoryItem, default);
-        GameObject.Destroy(slot.InventoryItem.gameObject);
-        slot.AddItem(_fsm.CurrenDragItem);
+        if (!slot.AddItem(_fsm.CurrenDragItem))
+            ReturnItemToInventory();
 
-        _fsm.SetState<IdleDragState>();
-    }
-
-    private void AddItemToEmptySlot(EquipmentSlot slot)
-    {
-        slot.AddItem(_fsm.CurrenDragItem);
         _fsm.CurrenDragItem = null;
         _fsm.SetState<IdleDragState>();
     }
@@ -79,7 +69,7 @@ public class EndDragState : BaseState
 
     private void ReturnItemToInventory()
     {
-        _fsm.AddItemToInventory(_fsm.CurrenDragItem, _fsm.StartDragCell);
+        _fsm.StartDragInventory.AddItem(_fsm.CurrenDragItem.Item.itemData);
         DestroyItemAndReturnToIdle();
     }
 

@@ -10,7 +10,6 @@ public class IdleDragState : BaseState, ITickable
 
     public void Tick()
     {
-        Debug.Log("IdleDrag");
         if (Input.GetMouseButtonDown(0))
         {
             _fsm.SetState<StartDragState>();

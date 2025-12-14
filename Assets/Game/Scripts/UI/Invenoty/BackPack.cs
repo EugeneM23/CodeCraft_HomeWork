@@ -1,25 +1,21 @@
 using Inventories;
-using Sirenix.OdinInspector;
 using UnityEngine;
 
 public class BackPack : MonoBehaviour
 {
     [SerializeField] private InventoryPresenter _presenter;
     [SerializeField] private ItemData[] _items;
+    [SerializeField] private int _columns = 4;
+    [SerializeField] private int _rows = 7;
 
-    private void Start()
-    {
-        foreach (var item in _items) 
-            _presenter.AddItem(item);
-    }
+    public Inventory Inventory { get; private set; }
 
-    [Button]
-    public void AddItem()
+    private void Awake()
     {
-    }
+        Inventory = new Inventory(_columns, _rows);
+        _presenter.Inventory = Inventory;
 
-    [Button]
-    public void RemoveItem()
-    {
+        foreach (var item in _items)
+            Inventory.AddItem(item);
     }
 }

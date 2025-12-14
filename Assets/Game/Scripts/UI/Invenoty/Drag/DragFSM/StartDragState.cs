@@ -39,8 +39,11 @@ public class StartDragState : BaseState
         _fsm.DragOffset = _fsm.CurrenDragItem.transform.position - Input.mousePosition;
         _fsm.DragItemCell = _fsm.GetDragItemCell(_fsm.CurrenDragItem, Input.mousePosition);
         _fsm.StartDragCell = cell.GridPosition - _fsm.DragItemCell;
-        _fsm.RemoveItemFromInventory(_fsm.CurrenDragItem);
-        
+        _fsm.StartDragInventory = cell.Inventory;
+        _fsm.CurrenDragItem.transform.parent = _fsm.CurrenDragItem.transform.root;
+
+        cell.Inventory.RemoveItem(_fsm.CurrenDragItem.Item.uniqueId);
+
         _fsm.SetState<UpdateDragState>();
 
         return true;
@@ -52,9 +55,10 @@ public class StartDragState : BaseState
             return false;
 
         _fsm.CurrenDragItem = slot.InventoryItem;
+        _fsm.CurrenDragItem.transform.parent = _fsm.CurrenDragItem.transform.root;
         _fsm.DragOffset = _fsm.CurrenDragItem.transform.position - Input.mousePosition;
         _fsm.DragItemCell = _fsm.GetDragItemCell(_fsm.CurrenDragItem, Input.mousePosition);
-        Debug.Log(_fsm.DragItemCell);
+
         slot.RemoveItem();
         _fsm.SetState<UpdateDragState>();
 

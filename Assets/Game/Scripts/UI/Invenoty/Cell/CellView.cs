@@ -1,4 +1,6 @@
 using System.Collections;
+using Inventories;
+using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -17,11 +19,11 @@ public class CellView : MonoBehaviour
 
     public InventoryItem InventoryItem { get; set; }
 
-    public InventoryPresenter Presenter { get; private set; }
+    [ShowInInspector] public Inventory Inventory { get; private set; }
 
-    public void Construct(InventoryPresenter presenter, Vector2Int gridPosition, CellView[,] cells)
+    public void Construct(Inventory inventory, Vector2Int gridPosition)
     {
-        Presenter = presenter;
+        Inventory = inventory;
         GridPosition = gridPosition;
         _currentTargetSprite = _emptySprite;
     }
@@ -46,7 +48,6 @@ public class CellView : MonoBehaviour
 
     public void Clear()
     {
-        Presenter = null;
         InventoryItem = null;
     }
 
@@ -65,9 +66,9 @@ public class CellView : MonoBehaviour
         Color color = _backGround.color;
         color.a = 0f;
         _backGround.color = color;
-        
+
         _backGround.sprite = newSprite;
-        
+
         float elapsed = 0f;
 
         while (elapsed < _fadeDuration)

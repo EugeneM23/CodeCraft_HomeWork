@@ -1,13 +1,12 @@
 using System;
 using System.Collections.Generic;
+using Inventories;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class DragFSM : MonoBehaviour
 {
-    [SerializeField] private InventoryPresenter _inventoryPresenter;
-    
     private Dictionary<Type, IState> _states;
     private IState _currentState;
     private RaycastDetector _raycastDetector;
@@ -16,6 +15,8 @@ public class DragFSM : MonoBehaviour
     public InventoryItem CurrenDragItem;
     public Vector2Int DragItemCell { get; set; }
     public Vector2Int StartDragCell { get; set; }
+    public Inventory StartDragInventory { get; set; }
+    public Inventory CurrentInventory { get; set; }
 
     private void Start()
     {
@@ -53,16 +54,6 @@ public class DragFSM : MonoBehaviour
     public bool TryGetComponentUnderMouse<T>(out T component) where T : Component
     {
         return _raycastDetector.TryGetComponent(out component);
-    }
-
-    public void RemoveItemFromInventory(InventoryItem inventoryItem)
-    {
-        _inventoryPresenter.RemoveItem(inventoryItem.Item.uniqueId);
-    }
-
-    public bool AddItemToInventory(InventoryItem inventoryItem, Vector2Int position)
-    {
-        return _inventoryPresenter.AddItem(inventoryItem.Item.itemData, position);
     }
 
     public Vector2Int GetDragItemCell(InventoryItem item, Vector2 clickPosition)
@@ -113,9 +104,12 @@ public class DragFSM : MonoBehaviour
             }
         }
 
-        _inventoryPresenter.Highlight(cells);
+        CurrentInventory?.Highlight(cells);
     }
 
-    public void UnHighlight() =>
-        _inventoryPresenter.UnHighlight();
+    public void UnHighlight()
+    {
+        CurrentInventory?.UnHighlight();
+
+    }
 }
