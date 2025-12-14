@@ -23,13 +23,9 @@ public class InventoryPresenter : MonoBehaviour, IInventoryCollection
         ItemInstance instance;
 
         if (startPosition == default)
-        {
             instance = _inventory.AddItem(itemData);
-        }
         else
-        {
             instance = _inventory.AddItem(itemData, startPosition);
-        }
 
         if (instance != null)
         {

@@ -402,20 +402,20 @@ MonoBehaviour:
   serializationData:
     SerializedFormat: 2
     SerializedBytes: 
-    ReferencedUnityObjects:
-    - {fileID: 8091451521871496151}
+    ReferencedUnityObjects: []
     SerializedBytesString: 
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
     SerializationNodes:
     - Name: _presenter
-      Entry: 10
-      Data: 0
+      Entry: 6
+      Data: 
   _itemType: 0
   _itemSlot: {fileID: 945981824}
   _addItemAudio: {fileID: 1152676636}
   _removeItemAudio: {fileID: 1152676637}
+  InventoryItem: {fileID: 0}
 --- !u!82 &1152676636
 AudioSource:
   m_ObjectHideFlags: 0
@@ -1287,14 +1287,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 7c42b456b1db20b4696d71f4c98e58c4, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 306335e562430f94bb35276a4f8c9cc1, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1335,14 +1335,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 7c42b456b1db20b4696d71f4c98e58c4, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 306335e562430f94bb35276a4f8c9cc1, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1366,10 +1366,9 @@ GameObject:
   - component: {fileID: 1521936123479235184}
   - component: {fileID: 7756850200214645762}
   - component: {fileID: 7756850200214645763}
-  - component: {fileID: 7756850200214645764}
   - component: {fileID: 9178248304952006589}
   - component: {fileID: 9178248304952006590}
-  - component: {fileID: 9178248304952006591}
+  - component: {fileID: 9178248304952006592}
   m_Layer: 5
   m_Name: Inventory
   m_TagString: Untagged
@@ -1652,7 +1651,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -654, y: 83.5}
+  m_AnchoredPosition: {x: -673, y: 83.5}
   m_SizeDelta: {x: 492.7, y: 726.4}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &7756850200214645762
@@ -1688,22 +1687,6 @@ MonoBehaviour:
   _view: {fileID: 9178248304952006590}
   _columns: 7
   _rows: 7
---- !u!114 &7756850200214645764
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 845462845197929360}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 543870e077c142c58ebe99f8a465141b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _dragItemPrefab: {fileID: 2446545517653513176, guid: 39a12f2e53b20406892326f3e6da3fec, type: 3}
-  _pickUpPrefab: {fileID: 1487774384131766, guid: ee329c3cd08e58645834d20702d7f6c6, type: 3}
-  _sourcePresentor: {fileID: 0}
-  _dragArea: {fileID: 4746181383596171366}
 --- !u!1 &8091451521871496150
 GameObject:
   m_ObjectHideFlags: 0
@@ -1738,7 +1721,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: becb2f53b00f48e38774f713bcd197c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _equipmentSlot: {fileID: 1152676632}
 --- !u!82 &9178248304952006589
 AudioSource:
   m_ObjectHideFlags: 0
@@ -1851,8 +1833,8 @@ MonoBehaviour:
   _cellPrefab: {fileID: -8153152781171872631, guid: 9d9acb3550ff64ac18eca0767a708394, type: 3}
   _itemContainerPrefab: {fileID: 3334073297244301008, guid: 4c15baa75d82b483abb917b275ec412d, type: 3}
   _gridContainer: {fileID: 4746181383596171366}
-  _cellSize: {x: 100, y: 100}
---- !u!114 &9178248304952006591
+  _cellSize: {x: 75, y: 75}
+--- !u!114 &9178248304952006592
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1861,10 +1843,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 845462845197929360}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: becb2f53b00f48e38774f713bcd197c5, type: 3}
+  m_Script: {fileID: 11500000, guid: 7cd5f8a9286f4ce7a2759fd532c1a0e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _equipmentSlot: {fileID: 0}
+  _inventoryPresenter: {fileID: 7756850200214645763}
+  DragOffset: {x: 0, y: 0, z: 0}
+  CurrenDragItem: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

@@ -85,6 +85,7 @@ public class EndDragState : BaseState
 
     private void DropItemToScene()
     {
+        Debug.Log("Drop Item To Scene");
         DestroyItemAndReturnToIdle();
     }
 
