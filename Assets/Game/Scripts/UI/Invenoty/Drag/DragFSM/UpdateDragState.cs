@@ -15,11 +15,6 @@ public class UpdateDragState : BaseState, ITickable
         if (_fsm.TryGetComponentUnderMouse(out CellView cell) && cell.GridPosition != _currentCell)
         {
             _currentCell = cell.GridPosition;
-            
-            // Пересчитываем DragItemCell при каждом наведении на новую ячейку
-            // чтобы учесть текущее положение предмета относительно курсора
-            _fsm.DragItemCell = _fsm.GetDragItemCell(_fsm.CurrenDragItem, Input.mousePosition);
-            
             _fsm.Highlight(_currentCell);
         }
 
