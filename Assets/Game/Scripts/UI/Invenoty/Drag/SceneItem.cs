@@ -3,5 +3,7 @@ using UnityEngine;
 
 public class SceneItem : MonoBehaviour
 {
-    public ItemData ItemData { get; set; }
+    [SerializeField] private ItemData _itemData;
+
+    public ItemData ItemData => _itemData;
 }

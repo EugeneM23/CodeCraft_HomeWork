@@ -7,6 +7,8 @@ using UnityEngine.UI;
 
 public class DragFSM : MonoBehaviour
 {
+    [SerializeField] private SceneItemSpawner _spawner;
+
     private Dictionary<Type, IState> _states;
     private IState _currentState;
     private RaycastDetector _raycastDetector;
@@ -29,7 +31,7 @@ public class DragFSM : MonoBehaviour
             [typeof(IdleDragState)] = new IdleDragState(this),
             [typeof(StartDragState)] = new StartDragState(this),
             [typeof(UpdateDragState)] = new UpdateDragState(this),
-            [typeof(EndDragState)] = new EndDragState(this)
+            [typeof(EndDragState)] = new EndDragState(this, _spawner)
         };
 
         SetState<IdleDragState>();
@@ -65,8 +67,8 @@ public class DragFSM : MonoBehaviour
         Vector2Int itemSize = item.Item.itemData.Size;
 
         RectTransformUtility.ScreenPointToLocalPointInRectangle(
-            rectTransform, 
-            clickPosition, 
+            rectTransform,
+            clickPosition,
             null,
             out Vector2 localPoint
         );
@@ -113,5 +115,10 @@ public class DragFSM : MonoBehaviour
     {
         if (CurrentInventory != null)
             CurrentInventory.UnHighlight();
+    }
+
+    public bool TryGetSceneRaycastHit(out RaycastHit raycastHit)
+    {
+        return _raycastDetector.TryGetSceneRaycastHit(out raycastHit);
     }
 }

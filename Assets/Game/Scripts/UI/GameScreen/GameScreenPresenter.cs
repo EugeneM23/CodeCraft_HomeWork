@@ -16,12 +16,9 @@ namespace Game.Scripts.UI.GameScreen
             _view.OnInventoryButtonClicked -= OpenInventory;
         }
 
-        private void OpenInventory(bool enable)
+        private void OpenInventory()
         {
-            if (enable)
-                _view.OpenInventory();
-            else
-                _view.CloseInventory();
+            _view.EnableInventory();
         }
     }
 }

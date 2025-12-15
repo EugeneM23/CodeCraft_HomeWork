@@ -1,10 +1,14 @@
 using Game.Scripts.UI.Equipment;
+using UnityEditor;
 using UnityEngine;
 
 public class EndDragState : BaseState
 {
-    public EndDragState(DragFSM fsm) : base(fsm)
+    private readonly SceneItemSpawner _itemSpawner;
+
+    public EndDragState(DragFSM fsm, SceneItemSpawner itemSpawner) : base(fsm)
     {
+        _itemSpawner = itemSpawner;
     }
 
     public override void Enter()
@@ -70,6 +74,11 @@ public class EndDragState : BaseState
 
     private void DropItemToScene()
     {
+        if (_fsm.TryGetSceneRaycastHit(out RaycastHit hit))
+        {
+            _itemSpawner.SpawnItem(_fsm.CurrentDragItem.Item.itemData, hit.point);
+        }
+
         DestroyItemAndReturnToIdle();
     }
 

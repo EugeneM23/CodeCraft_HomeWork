@@ -6,41 +6,37 @@ namespace Game.Scripts.UI.GameScreen
 {
     public class GameScreenView : MonoBehaviour
     {
-        public event Action<bool> OnInventoryButtonClicked;
+        public event Action OnInventoryButtonClicked;
 
         [SerializeField] private Button _openInventoryButton;
         [SerializeField] private InventoryView _inventoryPrefab;
 
         private InventoryView _inventoryContainer;
 
+        private void Start()
+        {
+            _inventoryContainer = Instantiate(_inventoryPrefab, transform);
+            _inventoryContainer.gameObject.SetActive(false);
+        }
+
         private void OnEnable()
         {
-            _openInventoryButton.onClick.AddListener(OnInventoryEnable);
+            _openInventoryButton.onClick.AddListener(HandleInventoryButtonClick);
         }
 
         private void OnDisable()
         {
-            _openInventoryButton.onClick.RemoveListener(OnInventoryEnable);
+            _openInventoryButton.onClick.RemoveListener(HandleInventoryButtonClick);
         }
 
-        private void OnInventoryEnable()
+        private void HandleInventoryButtonClick()
         {
-            bool needOpen = _inventoryContainer == null || !_inventoryContainer.gameObject.activeSelf;
-            OnInventoryButtonClicked?.Invoke(needOpen);
+            OnInventoryButtonClicked?.Invoke();
         }
 
-        public void OpenInventory()
+        public void EnableInventory()
         {
-            if (_inventoryContainer == null)
-                _inventoryContainer = Instantiate(_inventoryPrefab, transform);
-            else
-                _inventoryContainer.gameObject.SetActive(true);
-        }
-
-        public void CloseInventory()
-        {
-            if (_inventoryContainer != null) 
-                _inventoryContainer.gameObject.SetActive(false);
+            _inventoryContainer.gameObject.SetActive(!_inventoryContainer.gameObject.activeSelf);
         }
     }
 }

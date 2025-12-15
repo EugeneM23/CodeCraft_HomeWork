@@ -5,7 +5,6 @@ namespace Inventories
     [CreateAssetMenu(fileName = "ItemData_", menuName = "Inventory/ItemData")]
     public sealed class ItemData : ScriptableObject
     {
-        [HideInInspector] public string ItemID;
         [field: SerializeField] public string Name;
         [field: SerializeField] public Sprite Icon;
         [field: SerializeField] public Vector2Int Size;

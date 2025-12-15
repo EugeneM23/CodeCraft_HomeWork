@@ -101,4 +101,15 @@ public class RaycastDetector
 
         return obj == _ignoredItem.gameObject || obj.transform.IsChildOf(_ignoredItem.transform);
     }
+
+    public bool TryGetSceneRaycastHit(out RaycastHit hit)
+    {
+        hit = default;
+
+        if (IsOverAnyUI())
+            return false;
+
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        return Physics.Raycast(ray, out hit);
+    }
 }
