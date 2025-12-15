@@ -66,7 +66,7 @@ public class StartDragState : BaseState
     private bool TryStartDragFromScene()
     {
         if (_fsm.TryGetComponentUnderMouse(out SceneItem sceneItem))
-            if (_fsm.CurrentInventory.AddItem(sceneItem.ItemData))
+            if (_fsm.OriginInventory.AddItem(sceneItem.ItemData))
                 GameObject.Destroy(sceneItem.gameObject);
 
         _fsm.SetState<IdleDragState>();

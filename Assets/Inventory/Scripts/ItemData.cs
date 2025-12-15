@@ -9,5 +9,6 @@ namespace Inventories
         [field: SerializeField] public Sprite Icon;
         [field: SerializeField] public Vector2Int Size;
         [field: SerializeField] public ItemType ItemType;
+        [field: SerializeField] public GameObject SpawnPrefab;
     }
 }

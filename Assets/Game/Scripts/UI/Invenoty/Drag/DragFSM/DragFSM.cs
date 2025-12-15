@@ -7,6 +7,7 @@ using UnityEngine.UI;
 
 public class DragFSM : MonoBehaviour
 {
+    [SerializeField] private BackPack _backPack;
     [SerializeField] private SceneItemSpawner _spawner;
 
     private Dictionary<Type, IState> _states;
@@ -18,6 +19,7 @@ public class DragFSM : MonoBehaviour
     public Vector2Int DragItemCell { get; set; }
     public Inventory StartDragInventory { get; set; }
     public Inventory CurrentInventory { get; set; }
+    public Inventory OriginInventory => _backPack.Inventory;
 
     private void Start()
     {

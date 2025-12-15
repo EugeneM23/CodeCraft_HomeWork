@@ -318,7 +318,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serializationData:
-    SerializedFormat: 2
+    SerializedFormat: 0
     SerializedBytes: 
     ReferencedUnityObjects: []
     SerializedBytesString: 
@@ -680,6 +680,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7cd5f8a9286f4ce7a2759fd532c1a0e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _backPack: {fileID: 5830915091178595739}
   _spawner: {fileID: 3349113050816894745}
 --- !u!114 &3349113050816894745
 MonoBehaviour:
@@ -693,4 +694,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec7e036197ec42e6bf3ecb8aa8d3d35c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _spawnPrefab: {fileID: 1487774384131766, guid: ee329c3cd08e58645834d20702d7f6c6, type: 3}
