@@ -73,10 +73,8 @@ namespace Inventories
                 {
                     if (item.itemData.Name != itemData.Name) continue;
 
-                    if (item.itemData.MaxStackQuantity <= item.CurrentQuantity + item.itemData.CurrentStackQuantity)
-                    {
+                    if (item.itemData.MaxStackQuantity <= item.itemData.CurrentStackQuantity + itemData.CurrentStackQuantity)
                         return false;
-                    }
 
 
                     item.AddQuantity(itemData.CurrentStackQuantity);

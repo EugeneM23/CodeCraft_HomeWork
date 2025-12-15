@@ -1,4 +1,5 @@
 using Game.Scripts.UI.Equipment;
+using Inventories;
 using UnityEditor;
 using UnityEngine;
 
@@ -76,7 +77,8 @@ public class EndDragState : BaseState
     {
         if (_fsm.TryGetSceneRaycastHit(out RaycastHit hit))
         {
-            _itemSpawner.SpawnItem(_fsm.CurrentDragItem.Item.itemData, hit.point);
+            ItemData itemItemData = new ItemData(_fsm.CurrentDragItem.Item.itemData);
+            _itemSpawner.SpawnItem(itemItemData, hit.point);
         }
 
         DestroyItemAndReturnToIdle();

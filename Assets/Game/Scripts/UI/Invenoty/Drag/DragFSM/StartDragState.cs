@@ -35,6 +35,7 @@ public class StartDragState : BaseState
         if (cell.InventoryItem == null)
             return false;
 
+        Debug.Log(cell.InventoryItem.Item.itemData.CurrentStackQuantity);
         _fsm.CurrentDragItem = cell.InventoryItem;
         _fsm.DragOffset = _fsm.CurrentDragItem.transform.position - Input.mousePosition;
         _fsm.DragItemCell = _fsm.GetDragItemCell(_fsm.CurrentDragItem, Input.mousePosition);

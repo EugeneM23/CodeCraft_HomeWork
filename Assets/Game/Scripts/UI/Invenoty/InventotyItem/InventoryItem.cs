@@ -34,8 +34,7 @@ public class InventoryItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     {
         _item = item;
         _itemImage.sprite = item.itemData.Icon;
-        _item.OnStackChanged += UpdateQuantity;
-        _count.text = item.CurrentQuantity.ToString();
+        _count.text = item.itemData.CurrentStackQuantity.ToString();
 
         Vector2 itemSize = new Vector2(
             cellSize.x * item.itemData.Size.x,

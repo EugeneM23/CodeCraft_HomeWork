@@ -633,8 +633,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _presenter: {fileID: 882364599994402435}
   _items:
-  - {fileID: 11400000, guid: e49d12d7e786d4bb1bc5a8cfdcd57022, type: 2}
-  - {fileID: 11400000, guid: e49d12d7e786d4bb1bc5a8cfdcd57022, type: 2}
+  - {fileID: 4751637913041529059, guid: 7746e058d10ed4b74a618e111051fe3f, type: 3}
+  - {fileID: 4751637913041529059, guid: 7746e058d10ed4b74a618e111051fe3f, type: 3}
   _columns: 8
   _rows: 8
 --- !u!114 &882364599994402435
@@ -692,3 +692,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec7e036197ec42e6bf3ecb8aa8d3d35c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _items:
+  - {fileID: 4751637913041529059, guid: 7746e058d10ed4b74a618e111051fe3f, type: 3}
