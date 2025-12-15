@@ -318,7 +318,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serializationData:
-    SerializedFormat: 0
+    SerializedFormat: 2
     SerializedBytes: 
     ReferencedUnityObjects: []
     SerializedBytesString: 
@@ -633,10 +633,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _presenter: {fileID: 882364599994402435}
   _items:
-  - {fileID: 11400000, guid: 46162189118124311ad016055c895131, type: 2}
-  - {fileID: 11400000, guid: 46162189118124311ad016055c895131, type: 2}
-  - {fileID: 11400000, guid: e52956c102dc54270b8e0f7bacf3d9eb, type: 2}
-  - {fileID: 11400000, guid: 46162189118124311ad016055c895131, type: 2}
+  - {fileID: 11400000, guid: e49d12d7e786d4bb1bc5a8cfdcd57022, type: 2}
+  - {fileID: 11400000, guid: e49d12d7e786d4bb1bc5a8cfdcd57022, type: 2}
   _columns: 8
   _rows: 8
 --- !u!114 &882364599994402435

@@ -31,11 +31,9 @@ namespace Inventories
 
         public bool AddItem(in ItemData itemData, Vector2Int position)
         {
-            ItemInstance instance;
             if (Fit(itemData.Size, position.x, position.y))
             {
-                instance = new ItemInstance(itemData);
-                instance.GridPosition = position;
+                var instance = new ItemInstance(itemData, position);
 
                 PlaceInstanceInGrid(instance, position.x, position.y);
 
@@ -50,16 +48,40 @@ namespace Inventories
 
         public bool AddItem(in ItemData itemData)
         {
+            if (StackItem(itemData))
+                return true;
+
             if (FindFreePosition(itemData.Size, out var targetPosition))
             {
-                ItemInstance instance = new ItemInstance(itemData);
-                instance.GridPosition = targetPosition;
+                ItemInstance instance = new ItemInstance(itemData, targetPosition);
                 PlaceInstanceInGrid(instance, targetPosition.x, targetPosition.y);
 
                 _items.Add(instance.uniqueId, instance);
 
                 OnAdded?.Invoke(instance);
                 return true;
+            }
+
+            return false;
+        }
+
+        private bool StackItem(ItemData itemData)
+        {
+            if (itemData.CanStack)
+            {
+                foreach ((string key, ItemInstance item) in _items)
+                {
+                    if (item.itemData.Name != itemData.Name) continue;
+
+                    if (item.itemData.MaxStackQuantity <= item.CurrentQuantity + item.itemData.CurrentStackQuantity)
+                    {
+                        return false;
+                    }
+
+
+                    item.AddQuantity(itemData.CurrentStackQuantity);
+                    return true;
+                }
             }
 
             return false;
@@ -82,7 +104,7 @@ namespace Inventories
             return true;
         }
 
-        public bool FindFreePosition(in Vector2Int size, out Vector2Int freePosition)
+        private bool FindFreePosition(in Vector2Int size, out Vector2Int freePosition)
         {
             if (size.x <= 0 || size.y <= 0)
                 throw new ArgumentOutOfRangeException();
@@ -104,7 +126,7 @@ namespace Inventories
             return false;
         }
 
-        public bool Fit(Vector2Int size, int posX, int posY)
+        private bool Fit(Vector2Int size, int posX, int posY)
         {
             if (!IsPositionValid(size, posX, posY))
                 return false;

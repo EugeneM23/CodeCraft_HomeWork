@@ -10,5 +10,9 @@ namespace Inventories
         [field: SerializeField] public Vector2Int Size;
         [field: SerializeField] public ItemType ItemType;
         [field: SerializeField] public GameObject SpawnPrefab;
+
+        [field: SerializeField] public bool CanStack;
+        [field: SerializeField] public int MaxStackQuantity;
+        [field: SerializeField] public int CurrentStackQuantity;
     }
 }
