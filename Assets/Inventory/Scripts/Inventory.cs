@@ -29,16 +29,13 @@ namespace Inventories
             _items = new Dictionary<string, ItemInstance>();
         }
 
-        public bool AddItem(in ItemData itemData, Vector2Int position)
+        public bool AddItem(in ItemData itemData, Vector2Int position, int quantity = 1)
         {
             if (Fit(itemData.Size, position.x, position.y))
             {
-                var instance = new ItemInstance(itemData, position);
-
+                var instance = new ItemInstance(itemData, position, quantity);
                 PlaceInstanceInGrid(instance, position.x, position.y);
-
                 _items.Add(instance.uniqueId, instance);
-
                 OnAdded?.Invoke(instance);
                 return true;
             }
@@ -46,43 +43,59 @@ namespace Inventories
             return false;
         }
 
-        public bool AddItem(in ItemData itemData)
+        public bool AddItem(in ItemData itemData, int quantity = 1)
         {
-            if (StackItem(itemData))
-                return true;
-
-            if (FindFreePosition(itemData.Size, out var targetPosition))
+            // Сначала пытаемся добавить к существующему стаку
+            if (TryStackItem(itemData, ref quantity))
             {
-                ItemInstance instance = new ItemInstance(itemData, targetPosition);
-                PlaceInstanceInGrid(instance, targetPosition.x, targetPosition.y);
-
-                _items.Add(instance.uniqueId, instance);
-
-                OnAdded?.Invoke(instance);
-                return true;
-            }
-
-            return false;
-        }
-
-        private bool StackItem(ItemData itemData)
-        {
-            if (itemData.CanStack)
-            {
-                foreach ((string key, ItemInstance item) in _items)
-                {
-                    if (item.itemData.Name != itemData.Name) continue;
-
-                    if (item.itemData.MaxStackQuantity <= item.itemData.CurrentStackQuantity + itemData.CurrentStackQuantity)
-                        return false;
-
-
-                    item.AddQuantity(itemData.CurrentStackQuantity);
+                // Если всё добавили - успех
+                if (quantity == 0)
                     return true;
+            }
+
+            // Если осталось что-то добавить - создаём новый стак
+            if (quantity > 0 && FindFreePosition(itemData.Size, out var targetPosition))
+            {
+                ItemInstance instance = new ItemInstance(itemData, targetPosition, quantity);
+                PlaceInstanceInGrid(instance, targetPosition.x, targetPosition.y);
+                _items.Add(instance.uniqueId, instance);
+                OnAdded?.Invoke(instance);
+                return true;
+            }
+
+            return false;
+        }
+
+        private bool TryStackItem(ItemData itemData, ref int quantity)
+        {
+            if (!itemData.CanStack || quantity <= 0)
+                return false;
+
+            foreach (var item in _items.Values)
+            {
+                // Проверяем, что это тот же предмет
+                if (item.itemData.Name != itemData.Name)
+                    continue;
+
+                // Проверяем, что стак не полон
+                if (item.IsFull)
+                    continue;
+
+                // Пытаемся добавить
+                int canAdd = Mathf.Min(quantity, item.RemainingCapacity);
+                
+                if (item.TryAddQuantity(canAdd))
+                {
+                    quantity -= canAdd;
+                    
+                    // Если всё добавили - выходим
+                    if (quantity == 0)
+                        return true;
                 }
             }
 
-            return false;
+            // Вернём true если хоть что-то добавили
+            return quantity < itemData.MaxStackQuantity;
         }
 
         public bool RemoveItem(string id)
@@ -96,7 +109,6 @@ namespace Inventories
                 _cells[position.x, position.y] = null;
 
             _items.Remove(id);
-
             OnRemoved?.Invoke(item);
 
             return true;

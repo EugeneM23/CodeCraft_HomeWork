@@ -14,8 +14,9 @@ namespace Inventories
 
         [field: SerializeField] public bool CanStack;
         [field: SerializeField] public int MaxStackQuantity;
-        [field: SerializeField] public int CurrentStackQuantity;
 
+        // Убрали CurrentStackQuantity отсюда - это состояние, а не данные!
+        
         public ItemData(ItemData itemData)
         {
             Name = itemData.Name;
@@ -24,7 +25,6 @@ namespace Inventories
             ItemType = itemData.ItemType;
             CanStack = itemData.CanStack;
             MaxStackQuantity = itemData.MaxStackQuantity;
-            CurrentStackQuantity = itemData.CurrentStackQuantity;
         }
     }
 }

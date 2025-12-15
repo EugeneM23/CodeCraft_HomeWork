@@ -1,6 +1,5 @@
 using Game.Scripts.UI.Equipment;
 using Inventories;
-using UnityEditor;
 using UnityEngine;
 
 public class EndDragState : BaseState
@@ -40,8 +39,9 @@ public class EndDragState : BaseState
             return false;
 
         Vector2Int targetPosition = cellView.GridPosition - _fsm.DragItemCell;
+        ItemInstance draggedItem = _fsm.CurrentDragItem.Item;
 
-        if (!cellView.Inventory.AddItem(_fsm.CurrentDragItem.Item.itemData, targetPosition))
+        if (!cellView.Inventory.AddItem(draggedItem.itemData, targetPosition, draggedItem.StackQuantity))
             ReturnItemToInventory();
 
         DestroyItemAndReturnToIdle();
@@ -69,7 +69,8 @@ public class EndDragState : BaseState
 
     private void ReturnItemToInventory()
     {
-        _fsm.StartDragInventory.AddItem(_fsm.CurrentDragItem.Item.itemData);
+        ItemInstance draggedItem = _fsm.CurrentDragItem.Item;
+        _fsm.StartDragInventory.AddItem(draggedItem.itemData, draggedItem.StackQuantity);
         DestroyItemAndReturnToIdle();
     }
 
@@ -77,8 +78,8 @@ public class EndDragState : BaseState
     {
         if (_fsm.TryGetSceneRaycastHit(out RaycastHit hit))
         {
-            ItemData itemItemData = new ItemData(_fsm.CurrentDragItem.Item.itemData);
-            _itemSpawner.SpawnItem(itemItemData, hit.point);
+            ItemInstance draggedItem = _fsm.CurrentDragItem.Item;
+            _itemSpawner.SpawnItem(draggedItem.itemData, draggedItem.StackQuantity, hit.point);
         }
 
         DestroyItemAndReturnToIdle();

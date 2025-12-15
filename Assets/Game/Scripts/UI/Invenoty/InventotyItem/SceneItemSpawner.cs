@@ -15,10 +15,16 @@ public class SceneItemSpawner : MonoBehaviour
             _itemCatalog[item.ItemData.Name] = item;
     }
 
-    public void SpawnItem(ItemData itemData, Vector3 raycastHitPoint)
+    public void SpawnItem(ItemData itemData, int quantity, Vector3 position)
     {
-        SceneItem item = _itemCatalog[itemData.Name];
-        item.ItemData = itemData;
-        Instantiate(item, raycastHitPoint, Quaternion.identity);
+        if (!_itemCatalog.TryGetValue(itemData.Name, out SceneItem prefab))
+        {
+            Debug.LogWarning($"Item prefab not found: {itemData.Name}");
+            return;
+        }
+
+        SceneItem spawnedItem = Instantiate(prefab, position, Quaternion.identity);
+        spawnedItem.ItemData = itemData;
+        spawnedItem.Quantity = quantity;
     }
 }

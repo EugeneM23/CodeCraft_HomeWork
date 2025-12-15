@@ -17,7 +17,7 @@ public class BackPack : MonoBehaviour
 
         foreach (SceneItem item in _items)
         {
-            Inventory.AddItem(item.ItemData);
+            Inventory.AddItem(item.ItemData, item.Quantity);
         }
     }
 }

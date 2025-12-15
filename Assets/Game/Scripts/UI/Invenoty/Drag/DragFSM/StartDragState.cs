@@ -35,7 +35,6 @@ public class StartDragState : BaseState
         if (cell.InventoryItem == null)
             return false;
 
-        Debug.Log(cell.InventoryItem.Item.itemData.CurrentStackQuantity);
         _fsm.CurrentDragItem = cell.InventoryItem;
         _fsm.DragOffset = _fsm.CurrentDragItem.transform.position - Input.mousePosition;
         _fsm.DragItemCell = _fsm.GetDragItemCell(_fsm.CurrentDragItem, Input.mousePosition);
@@ -67,8 +66,10 @@ public class StartDragState : BaseState
     private bool TryStartDragFromScene()
     {
         if (_fsm.TryGetComponentUnderMouse(out SceneItem sceneItem))
-            if (_fsm.OriginInventory.AddItem(sceneItem.ItemData))
+        {
+            if (_fsm.OriginInventory.AddItem(sceneItem.ItemData, sceneItem.Quantity))
                 GameObject.Destroy(sceneItem.gameObject);
+        }
 
         _fsm.SetState<IdleDragState>();
         return true;

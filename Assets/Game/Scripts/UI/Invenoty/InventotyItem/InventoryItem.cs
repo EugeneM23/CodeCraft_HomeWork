@@ -18,23 +18,35 @@ public class InventoryItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     public ItemInstance Item => _item;
     public Transform Background => _background.transform;
 
-    private void Start()
+    private void OnDestroy()
     {
-        _count.gameObject.SetActive(_item.itemData.CanStack);
+        if (_item != null)
+            _item.OnStackChanged -= UpdateQuantity;
     }
 
-    private void OnDisable() => _item.OnStackChanged -= UpdateQuantity;
-
-    private void UpdateQuantity(string quantity)
+    private void UpdateQuantity(int quantity)
     {
-        _count.text = quantity;
+        _count.text = quantity.ToString();
     }
 
     public void SetupItem(ItemInstance item, Vector2 cellSize)
     {
+        // Отписываемся от старого item если он был
+        if (_item != null)
+            _item.OnStackChanged -= UpdateQuantity;
+
         _item = item;
         _itemImage.sprite = item.itemData.Icon;
-        _count.text = item.itemData.CurrentStackQuantity.ToString();
+        
+        // Показываем счётчик только для стакаемых предметов
+        bool showCount = item.CanStack;
+        _count.gameObject.SetActive(showCount);
+        
+        if (showCount)
+            _count.text = item.StackQuantity.ToString();
+
+        // Подписываемся на изменения
+        _item.OnStackChanged += UpdateQuantity;
 
         Vector2 itemSize = new Vector2(
             cellSize.x * item.itemData.Size.x,

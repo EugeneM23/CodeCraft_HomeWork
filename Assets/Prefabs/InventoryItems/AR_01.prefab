@@ -97,8 +97,6 @@ GameObject:
   - component: {fileID: 5781685275174074433}
   - component: {fileID: 5994872970234957422}
   - component: {fileID: 9014789100357390462}
-  - component: {fileID: 6928100283142434196}
-  - component: {fileID: 1367917748577566128}
   - component: {fileID: 1258537309380863732}
   m_Layer: 0
   m_Name: AK74
@@ -178,40 +176,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &6928100283142434196
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 759866545977216738}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0fa84783d20a428185a38a9c1db40342, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _itemData: {fileID: 11400000, guid: 46162189118124311ad016055c895131, type: 2}
---- !u!65 &1367917748577566128
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 759866545977216738}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.033782393, y: 0.16676852, z: 0.7707256}
-  m_Center: {x: -0.0017576697, y: -0.03621251, z: -0.06259711}
 --- !u!82 &1258537309380863732
 AudioSource:
   m_ObjectHideFlags: 0
@@ -318,6 +282,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7960245070435069082}
+  - component: {fileID: 7863706435233951146}
+  - component: {fileID: 6500494498358227145}
   m_Layer: 0
   m_Name: AR_01
   m_TagString: Untagged
@@ -341,6 +307,47 @@ Transform:
   - {fileID: 5781685275174074433}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7863706435233951146
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3556696973968509234}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0fa84783d20a428185a38a9c1db40342, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ItemData:
+    Name: AR_01
+    Icon: {fileID: 9173757791638715115, guid: a9fd30c0df17c43f9a2f4fd2ab4c3b7a, type: 3}
+    Size: {x: 4, y: 2}
+    ItemType: 0
+    CanStack: 0
+    MaxStackQuantity: 0
+  Quantity: 1
+--- !u!65 &6500494498358227145
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3556696973968509234}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.17041202, y: 0.0576096, z: 0.7735953}
+  m_Center: {x: 0.039705157, y: 0.0018896789, z: -0.060825136}
 --- !u!1 &4124113970829073817
 GameObject:
   m_ObjectHideFlags: 0
