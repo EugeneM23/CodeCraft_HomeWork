@@ -29,9 +29,11 @@ public class InventoryView : MonoBehaviour
     {
         InventoryItem inventoryItem = Instantiate(_itemContainerPrefab, _gridContainer);
         inventoryItem.transform.position = _cells[positions[0].x, positions[0].y].transform.position;
+        
+        Debug.Log(instance.ItemConsumer == null);
         inventoryItem.SetupItem(instance, _cellSize);
 
-        _inventoryItems[instance.uniqueId] = inventoryItem;
+        _inventoryItems[instance.ID] = inventoryItem;
 
         foreach (Vector2Int pos in positions)
         {

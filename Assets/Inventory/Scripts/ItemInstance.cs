@@ -3,15 +3,17 @@ using UnityEngine;
 
 namespace Inventories
 {
-    [System.Serializable]
+    [Serializable]
     public class ItemInstance
     {
         public event Action<int> OnStackChanged;
-        
-        public string uniqueId;
-        public ItemData itemData;
-        public Vector2Int GridPosition;
-        
+
+        public string ID { get; private set; }
+        public ItemData itemData { get; private set; }
+        public Vector2Int GridPosition { get; private set; }
+        public ItemUseCase ItemUseCase { get; private set; }
+        public IItemConsumer ItemConsumer { get; private set; }
+
         private int _stackQuantity;
 
         public int StackQuantity
@@ -36,8 +38,11 @@ namespace Inventories
         {
             itemData = data;
             GridPosition = gridPosition;
-            uniqueId = System.Guid.NewGuid().ToString();
+            ID = Guid.NewGuid().ToString();
             _stackQuantity = Mathf.Clamp(initialQuantity, 1, data.CanStack ? data.MaxStackQuantity : 1);
+            ItemUseCase = data.ItemUseCase;
+            ItemConsumer = data.ItemConsumer;
+            Debug.Log(data.ItemConsumer == null);
         }
 
         public bool TryAddQuantity(int quantity)
@@ -46,7 +51,7 @@ namespace Inventories
                 return false;
 
             int newQuantity = _stackQuantity + quantity;
-            
+
             if (newQuantity > MaxStackQuantity)
                 return false;
 
@@ -61,11 +66,6 @@ namespace Inventories
 
             StackQuantity = _stackQuantity - quantity;
             return true;
-        }
-
-        public void SetQuantity(int quantity)
-        {
-            StackQuantity = Mathf.Clamp(quantity, 1, CanStack ? MaxStackQuantity : 1);
         }
     }
 }

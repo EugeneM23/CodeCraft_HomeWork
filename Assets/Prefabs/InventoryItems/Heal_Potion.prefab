@@ -122,10 +122,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ItemData:
-    Name: Heal_potion
-    Icon: {fileID: 21300000, guid: be8584e54b2d0974988f7180d2830912, type: 3}
-    Size: {x: 1, y: 1}
-    ItemType: 0
-    CanStack: 1
-    MaxStackQuantity: 3
+    <Name>k__BackingField: Heal_Potion
+    <Icon>k__BackingField: {fileID: 21300000, guid: 211ef4f7b2c37d24ba8dadecabe625f9, type: 3}
+    <Size>k__BackingField: {x: 1, y: 1}
+    <ItemType>k__BackingField: 0
+    <CanStack>k__BackingField: 1
+    <MaxStackQuantity>k__BackingField: 3
+    <ItemUseCase>k__BackingField: {fileID: 11400000, guid: ff4197b4c581341748c0ce0de9da5d40, type: 2}
   Quantity: 1

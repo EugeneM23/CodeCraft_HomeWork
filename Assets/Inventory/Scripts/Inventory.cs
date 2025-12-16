@@ -35,7 +35,7 @@ namespace Inventories
             {
                 var instance = new ItemInstance(itemData, position, quantity);
                 PlaceInstanceInGrid(instance, position.x, position.y);
-                _items.Add(instance.uniqueId, instance);
+                _items.Add(instance.ID, instance);
                 OnAdded?.Invoke(instance);
                 return true;
             }
@@ -48,7 +48,6 @@ namespace Inventories
             // Сначала пытаемся добавить к существующему стаку
             if (TryStackItem(itemData, ref quantity))
             {
-                // Если всё добавили - успех
                 if (quantity == 0)
                     return true;
             }
@@ -58,7 +57,7 @@ namespace Inventories
             {
                 ItemInstance instance = new ItemInstance(itemData, targetPosition, quantity);
                 PlaceInstanceInGrid(instance, targetPosition.x, targetPosition.y);
-                _items.Add(instance.uniqueId, instance);
+                _items.Add(instance.ID, instance);
                 OnAdded?.Invoke(instance);
                 return true;
             }

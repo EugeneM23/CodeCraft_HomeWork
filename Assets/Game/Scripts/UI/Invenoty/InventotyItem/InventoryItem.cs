@@ -11,17 +11,17 @@ public class InventoryItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     [SerializeField] private Image _itemImage;
     [SerializeField] private RectTransform _rectTransform;
     [SerializeField] private TMP_Text _count;
+    [SerializeField] private DoubleClickHandler _doubleClickHandler;
 
-    private ItemInstance _item;
-
+    public ItemInstance Item { get; private set; }
     public RectTransform RectTransform => _rectTransform;
-    public ItemInstance Item => _item;
+
     public Transform Background => _background.transform;
 
     private void OnDestroy()
     {
-        if (_item != null)
-            _item.OnStackChanged -= UpdateQuantity;
+        if (Item != null)
+            Item.OnStackChanged -= UpdateQuantity;
     }
 
     private void UpdateQuantity(int quantity)
@@ -32,21 +32,21 @@ public class InventoryItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     public void SetupItem(ItemInstance item, Vector2 cellSize)
     {
         // Отписываемся от старого item если он был
-        if (_item != null)
-            _item.OnStackChanged -= UpdateQuantity;
+        if (Item != null)
+            Item.OnStackChanged -= UpdateQuantity;
 
-        _item = item;
+        Item = item;
         _itemImage.sprite = item.itemData.Icon;
-        
+
         // Показываем счётчик только для стакаемых предметов
         bool showCount = item.CanStack;
         _count.gameObject.SetActive(showCount);
-        
+
         if (showCount)
             _count.text = item.StackQuantity.ToString();
 
         // Подписываемся на изменения
-        _item.OnStackChanged += UpdateQuantity;
+        Item.OnStackChanged += UpdateQuantity;
 
         Vector2 itemSize = new Vector2(
             cellSize.x * item.itemData.Size.x,
@@ -54,15 +54,21 @@ public class InventoryItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
         );
 
         _rectTransform.sizeDelta = itemSize;
+
+        Debug.Log(item.ItemConsumer == null);
+        _doubleClickHandler.SetUpUseCase(item.ItemUseCase, item.ItemConsumer);
     }
 
     public void OnPointerEnter(PointerEventData eventData)
     {
+        _itemImage.transform.localScale *= 1.2f;
         SetBackgroundAlpha(1f);
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
+        _itemImage.transform.localScale = Vector3.one;
+
         SetBackgroundAlpha(0f);
     }
 

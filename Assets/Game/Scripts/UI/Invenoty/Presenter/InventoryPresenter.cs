@@ -38,7 +38,7 @@ public class InventoryPresenter : MonoBehaviour
 
     private void OnItemRemoved(ItemInstance itemInstance)
     {
-        _view.RemoveItem(itemInstance.uniqueId);
+        _view.RemoveItem(itemInstance.ID);
     }
 
     private void Highlight(Vector2Int[] cells)

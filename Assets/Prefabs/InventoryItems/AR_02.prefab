@@ -568,12 +568,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ItemData:
-    Name: AR_02
-    Icon: {fileID: 8027571100345638807, guid: 117ea7f96d7014a738e16b8debf2b314, type: 3}
-    Size: {x: 4, y: 2}
-    ItemType: 0
-    CanStack: 0
-    MaxStackQuantity: 0
+    <Name>k__BackingField: AR_02
+    <Icon>k__BackingField: {fileID: 21300000, guid: be1083c1ddb57b740b5477a3f3d6e189, type: 3}
+    <Size>k__BackingField: {x: 4, y: 2}
+    <ItemType>k__BackingField: 0
+    <CanStack>k__BackingField: 0
+    <MaxStackQuantity>k__BackingField: 0
+    <ItemUseCase>k__BackingField: {fileID: 11400000, guid: f2a989a94ab8b47909f243ffe364f5c1, type: 2}
   Quantity: 1
 --- !u!65 &5734543699993197207
 BoxCollider:

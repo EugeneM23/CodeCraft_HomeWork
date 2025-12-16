@@ -541,6 +541,7 @@ GameObject:
   - component: {fileID: 2550732703897415888}
   - component: {fileID: 607738444684318886}
   - component: {fileID: 3349113050816894745}
+  - component: {fileID: 2602894320010975465}
   m_Layer: 5
   m_Name: Inventory
   m_TagString: Untagged
@@ -631,6 +632,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 575b436d4f6543cf925ac4db9ec70859, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects:
+    - {fileID: 2602894320010975465}
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes:
+    - Name: _itemConsumer
+      Entry: 10
+      Data: 0
   _presenter: {fileID: 882364599994402435}
   _items:
   - {fileID: 4751637913041529059, guid: 7746e058d10ed4b74a618e111051fe3f, type: 3}
@@ -638,6 +652,7 @@ MonoBehaviour:
   - {fileID: 7863706435233951146, guid: ec522a5a4d72540569bf5782dad53c2e, type: 3}
   - {fileID: 7066641485950063184, guid: c9e329e9e5a3f4e7eaeead4e646128f2, type: 3}
   - {fileID: 7070894261933836396, guid: 1dee5ee9daccd46cc930f6ab2989731f, type: 3}
+  - {fileID: 1441105143803712864, guid: 9de9593e1e39947b6b50224a5f4988a0, type: 3}
   _columns: 8
   _rows: 8
 --- !u!114 &882364599994402435
@@ -701,3 +716,16 @@ MonoBehaviour:
   - {fileID: 1441105143803712864, guid: 9de9593e1e39947b6b50224a5f4988a0, type: 3}
   - {fileID: 7863706435233951146, guid: ec522a5a4d72540569bf5782dad53c2e, type: 3}
   - {fileID: 7066641485950063184, guid: c9e329e9e5a3f4e7eaeead4e646128f2, type: 3}
+--- !u!114 &2602894320010975465
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8531536367912159190}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 21a62d3917f845a7b0408426fd310233, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Health: 50

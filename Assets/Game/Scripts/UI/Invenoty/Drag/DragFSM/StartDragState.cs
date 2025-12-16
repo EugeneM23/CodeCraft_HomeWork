@@ -41,7 +41,7 @@ public class StartDragState : BaseState
         _fsm.StartDragInventory = cell.Inventory;
         _fsm.CurrentDragItem.transform.parent = _fsm.CurrentDragItem.transform.root;
 
-        cell.Inventory.RemoveItem(_fsm.CurrentDragItem.Item.uniqueId);
+        cell.Inventory.RemoveItem(_fsm.CurrentDragItem.Item.ID);
         _fsm.SetState<UpdateDragState>();
 
         return true;
