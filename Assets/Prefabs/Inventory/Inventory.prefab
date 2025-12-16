@@ -696,6 +696,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7cd5f8a9286f4ce7a2759fd532c1a0e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _draItemPrefab: {fileID: 6494077023178959131, guid: ced7a2ab9e9864e21888941e7fc700a8, type: 3}
   _backPack: {fileID: 5830915091178595739}
   _spawner: {fileID: 3349113050816894745}
 --- !u!114 &3349113050816894745

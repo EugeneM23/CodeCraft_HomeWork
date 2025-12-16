@@ -1,4 +1,3 @@
-using System;
 using Inventories;
 using TMPro;
 using UnityEngine;
@@ -13,14 +12,14 @@ public class InventoryItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     [SerializeField] private TMP_Text _count;
     [SerializeField] private DoubleClickHandler _doubleClickHandler;
 
-    public ItemInstance Item { get; private set; }
+    public ItemInstance ItemInstance { get; private set; }
     public RectTransform RectTransform => _rectTransform;
     public Transform Background => _background.transform;
 
     private void OnDestroy()
     {
-        if (Item != null)
-            Item.OnStackChanged -= UpdateQuantity;
+        if (ItemInstance != null)
+            ItemInstance.OnStackChanged -= UpdateQuantity;
     }
 
     private void UpdateQuantity(int quantity)
@@ -30,10 +29,10 @@ public class InventoryItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
 
     public void SetupItem(ItemInstance item, Vector2 cellSize, Inventory inventory)
     {
-        if (Item != null)
-            Item.OnStackChanged -= UpdateQuantity;
+        if (ItemInstance != null)
+            ItemInstance.OnStackChanged -= UpdateQuantity;
 
-        Item = item;
+        ItemInstance = item;
         _itemImage.sprite = item.itemData.Icon;
 
         bool showCount = item.CanStack;
@@ -42,7 +41,7 @@ public class InventoryItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
         if (showCount)
             _count.text = item.StackQuantity.ToString();
 
-        Item.OnStackChanged += UpdateQuantity;
+        ItemInstance.OnStackChanged += UpdateQuantity;
 
         Vector2 itemSize = new Vector2(
             cellSize.x * item.itemData.Size.x,

@@ -39,7 +39,7 @@ public class EndDragState : BaseState
             return false;
 
         Vector2Int targetPosition = cellView.GridPosition - _fsm.DragItemCell;
-        ItemInstance draggedItem = _fsm.CurrentDragItem.Item;
+        ItemInstance draggedItem = _fsm.CurrentDragItem.ItemInstance;
 
         if (!cellView.Inventory.AddItem(draggedItem.itemData, targetPosition, draggedItem.StackQuantity))
             ReturnItemToInventory();
@@ -53,12 +53,11 @@ public class EndDragState : BaseState
         if (!_fsm.TryGetComponentUnderMouse(out EquipmentSlot slot))
             return false;
 
-        if (!slot.AddItem(_fsm.CurrentDragItem))
+        if (!slot.AddItem(_fsm.CurrentDragItem.ItemInstance))
             ReturnItemToInventory();
 
-        _fsm.CurrentDragItem = null;
+        GameObject.Destroy(_fsm.CurrentDragItem.gameObject);
         _fsm.SetState<IdleDragState>();
-
         return true;
     }
 
@@ -69,7 +68,7 @@ public class EndDragState : BaseState
 
     private void ReturnItemToInventory()
     {
-        ItemInstance draggedItem = _fsm.CurrentDragItem.Item;
+        ItemInstance draggedItem = _fsm.CurrentDragItem.ItemInstance;
         _fsm.StartDragInventory.AddItem(draggedItem.itemData, draggedItem.StackQuantity);
         DestroyItemAndReturnToIdle();
     }
@@ -78,7 +77,7 @@ public class EndDragState : BaseState
     {
         if (_fsm.TryGetSceneRaycastHit(out RaycastHit hit))
         {
-            ItemInstance draggedItem = _fsm.CurrentDragItem.Item;
+            ItemInstance draggedItem = _fsm.CurrentDragItem.ItemInstance;
             _itemSpawner.SpawnItem(draggedItem.itemData, draggedItem.StackQuantity, hit.point);
         }
 

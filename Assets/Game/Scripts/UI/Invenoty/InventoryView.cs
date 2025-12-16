@@ -52,6 +52,7 @@ public class InventoryView : MonoBehaviour
                 cell.Clear();
         }
 
+        Destroy(_inventoryItems[id].gameObject);
         _inventoryItems.Remove(id);
     }
 

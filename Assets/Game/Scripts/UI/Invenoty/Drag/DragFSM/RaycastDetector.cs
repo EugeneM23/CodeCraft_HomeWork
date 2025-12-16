@@ -7,7 +7,7 @@ public class RaycastDetector
 {
     private readonly GraphicRaycaster _raycaster;
     private readonly EventSystem _eventSystem;
-    private InventoryItem _ignoredItem;
+    private DragItem _ignoredItem;
 
     public RaycastDetector(GraphicRaycaster raycaster, EventSystem eventSystem)
     {
@@ -15,7 +15,7 @@ public class RaycastDetector
         _eventSystem = eventSystem;
     }
 
-    public void SetIgnoredItem(InventoryItem item)
+    public void SetIgnoredItem(DragItem item)
     {
         _ignoredItem = item;
     }

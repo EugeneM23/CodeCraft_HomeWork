@@ -7,6 +7,7 @@ using UnityEngine.UI;
 
 public class DragFSM : MonoBehaviour
 {
+    [SerializeField] private DragItem _draItemPrefab;
     [SerializeField] private BackPack _backPack;
     [SerializeField] private SceneItemSpawner _spawner;
 
@@ -15,7 +16,7 @@ public class DragFSM : MonoBehaviour
     private RaycastDetector _raycastDetector;
 
     public Vector3 DragOffset { get; set; }
-    public InventoryItem CurrentDragItem { get; set; }
+    public DragItem CurrentDragItem { get; set; }
     public Vector2Int DragItemCell { get; set; }
     public Inventory StartDragInventory { get; set; }
     public Inventory CurrentInventory { get; set; }
@@ -63,10 +64,10 @@ public class DragFSM : MonoBehaviour
         return _raycastDetector.TryGetComponent(out component);
     }
 
-    public Vector2Int GetDragItemCell(InventoryItem item, Vector2 clickPosition)
+    public Vector2Int GetDragItemCell(DragItem item, Vector2 clickPosition)
     {
         RectTransform rectTransform = item.RectTransform;
-        Vector2Int itemSize = item.Item.itemData.Size;
+        Vector2Int itemSize = item.ItemInstance.itemData.Size;
 
         RectTransformUtility.ScreenPointToLocalPointInRectangle(
             rectTransform,
@@ -91,7 +92,7 @@ public class DragFSM : MonoBehaviour
 
     public void Highlight(Vector2Int cellIndex)
     {
-        Vector2Int size = CurrentDragItem.Item.itemData.Size;
+        Vector2Int size = CurrentDragItem.ItemInstance.itemData.Size;
         Vector2Int startPosition = new Vector2Int(
             cellIndex.x - DragItemCell.x,
             cellIndex.y - DragItemCell.y
@@ -122,5 +123,13 @@ public class DragFSM : MonoBehaviour
     public bool TryGetSceneRaycastHit(out RaycastHit raycastHit)
     {
         return _raycastDetector.TryGetSceneRaycastHit(out raycastHit);
+    }
+
+    public DragItem CreateDragItem(ItemInstance itemInstance)
+    {
+        DragItem dragItem = Instantiate(_draItemPrefab, this.transform.parent);
+        Vector2Int size = new Vector2Int(75, 75);
+        dragItem.Construct(itemInstance, size, OriginInventory);
+        return dragItem;
     }
 }

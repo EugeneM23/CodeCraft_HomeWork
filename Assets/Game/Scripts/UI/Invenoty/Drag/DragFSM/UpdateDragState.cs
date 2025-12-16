@@ -10,7 +10,7 @@ public class UpdateDragState : BaseState, ITickable
 
     public void Tick()
     {
-        _fsm.CurrentDragItem.transform.position = Input.mousePosition + _fsm.DragOffset;
+        _fsm.CurrentDragItem.transform.position = Input.mousePosition;
 
         if (_fsm.TryGetComponentUnderMouse(out CellView cell))
         {
