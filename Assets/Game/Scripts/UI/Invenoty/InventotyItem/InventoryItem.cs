@@ -57,6 +57,7 @@ public class InventoryItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     public void OnPointerEnter(PointerEventData eventData)
     {
         _itemImage.transform.localScale *= 1.2f;
+
         SetBackgroundAlpha(1f);
     }
 
