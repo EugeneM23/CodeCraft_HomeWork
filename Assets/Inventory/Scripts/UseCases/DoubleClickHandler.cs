@@ -1,29 +1,32 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
+using Inventories;
 
 public class DoubleClickHandler : MonoBehaviour, IPointerClickHandler
 {
     [SerializeField] private float doubleClickTime = 0.3f;
 
     private ItemUseCase _itemUseCase;
+    private Inventory _inventory;
 
     private float lastClickTime = 0f;
-    private IItemConsumer _itemConsumer;
+    private ItemInstance _itemInstance;
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        Debug.Log(_itemConsumer == null);
         float timeSinceLastClick = Time.time - lastClickTime;
 
         if (timeSinceLastClick <= doubleClickTime)
-            _itemUseCase.Invoke(_itemConsumer);
+        {
+            _itemInstance.ItemUseCase.Invoke(_inventory, _itemInstance);
+        }
 
         lastClickTime = Time.time;
     }
 
-    public void SetUpUseCase(ItemUseCase itemUseCase, IItemConsumer itemConsumer)
+    public void SetUpUseCase(ItemInstance itemInstance, Inventory inventory)
     {
-        _itemUseCase = itemUseCase;
-        _itemConsumer = itemConsumer;
+        _itemInstance = itemInstance;
+        _inventory = inventory;
     }
 }

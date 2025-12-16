@@ -7,13 +7,15 @@ public class InventoryView : MonoBehaviour
     [SerializeField] private CellView _cellPrefab;
     [SerializeField] private InventoryItem _itemContainerPrefab;
     [SerializeField] private RectTransform _gridContainer;
-    [SerializeField] private Vector2 _cellSize = new Vector2(100f, 100f);
+    [SerializeField] private Vector2 _cellSize = new(100f, 100f);
 
-    private readonly Dictionary<string, InventoryItem> _inventoryItems = new Dictionary<string, InventoryItem>();
+    private readonly Dictionary<string, InventoryItem> _inventoryItems = new();
     private CellView[,] _cells;
+    private Inventory _inventory;
 
     public void InitializeGrid(int columns, int rows, Inventory inventory)
     {
+        _inventory = inventory;
         _cells = new CellView[columns, rows];
 
         for (int y = 0; y < rows; y++)
@@ -29,9 +31,8 @@ public class InventoryView : MonoBehaviour
     {
         InventoryItem inventoryItem = Instantiate(_itemContainerPrefab, _gridContainer);
         inventoryItem.transform.position = _cells[positions[0].x, positions[0].y].transform.position;
-        
-        Debug.Log(instance.ItemConsumer == null);
-        inventoryItem.SetupItem(instance, _cellSize);
+
+        inventoryItem.SetupItem(instance, _cellSize, _inventory);
 
         _inventoryItems[instance.ID] = inventoryItem;
 

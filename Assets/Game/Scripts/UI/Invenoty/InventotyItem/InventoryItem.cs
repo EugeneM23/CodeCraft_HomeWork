@@ -15,7 +15,6 @@ public class InventoryItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
 
     public ItemInstance Item { get; private set; }
     public RectTransform RectTransform => _rectTransform;
-
     public Transform Background => _background.transform;
 
     private void OnDestroy()
@@ -29,23 +28,20 @@ public class InventoryItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
         _count.text = quantity.ToString();
     }
 
-    public void SetupItem(ItemInstance item, Vector2 cellSize)
+    public void SetupItem(ItemInstance item, Vector2 cellSize, Inventory inventory)
     {
-        // Отписываемся от старого item если он был
         if (Item != null)
             Item.OnStackChanged -= UpdateQuantity;
 
         Item = item;
         _itemImage.sprite = item.itemData.Icon;
 
-        // Показываем счётчик только для стакаемых предметов
         bool showCount = item.CanStack;
         _count.gameObject.SetActive(showCount);
 
         if (showCount)
             _count.text = item.StackQuantity.ToString();
 
-        // Подписываемся на изменения
         Item.OnStackChanged += UpdateQuantity;
 
         Vector2 itemSize = new Vector2(
@@ -55,8 +51,7 @@ public class InventoryItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
 
         _rectTransform.sizeDelta = itemSize;
 
-        Debug.Log(item.ItemConsumer == null);
-        _doubleClickHandler.SetUpUseCase(item.ItemUseCase, item.ItemConsumer);
+        _doubleClickHandler.SetUpUseCase(item, inventory);
     }
 
     public void OnPointerEnter(PointerEventData eventData)
@@ -68,7 +63,6 @@ public class InventoryItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     public void OnPointerExit(PointerEventData eventData)
     {
         _itemImage.transform.localScale = Vector3.one;
-
         SetBackgroundAlpha(0f);
     }
 

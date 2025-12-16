@@ -15,7 +15,6 @@ namespace Inventories
         [field: SerializeField] public int MaxStackQuantity { get; private set; }
         [field: SerializeField] public ItemUseCase ItemUseCase { get; private set; }
         
-        public IItemConsumer ItemConsumer { get; set; }
 
         public ItemData(ItemData itemData)
         {
@@ -26,7 +25,6 @@ namespace Inventories
             CanStack = itemData.CanStack;
             MaxStackQuantity = itemData.MaxStackQuantity;
             ItemUseCase = itemData.ItemUseCase;
-            ItemConsumer = itemData.ItemConsumer;
         }
     }
 }

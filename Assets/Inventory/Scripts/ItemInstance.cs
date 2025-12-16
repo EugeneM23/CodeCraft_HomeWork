@@ -12,7 +12,8 @@ namespace Inventories
         public ItemData itemData { get; private set; }
         public Vector2Int GridPosition { get; private set; }
         public ItemUseCase ItemUseCase { get; private set; }
-        public IItemConsumer ItemConsumer { get; private set; }
+        
+        // УДАЛЕНО: ItemConsumer - не нужен!
 
         private int _stackQuantity;
 
@@ -41,8 +42,7 @@ namespace Inventories
             ID = Guid.NewGuid().ToString();
             _stackQuantity = Mathf.Clamp(initialQuantity, 1, data.CanStack ? data.MaxStackQuantity : 1);
             ItemUseCase = data.ItemUseCase;
-            ItemConsumer = data.ItemConsumer;
-            Debug.Log(data.ItemConsumer == null);
+            // УДАЛЕНО: ItemConsumer = data.ItemConsumer;
         }
 
         public bool TryAddQuantity(int quantity)

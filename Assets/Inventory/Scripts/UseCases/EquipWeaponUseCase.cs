@@ -1,10 +1,20 @@
 using UnityEngine;
+using Inventories;
 
-[CreateAssetMenu(fileName = "EquipmentWeaponUseCase", menuName = "InventoryItem/UseCases/EquipmentWeaponUseCase")]
+[CreateAssetMenu(fileName = "EquipWeaponUseCase", menuName = "InventoryItem/UseCases/EquipWeaponUseCase")]
 public class EquipWeaponUseCase : ItemUseCase
 {
-    public override void Invoke(IItemConsumer itemConsumer)
+    public override void Invoke(Inventory inventory, ItemInstance itemInstance)
     {
-        Debug.Log("EquipItemUseCase");
+        IItemConsumer consumer = inventory.Owner;
+
+        if (consumer == null)
+        {
+            Debug.LogWarning("Inventory has no owner!");
+            return;
+        }
+
+        Debug.Log("Weapon equipped!");
+        // Здесь логика экипировки
     }
 }

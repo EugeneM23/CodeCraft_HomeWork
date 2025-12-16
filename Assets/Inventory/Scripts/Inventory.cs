@@ -10,6 +10,9 @@ namespace Inventories
         public int Width => _cells.GetLength(0);
         public int Height => _cells.GetLength(1);
         public int Count => _items.Count;
+        
+        // НОВОЕ: Owner инвентаря (кто использует предметы)
+        public IItemConsumer Owner { get; set; }
 
         public event Action<ItemInstance> OnAdded;
         public event Action<ItemInstance> OnRemoved;

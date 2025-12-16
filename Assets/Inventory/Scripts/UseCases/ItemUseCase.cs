@@ -1,6 +1,8 @@
 using UnityEngine;
+using Inventories;
 
 public abstract class ItemUseCase : ScriptableObject
 {
-    public abstract void Invoke(IItemConsumer itemConsumer);
+    // UseCase теперь получает Inventory, из которого сам достанет Consumer
+    public abstract void Invoke(Inventory inventory, ItemInstance itemInstance);
 }

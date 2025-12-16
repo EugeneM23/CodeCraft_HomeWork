@@ -1,12 +1,22 @@
 using UnityEngine;
+using Inventories;
 
 [CreateAssetMenu(fileName = "HealPotionUseCase", menuName = "InventoryItem/UseCases/HealPotionUseCase")]
 public class HealPotionUseCase : ItemUseCase
 {
-    public override void Invoke(IItemConsumer itemConsumer)
+    [SerializeField] private int healAmount = 20;
+
+    public override void Invoke(Inventory inventory, ItemInstance itemInstance)
     {
-        Debug.Log(itemConsumer == null);
-        TestCharacter testCharacter = itemConsumer.GetComponent<TestCharacter>();
-        Debug.Log(testCharacter.Health);
+        IItemConsumer consumer = inventory.Owner;
+
+        TestCharacter character = consumer.GetComponent<TestCharacter>();
+
+        if (character != null)
+        {
+            character.Health += healAmount;
+            inventory.RemoveItem(itemInstance.ID);
+            Debug.Log($"Healed! New health: {character.Health}");
+        }
     }
 }

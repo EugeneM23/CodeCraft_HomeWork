@@ -16,14 +16,15 @@ public class BackPack : SerializedMonoBehaviour
     {
         Inventory = new Inventory(_columns, _rows);
         
-        _itemConsumer.Inventory = Inventory;
+        // УПРОЩЕНО: Устанавливаем owner только один раз
+        Inventory.Owner = _itemConsumer;
         
+        _itemConsumer.Inventory = Inventory;
         _presenter.Inventory = Inventory;
 
+        // Добавляем предметы БЕЗ передачи consumer
         foreach (SceneItem item in _items)
         {
-            Debug.Log(_itemConsumer == null);
-            item.ItemData.ItemConsumer = _itemConsumer;
             Inventory.AddItem(item.ItemData, item.Quantity);
         }
     }
