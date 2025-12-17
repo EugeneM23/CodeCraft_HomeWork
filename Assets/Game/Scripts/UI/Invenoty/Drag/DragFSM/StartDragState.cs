@@ -35,7 +35,7 @@ public class StartDragState : BaseState
         _fsm.Context.CurrentDragItem = _fsm.CreateDragItem(itemInstance);
         _fsm.Context.CurrentDragItem.transform.parent = _fsm.Context.CurrentDragItem.transform.root;
         _fsm.Context.SourceInventory = cell.Inventory;
-        _fsm.Context.GrabbedCell = _fsm.CalculateGrabbedCell(_fsm.Context.CurrentDragItem, Input.mousePosition);
+        _fsm.Context.GrabbedCell = _fsm.GetItemPostion(_fsm.Context.CurrentDragItem);
 
         cell.Inventory.RemoveItem(itemInstance.ID);
 
@@ -55,7 +55,7 @@ public class StartDragState : BaseState
         _fsm.Context.CurrentDragItem.transform.parent = _fsm.Context.CurrentDragItem.transform.root;
         _fsm.Context.SourceInventory = _fsm.OriginInventory;
         _fsm.Context.EquipmentSlot = slot;
-        _fsm.Context.GrabbedCell = _fsm.CalculateGrabbedCell(_fsm.Context.CurrentDragItem, Input.mousePosition);
+        //_fsm.Context.GrabbedCell = _fsm.CalculateGrabbedCell(_fsm.Context.CurrentDragItem, Input.mousePosition);
 
         slot.RemoveItem();
 

@@ -10,8 +10,6 @@ namespace Inventories
         public int Width => _cells.GetLength(0);
         public int Height => _cells.GetLength(1);
         public int Count => _items.Count;
-
-        // НОВОЕ: Owner инвентаря (кто использует предметы)
         public IItemConsumer Owner { get; set; }
 
         public event Action<ItemInstance> OnAdded;
@@ -244,7 +242,11 @@ namespace Inventories
             return _cells[cellIndex.x, cellIndex.y] == null;
         }
 
-        public void Highlight(Vector2Int[] cells) => OnHighlight?.Invoke(cells);
+        public void Highlight(Vector2Int[] cells)
+        {
+            Debug.Log(cells.Length);
+            OnHighlight?.Invoke(cells);
+        }
 
         public void UnHighlight() => OnUnHighlight?.Invoke();
     }

@@ -12,10 +12,12 @@ public class DragFSM : MonoBehaviour
     [SerializeField] private SceneItemSpawner _spawner;
     [SerializeField] private Vector2Int _cellSize = new(75, 75);
 
+    [SerializeField] private InventoryView _inventoryView;
+
     private Dictionary<Type, IState> _states;
     private IState _currentState;
     private RaycastDetector _raycastDetector;
-    
+
     public DragContext Context { get; private set; }
     public Inventory OriginInventory => _backPack.Inventory;
     public SceneItemSpawner ItemSpawner => _spawner;
@@ -94,19 +96,31 @@ public class DragFSM : MonoBehaviour
         int cellX = Mathf.Clamp(Mathf.FloorToInt(normalizedPoint.x * itemSize.x), 0, itemSize.x - 1);
         int cellY = Mathf.Clamp(Mathf.FloorToInt((1f - normalizedPoint.y) * itemSize.y), 0, itemSize.y - 1);
 
+
         return new Vector2Int(cellX, cellY);
+    }
+
+    public Vector2Int GetItemPostion(DragItem item)
+    {
+        return Context.SourceInventory.GetItemGridPositions(item.ItemInstance)[0];
     }
 
     public void HighlightCells(Vector2Int hoveredCell)
     {
-        if (!Context.IsDragging) return;
+        if (Context.CurrentInventory == null) return;
 
-        Vector2Int size = Context.CurrentDragItem.ItemInstance.itemData.Size;
-        Vector2Int topLeftCell = hoveredCell - Context.GrabbedCell;
+        int count = Context.CurrentInventory.Height + Context.CurrentInventory.Width;
+        Vector2Int[] cells = new Vector2Int[count];
+        for (int i = 0; i < Context.CurrentInventory.Width; i++)
+        {
+            for (int j = 0; j < Context.CurrentInventory.Height; j++)
+            {
+                cells[i + j] = new Vector2Int(i, j);
+            }
+        }
 
-        Vector2Int[] cells = CalculateOccupiedCells(topLeftCell, size);
-
-        Context.CurrentInventory?.Highlight(cells);
+        Debug.Log(cells.Length);
+        Context.CurrentInventory.Highlight(cells);
     }
 
     public void UnhighlightCells()

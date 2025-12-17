@@ -33,7 +33,6 @@ public class CellView : MonoBehaviour
 
         if (_currentTargetSprite == targetSprite)
             return;
-
         FadeToSprite(targetSprite);
     }
 

@@ -8,12 +8,14 @@ public class DragContext
     public Inventory SourceInventory { get; set; }
     public Inventory CurrentInventory { get; set; }
     public Vector2Int GrabbedCell { get; set; }
-    
+    public Vector2Int CurrentDragCell { get; set; }
+
     public bool IsDragging => CurrentDragItem != null;
     public EquipmentSlot EquipmentSlot { get; set; }
 
     public void Clear()
     {
+        CurrentDragCell = null;
         EquipmentSlot = null;
         CurrentDragItem = null;
         SourceInventory = null;

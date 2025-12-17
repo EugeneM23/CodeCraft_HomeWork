@@ -36,7 +36,7 @@ public class EndDragState : BaseState
         if (!_fsm.TryGetComponentUnderMouse(out CellView cell))
             return false;
 
-        Vector2Int targetPosition = cell.GridPosition - _fsm.Context.GrabbedCell;
+        Vector2Int targetPosition = cell.GridPosition;
         ItemInstance draggedItem = _fsm.Context.CurrentDragItem.ItemInstance;
 
         bool success = cell.Inventory.AddItem(draggedItem.itemData, targetPosition, draggedItem.StackQuantity);
@@ -78,7 +78,7 @@ public class EndDragState : BaseState
         }
 
         ItemInstance draggedItem = _fsm.Context.CurrentDragItem.ItemInstance;
-        _fsm.Context.SourceInventory.AddItem(draggedItem.itemData, draggedItem.StackQuantity);
+        _fsm.Context.SourceInventory.AddItem(draggedItem.itemData, _fsm.Context.GrabbedCell, draggedItem.StackQuantity);
     }
 
     private void DropToScene()
