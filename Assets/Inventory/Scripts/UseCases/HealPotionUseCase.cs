@@ -9,14 +9,27 @@ public class HealPotionUseCase : ItemUseCase
     public override void Invoke(Inventory inventory, ItemInstance itemInstance)
     {
         IItemConsumer consumer = inventory.Owner;
-
         TestCharacter character = consumer.GetComponent<TestCharacter>();
 
-        if (character != null)
+        if (character == null)
         {
-            character.Health += healAmount;
+            Debug.LogWarning("Character not found!");
+            return;
+        }
+
+        character.Health += healAmount;
+        Debug.Log($"Healed! New health: {character.Health}");
+
+        bool stackIsEmpty = itemInstance.UseOne();
+
+        if (stackIsEmpty)
+        {
             inventory.RemoveItem(itemInstance.ID);
-            Debug.Log($"Healed! New health: {character.Health}");
+            Debug.Log("Item stack depleted and removed");
+        }
+        else
+        {
+            Debug.Log($"Items remaining: {itemInstance.StackQuantity}");
         }
     }
 }

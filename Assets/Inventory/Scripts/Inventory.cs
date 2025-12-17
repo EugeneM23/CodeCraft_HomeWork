@@ -10,7 +10,7 @@ namespace Inventories
         public int Width => _cells.GetLength(0);
         public int Height => _cells.GetLength(1);
         public int Count => _items.Count;
-        
+
         // НОВОЕ: Owner инвентаря (кто использует предметы)
         public IItemConsumer Owner { get; set; }
 
@@ -48,12 +48,29 @@ namespace Inventories
 
         public bool AddItem(in ItemData itemData, int quantity = 1)
         {
+            if (itemData.CanStack)
+                if (AddStack(itemData, ref quantity))
+                    return true;
+
+
+            if (FindFreePosition(itemData.Size, out var position))
+            {
+                ItemInstance instance = new ItemInstance(itemData, position, quantity);
+                PlaceInstanceInGrid(instance, position.x, position.y);
+                _items.Add(instance.ID, instance);
+                OnAdded?.Invoke(instance);
+                return true;
+            }
+
+            return false;
+        }
+
+        private bool AddStack(ItemData itemData, ref int quantity)
+        {
             // Сначала пытаемся добавить к существующему стаку
             if (TryStackItem(itemData, ref quantity))
-            {
                 if (quantity == 0)
                     return true;
-            }
 
             // Если осталось что-то добавить - создаём новый стак
             if (quantity > 0 && FindFreePosition(itemData.Size, out var targetPosition))
@@ -85,11 +102,11 @@ namespace Inventories
 
                 // Пытаемся добавить
                 int canAdd = Mathf.Min(quantity, item.RemainingCapacity);
-                
+
                 if (item.TryAddQuantity(canAdd))
                 {
                     quantity -= canAdd;
-                    
+
                     // Если всё добавили - выходим
                     if (quantity == 0)
                         return true;

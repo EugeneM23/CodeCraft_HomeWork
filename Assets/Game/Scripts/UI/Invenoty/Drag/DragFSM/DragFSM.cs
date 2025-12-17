@@ -7,20 +7,18 @@ using UnityEngine.UI;
 
 public class DragFSM : MonoBehaviour
 {
-    [SerializeField] private DragItem _draItemPrefab;
+    [SerializeField] private DragItem _dragItemPrefab;
     [SerializeField] private BackPack _backPack;
     [SerializeField] private SceneItemSpawner _spawner;
+    [SerializeField] private Vector2Int _cellSize = new(75, 75);
 
     private Dictionary<Type, IState> _states;
     private IState _currentState;
     private RaycastDetector _raycastDetector;
-
-    public Vector3 DragOffset { get; set; }
-    public DragItem CurrentDragItem { get; set; }
-    public Vector2Int DragItemCell { get; set; }
-    public Inventory StartDragInventory { get; set; }
-    public Inventory CurrentInventory { get; set; }
+    
+    public DragContext Context { get; private set; }
     public Inventory OriginInventory => _backPack.Inventory;
+    public SceneItemSpawner ItemSpawner => _spawner;
 
     private void Start()
     {
@@ -28,13 +26,14 @@ public class DragFSM : MonoBehaviour
         EventSystem eventSystem = EventSystem.current;
 
         _raycastDetector = new RaycastDetector(raycaster, eventSystem);
+        Context = new DragContext();
 
         _states = new Dictionary<Type, IState>
         {
             [typeof(IdleDragState)] = new IdleDragState(this),
             [typeof(StartDragState)] = new StartDragState(this),
             [typeof(UpdateDragState)] = new UpdateDragState(this),
-            [typeof(EndDragState)] = new EndDragState(this, _spawner)
+            [typeof(EndDragState)] = new EndDragState(this)
         };
 
         SetState<IdleDragState>();
@@ -45,18 +44,14 @@ public class DragFSM : MonoBehaviour
         if (_currentState is ITickable tickable)
             tickable.Tick();
 
-        _raycastDetector.SetIgnoredItem(CurrentDragItem);
+        _raycastDetector.SetIgnoredItem(Context.CurrentDragItem);
     }
 
     public void SetState<T>() where T : IState
     {
-        if (_currentState != null)
-            _currentState.Exit();
-
+        _currentState?.Exit();
         _currentState = _states[typeof(T)];
-
-        if (_currentState != null)
-            _currentState.Enter();
+        _currentState?.Enter();
     }
 
     public bool TryGetComponentUnderMouse<T>(out T component) where T : Component
@@ -64,7 +59,19 @@ public class DragFSM : MonoBehaviour
         return _raycastDetector.TryGetComponent(out component);
     }
 
-    public Vector2Int GetDragItemCell(DragItem item, Vector2 clickPosition)
+    public bool TryGetSceneRaycastHit(out RaycastHit raycastHit)
+    {
+        return _raycastDetector.TryGetSceneRaycastHit(out raycastHit);
+    }
+
+    public DragItem CreateDragItem(ItemInstance itemInstance)
+    {
+        DragItem dragItem = Instantiate(_dragItemPrefab, transform.parent);
+        dragItem.Construct(itemInstance, _cellSize, OriginInventory);
+        return dragItem;
+    }
+
+    public Vector2Int CalculateGrabbedCell(DragItem item, Vector2 clickPosition)
     {
         RectTransform rectTransform = item.RectTransform;
         Vector2Int itemSize = item.ItemInstance.itemData.Size;
@@ -90,14 +97,25 @@ public class DragFSM : MonoBehaviour
         return new Vector2Int(cellX, cellY);
     }
 
-    public void Highlight(Vector2Int cellIndex)
+    public void HighlightCells(Vector2Int hoveredCell)
     {
-        Vector2Int size = CurrentDragItem.ItemInstance.itemData.Size;
-        Vector2Int startPosition = new Vector2Int(
-            cellIndex.x - DragItemCell.x,
-            cellIndex.y - DragItemCell.y
-        );
+        if (!Context.IsDragging) return;
 
+        Vector2Int size = Context.CurrentDragItem.ItemInstance.itemData.Size;
+        Vector2Int topLeftCell = hoveredCell - Context.GrabbedCell;
+
+        Vector2Int[] cells = CalculateOccupiedCells(topLeftCell, size);
+
+        Context.CurrentInventory?.Highlight(cells);
+    }
+
+    public void UnhighlightCells()
+    {
+        Context.CurrentInventory?.UnHighlight();
+    }
+
+    private Vector2Int[] CalculateOccupiedCells(Vector2Int topLeft, Vector2Int size)
+    {
         Vector2Int[] cells = new Vector2Int[size.x * size.y];
         int index = 0;
 
@@ -105,31 +123,10 @@ public class DragFSM : MonoBehaviour
         {
             for (int x = 0; x < size.x; x++)
             {
-                cells[index] = new Vector2Int(startPosition.x + x, startPosition.y + y);
-                index++;
+                cells[index++] = new Vector2Int(topLeft.x + x, topLeft.y + y);
             }
         }
 
-        if (CurrentInventory != null)
-            CurrentInventory.Highlight(cells);
-    }
-
-    public void UnHighlight()
-    {
-        if (CurrentInventory != null)
-            CurrentInventory.UnHighlight();
-    }
-
-    public bool TryGetSceneRaycastHit(out RaycastHit raycastHit)
-    {
-        return _raycastDetector.TryGetSceneRaycastHit(out raycastHit);
-    }
-
-    public DragItem CreateDragItem(ItemInstance itemInstance)
-    {
-        DragItem dragItem = Instantiate(_draItemPrefab, this.transform.parent);
-        Vector2Int size = new Vector2Int(75, 75);
-        dragItem.Construct(itemInstance, size, OriginInventory);
-        return dragItem;
+        return cells;
     }
 }

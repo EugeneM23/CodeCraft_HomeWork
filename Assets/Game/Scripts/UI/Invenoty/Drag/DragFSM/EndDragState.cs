@@ -4,16 +4,13 @@ using UnityEngine;
 
 public class EndDragState : BaseState
 {
-    private readonly SceneItemSpawner _itemSpawner;
-
-    public EndDragState(DragFSM fsm, SceneItemSpawner itemSpawner) : base(fsm)
+    public EndDragState(DragFSM fsm) : base(fsm)
     {
-        _itemSpawner = itemSpawner;
     }
 
     public override void Enter()
     {
-        if (TryPlaceInCell())
+        if (TryPlaceInInventory())
             return;
 
         if (TryPlaceInEquipmentSlot())
@@ -21,30 +18,33 @@ public class EndDragState : BaseState
 
         if (IsOverUI())
         {
-            ReturnItemToInventory();
+            ReturnToSource();
+            FinishDrag();
             return;
         }
 
-        DropItemToScene();
+        DropToScene();
     }
 
     public override void Exit()
     {
-        _fsm.UnHighlight();
+        _fsm.UnhighlightCells();
     }
 
-    private bool TryPlaceInCell()
+    private bool TryPlaceInInventory()
     {
-        if (!_fsm.TryGetComponentUnderMouse(out CellView cellView))
+        if (!_fsm.TryGetComponentUnderMouse(out CellView cell))
             return false;
 
-        Vector2Int targetPosition = cellView.GridPosition - _fsm.DragItemCell;
-        ItemInstance draggedItem = _fsm.CurrentDragItem.ItemInstance;
+        Vector2Int targetPosition = cell.GridPosition - _fsm.Context.GrabbedCell;
+        ItemInstance draggedItem = _fsm.Context.CurrentDragItem.ItemInstance;
 
-        if (!cellView.Inventory.AddItem(draggedItem.itemData, targetPosition, draggedItem.StackQuantity))
-            ReturnItemToInventory();
+        bool success = cell.Inventory.AddItem(draggedItem.itemData, targetPosition, draggedItem.StackQuantity);
 
-        DestroyItemAndReturnToIdle();
+        if (!success)
+            ReturnToSource();
+
+        FinishDrag();
         return true;
     }
 
@@ -53,11 +53,14 @@ public class EndDragState : BaseState
         if (!_fsm.TryGetComponentUnderMouse(out EquipmentSlot slot))
             return false;
 
-        if (!slot.AddItem(_fsm.CurrentDragItem.ItemInstance))
-            ReturnItemToInventory();
+        ItemInstance draggedItem = _fsm.Context.CurrentDragItem.ItemInstance;
 
-        GameObject.Destroy(_fsm.CurrentDragItem.gameObject);
-        _fsm.SetState<IdleDragState>();
+        if (!slot.AddItem(draggedItem))
+        {
+            ReturnToSource();
+        }
+
+        FinishDrag();
         return true;
     }
 
@@ -66,27 +69,38 @@ public class EndDragState : BaseState
         return _fsm.TryGetComponentUnderMouse(out RectTransform _);
     }
 
-    private void ReturnItemToInventory()
+    private void ReturnToSource()
     {
-        ItemInstance draggedItem = _fsm.CurrentDragItem.ItemInstance;
-        _fsm.StartDragInventory.AddItem(draggedItem.itemData, draggedItem.StackQuantity);
-        DestroyItemAndReturnToIdle();
+        if (_fsm.Context.EquipmentSlot != null)
+        {
+            _fsm.Context.EquipmentSlot.AddItem(_fsm.Context.CurrentDragItem.ItemInstance);
+            return;
+        }
+
+        ItemInstance draggedItem = _fsm.Context.CurrentDragItem.ItemInstance;
+        _fsm.Context.SourceInventory.AddItem(draggedItem.itemData, draggedItem.StackQuantity);
     }
 
-    private void DropItemToScene()
+    private void DropToScene()
     {
         if (_fsm.TryGetSceneRaycastHit(out RaycastHit hit))
         {
-            ItemInstance draggedItem = _fsm.CurrentDragItem.ItemInstance;
-            _itemSpawner.SpawnItem(draggedItem.itemData, draggedItem.StackQuantity, hit.point);
+            ItemInstance draggedItem = _fsm.Context.CurrentDragItem.ItemInstance;
+            _fsm.ItemSpawner.SpawnItem(draggedItem.itemData, draggedItem.StackQuantity, hit.point);
+            FinishDrag();
         }
-
-        DestroyItemAndReturnToIdle();
+        else
+        {
+            ReturnToSource();
+            FinishDrag();
+        }
     }
 
-    private void DestroyItemAndReturnToIdle()
+    private void FinishDrag()
     {
-        GameObject.Destroy(_fsm.CurrentDragItem.gameObject);
+        GameObject.Destroy(_fsm.Context.CurrentDragItem.gameObject);
+
+        _fsm.Context.Clear();
         _fsm.SetState<IdleDragState>();
     }
 }

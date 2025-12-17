@@ -18,21 +18,11 @@ namespace Game.Scripts.UI.Equipment
 
         public bool AddItem(ItemInstance item)
         {
+            if (ItemInstance != null) return false;
+
             _itemSlot.enabled = true;
             _itemSlot.sprite = item.itemData.Icon;
             ItemInstance = item;
-
-            // if (ItemInstance != null)
-            // {
-            //     if (_backPack.Inventory.AddItem(ItemInstance.itemData))
-            //     {
-            //         _itemSlot.sprite = item.itemData.Icon;
-            //         return true;
-            //     }
-            //
-            //     return false;
-            // }
-
 
             return true;
         }

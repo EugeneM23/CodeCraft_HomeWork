@@ -3,69 +3,67 @@ using UnityEngine;
 
 namespace Inventories
 {
-    [Serializable]
     public class ItemInstance
     {
-        public event Action<int> OnStackChanged;
-
         public string ID { get; private set; }
         public ItemData itemData { get; private set; }
-        public Vector2Int GridPosition { get; private set; }
+        public Vector2Int GridPosition { get; set; }
+        public int StackQuantity { get; private set; }
         public ItemUseCase ItemUseCase { get; private set; }
-        
-        // УДАЛЕНО: ItemConsumer - не нужен!
 
-        private int _stackQuantity;
+        public event Action<int> OnStackChanged;
 
-        public int StackQuantity
-        {
-            get => _stackQuantity;
-            private set
-            {
-                if (_stackQuantity != value)
-                {
-                    _stackQuantity = value;
-                    OnStackChanged?.Invoke(_stackQuantity);
-                }
-            }
-        }
-
-        public int MaxStackQuantity => itemData.MaxStackQuantity;
         public bool CanStack => itemData.CanStack;
-        public bool IsFull => _stackQuantity >= itemData.MaxStackQuantity;
-        public int RemainingCapacity => itemData.MaxStackQuantity - _stackQuantity;
+        public bool IsFull => StackQuantity >= itemData.MaxStackQuantity;
+        public int RemainingCapacity => itemData.MaxStackQuantity - StackQuantity;
 
-        public ItemInstance(ItemData data, Vector2Int gridPosition, int initialQuantity = 1)
+        public ItemInstance(ItemData data, Vector2Int position, int quantity = 1)
         {
-            itemData = data;
-            GridPosition = gridPosition;
             ID = Guid.NewGuid().ToString();
-            _stackQuantity = Mathf.Clamp(initialQuantity, 1, data.CanStack ? data.MaxStackQuantity : 1);
+            itemData = data;
+            GridPosition = position;
+            StackQuantity = Mathf.Clamp(quantity, 1, data.MaxStackQuantity);
             ItemUseCase = data.ItemUseCase;
-            // УДАЛЕНО: ItemConsumer = data.ItemConsumer;
         }
 
-        public bool TryAddQuantity(int quantity)
+        public bool TryAddQuantity(int amount)
         {
-            if (!CanStack || quantity <= 0)
+            if (amount <= 0 || !CanStack || IsFull)
                 return false;
 
-            int newQuantity = _stackQuantity + quantity;
+            int newQuantity = Mathf.Min(StackQuantity + amount, itemData.MaxStackQuantity);
+            int actualAdded = newQuantity - StackQuantity;
 
-            if (newQuantity > MaxStackQuantity)
-                return false;
+            if (actualAdded > 0)
+            {
+                StackQuantity = newQuantity;
+                OnStackChanged?.Invoke(StackQuantity);
+                return true;
+            }
 
-            StackQuantity = newQuantity;
-            return true;
+            return false;
         }
 
-        public bool TryRemoveQuantity(int quantity)
+        public bool TryRemoveQuantity(int amount)
         {
-            if (quantity <= 0 || quantity > _stackQuantity)
+            if (amount <= 0)
                 return false;
 
-            StackQuantity = _stackQuantity - quantity;
-            return true;
+            StackQuantity -= amount;
+
+            if (StackQuantity <= 0)
+            {
+                StackQuantity = 0;
+                return true;
+            }
+
+            OnStackChanged?.Invoke(StackQuantity);
+            return false;
+        }
+
+        public bool UseOne()
+        {
+            return TryRemoveQuantity(1);
         }
     }
 }

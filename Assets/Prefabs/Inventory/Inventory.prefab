@@ -325,11 +325,13 @@ MonoBehaviour:
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
-    SerializationNodes: []
+    SerializationNodes:
+    - Name: ItemInstance
+      Entry: 6
+      Data: 
   _backPack: {fileID: 5830915091178595739}
   _itemType: 0
   _itemSlot: {fileID: 9095926648009602934}
-  InventoryItem: {fileID: 0}
 --- !u!82 &7728336899552112599
 AudioSource:
   m_ObjectHideFlags: 0
@@ -696,9 +698,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7cd5f8a9286f4ce7a2759fd532c1a0e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _draItemPrefab: {fileID: 6494077023178959131, guid: ced7a2ab9e9864e21888941e7fc700a8, type: 3}
+  _dragItemPrefab: {fileID: 6494077023178959131, guid: ced7a2ab9e9864e21888941e7fc700a8, type: 3}
   _backPack: {fileID: 5830915091178595739}
   _spawner: {fileID: 3349113050816894745}
+  _cellSize: {x: 75, y: 75}
 --- !u!114 &3349113050816894745
 MonoBehaviour:
   m_ObjectHideFlags: 0

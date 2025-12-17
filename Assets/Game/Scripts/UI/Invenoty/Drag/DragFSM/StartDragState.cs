@@ -1,4 +1,5 @@
 using Game.Scripts.UI.Equipment;
+using Inventories;
 using UnityEngine;
 
 public class StartDragState : BaseState
@@ -9,19 +10,19 @@ public class StartDragState : BaseState
 
     public override void Enter()
     {
-        if (TryStartDragFromCell())
+        if (TryStartDragFromInventory())
             return;
 
-        if (TryStartDragFromEquipmentSlot())
+        if (TryStartDragFromEquipment())
             return;
 
-        if (TryStartDragFromScene())
+        if (TryPickupFromScene())
             return;
 
         _fsm.SetState<IdleDragState>();
     }
 
-    private bool TryStartDragFromCell()
+    private bool TryStartDragFromInventory()
     {
         if (!_fsm.TryGetComponentUnderMouse(out CellView cell))
             return false;
@@ -29,41 +30,46 @@ public class StartDragState : BaseState
         if (cell.InventoryItem == null)
             return false;
 
-        _fsm.CurrentDragItem = _fsm.CreateDragItem(cell.InventoryItem.ItemInstance);
-        _fsm.DragOffset = _fsm.CurrentDragItem.transform.position - Input.mousePosition;
-        _fsm.DragItemCell = _fsm.GetDragItemCell(_fsm.CurrentDragItem, Input.mousePosition);
-        _fsm.StartDragInventory = cell.Inventory;
-        _fsm.CurrentDragItem.transform.parent = _fsm.CurrentDragItem.transform.root;
+        ItemInstance itemInstance = cell.InventoryItem.ItemInstance;
 
-        cell.Inventory.RemoveItem(_fsm.CurrentDragItem.ItemInstance.ID);
+        _fsm.Context.CurrentDragItem = _fsm.CreateDragItem(itemInstance);
+        _fsm.Context.CurrentDragItem.transform.parent = _fsm.Context.CurrentDragItem.transform.root;
+        _fsm.Context.SourceInventory = cell.Inventory;
+        _fsm.Context.GrabbedCell = _fsm.CalculateGrabbedCell(_fsm.Context.CurrentDragItem, Input.mousePosition);
+
+        cell.Inventory.RemoveItem(itemInstance.ID);
+
         _fsm.SetState<UpdateDragState>();
-
         return true;
     }
 
-    private bool TryStartDragFromEquipmentSlot()
+    private bool TryStartDragFromEquipment()
     {
         if (!_fsm.TryGetComponentUnderMouse(out EquipmentSlot slot))
             return false;
 
-        _fsm.CurrentDragItem = _fsm.CreateDragItem(slot.ItemInstance);
-        _fsm.CurrentDragItem.transform.parent = _fsm.CurrentDragItem.transform.root;
-        _fsm.DragOffset = _fsm.CurrentDragItem.transform.position - Input.mousePosition;
-        _fsm.DragItemCell = _fsm.GetDragItemCell(_fsm.CurrentDragItem, Input.mousePosition);
+        if (slot.ItemInstance == null)
+            return false;
+
+        _fsm.Context.CurrentDragItem = _fsm.CreateDragItem(slot.ItemInstance);
+        _fsm.Context.CurrentDragItem.transform.parent = _fsm.Context.CurrentDragItem.transform.root;
+        _fsm.Context.SourceInventory = _fsm.OriginInventory;
+        _fsm.Context.EquipmentSlot = slot;
+        _fsm.Context.GrabbedCell = _fsm.CalculateGrabbedCell(_fsm.Context.CurrentDragItem, Input.mousePosition);
 
         slot.RemoveItem();
-        _fsm.SetState<UpdateDragState>();
 
+        _fsm.SetState<UpdateDragState>();
         return true;
     }
 
-    private bool TryStartDragFromScene()
+    private bool TryPickupFromScene()
     {
-        if (_fsm.TryGetComponentUnderMouse(out SceneItem sceneItem))
-        {
-            if (_fsm.OriginInventory.AddItem(sceneItem.ItemData, sceneItem.Quantity))
-                GameObject.Destroy(sceneItem.gameObject);
-        }
+        if (!_fsm.TryGetComponentUnderMouse(out SceneItem sceneItem))
+            return false;
+
+        if (_fsm.OriginInventory.AddItem(sceneItem.ItemData, sceneItem.Quantity))
+            GameObject.Destroy(sceneItem.gameObject);
 
         _fsm.SetState<IdleDragState>();
         return true;
