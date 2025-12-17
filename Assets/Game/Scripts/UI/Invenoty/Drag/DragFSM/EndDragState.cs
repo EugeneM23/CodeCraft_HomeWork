@@ -36,7 +36,7 @@ public class EndDragState : BaseState
         if (!_fsm.TryGetComponentUnderMouse(out CellView cell))
             return false;
 
-        Vector2Int targetPosition = cell.GridPosition;
+        Vector2Int targetPosition = _fsm.Context.CurrentDragCell;
         ItemInstance draggedItem = _fsm.Context.CurrentDragItem.ItemInstance;
 
         bool success = cell.Inventory.AddItem(draggedItem.itemData, targetPosition, draggedItem.StackQuantity);

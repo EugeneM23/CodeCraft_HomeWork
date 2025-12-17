@@ -13,6 +13,8 @@ public class InventoryView : MonoBehaviour
     private CellView[,] _cells;
     private Inventory _inventory;
 
+    public CellView[,] Cells => _cells;
+
     public void InitializeGrid(int columns, int rows, Inventory inventory)
     {
         _inventory = inventory;

@@ -544,6 +544,7 @@ GameObject:
   - component: {fileID: 607738444684318886}
   - component: {fileID: 3349113050816894745}
   - component: {fileID: 2602894320010975465}
+  - component: {fileID: 6280153183373775214}
   m_Layer: 5
   m_Name: Inventory
   m_TagString: Untagged
@@ -702,6 +703,7 @@ MonoBehaviour:
   _backPack: {fileID: 5830915091178595739}
   _spawner: {fileID: 3349113050816894745}
   _cellSize: {x: 75, y: 75}
+  _inventoryView: {fileID: 0}
 --- !u!114 &3349113050816894745
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -733,3 +735,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Health: 50
+--- !u!114 &6280153183373775214
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8531536367912159190}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd8fa5a00a554367abb49c070ee39ece, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _fsm: {fileID: 607738444684318886}
+  _inventoryView: {fileID: 2550732703897415888}

@@ -12,10 +12,12 @@ public class DragContext
 
     public bool IsDragging => CurrentDragItem != null;
     public EquipmentSlot EquipmentSlot { get; set; }
+    public Vector3 DragOffset { get; set; }
 
     public void Clear()
     {
-        CurrentDragCell = null;
+        DragOffset = Vector3.zero;
+        CurrentDragCell = Vector2Int.zero;
         EquipmentSlot = null;
         CurrentDragItem = null;
         SourceInventory = null;

@@ -2,14 +2,14 @@ using UnityEngine;
 
 public class UpdateDragState : BaseState, ITickable
 {
-    private Vector2Int _lastHoveredCell = new(-1, -1);
-
-    public UpdateDragState(DragFSM fsm) : base(fsm) { }
+    public UpdateDragState(DragFSM fsm) : base(fsm)
+    {
+    }
 
     public void Tick()
     {
         UpdateDragItemPosition();
-        UpdateHighlight();
+        UpdateCurrentDragCell();
         UpdateCurrentInventory();
         CheckForDragEnd();
     }
@@ -17,21 +17,18 @@ public class UpdateDragState : BaseState, ITickable
     private void UpdateDragItemPosition()
     {
         if (_fsm.Context.CurrentDragItem != null)
-        {
-            _fsm.Context.CurrentDragItem.transform.position = Input.mousePosition;
-        }
+            _fsm.Context.CurrentDragItem.transform.position = Input.mousePosition + _fsm.Context.DragOffset;
     }
 
-    private void UpdateHighlight()
+    private void UpdateCurrentDragCell()
     {
         if (!_fsm.TryGetComponentUnderMouse(out CellView cell))
             return;
 
-        if (cell.GridPosition != _lastHoveredCell)
-        {
-            _lastHoveredCell = cell.GridPosition;
-            _fsm.HighlightCells(_lastHoveredCell);
-        }
+        _fsm.Context.CurrentDragCell = new Vector2Int(
+            cell.GridPosition.x - _fsm.Context.GrabbedCell.x,
+            cell.GridPosition.y - _fsm.Context.GrabbedCell.y
+        );
     }
 
     private void UpdateCurrentInventory()
@@ -52,10 +49,5 @@ public class UpdateDragState : BaseState, ITickable
         {
             _fsm.SetState<EndDragState>();
         }
-    }
-
-    public override void Exit()
-    {
-        _lastHoveredCell = new Vector2Int(-1, -1);
     }
 }
