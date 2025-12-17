@@ -27,6 +27,8 @@ public class StartDragState : BaseState
         Vector2Int[] itemPositions = cell.Inventory.GetItemGridPositions(itemInstance);
         Vector2Int itemTopLeftCell = itemPositions[0];
 
+        _fsm.Context.StartDragCell = itemTopLeftCell;
+
         cell.Inventory.RemoveItem(itemInstance.ID);
 
         CreateDragItem(itemInstance, originalPosition, cell.Inventory);
@@ -45,7 +47,7 @@ public class StartDragState : BaseState
 
         CreateDragItem(slot.ItemInstance, Input.mousePosition, _fsm.OriginInventory);
         _fsm.Context.EquipmentSlot = slot;
-        _fsm.Context.GrabbedCell = Vector2Int.zero;
+        _fsm.Context.SelectedCell = Vector2Int.zero;
         _fsm.Context.DragOffset = Vector2.zero;
 
         _fsm.SetState<UpdateDragState>();
@@ -74,7 +76,7 @@ public class StartDragState : BaseState
 
     private void CalculateGrabbedOffset(Vector2Int clickedCell, Vector2Int itemTopLeftCell)
     {
-        _fsm.Context.GrabbedCell = new Vector2Int(
+        _fsm.Context.GridOffset = new Vector2Int(
             clickedCell.x - itemTopLeftCell.x,
             clickedCell.y - itemTopLeftCell.y
         );

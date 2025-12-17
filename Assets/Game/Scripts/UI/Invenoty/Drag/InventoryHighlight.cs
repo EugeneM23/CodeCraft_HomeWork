@@ -11,7 +11,7 @@ public class InventoryHighlight : MonoBehaviour
 
         if (!_fsm.Context.IsDragging || _fsm.Context.CurrentDragItem == null) return;
 
-        Vector2Int startCell = _fsm.Context.CurrentDragCell;
+        Vector2Int startCell = _fsm.Context.SelectedCell;
         Vector2Int itemSize = _fsm.Context.CurrentDragItem.ItemInstance.itemData.Size;
 
         for (int x = 0; x < itemSize.x; x++)

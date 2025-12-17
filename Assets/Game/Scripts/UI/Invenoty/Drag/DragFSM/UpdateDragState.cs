@@ -11,7 +11,7 @@ public class UpdateDragState : BaseState, ITickable
         UpdateDragItemPosition();
         UpdateCurrentCell();
         UpdateCurrentInventory();
-        
+
         if (Input.GetMouseButtonUp(0))
             _fsm.SetState<EndDragState>();
     }
@@ -25,10 +25,7 @@ public class UpdateDragState : BaseState, ITickable
     {
         if (!_fsm.TryGetComponentUnderMouse(out CellView hoveredCell)) return;
 
-        _fsm.Context.CurrentDragCell = new Vector2Int(
-            hoveredCell.GridPosition.x - _fsm.Context.GrabbedCell.x,
-            hoveredCell.GridPosition.y - _fsm.Context.GrabbedCell.y
-        );
+        _fsm.Context.SelectedCell = hoveredCell.GridPosition - _fsm.Context.GridOffset;
     }
 
     private void UpdateCurrentInventory()
