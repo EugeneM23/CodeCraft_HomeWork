@@ -24,12 +24,13 @@ public class StartDragState : BaseState
 
         ItemInstance itemInstance = cell.InventoryItem.ItemInstance;
         Vector3 originalPosition = cell.InventoryItem.transform.position;
-        Vector2Int itemGridPosition = _fsm.GetItemPostion(cell.InventoryItem.GetComponent<DragItem>());
+        Vector2Int[] itemPositions = cell.Inventory.GetItemGridPositions(itemInstance);
+        Vector2Int itemTopLeftCell = itemPositions[0];
 
         cell.Inventory.RemoveItem(itemInstance.ID);
 
         CreateDragItem(itemInstance, originalPosition, cell.Inventory);
-        CalculateGrabbedOffset(cell.GridPosition, itemGridPosition);
+        CalculateGrabbedOffset(cell.GridPosition, itemTopLeftCell);
 
         _fsm.SetState<UpdateDragState>();
         return true;
