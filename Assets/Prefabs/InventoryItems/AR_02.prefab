@@ -569,7 +569,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ItemData:
     <Name>k__BackingField: AR_02
-    <Icon>k__BackingField: {fileID: 21300000, guid: be1083c1ddb57b740b5477a3f3d6e189, type: 3}
+    <Icon>k__BackingField: {fileID: -5330622871896533815, guid: 7815c6af50e894d6297148095b75e3a9, type: 3}
     <Size>k__BackingField: {x: 4, y: 2}
     <ItemType>k__BackingField: 0
     <CanStack>k__BackingField: 0

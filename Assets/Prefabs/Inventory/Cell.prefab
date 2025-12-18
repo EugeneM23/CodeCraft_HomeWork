@@ -36,7 +36,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 752, y: -488}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &4360790109882595790
 CanvasRenderer:
@@ -59,14 +59,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.38039216, g: 0.40784314, b: 0.48235294, a: 1}
+  m_Color: {r: 1, g: 0.92449117, b: 0.75, a: 0.83137256}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 107304ea0aa3d964eb464680ba0bee4a, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 21fed3378b8006344b11d9429b17566d, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -89,7 +89,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _backGround: {fileID: 525445824762982183}
-  _emptySprite: {fileID: 21300000, guid: 107304ea0aa3d964eb464680ba0bee4a, type: 3}
+  _emptySprite: {fileID: 21300000, guid: 21fed3378b8006344b11d9429b17566d, type: 3}
   _freeSprite: {fileID: 21300000, guid: 2b630b2eaaa10c14281491f8ac097eb5, type: 3}
   _errorSprite: {fileID: 21300000, guid: 65a589c61f93b5f4295fd46d8c7b888a, type: 3}
-  _fadeDuration: 0.2
+  _fadeDuration: 0.3

@@ -77,7 +77,7 @@ public class CellView : MonoBehaviour
             yield return null;
         }
 
-        color.a = 1f;
+        color.a = 0.85f;
         _backGround.color = color;
         _fadeCoroutine = null;
     }
