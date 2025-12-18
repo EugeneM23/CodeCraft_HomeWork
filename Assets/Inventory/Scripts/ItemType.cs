@@ -4,6 +4,7 @@ namespace Inventories
     {
         Weapon,
         Armor,
-        Ammo
+        Ammo,
+        Item
     }
 }

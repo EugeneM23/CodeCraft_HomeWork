@@ -13,10 +13,18 @@ public class InventoryAudioController : MonoBehaviour
         _backpack.Inventory.OnAdded += OnItemAddedToInventory;
         _backpack.Inventory.OnRemoved += OnItemRemovedInventory;
         _equipmentSlot.OnItemAdded += OnItemAddedToSlot;
-        _equipmentSlot.OnItemRemoved += OnItemremovedFromToSlot;
+        _equipmentSlot.OnItemRemoved += OnItemRemovedFromToSlot;
     }
 
-    private void OnItemremovedFromToSlot() => _audioPlayer.PlaySlotRemove();
+    private void OnDisable()
+    {
+        _backpack.Inventory.OnAdded -= OnItemAddedToInventory;
+        _backpack.Inventory.OnRemoved -= OnItemRemovedInventory;
+        _equipmentSlot.OnItemAdded -= OnItemAddedToSlot;
+        _equipmentSlot.OnItemRemoved -= OnItemRemovedFromToSlot;
+    }
+
+    private void OnItemRemovedFromToSlot() => _audioPlayer.PlaySlotRemove();
 
     private void OnItemAddedToSlot() => _audioPlayer.PlaySlotAdd();
 

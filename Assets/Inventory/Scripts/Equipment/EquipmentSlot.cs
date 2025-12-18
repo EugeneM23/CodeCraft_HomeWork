@@ -1,10 +1,7 @@
 using System;
 using Inventories;
 using Sirenix.OdinInspector;
-using Sirenix.Serialization;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Game.Scripts.UI.Equipment
@@ -14,15 +11,18 @@ namespace Game.Scripts.UI.Equipment
         public event Action OnItemAdded;
         public event Action OnItemRemoved;
 
-        [SerializeField] private BackPack _backPack;
         [SerializeField] private ItemType _itemType;
         [SerializeField] private Image _itemSlot;
+
+        public ItemType ItemType => _itemType;
+        public bool IsEmpty => ItemInstance == null;
 
         public ItemInstance ItemInstance;
 
         public bool AddItem(ItemInstance item)
         {
             if (ItemInstance != null) return false;
+            if (item.itemData.ItemType != _itemType) return false;
 
             OnItemAdded?.Invoke();
 
@@ -36,7 +36,7 @@ namespace Game.Scripts.UI.Equipment
         public void RemoveItem()
         {
             OnItemRemoved?.Invoke();
-            
+
             _itemSlot.enabled = false;
             ItemInstance = null;
             _itemSlot.enabled = false;

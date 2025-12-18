@@ -8,13 +8,7 @@ public class EquipWeaponUseCase : ItemUseCase
     {
         IItemConsumer consumer = inventory.Owner;
 
-        if (consumer == null)
-        {
-            Debug.LogWarning("Inventory has no owner!");
-            return;
-        }
-
-        Debug.Log("Weapon equipped!");
-        // Здесь логика экипировки
+        if (consumer.EquipWeapon(itemInstance))
+            inventory.RemoveItem(itemInstance.ID);
     }
 }
