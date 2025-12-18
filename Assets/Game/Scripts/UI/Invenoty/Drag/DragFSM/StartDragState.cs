@@ -42,7 +42,8 @@ public class StartDragState : BaseState
         Vector2Int cellInSlot =
             CalculateClickedCellInSlot(slot, slot.ItemInstance.itemData.Size);
 
-        SetupDragContext(slot.ItemInstance, slot.transform.position, _fsm.OriginInventory, cellInSlot, Vector2Int.zero, slot);
+        SetupDragContext(slot.ItemInstance, slot.transform.position, _fsm.OriginInventory, cellInSlot, Vector2Int.zero,
+            slot);
 
         slot.RemoveItem();
 
@@ -96,7 +97,6 @@ public class StartDragState : BaseState
         int cellX = Mathf.Clamp(Mathf.FloorToInt(normalizedPoint.x * itemSize.x), 0, itemSize.x - 1);
         int cellY = Mathf.Clamp(Mathf.FloorToInt((1f - normalizedPoint.y) * itemSize.y), 0, itemSize.y - 1);
 
-        Debug.Log($"ClickedCell: {cellX}, {cellY} | ItemSize: {itemSize}");
 
         return new Vector2Int(cellX, cellY);
     }

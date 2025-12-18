@@ -26,11 +26,6 @@ public class EndDragState : BaseState
         DropToScene();
     }
 
-    public override void Exit()
-    {
-        _fsm.UnhighlightCells();
-    }
-
     private bool TryPlaceInInventory()
     {
         if (!_fsm.TryGetComponentUnderMouse(out CellView cell))
@@ -78,8 +73,9 @@ public class EndDragState : BaseState
         }
 
         ItemInstance draggedItem = _fsm.Context.CurrentDragItem.ItemInstance;
-        bool addItem = _fsm.Context.SourceInventory.AddItem(draggedItem.itemData, _fsm.Context.StartDragCell, draggedItem.StackQuantity);
-        
+        bool addItem = _fsm.Context.SourceInventory.AddItem(draggedItem.itemData, _fsm.Context.StartDragCell,
+            draggedItem.StackQuantity);
+
         Debug.Log(_fsm.Context.StartDragCell);
     }
 
