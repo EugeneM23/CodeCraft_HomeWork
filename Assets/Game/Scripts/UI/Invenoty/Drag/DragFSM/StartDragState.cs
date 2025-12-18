@@ -23,16 +23,12 @@ public class StartDragState : BaseState
         if (cell.InventoryItem == null) return false;
 
         ItemInstance itemInstance = cell.InventoryItem.ItemInstance;
-        Vector3 originalPosition = cell.InventoryItem.transform.position;
-        Vector2Int[] itemPositions = cell.Inventory.GetItemGridPositions(itemInstance);
-        Vector2Int itemTopLeftCell = itemPositions[0];
-
-        _fsm.Context.StartDragCell = itemTopLeftCell;
+        Vector3 itemPosition = cell.InventoryItem.transform.position;
+        Vector2Int itemStartCell = cell.Inventory.GetItemGridPositions(itemInstance)[0];
 
         cell.Inventory.RemoveItem(itemInstance.ID);
 
-        CreateDragItem(itemInstance, originalPosition, cell.Inventory);
-        CalculateGrabbedOffset(cell.GridPosition, itemTopLeftCell);
+        SetupDragContext(itemInstance, itemPosition, cell.Inventory, cell.GridPosition, itemStartCell);
 
         _fsm.SetState<UpdateDragState>();
         return true;
@@ -43,12 +39,12 @@ public class StartDragState : BaseState
         if (!_fsm.TryGetComponentUnderMouse(out EquipmentSlot slot)) return false;
         if (slot.ItemInstance == null) return false;
 
-        slot.RemoveItem();
+        Vector2Int cellInSlot =
+            CalculateClickedCellInSlot(slot, slot.ItemInstance.itemData.Size);
 
-        CreateDragItem(slot.ItemInstance, Input.mousePosition, _fsm.OriginInventory);
-        _fsm.Context.EquipmentSlot = slot;
-        _fsm.Context.SelectedCell = Vector2Int.zero;
-        _fsm.Context.DragOffset = Vector2.zero;
+        SetupDragContext(slot.ItemInstance, slot.transform.position, _fsm.OriginInventory, cellInSlot, Vector2Int.zero, slot);
+
+        slot.RemoveItem();
 
         _fsm.SetState<UpdateDragState>();
         return true;
@@ -65,20 +61,43 @@ public class StartDragState : BaseState
         return true;
     }
 
-    private void CreateDragItem(ItemInstance itemInstance, Vector3 position, Inventory sourceInventory)
+    private void SetupDragContext(ItemInstance itemInstance, Vector3 position, Inventory sourceInventory,
+        Vector2Int clickedCell, Vector2Int itemStartCell, EquipmentSlot equipmentSlot = null)
     {
         _fsm.Context.CurrentDragItem = _fsm.CreateDragItem(itemInstance);
         _fsm.Context.CurrentDragItem.transform.parent = _fsm.Context.CurrentDragItem.transform.root;
         _fsm.Context.CurrentDragItem.transform.position = position;
         _fsm.Context.SourceInventory = sourceInventory;
+        _fsm.Context.StartDragCell = itemStartCell;
         _fsm.Context.DragOffset = position - Input.mousePosition;
+        _fsm.Context.GridOffset = new Vector2Int(clickedCell.x - itemStartCell.x, clickedCell.y - itemStartCell.y);
+        _fsm.Context.EquipmentSlot = equipmentSlot;
     }
 
-    private void CalculateGrabbedOffset(Vector2Int clickedCell, Vector2Int itemTopLeftCell)
+    private Vector2Int CalculateClickedCellInSlot(EquipmentSlot slot, Vector2Int itemSize)
     {
-        _fsm.Context.GridOffset = new Vector2Int(
-            clickedCell.x - itemTopLeftCell.x,
-            clickedCell.y - itemTopLeftCell.y
+        RectTransform slotRect = slot.GetComponent<RectTransform>();
+
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            slotRect,
+            Input.mousePosition,
+            null,
+            out Vector2 localPoint
         );
+
+        Vector2 rectSize = slotRect.rect.size;
+        Vector2 pivot = slotRect.pivot;
+
+        Vector2 normalizedPoint = new Vector2(
+            (localPoint.x / rectSize.x) + pivot.x,
+            (localPoint.y / rectSize.y) + pivot.y
+        );
+
+        int cellX = Mathf.Clamp(Mathf.FloorToInt(normalizedPoint.x * itemSize.x), 0, itemSize.x - 1);
+        int cellY = Mathf.Clamp(Mathf.FloorToInt((1f - normalizedPoint.y) * itemSize.y), 0, itemSize.y - 1);
+
+        Debug.Log($"ClickedCell: {cellX}, {cellY} | ItemSize: {itemSize}");
+
+        return new Vector2Int(cellX, cellY);
     }
 }

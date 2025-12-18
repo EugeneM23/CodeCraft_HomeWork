@@ -53,9 +53,9 @@ public class EndDragState : BaseState
         if (!_fsm.TryGetComponentUnderMouse(out EquipmentSlot slot))
             return false;
 
-        ItemInstance draggedItem = _fsm.Context.CurrentDragItem.ItemInstance;
+        ItemInstance itemInstance = _fsm.Context.CurrentDragItem.ItemInstance;
 
-        if (!slot.AddItem(draggedItem))
+        if (!slot.AddItem(itemInstance))
         {
             ReturnToSource();
         }
