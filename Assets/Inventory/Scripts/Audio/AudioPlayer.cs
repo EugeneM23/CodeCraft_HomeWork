@@ -1,31 +1,34 @@
 using UnityEngine;
 using UnityEngine.Serialization;
 
-public class AudioPlayer : MonoBehaviour
+namespace Inventories
 {
-    [SerializeField] private AudioSource _addToInventory;
-    [SerializeField] private AudioSource _addToSlot;
-    [SerializeField] private AudioSource _removeFromInventory;
-    [SerializeField] private AudioSource _removeFromSlot;
-
-    public void PlayInventoryAdd()
+    public class AudioPlayer : MonoBehaviour
     {
-        _addToInventory.Play();
-    }
+        [SerializeField] private AudioSource _addToInventory;
+        [SerializeField] private AudioSource _addToSlot;
+        [SerializeField] private AudioSource _removeFromInventory;
+        [SerializeField] private AudioSource _removeFromSlot;
 
-    public void PlayInventoryRemove()
-    {
-        Debug.Log("Removing");
-        _removeFromInventory.Play();
-    }
+        public void PlayInventoryAdd()
+        {
+            _addToInventory.Play();
+        }
 
-    public void PlaySlotAdd()
-    {
-        _addToSlot.Play();
-    }
+        public void PlayInventoryRemove()
+        {
+            Debug.Log("Removing");
+            _removeFromInventory.Play();
+        }
 
-    public void PlaySlotRemove()
-    {
-        _removeFromSlot.Play();
+        public void PlaySlotAdd()
+        {
+            _addToSlot.Play();
+        }
+
+        public void PlaySlotRemove()
+        {
+            _removeFromSlot.Play();
+        }
     }
 }

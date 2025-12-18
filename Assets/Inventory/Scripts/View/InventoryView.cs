@@ -1,107 +1,107 @@
 using System;
 using System.Collections.Generic;
-using Inventories;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.UI;
 
-public class InventoryView : MonoBehaviour
+namespace Inventories
 {
-    public event Action OnReorganize;
-    
-    [SerializeField] private CellView _cellPrefab;
-    [SerializeField] private InventoryItem _itemContainerPrefab;
-    [SerializeField] private RectTransform _gridContainer;
-    [SerializeField] private Vector2 _cellSize = new(100f, 100f);
-    [SerializeField] private Button _reorganizeButton;
-
-    private readonly Dictionary<string, InventoryItem> _inventoryItems = new();
-    private CellView[,] _cells;
-    private Inventory _inventory;
-
-    public CellView[,] Cells => _cells;
-
-    private void OnEnable()
+    public class InventoryView : MonoBehaviour
     {
-        _reorganizeButton.onClick.AddListener(OnReorganizeClick);
-    }
+        public event Action OnReorganize;
 
-    private void OnDisable()
-    {
-        _reorganizeButton.onClick.RemoveListener(OnReorganizeClick);
-    }
+        [SerializeField] private CellView _cellPrefab;
+        [SerializeField] private InventoryItem _itemContainerPrefab;
+        [SerializeField] private RectTransform _gridContainer;
+        [SerializeField] private Vector2 _cellSize = new(100f, 100f);
+        [SerializeField] private Button _reorganizeButton;
 
-    private void OnReorganizeClick() => OnReorganize?.Invoke();
+        private readonly Dictionary<string, InventoryItem> _inventoryItems = new();
+        private CellView[,] _cells;
+        private Inventory _inventory;
 
-    public void InitializeGrid(int columns, int rows, Inventory inventory)
-    {
-        _inventory = inventory;
-        _cells = new CellView[columns, rows];
+        public CellView[,] Cells => _cells;
 
-        for (int y = 0; y < rows; y++)
+        private void OnEnable()
         {
-            for (int x = 0; x < columns; x++)
+            _reorganizeButton.onClick.AddListener(OnReorganizeClick);
+        }
+
+        private void OnDisable()
+        {
+            _reorganizeButton.onClick.RemoveListener(OnReorganizeClick);
+        }
+
+        private void OnReorganizeClick() => OnReorganize?.Invoke();
+
+        public void InitializeGrid(int columns, int rows, Inventory inventory)
+        {
+            _inventory = inventory;
+            _cells = new CellView[columns, rows];
+
+            for (int y = 0; y < rows; y++)
             {
-                CreateCell(inventory, x, y);
+                for (int x = 0; x < columns; x++)
+                {
+                    CreateCell(inventory, x, y);
+                }
             }
         }
-    }
 
-    public void AddItem(ItemInstance instance, Vector2Int[] positions)
-    {
-        InventoryItem inventoryItem = Instantiate(_itemContainerPrefab, _gridContainer);
-        inventoryItem.transform.position = _cells[positions[0].x, positions[0].y].transform.position;
-
-        inventoryItem.SetupItem(instance, _cellSize, _inventory);
-
-        _inventoryItems[instance.ID] = inventoryItem;
-
-        foreach (Vector2Int pos in positions)
+        public void AddItem(ItemInstance instance, Vector2Int[] positions)
         {
-            _cells[pos.x, pos.y].InventoryItem = inventoryItem;
+            InventoryItem inventoryItem = Instantiate(_itemContainerPrefab, _gridContainer);
+            inventoryItem.transform.position = _cells[positions[0].x, positions[0].y].transform.position;
+
+            inventoryItem.SetupItem(instance, _cellSize, _inventory);
+
+            _inventoryItems[instance.ID] = inventoryItem;
+
+            foreach (Vector2Int pos in positions)
+            {
+                _cells[pos.x, pos.y].InventoryItem = inventoryItem;
+            }
         }
-    }
 
-    public void RemoveItem(string id)
-    {
-        InventoryItem item = _inventoryItems[id];
-
-        foreach (CellView cell in _cells)
+        public void RemoveItem(string id)
         {
-            if (cell.InventoryItem == item)
+            InventoryItem item = _inventoryItems[id];
+
+            foreach (CellView cell in _cells)
+            {
+                if (cell.InventoryItem == item)
+                    cell.Clear();
+            }
+
+            Destroy(_inventoryItems[id].gameObject);
+            _inventoryItems.Remove(id);
+        }
+
+        public CellView GetCell(Vector2Int cellIndex)
+        {
+            return _cells[cellIndex.x, cellIndex.y];
+        }
+
+        private void CreateCell(Inventory inventory, int x, int y)
+        {
+            CellView cell = Instantiate(_cellPrefab, _gridContainer);
+            cell.Construct(inventory, new Vector2Int(x, y));
+
+            RectTransform rect = cell.GetComponent<RectTransform>();
+            rect.sizeDelta = _cellSize;
+            rect.anchoredPosition = new Vector2(x * _cellSize.x, -y * _cellSize.y);
+
+            _cells[x, y] = cell;
+        }
+
+        public void Clear()
+        {
+            foreach (var item in _inventoryItems.Values)
+                Destroy(item.gameObject);
+
+            _inventoryItems.Clear();
+
+            foreach (CellView cell in _cells)
                 cell.Clear();
         }
-
-        Destroy(_inventoryItems[id].gameObject);
-        _inventoryItems.Remove(id);
-    }
-
-    public CellView GetCell(Vector2Int cellIndex)
-    {
-        return _cells[cellIndex.x, cellIndex.y];
-    }
-
-    private void CreateCell(Inventory inventory, int x, int y)
-    {
-        CellView cell = Instantiate(_cellPrefab, _gridContainer);
-        cell.Construct(inventory, new Vector2Int(x, y));
-
-        RectTransform rect = cell.GetComponent<RectTransform>();
-        rect.sizeDelta = _cellSize;
-        rect.anchoredPosition = new Vector2(x * _cellSize.x, -y * _cellSize.y);
-
-        _cells[x, y] = cell;
-    }
-
-    public void Clear()
-    {
-        foreach (var item in _inventoryItems.Values)
-            Destroy(item.gameObject);
-
-        _inventoryItems.Clear();
-
-        foreach (CellView cell in _cells)
-            cell.Clear();
     }
 }

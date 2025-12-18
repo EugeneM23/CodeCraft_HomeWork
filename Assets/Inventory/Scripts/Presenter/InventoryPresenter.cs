@@ -2,88 +2,91 @@ using Inventories;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-public class InventoryPresenter : MonoBehaviour
+namespace Inventories
 {
-    [SerializeField] private InventoryView _view;
-
-    private Vector2Int[] _highlightedCells;
-
-    public Inventory Inventory { get; set; }
-
-    private void Start()
+    public class InventoryPresenter : MonoBehaviour
     {
-        _highlightedCells = new Vector2Int[4];
-        _view.InitializeGrid(Inventory.Width, Inventory.Height, Inventory);
-        UpdateView();
+        [SerializeField] private InventoryView _view;
 
-        Inventory.OnAdded += OnItemAdded;
-        Inventory.OnRemoved += OnItemRemoved;
-        Inventory.OnHighlight += Highlight;
-        Inventory.OnUnHighlight += UnHighlight;
-        Inventory.OnCleared += OnCleared;
+        private Vector2Int[] _highlightedCells;
 
-        _view.OnReorganize += Reorganize;
-    }
+        public Inventory Inventory { get; set; }
 
-    private void OnCleared()
-    {
-        _view.Clear();
-        UpdateView();
-    }
-
-    private void UpdateView()
-    {
-        foreach (ItemInstance item in Inventory)
+        private void Start()
         {
-            Vector2Int[] itemGridPositions = Inventory.GetItemGridPositions(item);
-            _view.AddItem(item, itemGridPositions);
-        }
-    }
+            _highlightedCells = new Vector2Int[4];
+            _view.InitializeGrid(Inventory.Width, Inventory.Height, Inventory);
+            UpdateView();
 
-    private void OnItemAdded(ItemInstance itemInstance)
-    {
-        Vector2Int[] positions = Inventory.GetItemGridPositions(itemInstance);
-        _view.AddItem(itemInstance, positions);
-    }
+            Inventory.OnAdded += OnItemAdded;
+            Inventory.OnRemoved += OnItemRemoved;
+            Inventory.OnHighlight += Highlight;
+            Inventory.OnUnHighlight += UnHighlight;
+            Inventory.OnCleared += OnCleared;
 
-    private void OnItemRemoved(ItemInstance itemInstance)
-    {
-        _view.RemoveItem(itemInstance.ID);
-    }
-
-    private void Highlight(Vector2Int[] cells)
-    {
-        UnHighlight();
-        _highlightedCells = cells;
-
-        foreach (Vector2Int cellIndex in cells)
-        {
-            if (!IsValidCell(cellIndex) || !Inventory.IsFree(cellIndex))
-                return;
+            _view.OnReorganize += Reorganize;
         }
 
-        foreach (Vector2Int cellIndex in cells)
-            _view.GetCell(cellIndex).Highlight(true);
-    }
-
-    private void UnHighlight()
-    {
-        foreach (Vector2Int cellIndex in _highlightedCells)
+        private void OnCleared()
         {
-            if (IsValidCell(cellIndex))
-                _view.GetCell(cellIndex).UnHighlight();
+            _view.Clear();
+            UpdateView();
         }
-    }
 
-    private bool IsValidCell(Vector2Int cellIndex)
-    {
-        return cellIndex.x >= 0 && cellIndex.x < Inventory.Width &&
-               cellIndex.y >= 0 && cellIndex.y < Inventory.Height;
-    }
+        private void UpdateView()
+        {
+            foreach (ItemInstance item in Inventory)
+            {
+                Vector2Int[] itemGridPositions = Inventory.GetItemGridPositions(item);
+                _view.AddItem(item, itemGridPositions);
+            }
+        }
 
-    [Button]
-    public void Reorganize()
-    {
-        Inventory.Reorganize();
+        private void OnItemAdded(ItemInstance itemInstance)
+        {
+            Vector2Int[] positions = Inventory.GetItemGridPositions(itemInstance);
+            _view.AddItem(itemInstance, positions);
+        }
+
+        private void OnItemRemoved(ItemInstance itemInstance)
+        {
+            _view.RemoveItem(itemInstance.ID);
+        }
+
+        private void Highlight(Vector2Int[] cells)
+        {
+            UnHighlight();
+            _highlightedCells = cells;
+
+            foreach (Vector2Int cellIndex in cells)
+            {
+                if (!IsValidCell(cellIndex) || !Inventory.IsFree(cellIndex))
+                    return;
+            }
+
+            foreach (Vector2Int cellIndex in cells)
+                _view.GetCell(cellIndex).Highlight(true);
+        }
+
+        private void UnHighlight()
+        {
+            foreach (Vector2Int cellIndex in _highlightedCells)
+            {
+                if (IsValidCell(cellIndex))
+                    _view.GetCell(cellIndex).UnHighlight();
+            }
+        }
+
+        private bool IsValidCell(Vector2Int cellIndex)
+        {
+            return cellIndex.x >= 0 && cellIndex.x < Inventory.Width &&
+                   cellIndex.y >= 0 && cellIndex.y < Inventory.Height;
+        }
+
+        [Button]
+        public void Reorganize()
+        {
+            Inventory.Reorganize();
+        }
     }
 }

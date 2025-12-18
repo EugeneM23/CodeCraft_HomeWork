@@ -1,95 +1,98 @@
 using UnityEngine;
 
-public class InventoryHighlight : MonoBehaviour
+namespace Inventories
 {
-    [SerializeField] private DragFSM _fsm;
-    [SerializeField] private InventoryView _inventoryView;
-
-    private Vector2Int _currentSelectedCell;
-    private Vector2Int[] _highlightedCells = new Vector2Int[0];
-
-    private void Update()
+    public class InventoryHighlight : MonoBehaviour
     {
-        if (!_fsm.Context.IsDragging || _fsm.Context.CurrentDragItem == null)
+        [SerializeField] private DragFSM _fsm;
+        [SerializeField] private InventoryView _inventoryView;
+
+        private Vector2Int _currentSelectedCell;
+        private Vector2Int[] _highlightedCells = new Vector2Int[0];
+
+        private void Update()
         {
+            if (!_fsm.Context.IsDragging || _fsm.Context.CurrentDragItem == null)
+            {
+                ClearHighlight();
+                return;
+            }
+
+            if (_currentSelectedCell == _fsm.Context.SelectedCell) return;
+
+            _currentSelectedCell = _fsm.Context.SelectedCell;
+
+            Vector2Int startCell = _fsm.Context.SelectedCell;
+            Vector2Int itemSize = _fsm.Context.CurrentDragItem.ItemInstance.itemData.Size;
+
+            Vector2Int[] newCells = CalculateCells(startCell, itemSize);
+
+            if (!AreAllCellsValid(newCells))
+            {
+                ClearHighlight();
+                return;
+            }
+
             ClearHighlight();
-            return;
+            _highlightedCells = newCells;
+            HighlightCells(_highlightedCells, true);
         }
 
-        if (_currentSelectedCell == _fsm.Context.SelectedCell) return;
-
-        _currentSelectedCell = _fsm.Context.SelectedCell;
-
-        Vector2Int startCell = _fsm.Context.SelectedCell;
-        Vector2Int itemSize = _fsm.Context.CurrentDragItem.ItemInstance.itemData.Size;
-
-        Vector2Int[] newCells = CalculateCells(startCell, itemSize);
-
-        if (!AreAllCellsValid(newCells))
+        private Vector2Int[] CalculateCells(Vector2Int startCell, Vector2Int itemSize)
         {
-            ClearHighlight();
-            return;
-        }
+            Vector2Int[] cells = new Vector2Int[itemSize.x * itemSize.y];
+            int index = 0;
 
-        ClearHighlight();
-        _highlightedCells = newCells;
-        HighlightCells(_highlightedCells, true);
-    }
-
-    private Vector2Int[] CalculateCells(Vector2Int startCell, Vector2Int itemSize)
-    {
-        Vector2Int[] cells = new Vector2Int[itemSize.x * itemSize.y];
-        int index = 0;
-
-        for (int x = 0; x < itemSize.x; x++)
-        {
-            for (int y = 0; y < itemSize.y; y++)
+            for (int x = 0; x < itemSize.x; x++)
             {
-                cells[index++] = new Vector2Int(startCell.x + x, startCell.y + y);
+                for (int y = 0; y < itemSize.y; y++)
+                {
+                    cells[index++] = new Vector2Int(startCell.x + x, startCell.y + y);
+                }
+            }
+
+            return cells;
+        }
+
+        private bool AreAllCellsValid(Vector2Int[] cells)
+        {
+            foreach (Vector2Int cell in cells)
+            {
+                if (cell.x < 0 || cell.x >= _inventoryView.Cells.GetLength(0) ||
+                    cell.y < 0 || cell.y >= _inventoryView.Cells.GetLength(1))
+                {
+                    return false;
+                }
+
+                if (_inventoryView.Cells[cell.x, cell.y].InventoryItem != null)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private void HighlightCells(Vector2Int[] cells, bool isCorrect)
+        {
+            foreach (Vector2Int cell in cells)
+            {
+                _inventoryView.Cells[cell.x, cell.y].Highlight(isCorrect);
             }
         }
 
-        return cells;
-    }
-
-    private bool AreAllCellsValid(Vector2Int[] cells)
-    {
-        foreach (Vector2Int cell in cells)
+        private void ClearHighlight()
         {
-            if (cell.x < 0 || cell.x >= _inventoryView.Cells.GetLength(0) ||
-                cell.y < 0 || cell.y >= _inventoryView.Cells.GetLength(1))
+            foreach (Vector2Int cell in _highlightedCells)
             {
-                return false;
+                if (cell.x >= 0 && cell.x < _inventoryView.Cells.GetLength(0) &&
+                    cell.y >= 0 && cell.y < _inventoryView.Cells.GetLength(1))
+                {
+                    _inventoryView.Cells[cell.x, cell.y].UnHighlight();
+                }
             }
 
-            if (_inventoryView.Cells[cell.x, cell.y].InventoryItem != null)
-            {
-                return false;
-            }
+            _highlightedCells = new Vector2Int[0];
         }
-
-        return true;
-    }
-
-    private void HighlightCells(Vector2Int[] cells, bool isCorrect)
-    {
-        foreach (Vector2Int cell in cells)
-        {
-            _inventoryView.Cells[cell.x, cell.y].Highlight(isCorrect);
-        }
-    }
-
-    private void ClearHighlight()
-    {
-        foreach (Vector2Int cell in _highlightedCells)
-        {
-            if (cell.x >= 0 && cell.x < _inventoryView.Cells.GetLength(0) &&
-                cell.y >= 0 && cell.y < _inventoryView.Cells.GetLength(1))
-            {
-                _inventoryView.Cells[cell.x, cell.y].UnHighlight();
-            }
-        }
-
-        _highlightedCells = new Vector2Int[0];
     }
 }

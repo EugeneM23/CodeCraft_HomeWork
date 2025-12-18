@@ -4,70 +4,73 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class InventoryItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+namespace Inventories
 {
-    [SerializeField] private Image _background;
-    [SerializeField] private Image _itemImage;
-    [SerializeField] private RectTransform _rectTransform;
-    [SerializeField] private TMP_Text _count;
-    [SerializeField] private DoubleClickHandler _doubleClickHandler;
-
-    public ItemInstance ItemInstance { get; private set; }
-
-    private void OnDestroy()
+    public class InventoryItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
-        if (ItemInstance != null)
-            ItemInstance.OnStackChanged -= UpdateQuantity;
-    }
+        [SerializeField] private Image _background;
+        [SerializeField] private Image _itemImage;
+        [SerializeField] private RectTransform _rectTransform;
+        [SerializeField] private TMP_Text _count;
+        [SerializeField] private DoubleClickHandler _doubleClickHandler;
 
-    private void UpdateQuantity(int quantity)
-    {
-        _count.text = quantity.ToString();
-    }
+        public ItemInstance ItemInstance { get; private set; }
 
-    public void SetupItem(ItemInstance item, Vector2 cellSize, Inventory inventory)
-    {
-        if (ItemInstance != null)
-            ItemInstance.OnStackChanged -= UpdateQuantity;
+        private void OnDestroy()
+        {
+            if (ItemInstance != null)
+                ItemInstance.OnStackChanged -= UpdateQuantity;
+        }
 
-        ItemInstance = item;
-        _itemImage.sprite = item.itemData.Icon;
+        private void UpdateQuantity(int quantity)
+        {
+            _count.text = quantity.ToString();
+        }
 
-        bool showCount = item.CanStack;
-        _count.gameObject.SetActive(showCount);
+        public void SetupItem(ItemInstance item, Vector2 cellSize, Inventory inventory)
+        {
+            if (ItemInstance != null)
+                ItemInstance.OnStackChanged -= UpdateQuantity;
 
-        if (showCount)
-            _count.text = item.StackQuantity.ToString();
+            ItemInstance = item;
+            _itemImage.sprite = item.itemData.Icon;
 
-        ItemInstance.OnStackChanged += UpdateQuantity;
+            bool showCount = item.CanStack;
+            _count.gameObject.SetActive(showCount);
 
-        Vector2 itemSize = new Vector2(
-            cellSize.x * item.itemData.Size.x,
-            cellSize.y * item.itemData.Size.y
-        );
+            if (showCount)
+                _count.text = item.StackQuantity.ToString();
 
-        _rectTransform.sizeDelta = itemSize;
+            ItemInstance.OnStackChanged += UpdateQuantity;
 
-        _doubleClickHandler.SetUpUseCase(item, inventory);
-    }
+            Vector2 itemSize = new Vector2(
+                cellSize.x * item.itemData.Size.x,
+                cellSize.y * item.itemData.Size.y
+            );
 
-    public void OnPointerEnter(PointerEventData eventData)
-    {
-        _itemImage.transform.localScale *= 1.2f;
+            _rectTransform.sizeDelta = itemSize;
 
-        SetBackgroundAlpha(1f);
-    }
+            _doubleClickHandler.SetUpUseCase(item, inventory);
+        }
 
-    public void OnPointerExit(PointerEventData eventData)
-    {
-        _itemImage.transform.localScale = Vector3.one;
-        SetBackgroundAlpha(0f);
-    }
+        public void OnPointerEnter(PointerEventData eventData)
+        {
+            _itemImage.transform.localScale *= 1.2f;
 
-    private void SetBackgroundAlpha(float alpha)
-    {
-        Color color = _background.color;
-        color.a = alpha;
-        _background.color = color;
+            SetBackgroundAlpha(1f);
+        }
+
+        public void OnPointerExit(PointerEventData eventData)
+        {
+            _itemImage.transform.localScale = Vector3.one;
+            SetBackgroundAlpha(0f);
+        }
+
+        private void SetBackgroundAlpha(float alpha)
+        {
+            Color color = _background.color;
+            color.a = alpha;
+            _background.color = color;
+        }
     }
 }
