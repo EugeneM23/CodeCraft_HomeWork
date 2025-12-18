@@ -12,10 +12,10 @@ namespace Inventories
 
         private void OnEnable()
         {
-            _backpack.Inventory.OnAdded += OnItemAddedToInventory;
-            _backpack.Inventory.OnRemoved += OnItemRemovedInventory;
-            _equipmentSlot.OnItemAdded += OnItemAddedToSlot;
-            _equipmentSlot.OnItemRemoved += OnItemRemovedFromToSlot;
+            // _backpack.Inventory.OnAdded += OnItemAddedToInventory;
+            // _backpack.Inventory.OnRemoved += OnItemRemovedInventory;
+            // _equipmentSlot.OnItemAdded += OnItemAddedToSlot;
+            // _equipmentSlot.OnItemRemoved += OnItemRemovedFromToSlot;
         }
 
         private void OnDisable()

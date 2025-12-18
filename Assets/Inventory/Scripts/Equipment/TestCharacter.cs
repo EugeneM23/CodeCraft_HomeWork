@@ -1,15 +1,17 @@
 using Inventories;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class TestCharacter : MonoBehaviour, IItemConsumer
 {
     public int Health = 50;
-    [SerializeField] private Equipment _equipment;
+
+    public Equipment Equipment;
     public Inventory Inventory { get; set; }
 
     public bool EquipWeapon(ItemInstance itemInstance)
     {
-        if (_equipment.EquipWeapon(itemInstance))
+        if (Equipment.EquipWeapon(itemInstance))
             return true;
 
         return false;

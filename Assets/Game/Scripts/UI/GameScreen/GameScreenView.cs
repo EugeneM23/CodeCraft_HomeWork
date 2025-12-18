@@ -10,14 +10,18 @@ namespace Game.Scripts.UI.GameScreen
         public event Action OnInventoryButtonClicked;
 
         [SerializeField] private Button _openInventoryButton;
-        [SerializeField] private InventoryView _inventoryPrefab;
+        [SerializeField] private InventoryInstaller _inventoryPrefab;
+        [SerializeField] private TestCharacter _testCharacter;
+        
+        private InventoryInstaller _inventoryContainer;
 
-        private InventoryView _inventoryContainer;
-
-        private void Start()
+        public InventoryPresenter Initialize()
         {
             _inventoryContainer = Instantiate(_inventoryPrefab, transform);
+            _inventoryContainer.Initialize(_testCharacter);
             _inventoryContainer.gameObject.SetActive(false);
+
+            return _inventoryContainer.Presenter;
         }
 
         private void OnEnable()

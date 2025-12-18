@@ -11,6 +11,8 @@ namespace Inventories
         private Vector2Int[] _highlightedCells;
         public Inventory Inventory => _inventory;
 
+        public bool IsOpen { get; private set; }
+
         public InventoryPresenter(InventoryView view, Inventory inventory)
         {
             _view = view;
@@ -21,6 +23,9 @@ namespace Inventories
         {
             _highlightedCells = new Vector2Int[4];
             _view.InitializeGrid(Inventory.Width, Inventory.Height, Inventory);
+            _view.gameObject.SetActive(true);
+            IsOpen = true;
+
             UpdateView();
 
             Inventory.OnAdded += OnItemAdded;
@@ -33,6 +38,8 @@ namespace Inventories
 
         public void OnHide()
         {
+            _view.gameObject.SetActive(false);
+            IsOpen = false;
             Inventory.OnAdded -= OnItemAdded;
             Inventory.OnRemoved -= OnItemRemoved;
             Inventory.OnHighlight -= Highlight;

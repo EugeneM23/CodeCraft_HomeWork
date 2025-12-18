@@ -2766,7 +2766,6 @@ GameObject:
   - component: {fileID: 8833381284790935183}
   - component: {fileID: 5830915091178595739}
   - component: {fileID: 2550732703897415888}
-  - component: {fileID: 2602894320010975465}
   m_Layer: 5
   m_Name: Inventory
   m_TagString: Untagged
@@ -2862,20 +2861,14 @@ MonoBehaviour:
   serializationData:
     SerializedFormat: 2
     SerializedBytes: 
-    ReferencedUnityObjects:
-    - {fileID: 2602894320010975465}
+    ReferencedUnityObjects: []
     SerializedBytesString: 
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
-    SerializationNodes:
-    - Name: _itemConsumer
-      Entry: 10
-      Data: 0
-    - Name: _spawner
-      Entry: 6
-      Data: 
+    SerializationNodes: []
   _view: {fileID: 2550732703897415888}
+  _equipment: {fileID: 9177767273808478840}
   _columns: 8
   _rows: 8
   _initializeItems: []
@@ -2903,20 +2896,6 @@ MonoBehaviour:
   _gridContainer: {fileID: 4748508683505151152}
   _cellSize: {x: 75, y: 75}
   _reorganizeButton: {fileID: 1392917110872869356}
---- !u!114 &2602894320010975465
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8531536367912159190}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 21a62d3917f845a7b0408426fd310233, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Health: 50
-  _equipment: {fileID: 9177767273808478840}
 --- !u!1 &8681308477849611947
 GameObject:
   m_ObjectHideFlags: 0

@@ -9,13 +9,9 @@ public class HealPotionUseCase : ItemUseCase
     public override void Invoke(Inventory inventory, ItemInstance itemInstance)
     {
         IItemConsumer consumer = inventory.Owner;
-        TestCharacter character = consumer.GetComponent<TestCharacter>();
+        if (consumer == null) return;
 
-        if (character == null)
-        {
-            Debug.LogWarning("Character not found!");
-            return;
-        }
+        TestCharacter character = consumer.GetComponent<TestCharacter>();
 
         character.Health += healAmount;
         Debug.Log($"Healed! New health: {character.Health}");

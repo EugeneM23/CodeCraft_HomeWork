@@ -8,18 +8,16 @@ namespace Inventories
 {
     public class InventoryInstaller : SerializedMonoBehaviour
     {
-        [Header("View Settings")] [SerializeField]
-        private InventoryView _view;
+        [Header("View Settings")] 
+        [SerializeField] private InventoryView _view;
+        [SerializeField] private Equipment _equipment;
 
-        [Header("Inventory Settings")] [SerializeField]
-        private int _columns = 4;
-
+        [Header("Inventory Settings")]
+        [SerializeField] private int _columns = 4;
         [SerializeField] private int _rows = 7;
         [SerializeField] private SceneItem[] _initializeItems;
 
-        [Header("Dependencies")] [SerializeField]
-        private IItemConsumer _itemConsumer;
-
+        [Header("Dependencies")] 
         [SerializeField] private DragItem _dragItemPrefab;
         [SerializeField] private List<SceneItem> _sceneItemCatalog;
 
@@ -28,17 +26,20 @@ namespace Inventories
         private DragFSM _dragFsm;
         private InventoryHighlight _inventoryHighlight;
 
+        public InventoryPresenter Presenter => _presenter;
+
         public Inventory Inventory { get; private set; }
 
-        private void Awake()
+        public void Initialize(TestCharacter testCharacter)
         {
             //Inventory
             Inventory = new Inventory(_columns, _rows);
             _presenter = new InventoryPresenter(_view, Inventory);
 
             //Consumer
-            Inventory.Owner = _itemConsumer;
-            _itemConsumer.Inventory = Inventory;
+            Inventory.Owner = testCharacter;
+            testCharacter.Inventory = Inventory;
+            testCharacter.Equipment = _equipment;
 
             //Raycast
             GraphicRaycaster raycaster = FindObjectOfType<GraphicRaycaster>();
@@ -60,20 +61,10 @@ namespace Inventories
                 Inventory.AddItem(item.ItemData, item.Quantity);
         }
 
-        private void OnEnable()
-        {
-            _presenter.OnShow();
-        }
-
-        private void OnDisable()
-        {
-            _presenter.OnHide();
-        }
-
         private void Update()
         {
-            _dragFsm.Tick();
-            _inventoryHighlight.Tick();
+            _dragFsm?.Tick();
+            _inventoryHighlight?.Tick();
         }
     }
 }
