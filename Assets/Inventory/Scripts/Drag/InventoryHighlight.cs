@@ -2,15 +2,21 @@ using UnityEngine;
 
 namespace Inventories
 {
-    public class InventoryHighlight : MonoBehaviour
+    public class InventoryHighlight
     {
-        [SerializeField] private DragFSM _fsm;
-        [SerializeField] private InventoryView _inventoryView;
+        private readonly DragFSM _fsm;
+        private readonly InventoryView _inventoryView;
 
         private Vector2Int _currentSelectedCell;
         private Vector2Int[] _highlightedCells = new Vector2Int[0];
 
-        private void Update()
+        public InventoryHighlight(DragFSM fsm, InventoryView inventoryView)
+        {
+            _fsm = fsm;
+            _inventoryView = inventoryView;
+        }
+
+        public void Tick()
         {
             if (!_fsm.Context.IsDragging || _fsm.Context.CurrentDragItem == null)
             {

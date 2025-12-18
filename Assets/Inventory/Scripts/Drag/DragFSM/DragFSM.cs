@@ -2,33 +2,36 @@ using System;
 using System.Collections.Generic;
 using Inventories;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.Serialization;
-using UnityEngine.UI;
 
-public class DragFSM : MonoBehaviour
+public class DragFSM
 {
-    [SerializeField] private DragItem _dragItemPrefab;
-    [SerializeField] private InventoryInstaller inventoryInstaller;
-    [SerializeField] private SceneItemSpawner _spawner;
-    [SerializeField] private Vector2Int _cellSize = new(75, 75);
+    private Vector2Int _cellSize = new(75, 75);
 
-    [SerializeField] private InventoryView _inventoryView;
+    private readonly SceneItemSpawner _spawner;
+    private readonly InventoryView _inventoryView;
+    private readonly RaycastDetector _raycastDetector;
+    private readonly Inventory _originalInventory;
+    private readonly DragItem _dragItemPrefab;
 
     private Dictionary<Type, IState> _states;
     private IState _currentState;
-    private RaycastDetector _raycastDetector;
+    public Inventory OriginInventory => _originalInventory;
+
+    public DragFSM(InventoryView inventoryView, RaycastDetector raycastDetector, Inventory originalInventory,
+        DragItem dragItemPrefab, SceneItemSpawner spawner)
+    {
+        _inventoryView = inventoryView;
+        _raycastDetector = raycastDetector;
+        _originalInventory = originalInventory;
+        _dragItemPrefab = dragItemPrefab;
+        _spawner = spawner;
+    }
 
     public DragContext Context { get; private set; }
-    public Inventory OriginInventory => inventoryInstaller.Inventory;
     public SceneItemSpawner ItemSpawner => _spawner;
 
-    private void Start()
+    public void Initialize()
     {
-        GraphicRaycaster raycaster = FindObjectOfType<GraphicRaycaster>();
-        EventSystem eventSystem = EventSystem.current;
-
-        _raycastDetector = new RaycastDetector(raycaster, eventSystem);
         Context = new DragContext();
 
         _states = new Dictionary<Type, IState>
@@ -42,7 +45,7 @@ public class DragFSM : MonoBehaviour
         SetState<IdleDragState>();
     }
 
-    private void Update()
+    public void Tick()
     {
         if (_currentState is ITickable tickable)
             tickable.Tick();
@@ -69,7 +72,7 @@ public class DragFSM : MonoBehaviour
 
     public DragItem CreateDragItem(ItemInstance itemInstance)
     {
-        DragItem dragItem = Instantiate(_dragItemPrefab, transform.parent);
+        DragItem dragItem = GameObject.Instantiate(_dragItemPrefab, _spawner.transform.parent);
         dragItem.Construct(itemInstance, _cellSize, OriginInventory);
         return dragItem;
     }
