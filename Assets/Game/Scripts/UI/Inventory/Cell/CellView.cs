@@ -72,12 +72,12 @@ public class CellView : MonoBehaviour
         while (elapsed < _fadeDuration)
         {
             elapsed += Time.deltaTime;
-            color.a = Mathf.Lerp(0f, 1f, elapsed / _fadeDuration);
+            color.a = Mathf.Lerp(0f, 0.6f, elapsed / _fadeDuration);
             _backGround.color = color;
             yield return null;
         }
 
-        color.a = 0.85f;
+        color.a = 0.6f;
         _backGround.color = color;
         _fadeCoroutine = null;
     }

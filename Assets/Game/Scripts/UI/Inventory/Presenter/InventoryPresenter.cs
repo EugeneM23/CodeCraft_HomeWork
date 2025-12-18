@@ -1,4 +1,5 @@
 using Inventories;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 public class InventoryPresenter : MonoBehaviour
@@ -19,6 +20,15 @@ public class InventoryPresenter : MonoBehaviour
         Inventory.OnRemoved += OnItemRemoved;
         Inventory.OnHighlight += Highlight;
         Inventory.OnUnHighlight += UnHighlight;
+        Inventory.OnCleared += OnCleared;
+
+        _view.OnReorganize += Reorganize;
+    }
+
+    private void OnCleared()
+    {
+        _view.Clear();
+        UpdateView();
     }
 
     private void UpdateView()
@@ -69,5 +79,11 @@ public class InventoryPresenter : MonoBehaviour
     {
         return cellIndex.x >= 0 && cellIndex.x < Inventory.Width &&
                cellIndex.y >= 0 && cellIndex.y < Inventory.Height;
+    }
+
+    [Button]
+    public void Reorganize()
+    {
+        Inventory.Reorganize();
     }
 }

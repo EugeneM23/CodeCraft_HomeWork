@@ -242,12 +242,45 @@ namespace Inventories
             return _cells[cellIndex.x, cellIndex.y] == null;
         }
 
-        public void Highlight(Vector2Int[] cells)
-        {
-            Debug.Log(cells.Length);
-            OnHighlight?.Invoke(cells);
-        }
-
         public void UnHighlight() => OnUnHighlight?.Invoke();
+
+        public void Reorganize()
+        {
+            if (Count == 0)
+                return;
+
+            var itemsToReorganize = new List<(ItemData data, int quantity)>();
+
+            foreach (var item in _items.Values)
+            {
+                itemsToReorganize.Add((item.itemData, item.StackQuantity));
+            }
+
+            itemsToReorganize.Sort((a, b) =>
+            {
+                if (a.data.CanStack != b.data.CanStack)
+                    return a.data.CanStack ? -1 : 1;
+
+                int areaA = a.data.Size.x * a.data.Size.y;
+                int areaB = b.data.Size.x * b.data.Size.y;
+
+                if (areaA != areaB)
+                    return areaB.CompareTo(areaA);
+
+                return string.Compare(a.data.Name, b.data.Name, StringComparison.Ordinal);
+            });
+
+            _items.Clear();
+            for (int i = 0; i < _cells.GetLength(0); i++)
+            for (int j = 0; j < _cells.GetLength(1); j++)
+                _cells[i, j] = null;
+
+            OnCleared?.Invoke();
+
+            foreach (var (data, quantity) in itemsToReorganize)
+            {
+                AddItem(data, quantity);
+            }
+        }
     }
 }

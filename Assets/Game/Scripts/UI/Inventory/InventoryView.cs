@@ -1,19 +1,38 @@
+using System;
 using System.Collections.Generic;
 using Inventories;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.UI;
 
 public class InventoryView : MonoBehaviour
 {
+    public event Action OnReorganize;
+    
     [SerializeField] private CellView _cellPrefab;
     [SerializeField] private InventoryItem _itemContainerPrefab;
     [SerializeField] private RectTransform _gridContainer;
     [SerializeField] private Vector2 _cellSize = new(100f, 100f);
+    [SerializeField] private Button _reorganizeButton;
 
     private readonly Dictionary<string, InventoryItem> _inventoryItems = new();
     private CellView[,] _cells;
     private Inventory _inventory;
 
     public CellView[,] Cells => _cells;
+
+    private void OnEnable()
+    {
+        _reorganizeButton.onClick.AddListener(OnReorganizeClick);
+    }
+
+    private void OnDisable()
+    {
+        _reorganizeButton.onClick.RemoveListener(OnReorganizeClick);
+    }
+
+    private void OnReorganizeClick() => OnReorganize?.Invoke();
 
     public void InitializeGrid(int columns, int rows, Inventory inventory)
     {
@@ -73,5 +92,16 @@ public class InventoryView : MonoBehaviour
         rect.anchoredPosition = new Vector2(x * _cellSize.x, -y * _cellSize.y);
 
         _cells[x, y] = cell;
+    }
+
+    public void Clear()
+    {
+        foreach (var item in _inventoryItems.Values)
+            Destroy(item.gameObject);
+
+        _inventoryItems.Clear();
+
+        foreach (CellView cell in _cells)
+            cell.Clear();
     }
 }
