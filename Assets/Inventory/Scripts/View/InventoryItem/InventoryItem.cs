@@ -13,8 +13,6 @@ public class InventoryItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     [SerializeField] private DoubleClickHandler _doubleClickHandler;
 
     public ItemInstance ItemInstance { get; private set; }
-    public RectTransform RectTransform => _rectTransform;
-    public Transform Background => _background.transform;
 
     private void OnDestroy()
     {
@@ -64,11 +62,6 @@ public class InventoryItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     {
         _itemImage.transform.localScale = Vector3.one;
         SetBackgroundAlpha(0f);
-    }
-
-    public void DisableBackGround()
-    {
-        _background.enabled = false;
     }
 
     private void SetBackgroundAlpha(float alpha)
