@@ -18,8 +18,10 @@ namespace Inventories
         private readonly Dictionary<string, InventoryItem> _inventoryItems = new();
         private CellView[,] _cells;
         private Inventory _inventory;
+        private InventoryFactory _factory;
 
         public CellView[,] Cells => _cells;
+        public Vector2 CellSize => _cellSize;
 
         private void OnEnable()
         {
@@ -33,8 +35,9 @@ namespace Inventories
 
         private void OnReorganizeClick() => OnReorganize?.Invoke();
 
-        public void InitializeGrid(int columns, int rows, Inventory inventory)
+        public void Initialize(int columns, int rows, Inventory inventory, InventoryFactory factory)
         {
+            _factory = factory;
             _inventory = inventory;
             _cells = new CellView[columns, rows];
 
@@ -49,7 +52,7 @@ namespace Inventories
 
         public void AddItem(ItemInstance instance, Vector2Int[] positions)
         {
-            InventoryItem inventoryItem = Instantiate(_itemContainerPrefab, _gridContainer);
+            InventoryItem inventoryItem = _factory.SpawnItem(_itemContainerPrefab, _gridContainer);
             inventoryItem.transform.position = _cells[positions[0].x, positions[0].y].transform.position;
 
             inventoryItem.SetupItem(instance, _cellSize, _inventory);
@@ -72,7 +75,7 @@ namespace Inventories
                     cell.Clear();
             }
 
-            Destroy(_inventoryItems[id].gameObject);
+            _factory.DeSpawn(_inventoryItems[id].gameObject);
             _inventoryItems.Remove(id);
         }
 
@@ -83,7 +86,7 @@ namespace Inventories
 
         private void CreateCell(Inventory inventory, int x, int y)
         {
-            CellView cell = Instantiate(_cellPrefab, _gridContainer);
+            CellView cell = _factory.SpawnItem(_cellPrefab, _gridContainer);
             cell.Construct(inventory, new Vector2Int(x, y));
 
             RectTransform rect = cell.GetComponent<RectTransform>();
@@ -95,8 +98,8 @@ namespace Inventories
 
         public void Clear()
         {
-            foreach (var item in _inventoryItems.Values)
-                Destroy(item.gameObject);
+            foreach (InventoryItem item in _inventoryItems.Values)
+                _factory.DeSpawn(item.gameObject);
 
             _inventoryItems.Clear();
 

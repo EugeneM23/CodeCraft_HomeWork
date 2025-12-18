@@ -4,8 +4,11 @@ using UnityEngine;
 
 public class StartDragState : BaseState
 {
-    public StartDragState(DragFSM fsm) : base(fsm)
+    private readonly InventoryFactory _factory;
+
+    public StartDragState(DragFSM fsm, InventoryFactory factory) : base(fsm)
     {
+        _factory = factory;
     }
 
     public override void Enter()
@@ -56,7 +59,7 @@ public class StartDragState : BaseState
         if (!_fsm.TryGetComponentUnderMouse(out SceneItem sceneItem)) return false;
 
         if (_fsm.OriginInventory.AddItem(sceneItem.ItemData, sceneItem.Quantity))
-            GameObject.Destroy(sceneItem.gameObject);
+            _factory.DeSpawn(sceneItem.gameObject);
 
         _fsm.SetState<IdleDragState>();
         return true;
@@ -65,7 +68,7 @@ public class StartDragState : BaseState
     private void SetupDragContext(ItemInstance itemInstance, Vector3 position, Inventory sourceInventory,
         Vector2Int clickedCell, Vector2Int itemStartCell, EquipmentSlot equipmentSlot = null)
     {
-        _fsm.Context.CurrentDragItem = _fsm.CreateDragItem(itemInstance);
+        _fsm.Context.CurrentDragItem = _factory.CreateDragItem(itemInstance);
         _fsm.Context.CurrentDragItem.transform.parent = _fsm.Context.CurrentDragItem.transform.root;
         _fsm.Context.CurrentDragItem.transform.position = position;
         _fsm.Context.SourceInventory = sourceInventory;

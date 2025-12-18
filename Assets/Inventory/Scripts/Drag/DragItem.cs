@@ -11,7 +11,7 @@ public class DragItem : MonoBehaviour
     public Inventory Inventory { get; private set; }
     public RectTransform RectTransform => _rectTransform;
 
-    public void Construct(ItemInstance itemInstance, Vector2Int _cellSize, Inventory originInventory)
+    public void Construct(ItemInstance itemInstance, Vector2 _cellSize, Inventory originInventory)
     {
         ItemInstance = itemInstance;
         Inventory = originInventory;

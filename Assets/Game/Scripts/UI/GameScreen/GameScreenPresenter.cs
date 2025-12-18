@@ -9,7 +9,10 @@ namespace Game.Scripts.UI.GameScreen
         [SerializeField] private GameScreenView _view;
         private InventoryPresenter _presenter;
 
-        private void Start() => _presenter = _view.Initialize();
+        private void Start()
+        {
+            _presenter = _view.Initialize();
+        }
 
         private void OnEnable() => _view.OnInventoryButtonClicked += OpenInventory;
 
@@ -18,9 +21,9 @@ namespace Game.Scripts.UI.GameScreen
         private void OpenInventory()
         {
             if (_presenter.IsOpen)
-                _presenter.OnHide();
+                _presenter.Hide();
             else
-                _presenter.OnShow();
+                _presenter.Show();
         }
     }
 }

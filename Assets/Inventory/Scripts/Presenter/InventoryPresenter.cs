@@ -1,5 +1,3 @@
-using Inventories;
-using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace Inventories
@@ -9,7 +7,6 @@ namespace Inventories
         private readonly InventoryView _view;
         private readonly Inventory _inventory;
         private Vector2Int[] _highlightedCells;
-        public Inventory Inventory => _inventory;
 
         public bool IsOpen { get; private set; }
 
@@ -19,32 +16,28 @@ namespace Inventories
             _inventory = inventory;
         }
 
-        public void OnShow()
+        public void Show()
         {
             _highlightedCells = new Vector2Int[4];
-            _view.InitializeGrid(Inventory.Width, Inventory.Height, Inventory);
             _view.gameObject.SetActive(true);
             IsOpen = true;
-
-            UpdateView();
-
-            Inventory.OnAdded += OnItemAdded;
-            Inventory.OnRemoved += OnItemRemoved;
-            Inventory.OnHighlight += Highlight;
-            Inventory.OnUnHighlight += UnHighlight;
-            Inventory.OnCleared += OnCleared;
+            _inventory.OnAdded += OnItemAdded;
+            _inventory.OnRemoved += OnItemRemoved;
+            _inventory.OnHighlight += Highlight;
+            _inventory.OnUnHighlight += UnHighlight;
+            _inventory.OnCleared += OnCleared;
             _view.OnReorganize += Reorganize;
         }
 
-        public void OnHide()
+        public void Hide()
         {
             _view.gameObject.SetActive(false);
             IsOpen = false;
-            Inventory.OnAdded -= OnItemAdded;
-            Inventory.OnRemoved -= OnItemRemoved;
-            Inventory.OnHighlight -= Highlight;
-            Inventory.OnUnHighlight -= UnHighlight;
-            Inventory.OnCleared -= OnCleared;
+            _inventory.OnAdded -= OnItemAdded;
+            _inventory.OnRemoved -= OnItemRemoved;
+            _inventory.OnHighlight -= Highlight;
+            _inventory.OnUnHighlight -= UnHighlight;
+            _inventory.OnCleared -= OnCleared;
 
             _view.OnReorganize -= Reorganize;
         }
@@ -55,18 +48,18 @@ namespace Inventories
             UpdateView();
         }
 
-        private void UpdateView()
+        public void UpdateView()
         {
-            foreach (ItemInstance item in Inventory)
+            foreach (ItemInstance item in _inventory)
             {
-                Vector2Int[] itemGridPositions = Inventory.GetItemGridPositions(item);
+                Vector2Int[] itemGridPositions = _inventory.GetItemGridPositions(item);
                 _view.AddItem(item, itemGridPositions);
             }
         }
 
         private void OnItemAdded(ItemInstance itemInstance)
         {
-            Vector2Int[] positions = Inventory.GetItemGridPositions(itemInstance);
+            Vector2Int[] positions = _inventory.GetItemGridPositions(itemInstance);
             _view.AddItem(itemInstance, positions);
         }
 
@@ -82,7 +75,7 @@ namespace Inventories
 
             foreach (Vector2Int cellIndex in cells)
             {
-                if (!IsValidCell(cellIndex) || !Inventory.IsFree(cellIndex))
+                if (!IsValidCell(cellIndex) || !_inventory.IsFree(cellIndex))
                     return;
             }
 
@@ -101,14 +94,13 @@ namespace Inventories
 
         private bool IsValidCell(Vector2Int cellIndex)
         {
-            return cellIndex.x >= 0 && cellIndex.x < Inventory.Width &&
-                   cellIndex.y >= 0 && cellIndex.y < Inventory.Height;
+            return cellIndex.x >= 0 && cellIndex.x < _inventory.Width &&
+                   cellIndex.y >= 0 && cellIndex.y < _inventory.Height;
         }
 
-        [Button]
-        public void Reorganize()
+        private void Reorganize()
         {
-            Inventory.Reorganize();
+            _inventory.Reorganize();
         }
     }
 }

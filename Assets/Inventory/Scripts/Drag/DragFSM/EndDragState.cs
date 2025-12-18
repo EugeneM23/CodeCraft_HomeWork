@@ -4,8 +4,11 @@ using UnityEngine;
 
 public class EndDragState : BaseState
 {
-    public EndDragState(DragFSM fsm) : base(fsm)
+    private readonly InventoryFactory _factory;
+
+    public EndDragState(DragFSM fsm, InventoryFactory factory) : base(fsm)
     {
+        _factory = factory;
     }
 
     public override void Enter()
@@ -50,7 +53,7 @@ public class EndDragState : BaseState
 
         if (slot.ItemType != _fsm.Context.CurrentDragItem.ItemInstance.itemData.ItemType)
             return false;
-        
+
         ItemInstance itemInstance = _fsm.Context.CurrentDragItem.ItemInstance;
 
         if (!slot.AddItem(itemInstance))
@@ -76,10 +79,8 @@ public class EndDragState : BaseState
         }
 
         ItemInstance draggedItem = _fsm.Context.CurrentDragItem.ItemInstance;
-        bool addItem = _fsm.Context.SourceInventory.AddItem(draggedItem.itemData, _fsm.Context.StartDragCell,
+        _fsm.Context.SourceInventory.AddItem(draggedItem.itemData, _fsm.Context.StartDragCell,
             draggedItem.StackQuantity);
-
-        Debug.Log(_fsm.Context.StartDragCell);
     }
 
     private void DropToScene()
@@ -87,7 +88,7 @@ public class EndDragState : BaseState
         if (_fsm.TryGetSceneRaycastHit(out RaycastHit hit))
         {
             ItemInstance draggedItem = _fsm.Context.CurrentDragItem.ItemInstance;
-            _fsm.ItemSpawner.SpawnItem(draggedItem.itemData, draggedItem.StackQuantity, hit.point);
+            _fsm.ItemFactory.SpawnItem(draggedItem.itemData, draggedItem.StackQuantity, hit.point);
             FinishDrag();
         }
         else
@@ -99,8 +100,7 @@ public class EndDragState : BaseState
 
     private void FinishDrag()
     {
-        GameObject.Destroy(_fsm.Context.CurrentDragItem.gameObject);
-
+        _factory.DeSpawn(_fsm.Context.CurrentDragItem.gameObject);
         _fsm.Context.Clear();
         _fsm.SetState<IdleDragState>();
     }

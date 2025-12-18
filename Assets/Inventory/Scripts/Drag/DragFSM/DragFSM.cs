@@ -5,32 +5,23 @@ using UnityEngine;
 
 public class DragFSM
 {
-    private Vector2Int _cellSize = new(75, 75);
-
-    private readonly SceneItemSpawner _spawner;
-    private readonly InventoryView _inventoryView;
+    private readonly InventoryFactory _factory;
     private readonly RaycastDetector _raycastDetector;
     private readonly Inventory _originalInventory;
-    private readonly DragItem _dragItemPrefab;
 
     private Dictionary<Type, IState> _states;
     private IState _currentState;
-    private Transform _parent;
     public Inventory OriginInventory => _originalInventory;
 
-    public DragFSM(InventoryView inventoryView, RaycastDetector raycastDetector, Inventory originalInventory,
-        DragItem dragItemPrefab, SceneItemSpawner spawner, Transform parent)
+    public DragFSM(RaycastDetector raycastDetector, Inventory originalInventory, InventoryFactory factory)
     {
-        _inventoryView = inventoryView;
         _raycastDetector = raycastDetector;
         _originalInventory = originalInventory;
-        _dragItemPrefab = dragItemPrefab;
-        _spawner = spawner;
-        _parent = parent;
+        _factory = factory;
     }
 
     public DragContext Context { get; private set; }
-    public SceneItemSpawner ItemSpawner => _spawner;
+    public InventoryFactory ItemFactory => _factory;
 
     public void Initialize()
     {
@@ -39,9 +30,9 @@ public class DragFSM
         _states = new Dictionary<Type, IState>
         {
             [typeof(IdleDragState)] = new IdleDragState(this),
-            [typeof(StartDragState)] = new StartDragState(this),
+            [typeof(StartDragState)] = new StartDragState(this, _factory),
             [typeof(UpdateDragState)] = new UpdateDragState(this),
-            [typeof(EndDragState)] = new EndDragState(this)
+            [typeof(EndDragState)] = new EndDragState(this, _factory),
         };
 
         SetState<IdleDragState>();
@@ -70,12 +61,5 @@ public class DragFSM
     public bool TryGetSceneRaycastHit(out RaycastHit raycastHit)
     {
         return _raycastDetector.TryGetSceneRaycastHit(out raycastHit);
-    }
-
-    public DragItem CreateDragItem(ItemInstance itemInstance)
-    {
-        DragItem dragItem = GameObject.Instantiate(_dragItemPrefab, _parent);
-        dragItem.Construct(itemInstance, _cellSize, OriginInventory);
-        return dragItem;
     }
 }
