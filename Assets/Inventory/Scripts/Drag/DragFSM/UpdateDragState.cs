@@ -32,7 +32,7 @@ namespace Inventories
 
         private void UpdateCurrentInventory()
         {
-            if (!_fsm.TryGetComponentUnderMouse(out BackPack backPack)) return;
+            if (!_fsm.TryGetComponentUnderMouse(out InventoryInstaller backPack)) return;
             if (_fsm.Context.CurrentInventory == backPack.Inventory) return;
 
             _fsm.Context.CurrentInventory?.UnHighlight();

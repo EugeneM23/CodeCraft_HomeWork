@@ -6,7 +6,7 @@ namespace Inventories
 {
     public class InventoryAudioController : MonoBehaviour
     {
-        [SerializeField] private BackPack _backpack;
+        [SerializeField] private InventoryInstaller _backpack;
         [SerializeField] private AudioPlayer _audioPlayer;
         [SerializeField] private EquipmentSlot _equipmentSlot;
 

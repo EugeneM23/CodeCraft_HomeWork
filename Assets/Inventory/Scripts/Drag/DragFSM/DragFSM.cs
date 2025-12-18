@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using Inventories;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class DragFSM : MonoBehaviour
 {
     [SerializeField] private DragItem _dragItemPrefab;
-    [SerializeField] private BackPack _backPack;
+    [SerializeField] private InventoryInstaller inventoryInstaller;
     [SerializeField] private SceneItemSpawner _spawner;
     [SerializeField] private Vector2Int _cellSize = new(75, 75);
 
@@ -19,7 +20,7 @@ public class DragFSM : MonoBehaviour
     private RaycastDetector _raycastDetector;
 
     public DragContext Context { get; private set; }
-    public Inventory OriginInventory => _backPack.Inventory;
+    public Inventory OriginInventory => inventoryInstaller.Inventory;
     public SceneItemSpawner ItemSpawner => _spawner;
 
     private void Start()
@@ -72,5 +73,4 @@ public class DragFSM : MonoBehaviour
         dragItem.Construct(itemInstance, _cellSize, OriginInventory);
         return dragItem;
     }
-
 }

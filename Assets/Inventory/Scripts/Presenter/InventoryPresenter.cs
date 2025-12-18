@@ -4,15 +4,20 @@ using UnityEngine;
 
 namespace Inventories
 {
-    public class InventoryPresenter : MonoBehaviour
+    public class InventoryPresenter
     {
-        [SerializeField] private InventoryView _view;
-
+        private readonly InventoryView _view;
+        private readonly Inventory _inventory;
         private Vector2Int[] _highlightedCells;
+        public Inventory Inventory => _inventory;
 
-        public Inventory Inventory { get; set; }
+        public InventoryPresenter(InventoryView view, Inventory inventory)
+        {
+            _view = view;
+            _inventory = inventory;
+        }
 
-        private void Start()
+        public void OnShow()
         {
             _highlightedCells = new Vector2Int[4];
             _view.InitializeGrid(Inventory.Width, Inventory.Height, Inventory);
@@ -23,8 +28,18 @@ namespace Inventories
             Inventory.OnHighlight += Highlight;
             Inventory.OnUnHighlight += UnHighlight;
             Inventory.OnCleared += OnCleared;
-
             _view.OnReorganize += Reorganize;
+        }
+
+        public void OnHide()
+        {
+            Inventory.OnAdded -= OnItemAdded;
+            Inventory.OnRemoved -= OnItemRemoved;
+            Inventory.OnHighlight -= Highlight;
+            Inventory.OnUnHighlight -= UnHighlight;
+            Inventory.OnCleared -= OnCleared;
+
+            _view.OnReorganize -= Reorganize;
         }
 
         private void OnCleared()
