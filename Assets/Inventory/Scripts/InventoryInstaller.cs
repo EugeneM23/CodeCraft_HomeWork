@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -21,6 +22,7 @@ namespace Inventories
 
         [SerializeField] private SceneItemSpawner _spawner;
         [SerializeField] private DragItem _dragItemPrefab;
+        [SerializeField] private List<SceneItem> _sceneItemCatalog;
 
         private InventoryPresenter _presenter;
         private RaycastDetector _raycastDetector;
@@ -31,12 +33,32 @@ namespace Inventories
 
         private void Awake()
         {
-            InitializeInventory();
-            ConfigureItemConsumer();
-            PopulateInitialItems();
-            InitializeRaycastSystem();
-            InitializeDragSystem();
-            InitializeHighlightSystem();
+            //Inventory
+            Inventory = new Inventory(_columns, _rows);
+            _presenter = new InventoryPresenter(_view, Inventory);
+
+            //Consumer
+            Inventory.Owner = _itemConsumer;
+            _itemConsumer.Inventory = Inventory;
+
+            //Raycast
+            GraphicRaycaster raycaster = FindObjectOfType<GraphicRaycaster>();
+            EventSystem eventSystem = EventSystem.current;
+
+            _raycastDetector = new RaycastDetector(raycaster, eventSystem);
+
+            //Drag
+            SceneItemSpawner spawner = new SceneItemSpawner();
+            spawner.Initialize(_sceneItemCatalog);
+            _dragFsm = new DragFSM(_view, _raycastDetector, Inventory, _dragItemPrefab, spawner, transform);
+            _dragFsm.Initialize();
+
+            //HighLight
+            _inventoryHighlight = new InventoryHighlight(_dragFsm, _view);
+
+            //Add init items
+            foreach (SceneItem item in _initializeItems)
+                Inventory.AddItem(item.ItemData, item.Quantity);
         }
 
         private void OnEnable()
@@ -53,43 +75,6 @@ namespace Inventories
         {
             _dragFsm.Tick();
             _inventoryHighlight.Tick();
-        }
-
-        private void InitializeInventory()
-        {
-            Inventory = new Inventory(_columns, _rows);
-            _presenter = new InventoryPresenter(_view, Inventory);
-        }
-
-        private void ConfigureItemConsumer()
-        {
-            Inventory.Owner = _itemConsumer;
-            _itemConsumer.Inventory = Inventory;
-        }
-
-        private void PopulateInitialItems()
-        {
-            foreach (SceneItem item in _initializeItems)
-                Inventory.AddItem(item.ItemData, item.Quantity);
-        }
-
-        private void InitializeRaycastSystem()
-        {
-            GraphicRaycaster raycaster = FindObjectOfType<GraphicRaycaster>();
-            EventSystem eventSystem = EventSystem.current;
-
-            _raycastDetector = new RaycastDetector(raycaster, eventSystem);
-        }
-
-        private void InitializeDragSystem()
-        {
-            _dragFsm = new DragFSM(_view, _raycastDetector, Inventory, _dragItemPrefab, _spawner);
-            _dragFsm.Initialize();
-        }
-
-        private void InitializeHighlightSystem()
-        {
-            _inventoryHighlight = new InventoryHighlight(_dragFsm, _view);
         }
     }
 }

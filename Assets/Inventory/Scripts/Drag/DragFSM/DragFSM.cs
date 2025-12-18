@@ -15,16 +15,18 @@ public class DragFSM
 
     private Dictionary<Type, IState> _states;
     private IState _currentState;
+    private Transform _parent;
     public Inventory OriginInventory => _originalInventory;
 
     public DragFSM(InventoryView inventoryView, RaycastDetector raycastDetector, Inventory originalInventory,
-        DragItem dragItemPrefab, SceneItemSpawner spawner)
+        DragItem dragItemPrefab, SceneItemSpawner spawner, Transform parent)
     {
         _inventoryView = inventoryView;
         _raycastDetector = raycastDetector;
         _originalInventory = originalInventory;
         _dragItemPrefab = dragItemPrefab;
         _spawner = spawner;
+        _parent = parent;
     }
 
     public DragContext Context { get; private set; }
@@ -72,7 +74,7 @@ public class DragFSM
 
     public DragItem CreateDragItem(ItemInstance itemInstance)
     {
-        DragItem dragItem = GameObject.Instantiate(_dragItemPrefab, _spawner.transform.parent);
+        DragItem dragItem = GameObject.Instantiate(_dragItemPrefab, _parent);
         dragItem.Construct(itemInstance, _cellSize, OriginInventory);
         return dragItem;
     }

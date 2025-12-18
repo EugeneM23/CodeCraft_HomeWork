@@ -3,15 +3,13 @@ using System.Collections.Generic;
 using Inventories;
 using UnityEngine;
 
-public class SceneItemSpawner : MonoBehaviour
+public class SceneItemSpawner
 {
-    [SerializeField] private List<SceneItem> _items = new();
+    private readonly Dictionary<string, SceneItem> _itemCatalog = new();
 
-    private Dictionary<string, SceneItem> _itemCatalog = new();
-
-    private void Awake()
+    public void Initialize(List<SceneItem> items)
     {
-        foreach (SceneItem item in _items)
+        foreach (SceneItem item in items)
             _itemCatalog[item.ItemData.Name] = item;
     }
 
@@ -23,7 +21,7 @@ public class SceneItemSpawner : MonoBehaviour
             return;
         }
 
-        SceneItem spawnedItem = Instantiate(prefab, position, Quaternion.identity);
+        SceneItem spawnedItem = GameObject.Instantiate(prefab, position, Quaternion.identity);
         spawnedItem.ItemData = itemData;
         spawnedItem.Quantity = quantity;
     }
