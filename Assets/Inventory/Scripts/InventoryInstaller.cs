@@ -20,7 +20,6 @@ namespace Inventories
         [Header("Dependencies")] [SerializeField]
         private IItemConsumer _itemConsumer;
 
-        [SerializeField] private SceneItemSpawner _spawner;
         [SerializeField] private DragItem _dragItemPrefab;
         [SerializeField] private List<SceneItem> _sceneItemCatalog;
 
