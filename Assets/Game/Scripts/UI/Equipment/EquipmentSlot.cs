@@ -1,3 +1,4 @@
+using System;
 using Inventories;
 using Sirenix.OdinInspector;
 using Sirenix.Serialization;
@@ -10,6 +11,9 @@ namespace Game.Scripts.UI.Equipment
 {
     public class EquipmentSlot : SerializedMonoBehaviour
     {
+        public event Action OnItemAdded;
+        public event Action OnItemRemoved;
+
         [SerializeField] private BackPack _backPack;
         [SerializeField] private ItemType _itemType;
         [SerializeField] private Image _itemSlot;
@@ -20,6 +24,8 @@ namespace Game.Scripts.UI.Equipment
         {
             if (ItemInstance != null) return false;
 
+            OnItemAdded?.Invoke();
+
             _itemSlot.enabled = true;
             _itemSlot.sprite = item.itemData.Icon;
             ItemInstance = item;
@@ -29,6 +35,8 @@ namespace Game.Scripts.UI.Equipment
 
         public void RemoveItem()
         {
+            OnItemRemoved?.Invoke();
+            
             _itemSlot.enabled = false;
             ItemInstance = null;
             _itemSlot.enabled = false;
