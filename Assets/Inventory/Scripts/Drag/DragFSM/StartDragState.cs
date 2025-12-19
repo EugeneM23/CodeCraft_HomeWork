@@ -5,7 +5,6 @@ using UnityEngine;
 public class StartDragState : BaseState
 {
     private readonly InventoryFactory _factory;
-
     public StartDragState(DragFSM fsm, InventoryFactory factory) : base(fsm)
     {
         _factory = factory;
@@ -22,7 +21,14 @@ public class StartDragState : BaseState
 
     private bool TryStartDragFromInventory()
     {
-        if (!_fsm.TryGetComponentUnderMouse(out CellView cell)) return false;
+        if (!_fsm.TryGetComponentUnderMouse(out CellView cell))
+        {
+            Debug.Log(cell == null);
+
+            return false;
+        }
+
+
         if (cell.InventoryItem == null) return false;
 
         ItemInstance itemInstance = cell.InventoryItem.ItemInstance;
@@ -45,7 +51,7 @@ public class StartDragState : BaseState
         Vector2Int cellInSlot =
             CalculateClickedCellInSlot(slot, slot.ItemInstance.itemData.Size);
 
-        SetupDragContext(slot.ItemInstance, slot.transform.position, _fsm.OriginInventory, cellInSlot, Vector2Int.zero,
+        SetupDragContext(slot.ItemInstance, slot.transform.position, _fsm.MainInventory, cellInSlot, Vector2Int.zero,
             slot);
 
         slot.RemoveItem();
@@ -58,7 +64,7 @@ public class StartDragState : BaseState
     {
         if (!_fsm.TryGetComponentUnderMouse(out SceneItem sceneItem)) return false;
 
-        if (_fsm.OriginInventory.AddItem(sceneItem.ItemData, sceneItem.Quantity))
+        if (_fsm.MainInventory.AddItem(sceneItem.ItemData, sceneItem.Quantity))
             _factory.DeSpawn(sceneItem.gameObject);
 
         _fsm.SetState<IdleDragState>();
@@ -68,7 +74,8 @@ public class StartDragState : BaseState
     private void SetupDragContext(ItemInstance itemInstance, Vector3 position, Inventory sourceInventory,
         Vector2Int clickedCell, Vector2Int itemStartCell, EquipmentSlot equipmentSlot = null)
     {
-        _fsm.Context.CurrentDragItem = _factory.SpawnDragItem(itemInstance);
+        Vector2 cellSize = new Vector2(75, 75);
+        _fsm.Context.CurrentDragItem = _factory.SpawnDragItem(itemInstance, cellSize, sourceInventory);
         _fsm.Context.CurrentDragItem.transform.parent = _fsm.Context.CurrentDragItem.transform.root;
         _fsm.Context.CurrentDragItem.transform.position = position;
         _fsm.Context.SourceInventory = sourceInventory;

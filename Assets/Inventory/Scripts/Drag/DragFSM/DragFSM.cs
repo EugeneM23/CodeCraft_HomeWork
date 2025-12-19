@@ -2,26 +2,30 @@ using System;
 using System.Collections.Generic;
 using Inventories;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
-public class DragFSM
+public class DragFSM : MonoBehaviour
 {
-    private readonly InventoryFactory _factory;
-    private readonly RaycastDetector _raycastDetector;
-    private readonly Inventory _originalInventory;
+    [SerializeField] private InventoryFactory _factory;
+    [SerializeField] private GraphicRaycaster _raycaster;
 
     private Dictionary<Type, IState> _states;
     private IState _currentState;
-    public Inventory OriginInventory => _originalInventory;
+    private RaycastDetector _raycastDetector;
 
-    public DragFSM(RaycastDetector raycastDetector, Inventory originalInventory, InventoryFactory factory)
-    {
-        _raycastDetector = raycastDetector;
-        _originalInventory = originalInventory;
-        _factory = factory;
-    }
+    public Inventory MainInventory { get; private set; }
 
     public DragContext Context { get; private set; }
-    public InventoryFactory ItemFactory => _factory;
+
+    private void OnEnable()
+    {
+        _raycastDetector = new RaycastDetector(_raycaster, EventSystem.current);
+    }
+
+    public void SetMainInventory(Inventory mainInventory) => MainInventory = mainInventory;
+
+    private void Start() => Initialize();
 
     public void Initialize()
     {
@@ -38,7 +42,7 @@ public class DragFSM
         SetState<IdleDragState>();
     }
 
-    public void Tick()
+    public void Update()
     {
         if (_currentState is ITickable tickable)
             tickable.Tick();

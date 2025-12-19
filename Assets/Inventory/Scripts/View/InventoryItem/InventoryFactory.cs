@@ -2,34 +2,28 @@ using System.Collections.Generic;
 using Inventories;
 using UnityEngine;
 
-public class InventoryFactory
+public class InventoryFactory : MonoBehaviour
 {
-    private readonly Dictionary<string, SceneItem> _itemCatalog = new();
-    private readonly PrefabPool _prefabPool;
-    private readonly DragItem _dragItemPrefab;
-    private readonly Vector2 _cellSize;
-    private readonly Inventory _inventory;
-    private readonly Transform _parent;
+    private readonly Dictionary<string, SceneItem> _items = new();
 
-    public InventoryFactory(PrefabPool prefabPool, DragItem dragItemPrefab, Vector2 cellSize, Inventory inventory,
-        Transform parent)
+    [SerializeField] private DragItem _dragItemPrefab;
+    [SerializeField] private InventoryItem _inventoryItemPrefab;
+    [SerializeField] private SceneItem[] _itemCatalog;
+    [SerializeField] private Canvas _canvas;
+
+    private PrefabPool _prefabPool;
+
+    private void Start()
     {
-        _prefabPool = prefabPool;
-        _dragItemPrefab = dragItemPrefab;
-        _cellSize = cellSize;
-        _inventory = inventory;
-        _parent = parent;
+        foreach (SceneItem item in _itemCatalog)
+            _items[item.ItemData.Name] = item;
     }
 
-    public void Initialize(List<SceneItem> items)
-    {
-        foreach (SceneItem item in items)
-            _itemCatalog[item.ItemData.Name] = item;
-    }
+    private void OnEnable() => _prefabPool = new PrefabPool();
 
     public void SpawnSceneItem(ItemData itemData, int quantity, Vector3 position)
     {
-        if (!_itemCatalog.TryGetValue(itemData.Name, out SceneItem prefab))
+        if (!_items.TryGetValue(itemData.Name, out SceneItem prefab))
         {
             Debug.LogWarning($"Item prefab not found: {itemData.Name}");
             return;
@@ -45,11 +39,12 @@ public class InventoryFactory
     public void DeSpawn(GameObject sceneItemGameObject) =>
         _prefabPool.DeSpawn(sceneItemGameObject);
 
-    public DragItem SpawnDragItem(ItemInstance itemInstance)
+    public DragItem SpawnDragItem(ItemInstance itemInstance, Vector2 cellSize, Inventory inventory)
     {
-        DragItem item = _prefabPool.Spawn<DragItem>(_dragItemPrefab.gameObject, _parent.GetComponent<RectTransform>());
+        Debug.Log("Spawn drag item");
+        DragItem item = _prefabPool.Spawn<DragItem>(_dragItemPrefab.gameObject, _canvas.GetComponent<RectTransform>());
         item.transform.SetAsLastSibling();
-        item.Construct(itemInstance, _cellSize, _inventory);
+        item.Construct(itemInstance, cellSize, inventory);
         return item;
     }
 

@@ -9,11 +9,6 @@ namespace Game.Scripts.UI.GameScreen
         [SerializeField] private GameScreenView _view;
         private InventoryPresenter _presenter;
 
-        private void Start()
-        {
-            _presenter = _view.Initialize();
-        }
-
         private void OnEnable() => _view.OnInventoryButtonClicked += OpenInventory;
 
         private void OnDisable() => _view.OnInventoryButtonClicked -= OpenInventory;

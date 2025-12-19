@@ -88,7 +88,7 @@ public class EndDragState : BaseState
         if (_fsm.TryGetSceneRaycastHit(out RaycastHit hit))
         {
             ItemInstance draggedItem = _fsm.Context.CurrentDragItem.ItemInstance;
-            _fsm.ItemFactory.SpawnSceneItem(draggedItem.itemData, draggedItem.StackQuantity, hit.point);
+            _factory.SpawnSceneItem(draggedItem.itemData, draggedItem.StackQuantity, hit.point);
             FinishDrag();
         }
         else

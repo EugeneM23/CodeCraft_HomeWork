@@ -8,11 +8,13 @@ namespace Game.Scripts.UI.Chest
     {
         [SerializeField] private InventoryInstaller _inventoryPrefab;
         [SerializeField] private Canvas _canvas;
+        [SerializeField] private DragFSM _dragFSM;
+        [SerializeField] private InventoryFactory _inventoryFactory;
 
         public void OnPointerClick(PointerEventData eventData)
         {
-            InventoryInstaller installer = Instantiate(_inventoryPrefab, _canvas.transform);
-            installer.Initialize(null);
+            InventoryInstaller inventory = Instantiate(_inventoryPrefab, _canvas.transform);
+            inventory.Initialize(_inventoryFactory, _dragFSM);
         }
     }
 }

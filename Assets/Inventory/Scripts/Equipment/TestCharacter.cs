@@ -1,6 +1,5 @@
 using Inventories;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 public class TestCharacter : MonoBehaviour, IItemConsumer
 {

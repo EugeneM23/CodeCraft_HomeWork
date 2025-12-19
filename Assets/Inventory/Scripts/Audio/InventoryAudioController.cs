@@ -20,10 +20,10 @@ namespace Inventories
 
         private void OnDisable()
         {
-            _backpack.Inventory.OnAdded -= OnItemAddedToInventory;
-            _backpack.Inventory.OnRemoved -= OnItemRemovedInventory;
-            _equipmentSlot.OnItemAdded -= OnItemAddedToSlot;
-            _equipmentSlot.OnItemRemoved -= OnItemRemovedFromToSlot;
+            // _backpack.Inventory.OnAdded -= OnItemAddedToInventory;
+            // _backpack.Inventory.OnRemoved -= OnItemRemovedInventory;
+            // _equipmentSlot.OnItemAdded -= OnItemAddedToSlot;
+            // _equipmentSlot.OnItemRemoved -= OnItemRemovedFromToSlot;
         }
 
         private void OnItemRemovedFromToSlot() => _audioPlayer.PlaySlotRemove();
