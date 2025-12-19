@@ -32,11 +32,12 @@ namespace Inventories
 
         private void UpdateCurrentInventory()
         {
-            if (!_fsm.TryGetComponentUnderMouse(out InventoryInstaller backPack)) return;
-            if (_fsm.Context.CurrentInventory == backPack.Inventory) return;
+            if (!_fsm.TryGetComponentUnderMouse(out InventoryInstaller installer)) return;
+            if (_fsm.Context.CurrentInventory == installer.Inventory) return;
 
+            _fsm.Context.CurrentInventory = installer.Inventory;
             _fsm.Context.CurrentInventory?.UnHighlight();
-            _fsm.Context.CurrentInventory = backPack.Inventory;
+            _fsm.Context.CurrentInventory = installer.Inventory;
         }
     }
 }

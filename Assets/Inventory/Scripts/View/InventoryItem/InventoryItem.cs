@@ -1,3 +1,4 @@
+using System;
 using Inventories;
 using TMPro;
 using UnityEngine;
@@ -15,6 +16,12 @@ namespace Inventories
         [SerializeField] private DoubleClickHandler _doubleClickHandler;
 
         public ItemInstance ItemInstance { get; private set; }
+
+        private void OnEnable()
+        {
+            _itemImage.rectTransform.localScale = Vector3.one;
+            SetBackgroundAlpha(0f);
+        }
 
         private void OnDestroy()
         {
@@ -55,7 +62,7 @@ namespace Inventories
 
         public void OnPointerEnter(PointerEventData eventData)
         {
-            _itemImage.transform.localScale *= 1.2f;
+            _itemImage.transform.localScale *= 0.8f;
 
             SetBackgroundAlpha(1f);
         }

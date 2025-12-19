@@ -24,6 +24,7 @@ namespace Inventories
         private DragItem _dragItemPrefab;
 
         [SerializeField] private List<SceneItem> _sceneItemCatalog;
+        [SerializeField] private bool _canDrag = true;
 
         private InventoryPresenter _presenter;
         private RaycastDetector _raycastDetector;
@@ -35,7 +36,7 @@ namespace Inventories
 
         public Inventory Inventory { get; private set; }
 
-        public void Initialize(TestCharacter testCharacter)
+        public void Initialize(IItemConsumer consumer)
         {
             PrefabPool pool = new();
 
@@ -49,11 +50,12 @@ namespace Inventories
             _presenter.Show();
 
             //Consumer
-            Inventory.Owner = testCharacter;
-            testCharacter.Inventory = Inventory;
-            testCharacter.Equipment = _equipment;
-
-            //Pool
+            if (consumer != null)
+            {
+                Inventory.Owner = consumer;
+                consumer.Inventory = Inventory;
+                consumer.Equipment = _equipment;
+            }
 
             //Raycast
             GraphicRaycaster raycaster = FindObjectOfType<GraphicRaycaster>();
@@ -64,11 +66,14 @@ namespace Inventories
             //Drag
 
             _factory.Initialize(_sceneItemCatalog);
-            _dragFsm = new DragFSM(_raycastDetector, Inventory, _factory);
-            _dragFsm.Initialize();
 
-            //HighLight
-            _inventoryHighlight = new InventoryHighlight(_dragFsm, _view);
+            if (_canDrag)
+            {
+                _dragFsm = new DragFSM(_raycastDetector, Inventory, _factory);
+                _dragFsm.Initialize();
+                _inventoryHighlight = new InventoryHighlight(_dragFsm, _view);
+            }
+
 
             //Add init items
             foreach (SceneItem item in _initializeItems)

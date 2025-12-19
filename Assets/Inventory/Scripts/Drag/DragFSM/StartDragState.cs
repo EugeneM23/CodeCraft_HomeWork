@@ -68,7 +68,7 @@ public class StartDragState : BaseState
     private void SetupDragContext(ItemInstance itemInstance, Vector3 position, Inventory sourceInventory,
         Vector2Int clickedCell, Vector2Int itemStartCell, EquipmentSlot equipmentSlot = null)
     {
-        _fsm.Context.CurrentDragItem = _factory.CreateDragItem(itemInstance);
+        _fsm.Context.CurrentDragItem = _factory.SpawnDragItem(itemInstance);
         _fsm.Context.CurrentDragItem.transform.parent = _fsm.Context.CurrentDragItem.transform.root;
         _fsm.Context.CurrentDragItem.transform.position = position;
         _fsm.Context.SourceInventory = sourceInventory;

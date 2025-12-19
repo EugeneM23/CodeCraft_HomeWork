@@ -7,7 +7,7 @@ namespace Inventories
     {
         private readonly Dictionary<string, Queue<GameObject>> _pools = new();
 
-        public T Spawn<T>(GameObject prefab, RectTransform parent = null) where T : MonoBehaviour
+        public T Spawn<T>(GameObject prefab, RectTransform parent) where T : MonoBehaviour
         {
             string key = prefab.name;
 
@@ -22,22 +22,12 @@ namespace Inventories
                 return obj.GetComponent<T>();
             }
 
-            if (parent != null)
-            {
-                return CreateObject(prefab, parent).GetComponent<T>();
-            }
-
-            return CreateObject(prefab).GetComponent<T>();
+            return CreateObject(prefab, parent).GetComponent<T>();
         }
 
-        private GameObject CreateObject(GameObject prefab, RectTransform parent = null)
+        private GameObject CreateObject(GameObject prefab, RectTransform parent)
         {
-            GameObject go;
-            if (parent != null)
-                go = Object.Instantiate(prefab, parent);
-            else
-                go = Object.Instantiate(prefab);
-
+            GameObject go = Object.Instantiate(prefab, parent);
             go.gameObject.name = prefab.name;
 
             return go;

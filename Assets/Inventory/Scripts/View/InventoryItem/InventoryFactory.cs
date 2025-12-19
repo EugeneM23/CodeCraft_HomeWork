@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Inventories;
 using UnityEngine;
@@ -28,7 +27,7 @@ public class InventoryFactory
             _itemCatalog[item.ItemData.Name] = item;
     }
 
-    public void SpawnItem(ItemData itemData, int quantity, Vector3 position)
+    public void SpawnSceneItem(ItemData itemData, int quantity, Vector3 position)
     {
         if (!_itemCatalog.TryGetValue(itemData.Name, out SceneItem prefab))
         {
@@ -36,7 +35,7 @@ public class InventoryFactory
             return;
         }
 
-        SceneItem spawnedItem = _prefabPool.Spawn<SceneItem>(prefab.gameObject);
+        SceneItem spawnedItem = _prefabPool.Spawn<SceneItem>(prefab.gameObject, null);
         spawnedItem.transform.position = position;
         spawnedItem.transform.rotation = Quaternion.identity;
         spawnedItem.ItemData = itemData;
@@ -46,11 +45,11 @@ public class InventoryFactory
     public void DeSpawn(GameObject sceneItemGameObject) =>
         _prefabPool.DeSpawn(sceneItemGameObject);
 
-    public DragItem CreateDragItem(ItemInstance itemInstance)
+    public DragItem SpawnDragItem(ItemInstance itemInstance)
     {
-        DragItem item = _prefabPool.Spawn<DragItem>(_dragItemPrefab.gameObject);
+        DragItem item = _prefabPool.Spawn<DragItem>(_dragItemPrefab.gameObject, _parent.GetComponent<RectTransform>());
+        item.transform.SetAsLastSibling();
         item.Construct(itemInstance, _cellSize, _inventory);
-        item.transform.SetParent(_parent);
         return item;
     }
 

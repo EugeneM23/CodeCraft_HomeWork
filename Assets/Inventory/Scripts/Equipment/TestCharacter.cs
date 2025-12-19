@@ -6,8 +6,8 @@ public class TestCharacter : MonoBehaviour, IItemConsumer
 {
     public int Health = 50;
 
-    public Equipment Equipment;
     public Inventory Inventory { get; set; }
+    public Equipment Equipment { get; set; }
 
     public bool EquipWeapon(ItemInstance itemInstance)
     {
