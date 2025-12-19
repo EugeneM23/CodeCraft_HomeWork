@@ -12,6 +12,7 @@ namespace Inventories
         [SerializeField] private Image _background;
         [SerializeField] private Image _itemImage;
         [SerializeField] private RectTransform _rectTransform;
+        [SerializeField] private GameObject _countBackGround;
         [SerializeField] private TMP_Text _count;
         [SerializeField] private DoubleClickHandler _doubleClickHandler;
 
@@ -44,6 +45,7 @@ namespace Inventories
 
             bool showCount = item.CanStack;
             _count.gameObject.SetActive(showCount);
+            _countBackGround.SetActive(showCount);
 
             if (showCount)
                 _count.text = item.StackQuantity.ToString();
