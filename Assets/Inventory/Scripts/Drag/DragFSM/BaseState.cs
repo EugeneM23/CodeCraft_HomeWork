@@ -1,12 +1,14 @@
-public abstract class BaseState : IState
+public class BaseState : IState
 {
     protected readonly DragFSM _fsm;
 
-    protected BaseState(DragFSM fsm)
+    protected BaseState(DragFSM fsm) => _fsm = fsm;
+
+    public virtual void Enter()
     {
-        _fsm = fsm;
     }
 
-    public virtual void Enter() { }
-    public virtual void Exit() { }
+    public virtual void Exit()
+    {
+    }
 }

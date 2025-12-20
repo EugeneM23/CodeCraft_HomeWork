@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Game.Scripts.UI.Equipment;
 using Inventories;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -15,7 +16,6 @@ public class DragFSM : MonoBehaviour
     private RaycastDetector _raycastDetector;
 
     public Inventory MainInventory { get; private set; }
-
     public DragContext Context { get; private set; }
 
     private void OnEnable()
@@ -27,14 +27,16 @@ public class DragFSM : MonoBehaviour
 
     private void Start() => Initialize();
 
-    public void Initialize()
+    private void Initialize()
     {
         Context = new DragContext();
 
         _states = new Dictionary<Type, IState>
         {
             [typeof(IdleDragState)] = new IdleDragState(this),
-            [typeof(StartDragState)] = new StartDragState(this, _factory),
+            [typeof(StartDragFromInventoryState)] = new StartDragFromInventoryState(this),
+            [typeof(StartDragFromEquipmentState)] = new StartDragFromEquipmentState(this),
+            [typeof(PickupFromSceneState)] = new PickupFromSceneState(this, _factory),
             [typeof(UpdateDragState)] = new UpdateDragState(this),
             [typeof(EndDragState)] = new EndDragState(this, _factory),
         };
@@ -46,8 +48,6 @@ public class DragFSM : MonoBehaviour
     {
         if (_currentState is ITickable tickable)
             tickable.Tick();
-
-        _raycastDetector.SetIgnoredItem(Context.CurrentDragItem);
     }
 
     public void SetState<T>() where T : IState
@@ -65,5 +65,42 @@ public class DragFSM : MonoBehaviour
     public bool TryGetSceneRaycastHit(out RaycastHit raycastHit)
     {
         return _raycastDetector.TryGetSceneRaycastHit(out raycastHit);
+    }
+
+    public void SetupDragContext(ItemInstance itemInstance, Vector3 position, Inventory sourceInventory,
+        Vector2Int clickedCell, Vector2Int itemStartCell, EquipmentSlot equipmentSlot = null)
+    {
+        Vector2 cellSize = new Vector2(75, 75);
+        Context.CurrentDragItem = _factory.SpawnDragItem(itemInstance, cellSize, sourceInventory);
+        Context.CurrentDragItem.transform.parent = Context.CurrentDragItem.transform.root;
+        Context.CurrentDragItem.transform.position = position;
+        Context.SourceInventory = sourceInventory;
+        Context.StartDragCell = itemStartCell;
+        Context.DragOffset = position - Input.mousePosition;
+        Context.GridOffset = new Vector2Int(clickedCell.x - itemStartCell.x, clickedCell.y - itemStartCell.y);
+        Context.EquipmentSlot = equipmentSlot;
+    }
+
+    public Vector2Int CalculateClickedCellInSlot(RectTransform slotRect, Vector2Int itemSize)
+    {
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            slotRect,
+            Input.mousePosition,
+            null,
+            out Vector2 localPoint
+        );
+
+        Vector2 rectSize = slotRect.rect.size;
+        Vector2 pivot = slotRect.pivot;
+
+        Vector2 normalizedPoint = new Vector2(
+            (localPoint.x / rectSize.x) + pivot.x,
+            (localPoint.y / rectSize.y) + pivot.y
+        );
+
+        int cellX = Mathf.Clamp(Mathf.FloorToInt(normalizedPoint.x * itemSize.x), 0, itemSize.x - 1);
+        int cellY = Mathf.Clamp(Mathf.FloorToInt((1f - normalizedPoint.y) * itemSize.y), 0, itemSize.y - 1);
+
+        return new Vector2Int(cellX, cellY);
     }
 }

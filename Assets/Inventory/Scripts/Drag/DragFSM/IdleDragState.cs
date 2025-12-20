@@ -1,43 +1,68 @@
+using Game.Scripts.UI.Equipment;
 using UnityEngine;
 
 public class IdleDragState : BaseState, ITickable
 {
     private Vector3 _mouseDownPosition;
     private bool _isMouseDown;
-    private readonly float _dragThreshold = 5f;
+    private const float DragThreshold = 5f;
 
-    public IdleDragState(DragFSM fsm) : base(fsm)
-    {
-    }
+    public IdleDragState(DragFSM fsm) : base(fsm) { }
 
     public void Tick()
     {
-        if (Input.GetMouseButtonDown(0))
+        HandleMouseDown();
+        HandleMouseDrag();
+        HandleMouseUp();
+    }
+
+    private void HandleMouseDown()
+    {
+        if (!Input.GetMouseButtonDown(0)) return;
+
+        if (TryPickupFromScene())
+            return;
+
+        _isMouseDown = true;
+        _mouseDownPosition = Input.mousePosition;
+    }
+
+    private void HandleMouseDrag()
+    {
+        if (!_isMouseDown || !Input.GetMouseButton(0)) return;
+
+        if (Vector3.Distance(_mouseDownPosition, Input.mousePosition) > DragThreshold)
         {
-            if (_fsm.TryGetSceneRaycastHit(out RaycastHit hit) && hit.collider.GetComponent<SceneItem>())
-            {
-                _fsm.SetState<StartDragState>();
-                return;
-            }
-
-            _isMouseDown = true;
-            _mouseDownPosition = Input.mousePosition;
-        }
-
-        if (_isMouseDown && Input.GetMouseButton(0))
-        {
-            float dragDistance = Vector3.Distance(_mouseDownPosition, Input.mousePosition);
-
-            if (dragDistance > _dragThreshold)
-            {
-                _fsm.SetState<StartDragState>();
-                _isMouseDown = false;
-            }
-        }
-
-        if (Input.GetMouseButtonUp(0))
-        {
+            StartDragFromUI();
             _isMouseDown = false;
+        }
+    }
+
+    private void HandleMouseUp()
+    {
+        if (Input.GetMouseButtonUp(0))
+            _isMouseDown = false;
+    }
+
+    private bool TryPickupFromScene()
+    {
+        if (_fsm.TryGetSceneRaycastHit(out RaycastHit hit) && hit.collider.GetComponent<SceneItem>())
+        {
+            _fsm.SetState<PickupFromSceneState>();
+            return true;
+        }
+        return false;
+    }
+
+    private void StartDragFromUI()
+    {
+        if (_fsm.TryGetComponentUnderMouse(out EquipmentSlot slot) && slot.ItemInstance != null)
+        {
+            _fsm.SetState<StartDragFromEquipmentState>();
+        }
+        else if (_fsm.TryGetComponentUnderMouse(out CellView cell) && cell.InventoryItem != null)
+        {
+            _fsm.SetState<StartDragFromInventoryState>();
         }
     }
 }
