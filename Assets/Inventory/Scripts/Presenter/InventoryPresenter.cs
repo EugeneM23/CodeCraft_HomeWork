@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Inventories
@@ -7,6 +8,8 @@ namespace Inventories
         private readonly InventoryView _view;
         private readonly Inventory _inventory;
         private Vector2Int[] _highlightedCells;
+
+        private Inventory _mainInventory;
 
         public bool IsOpen { get; private set; }
 
@@ -18,15 +21,27 @@ namespace Inventories
 
         public void Show()
         {
+            IsOpen = true;
             _highlightedCells = new Vector2Int[4];
             _view.gameObject.SetActive(true);
-            IsOpen = true;
             _inventory.OnAdded += OnItemAdded;
             _inventory.OnRemoved += OnItemRemoved;
             _inventory.OnHighlight += Highlight;
             _inventory.OnUnHighlight += UnHighlight;
             _inventory.OnCleared += OnCleared;
             _view.OnReorganize += Reorganize;
+            _view.OnCollectAll += OnCollectAll;
+        }
+
+        private void OnCollectAll()
+        {
+            var itemsToCollect = new List<ItemInstance>(_inventory);
+
+            foreach (ItemInstance item in itemsToCollect)
+            {
+                if (_mainInventory.AddItem(item.itemData, item.StackQuantity)) 
+                    _inventory.RemoveItem(item.ID);
+            }
         }
 
         public void Hide()
@@ -38,8 +53,8 @@ namespace Inventories
             _inventory.OnHighlight -= Highlight;
             _inventory.OnUnHighlight -= UnHighlight;
             _inventory.OnCleared -= OnCleared;
-
             _view.OnReorganize -= Reorganize;
+            _view.OnCollectAll -= OnCollectAll;
         }
 
         private void OnCleared()
@@ -101,6 +116,11 @@ namespace Inventories
         private void Reorganize()
         {
             _inventory.Reorganize();
+        }
+
+        public void SetMainInventory(Inventory inventory)
+        {
+            _mainInventory = inventory;
         }
     }
 }

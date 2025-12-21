@@ -10,7 +10,15 @@ public class TestCharacter : MonoBehaviour, IItemConsumer
 
     public bool EquipWeapon(ItemInstance itemInstance)
     {
-        if (Equipment.EquipWeapon(itemInstance))
+        if (Equipment.EquipWeapon(itemInstance, Inventory))
+            return true;
+
+        return false;
+    }
+
+    public bool EquipArmor(ItemInstance itemInstance)
+    {
+        if (Equipment.EquipArmor(itemInstance, Inventory))
             return true;
 
         return false;

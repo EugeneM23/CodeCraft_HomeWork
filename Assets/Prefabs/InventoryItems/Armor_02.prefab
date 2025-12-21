@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 1084893448804538809}
   - component: {fileID: 7070894261933836396}
   m_Layer: 0
-  m_Name: Armor
+  m_Name: Armor_02
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -125,7 +125,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ItemData:
     <Name>k__BackingField: Armor
-    <Icon>k__BackingField: {fileID: -4938267214098984600, guid: 538d30adf67dd427f9b736b0d1828310, type: 3}
+    <Icon>k__BackingField: {fileID: -6533400362301679155, guid: 8ab79d62665074332affe70b04e0f94e, type: 3}
     <Size>k__BackingField: {x: 2, y: 3}
     <ItemType>k__BackingField: 1
     <CanStack>k__BackingField: 0

@@ -1,37 +1,40 @@
-using Game.Scripts.UI.Equipment;
 using Inventories;
 using UnityEngine;
 
-namespace Inventories
+public class InventoryAudioController
 {
-    public class InventoryAudioController : MonoBehaviour
+    private readonly Inventory _inventory;
+    private readonly AudioPlayer _audioPlayer;
+
+    public InventoryAudioController(Inventory inventory)
     {
-        [SerializeField] private InventoryInstaller _backpack;
-        [SerializeField] private AudioPlayer _audioPlayer;
-        [SerializeField] private EquipmentSlot _equipmentSlot;
+        _inventory = inventory;
+        _audioPlayer = AudioPlayer.Instance;
 
-        private void OnEnable()
-        {
-            // _backpack.Inventory.OnAdded += OnItemAddedToInventory;
-            // _backpack.Inventory.OnRemoved += OnItemRemovedInventory;
-            // _equipmentSlot.OnItemAdded += OnItemAddedToSlot;
-            // _equipmentSlot.OnItemRemoved += OnItemRemovedFromToSlot;
-        }
-
-        private void OnDisable()
-        {
-            // _backpack.Inventory.OnAdded -= OnItemAddedToInventory;
-            // _backpack.Inventory.OnRemoved -= OnItemRemovedInventory;
-            // _equipmentSlot.OnItemAdded -= OnItemAddedToSlot;
-            // _equipmentSlot.OnItemRemoved -= OnItemRemovedFromToSlot;
-        }
-
-        private void OnItemRemovedFromToSlot() => _audioPlayer.PlaySlotRemove();
-
-        private void OnItemAddedToSlot() => _audioPlayer.PlaySlotAdd();
-
-        private void OnItemRemovedInventory(ItemInstance _) => _audioPlayer.PlayInventoryRemove();
-
-        private void OnItemAddedToInventory(ItemInstance _) => _audioPlayer.PlayInventoryAdd();
+        OnEnable();
     }
+
+    private void OnEnable()
+    {
+        _inventory.OnAdded += OnItemAddedToInventory;
+        _inventory.OnRemoved += OnItemRemovedInventory;
+        _inventory.OnStackIncreased += OnStackIncreased;
+        _inventory.OnStackDecreased += OnStackDecreased;
+    }
+
+    private void OnDisable()
+    {
+        _inventory.OnAdded -= OnItemAddedToInventory;
+        _inventory.OnRemoved -= OnItemRemovedInventory;
+        _inventory.OnStackIncreased -= OnStackIncreased;
+        _inventory.OnStackDecreased -= OnStackDecreased;
+    }
+
+    private void OnStackDecreased(ItemInstance _) => _audioPlayer.PlayStackDecreased();
+
+    private void OnStackIncreased(ItemInstance _) => _audioPlayer.PlayStackIncreased();
+
+    private void OnItemRemovedInventory(ItemInstance _) => _audioPlayer.PlayInventoryRemove();
+
+    private void OnItemAddedToInventory(ItemInstance _) => _audioPlayer.PlayInventoryAdd();
 }

@@ -295,6 +295,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _testCharacter: {fileID: 66427001}
   _inventoryPrefab: {fileID: 5830915091178595739, guid: 44cedbd04ce82435a9667ed410b601f2, type: 3}
+  _equipmentPrefab: {fileID: -8166922283319199302, guid: c974f0e9092bc4096afee2db7f38a24c, type: 3}
   _factory: {fileID: 66427000}
   _dragFSM: {fileID: 66426999}
   _canvas: {fileID: 2068645393}
@@ -678,6 +679,7 @@ MonoBehaviour:
   _canvas: {fileID: 2068645393}
   _dragFSM: {fileID: 66426999}
   _inventoryFactory: {fileID: 66427000}
+  _testCharacter: {fileID: 66427001}
 --- !u!65 &1059128929
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1414,7 +1416,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3556696973968509234, guid: ec522a5a4d72540569bf5782dad53c2e, type: 3}
       propertyPath: m_Name
-      value: AR_01
+      value: "\u044B\u0444\u0432"
       objectReference: {fileID: 0}
     - target: {fileID: 7960245070435069082, guid: ec522a5a4d72540569bf5782dad53c2e, type: 3}
       propertyPath: m_LocalPosition.x

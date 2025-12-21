@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Inventories
@@ -8,8 +9,8 @@ namespace Inventories
         private readonly InventoryView _inventoryView;
 
         private Vector2Int _currentSelectedCell;
-        private Vector2Int[] _highlightedCells = new Vector2Int[0];
-        private Inventory _inventory;
+        private Vector2Int[] _highlightedCells = Array.Empty<Vector2Int>();
+        private readonly Inventory _inventory;
 
         public InventoryHighlight(DragFSM fsm, InventoryView inventoryView, Inventory inventory)
         {
@@ -20,8 +21,7 @@ namespace Inventories
 
         public void Tick()
         {
-            if (!_fsm.Context.IsDragging || _fsm.Context.CurrentDragItem == null ||
-                _fsm.Context.CurrentInventory != _inventory)
+            if (!_fsm.Context.IsDragging || _fsm.Context.CurrentDragItem == null || _fsm.Context.CurrentInventory != _inventory)
             {
                 ClearHighlight();
                 return;

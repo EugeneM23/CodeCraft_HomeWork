@@ -9,8 +9,6 @@ namespace Inventories
         [Header("View Settings")] [SerializeField]
         private InventoryView _view;
 
-        [SerializeField] private Equipment _equipment;
-
         [Header("Inventory Settings")] [SerializeField]
         private int _columns = 4;
 
@@ -19,10 +17,11 @@ namespace Inventories
 
         private InventoryPresenter _presenter;
         private InventoryHighlight _inventoryHighlight;
+        private InventoryAudioController _audioController;
 
         public Inventory Inventory { get; private set; }
 
-        public void Initialize(InventoryFactory factory, DragFSM dragFsm, IItemConsumer consumer = null)
+        public void Initialize(InventoryFactory factory, DragFSM dragFsm, IItemConsumer consumer)
         {
             // Inventory
             Inventory = new Inventory(_columns, _rows);
@@ -30,21 +29,20 @@ namespace Inventories
             _view.Initialize(Inventory.Width, Inventory.Height, Inventory, factory);
             _presenter.UpdateView();
             _presenter.Show();
+            _presenter.SetMainInventory(consumer.Inventory);
 
             // Consumer
-            if (consumer != null)
-            {
-                Inventory.Owner = consumer;
-                consumer.Inventory = Inventory;
-                consumer.Equipment = _equipment;
-            }
+            Inventory.Owner = consumer;
 
-            // Highlight (опционально, если нужно)
+            // Highlight
             _inventoryHighlight = new InventoryHighlight(dragFsm, _view, Inventory);
 
             // Add init items
             foreach (SceneItem item in _initializeItems)
                 Inventory.AddItem(item.ItemData, item.Quantity);
+
+            // Audio 
+            _audioController = new InventoryAudioController(Inventory);
         }
 
         private void Update()

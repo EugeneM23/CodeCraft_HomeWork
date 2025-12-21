@@ -8,12 +8,14 @@ namespace Inventories
     public class InventoryView : MonoBehaviour
     {
         public event Action OnReorganize;
+        public event Action OnCollectAll;
 
         [SerializeField] private CellView _cellPrefab;
         [SerializeField] private InventoryItem _itemContainerPrefab;
         [SerializeField] private RectTransform _gridContainer;
         [SerializeField] private Vector2 _cellSize = new(100f, 100f);
         [SerializeField] private Button _reorganizeButton;
+        [SerializeField] private Button _collectAllButton;
 
         private readonly Dictionary<string, InventoryItem> _inventoryItems = new();
         private CellView[,] _cells;
@@ -26,12 +28,16 @@ namespace Inventories
         private void OnEnable()
         {
             _reorganizeButton.onClick.AddListener(OnReorganizeClick);
+            _collectAllButton?.onClick.AddListener(OnCollectAllClick);
         }
 
         private void OnDisable()
         {
             _reorganizeButton.onClick.RemoveListener(OnReorganizeClick);
+            _collectAllButton?.onClick.RemoveListener(OnCollectAllClick);
         }
+
+        private void OnCollectAllClick() => OnCollectAll?.Invoke();
 
         private void OnReorganizeClick() => OnReorganize?.Invoke();
 
