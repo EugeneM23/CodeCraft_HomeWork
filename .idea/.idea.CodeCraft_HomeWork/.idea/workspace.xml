@@ -10,10 +10,14 @@
       <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/UI/Chest/Chest.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/UI/Chest/Chest.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/UI/GameScreen/GameScreenPresenter.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/UI/GameScreen/GameScreenPresenter.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/UI/GameScreen/GameScreenView.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/UI/GameScreen/GameScreenView.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Inventory/Scripts/Equipment/TestCharacter.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Inventory/Scripts/Equipment/TestCharacter.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Inventory/Scripts/Equipment/TestCharacter.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Inventory/Scripts/Integration/ItemConsumer.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Inventory/Scripts/Equipment/TestCharacter.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Inventory/Scripts/Integration/ItemConsumer.cs.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Inventory/Scripts/Installer/EquipmentInstaller.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Inventory/Scripts/Installer/EquipmentInstaller.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Inventory/Scripts/Installer/InventoryInstaller.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Inventory/Scripts/Installer/InventoryInstaller.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Inventory/Scripts/Presenter/InventoryPresenter.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Inventory/Scripts/Presenter/InventoryPresenter.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Inventory/Scripts/UseCases/HealPotionUseCase.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Inventory/Scripts/UseCases/HealPotionUseCase.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Inventory/Scripts/UseCases/ItemConsumer/IItemConsumer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Inventory/Scripts/UseCases/ItemConsumer/IItemConsumer.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Inventory/Scripts/View/InventoryItem/InventoryFactory.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Inventory/Scripts/View/InventoryItem/InventoryFactory.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Inventory/Scripts/View/InventoryView.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Inventory/Scripts/View/InventoryView.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Inventory/Inventory.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/Inventory/Inventory.prefab" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Inventory/InventoryChest.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/Inventory/InventoryChest.prefab" afterDir="false" />
@@ -176,7 +180,7 @@
       <workItem from="1764414600115" duration="129323000" />
       <workItem from="1764857459023" duration="49093000" />
       <workItem from="1765483594498" duration="201505000" />
-      <workItem from="1766262089670" duration="8921000" />
+      <workItem from="1766262089670" duration="15240000" />
     </task>
     <task id="LOCAL-00001" summary="Update">
       <option name="closed" value="true" />

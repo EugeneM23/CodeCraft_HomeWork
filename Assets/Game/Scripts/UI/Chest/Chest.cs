@@ -1,22 +1,31 @@
+using Game.Scripts.UI.GameScreen;
 using Inventories;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.Serialization;
 
 namespace Game.Scripts.UI.Chest
 {
     public class Chest : MonoBehaviour, IPointerClickHandler
     {
+        [SerializeField] private GameScreenView _mainScreenView;
         [SerializeField] private InventoryInstaller _inventoryPrefab;
-        [SerializeField] private Canvas _canvas;
-        [SerializeField] private DragFSM _dragFSM;
-        [SerializeField] private InventoryFactory _inventoryFactory;
-        [SerializeField] private TestCharacter _testCharacter;
+        [FormerlySerializedAs("_testCharacter")] [SerializeField] private ItemConsumer itemConsumer;
+
+        private InventoryPresenter _chestInventoryPresenter;
 
         public void OnPointerClick(PointerEventData eventData)
         {
-            InventoryInstaller inventory = Instantiate(_inventoryPrefab, _canvas.transform);
-            inventory.Initialize(_inventoryFactory, _dragFSM);
-            inventory.Presenter.SetMainInventory(_testCharacter.Inventory);
+            if (_chestInventoryPresenter == null)
+                CreateChestInventory();
+
+            Debug.Log(_chestInventoryPresenter == null);
+            _chestInventoryPresenter.Toggle(itemConsumer.Inventory);
+        }
+
+        private void CreateChestInventory()
+        {
+            _chestInventoryPresenter = _mainScreenView.CreateSecondInventory(_inventoryPrefab).Presenter;
         }
     }
 }

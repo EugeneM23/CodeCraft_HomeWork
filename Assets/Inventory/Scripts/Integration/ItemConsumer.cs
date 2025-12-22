@@ -1,11 +1,11 @@
 using Inventories;
 using UnityEngine;
 
-public class TestCharacter : MonoBehaviour, IItemConsumer
+public class ItemConsumer : MonoBehaviour, IItemConsumer
 {
     public int Health = 50;
     public Inventory Inventory { get; private set; }
-    public Equipment Equipment { get; set; }
+    public Equipment Equipment { get; private set; }
 
     public bool EquipWeapon(ItemInstance itemInstance)
     {
@@ -17,10 +17,7 @@ public class TestCharacter : MonoBehaviour, IItemConsumer
 
     public bool EquipArmor(ItemInstance itemInstance)
     {
-        if (Equipment.EquipArmor(itemInstance, Inventory))
-            return true;
-
-        return false;
+        return Equipment != null && Equipment.EquipArmor(itemInstance, Inventory);
     }
 
     public new T GetComponent<T>()
@@ -36,5 +33,10 @@ public class TestCharacter : MonoBehaviour, IItemConsumer
     public void SetInventory(Inventory inventory)
     {
         Inventory = inventory;
+    }
+
+    public void SetEquipment(Equipment equipmentEquipment)
+    {
+        Equipment = equipmentEquipment;
     }
 }

@@ -1,12 +1,13 @@
 using System;
 using Inventories;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Game.Scripts.GameSystem
 {
     public class GameContext : MonoBehaviour
     {
-        [SerializeField] private TestCharacter _testCharacter;
+        [FormerlySerializedAs("_testCharacter")] [SerializeField] private ItemConsumer itemConsumer;
         [SerializeField] private InventoryInstaller _inventoryPrefab;
         [SerializeField] private EquipmentInstaller _equipmentPrefab;
         [SerializeField] private InventoryFactory _factory;

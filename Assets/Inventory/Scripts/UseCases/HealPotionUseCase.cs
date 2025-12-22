@@ -11,7 +11,7 @@ public class HealPotionUseCase : ItemUseCase
         IItemConsumer consumer = inventory.Owner;
         if (consumer == null) return;
 
-        TestCharacter character = consumer.GetComponent<TestCharacter>();
+        ItemConsumer character = consumer.GetComponent<ItemConsumer>();
 
         character.Health += healAmount;
         Debug.Log($"Healed! New health: {character.Health}");

@@ -526,7 +526,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _cellPrefab: {fileID: -8153152781171872631, guid: 9d9acb3550ff64ac18eca0767a708394, type: 3}
-  _itemContainerPrefab: {fileID: 3334073297244301008, guid: 4c15baa75d82b483abb917b275ec412d, type: 3}
+  _itemPrefab: {fileID: 3334073297244301008, guid: 4c15baa75d82b483abb917b275ec412d, type: 3}
   _gridContainer: {fileID: 4748508683505151152}
   _cellSize: {x: 75, y: 75}
   _reorganizeButton: {fileID: 1392917110872869356}
