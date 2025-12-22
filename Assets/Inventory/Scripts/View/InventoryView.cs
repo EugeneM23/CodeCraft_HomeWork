@@ -9,13 +9,16 @@ namespace Inventories
     {
         public event Action OnReorganize;
         public event Action OnCollectAll;
+        public event Action OnClose;
 
         [SerializeField] private CellView _cellPrefab;
         [SerializeField] private InventoryItem _itemContainerPrefab;
         [SerializeField] private RectTransform _gridContainer;
         [SerializeField] private Vector2 _cellSize = new(100f, 100f);
+
         [SerializeField] private Button _reorganizeButton;
         [SerializeField] private Button _collectAllButton;
+        [SerializeField] private Button _closeButton;
 
         private readonly Dictionary<string, InventoryItem> _inventoryItems = new();
         private CellView[,] _cells;
@@ -23,24 +26,7 @@ namespace Inventories
         private InventoryFactory _factory;
 
         public CellView[,] Cells => _cells;
-        public Vector2 CellSize => _cellSize;
-
-        private void OnEnable()
-        {
-            _reorganizeButton.onClick.AddListener(OnReorganizeClick);
-            _collectAllButton?.onClick.AddListener(OnCollectAllClick);
-        }
-
-        private void OnDisable()
-        {
-            _reorganizeButton.onClick.RemoveListener(OnReorganizeClick);
-            _collectAllButton?.onClick.RemoveListener(OnCollectAllClick);
-        }
-
-        private void OnCollectAllClick() => OnCollectAll?.Invoke();
-
-        private void OnReorganizeClick() => OnReorganize?.Invoke();
-
+        
         public void Initialize(int columns, int rows, Inventory inventory, InventoryFactory factory)
         {
             _factory = factory;
@@ -55,6 +41,27 @@ namespace Inventories
                 }
             }
         }
+
+        private void OnEnable()
+        {
+            _reorganizeButton?.onClick.AddListener(OnReorganizeClick);
+            _collectAllButton?.onClick.AddListener(OnCollectAllClick);
+            _closeButton?.onClick.AddListener(OnCloseClick);
+        }
+
+        private void OnDisable()
+        {
+            _reorganizeButton?.onClick.RemoveListener(OnReorganizeClick);
+            _collectAllButton?.onClick.RemoveListener(OnCollectAllClick);
+            _reorganizeButton?.onClick.RemoveListener(OnReorganizeClick);
+
+        }
+
+        private void OnCloseClick() => OnClose?.Invoke();
+
+        private void OnCollectAllClick() => OnCollectAll?.Invoke();
+
+        private void OnReorganizeClick() => OnReorganize?.Invoke();
 
         public void AddItem(ItemInstance instance, Vector2Int[] positions)
         {

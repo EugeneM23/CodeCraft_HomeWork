@@ -10,7 +10,6 @@ namespace Inventories
         private Vector2Int[] _highlightedCells;
 
         private Inventory _mainInventory;
-
         public bool IsOpen { get; private set; }
 
         public InventoryPresenter(InventoryView view, Inventory inventory)
@@ -19,8 +18,9 @@ namespace Inventories
             _inventory = inventory;
         }
 
-        public void Show()
+        public void Show(Inventory mainInventory)
         {
+            _mainInventory = mainInventory;
             IsOpen = true;
             _highlightedCells = new Vector2Int[4];
             _view.gameObject.SetActive(true);
@@ -28,9 +28,17 @@ namespace Inventories
             _inventory.OnRemoved += OnItemRemoved;
             _inventory.OnHighlight += Highlight;
             _inventory.OnUnHighlight += UnHighlight;
-            _inventory.OnCleared += OnCleared;
+            _inventory.OnCleared += UpdateView;
             _view.OnReorganize += Reorganize;
             _view.OnCollectAll += OnCollectAll;
+            _view.OnClose += Onclose;
+
+            UpdateView();
+        }
+
+        private void Onclose()
+        {
+            _view.gameObject.SetActive(false);
         }
 
         private void OnCollectAll()
@@ -39,7 +47,7 @@ namespace Inventories
 
             foreach (ItemInstance item in itemsToCollect)
             {
-                if (_mainInventory.AddItem(item.itemData, item.StackQuantity)) 
+                if (_mainInventory.AddItem(item.itemData, item.StackQuantity))
                     _inventory.RemoveItem(item.ID);
             }
         }
@@ -52,19 +60,16 @@ namespace Inventories
             _inventory.OnRemoved -= OnItemRemoved;
             _inventory.OnHighlight -= Highlight;
             _inventory.OnUnHighlight -= UnHighlight;
-            _inventory.OnCleared -= OnCleared;
+            _inventory.OnCleared -= UpdateView;
             _view.OnReorganize -= Reorganize;
             _view.OnCollectAll -= OnCollectAll;
-        }
-
-        private void OnCleared()
-        {
-            _view.Clear();
-            UpdateView();
+            _view.OnClose -= Onclose;
         }
 
         public void UpdateView()
         {
+            _view.Clear();
+
             foreach (ItemInstance item in _inventory)
             {
                 Vector2Int[] itemGridPositions = _inventory.GetItemGridPositions(item);

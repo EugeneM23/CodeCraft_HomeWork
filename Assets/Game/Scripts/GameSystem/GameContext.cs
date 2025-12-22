@@ -15,7 +15,7 @@ namespace Game.Scripts.GameSystem
 
         private void Awake()
         {
-            InventoryInstaller inventory = Instantiate(_inventoryPrefab, _canvas.GetComponent<RectTransform>());
+            /*InventoryInstaller inventory = Instantiate(_inventoryPrefab, _canvas.GetComponent<RectTransform>());
             inventory.Initialize(_factory, _dragFSM, _testCharacter);
 
             EquipmentInstaller equipment = Instantiate(_equipmentPrefab, inventory.GetComponent<RectTransform>());
@@ -24,7 +24,7 @@ namespace Game.Scripts.GameSystem
             _testCharacter.Inventory = inventory.Inventory;
             _testCharacter.Equipment = equipment.Equipment;
 
-            _dragFSM.SetMainInventory(inventory.Inventory);
+            _dragFSM.SetMainInventory(inventory.Inventory);*/
         }
     }
 }

@@ -10,6 +10,10 @@ namespace Game.Scripts.UI.GameScreen
         public event Action OnInventoryButtonClicked;
 
         [SerializeField] private Button _openInventoryButton;
+        [SerializeField] private InventoryInstaller _inventoryPrefab;
+        [SerializeField] private RectTransform _canvas;
+
+        private InventoryInstaller _inventory;
 
         private void OnEnable()
         {
@@ -24,6 +28,12 @@ namespace Game.Scripts.UI.GameScreen
         private void HandleInventoryButtonClick()
         {
             OnInventoryButtonClicked?.Invoke();
+        }
+
+        public InventoryInstaller CreateInventory()
+        {
+            _inventory = Instantiate(_inventoryPrefab, _canvas);
+            return _inventory;
         }
     }
 }

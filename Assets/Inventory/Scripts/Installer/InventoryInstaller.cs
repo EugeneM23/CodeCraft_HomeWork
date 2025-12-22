@@ -15,31 +15,30 @@ namespace Inventories
         [SerializeField] private int _rows = 7;
         [SerializeField] private SceneItem[] _initializeItems;
 
-        private InventoryPresenter _presenter;
         private InventoryHighlight _inventoryHighlight;
         private InventoryAudioController _audioController;
 
         public Inventory Inventory { get; private set; }
+        public InventoryPresenter Presenter { get; private set; }
 
-        public void Initialize(InventoryFactory factory, DragFSM dragFsm, IItemConsumer consumer)
+        public void Initialize(InventoryFactory factory, DragFSM dragFsm)
         {
             // Inventory
             Inventory = new Inventory(_columns, _rows);
-            _presenter = new InventoryPresenter(_view, Inventory);
-            _view.Initialize(Inventory.Width, Inventory.Height, Inventory, factory);
-            _presenter.UpdateView();
-            _presenter.Show();
-            _presenter.SetMainInventory(consumer.Inventory);
+            
+            foreach (SceneItem item in _initializeItems)
+                Inventory.AddItem(item.ItemData, item.Quantity);
+            
+            Presenter = new InventoryPresenter(_view, Inventory);
 
-            // Consumer
-            Inventory.Owner = consumer;
+            _view.Initialize(Inventory.Width, Inventory.Height, Inventory, factory);
+            Presenter.UpdateView();
 
             // Highlight
             _inventoryHighlight = new InventoryHighlight(dragFsm, _view, Inventory);
 
             // Add init items
-            foreach (SceneItem item in _initializeItems)
-                Inventory.AddItem(item.ItemData, item.Quantity);
+
 
             // Audio 
             _audioController = new InventoryAudioController(Inventory);

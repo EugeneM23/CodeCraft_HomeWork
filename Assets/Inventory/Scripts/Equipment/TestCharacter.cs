@@ -4,8 +4,7 @@ using UnityEngine;
 public class TestCharacter : MonoBehaviour, IItemConsumer
 {
     public int Health = 50;
-
-    public Inventory Inventory { get; set; }
+    public Inventory Inventory { get; private set; }
     public Equipment Equipment { get; set; }
 
     public bool EquipWeapon(ItemInstance itemInstance)
@@ -32,5 +31,10 @@ public class TestCharacter : MonoBehaviour, IItemConsumer
         }
 
         return base.GetComponent<T>();
+    }
+
+    public void SetInventory(Inventory inventory)
+    {
+        Inventory = inventory;
     }
 }

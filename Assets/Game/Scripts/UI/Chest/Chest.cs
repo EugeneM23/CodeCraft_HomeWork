@@ -15,7 +15,8 @@ namespace Game.Scripts.UI.Chest
         public void OnPointerClick(PointerEventData eventData)
         {
             InventoryInstaller inventory = Instantiate(_inventoryPrefab, _canvas.transform);
-            inventory.Initialize(_inventoryFactory, _dragFSM, _testCharacter);
+            inventory.Initialize(_inventoryFactory, _dragFSM);
+            inventory.Presenter.SetMainInventory(_testCharacter.Inventory);
         }
     }
 }
