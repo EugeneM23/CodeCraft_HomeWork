@@ -6,9 +6,16 @@
   <component name="ChangeListManager">
     <list default="true" id="6f0b762c-5415-4a85-b17b-cc44fd47261d" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.CodeCraft_HomeWork/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.CodeCraft_HomeWork/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/UI/GameScreen/GameScreenView.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/UI/GameScreen/GameScreenView.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/UI/Inventory/Cell.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Inventory/Scripts/Drag/DragFSM/EndDragState.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Inventory/Scripts/Drag/DragFSM/EndDragState.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/UI/GameScreen/GameScreenPresenter.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/UI/GameScreen/GameScreenPresenter.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Inventory/Scripts/Audio/EquipmentAudioController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Inventory/Scripts/Audio/EquipmentAudioController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Inventory/Scripts/Drag/DragFSM/StartDragFromEquipmentState.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Inventory/Scripts/Drag/DragFSM/StartDragFromEquipmentState.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Inventory/Scripts/Drag/DragFSM/StartDragState.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Inventory/Scripts/Drag/DragFSM/StartDragState.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Inventory/Scripts/Equipment/Equipment.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Inventory/Scripts/Equipment/Equipment.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Inventory/Scripts/Equipment/EquipmentPresenter.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Inventory/Scripts/Equipment/EquipmentPresenter.cs.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Inventory/Scripts/Equipment/EquipmentSlot.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Inventory/Scripts/Equipment/EquipmentSlot.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Inventory/Scripts/Installer/EquipmentInstaller.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Inventory/Scripts/Installer/EquipmentInstaller.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Inventory/EquipmentWindow.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/Inventory/EquipmentWindow.prefab" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

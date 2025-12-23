@@ -6,47 +6,34 @@ public class Equipment : MonoBehaviour
 {
     [SerializeField] private EquipmentSlot _weaponSlot;
     [SerializeField] private EquipmentSlot _armorSlot;
+    [SerializeField] private EquipmentSlot _itemSlot01;
+    [SerializeField] private EquipmentSlot _itemSlot02;
+    [SerializeField] private EquipmentSlot _itemSlot03;
 
-    public EquipmentSlot ArmorSlot => _armorSlot;
-    public EquipmentSlot WeaponSlot => _weaponSlot;
 
-    public bool EquipWeapon(ItemInstance itemInstance, Inventory inventory)
+    public bool EquipWeapon(ItemInstance item, Inventory inventory)
     {
-        if (!_weaponSlot.IsEmpty)
-        {
-            if (inventory.AddItem(_weaponSlot.ItemInstance.itemData))
-            {
-                _weaponSlot.RemoveItem();
-                _weaponSlot.AddItem(itemInstance);
-                return true;
-            }
-
-            return false;
-        }
-
-        if (_weaponSlot.AddItem(itemInstance))
-            return true;
-
-        return false;
+        return EquipToSlot(item, inventory, _weaponSlot);
     }
 
-    public bool EquipArmor(ItemInstance itemInstance, Inventory inventory)
+    public bool EquipArmor(ItemInstance item, Inventory inventory)
     {
-        if (!_armorSlot.IsEmpty)
-        {
-            if (inventory.AddItem(_armorSlot.ItemInstance.itemData))
-            {
-                _armorSlot.RemoveItem();
-                _armorSlot.AddItem(itemInstance);
-                return true;
-            }
+        return EquipToSlot(item, inventory, _armorSlot);
+    }
 
+    private bool EquipToSlot(ItemInstance item, Inventory inventory, EquipmentSlot slot)
+    {
+        if (item.itemData.ItemType != slot.ItemType)
             return false;
+
+        if (!slot.IsEmpty)
+        {
+            if (!inventory.AddItem(slot.ItemInstance.itemData))
+                return false;
+
+            slot.Remove();
         }
 
-        if (_armorSlot.AddItem(itemInstance))
-            return true;
-
-        return false;
+        return true;
     }
 }

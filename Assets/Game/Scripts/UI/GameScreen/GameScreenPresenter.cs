@@ -13,7 +13,7 @@ namespace Inventories
         [SerializeField] private EquipmentInstaller _equipmentPrefab;
 
         private InventoryPresenter _inventoryPresenter;
-        private EquipmentPresenter _equipmentPresenter;
+        //private EquipmentPresenter _equipmentPresenter;
 
         private void Start()
         {
@@ -23,7 +23,7 @@ namespace Inventories
             EquipmentInstaller equipment = _view.CreateEquipment(_equipmentPrefab);
             equipment.Initialize(itemConsumer);
 
-            _equipmentPresenter = new EquipmentPresenter(equipment.Equipment);
+            //_equipmentPresenter = new EquipmentPresenter(equipment.Equipment);
         }
 
         private void OnEnable()
@@ -39,7 +39,7 @@ namespace Inventories
         private void ToggleInventory()
         {
             _inventoryPresenter.Toggle(itemConsumer.Inventory);
-            _equipmentPresenter.Toggle();
+            //_equipmentPresenter.Toggle();
         }
     }
 }

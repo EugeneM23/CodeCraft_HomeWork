@@ -6,40 +6,33 @@ using UnityEngine.UI;
 
 namespace Game.Scripts.UI.Equipment
 {
-    public class EquipmentSlot : SerializedMonoBehaviour
+    public class EquipmentSlot : MonoBehaviour
     {
-        public event Action OnItemAdded;
-        public event Action OnItemRemoved;
+        public event Action<ItemInstance> OnEquip;
+        public event Action<ItemInstance> OnUnequip;
 
         [SerializeField] private ItemType _itemType;
-        [SerializeField] private Image _itemSlot;
+        [SerializeField] private Image _itemIcon;
 
         public ItemType ItemType => _itemType;
+        public ItemInstance ItemInstance { get; private set; }
         public bool IsEmpty => ItemInstance == null;
 
-        public ItemInstance ItemInstance;
-
-        public bool AddItem(ItemInstance item)
+        public void Remove()
         {
-            if (ItemInstance != null) return false;
-            if (item.itemData.ItemType != _itemType) return false;
+            OnUnequip?.Invoke(ItemInstance);
 
-            OnItemAdded?.Invoke();
-
-            _itemSlot.enabled = true;
-            _itemSlot.sprite = item.itemData.Icon;
-            ItemInstance = item;
-
-            return true;
+            ItemInstance = null;
+            _itemIcon.enabled = false;
+            _itemIcon.sprite = null;
         }
 
-        public void RemoveItem()
+        public bool AddItem(ItemInstance itemInstance)
         {
-            OnItemRemoved?.Invoke();
+            if (!IsEmpty) return false;
 
-            _itemSlot.enabled = false;
-            ItemInstance = null;
-            _itemSlot.enabled = false;
+            OnEquip?.Invoke(itemInstance);
+            return true;
         }
     }
 }

@@ -172,6 +172,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _weaponSlot: {fileID: 6261775474395911396}
   _armorSlot: {fileID: 4393410292731869929}
+  _itemSlot01: {fileID: 0}
+  _itemSlot02: {fileID: 0}
+  _itemSlot03: {fileID: 0}
 --- !u!114 &-8166922283319199302
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -293,12 +296,9 @@ MonoBehaviour:
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
-    SerializationNodes:
-    - Name: ItemInstance
-      Entry: 6
-      Data: 
+    SerializationNodes: []
   _itemType: 1
-  _itemSlot: {fileID: 4663132469209814326}
+  _itemIcon: {fileID: 4663132469209814326}
 --- !u!82 &2192669917280775233
 AudioSource:
   m_ObjectHideFlags: 0
@@ -592,12 +592,9 @@ MonoBehaviour:
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
-    SerializationNodes:
-    - Name: ItemInstance
-      Entry: 6
-      Data: 
+    SerializationNodes: []
   _itemType: 3
-  _itemSlot: {fileID: 5538149772398063791}
+  _itemIcon: {fileID: 0}
 --- !u!82 &1835924373961475053
 AudioSource:
   m_ObjectHideFlags: 0
@@ -1041,12 +1038,9 @@ MonoBehaviour:
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
-    SerializationNodes:
-    - Name: ItemInstance
-      Entry: 6
-      Data: 
+    SerializationNodes: []
   _itemType: 3
-  _itemSlot: {fileID: 5344187858772593634}
+  _itemIcon: {fileID: 0}
 --- !u!82 &502309377565447675
 AudioSource:
   m_ObjectHideFlags: 0
@@ -1565,12 +1559,9 @@ MonoBehaviour:
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
-    SerializationNodes:
-    - Name: ItemInstance
-      Entry: 6
-      Data: 
+    SerializationNodes: []
   _itemType: 3
-  _itemSlot: {fileID: 3421802682993424734}
+  _itemIcon: {fileID: 0}
 --- !u!82 &8420947458843327182
 AudioSource:
   m_ObjectHideFlags: 0
@@ -1864,12 +1855,9 @@ MonoBehaviour:
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
-    SerializationNodes:
-    - Name: ItemInstance
-      Entry: 6
-      Data: 
+    SerializationNodes: []
   _itemType: 0
-  _itemSlot: {fileID: 8160672631290751025}
+  _itemIcon: {fileID: 8160672631290751025}
 --- !u!82 &7222402624389230736
 AudioSource:
   m_ObjectHideFlags: 0
@@ -2163,12 +2151,9 @@ MonoBehaviour:
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
-    SerializationNodes:
-    - Name: ItemInstance
-      Entry: 6
-      Data: 
+    SerializationNodes: []
   _itemType: 2
-  _itemSlot: {fileID: 6885396012638918753}
+  _itemIcon: {fileID: 0}
 --- !u!82 &7722795956629613493
 AudioSource:
   m_ObjectHideFlags: 0

@@ -54,7 +54,7 @@ public class StartDragState : BaseState
         SetupDragContext(slot.ItemInstance, slot.transform.position, _fsm.MainInventory, cellInSlot, Vector2Int.zero,
             slot);
 
-        slot.RemoveItem();
+        slot.Remove();
 
         _fsm.SetState<UpdateDragState>();
         return true;
