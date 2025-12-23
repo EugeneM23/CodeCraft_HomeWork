@@ -1,7 +1,6 @@
 using System;
 using Inventories;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Game.Scripts.UI.GameScreen
@@ -17,6 +16,8 @@ namespace Game.Scripts.UI.GameScreen
         [SerializeField] private InventoryFactory _inventoryFactory;
         [SerializeField] private DragFSM _dragFSM;
         [SerializeField] private ItemConsumer _itemConsumer;
+        
+        private RectTransform _mainInventoryRect;
 
         private void OnEnable()
         {
@@ -40,13 +41,15 @@ namespace Game.Scripts.UI.GameScreen
             _dragFSM.SetMainInventory(installer.Inventory);
             _itemConsumer.SetInventory(installer.Inventory);
             installer.Inventory.Owner = _itemConsumer;
-
+            
+            _mainInventoryRect = installer.GetComponent<RectTransform>();
+            
             return installer;
         }
 
         public EquipmentInstaller CreateEquipment(EquipmentInstaller equipmentPrefab)
         {
-            var equipment = Instantiate(equipmentPrefab, _mainInventoryRoot);
+            var equipment = Instantiate(equipmentPrefab, _mainInventoryRect);
             _itemConsumer.SetEquipment(equipment.Equipment);
             return equipment;
         }
