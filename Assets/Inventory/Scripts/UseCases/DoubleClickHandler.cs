@@ -1,11 +1,12 @@
+using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using Inventories;
 
 namespace Inventories
 {
     public class DoubleClickHandler : MonoBehaviour, IPointerClickHandler
     {
+        public event Action OnDoubleClick;
         [SerializeField] private float doubleClickTime = 0.3f;
 
         private ItemUseCase _itemUseCase;
@@ -20,16 +21,11 @@ namespace Inventories
 
             if (timeSinceLastClick <= doubleClickTime)
             {
-                _itemInstance.ItemUseCase.Invoke(_inventory, _itemInstance);
+                
+                OnDoubleClick?.Invoke();
             }
 
             lastClickTime = Time.time;
-        }
-
-        public void SetUpUseCase(ItemInstance itemInstance, Inventory inventory)
-        {
-            _itemInstance = itemInstance;
-            _inventory = inventory;
         }
     }
 }

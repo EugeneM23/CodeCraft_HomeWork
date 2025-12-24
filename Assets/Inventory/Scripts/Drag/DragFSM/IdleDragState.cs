@@ -1,4 +1,5 @@
 using Game.Scripts.UI.Equipment;
+using Game.Scripts.UI.Equipment.Game.Equipment.View;
 using UnityEngine;
 
 public class IdleDragState : BaseState, ITickable
@@ -56,8 +57,11 @@ public class IdleDragState : BaseState, ITickable
 
     private void StartDragFromUI()
     {
-        if (_fsm.TryGetComponentUnderMouse(out EquipmentSlot slot) && slot.ItemInstance != null)
+
+        if (_fsm.TryGetComponentUnderMouse(out EquipmentSlotView slot) && slot.CurrentItem != null)
         {
+            Debug.Log("StartDragFromEquipmentState Enter");
+
             _fsm.SetState<StartDragFromEquipmentState>();
         }
         else if (_fsm.TryGetComponentUnderMouse(out CellView cell) && cell.InventoryItem != null)

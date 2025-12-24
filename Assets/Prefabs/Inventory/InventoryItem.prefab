@@ -464,7 +464,8 @@ MonoBehaviour:
   _rectTransform: {fileID: 6379091871092702191}
   _countBackGround: {fileID: 8634197385032340632}
   _count: {fileID: 3715987727289035597}
-  _doubleClickHandler: {fileID: 7001049065726349089}
+  _doubleClick: {fileID: 7001049065726349089}
+  _itemUseCase: {fileID: 0}
 --- !u!114 &7001049065726349089
 MonoBehaviour:
   m_ObjectHideFlags: 0

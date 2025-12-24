@@ -9,7 +9,7 @@ public class EquipWeaponUseCase : ItemUseCase
         IItemConsumer consumer = inventory.Owner;
         if (consumer == null) return;
 
-        if (consumer.EquipWeapon(itemInstance))
-            inventory.RemoveItem(itemInstance.ID);
+        inventory.RemoveItem(itemInstance.ID);
+        consumer.EquipWeapon(itemInstance);
     }
 }

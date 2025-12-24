@@ -14,14 +14,27 @@ namespace Inventories
         [SerializeField] private RectTransform _rectTransform;
         [SerializeField] private GameObject _countBackGround;
         [SerializeField] private TMP_Text _count;
-        [SerializeField] private DoubleClickHandler _doubleClickHandler;
-
+        [SerializeField] private DoubleClickHandler _doubleClick;
+        [SerializeField] private ItemUseCase _itemUseCase;
         public ItemInstance ItemInstance { get; private set; }
+
+        private Inventory _inventory;
 
         private void OnEnable()
         {
+            _doubleClick.OnDoubleClick += OnDoubleClicked;
             _itemImage.rectTransform.localScale = Vector3.one;
             SetBackgroundAlpha(0f);
+        }
+
+        private void OnDisable()
+        {
+            _doubleClick.OnDoubleClick -= OnDoubleClicked;
+        }
+
+        private void OnDoubleClicked()
+        {
+            _itemUseCase.Invoke(_inventory, ItemInstance);
         }
 
         private void OnDestroy()
@@ -58,8 +71,8 @@ namespace Inventories
             );
 
             _rectTransform.sizeDelta = itemSize;
-
-            _doubleClickHandler.SetUpUseCase(item, inventory);
+            _inventory = inventory;
+            _itemUseCase = item.ItemUseCase;
         }
 
         public void OnPointerEnter(PointerEventData eventData)

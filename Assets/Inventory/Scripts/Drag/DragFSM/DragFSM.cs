@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Game.Scripts.UI.Equipment;
+using Game.Scripts.UI.Equipment.Game.Equipment.View;
 using Inventories;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -68,7 +69,7 @@ public class DragFSM : MonoBehaviour
     }
 
     public void SetupDragContext(ItemInstance itemInstance, Vector3 position, Inventory sourceInventory,
-        Vector2Int clickedCell, Vector2Int itemStartCell, EquipmentSlot equipmentSlot = null)
+        Vector2Int clickedCell, Vector2Int itemStartCell, EquipmentSlotView slotView = null)
     {
         Vector2 cellSize = new Vector2(75, 75);
         Context.CurrentDragItem = _factory.SpawnDragItem(itemInstance, cellSize, sourceInventory);
@@ -78,7 +79,7 @@ public class DragFSM : MonoBehaviour
         Context.StartDragCell = itemStartCell;
         Context.DragOffset = position - Input.mousePosition;
         Context.GridOffset = new Vector2Int(clickedCell.x - itemStartCell.x, clickedCell.y - itemStartCell.y);
-        Context.EquipmentSlot = equipmentSlot;
+        Context.EquipmentSlotOld = slotView;
     }
 
     public Vector2Int CalculateClickedCellInSlot(RectTransform slotRect, Vector2Int itemSize)

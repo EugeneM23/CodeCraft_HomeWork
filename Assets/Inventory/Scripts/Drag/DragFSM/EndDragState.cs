@@ -1,4 +1,5 @@
 using Game.Scripts.UI.Equipment;
+using Game.Scripts.UI.Equipment.Game.Equipment.View;
 using Inventories;
 using UnityEngine;
 
@@ -48,18 +49,15 @@ public class EndDragState : BaseState
 
     private bool TryPlaceInEquipmentSlot()
     {
-        if (!_fsm.TryGetComponentUnderMouse(out EquipmentSlot slot))
-            return false;
-        
-        if (slot.ItemType != _fsm.Context.CurrentDragItem.ItemInstance.itemData.ItemType)
+        if (!_fsm.TryGetComponentUnderMouse(out EquipmentSlotView slot))
             return false;
 
         ItemInstance itemInstance = _fsm.Context.CurrentDragItem.ItemInstance;
 
-        if (!slot.AddItem(itemInstance))
-        {
+        if (slot.AllowedItemType == itemInstance.itemData.ItemType)
+            slot.DropItemToSlot(itemInstance);
+        else
             ReturnToSource();
-        }
 
         FinishDrag();
         return true;
@@ -72,9 +70,9 @@ public class EndDragState : BaseState
 
     private void ReturnToSource()
     {
-        if (_fsm.Context.EquipmentSlot != null)
+        if (_fsm.Context.EquipmentSlotOld != null)
         {
-            _fsm.Context.EquipmentSlot.AddItem(_fsm.Context.CurrentDragItem.ItemInstance);
+            _fsm.Context.EquipmentSlotOld.EquipItem(_fsm.Context.CurrentDragItem.ItemInstance);
             return;
         }
 

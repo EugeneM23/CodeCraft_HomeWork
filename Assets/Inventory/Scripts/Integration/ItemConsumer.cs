@@ -1,3 +1,4 @@
+using Game.Scripts.UI.Equipment.Game.Equipment.Presenter;
 using Inventories;
 using UnityEngine;
 
@@ -5,11 +6,11 @@ public class ItemConsumer : MonoBehaviour, IItemConsumer
 {
     public int Health = 50;
     public Inventory Inventory { get; private set; }
-    public Equipment Equipment { get; private set; }
+    public EquipmentPresenter EquipmentPresenter { get; private set; }
 
     public bool EquipWeapon(ItemInstance itemInstance)
     {
-        if (Equipment.EquipWeapon(itemInstance, Inventory))
+        if (EquipmentPresenter.EquipWeapon(itemInstance))
             return true;
 
         return false;
@@ -17,7 +18,7 @@ public class ItemConsumer : MonoBehaviour, IItemConsumer
 
     public bool EquipArmor(ItemInstance itemInstance)
     {
-        return Equipment != null && Equipment.EquipArmor(itemInstance, Inventory);
+        return EquipmentPresenter != null && EquipmentPresenter.EquipArmor(itemInstance);
     }
 
     public new T GetComponent<T>()
@@ -35,8 +36,8 @@ public class ItemConsumer : MonoBehaviour, IItemConsumer
         Inventory = inventory;
     }
 
-    public void SetEquipment(Equipment equipmentEquipment)
+    public void SetEquipment(EquipmentPresenter equipmentPresenter)
     {
-        Equipment = equipmentEquipment;
+        EquipmentPresenter = equipmentPresenter;
     }
 }

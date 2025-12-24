@@ -5,6 +5,7 @@ namespace Inventories
         Weapon,
         Armor,
         Ammo,
-        Item
+        Item,
+        Consumable
     }
 }

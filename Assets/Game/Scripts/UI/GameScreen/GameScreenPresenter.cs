@@ -1,3 +1,4 @@
+using Game.Scripts.UI.Equipment.Game.Equipment;
 using Game.Scripts.UI.GameScreen;
 using Inventories;
 using UnityEngine;
@@ -10,20 +11,17 @@ namespace Inventories
         [SerializeField] private GameScreenView _view;
         [SerializeField] private ItemConsumer itemConsumer;
         [SerializeField] private InventoryInstaller _mainInventoryPrefab;
-        [SerializeField] private EquipmentInstaller _equipmentPrefab;
+        [SerializeField] private EquipmentBootstrap _equipmentPrefab;
 
         private InventoryPresenter _inventoryPresenter;
-        //private EquipmentPresenter _equipmentPresenter;
 
         private void Start()
         {
             InventoryInstaller installer = _view.CreateMainInventory(_mainInventoryPrefab);
             _inventoryPresenter = installer.Presenter;
 
-            EquipmentInstaller equipment = _view.CreateEquipment(_equipmentPrefab);
+            EquipmentBootstrap equipment = _view.CreateEquipment(_equipmentPrefab);
             equipment.Initialize(itemConsumer);
-
-            //_equipmentPresenter = new EquipmentPresenter(equipment.Equipment);
         }
 
         private void OnEnable()
@@ -39,7 +37,6 @@ namespace Inventories
         private void ToggleInventory()
         {
             _inventoryPresenter.Toggle(itemConsumer.Inventory);
-            //_equipmentPresenter.Toggle();
         }
     }
 }

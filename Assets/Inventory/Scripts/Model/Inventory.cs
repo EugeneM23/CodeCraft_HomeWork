@@ -119,6 +119,7 @@ public sealed class Inventory : IEnumerable<ItemInstance>
 
     public bool RemoveItem(string id)
     {
+        Debug.Log("RemoveItem");
         if (!_items.TryGetValue(id, out var item))
             throw new KeyNotFoundException();
 

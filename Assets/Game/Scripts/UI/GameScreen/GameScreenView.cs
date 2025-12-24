@@ -1,4 +1,5 @@
 using System;
+using Game.Scripts.UI.Equipment.Game.Equipment;
 using Inventories;
 using UnityEngine;
 using UnityEngine.UI;
@@ -47,10 +48,9 @@ namespace Game.Scripts.UI.GameScreen
             return installer;
         }
 
-        public EquipmentInstaller CreateEquipment(EquipmentInstaller equipmentPrefab)
+        public EquipmentBootstrap CreateEquipment(EquipmentBootstrap equipmentPrefab)
         {
             var equipment = Instantiate(equipmentPrefab, _mainInventoryRect);
-            _itemConsumer.SetEquipment(equipment.Equipment);
             return equipment;
         }
 

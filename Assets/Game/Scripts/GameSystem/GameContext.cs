@@ -9,7 +9,6 @@ namespace Game.Scripts.GameSystem
     {
         [FormerlySerializedAs("_testCharacter")] [SerializeField] private ItemConsumer itemConsumer;
         [SerializeField] private InventoryInstaller _inventoryPrefab;
-        [SerializeField] private EquipmentInstaller _equipmentPrefab;
         [SerializeField] private InventoryFactory _factory;
         [SerializeField] private DragFSM _dragFSM;
         [SerializeField] private Canvas _canvas;
