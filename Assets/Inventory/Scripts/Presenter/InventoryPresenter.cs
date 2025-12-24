@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Inventories
 {
-    public class InventoryPresenter
+    public class InventoryBootstrap
     {
         private readonly InventoryView _view;
         private readonly Inventory _inventory;
@@ -12,14 +12,15 @@ namespace Inventories
 
         private bool _isOpen;
 
-        public InventoryPresenter(InventoryView view, Inventory inventory, InventoryFactory factory)
+        public InventoryBootstrap(InventoryView view, Inventory inventory, InventoryFactory factory)
         {
             _view = view;
             _inventory = inventory;
 
             _view.Initialize(inventory.Width, inventory.Height, inventory, factory);
         }
-        private void SubscribeToEvents()
+
+        public void Subscribe()
         {
             _inventory.OnAdded += OnItemAdded;
             _inventory.OnRemoved += OnItemRemoved;
@@ -31,7 +32,7 @@ namespace Inventories
             _view.OnCloseClicked += Hide;
         }
 
-        private void UnsubscribeFromEvents()
+        private void Unsubscribe()
         {
             _inventory.OnAdded -= OnItemAdded;
             _inventory.OnRemoved -= OnItemRemoved;
@@ -50,7 +51,7 @@ namespace Inventories
             _mainInventory = mainInventory;
             _isOpen = true;
 
-            SubscribeToEvents();
+            Subscribe();
             _view.SetActive(true);
             UpdateView();
         }
@@ -60,7 +61,7 @@ namespace Inventories
             if (!_isOpen) return;
 
             _isOpen = false;
-            UnsubscribeFromEvents();
+            Unsubscribe();
             _view.SetActive(false);
         }
 

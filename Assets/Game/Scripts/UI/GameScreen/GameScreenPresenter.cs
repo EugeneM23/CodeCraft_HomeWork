@@ -13,12 +13,12 @@ namespace Inventories
         [SerializeField] private InventoryInstaller _mainInventoryPrefab;
         [SerializeField] private EquipmentBootstrap _equipmentPrefab;
 
-        private InventoryPresenter _inventoryPresenter;
+        private InventoryBootstrap _inventoryBootstrap;
 
         private void Start()
         {
             InventoryInstaller installer = _view.CreateMainInventory(_mainInventoryPrefab);
-            _inventoryPresenter = installer.Presenter;
+            _inventoryBootstrap = installer.Bootstrap;
 
             EquipmentBootstrap equipment = _view.CreateEquipment(_equipmentPrefab);
             equipment.Initialize(itemConsumer);
@@ -36,7 +36,7 @@ namespace Inventories
 
         private void ToggleInventory()
         {
-            _inventoryPresenter.Toggle(itemConsumer.Inventory);
+            _inventoryBootstrap.Toggle(itemConsumer.Inventory);
         }
     }
 }

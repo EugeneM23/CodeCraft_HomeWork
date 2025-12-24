@@ -14,7 +14,7 @@ namespace Inventories
         private InventoryAudioController _audioController;
 
         public Inventory Inventory { get; private set; }
-        public InventoryPresenter Presenter { get; private set; }
+        public InventoryBootstrap Bootstrap { get; private set; }
 
         public void Initialize(InventoryFactory factory, DragFSM dragFsm)
         {
@@ -22,7 +22,7 @@ namespace Inventories
             
             AddInitialItems();
             
-            Presenter = new InventoryPresenter(_view, Inventory, factory);
+            Bootstrap = new InventoryBootstrap(_view, Inventory, factory);
             
             _inventoryHighlight = new InventoryHighlight(dragFsm, _view, Inventory);
             _audioController = new InventoryAudioController(Inventory);

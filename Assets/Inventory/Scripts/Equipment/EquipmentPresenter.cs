@@ -30,6 +30,8 @@ namespace Game.Scripts.UI.Equipment.Game.Equipment.Presenter
 
             _panelView.ItemSlot03.OnRemoveToInventory += RemoveItemToInventory;
             _panelView.ItemSlot03.OnDropItemToSlot += DropItemToSlot;
+
+            _panelView.ShowEquipmentButton.onClick.AddListener(ToggleEquipment);
         }
 
         public void Unsubscribe()
@@ -48,6 +50,8 @@ namespace Game.Scripts.UI.Equipment.Game.Equipment.Presenter
 
             _panelView.ItemSlot03.OnRemoveToInventory -= RemoveItemToInventory;
             _panelView.ItemSlot03.OnDropItemToSlot -= DropItemToSlot;
+
+            _panelView.ShowEquipmentButton.onClick.RemoveListener(ToggleEquipment);
         }
 
         private void DropItemToSlot(ItemInstance itemInstance, EquipmentSlotView slotView)
@@ -101,6 +105,11 @@ namespace Game.Scripts.UI.Equipment.Game.Equipment.Presenter
 
             slot.EquipItem(itemInstance);
             return true;
+        }
+
+        private void ToggleEquipment()
+        {
+            _panelView.gameObject.SetActive(!_panelView.gameObject.activeSelf);
         }
     }
 }
