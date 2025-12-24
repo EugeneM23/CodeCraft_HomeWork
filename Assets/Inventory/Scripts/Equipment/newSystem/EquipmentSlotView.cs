@@ -1,11 +1,13 @@
 using System;
 using Inventories;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Game.Scripts.UI.Equipment.Game.Equipment.View
 {
-    public class EquipmentSlotView : MonoBehaviour
+    public class EquipmentSlotView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         public event Action<ItemInstance, EquipmentSlotView> OnRemoveToInventory;
         public event Action<ItemInstance, EquipmentSlotView> OnDropItemToSlot;
@@ -14,19 +16,31 @@ namespace Game.Scripts.UI.Equipment.Game.Equipment.View
         [SerializeField] private ItemType _allowedItemType;
         [SerializeField] private DoubleClickHandler _doubleClick;
 
-        private void OnEnable() => _doubleClick.OnDoubleClick += RemoveItemToInventory;
-
-        private void OnDisable() => _doubleClick.OnDoubleClick -= RemoveItemToInventory;
-
-        private void RemoveItemToInventory() => OnRemoveToInventory?.Invoke(CurrentItem, this);
+        [SerializeField] private Image _background;
+        [SerializeField] private Sprite _backgroundEmptySprite;
+        [SerializeField] private Sprite _occupiedBackgroundSprite;
+        [SerializeField] private Sprite _hoveredBackgroundSprite;
 
         public ItemType AllowedItemType => _allowedItemType;
         public ItemInstance CurrentItem { get; private set; }
         public bool IsEmpty => CurrentItem == null;
 
-        private bool CanEquip(ItemInstance item)
+        private void OnEnable()
         {
-            return item?.itemData.ItemType == AllowedItemType;
+            _doubleClick.OnDoubleClick += HandleDoubleClick;
+        }
+
+        private void OnDisable()
+        {
+            _doubleClick.OnDoubleClick -= HandleDoubleClick;
+        }
+
+        private void HandleDoubleClick()
+        {
+            if (CurrentItem != null)
+            {
+                OnRemoveToInventory?.Invoke(CurrentItem, this);
+            }
         }
 
         public void DropItemToSlot(ItemInstance itemInstance)
@@ -42,15 +56,24 @@ namespace Game.Scripts.UI.Equipment.Game.Equipment.View
             CurrentItem = item;
             ShowItem(item.itemData.Icon);
 
+            _background.sprite = _occupiedBackgroundSprite;
             return true;
         }
 
         public ItemInstance UnequipItem()
         {
-            var item = CurrentItem;
+            ItemInstance item = CurrentItem;
             CurrentItem = null;
             ShowEmpty();
+
+            _background.sprite = _backgroundEmptySprite;
+
             return item;
+        }
+
+        private bool CanEquip(ItemInstance item)
+        {
+            return item?.itemData.ItemType == AllowedItemType;
         }
 
         private void ShowItem(Sprite icon)
@@ -63,6 +86,16 @@ namespace Game.Scripts.UI.Equipment.Game.Equipment.View
         {
             _itemIcon.enabled = false;
             _itemIcon.sprite = null;
+        }
+
+        public void OnPointerEnter(PointerEventData eventData)
+        {
+            _background.sprite = _hoveredBackgroundSprite;
+        }
+
+        public void OnPointerExit(PointerEventData eventData)
+        {
+            _background.sprite = CurrentItem != null ? _occupiedBackgroundSprite : _backgroundEmptySprite;
         }
     }
 }

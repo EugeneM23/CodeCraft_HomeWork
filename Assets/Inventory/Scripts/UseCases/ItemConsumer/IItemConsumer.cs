@@ -6,4 +6,5 @@ public interface IItemConsumer
     bool EquipWeapon(ItemInstance itemInstance);
     bool EquipArmor(ItemInstance itemInstance);
     void SetInventory(Inventory inventory);
+    bool EquipAmmo(ItemInstance itemInstance);
 }

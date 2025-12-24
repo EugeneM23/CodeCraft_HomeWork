@@ -6,7 +6,7 @@ public class ItemConsumer : MonoBehaviour, IItemConsumer
 {
     public int Health = 50;
     public Inventory Inventory { get; private set; }
-    public EquipmentPresenter EquipmentPresenter { get; private set; }
+    private EquipmentPresenter EquipmentPresenter { get; set; }
 
     public bool EquipWeapon(ItemInstance itemInstance)
     {
@@ -19,6 +19,11 @@ public class ItemConsumer : MonoBehaviour, IItemConsumer
     public bool EquipArmor(ItemInstance itemInstance)
     {
         return EquipmentPresenter != null && EquipmentPresenter.EquipArmor(itemInstance);
+    }
+
+    public bool EquipAmmo(ItemInstance itemInstance)
+    {
+        return EquipmentPresenter != null && EquipmentPresenter.EquipAmmo(itemInstance);
     }
 
     public new T GetComponent<T>()

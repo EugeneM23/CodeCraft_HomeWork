@@ -8,15 +8,14 @@ namespace Game.Scripts.UI.Equipment.Game.Equipment
     public class EquipmentBootstrap : MonoBehaviour
     {
         [SerializeField] private EquipmentPanelView _view;
-        private ItemConsumer _consumer;
 
+        private ItemConsumer _consumer;
         private EquipmentPresenter _presenter;
 
         public void Initialize(ItemConsumer consumer)
         {
             _consumer = consumer;
             _presenter = new EquipmentPresenter(_view, _consumer.Inventory);
-            //_presenter.Subscribe();
             _consumer.SetEquipment(_presenter);
         }
 
@@ -27,7 +26,7 @@ namespace Game.Scripts.UI.Equipment.Game.Equipment
 
         private void OnDisable()
         {
-            _presenter.UnSubscribe();
+            _presenter.Unsubscribe();
         }
     }
 }

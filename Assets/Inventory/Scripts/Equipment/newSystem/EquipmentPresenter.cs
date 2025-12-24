@@ -1,6 +1,5 @@
 using Game.Scripts.UI.Equipment.Game.Equipment.View;
 using Inventories;
-using UnityEngine;
 
 namespace Game.Scripts.UI.Equipment.Game.Equipment.Presenter
 {
@@ -22,65 +21,85 @@ namespace Game.Scripts.UI.Equipment.Game.Equipment.Presenter
 
             _panelView.ArmorSlot.OnRemoveToInventory += RemoveItemToInventory;
             _panelView.ArmorSlot.OnDropItemToSlot += DropItemToSlot;
+
+            _panelView.ItemSlot01.OnRemoveToInventory += RemoveItemToInventory;
+            _panelView.ItemSlot01.OnDropItemToSlot += DropItemToSlot;
+
+            _panelView.ItemSlot02.OnRemoveToInventory += RemoveItemToInventory;
+            _panelView.ItemSlot02.OnDropItemToSlot += DropItemToSlot;
+
+            _panelView.ItemSlot03.OnRemoveToInventory += RemoveItemToInventory;
+            _panelView.ItemSlot03.OnDropItemToSlot += DropItemToSlot;
         }
-        public void UnSubscribe()
+
+        public void Unsubscribe()
         {
             _panelView.WeaponSlot.OnRemoveToInventory -= RemoveItemToInventory;
-            _panelView.ArmorSlot.OnRemoveToInventory -= RemoveItemToInventory;
+            _panelView.WeaponSlot.OnDropItemToSlot -= DropItemToSlot;
 
             _panelView.ArmorSlot.OnRemoveToInventory -= RemoveItemToInventory;
             _panelView.ArmorSlot.OnDropItemToSlot -= DropItemToSlot;
-        }
 
+            _panelView.ItemSlot01.OnRemoveToInventory -= RemoveItemToInventory;
+            _panelView.ItemSlot01.OnDropItemToSlot -= DropItemToSlot;
+
+            _panelView.ItemSlot02.OnRemoveToInventory -= RemoveItemToInventory;
+            _panelView.ItemSlot02.OnDropItemToSlot -= DropItemToSlot;
+
+            _panelView.ItemSlot03.OnRemoveToInventory -= RemoveItemToInventory;
+            _panelView.ItemSlot03.OnDropItemToSlot -= DropItemToSlot;
+        }
 
         private void DropItemToSlot(ItemInstance itemInstance, EquipmentSlotView slotView)
         {
-            if (slotView.CurrentItem == null)
+            if (slotView.CurrentItem != null)
             {
-                slotView.EquipItem(itemInstance);
+                if (_inventory.AddItem(slotView.CurrentItem.itemData))
+                {
+                    slotView.EquipItem(itemInstance);
+                }
+
                 return;
             }
 
-            if (slotView.CurrentItem != null && _inventory.AddItem(slotView.CurrentItem.itemData))
-                slotView.EquipItem(itemInstance);
+            slotView.EquipItem(itemInstance);
         }
-
 
         private void RemoveItemToInventory(ItemInstance itemInstance, EquipmentSlotView equipmentSlotView)
         {
-            _inventory.AddItem(itemInstance.itemData);
-            equipmentSlotView.UnequipItem();
+            if (_inventory.AddItem(itemInstance.itemData))
+            {
+                equipmentSlotView.UnequipItem();
+            }
         }
 
         public bool EquipWeapon(ItemInstance itemInstance)
         {
-            if (!_panelView.WeaponSlot.IsEmpty)
-            {
-                ItemInstance currentWeapon = _panelView.WeaponSlot.CurrentItem;
-                _panelView.WeaponSlot.UnequipItem();
-                _panelView.WeaponSlot.EquipItem(itemInstance);
-                _inventory.AddItem(currentWeapon.itemData);
-                return true;
-            }
-
-            _panelView.WeaponSlot.UnequipItem();
-            _panelView.WeaponSlot.EquipItem(itemInstance);
-            return true;
+            return EquipToSlot(_panelView.WeaponSlot, itemInstance);
         }
 
         public bool EquipArmor(ItemInstance itemInstance)
         {
-            if (!_panelView.ArmorSlot.IsEmpty)
+            return EquipToSlot(_panelView.ArmorSlot, itemInstance);
+        }
+
+        public bool EquipAmmo(ItemInstance itemInstance)
+        {
+            return EquipToSlot(_panelView.ItemSlot01, itemInstance);
+        }
+
+        private bool EquipToSlot(EquipmentSlotView slot, ItemInstance itemInstance)
+        {
+            if (!slot.IsEmpty)
             {
-                ItemInstance currentWeapon = _panelView.ArmorSlot.CurrentItem;
-                _panelView.ArmorSlot.UnequipItem();
-                _panelView.ArmorSlot.EquipItem(itemInstance);
-                _inventory.AddItem(currentWeapon.itemData);
+                ItemInstance currentItem = slot.CurrentItem;
+                slot.UnequipItem();
+                slot.EquipItem(itemInstance);
+                _inventory.AddItem(currentItem.itemData);
                 return true;
             }
 
-            _panelView.ArmorSlot.UnequipItem();
-            _panelView.ArmorSlot.EquipItem(itemInstance);
+            slot.EquipItem(itemInstance);
             return true;
         }
     }

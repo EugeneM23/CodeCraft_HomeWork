@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &8109618927111567463
+--- !u!1 &3172102141589766498
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,48 +8,48 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 2782977454410874270}
-  - component: {fileID: 6128737023176730847}
-  - component: {fileID: 4180314075565315859}
-  - component: {fileID: 6609461073202377579}
-  - component: {fileID: 4751637913041529059}
+  - component: {fileID: 5633370403166231957}
+  - component: {fileID: 7528259036273102345}
+  - component: {fileID: 2461049266000352800}
+  - component: {fileID: 1084893448804538809}
+  - component: {fileID: 7070894261933836396}
   m_Layer: 0
-  m_Name: Ammo
+  m_Name: Armor_02 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &2782977454410874270
+--- !u!4 &5633370403166231957
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8109618927111567463}
+  m_GameObject: {fileID: 3172102141589766498}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -5.148, y: 2.5264232, z: -0.62597096}
-  m_LocalScale: {x: 1, y: 1, z: 2.0276}
+  m_LocalPosition: {x: -3.221, y: 2.5264232, z: -0.62597096}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &6128737023176730847
+--- !u!33 &7528259036273102345
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8109618927111567463}
-  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!23 &4180314075565315859
+  m_GameObject: {fileID: 3172102141589766498}
+  m_Mesh: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!23 &2461049266000352800
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8109618927111567463}
+  m_GameObject: {fileID: 3172102141589766498}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -88,13 +88,13 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &6609461073202377579
-BoxCollider:
+--- !u!136 &1084893448804538809
+CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8109618927111567463}
+  m_GameObject: {fileID: 3172102141589766498}
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -106,27 +106,29 @@ BoxCollider:
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Height: 2
+  m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &4751637913041529059
+--- !u!114 &7070894261933836396
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8109618927111567463}
+  m_GameObject: {fileID: 3172102141589766498}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0fa84783d20a428185a38a9c1db40342, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   ItemData:
-    <Name>k__BackingField: Ammo
-    <Icon>k__BackingField: {fileID: 7525844301071102666, guid: 1b4b7f3d0e3a4451984f837c1d2df67a, type: 3}
+    <Name>k__BackingField: Armor
+    <Icon>k__BackingField: {fileID: -6533400362301679155, guid: 8ab79d62665074332affe70b04e0f94e, type: 3}
     <Size>k__BackingField: {x: 2, y: 2}
-    <ItemType>k__BackingField: 2
-    <CanStack>k__BackingField: 1
-    <MaxStackQuantity>k__BackingField: 50
-    <ItemUseCase>k__BackingField: {fileID: 11400000, guid: cbde3f3903782471d8b959ab537493d8, type: 2}
-  Quantity: 15
+    <ItemType>k__BackingField: 1
+    <CanStack>k__BackingField: 0
+    <MaxStackQuantity>k__BackingField: 0
+    <ItemUseCase>k__BackingField: {fileID: 11400000, guid: b79800da5bb0a4688825937a30259cec, type: 2}
+  Quantity: 1
