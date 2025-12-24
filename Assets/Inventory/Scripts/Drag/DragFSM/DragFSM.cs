@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Game.Scripts.UI.Equipment;
 using Game.Scripts.UI.Equipment.Game.Equipment.View;
 using Inventories;
+using Inventories.EndDrag;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -39,7 +40,12 @@ public class DragFSM : MonoBehaviour
             [typeof(StartDragFromEquipmentState)] = new StartDragFromEquipmentState(this),
             [typeof(PickupFromSceneState)] = new PickupFromSceneState(this, _factory),
             [typeof(UpdateDragState)] = new UpdateDragState(this),
-            [typeof(EndDragState)] = new EndDragState(this, _factory),
+            [typeof(EndDragState)] = new EndDragState(this),
+            [typeof(EndDragToInventoryState)] = new EndDragToInventoryState(this),
+            [typeof(EndDragToEquipmentState)] = new EndDragToEquipmentState(this),
+            [typeof(EndDragToSceneState)] = new EndDragToSceneState(this, _factory),
+            [typeof(EndDragReturnToSourceState)] = new EndDragReturnToSourceState(this),
+            [typeof(FinishDragState)] = new FinishDragState(this, _factory),
         };
 
         SetState<IdleDragState>();
