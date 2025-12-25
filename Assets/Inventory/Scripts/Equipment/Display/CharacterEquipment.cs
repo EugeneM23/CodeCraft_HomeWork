@@ -19,6 +19,8 @@ public class CharacterEquipment : MonoBehaviour
     [Header("Armor Set")] [SerializeField] private ArmorSet _armorSet;
     [SerializeField] private ArmorSet _helmet;
     [SerializeField] private ArmorSet _head;
+    [SerializeField] private ArmorSet _legs;
+    [SerializeField] private ArmorSet _pants;
     [SerializeField] private ArmorSet _nakedSet;
 
     [Header("Weapon")] [SerializeField] private Transform _weaponSlot;
@@ -32,29 +34,22 @@ public class CharacterEquipment : MonoBehaviour
     {
         _items[ItemType.Armor] = _bodyMeshRenderer;
         _items[ItemType.Helmet] = _headMeshRenderer;
+        _items[ItemType.Pants] = _legMeshRenderer;
     }
 
-    public void EquipArmor()
+    public void EquipArmor() => _items[_armorSet.ItemType].sharedMesh = _armorSet.Mesh;
+
+    public void UnEquipArmor() => _items[_armorSet.ItemType].sharedMesh = _nakedSet.Mesh;
+
+    public void EquipHead() => _items[_helmet.ItemType].sharedMesh = _helmet.Mesh;
+
+    public void UnEquipHead() => _items[_head.ItemType].sharedMesh = _head.Mesh;
+
+    public void EquipLegs()
     {
-        if (_armorSet == null)
-            return;
-
-        _items[_armorSet.ItemType].sharedMesh = _armorSet.Mesh;
+        Debug.Log("Equip armor asdasd  -------------");
+        _items[_pants.ItemType].sharedMesh = _pants.Mesh;
     }
 
-    public void UnEquipArmor()
-    {
-        _items[_armorSet.ItemType].sharedMesh = _nakedSet.Mesh;
-    }
-
-    public void EquipHead()
-    {
-        Debug.Log("Equip Head");
-        _items[_helmet.ItemType].sharedMesh = _helmet.Mesh;
-    }
-
-    public void UnEquipHead()
-    {
-        _items[_head.ItemType].sharedMesh = _head.Mesh;
-    }
+    public void UnEquipLegs() => _items[_pants.ItemType].sharedMesh = _legs.Mesh;
 }

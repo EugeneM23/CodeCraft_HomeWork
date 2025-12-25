@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3561d358c6f64ae6b8f4b480232b8838, type: 3}
-  m_Name: Head_Naked
+  m_Name: Armor_Legs
   m_EditorClassIdentifier: 
-  _mesh: {fileID: -7195798588882294639, guid: c22e643322badc749954f2a6cf18579b, type: 3}
-  _itemType: 5
+  _mesh: {fileID: 285454426324367829, guid: 96f41e41291d0a94d89678e0f6469295, type: 3}
+  _itemType: 6

@@ -124,7 +124,7 @@ MonoBehaviour:
   ItemData:
     <Name>k__BackingField: Ammo
     <Icon>k__BackingField: {fileID: 7525844301071102666, guid: 1b4b7f3d0e3a4451984f837c1d2df67a, type: 3}
-    <Size>k__BackingField: {x: 2, y: 2}
+    <Size>k__BackingField: {x: 2, y: 3}
     <ItemType>k__BackingField: 2
     <CanStack>k__BackingField: 1
     <MaxStackQuantity>k__BackingField: 50

@@ -25,6 +25,9 @@ namespace Game.Scripts.UI.Equipment.Game.Equipment.Presenter
             _panelView.HeadSlot.OnRemoveToInventory += RemoveItemToInventory;
             _panelView.HeadSlot.OnDropItemToSlot += DropItemToSlot;
 
+            _panelView.LegsSlot.OnRemoveToInventory += RemoveItemToInventory;
+            _panelView.LegsSlot.OnDropItemToSlot += DropItemToSlot;
+
             _panelView.ItemSlot01.OnRemoveToInventory += RemoveItemToInventory;
             _panelView.ItemSlot01.OnDropItemToSlot += DropItemToSlot;
 
@@ -47,6 +50,9 @@ namespace Game.Scripts.UI.Equipment.Game.Equipment.Presenter
 
             _panelView.HeadSlot.OnRemoveToInventory -= RemoveItemToInventory;
             _panelView.HeadSlot.OnDropItemToSlot -= DropItemToSlot;
+
+            _panelView.LegsSlot.OnRemoveToInventory += RemoveItemToInventory;
+            _panelView.LegsSlot.OnDropItemToSlot += DropItemToSlot;
 
             _panelView.ItemSlot01.OnRemoveToInventory -= RemoveItemToInventory;
             _panelView.ItemSlot01.OnDropItemToSlot -= DropItemToSlot;

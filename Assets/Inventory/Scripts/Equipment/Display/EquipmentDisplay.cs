@@ -19,6 +19,9 @@ public class EquipmentDisplay : MonoBehaviour
 
         _view.HeadSlot.OnEquipped += OnHeadEquipped;
         _view.HeadSlot.OnUnEquipped += OnHeadUnEquipped;
+
+        _view.LegsSlot.OnEquipped += OnLegEquipped;
+        _view.LegsSlot.OnUnEquipped += OnLegUnEquipped;
     }
 
     private void OnDisable()
@@ -30,25 +33,19 @@ public class EquipmentDisplay : MonoBehaviour
 
         _view.HeadSlot.OnEquipped -= OnHeadEquipped;
         _view.HeadSlot.OnUnEquipped -= OnHeadUnEquipped;
+
+        _view.LegsSlot.OnEquipped -= OnLegEquipped;
+        _view.LegsSlot.OnUnEquipped -= OnLegUnEquipped;
     }
 
-    private void OnBodyEquipped(ItemInstance item, EquipmentSlotView slot)
-    {
-        _character.EquipArmor();
-    }
+    private void OnBodyEquipped(ItemInstance item, EquipmentSlotView slot) => _character.EquipArmor();
 
-    private void OnBodyUnEquipped(ItemInstance item, EquipmentSlotView slot)
-    {
-        _character.UnEquipArmor();
-    }
+    private void OnBodyUnEquipped(ItemInstance item, EquipmentSlotView slot) => _character.UnEquipArmor();
 
-    private void OnHeadUnEquipped(ItemInstance arg1, EquipmentSlotView arg2)
-    {
-        _character.UnEquipHead();
-    }
+    private void OnHeadUnEquipped(ItemInstance arg1, EquipmentSlotView arg2) => _character.UnEquipHead();
 
-    private void OnHeadEquipped(ItemInstance arg1, EquipmentSlotView arg2)
-    {
-        _character.EquipHead();
-    }
+    private void OnHeadEquipped(ItemInstance arg1, EquipmentSlotView arg2) => _character.EquipHead();
+    private void OnLegUnEquipped(ItemInstance arg1, EquipmentSlotView arg2) => _character.UnEquipLegs();
+
+    private void OnLegEquipped(ItemInstance arg1, EquipmentSlotView arg2) => _character.EquipLegs();
 }

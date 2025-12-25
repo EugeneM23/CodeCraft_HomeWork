@@ -337,6 +337,8 @@ MonoBehaviour:
   _armorSet: {fileID: 11400000, guid: e7c6cf513f8ed44d88019ad79fc4d1fb, type: 2}
   _helmet: {fileID: 11400000, guid: 7fd1bd89042884e60ac0ff4b9d5b3519, type: 2}
   _head: {fileID: 11400000, guid: d958d08c1d31149198a3badc2ffb7e9b, type: 2}
+  _legs: {fileID: 11400000, guid: 282ffab5eadac40c7aba38a2b081f104, type: 2}
+  _pants: {fileID: 11400000, guid: d016a292e26b542df861dbd864a7396f, type: 2}
   _nakedSet: {fileID: 11400000, guid: ed1db32a93462432b87b03303196293e, type: 2}
   _weaponSlot: {fileID: 0}
   _weaponPrefab: {fileID: 0}
