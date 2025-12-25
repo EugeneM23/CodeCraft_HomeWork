@@ -19,8 +19,11 @@ namespace Game.Scripts.UI.Equipment.Game.Equipment.Presenter
             _panelView.WeaponSlot.OnRemoveToInventory += RemoveItemToInventory;
             _panelView.WeaponSlot.OnDropItemToSlot += DropItemToSlot;
 
-            _panelView.ArmorSlot.OnRemoveToInventory += RemoveItemToInventory;
-            _panelView.ArmorSlot.OnDropItemToSlot += DropItemToSlot;
+            _panelView.BodySlot.OnRemoveToInventory += RemoveItemToInventory;
+            _panelView.BodySlot.OnDropItemToSlot += DropItemToSlot;
+
+            _panelView.HeadSlot.OnRemoveToInventory += RemoveItemToInventory;
+            _panelView.HeadSlot.OnDropItemToSlot += DropItemToSlot;
 
             _panelView.ItemSlot01.OnRemoveToInventory += RemoveItemToInventory;
             _panelView.ItemSlot01.OnDropItemToSlot += DropItemToSlot;
@@ -39,8 +42,11 @@ namespace Game.Scripts.UI.Equipment.Game.Equipment.Presenter
             _panelView.WeaponSlot.OnRemoveToInventory -= RemoveItemToInventory;
             _panelView.WeaponSlot.OnDropItemToSlot -= DropItemToSlot;
 
-            _panelView.ArmorSlot.OnRemoveToInventory -= RemoveItemToInventory;
-            _panelView.ArmorSlot.OnDropItemToSlot -= DropItemToSlot;
+            _panelView.BodySlot.OnRemoveToInventory -= RemoveItemToInventory;
+            _panelView.BodySlot.OnDropItemToSlot -= DropItemToSlot;
+
+            _panelView.HeadSlot.OnRemoveToInventory -= RemoveItemToInventory;
+            _panelView.HeadSlot.OnDropItemToSlot -= DropItemToSlot;
 
             _panelView.ItemSlot01.OnRemoveToInventory -= RemoveItemToInventory;
             _panelView.ItemSlot01.OnDropItemToSlot -= DropItemToSlot;
@@ -84,7 +90,7 @@ namespace Game.Scripts.UI.Equipment.Game.Equipment.Presenter
 
         public bool EquipArmor(ItemInstance itemInstance)
         {
-            return EquipToSlot(_panelView.ArmorSlot, itemInstance);
+            return EquipToSlot(_panelView.BodySlot, itemInstance);
         }
 
         public bool EquipAmmo(ItemInstance itemInstance)

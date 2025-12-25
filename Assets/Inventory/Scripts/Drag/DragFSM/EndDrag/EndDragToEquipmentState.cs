@@ -1,6 +1,7 @@
 using Game.Scripts.UI.Equipment.Game.Equipment.View;
 using Inventories;
 using Inventories.EndDrag;
+using UnityEngine;
 
 public class EndDragToEquipmentState : BaseState
 {

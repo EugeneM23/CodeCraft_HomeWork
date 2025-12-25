@@ -29,7 +29,7 @@ namespace Inventories
             _inventory.OnCleared += UpdateView;
             _view.OnReorganizeClicked += OnReorganize;
             _view.OnCollectAllClicked += OnCollectAll;
-            _view.OnCloseClicked += Hide;
+            _view.OnCloseClicked += OnHide;
         }
 
         private void Unsubscribe()
@@ -41,10 +41,10 @@ namespace Inventories
             _inventory.OnCleared -= UpdateView;
             _view.OnReorganizeClicked -= OnReorganize;
             _view.OnCollectAllClicked -= OnCollectAll;
-            _view.OnCloseClicked -= Hide;
+            _view.OnCloseClicked -= OnHide;
         }
 
-        private void Show(Inventory mainInventory)
+        private void OnShow(Inventory mainInventory)
         {
             if (_isOpen) return;
 
@@ -56,7 +56,7 @@ namespace Inventories
             UpdateView();
         }
 
-        private void Hide()
+        private void OnHide()
         {
             if (!_isOpen) return;
 
@@ -68,9 +68,9 @@ namespace Inventories
         public void Toggle(Inventory mainInventory)
         {
             if (_isOpen)
-                Hide();
+                OnHide();
             else
-                Show(mainInventory);
+                OnShow(mainInventory);
         }
 
         private void UpdateView()

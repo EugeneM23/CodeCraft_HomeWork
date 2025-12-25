@@ -6,6 +6,7 @@ namespace Inventories
         Armor,
         Ammo,
         Item,
-        Consumable
+        Consumable,
+        Helmet
     }
 }

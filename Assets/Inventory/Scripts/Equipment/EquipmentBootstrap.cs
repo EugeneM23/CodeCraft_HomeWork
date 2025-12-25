@@ -1,6 +1,8 @@
 using System;
+using Game.Scripts.UI.Equipment.Game.Equipment;
 using Game.Scripts.UI.Equipment.Game.Equipment.Presenter;
 using Game.Scripts.UI.Equipment.Game.Equipment.View;
+using UnityEditor;
 using UnityEngine;
 
 namespace Game.Scripts.UI.Equipment.Game.Equipment
@@ -11,6 +13,7 @@ namespace Game.Scripts.UI.Equipment.Game.Equipment
 
         private ItemConsumer _consumer;
         private EquipmentPresenter _presenter;
+        public EquipmentPresenter Presenter => _presenter;
 
         public void Initialize(ItemConsumer consumer)
         {

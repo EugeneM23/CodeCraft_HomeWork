@@ -512,7 +512,6 @@ MonoBehaviour:
   _initializeItems:
   - {fileID: 7863706435233951146, guid: ec522a5a4d72540569bf5782dad53c2e, type: 3}
   - {fileID: 1441105143803712864, guid: 9de9593e1e39947b6b50224a5f4988a0, type: 3}
-  - {fileID: 7070894261933836396, guid: 1dee5ee9daccd46cc930f6ab2989731f, type: 3}
 --- !u!114 &2550732703897415888
 MonoBehaviour:
   m_ObjectHideFlags: 0

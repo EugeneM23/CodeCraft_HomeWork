@@ -9,6 +9,8 @@ namespace Game.Scripts.UI.Equipment.Game.Equipment.View
 {
     public class EquipmentSlotView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
+        public event Action<ItemInstance, EquipmentSlotView> OnEquipped;
+        public event Action<ItemInstance, EquipmentSlotView> OnUnEquipped;
         public event Action<ItemInstance, EquipmentSlotView> OnRemoveToInventory;
         public event Action<ItemInstance, EquipmentSlotView> OnDropItemToSlot;
 
@@ -57,6 +59,8 @@ namespace Game.Scripts.UI.Equipment.Game.Equipment.View
             ShowItem(item.itemData.Icon);
 
             _background.sprite = _occupiedBackgroundSprite;
+
+            OnEquipped?.Invoke(item, this);
             return true;
         }
 
@@ -67,6 +71,7 @@ namespace Game.Scripts.UI.Equipment.Game.Equipment.View
             ShowEmpty();
 
             _background.sprite = _backgroundEmptySprite;
+            OnUnEquipped?.Invoke(item, this);
 
             return item;
         }
