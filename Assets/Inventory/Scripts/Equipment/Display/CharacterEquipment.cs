@@ -1,55 +1,75 @@
-using System;
 using System.Collections.Generic;
+using Game.Scripts.UI.Equipment.Game.Equipment.View;
 using Inventories;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 public class CharacterEquipment : MonoBehaviour
 {
-    [SerializeField] private Transform _root;
-
-    [Header("Armor Mesh Renderers")] [SerializeField]
-    private SkinnedMeshRenderer _headMeshRenderer;
-
+    [SerializeField] private SkinnedMeshRenderer _headMeshRenderer;
     [SerializeField] private SkinnedMeshRenderer _bodyMeshRenderer;
     [SerializeField] private SkinnedMeshRenderer _bootsMeshRenderer;
     [SerializeField] private SkinnedMeshRenderer _gauntletsMeshRenderer;
     [SerializeField] private SkinnedMeshRenderer _legMeshRenderer;
+    [SerializeField] private SkinnedMeshRenderer _handsMeshRenderer;
 
-    [Header("Armor Set")] [SerializeField] private ArmorSet _armorSet;
-    [SerializeField] private ArmorSet _helmet;
-    [SerializeField] private ArmorSet _head;
-    [SerializeField] private ArmorSet _legs;
-    [SerializeField] private ArmorSet _pants;
-    [SerializeField] private ArmorSet _nakedSet;
+    [SerializeField] private MeshFilter _weaponMeshRenderer01;
+    [SerializeField] private MeshFilter _weaponMeshRenderer02;
 
-    [Header("Weapon")] [SerializeField] private Transform _weaponSlot;
-    [SerializeField] private GameObject _weaponPrefab;
-
-    private GameObject _currentWeapon;
+    [SerializeField] private Mesh _headMesh;
+    [SerializeField] private Mesh _bodyMesh;
+    [SerializeField] private Mesh _legMesh;
+    [SerializeField] private Mesh _bootsMesh;
+    [SerializeField] private Mesh _handsMesh;
 
     private readonly Dictionary<ItemType, SkinnedMeshRenderer> _items = new();
+    private readonly Dictionary<ItemType, Mesh> _nakedParts = new();
 
     private void Start()
     {
-        _items[ItemType.Armor] = _bodyMeshRenderer;
-        _items[ItemType.Helmet] = _headMeshRenderer;
-        _items[ItemType.Pants] = _legMeshRenderer;
+        _items[ItemType.Head] = _headMeshRenderer;
+        _items[ItemType.Body] = _bodyMeshRenderer;
+        _items[ItemType.Legs] = _legMeshRenderer;
+        _items[ItemType.Boots] = _bootsMeshRenderer;
+        _items[ItemType.Hands] = _handsMeshRenderer;
+
+        _nakedParts[ItemType.Head] = _headMesh;
+        _nakedParts[ItemType.Body] = _bodyMesh;
+        _nakedParts[ItemType.Legs] = _legMesh;
+        _nakedParts[ItemType.Boots] = _bootsMesh;
+        _nakedParts[ItemType.Hands] = _handsMesh;
     }
 
-    public void EquipArmor() => _items[_armorSet.ItemType].sharedMesh = _armorSet.Mesh;
-
-    public void UnEquipArmor() => _items[_armorSet.ItemType].sharedMesh = _nakedSet.Mesh;
-
-    public void EquipHead() => _items[_helmet.ItemType].sharedMesh = _helmet.Mesh;
-
-    public void UnEquipHead() => _items[_head.ItemType].sharedMesh = _head.Mesh;
-
-    public void EquipLegs()
+    public void Equip(ItemInstance item, EquipmentSlotView slot)
     {
-        Debug.Log("Equip armor asdasd  -------------");
-        _items[_pants.ItemType].sharedMesh = _pants.Mesh;
+        if (item.itemData.ItemType == ItemType.Shield)
+        {
+            _weaponMeshRenderer02.mesh = item.itemData.Mesh;
+            return;
+        }
+
+        if (item.itemData.ItemType == ItemType.Weapon)
+        {
+            _weaponMeshRenderer01.mesh = item.itemData.Mesh;
+            return;
+        }
+
+        _items[slot.ItemType].sharedMesh = item.itemData.Mesh;
     }
 
-    public void UnEquipLegs() => _items[_pants.ItemType].sharedMesh = _legs.Mesh;
+    public void UnEquip(ItemInstance item, EquipmentSlotView slot)
+    {
+        if (item.itemData.ItemType == ItemType.Shield)
+        {
+            _weaponMeshRenderer02.mesh = null;
+            return;
+        }
+
+        if (item.itemData.ItemType == ItemType.Weapon)
+        {
+            _weaponMeshRenderer01.mesh = null;
+            return;
+        }
+
+        _items[item.itemData.ItemType].sharedMesh = _nakedParts[item.itemData.ItemType];
+    }
 }

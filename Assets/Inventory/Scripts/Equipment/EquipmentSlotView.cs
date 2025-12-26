@@ -15,7 +15,7 @@ namespace Game.Scripts.UI.Equipment.Game.Equipment.View
         public event Action<ItemInstance, EquipmentSlotView> OnDropItemToSlot;
 
         [SerializeField] private Image _itemIcon;
-        [SerializeField] private ItemType _allowedItemType;
+        [FormerlySerializedAs("_allowedItemType")] [SerializeField] private ItemType itemType;
         [SerializeField] private DoubleClickHandler _doubleClick;
 
         [SerializeField] private Image _background;
@@ -23,7 +23,7 @@ namespace Game.Scripts.UI.Equipment.Game.Equipment.View
         [SerializeField] private Sprite _occupiedBackgroundSprite;
         [SerializeField] private Sprite _hoveredBackgroundSprite;
 
-        public ItemType AllowedItemType => _allowedItemType;
+        public ItemType ItemType => itemType;
         public ItemInstance CurrentItem { get; private set; }
         public bool IsEmpty => CurrentItem == null;
 
@@ -78,7 +78,7 @@ namespace Game.Scripts.UI.Equipment.Game.Equipment.View
 
         private bool CanEquip(ItemInstance item)
         {
-            return item?.itemData.ItemType == AllowedItemType;
+            return item?.itemData.ItemType == ItemType;
         }
 
         private void ShowItem(Sprite icon)

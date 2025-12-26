@@ -19,7 +19,7 @@ public class EndDragToEquipmentState : BaseState
 
         ItemInstance itemInstance = _fsm.Context.CurrentDragItem.ItemInstance;
 
-        if (slot.AllowedItemType == itemInstance.itemData.ItemType)
+        if (slot.ItemType == itemInstance.itemData.ItemType)
         {
             slot.DropItemToSlot(itemInstance);
             _fsm.SetState<FinishDragState>();

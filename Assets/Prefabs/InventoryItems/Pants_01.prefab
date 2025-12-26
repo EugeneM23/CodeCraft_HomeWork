@@ -129,8 +129,8 @@ GameObject:
   - component: {fileID: 5633370403166231957}
   - component: {fileID: 7528259036273102345}
   - component: {fileID: 2461049266000352800}
-  - component: {fileID: 1084893448804538809}
   - component: {fileID: 7070894261933836396}
+  - component: {fileID: 6009434718875001729}
   m_Layer: 0
   m_Name: Pants_01
   m_TagString: Untagged
@@ -207,8 +207,30 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!136 &1084893448804538809
-CapsuleCollider:
+--- !u!114 &7070894261933836396
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3172102141589766498}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0fa84783d20a428185a38a9c1db40342, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ItemData:
+    <Name>k__BackingField: Pants_01
+    <Icon>k__BackingField: {fileID: 7958257570448774133, guid: 39a6dc44576384f9bab6711b20ebcc8d, type: 3}
+    <Size>k__BackingField: {x: 2, y: 3}
+    <ItemType>k__BackingField: 6
+    <CanStack>k__BackingField: 0
+    <MaxStackQuantity>k__BackingField: 0
+    <ItemUseCase>k__BackingField: {fileID: 0}
+    <Mesh>k__BackingField: {fileID: 4172649862315779155, guid: a8a60ec357ea8e345878ab81ed75c145, type: 3}
+  Quantity: 1
+--- !u!65 &6009434718875001729
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -225,29 +247,6 @@ CapsuleCollider:
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5
-  m_Height: 2
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &7070894261933836396
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3172102141589766498}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0fa84783d20a428185a38a9c1db40342, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ItemData:
-    <Name>k__BackingField: Pants_01
-    <Icon>k__BackingField: {fileID: 1634722549506530859, guid: 44d960eac0708457191aecd47ab3876c, type: 3}
-    <Size>k__BackingField: {x: 2, y: 3}
-    <ItemType>k__BackingField: 6
-    <CanStack>k__BackingField: 0
-    <MaxStackQuantity>k__BackingField: 0
-    <ItemUseCase>k__BackingField: {fileID: 0}
-  Quantity: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 3.7147827}
+  m_Center: {x: 0, y: 0, z: 1.3573914}

@@ -16,34 +16,35 @@ namespace Game.Scripts.UI.Equipment.Game.Equipment.Presenter
 
         public void Subscribe()
         {
-            _panelView.WeaponSlot.OnRemoveToInventory += RemoveItemToInventory;
-            _panelView.WeaponSlot.OnDropItemToSlot += DropItemToSlot;
+            _panelView.HeadSlot.OnRemoveToInventory += RemoveItemToInventory;
+            _panelView.HeadSlot.OnDropItemToSlot += DropItemToSlot;
 
             _panelView.BodySlot.OnRemoveToInventory += RemoveItemToInventory;
             _panelView.BodySlot.OnDropItemToSlot += DropItemToSlot;
 
-            _panelView.HeadSlot.OnRemoveToInventory += RemoveItemToInventory;
-            _panelView.HeadSlot.OnDropItemToSlot += DropItemToSlot;
+            _panelView.WeaponSlot01.OnRemoveToInventory += RemoveItemToInventory;
+            _panelView.WeaponSlot01.OnDropItemToSlot += DropItemToSlot;
+
+            _panelView.WeaponSlot02.OnRemoveToInventory += RemoveItemToInventory;
+            _panelView.WeaponSlot02.OnDropItemToSlot += DropItemToSlot;
 
             _panelView.LegsSlot.OnRemoveToInventory += RemoveItemToInventory;
             _panelView.LegsSlot.OnDropItemToSlot += DropItemToSlot;
 
-            _panelView.ItemSlot01.OnRemoveToInventory += RemoveItemToInventory;
-            _panelView.ItemSlot01.OnDropItemToSlot += DropItemToSlot;
+            _panelView.BootsSlot.OnRemoveToInventory += RemoveItemToInventory;
+            _panelView.BootsSlot.OnDropItemToSlot += DropItemToSlot;
 
-            _panelView.ItemSlot02.OnRemoveToInventory += RemoveItemToInventory;
-            _panelView.ItemSlot02.OnDropItemToSlot += DropItemToSlot;
-
-            _panelView.ItemSlot03.OnRemoveToInventory += RemoveItemToInventory;
-            _panelView.ItemSlot03.OnDropItemToSlot += DropItemToSlot;
-
-            _panelView.ShowEquipmentButton.onClick.AddListener(ToggleEquipment);
+            _panelView.HandsSlot.OnRemoveToInventory += RemoveItemToInventory;
+            _panelView.HandsSlot.OnDropItemToSlot += DropItemToSlot;
         }
 
         public void Unsubscribe()
         {
-            _panelView.WeaponSlot.OnRemoveToInventory -= RemoveItemToInventory;
-            _panelView.WeaponSlot.OnDropItemToSlot -= DropItemToSlot;
+            _panelView.WeaponSlot01.OnRemoveToInventory -= RemoveItemToInventory;
+            _panelView.WeaponSlot01.OnDropItemToSlot -= DropItemToSlot;
+
+            _panelView.WeaponSlot02.OnRemoveToInventory -= RemoveItemToInventory;
+            _panelView.WeaponSlot02.OnDropItemToSlot -= DropItemToSlot;
 
             _panelView.BodySlot.OnRemoveToInventory -= RemoveItemToInventory;
             _panelView.BodySlot.OnDropItemToSlot -= DropItemToSlot;
@@ -51,19 +52,14 @@ namespace Game.Scripts.UI.Equipment.Game.Equipment.Presenter
             _panelView.HeadSlot.OnRemoveToInventory -= RemoveItemToInventory;
             _panelView.HeadSlot.OnDropItemToSlot -= DropItemToSlot;
 
-            _panelView.LegsSlot.OnRemoveToInventory += RemoveItemToInventory;
-            _panelView.LegsSlot.OnDropItemToSlot += DropItemToSlot;
+            _panelView.LegsSlot.OnRemoveToInventory -= RemoveItemToInventory;
+            _panelView.LegsSlot.OnDropItemToSlot -= DropItemToSlot;
 
-            _panelView.ItemSlot01.OnRemoveToInventory -= RemoveItemToInventory;
-            _panelView.ItemSlot01.OnDropItemToSlot -= DropItemToSlot;
+            _panelView.BootsSlot.OnRemoveToInventory -= RemoveItemToInventory;
+            _panelView.BootsSlot.OnDropItemToSlot -= DropItemToSlot;
 
-            _panelView.ItemSlot02.OnRemoveToInventory -= RemoveItemToInventory;
-            _panelView.ItemSlot02.OnDropItemToSlot -= DropItemToSlot;
-
-            _panelView.ItemSlot03.OnRemoveToInventory -= RemoveItemToInventory;
-            _panelView.ItemSlot03.OnDropItemToSlot -= DropItemToSlot;
-
-            _panelView.ShowEquipmentButton.onClick.RemoveListener(ToggleEquipment);
+            _panelView.HandsSlot.OnRemoveToInventory -= RemoveItemToInventory;
+            _panelView.HandsSlot.OnDropItemToSlot -= DropItemToSlot;
         }
 
         private void DropItemToSlot(ItemInstance itemInstance, EquipmentSlotView slotView)
@@ -71,9 +67,7 @@ namespace Game.Scripts.UI.Equipment.Game.Equipment.Presenter
             if (slotView.CurrentItem != null)
             {
                 if (_inventory.AddItem(slotView.CurrentItem.itemData))
-                {
                     slotView.EquipItem(itemInstance);
-                }
 
                 return;
             }
@@ -91,7 +85,7 @@ namespace Game.Scripts.UI.Equipment.Game.Equipment.Presenter
 
         public bool EquipWeapon(ItemInstance itemInstance)
         {
-            return EquipToSlot(_panelView.WeaponSlot, itemInstance);
+            return EquipToSlot(_panelView.WeaponSlot01, itemInstance);
         }
 
         public bool EquipArmor(ItemInstance itemInstance)
@@ -101,7 +95,7 @@ namespace Game.Scripts.UI.Equipment.Game.Equipment.Presenter
 
         public bool EquipAmmo(ItemInstance itemInstance)
         {
-            return EquipToSlot(_panelView.ItemSlot01, itemInstance);
+            return EquipToSlot(_panelView.ItemSlot, itemInstance);
         }
 
         private bool EquipToSlot(EquipmentSlotView slot, ItemInstance itemInstance)
@@ -117,11 +111,6 @@ namespace Game.Scripts.UI.Equipment.Game.Equipment.Presenter
 
             slot.EquipItem(itemInstance);
             return true;
-        }
-
-        private void ToggleEquipment()
-        {
-            _panelView.gameObject.SetActive(!_panelView.gameObject.activeSelf);
         }
     }
 }

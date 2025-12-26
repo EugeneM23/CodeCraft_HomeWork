@@ -3,11 +3,14 @@ namespace Inventories
     public enum ItemType
     {
         Weapon,
-        Armor,
+        Body,
         Ammo,
         Item,
         Consumable,
-        Helmet,
-        Pants
+        Head,
+        Legs,
+        Boots,
+        Hands,
+        Shield
     }
 }
