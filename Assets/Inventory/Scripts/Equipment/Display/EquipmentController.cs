@@ -56,15 +56,13 @@ public class EquipmentController : MonoBehaviour
         _view.HandsSlot.OnUnEquipped -= UnEquip;
     }
 
-    private void UnEquip(ItemInstance item, EquipmentSlotView slot)
+    public void UnEquip(ItemInstance item, EquipmentSlotView slot = null)
     {
         _character.UnEquip(item, slot);
     }
 
-    private void Equip(ItemInstance item, EquipmentSlotView slot)
+    public void Equip(ItemInstance item, EquipmentSlotView slot = null)
     {
-        Debug.Log("Equip");
-
         _character.Equip(item, slot);
     }
 }

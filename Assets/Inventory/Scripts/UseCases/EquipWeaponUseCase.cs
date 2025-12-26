@@ -10,6 +10,7 @@ public class EquipWeaponUseCase : ItemUseCase
         if (consumer == null) return;
 
         inventory.RemoveItem(itemInstance.ID);
-        consumer.EquipWeapon(itemInstance);
+        
+        consumer.Equip(itemInstance);
     }
 }

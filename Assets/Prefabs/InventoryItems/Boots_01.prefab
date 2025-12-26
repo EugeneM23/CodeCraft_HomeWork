@@ -226,7 +226,7 @@ MonoBehaviour:
     <ItemType>k__BackingField: 7
     <CanStack>k__BackingField: 0
     <MaxStackQuantity>k__BackingField: 0
-    <ItemUseCase>k__BackingField: {fileID: 0}
+    <ItemUseCase>k__BackingField: {fileID: 11400000, guid: f2a989a94ab8b47909f243ffe364f5c1, type: 2}
     <Mesh>k__BackingField: {fileID: 4631457162544768386, guid: 96f41e41291d0a94d89678e0f6469295, type: 3}
   Quantity: 1
 --- !u!65 &6009434718875001729

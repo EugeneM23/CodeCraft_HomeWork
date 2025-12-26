@@ -41,6 +41,7 @@ public class CharacterEquipment : MonoBehaviour
 
     public void Equip(ItemInstance item, EquipmentSlotView slot)
     {
+        Debug.Log("Equip");
         if (item.itemData.ItemType == ItemType.Shield)
         {
             _weaponMeshRenderer02.mesh = item.itemData.Mesh;
@@ -53,7 +54,7 @@ public class CharacterEquipment : MonoBehaviour
             return;
         }
 
-        _items[slot.ItemType].sharedMesh = item.itemData.Mesh;
+        _items[item.itemData.ItemType].sharedMesh = item.itemData.Mesh;
     }
 
     public void UnEquip(ItemInstance item, EquipmentSlotView slot)

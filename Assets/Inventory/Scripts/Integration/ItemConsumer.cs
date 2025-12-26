@@ -5,13 +5,16 @@ using UnityEngine;
 public class ItemConsumer : MonoBehaviour, IItemConsumer
 {
     public int Health = 50;
+    private EquipmentController _controller;
     public Inventory Inventory { get; private set; }
     private EquipmentPresenter EquipmentPresenter { get; set; }
 
-    public bool EquipWeapon(ItemInstance itemInstance)
+    public bool Equip(ItemInstance itemInstance)
     {
-        if (EquipmentPresenter.EquipWeapon(itemInstance))
-            return true;
+        _controller.Equip(itemInstance);
+        
+        // if (EquipmentPresenter.EquipWeapon(itemInstance))
+        //     return true;
 
         return false;
     }
@@ -44,5 +47,10 @@ public class ItemConsumer : MonoBehaviour, IItemConsumer
     public void SetEquipment(EquipmentPresenter equipmentPresenter)
     {
         EquipmentPresenter = equipmentPresenter;
+    }
+
+    public void SetController(EquipmentController controller)
+    {
+        _controller = controller;
     }
 }

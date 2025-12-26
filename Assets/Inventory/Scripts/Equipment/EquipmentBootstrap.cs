@@ -10,6 +10,7 @@ namespace Game.Scripts.UI.Equipment.Game.Equipment
     public class EquipmentBootstrap : MonoBehaviour
     {
         [SerializeField] private EquipmentPanelView _view;
+        [SerializeField] private EquipmentController _controller;
 
         private ItemConsumer _consumer;
         private EquipmentPresenter _presenter;
@@ -20,6 +21,7 @@ namespace Game.Scripts.UI.Equipment.Game.Equipment
             _consumer = consumer;
             _presenter = new EquipmentPresenter(_view, _consumer.Inventory);
             _consumer.SetEquipment(_presenter);
+            _consumer.SetController(_controller);
         }
 
         private void OnEnable()

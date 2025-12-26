@@ -11,6 +11,6 @@ public class EquipArmorUseCase : ItemUseCase
             return;
 
         inventory.RemoveItem(itemInstance.ID);
-        consumer.EquipArmor(itemInstance);
+        consumer.Equip(itemInstance);
     }
 }
