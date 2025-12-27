@@ -2,7 +2,7 @@ using UnityEngine;
 using Inventories;
 
 [CreateAssetMenu(fileName = "EquipWeaponUseCase", menuName = "InventoryItem/UseCases/EquipWeaponUseCase")]
-public class EquipWeaponUseCase : ItemUseCase
+public class EquipUseCase : ItemUseCase
 {
     public override void Invoke(Inventory inventory, ItemInstance itemInstance)
     {

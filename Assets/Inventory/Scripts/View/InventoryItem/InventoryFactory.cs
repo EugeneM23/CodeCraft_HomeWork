@@ -40,7 +40,6 @@ public class InventoryFactory : MonoBehaviour
 
     public DragItem SpawnDragItem(ItemInstance itemInstance, Vector2 cellSize, Inventory inventory)
     {
-        Debug.Log("Spawn drag item");
         DragItem item = _prefabPool.Spawn<DragItem>(_dragItemPrefab.gameObject, _canvas.GetComponent<RectTransform>());
         item.transform.SetAsLastSibling();
         item.Construct(itemInstance, cellSize, inventory);

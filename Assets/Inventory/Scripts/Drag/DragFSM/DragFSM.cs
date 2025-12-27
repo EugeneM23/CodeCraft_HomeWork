@@ -77,7 +77,7 @@ public class DragFSM : MonoBehaviour
     public void SetupDragContext(ItemInstance itemInstance, Vector3 position, Inventory sourceInventory,
         Vector2Int clickedCell, Vector2Int itemStartCell, EquipmentSlotView slotView = null)
     {
-        Vector2 cellSize = new Vector2(75, 75);
+        Vector2 cellSize = new Vector2(50, 50);
         Context.CurrentDragItem = _factory.SpawnDragItem(itemInstance, cellSize, sourceInventory);
         Context.CurrentDragItem.transform.parent = Context.CurrentDragItem.transform.root;
         Context.CurrentDragItem.transform.position = position;
