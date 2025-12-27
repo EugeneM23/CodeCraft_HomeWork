@@ -23,7 +23,7 @@ public class StartDragFromEquipmentState : BaseState
         _fsm.SetupDragContext(slot.CurrentItem, slot.transform.position, _fsm.MainInventory, clickedCell,
             Vector2Int.zero, slot);
 
-        slot.Unequip();
+        slot.UnEquip();
 
         _fsm.SetState<UpdateDragState>();
     }

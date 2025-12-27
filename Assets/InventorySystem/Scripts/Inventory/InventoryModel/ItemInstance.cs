@@ -8,8 +8,8 @@ namespace Inventories
         public event Action<int> OnStackChanged;
 
         public string ID { get; private set; }
-        public ItemData itemData { get; private set; }
-        public Vector2Int GridPosition { get; set; }
+        public ItemData itemData { get; }
+        public Vector2Int GridPosition { get; }
         public int StackQuantity { get; private set; }
         public ItemUseCase ItemUseCase { get; private set; }
 

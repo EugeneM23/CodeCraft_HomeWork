@@ -64,7 +64,7 @@ public class EquipmentPresenter : MonoBehaviour
         if (!slot.IsEmpty)
         {
             var currentItem = slot.CurrentItem;
-            slot.Unequip();
+            slot.UnEquip();
             _inventory.AddItem(currentItem.itemData);
         }
 
@@ -74,7 +74,7 @@ public class EquipmentPresenter : MonoBehaviour
     private void ReturnToInventory(ItemInstance item)
     {
         if (_inventory.AddItem(item.itemData))
-            _slots[item.itemData.ItemType].Unequip();
+            _slots[item.itemData.ItemType].UnEquip();
     }
 
     public bool EquipItem(ItemInstance item)
@@ -84,7 +84,7 @@ public class EquipmentPresenter : MonoBehaviour
 
         if (!slot.IsEmpty)
         {
-            var currentItem = slot.Unequip();
+            var currentItem = slot.UnEquip();
             _inventory.AddItem(currentItem.itemData);
         }
 

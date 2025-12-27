@@ -261,9 +261,6 @@ MonoBehaviour:
   _dragItemPrefab: {fileID: 6494077023178959131, guid: ced7a2ab9e9864e21888941e7fc700a8, type: 3}
   _inventoryItemPrefab: {fileID: 3334073297244301008, guid: 4c15baa75d82b483abb917b275ec412d, type: 3}
   _itemCatalog:
-  - {fileID: 4751637913041529059, guid: 7746e058d10ed4b74a618e111051fe3f, type: 3}
-  - {fileID: 7863706435233951146, guid: ec522a5a4d72540569bf5782dad53c2e, type: 3}
-  - {fileID: 7066641485950063184, guid: c9e329e9e5a3f4e7eaeead4e646128f2, type: 3}
   - {fileID: 7070894261933836396, guid: 2d17967c122f4480a9ab865ce1992532, type: 3}
   - {fileID: 1441105143803712864, guid: 9de9593e1e39947b6b50224a5f4988a0, type: 3}
   - {fileID: 7070894261933836396, guid: cfdbd8f0601cf4ee08f4555a0a9474ee, type: 3}
