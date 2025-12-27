@@ -14,7 +14,8 @@ namespace Inventories
         [SerializeField] private GameObject _countBackGround;
         [SerializeField] private TMP_Text _count;
         [SerializeField] private DoubleClickHandler _doubleClick;
-        [SerializeField] private ItemUseCase _itemUseCase;
+        
+        private ItemUseCase _itemUseCase;
         public ItemInstance ItemInstance { get; private set; }
 
         private Inventory _inventory;
