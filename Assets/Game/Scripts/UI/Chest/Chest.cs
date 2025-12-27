@@ -9,7 +9,7 @@ namespace Game.Scripts.UI.Chest
     public class Chest : MonoBehaviour, IPointerClickHandler
     {
         [SerializeField] private GameScreenView _mainScreenView;
-        [SerializeField] private InventoryInstaller _inventoryPrefab;
+        [SerializeField] private InventoryBootstrap _inventoryPrefab;
         [FormerlySerializedAs("_testCharacter")] [SerializeField] private ItemConsumer itemConsumer;
 
         private InventoryPresenter _chestInventoryPresenter;

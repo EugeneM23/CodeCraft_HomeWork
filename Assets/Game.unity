@@ -1837,7 +1837,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _view: {fileID: 2068645396}
-  itemConsumer: {fileID: 66427001}
+  _itemConsumer: {fileID: 66427001}
   _mainInventoryPrefab: {fileID: 5830915091178595739, guid: 44cedbd04ce82435a9667ed410b601f2, type: 3}
   _equipmentPrefab: {fileID: 6642913416103080694, guid: 22ba7638006bd47c7af49b1b2a86a487, type: 3}
 --- !u!114 &2068645396

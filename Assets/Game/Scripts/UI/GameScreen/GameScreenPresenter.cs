@@ -2,43 +2,32 @@ using Game.Scripts.UI.Equipment.Game.Equipment;
 using Game.Scripts.UI.GameScreen;
 using Inventories;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Inventories
 {
     public class GameScreenPresenter : MonoBehaviour
     {
         [SerializeField] private GameScreenView _view;
-        [SerializeField] private ItemConsumer itemConsumer;
-        [SerializeField] private InventoryInstaller _mainInventoryPrefab;
+        [SerializeField] private ItemConsumer _itemConsumer;
+        [SerializeField] private InventoryBootstrap _mainInventoryPrefab;
         [SerializeField] private EquipmentBootstrap _equipmentPrefab;
 
         private InventoryPresenter _inventoryPresenter;
 
         private void Start()
         {
-            InventoryInstaller installer = _view.CreateMainInventory(_mainInventoryPrefab);
-            _inventoryPresenter = installer.Presenter;
+            var mainInventory = _view.CreateMainInventory(_mainInventoryPrefab);
+            _inventoryPresenter = mainInventory.Presenter;
 
-            EquipmentBootstrap equipment = _view.CreateEquipment(_equipmentPrefab);
-            equipment.Initialize(itemConsumer);
-            
+            var equipment = _view.CreateEquipment(_equipmentPrefab);
+            equipment.Initialize(_itemConsumer);
+
             _inventoryPresenter.SetEquipment(equipment.Presenter);
         }
 
-        private void OnEnable()
-        {
-            _view.OnInventoryButtonClicked += ToggleInventory;
-        }
+        private void OnEnable() => _view.OnInventoryButtonClicked += ToggleInventory;
+        private void OnDisable() => _view.OnInventoryButtonClicked -= ToggleInventory;
 
-        private void OnDisable()
-        {
-            _view.OnInventoryButtonClicked -= ToggleInventory;
-        }
-
-        private void ToggleInventory()
-        {
-            _inventoryPresenter.Toggle(itemConsumer.Inventory);
-        }
+        private void ToggleInventory() => _inventoryPresenter.Toggle(_itemConsumer.Inventory);
     }
 }

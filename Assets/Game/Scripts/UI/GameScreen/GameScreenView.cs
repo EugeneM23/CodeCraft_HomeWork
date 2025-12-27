@@ -35,7 +35,7 @@ namespace Game.Scripts.UI.GameScreen
             OnInventoryButtonClicked?.Invoke();
         }
 
-        public InventoryInstaller CreateMainInventory(InventoryInstaller mainInventoryPrefab)
+        public InventoryBootstrap CreateMainInventory(InventoryBootstrap mainInventoryPrefab)
         {
             var installer = Instantiate(mainInventoryPrefab, _mainInventoryRoot);
             installer.Initialize(_inventoryFactory, _dragFSM);
@@ -54,7 +54,7 @@ namespace Game.Scripts.UI.GameScreen
             return equipment;
         }
 
-        public InventoryInstaller CreateSecondInventory(InventoryInstaller secondInventoryPrefab)
+        public InventoryBootstrap CreateSecondInventory(InventoryBootstrap secondInventoryPrefab)
         {
             var installer = Instantiate(secondInventoryPrefab, _secondInventoryRoot);
             installer.Initialize(_inventoryFactory, _dragFSM);
