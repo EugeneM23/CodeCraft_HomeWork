@@ -15,6 +15,7 @@ namespace Inventories
         [field: SerializeField] public int MaxStackQuantity { get; private set; }
         [field: SerializeField] public ItemUseCase ItemUseCase { get; private set; }
         [field: SerializeField] public Mesh Mesh { get; private set; }
+        [field: SerializeField] public string Discription { get; private set; }
 
         public ItemData(ItemData itemData)
         {
@@ -26,6 +27,7 @@ namespace Inventories
             MaxStackQuantity = itemData.MaxStackQuantity;
             ItemUseCase = itemData.ItemUseCase;
             Mesh = itemData.Mesh;
+            Discription = itemData.Discription;
         }
     }
 }
