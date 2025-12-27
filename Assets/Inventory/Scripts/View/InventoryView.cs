@@ -10,6 +10,7 @@ namespace Inventories
         public event Action OnReorganizeClicked;
         public event Action OnCollectAllClicked;
         public event Action OnCloseClicked;
+        public event Action OnEquipClicked;
 
         [SerializeField] private CellView _cellPrefab;
         [SerializeField] private InventoryItem _itemPrefab;
@@ -18,6 +19,7 @@ namespace Inventories
         [SerializeField] private Button _reorganizeButton;
         [SerializeField] private Button _collectAllButton;
         [SerializeField] private Button _closeButton;
+        [SerializeField] private Button _showEquipmentButton;
 
         public CellView[,] Cells { get; private set; }
         private readonly Dictionary<string, InventoryItem> _items = new();
@@ -34,6 +36,9 @@ namespace Inventories
 
             if (_closeButton != null)
                 _closeButton.onClick.AddListener(HandleCloseClick);
+
+            if (_showEquipmentButton != null)
+                _showEquipmentButton.onClick.AddListener(HandleShowEquipmentClick);
         }
 
         private void OnDisable()
@@ -46,6 +51,9 @@ namespace Inventories
 
             if (_closeButton != null)
                 _closeButton.onClick.RemoveListener(HandleCloseClick);
+            
+            if (_showEquipmentButton != null)
+                _showEquipmentButton.onClick.RemoveListener(HandleShowEquipmentClick);
         }
 
         public void Initialize(int width, int height, Inventory inventory, InventoryFactory factory)
@@ -70,7 +78,7 @@ namespace Inventories
 
             _items[item.ID] = inventoryItem;
 
-            foreach (Vector2Int pos in positions) 
+            foreach (Vector2Int pos in positions)
                 Cells[pos.x, pos.y].InventoryItem = inventoryItem;
         }
 
@@ -90,12 +98,12 @@ namespace Inventories
 
         public void ClearAllItems()
         {
-            foreach (InventoryItem item in _items.Values) 
+            foreach (InventoryItem item in _items.Values)
                 _factory.DeSpawn(item.gameObject);
 
             _items.Clear();
 
-            foreach (CellView cell in Cells) 
+            foreach (CellView cell in Cells)
                 cell.Clear();
         }
 
@@ -131,5 +139,7 @@ namespace Inventories
         private void HandleReorganizeClick() => OnReorganizeClicked?.Invoke();
         private void HandleCollectAllClick() => OnCollectAllClicked?.Invoke();
         private void HandleCloseClick() => OnCloseClicked?.Invoke();
+
+        private void HandleShowEquipmentClick() => OnEquipClicked?.Invoke();
     }
 }

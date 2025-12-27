@@ -380,7 +380,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 690, y: 207}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1001 &740145194
@@ -759,7 +759,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _mainScreenView: {fileID: 2068645396}
-  _inventoryPrefab: {fileID: 5830915091178595739, guid: 17bcaeadf80774540bf60013380a4597, type: 3}
+  _inventoryPrefab: {fileID: 5830915091178595739, guid: c1174cce97b694c81908617ed2335148, type: 3}
   itemConsumer: {fileID: 66427001}
 --- !u!65 &1059128929
 BoxCollider:
@@ -1103,14 +1103,14 @@ RectTransform:
   m_GameObject: {fileID: 1358136005}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 2068645394}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: -688.84, y: 207}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1001 &1435727756
@@ -1447,7 +1447,7 @@ Camera:
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 3583
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -1467,13 +1467,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1611256434}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: -0.65320915, z: 0.7571776, w: 0}
-  m_LocalPosition: {x: -4.1, y: 6.1, z: -16.32}
+  m_LocalRotation: {x: 0, y: -0.7424323, z: 0.6699212, w: 0}
+  m_LocalPosition: {x: -4.1, y: 6.03, z: -7.02}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 81.568, y: 0, z: 180}
+  m_LocalEulerAnglesHint: {x: 95.87799, y: 0, z: 180}
 --- !u!114 &1611256439
 MonoBehaviour:
   m_ObjectHideFlags: 0

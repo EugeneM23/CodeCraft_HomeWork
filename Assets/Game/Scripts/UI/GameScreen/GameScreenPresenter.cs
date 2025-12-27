@@ -22,6 +22,8 @@ namespace Inventories
 
             EquipmentBootstrap equipment = _view.CreateEquipment(_equipmentPrefab);
             equipment.Initialize(itemConsumer);
+            
+            _inventoryPresenter.SetEquipment(equipment.Presenter);
         }
 
         private void OnEnable()

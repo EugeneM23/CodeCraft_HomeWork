@@ -1,4 +1,7 @@
+using System;
 using System.Collections.Generic;
+using Game.Scripts.UI.Equipment.Game.Equipment;
+using Game.Scripts.UI.Equipment.Game.Equipment.Presenter;
 using UnityEngine;
 
 namespace Inventories
@@ -7,8 +10,9 @@ namespace Inventories
     {
         private readonly InventoryView _view;
         private readonly Inventory _inventory;
-        private Vector2Int[] _highlightedCells = new Vector2Int[0];
+        private Vector2Int[] _highlightedCells = Array.Empty<Vector2Int>();
         private Inventory _mainInventory;
+        private EquipmentPresenter _equipment;
 
         private bool _isOpen;
 
@@ -30,7 +34,10 @@ namespace Inventories
             _view.OnReorganizeClicked += OnReorganize;
             _view.OnCollectAllClicked += OnCollectAll;
             _view.OnCloseClicked += OnHide;
+            _view.OnEquipClicked += OnEquipedClick;
         }
+
+        private void OnEquipedClick() => _equipment.Toggle();
 
         private void Unsubscribe()
         {
@@ -42,6 +49,7 @@ namespace Inventories
             _view.OnReorganizeClicked -= OnReorganize;
             _view.OnCollectAllClicked -= OnCollectAll;
             _view.OnCloseClicked -= OnHide;
+            _view.OnEquipClicked -= OnEquipedClick;
         }
 
         private void OnShow(Inventory mainInventory)
@@ -54,6 +62,8 @@ namespace Inventories
             Subscribe();
             _view.SetActive(true);
             UpdateView();
+
+            _equipment?.Show();
         }
 
         private void OnHide()
@@ -83,7 +93,7 @@ namespace Inventories
                 _view.DisplayItem(item, positions);
             }
         }
-  
+
         private void OnItemAdded(ItemInstance item)
         {
             Vector2Int[] positions = _inventory.GetItemGridPositions(item);
@@ -102,8 +112,8 @@ namespace Inventories
             if (!CanHighlightCells(cells)) return;
 
             _highlightedCells = cells;
-            
-            foreach (Vector2Int cell in cells) 
+
+            foreach (Vector2Int cell in cells)
                 _view.HighlightCell(cell);
         }
 
@@ -149,6 +159,11 @@ namespace Inventories
                 if (_mainInventory.AddItem(item.itemData, item.StackQuantity))
                     _inventory.RemoveItem(item.ID);
             }
+        }
+
+        public void SetEquipment(EquipmentPresenter equipment)
+        {
+            _equipment = equipment;
         }
     }
 }

@@ -97,7 +97,7 @@ namespace Game.Scripts.UI.Equipment.Game.Equipment.Presenter
         public bool EquipToSlot(ItemInstance itemInstance)
         {
             var slot = _equipmentSlots[itemInstance.itemData.ItemType];
-            
+
             if (!slot.IsEmpty)
             {
                 ItemInstance currentItem = slot.CurrentItem;
@@ -110,5 +110,12 @@ namespace Game.Scripts.UI.Equipment.Game.Equipment.Presenter
             slot.EquipItem(itemInstance);
             return true;
         }
+
+        public void Toggle()
+        {
+            _panelView.gameObject.SetActive(!_panelView.gameObject.activeSelf);
+        }
+
+        public void Show() => _panelView.gameObject.SetActive(true);
     }
 }

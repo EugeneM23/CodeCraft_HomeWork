@@ -15,7 +15,7 @@ namespace Game.Scripts.UI.Equipment.Game.Equipment.View
         public event Action<ItemInstance, EquipmentSlotView> OnDropItemToSlot;
 
         [SerializeField] private Image _itemIcon;
-        [FormerlySerializedAs("_allowedItemType")] [SerializeField] private ItemType itemType;
+        [SerializeField] private ItemType itemType;
         [SerializeField] private DoubleClickHandler _doubleClick;
 
         [SerializeField] private Image _background;
