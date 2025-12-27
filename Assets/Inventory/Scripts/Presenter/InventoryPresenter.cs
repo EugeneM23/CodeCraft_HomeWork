@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Inventories
 {
-    public class InventoryBootstrap
+    public class InventoryPresenter
     {
         private readonly InventoryView _view;
         private readonly Inventory _inventory;
@@ -12,7 +12,7 @@ namespace Inventories
 
         private bool _isOpen;
 
-        public InventoryBootstrap(InventoryView view, Inventory inventory, InventoryFactory factory)
+        public InventoryPresenter(InventoryView view, Inventory inventory, InventoryFactory factory)
         {
             _view = view;
             _inventory = inventory;

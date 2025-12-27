@@ -41,7 +41,6 @@ public class CharacterEquipment : MonoBehaviour
 
     public void Equip(ItemInstance item, EquipmentSlotView slot)
     {
-        Debug.Log("Equip");
         if (item.itemData.ItemType == ItemType.Shield)
         {
             _weaponMeshRenderer02.mesh = item.itemData.Mesh;

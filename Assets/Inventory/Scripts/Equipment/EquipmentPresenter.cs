@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Game.Scripts.UI.Equipment.Game.Equipment.View;
 using Inventories;
 
@@ -8,10 +9,20 @@ namespace Game.Scripts.UI.Equipment.Game.Equipment.Presenter
         private readonly EquipmentPanelView _panelView;
         private readonly Inventory _inventory;
 
+        private readonly Dictionary<ItemType, EquipmentSlotView> _equipmentSlots = new();
+
         public EquipmentPresenter(EquipmentPanelView panelView, Inventory inventory)
         {
             _inventory = inventory;
             _panelView = panelView;
+
+            _equipmentSlots[ItemType.Head] = _panelView.HeadSlot;
+            _equipmentSlots[ItemType.Body] = _panelView.BodySlot;
+            _equipmentSlots[ItemType.Legs] = _panelView.LegsSlot;
+            _equipmentSlots[ItemType.Boots] = _panelView.BootsSlot;
+            _equipmentSlots[ItemType.Hands] = _panelView.HandsSlot;
+            _equipmentSlots[ItemType.Weapon] = _panelView.WeaponSlot01;
+            _equipmentSlots[ItemType.Shield] = _panelView.WeaponSlot02;
         }
 
         public void Subscribe()
@@ -83,23 +94,10 @@ namespace Game.Scripts.UI.Equipment.Game.Equipment.Presenter
             }
         }
 
-        public bool EquipWeapon(ItemInstance itemInstance)
+        public bool EquipToSlot(ItemInstance itemInstance)
         {
-            return EquipToSlot(_panelView.WeaponSlot01, itemInstance);
-        }
-
-        public bool EquipArmor(ItemInstance itemInstance)
-        {
-            return EquipToSlot(_panelView.BodySlot, itemInstance);
-        }
-
-        public bool EquipAmmo(ItemInstance itemInstance)
-        {
-            return EquipToSlot(_panelView.ItemSlot, itemInstance);
-        }
-
-        private bool EquipToSlot(EquipmentSlotView slot, ItemInstance itemInstance)
-        {
+            var slot = _equipmentSlots[itemInstance.itemData.ItemType];
+            
             if (!slot.IsEmpty)
             {
                 ItemInstance currentItem = slot.CurrentItem;

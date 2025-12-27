@@ -11,23 +11,12 @@ public class ItemConsumer : MonoBehaviour, IItemConsumer
 
     public bool Equip(ItemInstance itemInstance)
     {
-        _controller.Equip(itemInstance);
-        
-        // if (EquipmentPresenter.EquipWeapon(itemInstance))
-        //     return true;
+        if (EquipmentPresenter.EquipToSlot(itemInstance))
+            return true;
 
         return false;
     }
 
-    public bool EquipArmor(ItemInstance itemInstance)
-    {
-        return EquipmentPresenter != null && EquipmentPresenter.EquipArmor(itemInstance);
-    }
-
-    public bool EquipAmmo(ItemInstance itemInstance)
-    {
-        return EquipmentPresenter != null && EquipmentPresenter.EquipAmmo(itemInstance);
-    }
 
     public new T GetComponent<T>()
     {

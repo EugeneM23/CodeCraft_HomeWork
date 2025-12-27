@@ -12,20 +12,20 @@ namespace Game.Scripts.UI.Chest
         [SerializeField] private InventoryInstaller _inventoryPrefab;
         [FormerlySerializedAs("_testCharacter")] [SerializeField] private ItemConsumer itemConsumer;
 
-        private InventoryBootstrap _chestInventoryBootstrap;
+        private InventoryPresenter _chestInventoryPresenter;
 
         public void OnPointerClick(PointerEventData eventData)
         {
-            if (_chestInventoryBootstrap == null)
+            if (_chestInventoryPresenter == null)
                 CreateChestInventory();
 
-            Debug.Log(_chestInventoryBootstrap == null);
-            _chestInventoryBootstrap.Toggle(itemConsumer.Inventory);
+            Debug.Log(_chestInventoryPresenter == null);
+            _chestInventoryPresenter.Toggle(itemConsumer.Inventory);
         }
 
         private void CreateChestInventory()
         {
-            _chestInventoryBootstrap = _mainScreenView.CreateSecondInventory(_inventoryPrefab).Bootstrap;
+            _chestInventoryPresenter = _mainScreenView.CreateSecondInventory(_inventoryPrefab).Presenter;
         }
     }
 }
