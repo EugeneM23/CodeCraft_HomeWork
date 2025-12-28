@@ -13,6 +13,7 @@ namespace Inventories
         [SerializeField] private EquipmentBootstrap _equipmentPrefab;
 
         private InventoryPresenter _inventoryPresenter;
+        private EquipmentPresenter _equipmentPresenter;
 
         private void Start()
         {
@@ -20,7 +21,9 @@ namespace Inventories
             _inventoryPresenter = mainInventory.Presenter;
 
             var equipment = _view.CreateEquipment(_equipmentPrefab);
+            _equipmentPresenter = equipment.Presenter;
             equipment.Initialize(_itemConsumer);
+            equipment.gameObject.SetActive(false);
 
             _inventoryPresenter.SetEquipment(equipment.Presenter);
         }
@@ -28,6 +31,10 @@ namespace Inventories
         private void OnEnable() => _view.OnInventoryButtonClicked += ToggleInventory;
         private void OnDisable() => _view.OnInventoryButtonClicked -= ToggleInventory;
 
-        private void ToggleInventory() => _inventoryPresenter.Toggle(_itemConsumer.Inventory);
+        private void ToggleInventory()
+        {
+            _inventoryPresenter.Toggle(_itemConsumer.Inventory);
+            _equipmentPresenter.Toggle();
+        }
     }
 }

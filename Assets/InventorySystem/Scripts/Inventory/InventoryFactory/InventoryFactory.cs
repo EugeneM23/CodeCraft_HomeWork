@@ -16,6 +16,7 @@ public class InventoryFactory : MonoBehaviour
     private void Start()
     {
         _prefabPool = new PrefabPool();
+        
         foreach (SceneItem item in _itemCatalog)
             _items[item.ItemData.Name] = item;
     }

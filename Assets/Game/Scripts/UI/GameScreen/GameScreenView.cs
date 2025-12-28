@@ -17,7 +17,7 @@ namespace Game.Scripts.UI.GameScreen
         [SerializeField] private InventoryFactory _inventoryFactory;
         [SerializeField] private DragFSM _dragFSM;
         [SerializeField] private ItemConsumer _itemConsumer;
-        
+
         private RectTransform _mainInventoryRect;
 
         private void OnEnable()
@@ -42,15 +42,15 @@ namespace Game.Scripts.UI.GameScreen
             _dragFSM.SetMainInventory(installer.Inventory);
             _itemConsumer.SetInventory(installer.Inventory);
             installer.Inventory.Owner = _itemConsumer;
-            
+
             _mainInventoryRect = installer.GetComponent<RectTransform>();
-            
+
             return installer;
         }
 
         public EquipmentBootstrap CreateEquipment(EquipmentBootstrap equipmentPrefab)
         {
-            var equipment = Instantiate(equipmentPrefab, _mainInventoryRect);
+            var equipment = Instantiate(equipmentPrefab, _mainInventoryRoot.transform);
             return equipment;
         }
 

@@ -59,5 +59,11 @@ namespace Inventories
         public void PlayStackDecreased() => _stackDecreased.Play();
 
         public void PlayStackIncreased() => _stackIncreased.Play();
+
+        public void Play(AudioClip dropToInventory)
+        {
+            _addToInventory.clip = dropToInventory;
+            _addToInventory.Play();
+        }
     }
 }

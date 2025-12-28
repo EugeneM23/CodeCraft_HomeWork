@@ -244,11 +244,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ItemData:
     <Name>k__BackingField: Helmet_01
-    <Icon>k__BackingField: {fileID: 5464958072073079247, guid: 50ee7aa8aba904802875a81e559dcc70, type: 3}
-    <Size>k__BackingField: {x: 2, y: 2}
+    <Description>k__BackingField: 
     <ItemType>k__BackingField: 5
+    <Icon>k__BackingField: {fileID: 5464958072073079247, guid: 50ee7aa8aba904802875a81e559dcc70, type: 3}
+    <Mesh>k__BackingField: {fileID: 6298414674511371952, guid: a8a60ec357ea8e345878ab81ed75c145, type: 3}
+    <Size>k__BackingField: {x: 2, y: 2}
     <CanStack>k__BackingField: 0
     <MaxStackQuantity>k__BackingField: 0
     <ItemUseCase>k__BackingField: {fileID: 11400000, guid: f2a989a94ab8b47909f243ffe364f5c1, type: 2}
-    <Mesh>k__BackingField: {fileID: 6298414674511371952, guid: a8a60ec357ea8e345878ab81ed75c145, type: 3}
+    ItemAudioData:
+      <StartDrag>k__BackingField: {fileID: 0}
+      <DropToInventory>k__BackingField: {fileID: 8300000, guid: a36e619e764824a64a7d4ea7c1c0ddd0, type: 3}
+      <EquipItem>k__BackingField: {fileID: 0}
+      <DropToScene>k__BackingField: {fileID: 0}
+      <UseItem>k__BackingField: {fileID: 0}
+  ItemAudioData:
+    <StartDrag>k__BackingField: {fileID: 0}
+    <DropToInventory>k__BackingField: {fileID: 0}
+    <EquipItem>k__BackingField: {fileID: 0}
+    <DropToScene>k__BackingField: {fileID: 0}
+    <UseItem>k__BackingField: {fileID: 0}
   Quantity: 1

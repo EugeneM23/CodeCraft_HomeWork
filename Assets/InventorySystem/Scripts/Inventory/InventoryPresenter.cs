@@ -60,7 +60,7 @@ namespace Inventories
             Subscribe();
             _view.SetActive(true);
             UpdateView();
-            _equipment?.Show();
+            //_equipment?.Show();
         }
 
         private void Hide()

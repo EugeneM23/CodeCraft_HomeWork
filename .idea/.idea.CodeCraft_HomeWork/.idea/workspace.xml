@@ -6,27 +6,22 @@
   <component name="ChangeListManager">
     <list default="true" id="6f0b762c-5415-4a85-b17b-cc44fd47261d" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.CodeCraft_HomeWork/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.CodeCraft_HomeWork/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/AssetPacks/Classic_RPG_GUI/Parts/inventory_frame_little_long.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/AssetPacks/Classic_RPG_GUI/Parts/inventory_frame_little_long.png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/AssetPacks/Classic_RPG_GUI/Parts/inventory_frame_little_long_r.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/AssetPacks/Classic_RPG_GUI/Parts/inventory_frame_little_long_r.png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Prefabs/Equipment/EquipmentWindow.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Prefabs/Equipment/EquipmentWindow.prefab" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Prefabs/Inventory/InventoryItem.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Prefabs/Inventory/InventoryItem.prefab" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Inventory/InventoryView/InventoryItem.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Inventory/InventoryView/InventoryItem.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Sprites/2025-12-27 00.38.01.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Sprites/2025-12-27 00.38.01.jpg.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Sprites/2025-12-27 01.01.31.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Sprites/2025-12-27 01.01.31.jpg.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Sprites/ChatGPT Image 25 груд. 2025 р., 11_32_42.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Sprites/ChatGPT Image 25 груд. 2025 р., 11_32_42.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Sprites/ChatGPT Image 25 груд. 2025 р., 12_54_35.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Sprites/ChatGPT Image 25 груд. 2025 р., 12_54_35.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Sprites/ChatGPT Image 26 груд. 2025 р., 18_00_23.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Sprites/ChatGPT Image 26 груд. 2025 р., 18_00_23.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Sprites/ChatGPT Image 26 груд. 2025 р., 18_07_23.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Sprites/ChatGPT Image 26 груд. 2025 р., 18_07_23.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Sprites/ChatGPT Image 27 груд. 2025 р., 22_24_14.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Sprites/ChatGPT Image 27 груд. 2025 р., 22_24_14.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Sprites/ChatGPT Image 27 груд. 2025 р., 22_33_53.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Sprites/ChatGPT Image 27 груд. 2025 р., 22_33_53.png.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/UI/GameScreen/GameScreenPresenter.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/UI/GameScreen/GameScreenPresenter.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/UI/GameScreen/GameScreenView.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/UI/GameScreen/GameScreenView.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Prefabs/InventoryItems/Armor_01.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Prefabs/InventoryItems/Armor_01.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Prefabs/InventoryItems/Armor_02.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Prefabs/InventoryItems/Armor_02.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Prefabs/InventoryItems/Heal_Potion.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Prefabs/InventoryItems/Heal_Potion.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Prefabs/InventoryItems/Helmet_01.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Prefabs/InventoryItems/Helmet_01.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Prefabs/InventoryItems/Sword_01.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Prefabs/InventoryItems/Sword_01.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Audio/AudioPlayer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Audio/AudioPlayer.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Audio/InventoryAudioController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Audio/InventoryAudioController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Common/SceneItem.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Common/SceneItem.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Equipment/EquipmentBootstrap.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Equipment/EquipmentBootstrap.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Equipment/EquipmentPresenter.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Equipment/EquipmentPresenter.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Inventory/InventoryFactory/InventoryFactory.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Inventory/InventoryFactory/InventoryFactory.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Inventory/InventoryModel/ItemData.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Inventory/InventoryModel/ItemData.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Inventory/InventoryPresenter.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Inventory/InventoryPresenter.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Resources/AudioPlayer.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Resources/AudioPlayer.prefab" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

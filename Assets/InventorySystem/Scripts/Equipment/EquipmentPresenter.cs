@@ -12,7 +12,7 @@ public class EquipmentPresenter : MonoBehaviour
     private Inventory _inventory;
     private Dictionary<ItemType, EquipmentSlotView> _slots;
 
-    public void Initialize(Inventory inventory)
+    public void Initialize(Inventory inventory = null)
     {
         _inventory = inventory;
         InitializeSlots();
@@ -91,7 +91,12 @@ public class EquipmentPresenter : MonoBehaviour
         return slot.Equip(item);
     }
 
-    public void Toggle() => _view.gameObject.SetActive(!_view.gameObject.activeSelf);
+    public void Toggle()
+    {
+        Debug.Log(_view.gameObject.activeSelf);
+        _view.gameObject.SetActive(!_view.gameObject.activeSelf);
+    }
+
     public void Show() => _view.gameObject.SetActive(true);
     public void Hide() => _view.gameObject.SetActive(false);
 }
