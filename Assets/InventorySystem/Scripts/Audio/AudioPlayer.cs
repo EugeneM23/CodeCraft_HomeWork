@@ -63,6 +63,7 @@ namespace Inventories
         public void Play(AudioClip dropToInventory)
         {
             _addToInventory.clip = dropToInventory;
+            _addToInventory.pitch = Random.Range(0.7f, 1.1f);
             _addToInventory.Play();
         }
     }
