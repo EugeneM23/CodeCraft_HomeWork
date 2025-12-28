@@ -19,7 +19,7 @@ public class EndDragToSceneState : BaseState
             return;
         }
 
-        ItemInstance draggedItem = _fsm.Context.CurrentDragItem.ItemInstance;
+        Item draggedItem = _fsm.Context.CurrentDragItem.Item;
         _factory.SpawnSceneItem(draggedItem.itemData, draggedItem.StackQuantity, hit.point);
         
         _fsm.SetState<FinishDragState>();

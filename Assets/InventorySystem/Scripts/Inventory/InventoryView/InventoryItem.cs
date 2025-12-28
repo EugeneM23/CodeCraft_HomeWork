@@ -16,7 +16,7 @@ namespace Inventories
         [SerializeField] private DoubleClickHandler _doubleClick;
         
         private ItemUseCase _itemUseCase;
-        public ItemInstance ItemInstance { get; private set; }
+        public Item Item { get; private set; }
 
         private Inventory _inventory;
 
@@ -34,13 +34,13 @@ namespace Inventories
 
         private void OnDoubleClicked()
         {
-            _itemUseCase.Invoke(_inventory, ItemInstance);
+            _itemUseCase.Invoke(_inventory, Item);
         }
 
         private void OnDestroy()
         {
-            if (ItemInstance != null)
-                ItemInstance.OnStackChanged -= UpdateQuantity;
+            if (Item != null)
+                Item.OnStackChanged -= UpdateQuantity;
         }
 
         private void UpdateQuantity(int quantity)
@@ -48,12 +48,12 @@ namespace Inventories
             _count.text = quantity.ToString();
         }
 
-        public void SetupItem(ItemInstance item, Vector2 cellSize, Inventory inventory)
+        public void SetupItem(Item item, Vector2 cellSize, Inventory inventory)
         {
-            if (ItemInstance != null)
-                ItemInstance.OnStackChanged -= UpdateQuantity;
+            if (Item != null)
+                Item.OnStackChanged -= UpdateQuantity;
 
-            ItemInstance = item;
+            Item = item;
             _itemImage.sprite = item.itemData.Icon;
 
             bool showCount = item.CanStack;
@@ -63,7 +63,7 @@ namespace Inventories
             if (showCount)
                 _count.text = item.StackQuantity.ToString();
 
-            ItemInstance.OnStackChanged += UpdateQuantity;
+            Item.OnStackChanged += UpdateQuantity;
 
             Vector2 itemSize = new Vector2(
                 cellSize.x * item.itemData.Size.x,

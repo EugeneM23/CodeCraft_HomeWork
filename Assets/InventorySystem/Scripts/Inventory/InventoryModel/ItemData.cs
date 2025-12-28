@@ -8,27 +8,27 @@ namespace Inventories
     {
         [Header("General")]
         [field: SerializeField]
-        public string Name { get; private set; }
+        public string Name { get;  set; }
 
-        [field: SerializeField] public string Description { get; private set; }
-        [field: SerializeField] public ItemType ItemType { get; private set; }
+        [field: SerializeField] public string Description { get;  set; }
+        [field: SerializeField] public ItemType ItemType { get;  set; }
 
         [Header("Visual")]
         [field: SerializeField]
-        public Sprite Icon { get; private set; }
+        public Sprite Icon { get;  set; }
 
-        [field: SerializeField] public Mesh Mesh { get; private set; }
+        [field: SerializeField] public Mesh Mesh { get;  set; }
 
         [Header("Inventory")]
         [field: SerializeField]
-        public Vector2Int Size { get; private set; }
+        public Vector2Int Size { get;  set; }
 
-        [field: SerializeField] public bool CanStack { get; private set; }
-        [field: SerializeField] public int MaxStackQuantity { get; private set; }
+        [field: SerializeField] public bool CanStack { get;  set; }
+        [field: SerializeField] public int MaxStackQuantity { get;  set; }
 
         [Header("Usage")]
         [field: SerializeField]
-        public ItemUseCase ItemUseCase { get; private set; }
+        public ItemUseCase ItemUseCase { get;  set; }
 
         [field: SerializeField] public ItemAudioData ItemAudioData;
         public ItemData(ItemData itemData)

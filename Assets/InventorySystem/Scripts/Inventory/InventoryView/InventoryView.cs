@@ -70,7 +70,7 @@ namespace Inventories
             gameObject.SetActive(active);
         }
 
-        public void DisplayItem(ItemInstance item, Vector2Int[] positions)
+        public void DisplayItem(Item item, Vector2Int[] positions)
         {
             InventoryItem inventoryItem = _factory.SpawnItem(_itemPrefab, _gridContainer);
             inventoryItem.transform.position = Cells[positions[0].x, positions[0].y].transform.position;

@@ -74,11 +74,11 @@ public class DragFSM : MonoBehaviour
         return _raycastDetector.TryGetSceneRaycastHit(out raycastHit);
     }
 
-    public void SetupDragContext(ItemInstance itemInstance, Vector3 position, Inventory sourceInventory,
+    public void SetupDragContext(Item item, Vector3 position, Inventory sourceInventory,
         Vector2Int clickedCell, Vector2Int itemStartCell, EquipmentSlotView slotView = null)
     {
         Vector2 cellSize = new Vector2(50, 50);
-        Context.CurrentDragItem = _factory.SpawnDragItem(itemInstance, cellSize, sourceInventory);
+        Context.CurrentDragItem = _factory.SpawnDragItem(item, cellSize, sourceInventory);
         Context.CurrentDragItem.transform.parent = Context.CurrentDragItem.transform.root;
         Context.CurrentDragItem.transform.position = position;
         Context.SourceInventory = sourceInventory;

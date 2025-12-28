@@ -374,7 +374,7 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   _view: {fileID: 2550732703897415888}
-  _columns: 7
+  _columns: 6
   _rows: 5
   _initializeItems:
   - {fileID: 7070894261933836396, guid: 79b534e7ec75a462b89b81d5956eb237, type: 3}

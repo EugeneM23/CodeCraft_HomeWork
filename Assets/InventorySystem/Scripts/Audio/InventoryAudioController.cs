@@ -30,18 +30,18 @@ public class InventoryAudioController
         _inventory.OnStackDecreased -= OnStackDecreased;
     }
 
-    private void OnStackDecreased(ItemInstance _) => _audioPlayer.PlayStackDecreased();
+    private void OnStackDecreased(Item _) => _audioPlayer.PlayStackDecreased();
 
-    private void OnStackIncreased(ItemInstance _) => _audioPlayer.PlayStackIncreased();
+    private void OnStackIncreased(Item _) => _audioPlayer.PlayStackIncreased();
 
-    private void OnItemRemovedInventory(ItemInstance item)
+    private void OnItemRemovedInventory(Item item)
     {
         if (item.itemData.ItemAudioData.StartDrag == null) return;
 
         _audioPlayer.Play(item.itemData.ItemAudioData.StartDrag);
     }
 
-    private void OnItemAddedToInventory(ItemInstance item)
+    private void OnItemAddedToInventory(Item item)
     {
         if (item.itemData.ItemAudioData.DropToInventory == null) return;
 

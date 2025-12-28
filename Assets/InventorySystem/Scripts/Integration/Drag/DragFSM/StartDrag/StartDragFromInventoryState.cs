@@ -15,19 +15,19 @@ public class StartDragFromInventoryState : BaseState
             return;
         }
 
-        ItemInstance itemInstance = cell.InventoryItem.ItemInstance;
+        Item item = cell.InventoryItem.Item;
         Vector3 itemPosition = cell.InventoryItem.transform.position;
-        Vector2Int itemStartCell = cell.Inventory.GetItemGridPositions(itemInstance)[0];
+        Vector2Int itemStartCell = cell.Inventory.GetItemGridPositions(item)[0];
 
         RectTransform cellRect = cell.InventoryItem.GetComponent<RectTransform>();
-        Vector2Int clickedCell = _fsm.CalculateClickedCellInSlot(cellRect, itemInstance.itemData.Size);
+        Vector2Int clickedCell = _fsm.CalculateClickedCellInSlot(cellRect, item.itemData.Size);
         
         Vector2Int adjustedClickedCell =
             new Vector2Int(itemStartCell.x + clickedCell.x, itemStartCell.y + clickedCell.y);
 
-        cell.Inventory.RemoveItem(itemInstance.ID);
+        cell.Inventory.RemoveItem(item.ID);
 
-        _fsm.SetupDragContext(itemInstance, itemPosition, cell.Inventory, adjustedClickedCell, itemStartCell);
+        _fsm.SetupDragContext(item, itemPosition, cell.Inventory, adjustedClickedCell, itemStartCell);
 
         _fsm.SetState<UpdateDragState>();
     }

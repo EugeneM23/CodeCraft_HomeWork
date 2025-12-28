@@ -84,20 +84,20 @@ namespace Inventories
         {
             _view.ClearAllItems();
 
-            foreach (ItemInstance item in _inventory)
+            foreach (Item item in _inventory)
             {
                 Vector2Int[] positions = _inventory.GetItemGridPositions(item);
                 _view.DisplayItem(item, positions);
             }
         }
 
-        private void OnItemAdded(ItemInstance item)
+        private void OnItemAdded(Item item)
         {
             Vector2Int[] positions = _inventory.GetItemGridPositions(item);
             _view.DisplayItem(item, positions);
         }
 
-        private void OnItemRemoved(ItemInstance item) => _view.RemoveItem(item.ID);
+        private void OnItemRemoved(Item item) => _view.RemoveItem(item.ID);
 
         private void OnHighlight(Vector2Int[] cells)
         {
@@ -139,9 +139,9 @@ namespace Inventories
 
         private void OnCollectAll()
         {
-            var itemsToCollect = new List<ItemInstance>(_inventory);
+            var itemsToCollect = new List<Item>(_inventory);
 
-            foreach (ItemInstance item in itemsToCollect)
+            foreach (Item item in itemsToCollect)
             {
                 if (_mainInventory.AddItem(item.itemData, item.StackQuantity))
                     _inventory.RemoveItem(item.ID);

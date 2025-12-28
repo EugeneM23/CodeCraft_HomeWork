@@ -10,11 +10,11 @@ namespace Inventories.EndDrag
         {
             if (_fsm.Context.EquipmentSlotOld != null)
             {
-                _fsm.Context.EquipmentSlotOld.Equip(_fsm.Context.CurrentDragItem.ItemInstance);
+                _fsm.Context.EquipmentSlotOld.Equip(_fsm.Context.CurrentDragItem.Item);
             }
             else
             {
-                ItemInstance draggedItem = _fsm.Context.CurrentDragItem.ItemInstance;
+                Item draggedItem = _fsm.Context.CurrentDragItem.Item;
                 _fsm.Context.SourceInventory.AddItem(
                     draggedItem.itemData, 
                     _fsm.Context.StartDragCell,

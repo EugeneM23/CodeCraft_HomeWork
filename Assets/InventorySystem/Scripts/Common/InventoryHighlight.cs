@@ -32,7 +32,7 @@ namespace Inventories
             _currentSelectedCell = _fsm.Context.SelectedCell;
 
             Vector2Int startCell = _fsm.Context.SelectedCell;
-            Vector2Int itemSize = _fsm.Context.CurrentDragItem.ItemInstance.itemData.Size;
+            Vector2Int itemSize = _fsm.Context.CurrentDragItem.Item.itemData.Size;
 
             Vector2Int[] newCells = CalculateCells(startCell, itemSize);
 

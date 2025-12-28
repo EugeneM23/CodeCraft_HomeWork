@@ -1,0 +1,156 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using NUnit.Framework;
+using UnityEngine;
+
+namespace Inventories
+{
+    public sealed partial class InventoryTests
+    {
+        [Test]
+        public void GetItem_Position_1_2_ReturnsItemX()
+        {
+            //Arrange:
+            var itemData1 = new ItemData
+            {
+                Name = "D",
+                Size = new Vector2Int(1, 2)
+            };
+            var itemData2 = new ItemData
+            {
+                Name = "X",
+                Size = new Vector2Int(3, 2)
+            };
+
+            var inventory = new Inventory(width: 5, height: 5, new[]
+            {
+                new KeyValuePair<ItemData, Vector2Int>(itemData2, new Vector2Int(1, 2)),
+                new KeyValuePair<ItemData, Vector2Int>(itemData1, new Vector2Int(4, 0))
+            });
+
+            var item2 = inventory.First(i => i.itemData.Name == "X");
+
+            //Act:
+            var result = inventory.GetItem(new Vector2Int(1, 2));
+
+            //Assert:
+            Assert.AreEqual(item2, result);
+        }
+
+        [Test]
+        public void GetItem_Position_1_3_ReturnsItemX()
+        {
+            //Arrange:
+            var itemData1 = new ItemData
+            {
+                Name = "D",
+                Size = new Vector2Int(1, 2)
+            };
+            var itemData2 = new ItemData
+            {
+                Name = "X",
+                Size = new Vector2Int(3, 2)
+            };
+
+            var inventory = new Inventory(width: 5, height: 5, new[]
+            {
+                new KeyValuePair<ItemData, Vector2Int>(itemData2, new Vector2Int(1, 2)),
+                new KeyValuePair<ItemData, Vector2Int>(itemData1, new Vector2Int(4, 0))
+            });
+
+            var item2 = inventory.First(i => i.itemData.Name == "X");
+
+            //Act:
+            var result = inventory.GetItem(new Vector2Int(1, 3));
+
+            //Assert:
+            Assert.AreEqual(item2, result);
+        }
+
+        [Test]
+        public void GetItem_Position_3_3_ReturnsItemX()
+        {
+            //Arrange:
+            var itemData1 = new ItemData
+            {
+                Name = "D",
+                Size = new Vector2Int(1, 2)
+            };
+            var itemData2 = new ItemData
+            {
+                Name = "X",
+                Size = new Vector2Int(3, 2)
+            };
+
+            var inventory = new Inventory(width: 5, height: 5, new[]
+            {
+                new KeyValuePair<ItemData, Vector2Int>(itemData2, new Vector2Int(1, 2)),
+                new KeyValuePair<ItemData, Vector2Int>(itemData1, new Vector2Int(4, 0))
+            });
+
+            var item2 = inventory.First(i => i.itemData.Name == "X");
+
+            //Act:
+            var result = inventory.GetItem(new Vector2Int(3, 3));
+
+            //Assert:
+            Assert.AreEqual(item2, result);
+        }
+
+        [Test]
+        public void GetItem_Position_4_1_ReturnsItemD()
+        {
+            //Arrange:
+            var itemData1 = new ItemData
+            {
+                Name = "D",
+                Size = new Vector2Int(1, 2)
+            };
+            var itemData2 = new ItemData
+            {
+                Name = "X",
+                Size = new Vector2Int(3, 2)
+            };
+
+            var inventory = new Inventory(width: 5, height: 5, new[]
+            {
+                new KeyValuePair<ItemData, Vector2Int>(itemData2, new Vector2Int(1, 2)),
+                new KeyValuePair<ItemData, Vector2Int>(itemData1, new Vector2Int(4, 0))
+            });
+
+            var item1 = inventory.First(i => i.itemData.Name == "D");
+
+            //Act:
+            var result = inventory.GetItem(new Vector2Int(4, 1));
+
+            //Assert:
+            Assert.AreEqual(item1, result);
+        }
+
+        [TestCase(-1, -1)]
+        [TestCase(-1, 0)]
+        [TestCase(0, -1)]
+        [TestCase(3, 0)]
+        [TestCase(0, 3)]
+        [TestCase(3, 3)]
+        public void WhenGetItemOutOfRangeThenException(int x, int y)
+        {
+            //Arrange:
+            var inventory = new Inventory(3, 3);
+
+            //Assert:
+            Assert.Catch<IndexOutOfRangeException>(() => inventory.GetItem(x, y));
+        }
+
+        [Test]
+        public void WhenGetNullItemThenException()
+        {
+            //Arrange:
+            var inventory = new Inventory(3, 3);
+
+            //Assert:
+            Assert.Catch<NullReferenceException>(() => inventory.GetItem(0, 0));
+        }
+    }
+}

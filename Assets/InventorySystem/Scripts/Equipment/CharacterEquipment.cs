@@ -42,7 +42,7 @@ public class CharacterEquipment : MonoBehaviour
         };
     }
 
-    public void Equip(ItemInstance item)
+    public void Equip(Item item)
     {
         var itemType = item.itemData.ItemType;
         var mesh = item.itemData.Mesh;
@@ -55,7 +55,7 @@ public class CharacterEquipment : MonoBehaviour
             _renderers[itemType].sharedMesh = mesh;
     }
 
-    public void Unequip(ItemInstance item)
+    public void Unequip(Item item)
     {
         var itemType = item.itemData.ItemType;
 

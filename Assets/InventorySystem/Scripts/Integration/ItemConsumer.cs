@@ -7,9 +7,9 @@ public class ItemConsumer : MonoBehaviour, IItemConsumer
     public Inventory Inventory { get; private set; }
     private EquipmentPresenter EquipmentPresenter { get; set; }
 
-    public bool Equip(ItemInstance itemInstance)
+    public bool Equip(Item item)
     {
-        if (EquipmentPresenter.EquipItem(itemInstance))
+        if (EquipmentPresenter.EquipItem(item))
             return true;
 
         return false;

@@ -17,11 +17,11 @@ public class EndDragToEquipmentState : BaseState
             return;
         }
 
-        ItemInstance itemInstance = _fsm.Context.CurrentDragItem.ItemInstance;
+        Item item = _fsm.Context.CurrentDragItem.Item;
 
-        if (slot.ItemType == itemInstance.itemData.ItemType)
+        if (slot.ItemType == item.itemData.ItemType)
         {
-            slot.DropItem(itemInstance);
+            slot.DropItem(item);
             _fsm.SetState<FinishDragState>();
         }
         else

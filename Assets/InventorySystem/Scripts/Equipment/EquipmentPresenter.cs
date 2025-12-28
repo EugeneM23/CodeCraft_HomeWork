@@ -57,7 +57,7 @@ public class EquipmentPresenter : MonoBehaviour
         }
     }
 
-    private void HandleItemDrop(ItemInstance item)
+    private void HandleItemDrop(Item item)
     {
         var slot = _slots[item.itemData.ItemType];
 
@@ -71,13 +71,13 @@ public class EquipmentPresenter : MonoBehaviour
         slot.Equip(item);
     }
 
-    private void ReturnToInventory(ItemInstance item)
+    private void ReturnToInventory(Item item)
     {
         if (_inventory.AddItem(item.itemData))
             _slots[item.itemData.ItemType].UnEquip();
     }
 
-    public bool EquipItem(ItemInstance item)
+    public bool EquipItem(Item item)
     {
         if (!_slots.TryGetValue(item.itemData.ItemType, out var slot))
             return false;

@@ -3,6 +3,6 @@ using Inventories;
 public interface IItemConsumer
 {
     abstract T GetComponent<T>();
-    bool Equip(ItemInstance itemInstance);
+    bool Equip(Item item);
     void SetInventory(Inventory inventory);
 }

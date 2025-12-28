@@ -17,7 +17,7 @@ public class EndDragToInventoryState : BaseState
         }
 
         Vector2Int targetPosition = _fsm.Context.SelectedCell;
-        ItemInstance draggedItem = _fsm.Context.CurrentDragItem.ItemInstance;
+        Item draggedItem = _fsm.Context.CurrentDragItem.Item;
 
         if (cell.Inventory.AddItem(draggedItem.itemData, targetPosition, draggedItem.StackQuantity))
             _fsm.SetState<FinishDragState>();

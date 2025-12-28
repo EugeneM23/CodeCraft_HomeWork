@@ -3,13 +3,13 @@ using UnityEngine;
 
 namespace Inventories
 {
-    public class ItemInstance
+    public class Item
     {
         public event Action<int> OnStackChanged;
 
         public string ID { get; private set; }
         public ItemData itemData { get; }
-        public Vector2Int GridPosition { get; }
+        public Vector2Int GridPosition { get; private set; }
         public int StackQuantity { get; private set; }
         public ItemUseCase ItemUseCase { get; private set; }
 
@@ -17,7 +17,7 @@ namespace Inventories
         public bool IsFull => StackQuantity >= itemData.MaxStackQuantity;
         public int RemainingCapacity => itemData.MaxStackQuantity - StackQuantity;
 
-        public ItemInstance(ItemData data, Vector2Int position, int quantity = 1)
+        public Item(ItemData data, Vector2Int position, int quantity = 1)
         {
             ID = Guid.NewGuid().ToString();
             itemData = data;
@@ -64,6 +64,11 @@ namespace Inventories
         public bool UseOne()
         {
             return TryRemoveQuantity(1);
+        }
+
+        public void SetGridPosition(Vector2Int newPosition)
+        {
+            GridPosition = newPosition;
         }
     }
 }

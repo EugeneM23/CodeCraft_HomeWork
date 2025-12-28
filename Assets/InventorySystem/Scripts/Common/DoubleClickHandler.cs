@@ -13,7 +13,7 @@ namespace Inventories
         private Inventory _inventory;
 
         private float lastClickTime = 0f;
-        private ItemInstance _itemInstance;
+        private Item _item;
 
         public void OnPointerClick(PointerEventData eventData)
         {
