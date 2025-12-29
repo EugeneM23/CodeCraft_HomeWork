@@ -22,7 +22,11 @@ namespace Inventories
 
         public void Show(InventoryPresenter presenter = null)
         {
-            if (_isOpen) return;
+            if (_isOpen)
+            {
+                _mainInventory = presenter;
+                return;
+            }
 
             _mainInventory = presenter;
             _isOpen = true;
@@ -40,6 +44,7 @@ namespace Inventories
             Unsubscribe();
             _view.SetActive(false);
         }
+
         private void Subscribe()
         {
             _inventory.OnAdded += OnItemAdded;
@@ -95,6 +100,8 @@ namespace Inventories
 
         private void OnCollectAll()
         {
+            Debug.Log($"OnCollectAll called. MainInventory owner: {_mainInventory?.Owner}");
+
             var itemsToCollect = new List<Item>(_inventory);
 
             foreach (Item item in itemsToCollect)
@@ -127,6 +134,11 @@ namespace Inventories
         public bool AddItem(ItemData currentItemItemData)
         {
             return _inventory.AddItem(currentItemItemData);
+        }
+        
+        public void UpdateMainInventory(InventoryPresenter presenter)
+        {
+            _mainInventory = presenter;
         }
     }
 }

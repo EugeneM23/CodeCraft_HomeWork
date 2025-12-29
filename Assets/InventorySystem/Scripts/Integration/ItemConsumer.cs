@@ -25,9 +25,10 @@ public class ItemConsumer : MonoBehaviour, IItemConsumer
         return base.GetComponent<T>();
     }
 
-    public void SetInventory(InventoryPresenter presenter)
+    public void SetInventory(InventoryPresenter inventory)
     {
-        InventoryPresenter = presenter;
+        Debug.Log($"ItemConsumer.SetInventory called with inventory from entity: {inventory?.Owner}");
+        InventoryPresenter = inventory;
     }
 
     public void SetEquipment(EquipmentPresenter equipmentPresenter)

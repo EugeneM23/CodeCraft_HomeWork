@@ -15,15 +15,15 @@ public class CharacterSelector : MonoBehaviour
 
             if (Physics.Raycast(ray, out RaycastHit hit) && hit.collider.TryGetComponent(out Entity entity))
             {
+                Debug.Log("OnUnitChanged");
+
                 _selectedEntity = entity;
                 OnUnitChanged?.Invoke(entity);
-                Debug.Log($"Selected entity: ");
             }
             else
             {
                 // _selectedEntity = null;
                 // OnUnitChanged?.Invoke(null);
-                // Debug.Log($"Selected null entity: ");
             }
         }
     }

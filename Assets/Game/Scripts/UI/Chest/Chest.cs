@@ -9,23 +9,32 @@ namespace Game.Scripts.UI.Chest
     {
         [SerializeField] private GameScreenView _mainScreenView;
         [SerializeField] private InventoryBootstrap _inventoryPrefab;
-        [SerializeField] private ItemConsumer itemConsumer;
         [SerializeField] private InventoryFactory _factory;
         [SerializeField] private DragFSM _dragFsm;
 
         private InventoryPresenter _chestInventoryPresenter;
+        private Entity _currentEntity;
+
+        public void SetCurrentEntity(Entity entity)
+        {
+            _currentEntity = entity;
+            
+            if (_chestInventoryPresenter != null && _currentEntity?.InventoryPresenter != null)
+                _chestInventoryPresenter.UpdateMainInventory(_currentEntity.InventoryPresenter);
+        }
 
         public void OnPointerClick(PointerEventData eventData)
         {
             if (_chestInventoryPresenter == null)
                 CreateChestInventory();
 
-            _chestInventoryPresenter.Toggle(itemConsumer.InventoryPresenter);
+            if (_currentEntity?.InventoryPresenter != null)
+                _chestInventoryPresenter.Show(_currentEntity.InventoryPresenter);
         }
 
         private void CreateChestInventory()
         {
-            var inventoryBootstrap = _mainScreenView.CreateInventory(_inventoryPrefab);
+            InventoryBootstrap inventoryBootstrap = _mainScreenView.CreateInventory(_inventoryPrefab);
             inventoryBootstrap.Construct(_factory, _dragFsm);
             _chestInventoryPresenter = inventoryBootstrap.Presenter;
         }
