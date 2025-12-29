@@ -283,13 +283,14 @@ GameObject:
   - component: {fileID: 9079383622550063518}
   - component: {fileID: 5830915091178595739}
   - component: {fileID: 2550732703897415888}
+  - component: {fileID: 2181845773870420622}
   m_Layer: 5
   m_Name: InventoryChest
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2739556563561042496
 RectTransform:
   m_ObjectHideFlags: 0
@@ -400,6 +401,18 @@ MonoBehaviour:
   _collectAllButton: {fileID: 2231339687126368626}
   _closeButton: {fileID: 1108670076654854990}
   _showEquipmentButton: {fileID: 0}
+--- !u!114 &2181845773870420622
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8531536367912159190}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d56be1196f6841dbb17159d22ed820ec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8939828376292575114
 GameObject:
   m_ObjectHideFlags: 0

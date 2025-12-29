@@ -225,7 +225,7 @@ MonoBehaviour:
     <Name>k__BackingField: Shield_01
     <Description>k__BackingField: 
     <ItemType>k__BackingField: 9
-    <Icon>k__BackingField: {fileID: -70956297385538305, guid: 316ae0698d9814b07b9ab4f2165c87a5, type: 3}
+    <Icon>k__BackingField: {fileID: -1371864526079846840, guid: c081b5de4e36c40ef94a15410ce5e499, type: 3}
     <Mesh>k__BackingField: {fileID: 8150614105551232225, guid: 388a3d2df3eca984d84f4d5fc40bfb17, type: 3}
     <Size>k__BackingField: {x: 2, y: 2}
     <CanStack>k__BackingField: 0
