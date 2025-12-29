@@ -18,7 +18,7 @@ namespace Inventories
         private ItemUseCase _itemUseCase;
         public Item Item { get; private set; }
 
-        private Inventory _inventory;
+        private InventoryPresenter _presenter;
 
         private void OnEnable()
         {
@@ -34,7 +34,7 @@ namespace Inventories
 
         private void OnDoubleClicked()
         {
-            _itemUseCase.Invoke(_inventory, Item);
+            _itemUseCase.Invoke(_presenter, Item);
         }
 
         private void OnDestroy()
@@ -48,7 +48,7 @@ namespace Inventories
             _count.text = quantity.ToString();
         }
 
-        public void SetupItem(Item item, Vector2 cellSize, Inventory inventory)
+        public void SetupItem(Item item, Vector2 cellSize, InventoryPresenter presenter)
         {
             if (Item != null)
                 Item.OnStackChanged -= UpdateQuantity;
@@ -71,7 +71,7 @@ namespace Inventories
             );
 
             _rectTransform.sizeDelta = itemSize;
-            _inventory = inventory;
+            _presenter = presenter;
             _itemUseCase = item.ItemUseCase;
         }
 

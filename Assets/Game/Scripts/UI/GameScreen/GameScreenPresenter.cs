@@ -17,11 +17,12 @@ namespace Inventories
 
         private void Start()
         {
-            var mainInventory = _view.CreateMainInventory(_mainInventoryPrefab);
+            InventoryBootstrap mainInventory = _view.CreateMainInventory(_mainInventoryPrefab);
             _inventoryPresenter = mainInventory.Presenter;
 
             var equipment = _view.CreateEquipment(_equipmentPrefab);
             _equipmentPresenter = equipment.Presenter;
+            
             equipment.Initialize(_itemConsumer);
             equipment.gameObject.SetActive(false);
 
@@ -33,7 +34,7 @@ namespace Inventories
 
         private void ToggleInventory()
         {
-            _inventoryPresenter.Toggle(_itemConsumer.Inventory);
+            _inventoryPresenter.Toggle(_itemConsumer.InventoryPresenter);
             _equipmentPresenter.Toggle();
         }
     }

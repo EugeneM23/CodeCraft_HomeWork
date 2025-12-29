@@ -11,7 +11,7 @@ namespace Game.Scripts.UI.Equipment.Game.Equipment
 
         public void Initialize(ItemConsumer consumer = null)
         {
-            _presenter.Initialize(consumer.Inventory);
+            _presenter.Initialize(consumer.InventoryPresenter);
             consumer.SetEquipment(_presenter);
         }
     }

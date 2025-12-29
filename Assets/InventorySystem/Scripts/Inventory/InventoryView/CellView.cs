@@ -18,11 +18,11 @@ public class CellView : MonoBehaviour
 
     public InventoryItem InventoryItem { get; set; }
 
-    public Inventory Inventory { get; private set; }
+    public InventoryPresenter InventoryPresenter { get; private set; }
 
-    public void Construct(Inventory inventory, Vector2Int gridPosition)
+    public void Construct(InventoryPresenter presenter, Vector2Int gridPosition)
     {
-        Inventory = inventory;
+        InventoryPresenter = presenter;
         GridPosition = gridPosition;
         _currentTargetSprite = _emptySprite;
     }

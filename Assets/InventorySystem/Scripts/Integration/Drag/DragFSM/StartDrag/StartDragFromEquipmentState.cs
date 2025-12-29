@@ -20,7 +20,7 @@ public class StartDragFromEquipmentState : BaseState
         RectTransform slotRect = slot.GetComponent<RectTransform>();
         Vector2Int clickedCell = _fsm.CalculateClickedCellInSlot(slotRect, slot.CurrentItem.itemData.Size);
 
-        _fsm.SetupDragContext(slot.CurrentItem, slot.transform.position, _fsm.MainInventory, clickedCell,
+        _fsm.SetupDragContext(slot.CurrentItem, slot.transform.position, _fsm.MainPresenter, clickedCell,
             Vector2Int.zero, slot);
 
         slot.UnEquip();

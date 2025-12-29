@@ -8,13 +8,13 @@ public class DragItem : MonoBehaviour
     [SerializeField] private RectTransform _rectTransform;
 
     public Item Item { get; private set; }
-    public Inventory Inventory { get; private set; }
+    public InventoryPresenter Presenter { get; private set; }
     public RectTransform RectTransform => _rectTransform;
 
-    public void Construct(Item item, Vector2 _cellSize, Inventory originInventory)
+    public void Construct(Item item, Vector2 _cellSize, InventoryPresenter presenter)
     {
         Item = item;
-        Inventory = originInventory;
+        Presenter = presenter;
         image.sprite = item.itemData.Icon;
 
         Vector2 itemSize = new Vector2(

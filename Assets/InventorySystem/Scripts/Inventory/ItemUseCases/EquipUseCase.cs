@@ -4,12 +4,12 @@ using Inventories;
 [CreateAssetMenu(fileName = "EquipWeaponUseCase", menuName = "InventoryItem/UseCases/EquipWeaponUseCase")]
 public class EquipUseCase : ItemUseCase
 {
-    public override void Invoke(Inventory inventory, Item item)
+    public override void Invoke(InventoryPresenter presenter, Item item)
     {
-        IItemConsumer consumer = inventory.Owner;
+        IItemConsumer consumer = presenter.Owner;
         if (consumer == null) return;
 
-        inventory.RemoveItem(item.ID);
+        presenter.RemoveItem(item.ID);
 
         consumer.Equip(item);
     }

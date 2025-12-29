@@ -13,20 +13,19 @@ namespace Inventories
         private InventoryHighlight _inventoryHighlight;
         private InventoryAudioController _audioController;
 
-        public Inventory Inventory { get; private set; }
         public InventoryPresenter Presenter { get; private set; }
 
         public void Initialize(InventoryFactory factory, DragFSM dragFsm)
         {
-            Inventory = new Inventory(_columns, _rows);
-            
+            Inventory inventory = new Inventory(_columns, _rows);
+
+            Presenter = new InventoryPresenter(_view, inventory, factory);
+
             AddInitialItems();
-            
-            Presenter = new InventoryPresenter(_view, Inventory, factory);
-            
-            _inventoryHighlight = new InventoryHighlight(dragFsm, _view, Inventory);
-            _audioController = new InventoryAudioController(Inventory);
-            
+
+            _inventoryHighlight = new InventoryHighlight(dragFsm, _view, Presenter);
+            _audioController = new InventoryAudioController(inventory);
+
             gameObject.SetActive(false);
         }
 
@@ -34,7 +33,7 @@ namespace Inventories
         {
             foreach (SceneItem item in _initializeItems)
             {
-                Inventory.AddItem(item.ItemData, item.Quantity);
+                Presenter.AddItem(item.ItemData, item.Quantity);
             }
         }
 

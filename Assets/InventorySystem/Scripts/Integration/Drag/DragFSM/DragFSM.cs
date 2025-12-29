@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Game.Scripts.UI.Equipment;
 using Game.Scripts.UI.Equipment.Game.Equipment.View;
 using Inventories;
 using Inventories.EndDrag;
@@ -17,7 +16,7 @@ public class DragFSM : MonoBehaviour
     private IState _currentState;
     private RaycastDetector _raycastDetector;
 
-    public Inventory MainInventory { get; private set; }
+    public InventoryPresenter MainPresenter { get; private set; }
     public DragContext Context { get; private set; }
 
     private void OnEnable()
@@ -25,7 +24,7 @@ public class DragFSM : MonoBehaviour
         _raycastDetector = new RaycastDetector(_raycaster, EventSystem.current);
     }
 
-    public void SetMainInventory(Inventory mainInventory) => MainInventory = mainInventory;
+    public void SetMainInventory(InventoryPresenter presenter) => MainPresenter = presenter;
 
     private void Start() => Initialize();
 
@@ -74,14 +73,14 @@ public class DragFSM : MonoBehaviour
         return _raycastDetector.TryGetSceneRaycastHit(out raycastHit);
     }
 
-    public void SetupDragContext(Item item, Vector3 position, Inventory sourceInventory,
+    public void SetupDragContext(Item item, Vector3 position, InventoryPresenter sourcePresenter,
         Vector2Int clickedCell, Vector2Int itemStartCell, EquipmentSlotView slotView = null)
     {
         Vector2 cellSize = new Vector2(50, 50);
-        Context.CurrentDragItem = _factory.SpawnDragItem(item, cellSize, sourceInventory);
+        Context.CurrentDragItem = _factory.SpawnDragItem(item, cellSize, sourcePresenter);
         Context.CurrentDragItem.transform.parent = Context.CurrentDragItem.transform.root;
         Context.CurrentDragItem.transform.position = position;
-        Context.SourceInventory = sourceInventory;
+        Context.SourceInventory = sourcePresenter;
         Context.StartDragCell = itemStartCell;
         Context.DragOffset = position - Input.mousePosition;
         Context.GridOffset = new Vector2Int(clickedCell.x - itemStartCell.x, clickedCell.y - itemStartCell.y);

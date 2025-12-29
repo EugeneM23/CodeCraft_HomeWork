@@ -20,7 +20,7 @@ namespace Game.Scripts.UI.Chest
                 CreateChestInventory();
 
             Debug.Log(_chestInventoryPresenter == null);
-            _chestInventoryPresenter.Toggle(itemConsumer.Inventory);
+            _chestInventoryPresenter.Toggle(itemConsumer.InventoryPresenter);
         }
 
         private void CreateChestInventory()

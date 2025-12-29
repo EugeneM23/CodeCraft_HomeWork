@@ -23,7 +23,7 @@ namespace Inventories
 
         public CellView[,] Cells { get; private set; }
         private readonly Dictionary<string, InventoryItem> _items = new();
-        private Inventory _inventory;
+        private InventoryPresenter _inventoryPresenter;
         private InventoryFactory _factory;
 
         private void OnEnable()
@@ -56,9 +56,9 @@ namespace Inventories
                 _showEquipmentButton.onClick.RemoveListener(HandleShowEquipmentClick);
         }
 
-        public void Initialize(int width, int height, Inventory inventory, InventoryFactory factory)
+        public void Initialize(int width, int height, InventoryPresenter presenter, InventoryFactory factory)
         {
-            _inventory = inventory;
+            _inventoryPresenter = presenter;
             _factory = factory;
             Cells = new CellView[width, height];
 
@@ -74,7 +74,7 @@ namespace Inventories
         {
             InventoryItem inventoryItem = _factory.SpawnItem(_itemPrefab, _gridContainer);
             inventoryItem.transform.position = Cells[positions[0].x, positions[0].y].transform.position;
-            inventoryItem.SetupItem(item, _cellSize, _inventory);
+            inventoryItem.SetupItem(item, _cellSize, _inventoryPresenter);
 
             _items[item.ID] = inventoryItem;
 
@@ -127,7 +127,7 @@ namespace Inventories
         private void CreateCell(int x, int y)
         {
             CellView cell = _factory.SpawnItem(_cellPrefab, _gridContainer);
-            cell.Construct(_inventory, new Vector2Int(x, y));
+            cell.Construct(_inventoryPresenter, new Vector2Int(x, y));
 
             RectTransform rect = cell.GetComponent<RectTransform>();
             rect.sizeDelta = _cellSize;

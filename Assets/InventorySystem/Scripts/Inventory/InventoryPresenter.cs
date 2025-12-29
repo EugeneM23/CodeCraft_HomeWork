@@ -8,24 +8,43 @@ namespace Inventories
     {
         private readonly InventoryView _view;
         private readonly Inventory _inventory;
-        private Vector2Int[] _highlightedCells = Array.Empty<Vector2Int>();
-        private Inventory _mainInventory;
+        private InventoryPresenter _mainInventory;
         private EquipmentPresenter _equipment;
         private bool _isOpen;
+        public IItemConsumer Owner { get; set; }
 
         public InventoryPresenter(InventoryView view, Inventory inventory, InventoryFactory factory)
         {
             _view = view;
             _inventory = inventory;
-            _view.Initialize(inventory.Width, inventory.Height, inventory, factory);
+            _view.Initialize(inventory.Width, inventory.Height, this, factory);
+        }
+        private void Show(InventoryPresenter presenter)
+        {
+            if (_isOpen) return;
+
+            _mainInventory = presenter;
+            _isOpen = true;
+
+            Subscribe();
+            _view.SetActive(true);
+            UpdateView();
         }
 
+        private void Hide()
+        {
+            if (!_isOpen) return;
+
+            _isOpen = false;
+            Unsubscribe();
+            _view.SetActive(false);
+        }
         private void Subscribe()
         {
             _inventory.OnAdded += OnItemAdded;
             _inventory.OnRemoved += OnItemRemoved;
-            _inventory.OnHighlight += OnHighlight;
-            _inventory.OnUnHighlight += ClearHighlight;
+            //_inventory.OnHighlight += OnHighlight;
+            //_inventory.OnUnHighlight += ClearHighlight;
             _inventory.OnCleared += UpdateView;
             _view.OnReorganizeClicked += _inventory.Reorganize;
             _view.OnCollectAllClicked += OnCollectAll;
@@ -39,8 +58,8 @@ namespace Inventories
         {
             _inventory.OnAdded -= OnItemAdded;
             _inventory.OnRemoved -= OnItemRemoved;
-            _inventory.OnHighlight -= OnHighlight;
-            _inventory.OnUnHighlight -= ClearHighlight;
+            //_inventory.OnHighlight -= OnHighlight;
+            //_inventory.OnUnHighlight -= ClearHighlight;
             _inventory.OnCleared -= UpdateView;
             _view.OnReorganizeClicked -= _inventory.Reorganize;
             _view.OnCollectAllClicked -= OnCollectAll;
@@ -50,34 +69,12 @@ namespace Inventories
                 _view.OnEquipClicked -= _equipment.Toggle;
         }
 
-        private void Show(Inventory mainInventory)
-        {
-            if (_isOpen) return;
-
-            _mainInventory = mainInventory;
-            _isOpen = true;
-
-            Subscribe();
-            _view.SetActive(true);
-            UpdateView();
-            //_equipment?.Show();
-        }
-
-        private void Hide()
-        {
-            if (!_isOpen) return;
-
-            _isOpen = false;
-            Unsubscribe();
-            _view.SetActive(false);
-        }
-
-        public void Toggle(Inventory mainInventory)
+        public void Toggle(InventoryPresenter presenter)
         {
             if (_isOpen)
                 Hide();
             else
-                Show(mainInventory);
+                Show(presenter);
         }
 
         private void UpdateView()
@@ -99,44 +96,6 @@ namespace Inventories
 
         private void OnItemRemoved(Item item) => _view.RemoveItem(item.ID);
 
-        private void OnHighlight(Vector2Int[] cells)
-        {
-            ClearHighlight();
-
-            if (!CanHighlightCells(cells)) return;
-
-            _highlightedCells = cells;
-
-            foreach (Vector2Int cell in cells)
-                _view.HighlightCell(cell);
-        }
-
-        private void ClearHighlight()
-        {
-            foreach (Vector2Int cell in _highlightedCells)
-            {
-                if (IsValidCell(cell))
-                    _view.UnhighlightCell(cell);
-            }
-
-            _highlightedCells = Array.Empty<Vector2Int>();
-        }
-
-        private bool CanHighlightCells(Vector2Int[] cells)
-        {
-            foreach (Vector2Int cell in cells)
-            {
-                if (!IsValidCell(cell) || !_inventory.IsFree(cell))
-                    return false;
-            }
-
-            return true;
-        }
-
-        private bool IsValidCell(Vector2Int cell) =>
-            cell.x >= 0 && cell.x < _inventory.Width &&
-            cell.y >= 0 && cell.y < _inventory.Height;
-
         private void OnCollectAll()
         {
             var itemsToCollect = new List<Item>(_inventory);
@@ -149,5 +108,30 @@ namespace Inventories
         }
 
         public void SetEquipment(EquipmentPresenter equipment) => _equipment = equipment;
+
+        public void RemoveItem(string itemID)
+        {
+            _inventory.RemoveItem(itemID);
+        }
+
+        public bool AddItem(ItemData draggedItemItemData, Vector2Int targetPosition, int draggedItemStackQuantity)
+        {
+            return _inventory.AddItem(draggedItemItemData, targetPosition, draggedItemStackQuantity);
+        }
+
+        public Vector2Int GetItemGridPositions(Item item)
+        {
+            return _inventory.GetPositions(item.ID)[0];
+        }
+
+        public bool AddItem(ItemData draggedItemItemData, int sceneItemQuantity)
+        {
+            return _inventory.AddItem(draggedItemItemData, sceneItemQuantity);
+        }
+
+        public bool AddItem(ItemData currentItemItemData)
+        {
+            return _inventory.AddItem(currentItemItemData);
+        }
     }
 }

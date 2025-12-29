@@ -39,11 +39,11 @@ public class InventoryFactory : MonoBehaviour
     public void DeSpawn(GameObject sceneItemGameObject) =>
         _prefabPool.DeSpawn(sceneItemGameObject);
 
-    public DragItem SpawnDragItem(Item item, Vector2 cellSize, Inventory inventory)
+    public DragItem SpawnDragItem(Item item, Vector2 cellSize, InventoryPresenter presenter)
     {
         DragItem dragItemitem = _prefabPool.Spawn<DragItem>(_dragItemPrefab.gameObject, _canvas.GetComponent<RectTransform>());
         dragItemitem.transform.SetAsLastSibling();
-        dragItemitem.Construct(item, cellSize, inventory);
+        dragItemitem.Construct(item, cellSize, presenter);
         return dragItemitem;
     }
 

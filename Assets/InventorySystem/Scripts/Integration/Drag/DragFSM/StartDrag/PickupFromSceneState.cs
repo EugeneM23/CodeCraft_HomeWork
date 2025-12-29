@@ -13,7 +13,7 @@ public class PickupFromSceneState : BaseState
             return;
         }
 
-        if (_fsm.MainInventory.AddItem(sceneItem.ItemData, sceneItem.Quantity))
+        if (_fsm.MainPresenter.AddItem(sceneItem.ItemData, sceneItem.Quantity))
             _factory.DeSpawn(sceneItem.gameObject);
 
         _fsm.SetState<IdleDragState>();

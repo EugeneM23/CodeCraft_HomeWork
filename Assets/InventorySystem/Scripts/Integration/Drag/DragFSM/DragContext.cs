@@ -6,8 +6,8 @@ using UnityEngine;
 public class DragContext
 {
     public DragItem CurrentDragItem { get; set; }
-    public Inventory SourceInventory { get; set; }
-    public Inventory CurrentInventory { get; set; }
+    public InventoryPresenter SourceInventory { get; set; }
+    public InventoryPresenter CurrentInventoryPresenter { get; set; }
     public Vector2Int SelectedCell { get; set; }
     public Vector2Int StartDragCell { get; set; }
     public Vector2Int GridOffset { get; set; }
@@ -24,7 +24,7 @@ public class DragContext
         EquipmentSlotOld = null;
         CurrentDragItem = null;
         SourceInventory = null;
-        CurrentInventory = null;
+        CurrentInventoryPresenter = null;
         SelectedCell = Vector2Int.zero;
     }
 }

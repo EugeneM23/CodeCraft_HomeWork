@@ -33,11 +33,10 @@ namespace Inventories
         private void UpdateCurrentInventory()
         {
             if (!_fsm.TryGetComponentUnderMouse(out InventoryBootstrap installer)) return;
-            if (_fsm.Context.CurrentInventory == installer.Inventory) return;
+            if (_fsm.Context.CurrentInventoryPresenter == installer.Presenter) return;
 
-            _fsm.Context.CurrentInventory = installer.Inventory;
-            _fsm.Context.CurrentInventory?.UnHighlight();
-            _fsm.Context.CurrentInventory = installer.Inventory;
+            _fsm.Context.CurrentInventoryPresenter = installer.Presenter;
+            _fsm.Context.CurrentInventoryPresenter = installer.Presenter;
         }
     }
 }

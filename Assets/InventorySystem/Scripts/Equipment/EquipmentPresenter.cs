@@ -9,12 +9,12 @@ public class EquipmentPresenter : MonoBehaviour
     [SerializeField] private EquipmentPanelView _view;
     [SerializeField] private CharacterEquipment _character;
 
-    private Inventory _inventory;
+    private InventoryPresenter _presenter;
     private Dictionary<ItemType, EquipmentSlotView> _slots;
 
-    public void Initialize(Inventory inventory = null)
+    public void Initialize(InventoryPresenter presenter = null)
     {
-        _inventory = inventory;
+        _presenter = presenter;
         InitializeSlots();
         SubscribeToSlots();
     }
@@ -65,7 +65,7 @@ public class EquipmentPresenter : MonoBehaviour
         {
             var currentItem = slot.CurrentItem;
             slot.UnEquip();
-            _inventory.AddItem(currentItem.itemData);
+            _presenter.AddItem(currentItem.itemData);
         }
 
         slot.Equip(item);
@@ -73,7 +73,7 @@ public class EquipmentPresenter : MonoBehaviour
 
     private void ReturnToInventory(Item item)
     {
-        if (_inventory.AddItem(item.itemData))
+        if (_presenter.AddItem(item.itemData))
             _slots[item.itemData.ItemType].UnEquip();
     }
 
@@ -85,7 +85,7 @@ public class EquipmentPresenter : MonoBehaviour
         if (!slot.IsEmpty)
         {
             var currentItem = slot.UnEquip();
-            _inventory.AddItem(currentItem.itemData);
+            _presenter.AddItem(currentItem.itemData);
         }
 
         return slot.Equip(item);
@@ -96,7 +96,4 @@ public class EquipmentPresenter : MonoBehaviour
         Debug.Log(_view.gameObject.activeSelf);
         _view.gameObject.SetActive(!_view.gameObject.activeSelf);
     }
-
-    public void Show() => _view.gameObject.SetActive(true);
-    public void Hide() => _view.gameObject.SetActive(false);
 }

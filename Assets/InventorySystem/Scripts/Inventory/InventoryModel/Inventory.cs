@@ -10,8 +10,6 @@ public sealed class Inventory : IEnumerable<Item>
     public event Action<Item> OnAdded;
     public event Action<Item> OnRemoved;
     public event Action OnCleared;
-    public event Action<Vector2Int[]> OnHighlight;
-    public event Action OnUnHighlight;
     public event Action<Item> OnStackIncreased;
     public event Action<Item> OnStackDecreased;
     public event Action<Item, Vector2Int> OnMoved;
@@ -19,7 +17,6 @@ public sealed class Inventory : IEnumerable<Item>
     public int Width => _cells.GetLength(0);
     public int Height => _cells.GetLength(1);
     public int Count => _items.Count;
-    public IItemConsumer Owner { get; set; }
 
     private readonly Dictionary<string, Item> _items;
     private readonly Item[,] _cells;
@@ -526,12 +523,6 @@ public sealed class Inventory : IEnumerable<Item>
 
     #endregion
 
-    #region Highlight Methods
-
-    public void UnHighlight() => OnUnHighlight?.Invoke();
-
-    #endregion
-
     #region IEnumerable Implementation
 
     public IEnumerator<Item> GetEnumerator()
@@ -544,4 +535,6 @@ public sealed class Inventory : IEnumerable<Item>
         => GetEnumerator();
 
     #endregion
+
+    
 }

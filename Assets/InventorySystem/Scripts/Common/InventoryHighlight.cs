@@ -10,18 +10,18 @@ namespace Inventories
 
         private Vector2Int _currentSelectedCell;
         private Vector2Int[] _highlightedCells = Array.Empty<Vector2Int>();
-        private readonly Inventory _inventory;
+        private readonly InventoryPresenter _presenter;
 
-        public InventoryHighlight(DragFSM fsm, InventoryView inventoryView, Inventory inventory)
+        public InventoryHighlight(DragFSM fsm, InventoryView inventoryView, InventoryPresenter presenter)
         {
             _fsm = fsm;
-            _inventory = inventory;
+            _presenter = presenter;
             _inventoryView = inventoryView;
         }
 
         public void Tick()
         {
-            if (!_fsm.Context.IsDragging || _fsm.Context.CurrentDragItem == null || _fsm.Context.CurrentInventory != _inventory)
+            if (!_fsm.Context.IsDragging || _fsm.Context.CurrentDragItem == null || _fsm.Context.CurrentInventoryPresenter != _presenter)
             {
                 ClearHighlight();
                 return;

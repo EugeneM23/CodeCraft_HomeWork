@@ -6,9 +6,9 @@ public class HealPotionUseCase : ItemUseCase
 {
     [SerializeField] private int healAmount = 20;
 
-    public override void Invoke(Inventory inventory, Item item)
+    public override void Invoke(InventoryPresenter presenter, Item item)
     {
-        IItemConsumer consumer = inventory.Owner;
+        IItemConsumer consumer = presenter.Owner;
         if (consumer == null) return;
 
         ItemConsumer character = consumer.GetComponent<ItemConsumer>();
@@ -20,7 +20,7 @@ public class HealPotionUseCase : ItemUseCase
 
         if (stackIsEmpty)
         {
-            inventory.RemoveItem(item.ID);
+            presenter.RemoveItem(item.ID);
             Debug.Log("Item stack depleted and removed");
         }
         else
