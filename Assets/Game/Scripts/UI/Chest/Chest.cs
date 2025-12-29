@@ -2,7 +2,6 @@ using Game.Scripts.UI.GameScreen;
 using Inventories;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.Serialization;
 
 namespace Game.Scripts.UI.Chest
 {
@@ -10,7 +9,9 @@ namespace Game.Scripts.UI.Chest
     {
         [SerializeField] private GameScreenView _mainScreenView;
         [SerializeField] private InventoryBootstrap _inventoryPrefab;
-        [FormerlySerializedAs("_testCharacter")] [SerializeField] private ItemConsumer itemConsumer;
+        [SerializeField] private ItemConsumer itemConsumer;
+        [SerializeField] private InventoryFactory _factory;
+        [SerializeField] private DragFSM _dragFsm;
 
         private InventoryPresenter _chestInventoryPresenter;
 
@@ -19,13 +20,14 @@ namespace Game.Scripts.UI.Chest
             if (_chestInventoryPresenter == null)
                 CreateChestInventory();
 
-            Debug.Log(_chestInventoryPresenter == null);
             _chestInventoryPresenter.Toggle(itemConsumer.InventoryPresenter);
         }
 
         private void CreateChestInventory()
         {
-            _chestInventoryPresenter = _mainScreenView.CreateSecondInventory(_inventoryPrefab).Presenter;
+            var inventoryBootstrap = _mainScreenView.CreateInventory(_inventoryPrefab);
+            inventoryBootstrap.Construct(_factory, _dragFsm);
+            _chestInventoryPresenter = inventoryBootstrap.Presenter;
         }
     }
 }

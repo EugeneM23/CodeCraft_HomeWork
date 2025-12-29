@@ -1,3 +1,5 @@
+using UnityEngine;
+
 public class PickupFromSceneState : BaseState
 {
     private readonly InventoryFactory _factory;
@@ -13,6 +15,7 @@ public class PickupFromSceneState : BaseState
             return;
         }
 
+        Debug.Log(_fsm.MainPresenter == null);
         if (_fsm.MainPresenter.AddItem(sceneItem.ItemData, sceneItem.Quantity))
             _factory.DeSpawn(sceneItem.gameObject);
 

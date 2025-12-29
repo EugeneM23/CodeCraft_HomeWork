@@ -15,7 +15,7 @@ namespace Inventories
 
         public InventoryPresenter Presenter { get; private set; }
 
-        public void Initialize(InventoryFactory factory, DragFSM dragFsm)
+        public void Construct(InventoryFactory factory, DragFSM dragFsm)
         {
             Inventory inventory = new Inventory(_columns, _rows);
 

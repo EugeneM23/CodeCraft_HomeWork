@@ -19,7 +19,8 @@ namespace Inventories
             _inventory = inventory;
             _view.Initialize(inventory.Width, inventory.Height, this, factory);
         }
-        private void Show(InventoryPresenter presenter)
+
+        public void Show(InventoryPresenter presenter = null)
         {
             if (_isOpen) return;
 
@@ -43,8 +44,6 @@ namespace Inventories
         {
             _inventory.OnAdded += OnItemAdded;
             _inventory.OnRemoved += OnItemRemoved;
-            //_inventory.OnHighlight += OnHighlight;
-            //_inventory.OnUnHighlight += ClearHighlight;
             _inventory.OnCleared += UpdateView;
             _view.OnReorganizeClicked += _inventory.Reorganize;
             _view.OnCollectAllClicked += OnCollectAll;
@@ -58,8 +57,6 @@ namespace Inventories
         {
             _inventory.OnAdded -= OnItemAdded;
             _inventory.OnRemoved -= OnItemRemoved;
-            //_inventory.OnHighlight -= OnHighlight;
-            //_inventory.OnUnHighlight -= ClearHighlight;
             _inventory.OnCleared -= UpdateView;
             _view.OnReorganizeClicked -= _inventory.Reorganize;
             _view.OnCollectAllClicked -= OnCollectAll;
@@ -106,8 +103,6 @@ namespace Inventories
                     _inventory.RemoveItem(item.ID);
             }
         }
-
-        public void SetEquipment(EquipmentPresenter equipment) => _equipment = equipment;
 
         public void RemoveItem(string itemID)
         {

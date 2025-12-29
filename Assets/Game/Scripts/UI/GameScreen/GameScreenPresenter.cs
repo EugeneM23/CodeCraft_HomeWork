@@ -11,31 +11,42 @@ namespace Inventories
         [SerializeField] private ItemConsumer _itemConsumer;
         [SerializeField] private InventoryBootstrap _mainInventoryPrefab;
         [SerializeField] private EquipmentBootstrap _equipmentPrefab;
+        [SerializeField] private InventoryFactory _factory;
+        [SerializeField] private DragFSM _dragFSM;
 
-        private InventoryPresenter _inventoryPresenter;
         private EquipmentPresenter _equipmentPresenter;
 
-        private void Start()
-        {
-            InventoryBootstrap mainInventory = _view.CreateMainInventory(_mainInventoryPrefab);
-            _inventoryPresenter = mainInventory.Presenter;
-
-            var equipment = _view.CreateEquipment(_equipmentPrefab);
-            _equipmentPresenter = equipment.Presenter;
-            
-            equipment.Initialize(_itemConsumer);
-            equipment.gameObject.SetActive(false);
-
-            _inventoryPresenter.SetEquipment(equipment.Presenter);
-        }
+        private Entity _currentSelectedUnit;
 
         private void OnEnable() => _view.OnInventoryButtonClicked += ToggleInventory;
         private void OnDisable() => _view.OnInventoryButtonClicked -= ToggleInventory;
 
         private void ToggleInventory()
         {
-            _inventoryPresenter.Toggle(_itemConsumer.InventoryPresenter);
-            _equipmentPresenter.Toggle();
+            if (_currentSelectedUnit.InventoryPresenter == null)
+            {
+                InventoryBootstrap mainInventory = _view.CreateInventory(_currentSelectedUnit.InventoryPrefab);
+                mainInventory.Construct(_factory, _dragFSM);
+                _currentSelectedUnit.SetPresenter(mainInventory.Presenter);
+                _dragFSM.SetMainInventory(mainInventory.Presenter);
+            }
+
+            _currentSelectedUnit.InventoryPresenter.Show();
+        }
+
+        public void ShowInventoryButton()
+        {
+            _view.Show();
+        }
+
+        public void HideInventoryButton()
+        {
+            _view.Hide();
+        }
+
+        public void SetCurrentUnit(Entity entity)
+        {
+            _currentSelectedUnit = entity;
         }
     }
 }

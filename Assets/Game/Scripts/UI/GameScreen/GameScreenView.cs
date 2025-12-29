@@ -13,9 +13,6 @@ namespace Game.Scripts.UI.GameScreen
         [SerializeField] private Button _openInventoryButton;
         [SerializeField] private RectTransform _mainInventoryRoot;
         [SerializeField] private RectTransform _secondInventoryRoot;
-
-        [SerializeField] private InventoryFactory _inventoryFactory;
-        [SerializeField] private DragFSM _dragFSM;
         [SerializeField] private ItemConsumer _itemConsumer;
 
         private void OnEnable()
@@ -33,29 +30,15 @@ namespace Game.Scripts.UI.GameScreen
             OnInventoryButtonClicked?.Invoke();
         }
 
-        public InventoryBootstrap CreateMainInventory(InventoryBootstrap mainInventoryPrefab)
+        public InventoryBootstrap CreateInventory(InventoryBootstrap inventoryPrefab)
         {
-            InventoryBootstrap installer = Instantiate(mainInventoryPrefab, _mainInventoryRoot);
-            installer.Initialize(_inventoryFactory, _dragFSM);
-            _dragFSM.SetMainInventory(installer.Presenter);
-            _itemConsumer.SetInventory(installer.Presenter);
-            installer.Presenter.Owner = _itemConsumer;
-
-
+            InventoryBootstrap installer = Instantiate(inventoryPrefab, _mainInventoryRoot);
             return installer;
         }
 
-        public EquipmentBootstrap CreateEquipment(EquipmentBootstrap equipmentPrefab)
-        {
-            var equipment = Instantiate(equipmentPrefab, _mainInventoryRoot.transform);
-            return equipment;
-        }
 
-        public InventoryBootstrap CreateSecondInventory(InventoryBootstrap secondInventoryPrefab)
-        {
-            var installer = Instantiate(secondInventoryPrefab, _secondInventoryRoot);
-            installer.Initialize(_inventoryFactory, _dragFSM);
-            return installer;
-        }
+        public void Show() => _openInventoryButton.gameObject.SetActive(true);
+
+        public void Hide() => _openInventoryButton.gameObject.SetActive(false);
     }
 }
