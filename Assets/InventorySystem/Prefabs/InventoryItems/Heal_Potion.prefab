@@ -125,7 +125,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ItemData:
     <Name>k__BackingField: Heal_Potion
-    <Description>k__BackingField: 
+    <Description>k__BackingField: Some Description
     <ItemType>k__BackingField: 4
     <Icon>k__BackingField: {fileID: 21300000, guid: 27c3d7bd2cecd984b9b428efff35e839, type: 3}
     <Mesh>k__BackingField: {fileID: 0}

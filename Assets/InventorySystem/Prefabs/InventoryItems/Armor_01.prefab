@@ -222,8 +222,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ItemData:
-    <Name>k__BackingField: Armor_01
-    <Description>k__BackingField: 
+    <Name>k__BackingField: Heavy Armor
+    <Description>k__BackingField: Some Description
     <ItemType>k__BackingField: 1
     <Icon>k__BackingField: {fileID: -7171328722357739360, guid: 9414b153a3a234a178b079549ff79d64, type: 3}
     <Mesh>k__BackingField: {fileID: -8546627349099540691, guid: ba3eaedf5b135cf45a659743fb10f5ed, type: 3}

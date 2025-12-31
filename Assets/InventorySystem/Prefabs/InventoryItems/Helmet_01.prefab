@@ -245,8 +245,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ItemData:
-    <Name>k__BackingField: Helmet_01
-    <Description>k__BackingField: 
+    <Name>k__BackingField: Helmet
+    <Description>k__BackingField: Some Description
     <ItemType>k__BackingField: 5
     <Icon>k__BackingField: {fileID: 5464958072073079247, guid: 50ee7aa8aba904802875a81e559dcc70, type: 3}
     <Mesh>k__BackingField: {fileID: 6298414674511371952, guid: a8a60ec357ea8e345878ab81ed75c145, type: 3}

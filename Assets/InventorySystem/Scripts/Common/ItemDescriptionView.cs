@@ -1,16 +1,19 @@
-using UnityEngine;
-using UnityEngine.EventSystems;
 using System.Collections;
 using Inventories;
+using TMPro;
+using UnityEngine;
 
-public class ItemDescriptionView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerMoveHandler
+public class ItemDescriptionView : MonoBehaviour
 {
     [SerializeField] private RectTransform _descriptionImage;
     [SerializeField] private CanvasGroup _canvasGroup;
     [SerializeField] private float _showDelay = 0.3f;
     [SerializeField] private float _fadeDuration = 0.2f;
-    [SerializeField] private InventoryItem _item;
-    private bool _isPointerOver = false;
+    [SerializeField] private TMP_Text _descriptionText;
+    [SerializeField] private TMP_Text _nameText;
+    [SerializeField] private DragFSM _dragFSM;
+
+    private InventoryItem _lastItem;
     private Coroutine _showCoroutine;
     private Coroutine _fadeCoroutine;
 
@@ -22,60 +25,69 @@ public class ItemDescriptionView : MonoBehaviour, IPointerEnterHandler, IPointer
             _canvasGroup = _descriptionImage.GetComponent<CanvasGroup>();
     }
 
-    public void OnPointerEnter(PointerEventData eventData)
+    private void Update()
     {
-        _isPointerOver = true;
+        InventoryItem currentItem = _dragFSM.Context.CurrentItemUnderMouse;
 
-        _descriptionImage.gameObject.transform.SetParent(gameObject.transform.parent);
-        _descriptionImage.transform.SetAsLastSibling();
+        if (currentItem != _lastItem)
+        {
+            if (currentItem != null)
+                ShowDescription(currentItem, _lastItem != null);
+            else
+                HideDescription();
 
-        if (_showCoroutine != null)
-            StopCoroutine(_showCoroutine);
+            _lastItem = currentItem;
+        }
 
-        _showCoroutine = StartCoroutine(ShowWithDelay());
+        if (_descriptionImage.gameObject.activeSelf)
+            _descriptionImage.position = Input.mousePosition;
     }
 
-    public void OnPointerExit(PointerEventData eventData)
+    private void ShowDescription(InventoryItem item, bool instant)
     {
-        _isPointerOver = false;
-
         if (_showCoroutine != null)
-        {
             StopCoroutine(_showCoroutine);
-            _showCoroutine = null;
-        }
 
         if (_fadeCoroutine != null)
-        {
             StopCoroutine(_fadeCoroutine);
-            _fadeCoroutine = null;
-        }
 
-        HideInstant();
+        _nameText.text = item.Item.itemData.Name;
+        _descriptionText.text = item.Item.itemData.Description;
+
+        if (instant)
+        {
+            _descriptionImage.gameObject.SetActive(true);
+            _descriptionImage.position = Input.mousePosition;
+            _canvasGroup.alpha = 1f;
+        }
+        else
+        {
+            _showCoroutine = StartCoroutine(ShowWithDelay());
+        }
     }
 
-    public void OnPointerMove(PointerEventData eventData)
+    private void HideDescription()
     {
-        if (_descriptionImage != null && _descriptionImage.gameObject.activeSelf)
-        {
-            _descriptionImage.position = Input.mousePosition;
-        }
+        if (_showCoroutine != null)
+            StopCoroutine(_showCoroutine);
+
+        if (_fadeCoroutine != null)
+            StopCoroutine(_fadeCoroutine);
+
+        _fadeCoroutine = StartCoroutine(FadeOut());
     }
 
     private IEnumerator ShowWithDelay()
     {
         yield return new WaitForSeconds(_showDelay);
 
-        if (_descriptionImage != null && _isPointerOver)
-        {
-            _descriptionImage.gameObject.SetActive(true);
-            _descriptionImage.position = Input.mousePosition;
+        _descriptionImage.gameObject.SetActive(true);
+        _descriptionImage.position = Input.mousePosition;
 
-            if (_fadeCoroutine != null)
-                StopCoroutine(_fadeCoroutine);
+        if (_fadeCoroutine != null)
+            StopCoroutine(_fadeCoroutine);
 
-            _fadeCoroutine = StartCoroutine(FadeIn());
-        }
+        _fadeCoroutine = StartCoroutine(FadeIn());
     }
 
     private IEnumerator FadeIn()
@@ -96,16 +108,27 @@ public class ItemDescriptionView : MonoBehaviour, IPointerEnterHandler, IPointer
         _canvasGroup.alpha = 1f;
     }
 
-    private void HideInstant()
+    private IEnumerator FadeOut()
     {
-        if (_descriptionImage != null)
+        if (_canvasGroup == null)
+            yield break;
+
+        float elapsed = 0f;
+        float startAlpha = _canvasGroup.alpha;
+
+        while (elapsed < _fadeDuration)
         {
-            _descriptionImage.gameObject.SetActive(false);
+            elapsed += Time.deltaTime;
+            _canvasGroup.alpha = Mathf.Lerp(startAlpha, 0f, elapsed / _fadeDuration);
+            yield return null;
         }
 
-        if (_canvasGroup != null)
-        {
-            _canvasGroup.alpha = 1f;
-        }
+        _canvasGroup.alpha = 0f;
+        _descriptionImage.gameObject.SetActive(false);
+    }
+
+    private void OnDisable()
+    {
+        _descriptionImage.gameObject.SetActive(false);
     }
 }

@@ -1,125 +1,57 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.UI; // Добавлено для Image
+using UnityEngine.UI;
 
-public class UITurntable : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IDragHandler
+[RequireComponent(typeof(RawImage))]
+public class UITurntable : MonoBehaviour, IDragHandler
 {
-    [Header("Настройки вращения")]
-    [SerializeField] private RectTransform target3DObject; // 3D объект с RectTransform
-    [SerializeField] private float rotationSpeed = 0.5f; // Скорость вращения
-    [SerializeField] private bool invertRotation = false; // Инвертировать направление
-    [SerializeField] private Vector3 rotationAxis = Vector3.up; // Ось вращения (Y по умолчанию)
-    
-    [Header("Дополнительные настройки")]
-    [SerializeField] private bool smoothRotation = true; // Плавное вращение
-    [SerializeField] private float smoothTime = 0.1f; // Время сглаживания
-    
-    private bool isDragging = false;
-    private Vector2 lastMousePosition;
-    private float currentVelocity = 0f;
-    private Vector3 targetRotation;
+    [Header("Rotation")]
+    [SerializeField] private RectTransform target;
+    [SerializeField] private float speed = 0.5f;
 
-    private void Start()
+    [Header("Render To Texture")]
+    [SerializeField] private Camera renderCamera;
+    [SerializeField] private int textureWidth = 1000;
+    [SerializeField] private int textureHeight = 1200;
+
+    private RenderTexture runtimeRT;
+    private RawImage rawImage;
+
+    void Awake()
     {
-        // Проверяем наличие любого Graphic компонента (Image или RawImage)
-        Graphic graphic = GetComponent<Graphic>();
-        
-        if (graphic == null)
-        {
-            // Проверяем RawImage
-            RawImage rawImg = GetComponent<RawImage>();
-            if (rawImg == null)
-            {
-                Debug.LogWarning("UITurntable: Отсутствует Image или RawImage компонент! Добавляю Image...");
-                Image img = gameObject.AddComponent<Image>();
-                img.color = new Color(1, 1, 1, 0.01f); // Почти прозрачный
-                graphic = img;
-            }
-            else
-            {
-                graphic = rawImg;
-            }
-        }
-        
-        // Проверяем Raycast Target
-        if (graphic != null && !graphic.raycastTarget)
-        {
-            Debug.LogWarning("UITurntable: Raycast Target выключен! Включаю...");
-            graphic.raycastTarget = true;
-        }
-        
-        if (target3DObject != null)
-        {
-            targetRotation = target3DObject.localEulerAngles;
-        }
-        
-        Debug.Log("UITurntable инициализирован на " + gameObject.name);
+        rawImage = GetComponent<RawImage>();
+        EnsureRenderTexture();
     }
 
-    public void OnPointerDown(PointerEventData eventData)
+    void EnsureRenderTexture()
     {
-        Debug.Log("OnPointerDown сработал!");
-        isDragging = true;
-        lastMousePosition = eventData.position;
-        
-        if (smoothRotation && target3DObject != null)
+        if (runtimeRT != null) return;
+
+        runtimeRT = new RenderTexture(textureWidth, textureHeight, 16)
         {
-            targetRotation = target3DObject.localEulerAngles;
-        }
+            useMipMap = false,
+            autoGenerateMips = false,
+            filterMode = FilterMode.Bilinear
+        };
+
+        renderCamera.targetTexture = runtimeRT;
+        rawImage.texture = runtimeRT;
     }
 
-    public void OnPointerUp(PointerEventData eventData)
+    public void OnDrag(PointerEventData e)
     {
-        Debug.Log("OnPointerUp сработал!");
-        isDragging = false;
+        if (target == null) return;
+
+        EnsureRenderTexture();
+        target.Rotate(0f, e.delta.x * speed, 0f);
     }
 
-    public void OnDrag(PointerEventData eventData)
+    void OnDestroy()
     {
-        Debug.Log("OnDrag сработал!");
-        if (target3DObject == null) return;
-
-        // Вычисляем разницу по горизонтали
-        float deltaX = eventData.position.x - lastMousePosition.x;
-        
-        // Применяем инверсию если нужно
-        if (invertRotation)
-            deltaX = -deltaX;
-        
-        // Вычисляем угол поворота
-        float rotationDelta = deltaX * rotationSpeed;
-        
-        if (smoothRotation)
+        if (runtimeRT != null)
         {
-            // Плавное вращение
-            targetRotation += rotationAxis * rotationDelta;
-            
-            Vector3 currentRotation = target3DObject.localEulerAngles;
-            Vector3 smoothedRotation = new Vector3(
-                Mathf.LerpAngle(currentRotation.x, targetRotation.x, 1f - Mathf.Exp(-smoothTime * 10f)),
-                Mathf.LerpAngle(currentRotation.y, targetRotation.y, 1f - Mathf.Exp(-smoothTime * 10f)),
-                Mathf.LerpAngle(currentRotation.z, targetRotation.z, 1f - Mathf.Exp(-smoothTime * 10f))
-            );
-            
-            target3DObject.localEulerAngles = smoothedRotation;
-        }
-        else
-        {
-            // Прямое вращение
-            target3DObject.Rotate(rotationAxis, rotationDelta, Space.Self);
-        }
-        
-        // Сохраняем текущую позицию для следующего кадра
-        lastMousePosition = eventData.position;
-    }
-
-    // Метод для установки объекта из кода
-    public void SetTarget3DObject(RectTransform rectTransform)
-    {
-        target3DObject = rectTransform;
-        if (target3DObject != null)
-        {
-            targetRotation = target3DObject.localEulerAngles;
+            renderCamera.targetTexture = null;
+            runtimeRT.Release();
         }
     }
 }

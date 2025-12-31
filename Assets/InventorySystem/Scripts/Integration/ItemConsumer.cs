@@ -27,7 +27,6 @@ public class ItemConsumer : MonoBehaviour, IItemConsumer
 
     public void SetInventory(InventoryPresenter inventory)
     {
-        Debug.Log($"ItemConsumer.SetInventory called with inventory from entity: {inventory?.Owner}");
         InventoryPresenter = inventory;
     }
 

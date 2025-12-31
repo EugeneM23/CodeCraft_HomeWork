@@ -222,10 +222,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ItemData:
-    <Name>k__BackingField: Gauntlets_01
-    <Description>k__BackingField: 
+    <Name>k__BackingField: Gauntlets
+    <Description>k__BackingField: Some Description
     <ItemType>k__BackingField: 8
-    <Icon>k__BackingField: {fileID: -229995559215790575, guid: 1ad4e5ed7c833482a9cb584d3eb1c86b, type: 3}
+    <Icon>k__BackingField: {fileID: -4119252931027220006, guid: 1656f680226de43fcb770702813091eb, type: 3}
     <Mesh>k__BackingField: {fileID: -758172254690646520, guid: 1ce208a689a6f6c4bb1b61c451ff6c90, type: 3}
     <Size>k__BackingField: {x: 1, y: 2}
     <CanStack>k__BackingField: 0

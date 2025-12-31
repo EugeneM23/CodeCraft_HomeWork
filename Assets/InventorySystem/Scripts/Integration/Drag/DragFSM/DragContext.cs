@@ -15,6 +15,7 @@ public class DragContext
 
     public bool IsDragging => CurrentDragItem != null;
     public EquipmentSlotView EquipmentSlotOld { get; set; }
+    public InventoryItem CurrentItemUnderMouse { get; set; }
 
     public void Clear()
     {
@@ -26,5 +27,6 @@ public class DragContext
         SourceInventory = null;
         CurrentInventoryPresenter = null;
         SelectedCell = Vector2Int.zero;
+        CurrentItemUnderMouse = null;
     }
 }

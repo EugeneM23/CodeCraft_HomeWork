@@ -222,8 +222,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ItemData:
-    <Name>k__BackingField: Shield_01
-    <Description>k__BackingField: 
+    <Name>k__BackingField: Shield
+    <Description>k__BackingField: Some Description
     <ItemType>k__BackingField: 9
     <Icon>k__BackingField: {fileID: -1371864526079846840, guid: c081b5de4e36c40ef94a15410ce5e499, type: 3}
     <Mesh>k__BackingField: {fileID: 8150614105551232225, guid: 388a3d2df3eca984d84f4d5fc40bfb17, type: 3}

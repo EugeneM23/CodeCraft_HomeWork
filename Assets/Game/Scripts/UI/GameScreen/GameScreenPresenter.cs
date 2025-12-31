@@ -20,13 +20,10 @@ namespace Inventories
 
         private void ToggleInventory()
         {
-            Debug.Log($"Toggle inventory for: {_currentSelectedUnit?.name}");
-            
             if (_currentSelectedUnit.InventoryPresenter == null)
             {
-                Debug.Log($"Creating inventory for {_currentSelectedUnit.name}");
                 InventoryBootstrap inventoryBootstrap = _view.CreateInventory(_currentSelectedUnit.InventoryPrefab);
-                inventoryBootstrap.Construct(_factory, _dragFSM);
+                inventoryBootstrap.Construct(_factory, _dragFSM, _currentSelectedUnit.ItemConsumer);
                 _currentSelectedUnit.SetInventoryPresenter(inventoryBootstrap.Presenter);
                 _dragFSM.SetMainInventory(_currentSelectedUnit.InventoryPresenter);
                 OnInventoryCreated?.Invoke(_currentSelectedUnit.InventoryPresenter);
@@ -40,7 +37,6 @@ namespace Inventories
         
         public void SetCurrentUnit(Entity entity)
         {
-            Debug.Log($"SetCurrentUnit called with: {entity?.name}");
             _currentSelectedUnit = entity;
         }
 

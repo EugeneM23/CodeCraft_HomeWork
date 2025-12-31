@@ -1,5 +1,6 @@
 using Game.Scripts.UI.Equipment;
 using Game.Scripts.UI.Equipment.Game.Equipment.View;
+using Inventories;
 using UnityEngine;
 
 public class IdleDragState : BaseState, ITickable
@@ -8,10 +9,15 @@ public class IdleDragState : BaseState, ITickable
     private bool _isMouseDown;
     private const float DragThreshold = 5f;
 
-    public IdleDragState(DragFSM fsm) : base(fsm) { }
+    public IdleDragState(DragFSM fsm) : base(fsm)
+    {
+    }
 
     public void Tick()
     {
+        _fsm.Context.CurrentItemUnderMouse =
+            _fsm.TryGetComponentUnderMouse(out CellView cell) ? cell.InventoryItem : null;
+
         HandleMouseDown();
         HandleMouseDrag();
         HandleMouseUp();
@@ -52,12 +58,12 @@ public class IdleDragState : BaseState, ITickable
             _fsm.SetState<PickupFromSceneState>();
             return true;
         }
+
         return false;
     }
 
     private void StartDragFromUI()
     {
-
         if (_fsm.TryGetComponentUnderMouse(out EquipmentSlotView slot) && slot.CurrentItem != null)
         {
             Debug.Log("StartDragFromEquipmentState Enter");
