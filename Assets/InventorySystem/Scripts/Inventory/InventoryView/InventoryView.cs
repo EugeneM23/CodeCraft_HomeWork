@@ -23,7 +23,6 @@ namespace Inventories
 
         public CellView[,] Cells { get; private set; }
         private readonly Dictionary<string, InventoryItem> _items = new();
-        private InventoryPresenter _inventoryPresenter;
         private InventoryFactory _factory;
 
         private void OnEnable()
@@ -51,18 +50,17 @@ namespace Inventories
 
             if (_closeButton != null)
                 _closeButton.onClick.RemoveListener(HandleCloseClick);
-            
+
             if (_showEquipmentButton != null)
                 _showEquipmentButton.onClick.RemoveListener(HandleShowEquipmentClick);
         }
 
         public void Initialize(int width, int height, InventoryPresenter presenter, InventoryFactory factory)
         {
-            _inventoryPresenter = presenter;
             _factory = factory;
             Cells = new CellView[width, height];
 
-            CreateGrid(width, height);
+            CreateGrid(width, height, presenter);
         }
 
         public void SetActive(bool active)
@@ -70,11 +68,11 @@ namespace Inventories
             gameObject.SetActive(active);
         }
 
-        public void DisplayItem(Item item, Vector2Int[] positions)
+        public void DisplayItem(Item item, Vector2Int[] positions, InventoryPresenter presenter)
         {
             InventoryItem inventoryItem = _factory.SpawnItem(_itemPrefab, _gridContainer);
             inventoryItem.transform.position = Cells[positions[0].x, positions[0].y].transform.position;
-            inventoryItem.SetupItem(item, _cellSize, _inventoryPresenter);
+            inventoryItem.SetupItem(item, _cellSize, presenter);
 
             _items[item.ID] = inventoryItem;
 
@@ -107,27 +105,17 @@ namespace Inventories
                 cell.Clear();
         }
 
-        public void HighlightCell(Vector2Int position)
-        {
-            Cells[position.x, position.y].Highlight(true);
-        }
-
-        public void UnhighlightCell(Vector2Int position)
-        {
-            Cells[position.x, position.y].UnHighlight();
-        }
-
-        private void CreateGrid(int width, int height)
+        private void CreateGrid(int width, int height, InventoryPresenter presenter)
         {
             for (int y = 0; y < height; y++)
             for (int x = 0; x < width; x++)
-                CreateCell(x, y);
+                CreateCell(x, y, presenter);
         }
 
-        private void CreateCell(int x, int y)
+        private void CreateCell(int x, int y, InventoryPresenter presenter)
         {
             CellView cell = _factory.SpawnItem(_cellPrefab, _gridContainer);
-            cell.Construct(_inventoryPresenter, new Vector2Int(x, y));
+            cell.Construct(presenter, new Vector2Int(x, y));
 
             RectTransform rect = cell.GetComponent<RectTransform>();
             rect.sizeDelta = _cellSize;

@@ -29,6 +29,12 @@ public class ItemDescriptionView : MonoBehaviour
     {
         InventoryItem currentItem = _dragFSM.Context.CurrentItemUnderMouse;
 
+        if (Input.GetMouseButtonDown(0))
+        {
+            HideDescription();
+            return;
+        }
+
         if (currentItem != _lastItem)
         {
             if (currentItem != null)

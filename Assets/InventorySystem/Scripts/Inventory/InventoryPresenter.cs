@@ -9,7 +9,6 @@ namespace Inventories
         private readonly InventoryView _view;
         private readonly Inventory _inventory;
         private InventoryPresenter _mainInventory;
-        private EquipmentPresenter _equipment;
         private bool _isOpen;
         public IItemConsumer Owner { get; set; }
 
@@ -53,9 +52,6 @@ namespace Inventories
             _view.OnReorganizeClicked += _inventory.Reorganize;
             _view.OnCollectAllClicked += OnCollectAll;
             _view.OnCloseClicked += Hide;
-
-            if (_equipment != null)
-                _view.OnEquipClicked += _equipment.Toggle;
         }
 
         private void Unsubscribe()
@@ -66,17 +62,6 @@ namespace Inventories
             _view.OnReorganizeClicked -= _inventory.Reorganize;
             _view.OnCollectAllClicked -= OnCollectAll;
             _view.OnCloseClicked -= Hide;
-
-            if (_equipment != null)
-                _view.OnEquipClicked -= _equipment.Toggle;
-        }
-
-        public void Toggle(InventoryPresenter presenter)
-        {
-            if (_isOpen)
-                Hide();
-            else
-                Show(presenter);
         }
 
         private void UpdateView()
@@ -86,14 +71,14 @@ namespace Inventories
             foreach (Item item in _inventory)
             {
                 Vector2Int[] positions = _inventory.GetItemGridPositions(item);
-                _view.DisplayItem(item, positions);
+                _view.DisplayItem(item, positions, this);
             }
         }
 
         private void OnItemAdded(Item item)
         {
             Vector2Int[] positions = _inventory.GetItemGridPositions(item);
-            _view.DisplayItem(item, positions);
+            _view.DisplayItem(item, positions, this);
         }
 
         private void OnItemRemoved(Item item) => _view.RemoveItem(item.ID);
@@ -135,7 +120,7 @@ namespace Inventories
         {
             return _inventory.AddItem(currentItemItemData);
         }
-        
+
         public void UpdateMainInventory(InventoryPresenter presenter)
         {
             _mainInventory = presenter;

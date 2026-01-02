@@ -12,8 +12,9 @@ public class EquipmentPresenter : MonoBehaviour
     private InventoryPresenter _presenter;
     private Dictionary<ItemType, EquipmentSlotView> _slots;
 
-    public void Initialize(InventoryPresenter presenter = null)
+    public void Initialize(InventoryView inventory, InventoryPresenter presenter = null)
     {
+        inventory.OnEquipClicked += Toggle;
         _presenter = presenter;
         InitializeSlots();
         SubscribeToSlots();

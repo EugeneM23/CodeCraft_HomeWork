@@ -4,13 +4,12 @@ using UnityEngine;
 
 public class InventoryFactory : MonoBehaviour
 {
-    private readonly Dictionary<string, SceneItem> _items = new();
-
     [SerializeField] private DragItem _dragItemPrefab;
     [SerializeField] private InventoryItem _inventoryItemPrefab;
     [SerializeField] private SceneItem[] _itemCatalog;
     [SerializeField] private Canvas _canvas;
 
+    private readonly Dictionary<string, SceneItem> _items = new();
     private PrefabPool _prefabPool;
 
     private void Start()

@@ -7,6 +7,8 @@ public class CharacterSelector : MonoBehaviour
 
     private Entity _selectedEntity;
 
+    public Entity SelectedEntity => _selectedEntity;
+
     private void Update()
     {
         if (Input.GetMouseButtonDown(0))
@@ -15,15 +17,8 @@ public class CharacterSelector : MonoBehaviour
 
             if (Physics.Raycast(ray, out RaycastHit hit) && hit.collider.TryGetComponent(out Entity entity))
             {
-                Debug.Log("OnUnitChanged");
-
                 _selectedEntity = entity;
                 OnUnitChanged?.Invoke(entity);
-            }
-            else
-            {
-                // _selectedEntity = null;
-                // OnUnitChanged?.Invoke(null);
             }
         }
     }

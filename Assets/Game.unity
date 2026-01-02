@@ -2113,7 +2113,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _descriptionImage: {fileID: 482254006}
   _canvasGroup: {fileID: 482254007}
-  _showDelay: 0.3
+  _showDelay: 0.2
   _fadeDuration: 0.2
   _descriptionText: {fileID: 963208824}
   _nameText: {fileID: 466712094}

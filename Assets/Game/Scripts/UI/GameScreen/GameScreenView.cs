@@ -11,17 +11,15 @@ namespace Game.Scripts.UI.GameScreen
 
         [SerializeField] private Button _openInventoryButton;
         [SerializeField] private RectTransform _mainInventoryRoot;
-        
-        public RectTransform MainInventoryRoot => _mainInventoryRoot;
 
         private void OnEnable() => _openInventoryButton.onClick.AddListener(HandleInventoryButtonClick);
         private void OnDisable() => _openInventoryButton.onClick.RemoveListener(HandleInventoryButtonClick);
 
         private void HandleInventoryButtonClick() => OnInventoryButtonClicked?.Invoke();
 
-        public InventoryBootstrap CreateInventory(InventoryBootstrap inventoryPrefab)
+        public InventoryBootstrap CreateInventory(InventoryBootstrap prefab)
         {
-            return Instantiate(inventoryPrefab, _mainInventoryRoot);
+            return Instantiate(prefab, _mainInventoryRoot);
         }
 
         public void Show() => _openInventoryButton.gameObject.SetActive(true);

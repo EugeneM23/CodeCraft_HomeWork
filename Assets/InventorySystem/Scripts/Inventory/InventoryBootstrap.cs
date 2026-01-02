@@ -16,24 +16,25 @@ namespace Inventories
         private InventoryAudioController _audioController;
 
         public InventoryPresenter Presenter { get; private set; }
+        public EquipmentBootstrap EquipmentBootstrap => _equipmentBootstrap;
 
-        public void Construct(InventoryFactory factory, DragFSM dragFsm, ItemConsumer consumer = null)
+        public void Construct(InventoryFactory factory, DragFSM dragFSM, ItemConsumer consumer = null)
         {
             Inventory inventory = new Inventory(_columns, _rows);
-
             Presenter = new InventoryPresenter(_view, inventory, factory);
 
             AddInitialItems();
 
-            _inventoryHighlight = new InventoryHighlight(dragFsm, _view, Presenter);
+            _inventoryHighlight = new InventoryHighlight(dragFSM, _view, Presenter);
             _audioController = new InventoryAudioController(inventory);
 
-            gameObject.SetActive(false);
-
-            if (_equipmentBootstrap != null)
+            if (consumer != null)
             {
-                _equipmentBootstrap.Initialize(consumer);
+                Presenter.Owner = consumer;
+                consumer.SetInventory(Presenter);
             }
+
+            gameObject.SetActive(false);
         }
 
         private void AddInitialItems()

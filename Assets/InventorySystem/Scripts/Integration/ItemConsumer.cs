@@ -18,9 +18,7 @@ public class ItemConsumer : MonoBehaviour, IItemConsumer
     public new T GetComponent<T>()
     {
         if (typeof(T) == typeof(IItemConsumer))
-        {
             return (T)(IItemConsumer)this;
-        }
 
         return base.GetComponent<T>();
     }
