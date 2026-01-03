@@ -232,17 +232,11 @@ MonoBehaviour:
     <MaxStackQuantity>k__BackingField: 2
     <ItemUseCase>k__BackingField: {fileID: 11400000, guid: f2a989a94ab8b47909f243ffe364f5c1, type: 2}
     ItemAudioData:
-      <StartDrag>k__BackingField: {fileID: 8300000, guid: bd596346bfc3b45fe86766471e755820, type: 3}
+      <StartDrag>k__BackingField: {fileID: 8300000, guid: 5d6f29bcef96c48e5bcf58037006a43f, type: 3}
       <DropToInventory>k__BackingField: {fileID: 8300000, guid: e9ce94d69d951458e80a3331da59d2e3, type: 3}
       <EquipItem>k__BackingField: {fileID: 0}
       <DropToScene>k__BackingField: {fileID: 0}
       <UseItem>k__BackingField: {fileID: 0}
-  ItemAudioData:
-    <StartDrag>k__BackingField: {fileID: 0}
-    <DropToInventory>k__BackingField: {fileID: 0}
-    <EquipItem>k__BackingField: {fileID: 0}
-    <DropToScene>k__BackingField: {fileID: 0}
-    <UseItem>k__BackingField: {fileID: 0}
   Quantity: 1
 --- !u!65 &5899807608685920841
 BoxCollider:

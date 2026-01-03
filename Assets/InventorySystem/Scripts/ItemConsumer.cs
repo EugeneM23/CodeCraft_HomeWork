@@ -4,7 +4,7 @@ using UnityEngine;
 public class ItemConsumer : MonoBehaviour, IItemConsumer
 {
     public int Health = 50;
-    public InventoryPresenter InventoryPresenter { get; private set; }
+    private InventoryPresenter InventoryPresenter { get; set; }
     private EquipmentPresenter EquipmentPresenter { get; set; }
 
     public bool Equip(Item item)

@@ -6,14 +6,6 @@ namespace Inventories
     {
         private static AudioPlayer _instance;
 
-        [SerializeField] private AudioSource _addToInventory;
-        [SerializeField] private AudioSource _addToSlot;
-        [SerializeField] private AudioSource _removeFromInventory;
-        [SerializeField] private AudioSource _removeFromSlot;
-        [SerializeField] private AudioSource _stackIncreased;
-        [SerializeField] private AudioSource _stackDecreased;
-
-        private const string PrefabPath = "AudioPlayer";
 
         public static AudioPlayer Instance
         {
@@ -25,8 +17,10 @@ namespace Inventories
 
                     if (_instance == null)
                     {
-                        GameObject prefab = Resources.Load<GameObject>(PrefabPath);
-                        GameObject go = Instantiate(prefab);
+                        GameObject go = new GameObject("AudioPlayer");
+                        go.AddComponent<AudioPlayer>();
+                        go.AddComponent<AudioSource>();
+
                         _instance = go.GetComponent<AudioPlayer>();
                     }
                 }
@@ -48,23 +42,11 @@ namespace Inventories
             }
         }
 
-        public void PlayInventoryAdd() => _addToInventory.Play();
-
-        public void PlayInventoryRemove() => _removeFromInventory.Play();
-
-        public void PlaySlotAdd() => _addToSlot.Play();
-
-        public void PlaySlotRemove() => _removeFromSlot.Play();
-
-        public void PlayStackDecreased() => _stackDecreased.Play();
-
-        public void PlayStackIncreased() => _stackIncreased.Play();
-
         public void Play(AudioClip dropToInventory)
         {
-            _addToInventory.clip = dropToInventory;
-            _addToInventory.pitch = Random.Range(0.7f, 1.1f);
-            _addToInventory.Play();
+            _instance.GetComponent<AudioSource>().clip = dropToInventory;
+            _instance.GetComponent<AudioSource>().pitch = Random.Range(0.7f, 1.1f);
+            _instance.GetComponent<AudioSource>().Play();
         }
     }
 }

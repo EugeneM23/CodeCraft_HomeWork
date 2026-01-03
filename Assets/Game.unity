@@ -210,7 +210,6 @@ GameObject:
   - component: {fileID: 66427000}
   - component: {fileID: 66426999}
   - component: {fileID: 66427002}
-  - component: {fileID: 66427001}
   m_Layer: 0
   m_Name: '[SYSTEM]'
   m_TagString: Untagged
@@ -272,23 +271,6 @@ MonoBehaviour:
   - {fileID: 7070894261933836396, guid: 4a28ec6f258124f069038ac2693f8b13, type: 3}
   - {fileID: 7070894261933836396, guid: d00b195c1c8c94d6097850658fc3edc7, type: 3}
   _canvas: {fileID: 2068645393}
---- !u!114 &66427001
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 66426997}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5e86589abc62440a8b91dbf36b4c1101, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _dragFSM: {fileID: 66426999}
-  _characterSelector: {fileID: 66427002}
-  _presenter: {fileID: 2068645395}
-  _chests:
-  - {fileID: 1059128928}
 --- !u!114 &66427002
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -854,10 +836,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 025d9e93cb8046ff9aac1bdd9f575978, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _mainScreenView: {fileID: 2068645396}
+  _gameScreenView: {fileID: 2068645396}
   _inventoryPrefab: {fileID: 5830915091178595739, guid: c1174cce97b694c81908617ed2335148, type: 3}
   _factory: {fileID: 66427000}
-  _dragFsm: {fileID: 66426999}
+  _dragFSM: {fileID: 66426999}
+  _characterSelector: {fileID: 66427002}
 --- !u!65 &1059128929
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1053,7 +1036,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 21a62d3917f845a7b0408426fd310233, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Health: 50
+  Health: 10
 --- !u!1001 &1113294296
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2085,6 +2068,7 @@ MonoBehaviour:
   _view: {fileID: 2068645396}
   _factory: {fileID: 66427000}
   _dragFSM: {fileID: 66426999}
+  _characterSelector: {fileID: 66427002}
 --- !u!114 &2068645396
 MonoBehaviour:
   m_ObjectHideFlags: 0

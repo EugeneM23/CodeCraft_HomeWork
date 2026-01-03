@@ -6,6 +6,8 @@ namespace Inventories
 {
     public class InventoryPresenter
     {
+        public event Action OnShow;
+        public event Action OnHide;
         private readonly InventoryView _view;
         private readonly Inventory _inventory;
         private InventoryPresenter _mainInventory;
@@ -33,6 +35,8 @@ namespace Inventories
             Subscribe();
             _view.SetActive(true);
             UpdateView();
+
+            OnShow?.Invoke();
         }
 
         private void Hide()
@@ -42,6 +46,7 @@ namespace Inventories
             _isOpen = false;
             Unsubscribe();
             _view.SetActive(false);
+            OnHide?.Invoke();
         }
 
         private void Subscribe()
@@ -125,5 +130,7 @@ namespace Inventories
         {
             _mainInventory = presenter;
         }
+
+        public Inventory GetInventory() => _inventory;
     }
 }

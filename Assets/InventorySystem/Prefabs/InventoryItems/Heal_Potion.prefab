@@ -134,17 +134,11 @@ MonoBehaviour:
     <MaxStackQuantity>k__BackingField: 3
     <ItemUseCase>k__BackingField: {fileID: 11400000, guid: ff4197b4c581341748c0ce0de9da5d40, type: 2}
     ItemAudioData:
-      <StartDrag>k__BackingField: {fileID: 0}
+      <StartDrag>k__BackingField: {fileID: 8300000, guid: 5d6f29bcef96c48e5bcf58037006a43f, type: 3}
       <DropToInventory>k__BackingField: {fileID: 8300000, guid: 61055de96809d4a10baf32d2ad9011f0, type: 3}
       <EquipItem>k__BackingField: {fileID: 0}
       <DropToScene>k__BackingField: {fileID: 0}
       <UseItem>k__BackingField: {fileID: 0}
-  ItemAudioData:
-    <StartDrag>k__BackingField: {fileID: 0}
-    <DropToInventory>k__BackingField: {fileID: 0}
-    <EquipItem>k__BackingField: {fileID: 0}
-    <DropToScene>k__BackingField: {fileID: 0}
-    <UseItem>k__BackingField: {fileID: 0}
   Quantity: 1
 --- !u!114 &3101187000052574919
 MonoBehaviour:

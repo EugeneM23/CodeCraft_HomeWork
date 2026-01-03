@@ -10,31 +10,30 @@ namespace Inventories
         [SerializeField] private int _columns = 4;
         [SerializeField] private int _rows = 7;
         [SerializeField] private SceneItem[] _initializeItems;
-        [SerializeField] private EquipmentBootstrap _equipmentBootstrap;
-        
+        [SerializeField] private EquipmentPresenter _equipmentPresenter;
+        [SerializeField] private InventoryAudioController _inventoryAudioController;
+        [SerializeField] private EquipmentAudioController _equipmentAudioController;
+
         private InventoryHighlight _inventoryHighlight;
-        private InventoryAudioController _audioController;
 
         public InventoryPresenter Presenter { get; private set; }
-        public EquipmentBootstrap EquipmentBootstrap => _equipmentBootstrap;
+        public EquipmentPresenter Equipment => _equipmentPresenter;
 
         public void Construct(InventoryFactory factory, DragFSM dragFSM, ItemConsumer consumer = null)
         {
-            Inventory inventory = new Inventory(_columns, _rows);
-            Presenter = new InventoryPresenter(_view, inventory, factory);
-
+            InitializeInventory(factory);
             AddInitialItems();
-
-            _inventoryHighlight = new InventoryHighlight(dragFSM, _view, Presenter);
-            _audioController = new InventoryAudioController(inventory);
-
-            if (consumer != null)
-            {
-                Presenter.Owner = consumer;
-                consumer.SetInventory(Presenter);
-            }
+            InitializeSystems(dragFSM);
+            InitializeEquipment(consumer);
+            LinkConsumer(consumer);
 
             gameObject.SetActive(false);
+        }
+
+        private void InitializeInventory(InventoryFactory factory)
+        {
+            Inventory inventory = new Inventory(_columns, _rows);
+            Presenter = new InventoryPresenter(_view, inventory, factory);
         }
 
         private void AddInitialItems()
@@ -43,6 +42,39 @@ namespace Inventories
             {
                 Presenter.AddItem(item.ItemData, item.Quantity);
             }
+        }
+
+        private void InitializeSystems(DragFSM dragFSM)
+        {
+            _inventoryHighlight = new InventoryHighlight(dragFSM, _view, Presenter);
+
+            if (_inventoryAudioController != null)
+                _inventoryAudioController.Initialize(Presenter);
+        }
+
+        private void InitializeEquipment(ItemConsumer consumer)
+        {
+            if (_equipmentPresenter == null)
+                return;
+
+            _equipmentPresenter.Initialize(_view, Presenter);
+
+            if (_equipmentAudioController != null)
+                _equipmentAudioController.Initialize(_equipmentPresenter);
+
+            if (consumer != null)
+            {
+                consumer.SetEquipment(_equipmentPresenter);
+            }
+        }
+
+        private void LinkConsumer(ItemConsumer consumer)
+        {
+            if (consumer == null)
+                return;
+
+            Presenter.Owner = consumer;
+            consumer.SetInventory(Presenter);
         }
 
         private void Update()

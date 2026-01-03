@@ -1,5 +1,4 @@
 using System;
-using Game.Scripts.UI.Equipment.Game.Equipment;
 using Game.Scripts.UI.GameScreen;
 using Inventories;
 using UnityEngine;
@@ -65,9 +64,8 @@ namespace Inventories
 
             _currentSelectedUnit.InventoryPresenter = bootstrap.Presenter;
             _dragFSM.SetMainInventory(bootstrap.Presenter);
-
-            if (bootstrap.EquipmentBootstrap != null)
-                bootstrap.EquipmentBootstrap.Initialize(bootstrap.Presenter, _currentSelectedUnit.ItemConsumer);
+            
+            // Bootstrap сам инициализирует экипмент внутри
         }
 
         private void SetCurrentUnit(Entity entity)

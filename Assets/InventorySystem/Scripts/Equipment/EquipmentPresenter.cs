@@ -6,16 +6,22 @@ using UnityEngine;
 
 public class EquipmentPresenter : MonoBehaviour
 {
+    public event Action OnShow;
+    public event Action OnHide;
     [SerializeField] private EquipmentPanelView _view;
     [SerializeField] private CharacterEquipment _character;
 
-    private InventoryPresenter _presenter;
+    private InventoryPresenter _inventoryPresenter;
     private Dictionary<ItemType, EquipmentSlotView> _slots;
 
-    public void Initialize(InventoryView inventory, InventoryPresenter presenter = null)
+    public IEnumerable<EquipmentSlotView> GetAllSlots() => _slots?.Values;
+
+    public void Initialize(InventoryView inventory, InventoryPresenter inventoryPresenter)
     {
+        _inventoryPresenter = inventoryPresenter;
+
         inventory.OnEquipClicked += Toggle;
-        _presenter = presenter;
+
         InitializeSlots();
         SubscribeToSlots();
     }
@@ -66,7 +72,7 @@ public class EquipmentPresenter : MonoBehaviour
         {
             var currentItem = slot.CurrentItem;
             slot.UnEquip();
-            _presenter.AddItem(currentItem.itemData);
+            _inventoryPresenter.AddItem(currentItem.itemData);
         }
 
         slot.Equip(item);
@@ -74,7 +80,7 @@ public class EquipmentPresenter : MonoBehaviour
 
     private void ReturnToInventory(Item item)
     {
-        if (_presenter.AddItem(item.itemData))
+        if (_inventoryPresenter.AddItem(item.itemData))
             _slots[item.itemData.ItemType].UnEquip();
     }
 
@@ -86,15 +92,19 @@ public class EquipmentPresenter : MonoBehaviour
         if (!slot.IsEmpty)
         {
             var currentItem = slot.UnEquip();
-            _presenter.AddItem(currentItem.itemData);
+            _inventoryPresenter.AddItem(currentItem.itemData);
         }
 
         return slot.Equip(item);
     }
 
-    public void Toggle()
+    private void Toggle()
     {
-        Debug.Log(_view.gameObject.activeSelf);
+        if (_view.gameObject.activeSelf)
+            OnHide?.Invoke();
+        else
+            OnShow?.Invoke();
+        
         _view.gameObject.SetActive(!_view.gameObject.activeSelf);
     }
 }

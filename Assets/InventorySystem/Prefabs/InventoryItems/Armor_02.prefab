@@ -237,12 +237,6 @@ MonoBehaviour:
       <EquipItem>k__BackingField: {fileID: 0}
       <DropToScene>k__BackingField: {fileID: 8300000, guid: 7158c841a58444b8f9afc0d1d75f096b, type: 3}
       <UseItem>k__BackingField: {fileID: 0}
-  ItemAudioData:
-    <StartDrag>k__BackingField: {fileID: 0}
-    <DropToInventory>k__BackingField: {fileID: 0}
-    <EquipItem>k__BackingField: {fileID: 0}
-    <DropToScene>k__BackingField: {fileID: 0}
-    <UseItem>k__BackingField: {fileID: 0}
   Quantity: 1
 --- !u!65 &5899807608685920841
 BoxCollider:
