@@ -6,23 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="6f0b762c-5415-4a85-b17b-cc44fd47261d" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.CodeCraft_HomeWork/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.CodeCraft_HomeWork/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/UI/Chest/CharacterSelector.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/UI/Chest/CharacterSelector.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/UI/Chest/Chest.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/UI/Chest/Chest.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/UI/Chest/Entity.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/UI/Chest/Entity.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/UI/GameScreen/CurrentSelectedObserver.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/UI/GameScreen/CurrentSelectedObserver.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/UI/GameScreen/GameScreenPresenter.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/UI/GameScreen/GameScreenPresenter.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/UI/GameScreen/GameScreenView.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/UI/GameScreen/GameScreenView.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Prefabs/Inventory/Inventory.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Prefabs/Inventory/Inventory.prefab" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Common/ItemDescriptionView.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Common/ItemDescriptionView.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Equipment/EquipmentBootstrap.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Equipment/EquipmentBootstrap.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Equipment/EquipmentPresenter.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Equipment/EquipmentPresenter.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Integration/ItemConsumer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Integration/ItemConsumer.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Inventory/InventoryBootstrap.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Inventory/InventoryBootstrap.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Inventory/InventoryFactory/InventoryFactory.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Inventory/InventoryFactory/InventoryFactory.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Inventory/InventoryPresenter.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Inventory/InventoryPresenter.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Inventory/InventoryView/InventoryView.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Inventory/InventoryView/InventoryView.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Prefabs/Equipment/EquipmentWindow.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Prefabs/Equipment/EquipmentWindow.prefab" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
