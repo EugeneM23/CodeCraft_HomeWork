@@ -1,3 +1,4 @@
+using System;
 using Game.Scripts.UI.GameScreen;
 using Inventories;
 using UnityEngine;
@@ -7,6 +8,8 @@ namespace Game.Scripts.UI.Chest
 {
     public class Chest : MonoBehaviour, IPointerClickHandler
     {
+        public event Action OnShow;
+
         [SerializeField] private GameScreenView _gameScreenView;
         [SerializeField] private InventoryBootstrap _inventoryPrefab;
         [SerializeField] private InventoryFactory _factory;
@@ -15,9 +18,11 @@ namespace Game.Scripts.UI.Chest
 
         private InventoryPresenter _chestInventoryPresenter;
 
+        public InventoryPresenter Presenter => _chestInventoryPresenter;
+
         public void OnPointerClick(PointerEventData eventData)
         {
-            Entity currentEntity = _characterSelector.SelectedEntity;
+            var currentEntity = _characterSelector.SelectedEntity;
 
             if (currentEntity == null)
             {
@@ -32,6 +37,7 @@ namespace Game.Scripts.UI.Chest
             {
                 _chestInventoryPresenter.UpdateMainInventory(currentEntity.InventoryPresenter);
                 _chestInventoryPresenter.Show(currentEntity.InventoryPresenter);
+                OnShow?.Invoke();
             }
             else
             {

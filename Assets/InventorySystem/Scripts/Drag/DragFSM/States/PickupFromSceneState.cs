@@ -9,13 +9,13 @@ public class PickupFromSceneState : BaseState
 
     public override void Enter()
     {
-        if (!_fsm.TryGetComponentUnderMouse(out SceneItem sceneItem))
+        if (_fsm.MainPresenter == null || !_fsm.TryGetComponentUnderMouse(out SceneItem sceneItem))
         {
             _fsm.SetState<IdleDragState>();
             return;
         }
 
-        Debug.Log(_fsm.MainPresenter == null);
+
         if (_fsm.MainPresenter.AddItem(sceneItem.ItemData, sceneItem.Quantity))
             _factory.DeSpawn(sceneItem.gameObject);
 

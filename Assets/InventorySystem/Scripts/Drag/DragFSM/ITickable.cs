@@ -1,4 +1,4 @@
-public interface ITickable : IState
+public interface ITickable 
 {
     void Tick();
 }

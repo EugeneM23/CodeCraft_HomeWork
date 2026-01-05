@@ -1,4 +1,4 @@
-public class BaseState : IState
+public class BaseState 
 {
     protected readonly DragFSM _fsm;
 
