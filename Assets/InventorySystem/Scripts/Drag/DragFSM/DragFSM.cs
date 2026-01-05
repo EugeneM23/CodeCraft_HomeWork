@@ -12,8 +12,8 @@ public class DragFSM : MonoBehaviour
     [SerializeField] private InventoryFactory _factory;
     [SerializeField] private GraphicRaycaster _raycaster;
 
-    private Dictionary<Type, IState> _states;
-    private IState _currentState;
+    private Dictionary<Type, BaseState> _states;
+    private BaseState _currentState;
     private RaycastDetector _raycastDetector;
 
     public InventoryPresenter MainPresenter { get; private set; }
@@ -32,7 +32,7 @@ public class DragFSM : MonoBehaviour
     {
         Context = new DragContext();
 
-        _states = new Dictionary<Type, IState>
+        _states = new Dictionary<Type, BaseState>
         {
             [typeof(IdleDragState)] = new IdleDragState(this),
             [typeof(StartDragFromInventoryState)] = new StartDragFromInventoryState(this),
@@ -56,7 +56,7 @@ public class DragFSM : MonoBehaviour
             tickable.Tick();
     }
 
-    public void SetState<T>() where T : IState
+    public void SetState<T>() where T : BaseState
     {
         _currentState?.Exit();
         _currentState = _states[typeof(T)];
