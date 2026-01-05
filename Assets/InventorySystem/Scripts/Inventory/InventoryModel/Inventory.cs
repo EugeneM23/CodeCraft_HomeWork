@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Inventories;
 using UnityEngine;
 
@@ -68,7 +69,7 @@ public sealed class Inventory : IEnumerable<Item>
 
     #endregion
 
-    #region Add Item Methods
+    #region Add Item
 
     public bool AddItem(in ItemData itemData, Vector2Int position, int quantity = 1)
     {
@@ -77,13 +78,13 @@ public sealed class Inventory : IEnumerable<Item>
 
         if (itemData.Size.x <= 0 || itemData.Size.y <= 0)
             throw new ArgumentException("Item size must be positive");
-        
+
         if (Fit(itemData.Size, position.x, position.y))
         {
-            var instance = new Item(itemData, position, quantity);
-            PlaceInstanceInGrid(instance, position.x, position.y);
-            _items.Add(instance.ID, instance);
-            OnAdded?.Invoke(instance);
+            Item item = new Item(itemData, position, quantity);
+            PlaceInstanceInGrid(item, position.x, position.y);
+            _items.Add(item.ID, item);
+            OnAdded?.Invoke(item);
             return true;
         }
 
@@ -157,7 +158,7 @@ public sealed class Inventory : IEnumerable<Item>
 
     #endregion
 
-    #region CanAdd Methods
+    #region CanAdd
 
     public bool CanAddItem(ItemData itemData)
     {
@@ -183,14 +184,11 @@ public sealed class Inventory : IEnumerable<Item>
 
     #endregion
 
-    #region Remove Item Methods
+    #region Remove Item
 
     public bool RemoveItem(string id)
     {
-        if (string.IsNullOrEmpty(id))
-            return false;
-
-        if (!_items.TryGetValue(id, out var item))
+        if (string.IsNullOrEmpty(id) || !_items.TryGetValue(id, out var item))
             return false;
 
         Vector2Int[] positions = GetItemGridPositions(item);
@@ -206,7 +204,7 @@ public sealed class Inventory : IEnumerable<Item>
 
     #endregion
 
-    #region Move Item Methods
+    #region Move Item
 
     public bool MoveItem(string itemId, Vector2Int newPosition)
     {
@@ -220,19 +218,22 @@ public sealed class Inventory : IEnumerable<Item>
         if (!IsPositionValid(item.itemData.Size, newPosition.x, newPosition.y))
             return false;
 
-        // Временно очищаем старую позицию
+        // Проверяем, что новая позиция свободна (игнорируя клетки самого предмета)
+        for (int x = newPosition.x; x < newPosition.x + item.itemData.Size.x; x++)
+        {
+            for (int y = newPosition.y; y < newPosition.y + item.itemData.Size.y; y++)
+            {
+                var cell = _cells[x, y];
+                if (cell != null && cell != item)
+                    return false;
+            }
+        }
+
+        // Все проверки пройдены - выполняем перенос
+        // Очищаем старую позицию
         var oldPositions = GetItemGridPositions(item);
         foreach (var pos in oldPositions)
             _cells[pos.x, pos.y] = null;
-
-        // Проверяем, что новая позиция свободна
-        if (!Fit(item.itemData.Size, newPosition.x, newPosition.y))
-        {
-            // Восстанавливаем старую позицию
-            foreach (var pos in oldPositions)
-                _cells[pos.x, pos.y] = item;
-            return false;
-        }
 
         // Размещаем на новой позиции
         item.SetGridPosition(newPosition);
@@ -244,8 +245,9 @@ public sealed class Inventory : IEnumerable<Item>
 
     #endregion
 
-    #region Position Methods
+    #region Position
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool FindFreePosition(in Vector2Int size, out Vector2Int freePosition)
     {
         if (size.x <= 0 || size.y <= 0)
@@ -268,6 +270,7 @@ public sealed class Inventory : IEnumerable<Item>
         return false;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private bool Fit(Vector2Int size, int posX, int posY)
     {
         if (!IsPositionValid(size, posX, posY))
@@ -285,6 +288,7 @@ public sealed class Inventory : IEnumerable<Item>
         return true;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private bool IsPositionValid(Vector2Int size, int posX, int posY)
     {
         if (size.x <= 0 || size.y <= 0)
@@ -301,11 +305,19 @@ public sealed class Inventory : IEnumerable<Item>
 
     #endregion
 
-    #region Get Item Methods
+    #region Get Item
 
     public Item GetItem(Vector2Int position)
     {
-        return GetItem(position.x, position.y);
+        if (position.x < 0 || position.x >= Width || position.y < 0 || position.y >= Height)
+            throw new IndexOutOfRangeException();
+
+        var item = _cells[position.x, position.y];
+
+        if (item == null)
+            throw new NullReferenceException();
+
+        return item;
     }
 
     public Item GetItem(int x, int y)
@@ -323,7 +335,13 @@ public sealed class Inventory : IEnumerable<Item>
 
     public bool TryGetItem(Vector2Int position, out Item item)
     {
-        return TryGetItem(position.x, position.y, out item);
+        item = null;
+
+        if (position.x < 0 || position.x >= Width || position.y < 0 || position.y >= Height)
+            return false;
+
+        item = _cells[position.x, position.y];
+        return item != null;
     }
 
     public bool TryGetItem(int x, int y, out Item item)
@@ -339,7 +357,7 @@ public sealed class Inventory : IEnumerable<Item>
 
     #endregion
 
-    #region Get Positions Methods
+    #region Get Positions
 
     public Vector2Int[] GetPositions(string itemId)
     {
@@ -386,52 +404,34 @@ public sealed class Inventory : IEnumerable<Item>
 
     #endregion
 
-    #region Contains Methods
+    #region Contains
 
-    public bool Contains(string itemId)
-    {
-        if (string.IsNullOrEmpty(itemId))
-            return false;
-
-        return _items.ContainsKey(itemId);
-    }
+    public bool Contains(string itemId) => !string.IsNullOrEmpty(itemId) && _items.ContainsKey(itemId);
 
     #endregion
 
-    #region Count Methods
+    #region Count
 
-    public int GetItemCount(string name)
-    {
-        int count = 0;
-        foreach (var item in _items.Values)
-        {
-            if (item.itemData.Name == name)
-                count++;
-        }
-
-        return count;
-    }
+    public int GetItemCount(string name) => _items.Values.Count(item => item.itemData.Name == name);
 
     #endregion
 
-    #region IsFree Methods
+    #region IsFree
 
     public bool IsFree(Vector2Int cellIndex)
     {
-        return IsFree(cellIndex.x, cellIndex.y);
+        return cellIndex.x >= 0 && cellIndex.x < Width && cellIndex.y >= 0 && cellIndex.y < Height &&
+               _cells[cellIndex.x, cellIndex.y] == null;
     }
 
     public bool IsFree(int x, int y)
     {
-        if (x < 0 || x >= Width || y < 0 || y >= Height)
-            return false;
-
-        return _cells[x, y] == null;
+        return x >= 0 && x < Width && y >= 0 && y < Height && _cells[x, y] == null;
     }
 
     #endregion
 
-    #region Clear Methods
+    #region Clear
 
     public void Clear()
     {
@@ -440,16 +440,14 @@ public sealed class Inventory : IEnumerable<Item>
 
         _items.Clear();
 
-        for (int i = 0; i < _cells.GetLength(0); i++)
-        for (int j = 0; j < _cells.GetLength(1); j++)
-            _cells[i, j] = null;
+        Array.Clear(_cells, 0, _cells.Length);
 
         OnCleared?.Invoke();
     }
 
     #endregion
 
-    #region Reorganize Methods
+    #region Reorganize
 
     public void Reorganize()
     {
@@ -492,7 +490,7 @@ public sealed class Inventory : IEnumerable<Item>
 
     #endregion
 
-    #region Copy Methods
+    #region Copy
 
     public void CopyTo(Item[,] array)
     {
@@ -507,34 +505,25 @@ public sealed class Inventory : IEnumerable<Item>
 
     #endregion
 
-    #region Helper Methods
+    #region Helper
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void PlaceInstanceInGrid(Item instance, int posX, int posY)
     {
         ItemData itemData = instance.itemData;
         for (int x = posX; x < posX + itemData.Size.x; x++)
-        {
-            for (int y = posY; y < posY + itemData.Size.y; y++)
-            {
-                _cells[x, y] = instance;
-            }
-        }
+        for (int y = posY; y < posY + itemData.Size.y; y++)
+            _cells[x, y] = instance;
     }
 
     #endregion
 
-    #region IEnumerable Implementation
+    #region IEnumerable
 
-    public IEnumerator<Item> GetEnumerator()
-    {
-        foreach ((string key, Item value) in _items)
-            yield return value;
-    }
+    public IEnumerator<Item> GetEnumerator() => _items.Values.GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator()
         => GetEnumerator();
 
     #endregion
-
-    
 }
