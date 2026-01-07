@@ -47,7 +47,7 @@ namespace Game
 
             // Movement
             entity.AddRotationSpeed(new BaseVariable<float>(_rotationSpeed));
-            entity.AddMoveSpeed(new Const<float>(_moveSpeed));
+            entity.AddMoveSpeed(new ReactiveFloat(_moveSpeed));
             entity.AddMoveCondition(new AndExpression(
                 entity.GetHealth().Exists,
                 () => entity.GetWeapon().Value.GetMoveCondition().Invoke()

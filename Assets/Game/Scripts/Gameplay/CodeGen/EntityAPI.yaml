@@ -30,7 +30,7 @@ values:
   - DestroyAction: IAction
 
   # Movement
-  - MoveSpeed: IValue<float>
+  - MoveSpeed: IReactiveVariable<float>
   - MoveDirection: IReactiveVariable<Vector3>
   - RotateDirection: IReactiveVariable<Vector3>
   - MoveCondition: IExpression<bool>

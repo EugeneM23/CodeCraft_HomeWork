@@ -33,7 +33,7 @@ namespace Game
             entity.AddDestroyAction(new BaseAction(() => _factory.Destroy(entity)));
 
             //Movement
-            entity.AddMoveSpeed(new Const<float>(_moveSpeed));
+            entity.AddMoveSpeed(new ReactiveFloat(_moveSpeed));
             entity.AddMoveDirection(new ReactiveVector3(transform.forward));
 
             //Collision

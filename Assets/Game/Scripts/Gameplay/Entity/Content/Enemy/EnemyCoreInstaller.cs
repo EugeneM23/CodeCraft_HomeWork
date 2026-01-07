@@ -32,7 +32,7 @@ namespace Game
             _gameContext = GameContext.Instance;
 
             // Core
-            entity.AddMoveSpeed(new Const<float>(_moveSpeed));
+            entity.AddMoveSpeed(new ReactiveFloat(_moveSpeed));
             entity.AddDamage(new Const<int>(_damage));
             entity.AddTriggerEventReceiver(_triggerReceiver);
             entity.AddGameObject(transform.gameObject);
@@ -75,5 +75,5 @@ namespace Game
             entity.AddBehaviour<EnemyChaseBehaviour>();
             entity.AddBehaviour<EnemyAttackBehaviour>();
         }
-    }
+     }
 }
