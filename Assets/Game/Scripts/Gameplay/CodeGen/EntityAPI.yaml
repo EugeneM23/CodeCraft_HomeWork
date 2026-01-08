@@ -50,7 +50,8 @@ values:
   - WeaponRoot: Transform
   - FirePoint: Transform
   - ShellPoint: Transform
-  - Damage: IValue<int>
+  - Damage: IReactiveVariable<int>
+  - ExtraDamage: IExpression<int>
   - DamageRadius: IValue<float>
   - DamageLayer: LayerMask
   - DamageCastEnabled: IReactiveVariable<bool>

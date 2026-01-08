@@ -59,7 +59,7 @@ namespace Game
             entity.AddBehaviour<CharacterVelocityBehaviour>();
 
             // Combat
-            entity.AddWeapon(new ReactiveVariable<IEntity>(_weapon));
+            entity.AddWeapon(new ReactiveVariable<IEntity>(_weapon)); 
             entity.AddHandWeapon(new ReactiveVariable<IEntity>(_weapon));
             entity.AddWeaponRoot(_weaponRoot);
             entity.AddFireCondition(new AndExpression(entity.GetHealth().Exists));

@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using Atomic.Elements;
 using Atomic.Entities;
 using Game.Gameplay;
@@ -47,7 +49,8 @@ namespace Game
             entity.AddMoveCondition(new AndExpression((() => true)));
 
             //Fire
-            entity.AddDamage(new Const<int>(_damage));
+            entity.AddDamage(new ReactiveInt(_damage));
+            entity.AddExtraDamage(new IntSumExpression()); 
             entity.AddWeaponCooldown(_fireRate);
             entity.AddFireEvent(new BaseEvent());
             entity.AddFireAction(new RangeWeaponFireAction(entity, _gameContext));
@@ -67,5 +70,6 @@ namespace Game
 
             entity.OnUpdated += deltaTime => entity.GetWeaponCooldown().Tick(deltaTime);
         }
+        
     }
 }

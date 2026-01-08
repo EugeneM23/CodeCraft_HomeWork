@@ -47,7 +47,8 @@ namespace Game
 		public const int WeaponRoot = 381533304; // Transform
 		public const int FirePoint = 397255013; // Transform
 		public const int ShellPoint = 1300175571; // Transform
-		public const int Damage = 375673178; // IValue<int>
+		public const int Damage = 375673178; // IReactiveVariable<int>
+		public const int ExtraDamage = -530877775; // IExpression<int>
 		public const int DamageRadius = 945363216; // IValue<float>
 		public const int DamageLayer = 2001627032; // LayerMask
 		public const int DamageCastEnabled = -1903682430; // IReactiveVariable<bool>
@@ -548,13 +549,13 @@ namespace Game
 		public static void SetShellPoint(this IEntity obj, Transform value) => obj.SetValue(ShellPoint, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static IValue<int> GetDamage(this IEntity obj) => obj.GetValue<IValue<int>>(Damage);
+		public static IReactiveVariable<int> GetDamage(this IEntity obj) => obj.GetValue<IReactiveVariable<int>>(Damage);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool TryGetDamage(this IEntity obj, out IValue<int> value) => obj.TryGetValue(Damage, out value);
+		public static bool TryGetDamage(this IEntity obj, out IReactiveVariable<int> value) => obj.TryGetValue(Damage, out value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool AddDamage(this IEntity obj, IValue<int> value) => obj.AddValue(Damage, value);
+		public static bool AddDamage(this IEntity obj, IReactiveVariable<int> value) => obj.AddValue(Damage, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool HasDamage(this IEntity obj) => obj.HasValue(Damage);
@@ -563,7 +564,25 @@ namespace Game
 		public static bool DelDamage(this IEntity obj) => obj.DelValue(Damage);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void SetDamage(this IEntity obj, IValue<int> value) => obj.SetValue(Damage, value);
+		public static void SetDamage(this IEntity obj, IReactiveVariable<int> value) => obj.SetValue(Damage, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static IExpression<int> GetExtraDamage(this IEntity obj) => obj.GetValue<IExpression<int>>(ExtraDamage);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetExtraDamage(this IEntity obj, out IExpression<int> value) => obj.TryGetValue(ExtraDamage, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddExtraDamage(this IEntity obj, IExpression<int> value) => obj.AddValue(ExtraDamage, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasExtraDamage(this IEntity obj) => obj.HasValue(ExtraDamage);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelExtraDamage(this IEntity obj) => obj.DelValue(ExtraDamage);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetExtraDamage(this IEntity obj, IExpression<int> value) => obj.SetValue(ExtraDamage, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static IValue<float> GetDamageRadius(this IEntity obj) => obj.GetValue<IValue<float>>(DamageRadius);

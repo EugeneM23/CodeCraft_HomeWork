@@ -29,7 +29,7 @@ namespace Game
             entity.AddAnimationController(_animController);
 
             //Damage
-            entity.AddDamage(new Const<int>(_damage));
+            entity.AddDamage(new ReactiveInt(_damage));
             entity.AddDamageLayer(_damageLayer);
             entity.AddDamageRadius(new Const<float>(_damageRadius));
             entity.AddDamageCastEnabled(new ReactiveVariable<bool>());

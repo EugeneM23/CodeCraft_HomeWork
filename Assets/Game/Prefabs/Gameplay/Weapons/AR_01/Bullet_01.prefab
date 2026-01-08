@@ -145,7 +145,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _damage: 10
-  _moveSpeed: 20
+  _moveSpeed: 40
   _lifeTime: 1
   _hitPrefab: {fileID: 5814017759711512355, guid: b34ef2dbb38014c32b6e4533c0611105, type: 3}
   _collisionEventReceiver: {fileID: 2807187463229867269}

@@ -33,7 +33,7 @@ namespace Game
 
             // Core
             entity.AddMoveSpeed(new ReactiveFloat(_moveSpeed));
-            entity.AddDamage(new Const<int>(_damage));
+            entity.AddDamage(new ReactiveInt(_damage));
             entity.AddTriggerEventReceiver(_triggerReceiver);
             entity.AddGameObject(transform.gameObject);
             entity.AddTransform(_characterRoot);
