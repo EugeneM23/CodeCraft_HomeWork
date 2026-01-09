@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <Name>k__BackingField: Damage
   <Icon>k__BackingField: {fileID: 21300000, guid: fecc77653174e441cbe0eba1761a0b4b, type: 3}
-  _extraDamage: 20
+  _extraDamage: 100
