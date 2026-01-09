@@ -42,6 +42,12 @@ namespace Game
         public void Destroy(IEntity entity)
         {
             string entityID = entity.GetEntityID();
+
+            if (!_pools.ContainsKey(entityID))
+            {
+                RegisterNewPrefab(entity.GetTransform().GetComponent<SceneEntity>(), entityID);
+            }
+
             _pools[entityID].Return(entity);
         }
     }

@@ -1,14 +1,13 @@
 using Atomic.Entities;
-using Atomic.Extensions;
 using UnityEngine;
 
-namespace Game.Gameplay
+namespace Game
 {
-    [CreateAssetMenu(fileName = "DamageAspect", menuName = "Gameplay/DamageAspect")]
-    public class DamageAspect : ScriptableEntityAspect
+    [CreateAssetMenu(fileName = "ExtraDamageBuffEffect", menuName = "Gameplay/ExtraDamageBuffEffect")]
+    public class ExtraDamageBuff : BaseBuff
     {
         [SerializeField] private int _extraDamage;
-
+ 
         public override void Apply(IEntity entity)
         {
             if (entity.TryGetWeapon(out var weapon)) 

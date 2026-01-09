@@ -1,10 +1,11 @@
 using System;
+using Sirenix.OdinInspector;
 using UnityEditor;
 using UnityEngine;
 
 namespace Atomic.Entities
 {
-    public abstract class SceneEntityInstaller : MonoBehaviour, IEntityInstaller
+    public abstract class SceneEntityInstaller : SerializedMonoBehaviour, IEntityInstaller
     {
 #if UNITY_EDITOR
         internal Action m_refreshCallback;

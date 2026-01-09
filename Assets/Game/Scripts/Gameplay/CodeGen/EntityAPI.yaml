@@ -99,5 +99,8 @@ values:
   - CameraShakeArgs: CameraShakeArgs
   - CameraShakeEvent: BaseEvent<CameraShakeArgs>
   - CameraPoint: Transform
+  
+  # Buffs 
+  - BuffsEffects: IReactiveList<BaseBuff> 
     
     

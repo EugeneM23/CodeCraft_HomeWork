@@ -9,7 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1562f566a3df4612a2a0bd1c27bcaa77, type: 3}
-  m_Name: DamageAspect
+  m_Script: {fileID: 11500000, guid: 44f4e4ceaa8046099e001ebec199deca, type: 3}
+  m_Name: ExtraDamageBuffEffect
   m_EditorClassIdentifier: 
-  _extraDamage: 20
+  <Name>k__BackingField: 
+  <Icon>k__BackingField: {fileID: 0}
+  _extraDamage: 0
