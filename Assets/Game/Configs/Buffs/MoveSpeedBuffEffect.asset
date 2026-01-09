@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b4140d3cc4cc4e1b81805f57e279a02f, type: 3}
   m_Name: MoveSpeedBuffEffect
   m_EditorClassIdentifier: 
-  <Name>k__BackingField: 
-  <Icon>k__BackingField: {fileID: 0}
-  _multiplier: 0
+  <Name>k__BackingField: MuveSpeed
+  <Icon>k__BackingField: {fileID: 21300000, guid: c0d87cb98703e46db88228d78c2a07c2, type: 3}
+  _multiplier: 2
