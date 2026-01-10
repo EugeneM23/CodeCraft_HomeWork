@@ -9,9 +9,9 @@ namespace Game.Gameplay
         [SerializeField] private SceneEntity _character;
 
         [Button]
-        public bool Apply(BaseBuff buff) => BuffUseCase.Apply(_character, buff);
+        public bool Apply(BuffConfig buff) => BuffUseCase.Apply(_character, buff.CreateBuff());
 
         [Button]
-        public bool Discard(BaseBuff buff) => BuffUseCase.Discard(_character, buff);
+        public bool Discard(BuffConfig buff) => BuffUseCase.Discard(_character, buff.Name);
     }  
 }

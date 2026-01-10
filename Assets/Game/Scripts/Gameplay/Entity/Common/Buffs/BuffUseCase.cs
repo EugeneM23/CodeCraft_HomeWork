@@ -7,9 +7,9 @@ namespace Game.Gameplay
 {
     public static class BuffUseCase
     {
-        public static bool Apply(IEntity character, BaseBuff buff)
+        public static bool Apply(IEntity character, BuffBase buff)
         {
-            IList<BaseBuff> buffsEffects = character.GetBuffsEffects();
+            IList<BuffBase> buffsEffects = character.GetBuffsEffects();
 
             if (buffsEffects.Any(b => b.Name == buff.Name))
                 return false;
@@ -20,16 +20,16 @@ namespace Game.Gameplay
             return true;
         }
 
-        public static bool Discard(IEntity character, BaseBuff buff)
+        public static bool Discard(IEntity character, string buffName)
         {
-            IList<BaseBuff> buffsEffects = character.GetBuffsEffects();
+            IList<BuffBase> buffsEffects = character.GetBuffsEffects();
 
-            BaseBuff existingBuff = buffsEffects.FirstOrDefault(b => b.Name == buff.Name);
+            BuffBase buff = buffsEffects.FirstOrDefault(b => b.Name == buffName);
 
-            if (existingBuff != null)
+            if (buff != null)
             {
-                buffsEffects.Remove(existingBuff);
-                existingBuff.Discard(character);
+                buffsEffects.Remove(buff);
+                buff.Discard(character);
                 return true;
             }
 
@@ -38,34 +38,12 @@ namespace Game.Gameplay
 
         public static void DiscardAll(IEntity character)
         {
-            IList<BaseBuff> buffsEffects = character.GetBuffsEffects();
+            IList<BuffBase> buffsEffects = character.GetBuffsEffects();
 
             foreach (var buff in buffsEffects)
                 buff.Discard(character);
 
             buffsEffects.Clear();
-        }
-
-        public static bool DiscardByName(IEntity character, string buffName)
-        {
-            IList<BaseBuff> buffsEffects = character.GetBuffsEffects();
-
-            BaseBuff existingBuff = buffsEffects.FirstOrDefault(b => b.Name == buffName);
-
-            if (existingBuff != null)
-            {
-                buffsEffects.Remove(existingBuff);
-                existingBuff.Discard(character);
-                return true;
-            }
-
-            return false;
-        }
-
-        public static bool HasBuff(IEntity character, string buffName)
-        {
-            IList<BaseBuff> buffsEffects = character.GetBuffsEffects();
-            return buffsEffects.Any(b => b.Name == buffName);
         }
     }
 }

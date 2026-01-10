@@ -101,6 +101,6 @@ values:
   - CameraPoint: Transform
   
   # Buffs 
-  - BuffsEffects: IReactiveList<BaseBuff> 
+  - BuffsEffects: IReactiveList<BuffBase> 
     
     

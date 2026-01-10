@@ -8,10 +8,10 @@ namespace Game
 {
     public class BuffVFXBehaviour : IEntityInit, IEntityDispose
     {
-        private IReactiveList<BaseBuff> _buffsEffects;
-        private readonly Dictionary<BaseBuff, ParticleSystem> _particles;
+        private IReactiveList<BuffBase> _buffsEffects;
+        private readonly Dictionary<string, ParticleSystem> _particles;
 
-        public BuffVFXBehaviour(Dictionary<BaseBuff, ParticleSystem> particles)
+        public BuffVFXBehaviour(Dictionary<string, ParticleSystem> particles)
         {
             _particles = particles;
         }
@@ -30,15 +30,15 @@ namespace Game
             _buffsEffects.OnItemInserted -= OnItemAdded;
         }
 
-        private void OnItemAdded(int index, BaseBuff buff)
+        private void OnItemAdded(int index, BuffBase buff)
         {
-            _particles[buff].gameObject.SetActive(true);
+            _particles[buff.Name].gameObject.SetActive(true);
             //_particles[buff].Play();
         }
 
-        private void OnItemRemoved(int index, BaseBuff buff)
+        private void OnItemRemoved(int index, BuffBase buff)
         {
-            _particles[buff].gameObject.SetActive(false);
+            _particles[buff.Name].gameObject.SetActive(false);
             //_particles[buff].Stop();
         }
     }

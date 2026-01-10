@@ -82,7 +82,7 @@ namespace Game
 		public const int CameraShakeArgs = -1117880016; // CameraShakeArgs
 		public const int CameraShakeEvent = 621067616; // BaseEvent<CameraShakeArgs>
 		public const int CameraPoint = 657874848; // Transform
-		public const int BuffsEffects = -478293613; // IReactiveList<BaseBuff>
+		public const int BuffsEffects = -478293613; // IReactiveList<BuffBase>
 
 
 		///Tag Extensions
@@ -1180,13 +1180,13 @@ namespace Game
 		public static void SetCameraPoint(this IEntity obj, Transform value) => obj.SetValue(CameraPoint, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static IReactiveList<BaseBuff> GetBuffsEffects(this IEntity obj) => obj.GetValue<IReactiveList<BaseBuff>>(BuffsEffects);
+		public static IReactiveList<BuffBase> GetBuffsEffects(this IEntity obj) => obj.GetValue<IReactiveList<BuffBase>>(BuffsEffects);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool TryGetBuffsEffects(this IEntity obj, out IReactiveList<BaseBuff> value) => obj.TryGetValue(BuffsEffects, out value);
+		public static bool TryGetBuffsEffects(this IEntity obj, out IReactiveList<BuffBase> value) => obj.TryGetValue(BuffsEffects, out value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool AddBuffsEffects(this IEntity obj, IReactiveList<BaseBuff> value) => obj.AddValue(BuffsEffects, value);
+		public static bool AddBuffsEffects(this IEntity obj, IReactiveList<BuffBase> value) => obj.AddValue(BuffsEffects, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool HasBuffsEffects(this IEntity obj) => obj.HasValue(BuffsEffects);
@@ -1195,6 +1195,6 @@ namespace Game
 		public static bool DelBuffsEffects(this IEntity obj) => obj.DelValue(BuffsEffects);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void SetBuffsEffects(this IEntity obj, IReactiveList<BaseBuff> value) => obj.SetValue(BuffsEffects, value);
+		public static void SetBuffsEffects(this IEntity obj, IReactiveList<BuffBase> value) => obj.SetValue(BuffsEffects, value);
     }
 }
