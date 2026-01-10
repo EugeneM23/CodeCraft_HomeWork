@@ -13,8 +13,5 @@ namespace Game.Gameplay
 
         [Button]
         public bool Discard(BaseBuff buff) => BuffUseCase.Discard(_character, buff);
-        
-        [Button]
-        public void Contains(BaseBuff buff) => BuffUseCase.Contains(_character, buff);
     }  
 }
