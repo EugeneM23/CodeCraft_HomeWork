@@ -74,7 +74,6 @@ namespace Game
 
             // Interaction
             _interactInstaller.Install(entity);
-
         }
     }
 }

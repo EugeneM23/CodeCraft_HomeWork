@@ -2540,7 +2540,7 @@ MonoBehaviour:
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
     SerializationNodes: []
-  _buff: {fileID: 11400000, guid: b2a16bfb0b7d5457c8237d13293de8e0, type: 2}
+  buffConfig: {fileID: 11400000, guid: a3b01be62ed2d4e23be5df63c67afcaf, type: 2}
 --- !u!114 &173130347
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12394,7 +12394,7 @@ MonoBehaviour:
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
     SerializationNodes: []
-  _buff: {fileID: 11400000, guid: 62799eb40e55649f8adf91d7328f75bd, type: 2}
+  buffConfig: {fileID: 11400000, guid: d79af216988cc48f1bc3e88cf7533253, type: 2}
 --- !u!114 &888554426
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -23579,7 +23579,7 @@ MonoBehaviour:
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
     SerializationNodes: []
-  _buff: {fileID: 11400000, guid: b2a16bfb0b7d5457c8237d13293de8e0, type: 2}
+  buffConfig: {fileID: 11400000, guid: b2ec6038b96d14a5b83ae1a948833c9a, type: 2}
 --- !u!114 &1715537671
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -60635,9 +60635,7 @@ MonoBehaviour:
     SerializedFormat: 2
     SerializedBytes: 
     ReferencedUnityObjects:
-    - {fileID: 11400000, guid: 62799eb40e55649f8adf91d7328f75bd, type: 2}
     - {fileID: 107672435}
-    - {fileID: 11400000, guid: b2a16bfb0b7d5457c8237d13293de8e0, type: 2}
     - {fileID: 810418779}
     SerializedBytesString: 
     Prefab: {fileID: 0}
@@ -60646,24 +60644,36 @@ MonoBehaviour:
     SerializationNodes:
     - Name: _buffsParticles
       Entry: 7
-      Data: 0|System.Collections.Generic.Dictionary`2[[Game.BaseBuff, Assembly-CSharp],[UnityEngine.ParticleSystem,
+      Data: 0|System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[UnityEngine.ParticleSystem,
         UnityEngine.ParticleSystemModule]], mscorlib
     - Name: comparer
       Entry: 7
-      Data: 1|System.Collections.Generic.ObjectEqualityComparer`1[[Game.BaseBuff,
-        Assembly-CSharp]], mscorlib
+      Data: 1|System.Collections.Generic.GenericEqualityComparer`1[[System.String,
+        mscorlib]], mscorlib
     - Name: 
       Entry: 8
       Data: 
     - Name: 
       Entry: 12
-      Data: 2
+      Data: 3
     - Name: 
       Entry: 7
       Data: 
     - Name: $k
+      Entry: 1
+      Data: MoveSpeed
+    - Name: $v
       Entry: 10
       Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 
+    - Name: $k
+      Entry: 1
+      Data: Damage
     - Name: $v
       Entry: 10
       Data: 1
@@ -60674,11 +60684,11 @@ MonoBehaviour:
       Entry: 7
       Data: 
     - Name: $k
-      Entry: 10
-      Data: 2
+      Entry: 1
+      Data: Jump
     - Name: $v
       Entry: 10
-      Data: 3
+      Data: 1
     - Name: 
       Entry: 8
       Data: 
@@ -66822,8 +66832,8 @@ Rigidbody:
   m_GameObject: {fileID: 4585716273255885194}
   serializedVersion: 4
   m_Mass: 1
-  m_Drag: 10
-  m_AngularDrag: 10
+  m_Drag: 0
+  m_AngularDrag: 0.5
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -66835,10 +66845,10 @@ Rigidbody:
     m_Bits: 0
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
-  m_UseGravity: 0
+  m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 116
+  m_Constraints: 112
   m_CollisionDetection: 1
 --- !u!4 &8706401704068702174
 Transform:

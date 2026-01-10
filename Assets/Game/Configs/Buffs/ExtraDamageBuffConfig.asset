@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 752ed5c91ee54b0ea14c7d594b4d8119, type: 3}
   m_Name: ExtraDamageBuffConfig
   m_EditorClassIdentifier: 
-  <Name>k__BackingField: 
-  <Icon>k__BackingField: {fileID: 0}
-  <Damage>k__BackingField: 0
+  <Name>k__BackingField: Damage
+  <Icon>k__BackingField: {fileID: 21300000, guid: dd509c2878d09450ca1c4a135648bde6, type: 3}
+  <Duration>k__BackingField: 2
+  <Damage>k__BackingField: 100

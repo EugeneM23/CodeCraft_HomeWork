@@ -10,9 +10,6 @@ namespace Game
 
         public override void Install(IEntity entity)
         {
-            // entity.AddShowUIAction(new BaseAction<bool>((show) => { entity.GetIsInteract().Value = show; }));
-            // entity.AddIsInteract(new ReactiveBool(false));
-
             entity.AddTransform(transform);
             entity.AddInteractableTag();
             entity.AddPickUpEvent(new BaseEvent());

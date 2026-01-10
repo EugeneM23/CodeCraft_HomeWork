@@ -17,6 +17,7 @@ imports:
 tags:
   - Damageable
   - Interactable
+  - Jumpable
   - Player
   - MeleeWeapon
   - RangeWeapon
@@ -37,6 +38,11 @@ values:
   - MoveAction: IAction<Vector3, float>
   - RotationSpeed: IValue<float>
   - Velocity: IReactiveVariable<float>
+      
+  #Jump
+  - JumpCondition: BaseFunction<bool>
+  - JumpForce: float
+  - JumpEvent: BaseEvent
 
   # Weapon
   - BulletPrefab: SceneEntity

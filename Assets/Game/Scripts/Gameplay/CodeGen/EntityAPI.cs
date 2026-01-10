@@ -18,6 +18,7 @@ namespace Game
 		///Tags
 		public const int Damageable = 563499515;
 		public const int Interactable = 1077199658;
+		public const int Jumpable = 315505887;
 		public const int Player = -1615495341;
 		public const int MeleeWeapon = 1696241262;
 		public const int RangeWeapon = 1026304482;
@@ -36,6 +37,9 @@ namespace Game
 		public const int MoveAction = 1225226561; // IAction<Vector3, float>
 		public const int RotationSpeed = 1771316350; // IValue<float>
 		public const int Velocity = 1202631935; // IReactiveVariable<float>
+		public const int JumpCondition = -2140666110; // BaseFunction<bool>
+		public const int JumpForce = 952989974; // float
+		public const int JumpEvent = -1811156839; // BaseEvent
 		public const int BulletPrefab = -918778767; // SceneEntity
 		public const int ShellPrefab = -2060891990; // SceneEntity
 		public const int BulletHitPrefab = 520091209; // SceneEntity
@@ -104,6 +108,15 @@ namespace Game
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool DelInteractableTag(this IEntity obj) => obj.DelTag(Interactable);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasJumpableTag(this IEntity obj) => obj.HasTag(Jumpable);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddJumpableTag(this IEntity obj) => obj.AddTag(Jumpable);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelJumpableTag(this IEntity obj) => obj.DelTag(Jumpable);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool HasPlayerTag(this IEntity obj) => obj.HasTag(Player);
@@ -350,6 +363,60 @@ namespace Game
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void SetVelocity(this IEntity obj, IReactiveVariable<float> value) => obj.SetValue(Velocity, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static BaseFunction<bool> GetJumpCondition(this IEntity obj) => obj.GetValue<BaseFunction<bool>>(JumpCondition);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetJumpCondition(this IEntity obj, out BaseFunction<bool> value) => obj.TryGetValue(JumpCondition, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddJumpCondition(this IEntity obj, BaseFunction<bool> value) => obj.AddValue(JumpCondition, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasJumpCondition(this IEntity obj) => obj.HasValue(JumpCondition);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelJumpCondition(this IEntity obj) => obj.DelValue(JumpCondition);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetJumpCondition(this IEntity obj, BaseFunction<bool> value) => obj.SetValue(JumpCondition, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static float GetJumpForce(this IEntity obj) => obj.GetValue<float>(JumpForce);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetJumpForce(this IEntity obj, out float value) => obj.TryGetValue(JumpForce, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddJumpForce(this IEntity obj, float value) => obj.AddValue(JumpForce, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasJumpForce(this IEntity obj) => obj.HasValue(JumpForce);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelJumpForce(this IEntity obj) => obj.DelValue(JumpForce);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetJumpForce(this IEntity obj, float value) => obj.SetValue(JumpForce, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static BaseEvent GetJumpEvent(this IEntity obj) => obj.GetValue<BaseEvent>(JumpEvent);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetJumpEvent(this IEntity obj, out BaseEvent value) => obj.TryGetValue(JumpEvent, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddJumpEvent(this IEntity obj, BaseEvent value) => obj.AddValue(JumpEvent, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasJumpEvent(this IEntity obj) => obj.HasValue(JumpEvent);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelJumpEvent(this IEntity obj) => obj.DelValue(JumpEvent);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetJumpEvent(this IEntity obj, BaseEvent value) => obj.SetValue(JumpEvent, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static SceneEntity GetBulletPrefab(this IEntity obj) => obj.GetValue<SceneEntity>(BulletPrefab);
