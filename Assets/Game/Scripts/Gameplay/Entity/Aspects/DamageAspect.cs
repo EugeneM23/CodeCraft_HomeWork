@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Game.Gameplay
 {
-    [CreateAssetMenu(fileName = "DamageAspect", menuName = "Gameplay/DamageAspect")]
+    [CreateAssetMenu(fileName = "DamageAspect", menuName = "BuffSystem/Aspect/DamageAspect")]
     public class DamageAspect : ScriptableEntityAspect
     {
         [SerializeField] private int _extraDamage;

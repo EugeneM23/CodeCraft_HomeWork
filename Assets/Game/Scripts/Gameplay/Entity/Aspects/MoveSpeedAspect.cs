@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Game.Gameplay
 {
-    [CreateAssetMenu(fileName = "MoveSpeedAspect", menuName = "Gameplay/MoveSpeedAspect")]
+    [CreateAssetMenu(fileName = "MoveSpeedAspect", menuName = "BuffSystem/Aspect/MoveSpeedAspect")]
     public class MoveSpeedAspect : ScriptableEntityAspect
     {
         [SerializeField] private float _multiplier;

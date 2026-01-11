@@ -6008,7 +6008,7 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   _triggerEventReceiver: {fileID: 430235449}
-  _entityAspect: {fileID: 11400000, guid: 82e26979128dd4b019bbf161e28d9715, type: 2}
+  _entityAspect: {fileID: 11400000, guid: a9a51db15db69495ba8e8a37c4a918d5, type: 2}
 --- !u!114 &430235449
 MonoBehaviour:
   m_ObjectHideFlags: 0

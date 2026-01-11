@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Game
 {
-    [CreateAssetMenu(fileName = "ExtraDamageBuffConfig", menuName = "Gameplay/ExtraDamageBuffConfig")]
+    [CreateAssetMenu(fileName = "ExtraDamageBuffConfig", menuName = "BuffSystem/Buff/ExtraDamageBuffConfig")]
 
     public class ExtraDamageBuffConfig : BuffConfig
     {
