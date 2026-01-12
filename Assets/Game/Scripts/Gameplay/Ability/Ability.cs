@@ -1,7 +1,6 @@
-
 using Atomic.Entities;
 
-namespace Game.Gameplay
+namespace Game
 {
     public class Ability : Entity
     {

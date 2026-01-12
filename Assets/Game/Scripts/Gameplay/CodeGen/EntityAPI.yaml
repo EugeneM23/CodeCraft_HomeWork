@@ -21,6 +21,7 @@ tags:
   - Player
   - MeleeWeapon
   - RangeWeapon
+  - BaseAbility
 
 values:
   # Core
@@ -38,7 +39,7 @@ values:
   - MoveAction: IAction<Vector3, float>
   - RotationSpeed: IValue<float>
   - Velocity: IReactiveVariable<float>
-      
+  
   #Jump
   - JumpCondition: BaseFunction<bool>
   - JumpForce: float
@@ -107,6 +108,11 @@ values:
   - CameraPoint: Transform
   
   # Buffs 
-  - BuffsEffects: IReactiveList<BuffBase> 
-    
+  - BuffsEffects: IReactiveList<BuffBase>
+  
+  # Ability 
+  - BaseAction: IAction 
+  - BaseCondition: IFunction<bool>
+  - BaseEvent: IEvent
+  - Charges: IReactiveVariable<int>
     

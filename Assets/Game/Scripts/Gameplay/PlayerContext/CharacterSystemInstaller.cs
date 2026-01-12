@@ -14,11 +14,12 @@ namespace Game
         public void Install(IPlayerContext context)
         {
             context.AddCharacter(new ReactiveVariable<IEntity>(_character));
-            
+
             context.AddController<CharacterMoveController>();
             context.AddController<CharacterRotateController>();
             context.AddController<CharacterFireController>();
             context.AddController<CharacterJumpController>();
+            context.AddController<DashController>();
             context.AddController<CharacterInteractController>();
             context.AddController<CharacterDropWeaponController>();
         }

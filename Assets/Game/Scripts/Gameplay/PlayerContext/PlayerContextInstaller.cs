@@ -14,11 +14,13 @@ namespace Game
         [SerializeField] private Joystick _rotationJoystick;
         [SerializeField] private CharacterSystemInstaller _characterSystem;
         [SerializeField] private CameraSystemInstaller _cameraSystem;
+        [SerializeField] private AbilitySystemInstaller _abilitySystem;
 
         protected override void Install(IPlayerContext context)
         {
             _characterSystem.Install(context);
             _cameraSystem.Install(context);
+             _abilitySystem.Install(context);
 
             context.AddCharacter(new ReactiveVariable<IEntity>(_playerEntity));
             context.AddMoveJoystick(_movementJoystick);

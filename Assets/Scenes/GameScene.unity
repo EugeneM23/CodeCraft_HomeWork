@@ -537,6 +537,37 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 2.4999998, y: 0.27415082, z: 2.5000048}
   m_Center: {x: -1.2499853, y: 0.13707541, z: 1.25}
+--- !u!1 &43300051
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 43300052}
+  m_Layer: 0
+  m_Name: Pool_AudioSource
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &43300052
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 43300051}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 312067144}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &54775525
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4366,7 +4397,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 43300052}
   m_Father: {fileID: 1225762019}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &316717414 stripped
@@ -6930,7 +6962,9 @@ MonoBehaviour:
     _camera: {fileID: 4861445287701015072}
     _cameraRoot: {fileID: 192477114}
     _cameraSpeed: 5
-    _character: {fileID: 1360029755227770606}
+    _character: {fileID: 5160812569022390376}
+  _abilitySystem:
+    _dashAbility: {fileID: 11400000, guid: f814d177676104d7db18cb0b1f9956e6, type: 2}
 --- !u!114 &460514778
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6948,7 +6982,7 @@ MonoBehaviour:
   dontDestroyOnLoad: 0
   initialParent: {fileID: 1225762021}
   installers:
-  - {fileID: 460514777}
+  - {fileID: 0}
   children: []
 --- !u!1001 &462553793
 PrefabInstance:

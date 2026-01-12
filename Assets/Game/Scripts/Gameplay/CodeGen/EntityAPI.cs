@@ -22,6 +22,7 @@ namespace Game
 		public const int Player = -1615495341;
 		public const int MeleeWeapon = 1696241262;
 		public const int RangeWeapon = 1026304482;
+		public const int BaseAbility = -306370659;
 
 
 		///Values
@@ -87,6 +88,10 @@ namespace Game
 		public const int CameraShakeEvent = 621067616; // BaseEvent<CameraShakeArgs>
 		public const int CameraPoint = 657874848; // Transform
 		public const int BuffsEffects = -478293613; // IReactiveList<BuffBase>
+		public const int BaseAction = 942602042; // IAction
+		public const int BaseCondition = -395139187; // IFunction<bool>
+		public const int BaseEvent = -1277683221; // IEvent
+		public const int Charges = -179148410; // IReactiveVariable<int>
 
 
 		///Tag Extensions
@@ -144,6 +149,15 @@ namespace Game
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool DelRangeWeaponTag(this IEntity obj) => obj.DelTag(RangeWeapon);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasBaseAbilityTag(this IEntity obj) => obj.HasTag(BaseAbility);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddBaseAbilityTag(this IEntity obj) => obj.AddTag(BaseAbility);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelBaseAbilityTag(this IEntity obj) => obj.DelTag(BaseAbility);
 
 
 		///Value Extensions
@@ -1263,5 +1277,77 @@ namespace Game
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void SetBuffsEffects(this IEntity obj, IReactiveList<BuffBase> value) => obj.SetValue(BuffsEffects, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static IAction GetBaseAction(this IEntity obj) => obj.GetValue<IAction>(BaseAction);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetBaseAction(this IEntity obj, out IAction value) => obj.TryGetValue(BaseAction, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddBaseAction(this IEntity obj, IAction value) => obj.AddValue(BaseAction, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasBaseAction(this IEntity obj) => obj.HasValue(BaseAction);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelBaseAction(this IEntity obj) => obj.DelValue(BaseAction);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetBaseAction(this IEntity obj, IAction value) => obj.SetValue(BaseAction, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static IFunction<bool> GetBaseCondition(this IEntity obj) => obj.GetValue<IFunction<bool>>(BaseCondition);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetBaseCondition(this IEntity obj, out IFunction<bool> value) => obj.TryGetValue(BaseCondition, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddBaseCondition(this IEntity obj, IFunction<bool> value) => obj.AddValue(BaseCondition, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasBaseCondition(this IEntity obj) => obj.HasValue(BaseCondition);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelBaseCondition(this IEntity obj) => obj.DelValue(BaseCondition);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetBaseCondition(this IEntity obj, IFunction<bool> value) => obj.SetValue(BaseCondition, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static IEvent GetBaseEvent(this IEntity obj) => obj.GetValue<IEvent>(BaseEvent);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetBaseEvent(this IEntity obj, out IEvent value) => obj.TryGetValue(BaseEvent, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddBaseEvent(this IEntity obj, IEvent value) => obj.AddValue(BaseEvent, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasBaseEvent(this IEntity obj) => obj.HasValue(BaseEvent);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelBaseEvent(this IEntity obj) => obj.DelValue(BaseEvent);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetBaseEvent(this IEntity obj, IEvent value) => obj.SetValue(BaseEvent, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static IReactiveVariable<int> GetCharges(this IEntity obj) => obj.GetValue<IReactiveVariable<int>>(Charges);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetCharges(this IEntity obj, out IReactiveVariable<int> value) => obj.TryGetValue(Charges, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddCharges(this IEntity obj, IReactiveVariable<int> value) => obj.AddValue(Charges, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasCharges(this IEntity obj) => obj.HasValue(Charges);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelCharges(this IEntity obj) => obj.DelValue(Charges);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetCharges(this IEntity obj, IReactiveVariable<int> value) => obj.SetValue(Charges, value);
     }
 }

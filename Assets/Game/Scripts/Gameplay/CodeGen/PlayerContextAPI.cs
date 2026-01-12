@@ -25,6 +25,7 @@ namespace Game
 		public const int CameraSpeed = -1615506830; // IValue<int>
 		public const int MoveJoystick = -1686028204; // Joystick
 		public const int RotateJoystick = 17434633; // Joystick
+		public const int DashAbility = -1643251697; // Ability
 
 
 		///Value Extensions
@@ -154,5 +155,23 @@ namespace Game
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void SetRotateJoystick(this IPlayerContext obj, Joystick value) => obj.SetValue(RotateJoystick, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Ability GetDashAbility(this IPlayerContext obj) => obj.GetValue<Ability>(DashAbility);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetDashAbility(this IPlayerContext obj, out Ability value) => obj.TryGetValue(DashAbility, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddDashAbility(this IPlayerContext obj, Ability value) => obj.AddValue(DashAbility, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasDashAbility(this IPlayerContext obj) => obj.HasValue(DashAbility);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelDashAbility(this IPlayerContext obj) => obj.DelValue(DashAbility);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetDashAbility(this IPlayerContext obj, Ability value) => obj.SetValue(DashAbility, value);
     }
 }

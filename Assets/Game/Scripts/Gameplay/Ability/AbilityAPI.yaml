@@ -4,11 +4,15 @@ aggressiveInlining: true
 
 namespace: Game
 className: AbilityAPI
-directory: Assets/Game/Scripts/Gameplay/Ability
+directory: Assets/Game/Scripts/Gameplay
 
 imports:
   - UnityEngine
   - Atomic.Entities
+  - Atomic.Elements
+  - System
+  - Modules.Gameplay
+  - HighlightPlus
 
 tags:
   - Player
