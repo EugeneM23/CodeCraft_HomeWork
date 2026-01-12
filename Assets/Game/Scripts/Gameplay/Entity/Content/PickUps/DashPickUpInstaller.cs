@@ -1,29 +1,26 @@
 using Atomic.Elements;
 using Atomic.Entities;
-using UnityEngine;
 
 namespace Game
 {
-    public class AmmoPickUpInstaller : SceneEntityInstaller
+    public class DashPickUpInstaller : SceneEntityInstaller
     {
-        [SerializeField] private int _ammoAmount;
-
         public override void Install(IEntity entity)
         {
+            GameContext gameContext = GameContext.Instance;
+
             entity.AddTransform(transform);
             entity.AddInteractableTag();
             entity.AddPickUpEvent(new BaseEvent());
 
             entity.AddInteractAction(
-                new BaseAction<IEntity>((character =>
+                new BaseAction<IEntity>(character =>
                 {
-                    IEntity weapon = character.GetWeapon().Value;
-                    if (weapon == null || !weapon.TryGetAmmo(out var ammo)) return;
-
-                    weapon.GetAmmo().Add(_ammoAmount);
+                    IPlayerContext playerContext = PlayerUseCase.GetPlayerContext(gameContext, character);
+                    playerContext.GetDashAbility().GetCharges().Value++;
                     entity.GetPickUpEvent().Invoke();
                     gameObject.SetActive(false);
-                })));
+                }));
         }
     }
 }
