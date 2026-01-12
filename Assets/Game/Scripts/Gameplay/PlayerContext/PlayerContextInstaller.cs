@@ -20,7 +20,7 @@ namespace Game
         {
             _characterSystem.Install(context);
             _cameraSystem.Install(context);
-             _abilitySystem.Install(context);
+            _abilitySystem.Install(context);
 
             context.AddCharacter(new ReactiveVariable<IEntity>(_playerEntity));
             context.AddMoveJoystick(_movementJoystick);

@@ -15,10 +15,8 @@ namespace Game
 
         public void OnLateUpdate(IContext context, float deltaTime)
         {
-            if (Input.GetKeyDown(KeyCode.LeftShift) && _dashAbility.GetBaseCondition().Invoke())
-            {
-                _dashAbility.GetBaseAction().Invoke();
-            }
+            if (Input.GetKeyDown(KeyCode.LeftShift)) 
+                AbilityUseCase.Use(_dashAbility);
         }
     }
 }

@@ -1,10 +1,10 @@
-header: AbilityAPI
+header: EntityAPI
 entityType: Ability
 aggressiveInlining: true
 
 namespace: Game
 className: AbilityAPI
-directory: Assets/Game/Scripts/Gameplay
+directory: Assets/Game/Scripts/Gameplay/Ability
 
 imports:
   - UnityEngine

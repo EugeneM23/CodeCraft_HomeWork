@@ -22,4 +22,6 @@ values:
   - CameraSpeed: IValue<int>
   - MoveJoystick: Joystick
   - RotateJoystick: Joystick
+  
+  #Ability
   - DashAbility: Ability

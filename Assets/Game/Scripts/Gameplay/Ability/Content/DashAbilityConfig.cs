@@ -13,12 +13,13 @@ namespace Game.Content
         {
             ability.AddBaseAbilityTag();
             ability.AddBaseCondition(new BaseFunction<bool>(() => ability.GetCharges().Value > 0));
+
             ability.AddBaseAction(new BaseAction(() =>
             {
-                Debug.Log("Dash" + context.GetCharacter().Value.GetMoveSpeed().Value);
                 ability.GetCharges().Value--;
                 context.GetCharacter().Value.GetMoveSpeed().Value *= _multiplier;
             }));
+
             ability.AddBaseEvent(new BaseEvent());
 
             ability.AddCharges(new ReactiveInt(_initialCharges));

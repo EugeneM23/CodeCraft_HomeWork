@@ -19,7 +19,6 @@ namespace Game
             context.AddController<CharacterRotateController>();
             context.AddController<CharacterFireController>();
             context.AddController<CharacterJumpController>();
-            context.AddController<DashController>();
             context.AddController<CharacterInteractController>();
             context.AddController<CharacterDropWeaponController>();
         }

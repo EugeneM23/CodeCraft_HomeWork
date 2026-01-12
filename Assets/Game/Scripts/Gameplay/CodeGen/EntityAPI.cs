@@ -23,6 +23,8 @@ namespace Game
 		public const int MeleeWeapon = 1696241262;
 		public const int RangeWeapon = 1026304482;
 		public const int BaseAbility = -306370659;
+		public const int PointAbility = 1926569125;
+		public const int TargetAbility = -1187668890;
 
 
 		///Values
@@ -92,6 +94,12 @@ namespace Game
 		public const int BaseCondition = -395139187; // IFunction<bool>
 		public const int BaseEvent = -1277683221; // IEvent
 		public const int Charges = -179148410; // IReactiveVariable<int>
+		public const int PointAction = -269391236; // IAction<Vector3>
+		public const int PointCondition = 1323724090; // IFunction<Vector3,bool>
+		public const int PointEvent = 1637331210; // IEvent<Vector3>
+		public const int TargetAction = 1858217420; // IAction<IEntity>
+		public const int TargetCondition = 1133093239; // IFunction<IEntity,bool>
+		public const int TargetEvent = -321991458; // IEvent<IEntity>
 
 
 		///Tag Extensions
@@ -158,6 +166,24 @@ namespace Game
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool DelBaseAbilityTag(this IEntity obj) => obj.DelTag(BaseAbility);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasPointAbilityTag(this IEntity obj) => obj.HasTag(PointAbility);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddPointAbilityTag(this IEntity obj) => obj.AddTag(PointAbility);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelPointAbilityTag(this IEntity obj) => obj.DelTag(PointAbility);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasTargetAbilityTag(this IEntity obj) => obj.HasTag(TargetAbility);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddTargetAbilityTag(this IEntity obj) => obj.AddTag(TargetAbility);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelTargetAbilityTag(this IEntity obj) => obj.DelTag(TargetAbility);
 
 
 		///Value Extensions
@@ -1349,5 +1375,113 @@ namespace Game
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void SetCharges(this IEntity obj, IReactiveVariable<int> value) => obj.SetValue(Charges, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static IAction<Vector3> GetPointAction(this IEntity obj) => obj.GetValue<IAction<Vector3>>(PointAction);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetPointAction(this IEntity obj, out IAction<Vector3> value) => obj.TryGetValue(PointAction, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddPointAction(this IEntity obj, IAction<Vector3> value) => obj.AddValue(PointAction, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasPointAction(this IEntity obj) => obj.HasValue(PointAction);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelPointAction(this IEntity obj) => obj.DelValue(PointAction);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetPointAction(this IEntity obj, IAction<Vector3> value) => obj.SetValue(PointAction, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static IFunction<Vector3,bool> GetPointCondition(this IEntity obj) => obj.GetValue<IFunction<Vector3,bool>>(PointCondition);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetPointCondition(this IEntity obj, out IFunction<Vector3,bool> value) => obj.TryGetValue(PointCondition, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddPointCondition(this IEntity obj, IFunction<Vector3,bool> value) => obj.AddValue(PointCondition, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasPointCondition(this IEntity obj) => obj.HasValue(PointCondition);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelPointCondition(this IEntity obj) => obj.DelValue(PointCondition);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetPointCondition(this IEntity obj, IFunction<Vector3,bool> value) => obj.SetValue(PointCondition, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static IEvent<Vector3> GetPointEvent(this IEntity obj) => obj.GetValue<IEvent<Vector3>>(PointEvent);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetPointEvent(this IEntity obj, out IEvent<Vector3> value) => obj.TryGetValue(PointEvent, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddPointEvent(this IEntity obj, IEvent<Vector3> value) => obj.AddValue(PointEvent, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasPointEvent(this IEntity obj) => obj.HasValue(PointEvent);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelPointEvent(this IEntity obj) => obj.DelValue(PointEvent);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetPointEvent(this IEntity obj, IEvent<Vector3> value) => obj.SetValue(PointEvent, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static IAction<IEntity> GetTargetAction(this IEntity obj) => obj.GetValue<IAction<IEntity>>(TargetAction);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetTargetAction(this IEntity obj, out IAction<IEntity> value) => obj.TryGetValue(TargetAction, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddTargetAction(this IEntity obj, IAction<IEntity> value) => obj.AddValue(TargetAction, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasTargetAction(this IEntity obj) => obj.HasValue(TargetAction);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelTargetAction(this IEntity obj) => obj.DelValue(TargetAction);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetTargetAction(this IEntity obj, IAction<IEntity> value) => obj.SetValue(TargetAction, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static IFunction<IEntity,bool> GetTargetCondition(this IEntity obj) => obj.GetValue<IFunction<IEntity,bool>>(TargetCondition);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetTargetCondition(this IEntity obj, out IFunction<IEntity,bool> value) => obj.TryGetValue(TargetCondition, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddTargetCondition(this IEntity obj, IFunction<IEntity,bool> value) => obj.AddValue(TargetCondition, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasTargetCondition(this IEntity obj) => obj.HasValue(TargetCondition);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelTargetCondition(this IEntity obj) => obj.DelValue(TargetCondition);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetTargetCondition(this IEntity obj, IFunction<IEntity,bool> value) => obj.SetValue(TargetCondition, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static IEvent<IEntity> GetTargetEvent(this IEntity obj) => obj.GetValue<IEvent<IEntity>>(TargetEvent);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetTargetEvent(this IEntity obj, out IEvent<IEntity> value) => obj.TryGetValue(TargetEvent, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddTargetEvent(this IEntity obj, IEvent<IEntity> value) => obj.AddValue(TargetEvent, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasTargetEvent(this IEntity obj) => obj.HasValue(TargetEvent);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelTargetEvent(this IEntity obj) => obj.DelValue(TargetEvent);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetTargetEvent(this IEntity obj, IEvent<IEntity> value) => obj.SetValue(TargetEvent, value);
     }
 }
