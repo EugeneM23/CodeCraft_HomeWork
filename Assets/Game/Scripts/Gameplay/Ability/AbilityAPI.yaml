@@ -1,0 +1,21 @@
+header: AbilityAPI
+entityType: Ability
+aggressiveInlining: true
+
+namespace: Game
+className: AbilityAPI
+directory: Assets/Game/Scripts/Gameplay/Ability
+
+imports:
+  - UnityEngine
+  - Atomic.Entities
+
+tags:
+  - Player
+  - Enemy
+  - Resource
+
+values:
+  - Health: int
+  - Speed: float
+  - Transform: Transform
