@@ -13,7 +13,7 @@ namespace Game
         public void Install(IPlayerContext context)
         {
             context.AddDashAbility(_dashAbility.Create(context));
-            context.AddController<DashController>();
+            context.AddController<AbilityRunner>();
         }
     }
 }
