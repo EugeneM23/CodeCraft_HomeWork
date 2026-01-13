@@ -22,6 +22,9 @@ values:
   - CameraSpeed: IValue<int>
   - MoveJoystick: Joystick
   - RotateJoystick: Joystick
+  - MaxMana: IValue<int>
+  - CurrentMana: IReactiveVariable<int>
   
   #Ability
   - DashAbility: Ability
+  - TeleportAbility: Ability

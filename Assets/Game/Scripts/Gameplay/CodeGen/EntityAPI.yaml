@@ -21,9 +21,7 @@ tags:
   - Player
   - MeleeWeapon
   - RangeWeapon
-  - BaseAbility
-  - PointAbility
-  - TargetAbility
+ 
 
 values:
   # Core
@@ -112,17 +110,5 @@ values:
   # Buffs 
   - BuffsEffects: IReactiveList<BuffBase>
   
-  # Ability 
-  - BaseAction: IAction
-  - BaseCondition: IFunction<bool>
-  - BaseEvent: IEvent
-  - Charges: IReactiveVariable<int>
-
-  - PointAction: IAction<Vector3>
-  - PointCondition: IFunction<Vector3,bool>
-  - PointEvent: IEvent<Vector3>
-
-  - TargetAction: IAction<IEntity>
-  - TargetCondition: IFunction<IEntity,bool>
-  - TargetEvent: IEvent<IEntity>
+  
   

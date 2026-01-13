@@ -25,7 +25,10 @@ namespace Game
 		public const int CameraSpeed = -1615506830; // IValue<int>
 		public const int MoveJoystick = -1686028204; // Joystick
 		public const int RotateJoystick = 17434633; // Joystick
+		public const int MaxMana = 1394248230; // IValue<int>
+		public const int CurrentMana = 49250327; // IReactiveVariable<int>
 		public const int DashAbility = -1643251697; // Ability
+		public const int TeleportAbility = -1334875482; // Ability
 
 
 		///Value Extensions
@@ -157,6 +160,42 @@ namespace Game
 		public static void SetRotateJoystick(this IPlayerContext obj, Joystick value) => obj.SetValue(RotateJoystick, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static IValue<int> GetMaxMana(this IPlayerContext obj) => obj.GetValue<IValue<int>>(MaxMana);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetMaxMana(this IPlayerContext obj, out IValue<int> value) => obj.TryGetValue(MaxMana, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddMaxMana(this IPlayerContext obj, IValue<int> value) => obj.AddValue(MaxMana, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasMaxMana(this IPlayerContext obj) => obj.HasValue(MaxMana);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelMaxMana(this IPlayerContext obj) => obj.DelValue(MaxMana);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetMaxMana(this IPlayerContext obj, IValue<int> value) => obj.SetValue(MaxMana, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static IReactiveVariable<int> GetCurrentMana(this IPlayerContext obj) => obj.GetValue<IReactiveVariable<int>>(CurrentMana);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetCurrentMana(this IPlayerContext obj, out IReactiveVariable<int> value) => obj.TryGetValue(CurrentMana, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddCurrentMana(this IPlayerContext obj, IReactiveVariable<int> value) => obj.AddValue(CurrentMana, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasCurrentMana(this IPlayerContext obj) => obj.HasValue(CurrentMana);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelCurrentMana(this IPlayerContext obj) => obj.DelValue(CurrentMana);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetCurrentMana(this IPlayerContext obj, IReactiveVariable<int> value) => obj.SetValue(CurrentMana, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Ability GetDashAbility(this IPlayerContext obj) => obj.GetValue<Ability>(DashAbility);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -173,5 +212,23 @@ namespace Game
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void SetDashAbility(this IPlayerContext obj, Ability value) => obj.SetValue(DashAbility, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Ability GetTeleportAbility(this IPlayerContext obj) => obj.GetValue<Ability>(TeleportAbility);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetTeleportAbility(this IPlayerContext obj, out Ability value) => obj.TryGetValue(TeleportAbility, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddTeleportAbility(this IPlayerContext obj, Ability value) => obj.AddValue(TeleportAbility, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasTeleportAbility(this IPlayerContext obj) => obj.HasValue(TeleportAbility);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelTeleportAbility(this IPlayerContext obj) => obj.DelValue(TeleportAbility);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetTeleportAbility(this IPlayerContext obj, Ability value) => obj.SetValue(TeleportAbility, value);
     }
 }

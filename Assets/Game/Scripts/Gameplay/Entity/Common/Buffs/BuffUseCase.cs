@@ -20,6 +20,16 @@ namespace Game.Gameplay
             return true;
         }
 
+        public static bool CanApply(IEntity character, BuffConfig buff)
+        {
+            IList<BuffBase> buffsEffects = character.GetBuffsEffects();
+            
+            if (buffsEffects.Any(b => b.Name == buff.Name))
+                return false;
+
+                return true;
+        }
+
         public static bool Discard(IEntity character, string buffName)
         {
             IList<BuffBase> buffsEffects = character.GetBuffsEffects();

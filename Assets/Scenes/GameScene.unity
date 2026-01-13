@@ -6982,7 +6982,7 @@ MonoBehaviour:
   dontDestroyOnLoad: 0
   initialParent: {fileID: 1225762021}
   installers:
-  - {fileID: 0}
+  - {fileID: 460514777}
   children: []
 --- !u!1001 &462553793
 PrefabInstance:

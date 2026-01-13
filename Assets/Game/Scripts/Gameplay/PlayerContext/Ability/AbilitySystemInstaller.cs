@@ -9,10 +9,12 @@ namespace Game
     public class AbilitySystemInstaller : IContextInstaller<IPlayerContext>
     {
         [SerializeField] private DashAbilityConfig _dashAbility;
+        [SerializeField] private TeleportAbilityConfig _teleportAbility;
 
         public void Install(IPlayerContext context)
         {
             context.AddDashAbility(_dashAbility.Create(context));
+            context.AddTeleportAbility(_teleportAbility.Create(context));
             context.AddController<AbilityRunner>();
         }
     }

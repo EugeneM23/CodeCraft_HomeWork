@@ -11,7 +11,7 @@ namespace Game.Gameplay
 
         public override void Apply(IEntity entity)
         {
-            if (entity.TryGetWeapon(out var weapon)) 
+            if (entity.TryGetWeapon(out var weapon))
                 weapon.Value.GetDamage().Value += _extraDamage;
         }
 

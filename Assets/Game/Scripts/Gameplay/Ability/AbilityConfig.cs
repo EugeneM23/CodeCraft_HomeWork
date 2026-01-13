@@ -10,7 +10,7 @@ namespace Game
 
         public Ability Create(IPlayerContext context)
         {
-            var ability = new Ability(Name);
+            Ability ability = new Ability(Name);
             Install(ability, context);
             return ability;
         }

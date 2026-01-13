@@ -1,9 +1,10 @@
+using System.Collections.Generic;
 using Atomic.Contexts;
 using Atomic.Entities;
 
 namespace Game
 {
-    public class AbilityRunner : 
+    public class AbilityRunner :
         IContextInit<IPlayerContext>,
         IContextUpdate,
         IContextFixedUpdate,
@@ -12,41 +13,51 @@ namespace Game
         IContextDisable,
         IContextDispose
     {
-        private Ability _ability;
+        private readonly List<Ability> _ability = new List<Ability>();
+
         public void Init(IPlayerContext context)
         {
-            _ability = context.GetDashAbility();
-            _ability.Init(); 
+            _ability.Add(context.GetDashAbility());
+            _ability.Add(context.GetTeleportAbility());
+
+            foreach (var item in _ability)
+                item.Init();
         }
 
         public void OnUpdate(IContext context, float deltaTime)
         {
-            _ability.OnUpdate(deltaTime);
+            foreach (var item in _ability)
+                item.OnUpdate(deltaTime);
         }
 
         public void OnFixedUpdate(IContext context, float deltaTime)
         {
-            _ability.OnFixedUpdate(deltaTime);
+            foreach (var item in _ability)
+                item.OnFixedUpdate(deltaTime);
         }
 
         public void OnLateUpdate(IContext context, float deltaTime)
         {
-            _ability.OnLateUpdate(deltaTime);
+            foreach (var item in _ability)
+                item.OnLateUpdate(deltaTime);
         }
 
         public void Enable(IContext context)
         {
-            _ability.Enable();
+            foreach (var item in _ability)
+                item.Enable();
         }
 
         public void Disable(IContext context)
         {
-            _ability.Disable();
+            foreach (var item in _ability)
+                item.Disable();
         }
 
         public void Dispose(IContext context)
         {
-            _ability.Dispose(); 
+            foreach (var item in _ability)
+                item.Dispose();
         }
     }
 }
