@@ -25961,7 +25961,6 @@ GameObject:
   - component: {fileID: 176054064714788067}
   - component: {fileID: 4755651079808129345}
   - component: {fileID: 7967893696565996956}
-  - component: {fileID: 6169205581611434153}
   - component: {fileID: 1514997368305076773}
   - component: {fileID: 5543266535817348909}
   - component: {fileID: -222467678205984066}
@@ -26044,21 +26043,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 84
   m_CollisionDetection: 0
---- !u!114 &6169205581611434153
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5104382976400029070}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 603a745f80e14d1d8cd57cf70a50187f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  entities:
-  - {fileID: 4755651079808129345}
-  - {fileID: 0}
 --- !u!114 &1514997368305076773
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -55639,7 +55623,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7779472713387022580, guid: b815100e119f34356ae54e7adf16cf6b, type: 3}
       propertyPath: _damage
-      value: 50
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 7779472713387022580, guid: b815100e119f34356ae54e7adf16cf6b, type: 3}
       propertyPath: _animController

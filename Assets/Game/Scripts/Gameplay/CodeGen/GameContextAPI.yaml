@@ -20,3 +20,4 @@ values:
   - WeaponCatalog: WeaponCatalog
   - PlayerContext: PlayerContext
   - GameFactory: GameFactory
+  - EntityWorld: IEntityWorld

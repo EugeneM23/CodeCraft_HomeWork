@@ -22,6 +22,7 @@ namespace Game
 		public const int WeaponCatalog = -1557559158; // WeaponCatalog
 		public const int PlayerContext = -122845622; // PlayerContext
 		public const int GameFactory = 907141881; // GameFactory
+		public const int EntityWorld = 1757640864; // IEntityWorld
 
 
 		///Value Extensions
@@ -79,5 +80,23 @@ namespace Game
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void SetGameFactory(this IContext obj, GameFactory value) => obj.SetValue(GameFactory, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static IEntityWorld GetEntityWorld(this IContext obj) => obj.GetValue<IEntityWorld>(EntityWorld);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetEntityWorld(this IContext obj, out IEntityWorld value) => obj.TryGetValue(EntityWorld, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddEntityWorld(this IContext obj, IEntityWorld value) => obj.AddValue(EntityWorld, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasEntityWorld(this IContext obj) => obj.HasValue(EntityWorld);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelEntityWorld(this IContext obj) => obj.DelValue(EntityWorld);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetEntityWorld(this IContext obj, IEntityWorld value) => obj.SetValue(EntityWorld, value);
     }
 }

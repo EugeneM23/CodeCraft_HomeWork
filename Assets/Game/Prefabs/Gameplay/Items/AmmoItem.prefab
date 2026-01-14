@@ -4841,7 +4841,6 @@ GameObject:
   - component: {fileID: 8063351482510791362}
   - component: {fileID: 975393490776826503}
   - component: {fileID: 3626262360852270653}
-  - component: {fileID: 5759880653082249359}
   m_Layer: 6
   m_Name: AmmoItem
   m_TagString: Untagged
@@ -4927,6 +4926,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e957f2852a774d8c81c2c6fda31fc6d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes: []
   _vfx: {fileID: 3502387790222917825}
   _highlight: {fileID: 3999861814904877637}
   _visual: {fileID: 561079485267714583}
@@ -4945,6 +4953,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d19deb335830418d8f289c9785b68210, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes: []
   _ammoAmount: 10
 --- !u!114 &3626262360852270653
 MonoBehaviour:
@@ -4966,20 +4983,6 @@ MonoBehaviour:
   - {fileID: 8063351482510791362}
   _onlySelectedGizmos: 0
   _onlyEditModeGizmos: 0
---- !u!114 &5759880653082249359
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2835355164466344910}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 603a745f80e14d1d8cd57cf70a50187f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  entities:
-  - {fileID: 3626262360852270653}
 --- !u!1 &3737305012198839748
 GameObject:
   m_ObjectHideFlags: 0

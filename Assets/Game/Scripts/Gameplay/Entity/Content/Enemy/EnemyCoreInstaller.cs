@@ -34,13 +34,16 @@ namespace Game
         {
             _gameContext = GameContext.Instance;
 
+            //Tags
+            entity.AddDamageableTag();
+            entity.AddEnemyTag();
+
             // Core
             entity.AddMoveSpeed(new ReactiveFloat(_moveSpeed));
             entity.AddDamage(new ReactiveInt(_damage));
             entity.AddTriggerEventReceiver(_triggerReceiver);
             entity.AddGameObject(transform.gameObject);
             entity.AddTransform(_characterRoot);
-            entity.AddDamageableTag();
             entity.AddPatrolPoints(_patrolPoints);
             entity.AddTarget(new ReactiveVariable<IEntity>());
 
