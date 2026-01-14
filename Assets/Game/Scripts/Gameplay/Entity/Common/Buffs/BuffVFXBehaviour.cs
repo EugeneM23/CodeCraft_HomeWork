@@ -32,14 +32,14 @@ namespace Game
 
         private void OnItemAdded(int index, BuffBase buff)
         {
-            _particles[buff.Name].gameObject.SetActive(true);
-            //_particles[buff].Play();
+            if (_particles.TryGetValue(buff.Name, out var particleSystem))
+                particleSystem.gameObject.SetActive(true);
         }
 
         private void OnItemRemoved(int index, BuffBase buff)
         {
-            _particles[buff.Name].gameObject.SetActive(false);
-            //_particles[buff].Stop();
+            if (_particles.TryGetValue(buff.Name, out var particleSystem))
+                particleSystem.gameObject.SetActive(false);
         }
     }
 }

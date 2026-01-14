@@ -25964,6 +25964,7 @@ GameObject:
   - component: {fileID: 6169205581611434153}
   - component: {fileID: 1514997368305076773}
   - component: {fileID: 5543266535817348909}
+  - component: {fileID: -222467678205984066}
   m_Layer: 8
   m_Name: Zombie
   m_TagString: Enemy
@@ -26013,6 +26014,7 @@ MonoBehaviour:
   - {fileID: 2311451206462215717}
   - {fileID: 7521509866869491820}
   - {fileID: 1514997368305076773}
+  - {fileID: -222467678205984066}
   _onlySelectedGizmos: 0
   _onlyEditModeGizmos: 0
 --- !u!54 &7967893696565996956
@@ -26069,18 +26071,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e25142f147c44d2fae37ff031e1b67e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes: []
   _damage: 10
-  _moveSpeed: 0.4
-  _health: 100
-  _rotationSpeed: 5
   _weapon: {fileID: 4487957352370374873}
-  _triggerReceiver: {fileID: 0}
   _weaponRoot: {fileID: 7289780686842742615}
-  _characterRoot: {fileID: 176054064714788067}
+  _moveSpeed: 0.4
+  _rotationSpeed: 5
   _patrolPoints:
   - {fileID: 1710692057543926718}
   - {fileID: 6664947197381005067}
   - {fileID: 4668063995167171911}
+  _health: 100
+  _triggerReceiver: {fileID: 0}
+  _characterRoot: {fileID: 176054064714788067}
 --- !u!136 &5543266535817348909
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -26104,6 +26115,47 @@ CapsuleCollider:
   m_Height: 1.8
   m_Direction: 1
   m_Center: {x: 0, y: 1, z: 0}
+--- !u!114 &-222467678205984066
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5104382976400029070}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f312ab9752914155925f8b2dff4b9249, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes:
+    - Name: _buffsParticles
+      Entry: 7
+      Data: 0|System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[UnityEngine.ParticleSystem,
+        UnityEngine.ParticleSystemModule]], mscorlib
+    - Name: comparer
+      Entry: 7
+      Data: 1|System.Collections.Generic.GenericEqualityComparer`1[[System.String,
+        mscorlib]], mscorlib
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
 --- !u!1 &5123544058613230912
 GameObject:
   m_ObjectHideFlags: 0
@@ -31181,6 +31233,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9d7c330543b449afb0e74aaac3c275f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes: []
   _audioSource: {fileID: 2244143219407758770}
   _deathClips:
   - {fileID: 8300000, guid: b77095a6699d84b9eac62258d6b383d6, type: 3}
@@ -40861,6 +40922,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3bf3370d1ce343859cef743b45bbb7bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes: []
   _animator: {fileID: 4549442208233181949}
   _animationReceiver: {fileID: 1248371570081415167}
 --- !u!1 &6744283857113903901
@@ -55496,6 +55566,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3022691211bd4c2f8bf43b232f29cd7e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes: []
   _bulletBlood: {fileID: 6370671767458525671}
   _meleeBlood: {fileID: 6776261431370181711}
   _deadBlood: {fileID: 8688813168349701622}
@@ -55570,6 +55649,10 @@ PrefabInstance:
       propertyPath: _cooldown._duration
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 7779472713387022580, guid: b815100e119f34356ae54e7adf16cf6b, type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: 7779472713387022580, guid: b815100e119f34356ae54e7adf16cf6b, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

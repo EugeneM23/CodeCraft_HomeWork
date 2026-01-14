@@ -17,8 +17,8 @@ namespace Game
 
         public void Init(IPlayerContext context)
         {
-            _ability.Add(context.GetDashAbility());
-            _ability.Add(context.GetTeleportAbility());
+            foreach (var item in context.GetAbilities()) 
+                _ability.Add(item.Value);
 
             foreach (var item in _ability)
                 item.Init();

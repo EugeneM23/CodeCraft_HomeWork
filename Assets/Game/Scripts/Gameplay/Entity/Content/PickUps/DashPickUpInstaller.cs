@@ -1,5 +1,7 @@
 using Atomic.Elements;
 using Atomic.Entities;
+using Game.Content;
+using UnityEngine;
 
 namespace Game
 {
@@ -17,7 +19,15 @@ namespace Game
                 new BaseAction<IEntity>(character =>
                 {
                     IPlayerContext playerContext = PlayerUseCase.GetPlayerContext(gameContext, character);
-                    playerContext.GetDashAbility().GetCharges().Value++;
+
+                    //Костыль!
+                    IReactiveDictionary<string, Ability> dictionary = playerContext.GetAbilities();
+                    foreach (var (key, ability) in dictionary)
+                    {
+                        if (key == nameof(DashAbilityConfig))
+                            ability.GetCharges().Value++;
+                    }
+
                     entity.GetPickUpEvent().Invoke();
                     gameObject.SetActive(false);
                 }));

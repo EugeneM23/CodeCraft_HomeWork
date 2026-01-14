@@ -8,21 +8,24 @@ namespace Game
 {
     public sealed class EnemyCoreInstaller : SceneEntityInstaller
     {
-        [Header("Combat Settings")]
-        [SerializeField] private int _damage = 10;
+        [Header("Combat Settings")] [SerializeField]
+        private int _damage = 10;
+
         [SerializeField] private SceneEntity _weapon;
         [SerializeField] private Transform _weaponRoot;
 
-        [Header("Movement Settings")]
-        [SerializeField] private float _moveSpeed = 1;
+        [Header("Movement Settings")] [SerializeField]
+        private float _moveSpeed = 1;
+
         [SerializeField] private float _rotationSpeed = 15f;
         [SerializeField] private Transform[] _patrolPoints;
 
-        [Header("Health Settings")]
-        [SerializeField] private int _health = 100;
+        [Header("Health Settings")] [SerializeField]
+        private int _health = 100;
 
-        [Header("Core Components")]
-        [SerializeField] private TriggerEventReceiver _triggerReceiver;
+        [Header("Core Components")] [SerializeField]
+        private TriggerEventReceiver _triggerReceiver;
+
         [SerializeField] private Transform _characterRoot;
 
         private GameContext _gameContext;
@@ -74,6 +77,9 @@ namespace Game
             entity.AddBehaviour<EnemyPatrolBehaviour>();
             entity.AddBehaviour<EnemyChaseBehaviour>();
             entity.AddBehaviour<EnemyAttackBehaviour>();
+
+            //Buffs
+            entity.AddBuffsEffects(new ReactiveList<BuffBase>());
         }
-     }
+    }
 }

@@ -27,6 +27,7 @@ namespace Game.Content
                 context.GetCharacter().Value.GetTransform().position = point;
             }));
 
+            ability.AddPointEvent(new BaseEvent<Vector3>());
             ability.AddManaCost(new Const<int>(_manaCost));
             ability.AddRadius(new Const<float>(_radius));
 
@@ -34,24 +35,10 @@ namespace Game.Content
             {
                 if (Input.GetKey(_teleportKey) && Input.GetMouseButtonDown(0))
                 {
-                    if (TryGetMouseWorldPosition(out var teleportPosition)) 
-                        ability.GetPointAction().Invoke(teleportPosition);
+                    if (RayCastUseCase.RayCastGround(out var teleportPosition, _layerMask))
+                        AbilityUseCase.Use(ability, teleportPosition);
                 }
             });
-        }
-
-        private bool TryGetMouseWorldPosition(out Vector3 worldPosition)
-        {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-            if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, _layerMask))
-            {
-                worldPosition = hit.point;
-                return true;
-            }
-
-            worldPosition = Vector3.zero;
-            return false;
         }
     }
 }

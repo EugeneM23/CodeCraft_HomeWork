@@ -26,5 +26,4 @@ values:
   - CurrentMana: IReactiveVariable<int>
   
   #Ability
-  - DashAbility: Ability
-  - TeleportAbility: Ability
+  - Abilities: IReactiveDictionary<string, Ability>

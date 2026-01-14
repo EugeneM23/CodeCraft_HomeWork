@@ -27,8 +27,7 @@ namespace Game
 		public const int RotateJoystick = 17434633; // Joystick
 		public const int MaxMana = 1394248230; // IValue<int>
 		public const int CurrentMana = 49250327; // IReactiveVariable<int>
-		public const int DashAbility = -1643251697; // Ability
-		public const int TeleportAbility = -1334875482; // Ability
+		public const int Abilities = 986255111; // IReactiveDictionary<string, Ability>
 
 
 		///Value Extensions
@@ -196,39 +195,21 @@ namespace Game
 		public static void SetCurrentMana(this IPlayerContext obj, IReactiveVariable<int> value) => obj.SetValue(CurrentMana, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static Ability GetDashAbility(this IPlayerContext obj) => obj.GetValue<Ability>(DashAbility);
+		public static IReactiveDictionary<string, Ability> GetAbilities(this IPlayerContext obj) => obj.GetValue<IReactiveDictionary<string, Ability>>(Abilities);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool TryGetDashAbility(this IPlayerContext obj, out Ability value) => obj.TryGetValue(DashAbility, out value);
+		public static bool TryGetAbilities(this IPlayerContext obj, out IReactiveDictionary<string, Ability> value) => obj.TryGetValue(Abilities, out value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool AddDashAbility(this IPlayerContext obj, Ability value) => obj.AddValue(DashAbility, value);
+		public static bool AddAbilities(this IPlayerContext obj, IReactiveDictionary<string, Ability> value) => obj.AddValue(Abilities, value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool HasDashAbility(this IPlayerContext obj) => obj.HasValue(DashAbility);
+		public static bool HasAbilities(this IPlayerContext obj) => obj.HasValue(Abilities);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool DelDashAbility(this IPlayerContext obj) => obj.DelValue(DashAbility);
+		public static bool DelAbilities(this IPlayerContext obj) => obj.DelValue(Abilities);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void SetDashAbility(this IPlayerContext obj, Ability value) => obj.SetValue(DashAbility, value);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static Ability GetTeleportAbility(this IPlayerContext obj) => obj.GetValue<Ability>(TeleportAbility);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool TryGetTeleportAbility(this IPlayerContext obj, out Ability value) => obj.TryGetValue(TeleportAbility, out value);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool AddTeleportAbility(this IPlayerContext obj, Ability value) => obj.AddValue(TeleportAbility, value);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool HasTeleportAbility(this IPlayerContext obj) => obj.HasValue(TeleportAbility);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool DelTeleportAbility(this IPlayerContext obj) => obj.DelValue(TeleportAbility);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void SetTeleportAbility(this IPlayerContext obj, Ability value) => obj.SetValue(TeleportAbility, value);
+		public static void SetAbilities(this IPlayerContext obj, IReactiveDictionary<string, Ability> value) => obj.SetValue(Abilities, value);
     }
 }
