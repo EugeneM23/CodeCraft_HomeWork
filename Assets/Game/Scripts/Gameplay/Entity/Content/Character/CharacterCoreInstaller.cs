@@ -31,8 +31,12 @@ namespace Game
         [Header("Interaction")] [SerializeField]
         private InteractInstaller _interactInstaller;
 
+        private GameContext _gameContext;
+
         public override void Install(IEntity entity)
         {
+            _gameContext = GameContext.Instance;
+            
             // Core
             entity.AddDamageableTag();
             entity.AddPlayerTag();
@@ -46,7 +50,7 @@ namespace Game
             entity.AddHealth(new Health(_health, _health));
             entity.AddDamageTakenEvent(new BaseEvent<TakeDamageArgs>());
             entity.AddDeathTakenEvent(new BaseEvent<TakeDamageArgs>());
-            entity.AddBehaviour<DeathBehaviour>();
+            entity.AddBehaviour(new DeathBehaviour(_gameContext));
 
             // Movement
             entity.AddRotationSpeed(new BaseVariable<float>(_rotationSpeed));

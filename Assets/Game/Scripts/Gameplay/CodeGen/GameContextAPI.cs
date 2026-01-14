@@ -23,6 +23,7 @@ namespace Game
 		public const int PlayerContext = -122845622; // PlayerContext
 		public const int GameFactory = 907141881; // GameFactory
 		public const int EntityWorld = 1757640864; // IEntityWorld
+		public const int EnemyFilter = -285855885; // IEntityFilter
 
 
 		///Value Extensions
@@ -98,5 +99,23 @@ namespace Game
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void SetEntityWorld(this IContext obj, IEntityWorld value) => obj.SetValue(EntityWorld, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static IEntityFilter GetEnemyFilter(this IContext obj) => obj.GetValue<IEntityFilter>(EnemyFilter);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetEnemyFilter(this IContext obj, out IEntityFilter value) => obj.TryGetValue(EnemyFilter, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddEnemyFilter(this IContext obj, IEntityFilter value) => obj.AddValue(EnemyFilter, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasEnemyFilter(this IContext obj) => obj.HasValue(EnemyFilter);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelEnemyFilter(this IContext obj) => obj.DelValue(EnemyFilter);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetEnemyFilter(this IContext obj, IEntityFilter value) => obj.SetValue(EnemyFilter, value);
     }
 }

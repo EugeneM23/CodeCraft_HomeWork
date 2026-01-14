@@ -4,7 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6f0b762c-5415-4a85-b17b-cc44fd47261d" name="Changes" comment="" />
+    <list default="true" id="6f0b762c-5415-4a85-b17b-cc44fd47261d" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Entity/Common/Death/DeathBehaviour.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Entity/Common/Death/DeathBehaviour.cs" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -167,6 +169,7 @@
       <workItem from="1763824302453" duration="26536000" />
       <workItem from="1767796753686" duration="18000" />
       <workItem from="1767797524252" duration="71871000" />
+      <workItem from="1768310210957" duration="26373000" />
     </task>
     <task id="LOCAL-00001" summary="Update">
       <option name="closed" value="true" />
@@ -222,6 +225,11 @@
             <list>
               <RecentGroup>
                 <option name="FILTER_VALUES">
+                  <option value="HomeWork_08_Atomic" />
+                </option>
+              </RecentGroup>
+              <RecentGroup>
+                <option name="FILTER_VALUES">
                   <option value="origin/HomeWork_02_Tests" />
                 </option>
               </RecentGroup>
@@ -255,7 +263,7 @@
                   <entry key="branch">
                     <value>
                       <list>
-                        <option value="origin/HomeWork_02_Tests" />
+                        <option value="HomeWork_08_Atomic" />
                       </list>
                     </value>
                   </entry>

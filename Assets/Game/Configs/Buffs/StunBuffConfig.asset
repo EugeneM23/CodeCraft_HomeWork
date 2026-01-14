@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b712b05bc254024a67d605e9cc3e598, type: 3}
   m_Name: StunBuffConfig
   m_EditorClassIdentifier: 
-  <Name>k__BackingField: 
+  <Name>k__BackingField: Stun
   <Icon>k__BackingField: {fileID: 0}
-  <Duration>k__BackingField: 0
-  <Time>k__BackingField: 0
+  <Duration>k__BackingField: 2
+  <Time>k__BackingField: 2

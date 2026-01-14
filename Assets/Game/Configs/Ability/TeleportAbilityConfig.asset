@@ -12,10 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc28c2bf76144fdcbff1f516b18bfef1, type: 3}
   m_Name: TeleportAbilityConfig
   m_EditorClassIdentifier: 
-  <Name>k__BackingField: 
+  <Name>k__BackingField: Teleport
   <Description>k__BackingField: 
   <Icon>k__BackingField: {fileID: 0}
-  _initialCharges: 0
+  _initialCharges: 10
   _manaCost: 2
   _radius: 5
   _teleportKey: 116
+  _layerMask:
+    serializedVersion: 2
+    m_Bits: 16383

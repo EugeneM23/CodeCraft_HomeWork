@@ -9,6 +9,13 @@ namespace Game.Gameplay
         private Health _health;
         private IEntity _entity;
 
+        private readonly GameContext _gameContext;
+
+        public DeathBehaviour(GameContext gameContext)
+        {
+            _gameContext = gameContext;
+        }
+
         public void Init(in IEntity entity)
         {
             _entity = entity;
@@ -26,7 +33,11 @@ namespace Game.Gameplay
             if (_entity.TryGetDeathTakenEvent(out var @event))
                 @event.Invoke(new TakeDamageArgs(_entity));
 
-            _entity.GetGameObject().GetComponent<CapsuleCollider>().enabled = false;
+            if (_entity.GetGameObject().TryGetComponent(out CapsuleCollider collider))
+                collider.enabled = false;
+
+            if (_gameContext.GetEntityWorld().Has(_entity))
+                _gameContext.GetEntityWorld().Del(_entity);
         }
     }
 }

@@ -15,10 +15,10 @@ MonoBehaviour:
   <Name>k__BackingField: 
   <Description>k__BackingField: 
   <Icon>k__BackingField: {fileID: 0}
-  _initialCharges: 0
+  _initialCharges: 10
   _manaCost: 2
   _abilityKey: 114
   _layerMask:
     serializedVersion: 2
-    m_Bits: 0
-  _stunBuff: {fileID: 0}
+    m_Bits: 16383
+  _stunBuff: {fileID: 11400000, guid: d1a65d1fae67b453b8fcd8bf696e03f6, type: 2}

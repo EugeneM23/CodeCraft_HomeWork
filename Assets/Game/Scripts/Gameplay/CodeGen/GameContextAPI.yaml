@@ -21,3 +21,4 @@ values:
   - PlayerContext: PlayerContext
   - GameFactory: GameFactory
   - EntityWorld: IEntityWorld
+  - EnemyFilter: IEntityFilter

@@ -52,7 +52,7 @@ namespace Game
             entity.AddDeathTakenEvent(new BaseEvent<TakeDamageArgs>());
             entity.AddDamageTakenEvent(new BaseEvent<TakeDamageArgs>());
             entity.AddDeathEvent(new BaseEvent());
-            entity.AddBehaviour<DeathBehaviour>();
+            entity.AddBehaviour(new DeathBehaviour(_gameContext));
 
             // Movement
             entity.AddRotationSpeed(new BaseVariable<float>(_rotationSpeed));

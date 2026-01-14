@@ -17,3 +17,5 @@ MonoBehaviour:
   <Icon>k__BackingField: {fileID: 21300000, guid: b558604cff05941509a4a14b4186fe4b, type: 3}
   _initialCharges: 1
   _multiplier: 2
+  _dashKey: 101
+  _dashBuff: {fileID: 11400000, guid: d79af216988cc48f1bc3e88cf7533253, type: 2}

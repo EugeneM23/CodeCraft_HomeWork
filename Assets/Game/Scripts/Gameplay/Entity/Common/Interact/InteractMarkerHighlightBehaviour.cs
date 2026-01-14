@@ -13,7 +13,6 @@ namespace Game
         public void Init(in IEntity entity)
         {
             _character = GameContext.Instance.GetPlayerContext().GetCharacter();
-            Debug.Log(_character == null);
             _targetInteractable = _character.Value.GetTargetInteractable();
             _targetInteractable.Subscribe(OnTargetChanged);
         }
