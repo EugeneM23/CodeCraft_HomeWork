@@ -19,7 +19,6 @@ namespace Game
             effectTransform.rotation = Quaternion.LookRotation(normal);
         }
 
-
         public static IEntity SpawnBullet(IEntity weapon, GameFactory gameFactory, Transform firePoint)
         {
             IEntity bullet = gameFactory.Create(weapon.GetBulletPrefab());
@@ -46,6 +45,14 @@ namespace Game
                 lifeTime.Reset();
 
             factory.Destroy(entity);
+        }
+
+        public static void SpawnCharacter(SceneEntity characterPrefab, Transform spawnPoint, IEntityWorld entityWorld,
+            GameFactory gameFactory)
+        {
+            IEntity entity = gameFactory.Create(characterPrefab);
+            entity.GetTransform().position = spawnPoint.position;
+            entityWorld.Add(entity);
         }
     }
 }

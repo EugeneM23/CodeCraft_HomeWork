@@ -1,5 +1,6 @@
 using Atomic.Entities;
 using Modules.Gameplay;
+using UnityEngine;
 
 namespace Game.Gameplay
 {
@@ -24,6 +25,8 @@ namespace Game.Gameplay
 
             if (_entity.TryGetDeathTakenEvent(out var @event))
                 @event.Invoke(new TakeDamageArgs(_entity));
+
+            _entity.GetGameObject().GetComponent<CapsuleCollider>().enabled = false;
         }
     }
 }

@@ -5,7 +5,7 @@ namespace Atomic.Entities
     [AddComponentMenu("Atomic/Entities/Entity World Runner")]
     [DefaultExecutionOrder(-1000)]
     [DisallowMultipleComponent]
-    [RequireComponent(typeof(SceneEntit yWorld))]
+    [RequireComponent(typeof(SceneEntityWorld))]
     public sealed class SceneEntityWorldRunner : MonoBehaviour
     {
         private SceneEntityWorld world;

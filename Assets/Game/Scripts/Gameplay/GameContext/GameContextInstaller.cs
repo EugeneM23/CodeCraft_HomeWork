@@ -13,6 +13,9 @@ namespace Game
         [SerializeField] private SceneEntity _hitEffectPrefab;
         [SerializeField] private SceneEntityWorld _entityWorld;
 
+        [SerializeField] private SceneEntity _enemyPrefab;
+        [SerializeField] private Transform _spawnPoint; 
+
         protected override void Install(IGameContext context)
         {
             context.AddEntityWorld(_entityWorld);
@@ -20,21 +23,37 @@ namespace Game
             context.AddPlayerContext(_playerContext);
             context.AddGameFactory(new GameFactory(_poolsParent));
             context.GetGameFactory().RegisterNewPrefab(_audioPrefab, GameFactoryID.AudioSource.ToString());
-            context.AddController<EnemyController>();
+            context.AddController(new EnemyController(_enemyPrefab, _spawnPoint));
         }
     }
 
     public class EnemyController : IContextUpdate, IContextInit<GameContext>
     {
         private IEntityWorld _entityWorld;
+        private GameFactory _gameFactory;
+
+        private readonly SceneEntity _enemyPrefab;
+        private readonly Transform _spawnPoint;
+
+        public EnemyController(SceneEntity enemyPrefab, Transform spawnPoint)
+        {
+            _enemyPrefab = enemyPrefab;
+            _spawnPoint = spawnPoint;
+        }
 
         public void Init(GameContext context)
         {
             _entityWorld = context.GetEntityWorld();
+            _gameFactory = context.GetGameFactory();
         }
 
         public void OnUpdate(IContext context, float deltaTime)
         {
+            if (Input.GetKeyDown(KeyCode.M))
+            {
+                SpawnUseCase.SpawnCharacter(_enemyPrefab, _spawnPoint, _entityWorld, _gameFactory);
+            }
+
             foreach (IEntity enemy in _entityWorld.GetAllWithTag(EntityAPI.Enemy))
             {
                 Debug.Log(enemy.Name);
