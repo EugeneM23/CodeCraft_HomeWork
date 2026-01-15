@@ -91,4 +91,31 @@ namespace Game
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool AddEntityWorld(this IContext obj, IEntityWorld value) => obj.AddValue(EntityWorld, value);
 
-		[MethodImpl
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasEntityWorld(this IContext obj) => obj.HasValue(EntityWorld);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelEntityWorld(this IContext obj) => obj.DelValue(EntityWorld);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetEntityWorld(this IContext obj, IEntityWorld value) => obj.SetValue(EntityWorld, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static IEntityFilter GetEnemyFilter(this IContext obj) => obj.GetValue<IEntityFilter>(EnemyFilter);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetEnemyFilter(this IContext obj, out IEntityFilter value) => obj.TryGetValue(EnemyFilter, out value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AddEnemyFilter(this IContext obj, IEntityFilter value) => obj.AddValue(EnemyFilter, value);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool HasEnemyFilter(this IContext obj) => obj.HasValue(EnemyFilter);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool DelEnemyFilter(this IContext obj) => obj.DelValue(EnemyFilter);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetEnemyFilter(this IContext obj, IEntityFilter value) => obj.SetValue(EnemyFilter, value);
+    }
+}
