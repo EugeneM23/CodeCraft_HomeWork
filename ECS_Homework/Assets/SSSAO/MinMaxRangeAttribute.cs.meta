@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+guid: 621e01f769d6b478ea17235c058c64fc
+timeCreated: 1463530242
+licenseType: Store
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 57053
+  packageName: Simple SSAO
+  packageVersion: 1.4.3
+  assetPath: Assets/SSSAO/MinMaxRangeAttribute.cs
+  uploadId: 209573

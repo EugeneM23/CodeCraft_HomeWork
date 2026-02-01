@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+guid: 9348352450ef744eb89baa0d181b7021
+timeCreated: 1463530243
+licenseType: Store
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 57053
+  packageName: Simple SSAO
+  packageVersion: 1.4.3
+  assetPath: Assets/SSSAO/Editor/MinMaxRangeDrawer.cs
+  uploadId: 209573
