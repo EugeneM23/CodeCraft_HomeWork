@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 4117b212ec586114ca24e3c0a610f0e8
+timeCreated: 1465107806
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 64369
+  packageName: Arrow Mobile UI
+  packageVersion: 1.3
+  assetPath: Assets/Arrow Mobile UI for UGUI/Prefabs/Buttons/Square/Brown/Button
+    (Crosshair).prefab
+  uploadId: 362805

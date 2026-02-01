@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 79da224432518e046a0392cf064a612c
+timeCreated: 1464928123
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 64369
+  packageName: Arrow Mobile UI
+  packageVersion: 1.3
+  assetPath: Assets/Arrow Mobile UI for UGUI/Prefabs/Windows/Window (Store).prefab
+  uploadId: 362805

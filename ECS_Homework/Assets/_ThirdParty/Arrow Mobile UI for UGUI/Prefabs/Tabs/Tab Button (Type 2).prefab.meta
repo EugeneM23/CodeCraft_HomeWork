@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: fcc939ebfc2ccba4b9bc5aa8add96228
+timeCreated: 1463755290
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 64369
+  packageName: Arrow Mobile UI
+  packageVersion: 1.3
+  assetPath: Assets/Arrow Mobile UI for UGUI/Prefabs/Tabs/Tab Button (Type 2).prefab
+  uploadId: 362805

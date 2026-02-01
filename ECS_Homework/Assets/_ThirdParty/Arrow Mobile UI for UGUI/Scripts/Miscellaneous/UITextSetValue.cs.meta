@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 1c75e795262b74d48bd57e5ae2330c6c
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 64369
+  packageName: Arrow Mobile UI
+  packageVersion: 1.3
+  assetPath: Assets/Arrow Mobile UI for UGUI/Scripts/Miscellaneous/UITextSetValue.cs
+  uploadId: 362805

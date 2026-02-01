@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 53c1d7f1615a6b94cb9b58ada64d9ada
+timeCreated: 1465057100
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 64369
+  packageName: Arrow Mobile UI
+  packageVersion: 1.3
+  assetPath: Assets/Arrow Mobile UI for UGUI/Prefabs/Buttons/Square/Yellow Smaller/Button
+    (Shield).prefab
+  uploadId: 362805

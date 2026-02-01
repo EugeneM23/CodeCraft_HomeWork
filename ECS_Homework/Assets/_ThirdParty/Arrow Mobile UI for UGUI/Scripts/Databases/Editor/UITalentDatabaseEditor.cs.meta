@@ -1,0 +1,20 @@
+fileFormatVersion: 2
+guid: 4b3bc7f23000ff645aaa9ce9817070f0
+timeCreated: 1527956978
+licenseType: Store
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 64369
+  packageName: Arrow Mobile UI
+  packageVersion: 1.3
+  assetPath: Assets/Arrow Mobile UI for UGUI/Scripts/Databases/Editor/UITalentDatabaseEditor.cs
+  uploadId: 362805

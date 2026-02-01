@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 619e8df12dca67042bc5a4b4da403af9
+timeCreated: 1465107685
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 64369
+  packageName: Arrow Mobile UI
+  packageVersion: 1.3
+  assetPath: Assets/Arrow Mobile UI for UGUI/Prefabs/Buttons/Square/Brown/Button
+    (Letter).prefab
+  uploadId: 362805

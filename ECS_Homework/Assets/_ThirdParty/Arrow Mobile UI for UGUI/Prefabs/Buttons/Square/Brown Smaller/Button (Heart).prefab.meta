@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: f821e34ad58ab16409bd0221a06fbaf7
+timeCreated: 1465050953
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 64369
+  packageName: Arrow Mobile UI
+  packageVersion: 1.3
+  assetPath: Assets/Arrow Mobile UI for UGUI/Prefabs/Buttons/Square/Brown Smaller/Button
+    (Heart).prefab
+  uploadId: 362805

@@ -1,0 +1,20 @@
+fileFormatVersion: 2
+guid: 97c39e489e4fa7e4cb1f994537155b42
+timeCreated: 1527957090
+licenseType: Store
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 64369
+  packageName: Arrow Mobile UI
+  packageVersion: 1.3
+  assetPath: Assets/Arrow Mobile UI for UGUI/Scripts/Icon Slots System/Editor/UISlotBaseEditor.cs
+  uploadId: 362805

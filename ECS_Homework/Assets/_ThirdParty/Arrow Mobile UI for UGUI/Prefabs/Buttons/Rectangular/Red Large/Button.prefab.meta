@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 5bfd95b54e433d3488d2fa9000db77cb
+timeCreated: 1465099080
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 64369
+  packageName: Arrow Mobile UI
+  packageVersion: 1.3
+  assetPath: Assets/Arrow Mobile UI for UGUI/Prefabs/Buttons/Rectangular/Red Large/Button.prefab
+  uploadId: 362805

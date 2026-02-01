@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 8c6275d26f25cac4e917c70a69ccb7c6
+timeCreated: 1465104553
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 64369
+  packageName: Arrow Mobile UI
+  packageVersion: 1.3
+  assetPath: Assets/Arrow Mobile UI for UGUI/Prefabs/Buttons/Square/Yellow/Button
+    (Rockets).prefab
+  uploadId: 362805

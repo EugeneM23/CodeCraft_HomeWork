@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 2ccae24682d7db942bc655764bb67290
+timeCreated: 1465119678
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 64369
+  packageName: Arrow Mobile UI
+  packageVersion: 1.3
+  assetPath: Assets/Arrow Mobile UI for UGUI/Prefabs/Loading.prefab
+  uploadId: 362805

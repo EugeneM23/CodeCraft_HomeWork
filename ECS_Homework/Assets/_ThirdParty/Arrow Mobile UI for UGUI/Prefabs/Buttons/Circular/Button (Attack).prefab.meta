@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 9066630c7a1215e479d5ecddcbb61e9f
+timeCreated: 1465055338
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 64369
+  packageName: Arrow Mobile UI
+  packageVersion: 1.3
+  assetPath: Assets/Arrow Mobile UI for UGUI/Prefabs/Buttons/Circular/Button (Attack).prefab
+  uploadId: 362805

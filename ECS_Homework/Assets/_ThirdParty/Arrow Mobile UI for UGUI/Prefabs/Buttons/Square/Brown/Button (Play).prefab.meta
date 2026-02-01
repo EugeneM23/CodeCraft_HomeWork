@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 7b5472e82fe2aa7469b5735d9e62e760
+timeCreated: 1465107688
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 64369
+  packageName: Arrow Mobile UI
+  packageVersion: 1.3
+  assetPath: Assets/Arrow Mobile UI for UGUI/Prefabs/Buttons/Square/Brown/Button
+    (Play).prefab
+  uploadId: 362805

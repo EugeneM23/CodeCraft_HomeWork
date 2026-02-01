@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 75ea4fcba0c20144d91e0390638984a1
+timeCreated: 1463513482
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 64369
+  packageName: Arrow Mobile UI
+  packageVersion: 1.3
+  assetPath: Assets/Arrow Mobile UI for UGUI/Prefabs/Control Area (Type 1).prefab
+  uploadId: 362805

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: caaee37c886d23c47bb5df7cabf1b898
+timeCreated: 1463567676
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 64369
+  packageName: Arrow Mobile UI
+  packageVersion: 1.3
+  assetPath: Assets/Arrow Mobile UI for UGUI/Prefabs/Toggles/Toggle Radio.prefab
+  uploadId: 362805

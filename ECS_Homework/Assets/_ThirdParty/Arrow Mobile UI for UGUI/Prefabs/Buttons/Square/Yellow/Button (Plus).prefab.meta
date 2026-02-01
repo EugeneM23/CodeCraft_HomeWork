@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: fa96619a25efce040bd747c4922f43d6
+timeCreated: 1465104483
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 64369
+  packageName: Arrow Mobile UI
+  packageVersion: 1.3
+  assetPath: Assets/Arrow Mobile UI for UGUI/Prefabs/Buttons/Square/Yellow/Button
+    (Plus).prefab
+  uploadId: 362805

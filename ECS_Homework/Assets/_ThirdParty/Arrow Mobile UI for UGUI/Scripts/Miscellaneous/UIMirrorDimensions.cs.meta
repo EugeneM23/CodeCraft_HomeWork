@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+guid: 623898ac8647d7e4f961ebd36f0eb897
+timeCreated: 1450044756
+licenseType: Store
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 64369
+  packageName: Arrow Mobile UI
+  packageVersion: 1.3
+  assetPath: Assets/Arrow Mobile UI for UGUI/Scripts/Miscellaneous/UIMirrorDimensions.cs
+  uploadId: 362805

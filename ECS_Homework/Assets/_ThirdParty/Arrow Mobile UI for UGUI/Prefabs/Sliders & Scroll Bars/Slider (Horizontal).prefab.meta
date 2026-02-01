@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 8fad93f696d35a047a01a9fb7d8791a1
+timeCreated: 1463525225
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 64369
+  packageName: Arrow Mobile UI
+  packageVersion: 1.3
+  assetPath: Assets/Arrow Mobile UI for UGUI/Prefabs/Sliders & Scroll Bars/Slider
+    (Horizontal).prefab
+  uploadId: 362805

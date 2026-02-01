@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 018d889bbd0666d4da4ad2e2f9fa21a5
+timeCreated: 1463483412
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 64369
+  packageName: Arrow Mobile UI
+  packageVersion: 1.3
+  assetPath: Assets/Arrow Mobile UI for UGUI/Prefabs/Windows/Window (Game Menu).prefab
+  uploadId: 362805

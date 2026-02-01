@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 0f86065fd10c9f940960ec5c8bfb6104
+timeCreated: 1465107703
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 64369
+  packageName: Arrow Mobile UI
+  packageVersion: 1.3
+  assetPath: Assets/Arrow Mobile UI for UGUI/Prefabs/Buttons/Square/Brown/Button
+    (Chat).prefab
+  uploadId: 362805

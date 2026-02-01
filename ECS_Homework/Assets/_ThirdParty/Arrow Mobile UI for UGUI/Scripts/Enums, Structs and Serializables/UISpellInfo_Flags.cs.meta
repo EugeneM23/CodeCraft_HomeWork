@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 186b8dc474ff0ae468ddf4e112d747bd
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 64369
+  packageName: Arrow Mobile UI
+  packageVersion: 1.3
+  assetPath: Assets/Arrow Mobile UI for UGUI/Scripts/Enums, Structs and Serializables/UISpellInfo_Flags.cs
+  uploadId: 362805

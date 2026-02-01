@@ -1,0 +1,20 @@
+fileFormatVersion: 2
+guid: bb6b15b0891690d4797dee204818aa4f
+timeCreated: 1527960162
+licenseType: Store
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 64369
+  packageName: Arrow Mobile UI
+  packageVersion: 1.3
+  assetPath: Assets/Arrow Mobile UI for UGUI/Scripts/UI/Select Field/Editor/UISelectField_ArrowEditor.cs
+  uploadId: 362805

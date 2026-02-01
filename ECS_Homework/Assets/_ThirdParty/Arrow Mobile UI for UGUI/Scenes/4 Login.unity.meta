@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 275c6b655e6f4bf40a6a55c5e981d4c9
+timeCreated: 1463583572
+licenseType: Store
+DefaultImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 64369
+  packageName: Arrow Mobile UI
+  packageVersion: 1.3
+  assetPath: Assets/Arrow Mobile UI for UGUI/Scenes/4 Login.unity
+  uploadId: 362805

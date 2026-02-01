@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: ce7d749c5bc68874883cd8733fa3b443
+timeCreated: 1465104557
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 64369
+  packageName: Arrow Mobile UI
+  packageVersion: 1.3
+  assetPath: Assets/Arrow Mobile UI for UGUI/Prefabs/Buttons/Square/Yellow/Button
+    (Crosshair).prefab
+  uploadId: 362805

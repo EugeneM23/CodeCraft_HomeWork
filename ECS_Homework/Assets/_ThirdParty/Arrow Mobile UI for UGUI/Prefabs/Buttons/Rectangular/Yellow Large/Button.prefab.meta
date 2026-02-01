@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: c8b1ba594683b9a4e870cda4884e98c8
+timeCreated: 1463404277
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 64369
+  packageName: Arrow Mobile UI
+  packageVersion: 1.3
+  assetPath: Assets/Arrow Mobile UI for UGUI/Prefabs/Buttons/Rectangular/Yellow Large/Button.prefab
+  uploadId: 362805

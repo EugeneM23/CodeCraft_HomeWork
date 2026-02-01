@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 4e38263df604f4c448f736d6728111d7
+timeCreated: 1463404280
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 64369
+  packageName: Arrow Mobile UI
+  packageVersion: 1.3
+  assetPath: Assets/Arrow Mobile UI for UGUI/Prefabs/Buttons/Rectangular/Yellow Large/Button
+    (Flipped).prefab
+  uploadId: 362805
