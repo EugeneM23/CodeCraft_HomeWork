@@ -1,0 +1,57 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 61caefda880f4a5d94965826455b144b, type: 3}
+  m_Name: PushAbilityUp
+  m_EditorClassIdentifier: 
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes:
+    - Name: _events
+      Entry: 7
+      Data: 0|Gameplay.SpriteAnimationEvent[], Assembly-CSharp
+    - Name: 
+      Entry: 12
+      Data: 1
+    - Name: 
+      Entry: 7
+      Data: Gameplay.SpriteAnimationEvent, Assembly-CSharp
+    - Name: ID
+      Entry: 3
+      Data: 4
+    - Name: Frame
+      Entry: 3
+      Data: 4
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+  <Sprites>k__BackingField:
+  - {fileID: 7441861488978599509, guid: aec5070f5cb24b24e9fbdf06b0d1faf8, type: 3}
+  - {fileID: 8288915215451595207, guid: aec5070f5cb24b24e9fbdf06b0d1faf8, type: 3}
+  - {fileID: 4668938655123782945, guid: aec5070f5cb24b24e9fbdf06b0d1faf8, type: 3}
+  - {fileID: 5683539909772271658, guid: aec5070f5cb24b24e9fbdf06b0d1faf8, type: 3}
+  - {fileID: 5764228812365489207, guid: aec5070f5cb24b24e9fbdf06b0d1faf8, type: 3}
+  - {fileID: -1191510351576865934, guid: aec5070f5cb24b24e9fbdf06b0d1faf8, type: 3}
+  <ID>k__BackingField: 8
+  <FPS>k__BackingField: 30
+  CanInterrupt: 1
