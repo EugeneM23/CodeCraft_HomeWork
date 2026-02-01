@@ -6,6 +6,7 @@ using UnityEngine.AI;
 public class NavMeshAgentAuthoring : MonoBehaviour
 {
     public NavMeshAgent Agent;
+        
     public class NavMeshAgentBake : Baker<NavMeshAgentAuthoring>
     {
         public override void Bake(NavMeshAgentAuthoring authoring)
