@@ -64,10 +64,12 @@ Material:
     - _CastShadows: 1
     - _Cull: 0
     - _DstBlend: 10
+    - _DstBlendAlpha: 10
     - _Emissive: 50
     - _QueueControl: 0
     - _QueueOffset: 0
     - _SrcBlend: 5
+    - _SrcBlendAlpha: 1
     - _Surface: 1
     - _UseGradient: 0
     - _UsePanning: 1

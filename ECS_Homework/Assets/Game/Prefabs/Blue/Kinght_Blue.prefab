@@ -639,7 +639,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: ProjectDawn.Navigation.Hybrid::ProjectDawn.Navigation.Hybrid.AgentNavMeshAuthoring
   AgentTypeId: 0
-  AreaMask: -1
+  AreaMask: 0
   AutoRepath: 1
   m_Grounded: 1
   m_OptimizePath: 1
@@ -673,13 +673,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0344116cd75eaaf488b894904a1649d9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectDawn.Navigation.Hybrid::ProjectDawn.Navigation.Hybrid.AgentAvoidAuthoring
-  Radius: 5
+  Radius: 1
   Angle: 230
   MaxAngle: 300
   Mode: 3
   BlockedStop: 1
   UseWalls: 1
-  m_Layers: -1
+  m_Layers: 0
 --- !u!114 &2053445889337378989
 MonoBehaviour:
   m_ObjectHideFlags: 0

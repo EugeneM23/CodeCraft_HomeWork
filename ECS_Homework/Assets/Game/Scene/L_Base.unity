@@ -543,7 +543,7 @@ GameObject:
   - component: {fileID: 649233707}
   - component: {fileID: 649233706}
   - component: {fileID: 649233705}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1191,7 +1191,7 @@ GameObject:
   - component: {fileID: 1535430848}
   - component: {fileID: 1535430847}
   - component: {fileID: 1535430846}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: Button (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1717,7 +1717,7 @@ GameObject:
   - component: {fileID: 2017726294}
   - component: {fileID: 2017726293}
   - component: {fileID: 2017726292}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2103,7 +2103,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1257002610827928725, guid: 7b77e8701dda44f7f85bbd3470a54ff0, type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1257002610827928725, guid: 7b77e8701dda44f7f85bbd3470a54ff0, type: 3}
+      propertyPath: _spawnDelay
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 7160150596007185865, guid: 7b77e8701dda44f7f85bbd3470a54ff0, type: 3}
       propertyPath: m_Name
