@@ -2044,6 +2044,7 @@ GameObject:
   - component: {fileID: 8897318013728030475}
   - component: {fileID: 4481563839515227084}
   - component: {fileID: -4476225111447478412}
+  - component: {fileID: 6727435731423170795}
   m_Layer: 3
   m_Name: Skeleton_Necromancer_Blue
   m_TagString: Untagged
@@ -2200,6 +2201,18 @@ MonoBehaviour:
   BlockedStop: 1
   UseWalls: 0
   m_Layers: -1
+--- !u!114 &6727435731423170795
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5845351707157135717}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0cf25fa8d4024d8c86c33f0718f66f85, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Scripts.Entities.Systems.PlayerTagAuthoring
 --- !u!1 &5989569129047307830
 GameObject:
   m_ObjectHideFlags: 0
