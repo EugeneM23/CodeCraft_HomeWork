@@ -18,8 +18,28 @@ namespace Game.Scripts.Entities.Systems
             if (_timer <= 0)
             {
                 _timer = _spawnDelay;
-                SpawnKnight();
+
+                if (Random.Range(0, 2) > 0)
+                    SpawnKnight();
+                else
+                    SpawnArcher();
             }
+        }
+
+        private void SpawnArcher()
+        {
+            var spawnPosition = _spawnPoints[Random.Range(0, _spawnPoints.Length)].position;
+            var ecb = new EntityCommandBuffer(Allocator.Temp);
+            var manager = World.DefaultGameObjectInjectionWorld.EntityManager;
+            var catalog = manager.CreateEntityQuery(typeof(UnitEntityCatalog)).GetSingleton<UnitEntityCatalog>();
+            var entity = ecb.CreateEntity();
+            ecb.AddComponent(entity, new SpawnPrefabRequest
+            {
+                Position = spawnPosition,
+                UnitPrefab = catalog.NecromancerRed
+            });
+            ecb.Playback(manager);
+            ecb.Dispose();
         }
 
         private void SpawnKnight()

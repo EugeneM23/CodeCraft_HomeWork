@@ -127,7 +127,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Texture2D:
-        m_Texture: {fileID: 2800000, guid: f06359a3da8e4fb2945cc0a7045b20d5, type: 3}
+        m_Texture: {fileID: 2800000, guid: a705475ba59464ce984f49f71a625043, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _TransparencyMaskTex:
