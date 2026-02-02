@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 053f039c665217e45954770985359299
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 315488
+  packageName: RPG VFX pack
+  packageVersion: 1.0
+  assetPath: Assets/RPG_VFXPack/RPG_VFX/ShaderGraph/PickUp_VFX_SG/BG.mat
+  uploadId: 745464

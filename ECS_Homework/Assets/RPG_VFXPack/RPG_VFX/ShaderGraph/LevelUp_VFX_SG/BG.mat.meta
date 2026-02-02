@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 0894998935be9f247b86e4c845861862
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 315488
+  packageName: RPG VFX pack
+  packageVersion: 1.0
+  assetPath: Assets/RPG_VFXPack/RPG_VFX/ShaderGraph/LevelUp_VFX_SG/BG.mat
+  uploadId: 745464

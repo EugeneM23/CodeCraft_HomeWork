@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 99349e7ded7039e4b97ac31be5c99a6b
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 315488
+  packageName: RPG VFX pack
+  packageVersion: 1.0
+  assetPath: Assets/RPG_VFXPack/RPG_VFX/ShaderGraph/Shield_VFX_SG/Shield.mat
+  uploadId: 745464

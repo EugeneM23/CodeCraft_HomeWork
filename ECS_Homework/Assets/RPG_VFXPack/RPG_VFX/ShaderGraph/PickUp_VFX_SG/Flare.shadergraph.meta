@@ -1,0 +1,17 @@
+fileFormatVersion: 2
+guid: 5283c715da5bd2e4596917fb063074ad
+ScriptedImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 2
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+  script: {fileID: 11500000, guid: 625f186215c104763be7675aa2d941aa, type: 3}
+AssetOrigin:
+  serializedVersion: 1
+  productId: 315488
+  packageName: RPG VFX pack
+  packageVersion: 1.0
+  assetPath: Assets/RPG_VFXPack/RPG_VFX/ShaderGraph/PickUp_VFX_SG/Flare.shadergraph
+  uploadId: 745464

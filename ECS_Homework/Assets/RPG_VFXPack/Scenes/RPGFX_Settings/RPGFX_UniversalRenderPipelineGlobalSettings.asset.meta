@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 18dc0cd2c080841dea6cd2ca38ce93fa
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 315488
+  packageName: RPG VFX pack
+  packageVersion: 1.0
+  assetPath: Assets/RPG_VFXPack/Scenes/RPGFX_Settings/RPGFX_UniversalRenderPipelineGlobalSettings.asset
+  uploadId: 745464

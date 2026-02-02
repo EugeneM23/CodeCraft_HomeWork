@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: d96c290effb6e2b4d884d06afc4cd468
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 315488
+  packageName: RPG VFX pack
+  packageVersion: 1.0
+  assetPath: Assets/RPG_VFXPack/RPG_VFX/ShaderGraph/Weakness_VFX_SG/Wave.mat
+  uploadId: 745464

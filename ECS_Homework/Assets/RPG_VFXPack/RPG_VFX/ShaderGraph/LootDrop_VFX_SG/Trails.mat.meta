@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: e62c34843c4ef4340972efb3a04cd2cc
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 315488
+  packageName: RPG VFX pack
+  packageVersion: 1.0
+  assetPath: Assets/RPG_VFXPack/RPG_VFX/ShaderGraph/LootDrop_VFX_SG/Trails.mat
+  uploadId: 745464

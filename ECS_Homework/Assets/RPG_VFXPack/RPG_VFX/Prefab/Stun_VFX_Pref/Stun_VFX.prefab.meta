@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 8a8bc16db93b3914f86181901e7bb0c7
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 315488
+  packageName: RPG VFX pack
+  packageVersion: 1.0
+  assetPath: Assets/RPG_VFXPack/RPG_VFX/Prefab/Stun_VFX_Pref/Stun_VFX.prefab
+  uploadId: 745464

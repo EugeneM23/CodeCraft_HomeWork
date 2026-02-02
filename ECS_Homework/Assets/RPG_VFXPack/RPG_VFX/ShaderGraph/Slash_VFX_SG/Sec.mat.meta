@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: ed3c339cf7a555d4d91e60189d884396
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 315488
+  packageName: RPG VFX pack
+  packageVersion: 1.0
+  assetPath: Assets/RPG_VFXPack/RPG_VFX/ShaderGraph/Slash_VFX_SG/Sec.mat
+  uploadId: 745464

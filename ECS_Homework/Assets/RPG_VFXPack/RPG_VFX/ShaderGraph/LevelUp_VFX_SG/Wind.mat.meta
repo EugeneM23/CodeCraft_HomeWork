@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 1a8572ddc224cd54cb42c7279cca97f8
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 315488
+  packageName: RPG VFX pack
+  packageVersion: 1.0
+  assetPath: Assets/RPG_VFXPack/RPG_VFX/ShaderGraph/LevelUp_VFX_SG/Wind.mat
+  uploadId: 745464

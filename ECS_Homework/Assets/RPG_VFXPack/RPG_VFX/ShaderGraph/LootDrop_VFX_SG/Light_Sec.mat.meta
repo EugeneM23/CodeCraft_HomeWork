@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: bf7ac147a4559d4439e9029b87bd7f20
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 315488
+  packageName: RPG VFX pack
+  packageVersion: 1.0
+  assetPath: Assets/RPG_VFXPack/RPG_VFX/ShaderGraph/LootDrop_VFX_SG/Light_Sec.mat
+  uploadId: 745464

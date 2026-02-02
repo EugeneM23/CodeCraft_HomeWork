@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: e8df1811d9de7a2428d8ad6e3b95cd43
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 315488
+  packageName: RPG VFX pack
+  packageVersion: 1.0
+  assetPath: Assets/RPG_VFXPack/RPG_VFX/ShaderGraph/Buff_VFX_SG/Ground_Wave.mat
+  uploadId: 745464

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 65bc7dbf4170f435aa868bf41acfb082
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 315488
+  packageName: RPG VFX pack
+  packageVersion: 1.0
+  assetPath: Assets/RPG_VFXPack/Scenes/RPGFX_Settings/RPGFX_Mobile_Renderer.asset
+  uploadId: 745464

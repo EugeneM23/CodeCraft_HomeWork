@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: c5254aabbb0c42d40b577bace2e5c58e
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 315488
+  packageName: RPG VFX pack
+  packageVersion: 1.0
+  assetPath: Assets/RPG_VFXPack/RPG_VFX/ShaderGraph/Telegraph_VFX_SG/BG.mat
+  uploadId: 745464

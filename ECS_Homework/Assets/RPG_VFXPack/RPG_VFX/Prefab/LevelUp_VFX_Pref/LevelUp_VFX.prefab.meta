@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: b16076e998a265f448aa1d1a1e3ec08b
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 315488
+  packageName: RPG VFX pack
+  packageVersion: 1.0
+  assetPath: Assets/RPG_VFXPack/RPG_VFX/Prefab/LevelUp_VFX_Pref/LevelUp_VFX.prefab
+  uploadId: 745464

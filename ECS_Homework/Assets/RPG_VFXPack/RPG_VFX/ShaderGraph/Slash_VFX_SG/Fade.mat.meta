@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: c7d1065b81c9e464ca5db2cacd428652
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 315488
+  packageName: RPG VFX pack
+  packageVersion: 1.0
+  assetPath: Assets/RPG_VFXPack/RPG_VFX/ShaderGraph/Slash_VFX_SG/Fade.mat
+  uploadId: 745464

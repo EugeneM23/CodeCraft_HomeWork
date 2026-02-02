@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 4fbaca24a12ad0343b831170a0dd1fd1
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 315488
+  packageName: RPG VFX pack
+  packageVersion: 1.0
+  assetPath: Assets/RPG_VFXPack/RPG_VFX/ShaderGraph/Burning_VFX_SG/Spark.mat
+  uploadId: 745464

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 89534e3cbb81fa24d81f72f30b5543c3
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 315488
+  packageName: RPG VFX pack
+  packageVersion: 1.0
+  assetPath: Assets/RPG_VFXPack/RPG_VFX/ShaderGraph/PickUp_VFX_SG/Flare.mat
+  uploadId: 745464

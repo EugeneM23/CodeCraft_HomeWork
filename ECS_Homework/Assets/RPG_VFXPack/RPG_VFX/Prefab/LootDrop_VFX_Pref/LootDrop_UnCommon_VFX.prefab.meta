@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 640e007a20d1bbd488034fd840049f86
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 315488
+  packageName: RPG VFX pack
+  packageVersion: 1.0
+  assetPath: Assets/RPG_VFXPack/RPG_VFX/Prefab/LootDrop_VFX_Pref/LootDrop_UnCommon_VFX.prefab
+  uploadId: 745464

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 555ed95b5521b4343ba573a9365c6302
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 315488
+  packageName: RPG VFX pack
+  packageVersion: 1.0
+  assetPath: Assets/RPG_VFXPack/RPG_VFX/ShaderGraph/Healing_VFX_SG/Spotlight.mat
+  uploadId: 745464

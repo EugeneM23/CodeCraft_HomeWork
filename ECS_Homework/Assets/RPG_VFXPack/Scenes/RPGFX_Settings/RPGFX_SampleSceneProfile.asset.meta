@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 10fc4df2da32a41aaa32f2dac913491c
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 315488
+  packageName: RPG VFX pack
+  packageVersion: 1.0
+  assetPath: Assets/RPG_VFXPack/Scenes/RPGFX_Settings/RPGFX_SampleSceneProfile.asset
+  uploadId: 745464

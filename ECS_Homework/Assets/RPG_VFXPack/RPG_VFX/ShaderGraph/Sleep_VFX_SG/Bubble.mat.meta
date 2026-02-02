@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 32574d81d6478f94ba84f206f4e65147
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 315488
+  packageName: RPG VFX pack
+  packageVersion: 1.0
+  assetPath: Assets/RPG_VFXPack/RPG_VFX/ShaderGraph/Sleep_VFX_SG/Bubble.mat
+  uploadId: 745464

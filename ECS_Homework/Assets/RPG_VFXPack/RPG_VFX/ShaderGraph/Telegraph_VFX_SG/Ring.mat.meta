@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 9ffba589fe454714fa5de32b23a45acb
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 315488
+  packageName: RPG VFX pack
+  packageVersion: 1.0
+  assetPath: Assets/RPG_VFXPack/RPG_VFX/ShaderGraph/Telegraph_VFX_SG/Ring.mat
+  uploadId: 745464

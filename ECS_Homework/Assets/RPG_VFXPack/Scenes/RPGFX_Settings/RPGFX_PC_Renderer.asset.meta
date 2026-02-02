@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: f288ae1f4751b564a96ab5647541f7a2
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 315488
+  packageName: RPG VFX pack
+  packageVersion: 1.0
+  assetPath: Assets/RPG_VFXPack/Scenes/RPGFX_Settings/RPGFX_PC_Renderer.asset
+  uploadId: 745464

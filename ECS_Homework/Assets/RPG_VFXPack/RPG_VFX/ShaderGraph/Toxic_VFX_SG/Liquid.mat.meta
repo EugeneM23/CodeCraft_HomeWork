@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 337a94df3345e844288674d3be20cc4e
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 315488
+  packageName: RPG VFX pack
+  packageVersion: 1.0
+  assetPath: Assets/RPG_VFXPack/RPG_VFX/ShaderGraph/Toxic_VFX_SG/Liquid.mat
+  uploadId: 745464

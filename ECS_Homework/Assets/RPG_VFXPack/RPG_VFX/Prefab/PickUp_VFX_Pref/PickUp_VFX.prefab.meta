@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: ed93ce3c1b650e146a8e46bf5a9a0886
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 315488
+  packageName: RPG VFX pack
+  packageVersion: 1.0
+  assetPath: Assets/RPG_VFXPack/RPG_VFX/Prefab/PickUp_VFX_Pref/PickUp_VFX.prefab
+  uploadId: 745464

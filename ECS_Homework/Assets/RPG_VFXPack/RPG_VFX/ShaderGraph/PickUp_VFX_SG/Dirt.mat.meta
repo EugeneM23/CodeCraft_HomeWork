@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 215e0cdbb48d97d4199544df8b6ddfa8
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 315488
+  packageName: RPG VFX pack
+  packageVersion: 1.0
+  assetPath: Assets/RPG_VFXPack/RPG_VFX/ShaderGraph/PickUp_VFX_SG/Dirt.mat
+  uploadId: 745464

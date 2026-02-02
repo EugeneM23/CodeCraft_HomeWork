@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 0ce489c493c846849ba16db1d8558e54
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 315488
+  packageName: RPG VFX pack
+  packageVersion: 1.0
+  assetPath: Assets/RPG_VFXPack/RPG_VFX/ShaderGraph/Stun_VFX_SG/Particles.mat
+  uploadId: 745464
