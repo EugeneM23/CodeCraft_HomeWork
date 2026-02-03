@@ -1,5 +1,7 @@
+using Unity.Collections;
 using Unity.Entities;
 
-public struct AttackRequest : IComponentData
+public struct AnimationRequest : IComponentData
 {
+    public FixedString64Bytes AnimationName;
 }

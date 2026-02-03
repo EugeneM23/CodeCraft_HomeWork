@@ -1,8 +1,6 @@
-using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using System.Collections;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class CardScalerUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
@@ -10,7 +8,7 @@ public class CardScalerUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
     [SerializeField] private Image _image;
 
     public Vector3 normalScale = new Vector3(0.8f, 0.8f, 0.8f);
-    public Vector3 hoverScale = new Vector3(1.1f, 1.1f, 1.1f);
+    public Vector3 hoverScale = new Vector3(1.5f, 1.5f, 1.5f);
     public float scaleSpeed = 5f; // чем больше, тем быстрее
 
     private Coroutine scaleCoroutine;

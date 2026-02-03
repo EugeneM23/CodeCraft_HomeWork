@@ -16,7 +16,7 @@ public partial struct SpawnPrefabSystem : ISystem
         var manager = state.EntityManager;
         foreach (var (request, entity) in SystemAPI.Query<SpawnPrefabRequest>().WithEntityAccess())
         {
-            var ins = ecb.Instantiate(request.UnitPrefab);
+            var ins = ecb.Instantiate(request.Prefab);
 
             ecb.SetComponent(ins, new LocalTransform
             {

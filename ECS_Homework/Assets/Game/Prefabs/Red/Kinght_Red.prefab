@@ -520,10 +520,13 @@ GameObject:
   - component: {fileID: 589019017909702483}
   - component: {fileID: 2180445807749005750}
   - component: {fileID: 8298633788894902668}
-  - component: {fileID: 6521821489745549453}
-  - component: {fileID: 2110392822036436980}
   - component: {fileID: 6110902606865768825}
   - component: {fileID: 837228944334093691}
+  - component: {fileID: 2110392822036436980}
+  - component: {fileID: 6521821489745549453}
+  - component: {fileID: 2634226695976755565}
+  - component: {fileID: 3487593014486143294}
+  - component: {fileID: 2880584483501800905}
   m_Layer: 0
   m_Name: Kinght_Red
   m_TagString: Untagged
@@ -590,7 +593,7 @@ MonoBehaviour:
   boneEntityStrippingMode: 0
   rootMotionMode: 0
   boneStrippingMask: {fileID: 0}
-  hasAnimationEvents: 0
+  hasAnimationEvents: 1
   hasAnimatorControllerEvents: 0
   animationEngine: 1
 --- !u!114 &589019017909702483
@@ -606,7 +609,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: ProjectDawn.Navigation.Hybrid::ProjectDawn.Navigation.Hybrid.AgentAuthoring
   MotionType: 3
-  Speed: 2
+  Speed: 1.5
   Acceleration: 8
   AngularSpeed: 500
   StoppingDistance: 1
@@ -649,31 +652,6 @@ MonoBehaviour:
     x: 10
     y: 10
     z: 10
---- !u!114 &6521821489745549453
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4620109356902655728}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3ee49bfe6566471799ffd393beeee639, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Game.Scripts.Entities.Systems.TargetAuthoring
-  UpdateInterval: 0.2
---- !u!114 &2110392822036436980
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4620109356902655728}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 94dc70055dcb464e8881919b8d1483b0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Game.Scripts.Entities.Systems.EnemyTagAuthoring
 --- !u!136 &6110902606865768825
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -716,6 +694,70 @@ MonoBehaviour:
   BlockedStop: 0
   UseWalls: 0
   m_Layers: -1
+--- !u!114 &2110392822036436980
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4620109356902655728}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 94dc70055dcb464e8881919b8d1483b0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Scripts.Entities.Systems.EnemyTagAuthoring
+--- !u!114 &6521821489745549453
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4620109356902655728}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3ee49bfe6566471799ffd393beeee639, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Scripts.Entities.Systems.TargetAuthoring
+  UpdateInterval: 0.2
+--- !u!114 &2634226695976755565
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4620109356902655728}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0804e4e31dc2427bb5f9d7d839657a38, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Scripts.UI.Entities.Components.DamageAuthoring
+  DamageValue: 50
+--- !u!114 &3487593014486143294
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4620109356902655728}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 115fe328f27c423e95bd70844b7f620f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Scripts.UI.Entities.Components.Health.HealthAuthoring
+  Health: 100
+--- !u!114 &2880584483501800905
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4620109356902655728}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f1227d2733e4287ad606476b39cf369, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Scripts.UI.Entities.Components.Health.HitEffectAuthoring
+  Prefab: {fileID: 2736961300825504487, guid: fe306f873debaec4598f0ab92b1014c8, type: 3}
 --- !u!1 &4992053240300705693
 GameObject:
   m_ObjectHideFlags: 0

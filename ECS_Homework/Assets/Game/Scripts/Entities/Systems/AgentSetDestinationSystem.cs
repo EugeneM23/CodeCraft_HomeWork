@@ -4,6 +4,7 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
+using UnityEngine;
 
 partial struct AgentSetDestinationSystem : ISystem
 {
@@ -11,21 +12,31 @@ partial struct AgentSetDestinationSystem : ISystem
     {
         var ecb = new EntityCommandBuffer(Allocator.Temp);
 
-        foreach (var (target, body, entity) in SystemAPI
-                     .Query<RefRO<Target>, RefRW<AgentBody>>().WithEntityAccess())
+        foreach (var (target, body, entityTransform, entity) in SystemAPI
+                     .Query<RefRO<Target>, RefRW<AgentBody>, RefRO<LocalTransform>>()
+                     .WithEntityAccess())
         {
-            if (target.ValueRO.Value == Entity.Null) continue;
+            Entity targetEntity = target.ValueRO.Value;
 
+            // ОБЯЗАТЕЛЬНЫЕ ПРОВЕРКИ
+            if (targetEntity == Entity.Null ||
+                !SystemAPI.Exists(targetEntity) ||
+                !SystemAPI.HasComponent<LocalTransform>(targetEntity))
+                continue;
 
-            var targetTransform = state.EntityManager.GetComponentData<LocalTransform>(target.ValueRO.Value);
-            var entityTransform = state.EntityManager.GetComponentData<LocalTransform>(entity);
+            var targetTransform = SystemAPI.GetComponentRO<LocalTransform>(targetEntity);
 
-            var distance = math.distance(entityTransform.Position, targetTransform.Position);
+            float distance = math.distance(
+                entityTransform.ValueRO.Position,
+                targetTransform.ValueRO.Position
+            );
 
             if (distance < 1.1f)
-                ecb.AddComponent(entity, new AttackRequest());
+                ecb.AddComponent(entity, new AnimationRequest { AnimationName = "Attack" });
+            else
+                ecb.AddComponent(entity, new AnimationRequest { AnimationName = "Walk" });
 
-            body.ValueRW.SetDestination(targetTransform.Position);
+            body.ValueRW.SetDestination(targetTransform.ValueRO.Position);
         }
 
         ecb.Playback(state.EntityManager);

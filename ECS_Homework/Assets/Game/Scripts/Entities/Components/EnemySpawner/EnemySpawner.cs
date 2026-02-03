@@ -36,11 +36,13 @@ namespace Game.Scripts.Entities.Systems
             var manager = World.DefaultGameObjectInjectionWorld.EntityManager;
             var catalog = manager.CreateEntityQuery(typeof(UnitEntityCatalog)).GetSingleton<UnitEntityCatalog>();
             var entity = ecb.CreateEntity();
+            
             ecb.AddComponent(entity, new SpawnPrefabRequest
             {
                 Position = spawnPosition,
-                UnitPrefab = catalog.NecromancerRed
+                Prefab = catalog.NecromancerRed
             });
+            
             ecb.Playback(manager);
             ecb.Dispose();
         }
@@ -55,7 +57,7 @@ namespace Game.Scripts.Entities.Systems
             ecb.AddComponent(entity, new SpawnPrefabRequest
             {
                 Position = spawnPosition,
-                UnitPrefab = catalog.KnightRed
+                Prefab = catalog.KnightRed
             });
             ecb.Playback(manager);
             ecb.Dispose();

@@ -23,7 +23,7 @@ public class UnitSpawner : MonoBehaviour
         ecb.AddComponent(entity, new SpawnPrefabRequest
         {
             Position = spawnPosition,
-            UnitPrefab = catalog.KnightBlue
+            Prefab = catalog.KnightBlue
         });
 
         ecb.Playback(manager);
@@ -42,7 +42,7 @@ public class UnitSpawner : MonoBehaviour
         ecb.AddComponent(entity, new SpawnPrefabRequest
         {
             Position = spawnPosition,
-            UnitPrefab = catalog.NecromancerBlue
+            Prefab = catalog.NecromancerBlue
         });
 
         ecb.Playback(manager);
