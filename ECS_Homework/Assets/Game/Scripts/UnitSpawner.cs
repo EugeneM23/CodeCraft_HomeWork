@@ -1,6 +1,9 @@
+using ProjectDawn.Navigation;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Mathematics;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class UnitSpawner : MonoBehaviour
 {
@@ -15,11 +18,13 @@ public class UnitSpawner : MonoBehaviour
         var manager = World.DefaultGameObjectInjectionWorld.EntityManager;
         var catalog = manager.CreateEntityQuery(typeof(UnitEntityCatalog)).GetSingleton<UnitEntityCatalog>();
         var entity = ecb.CreateEntity();
+
         ecb.AddComponent(entity, new SpawnPrefabRequest
         {
             Position = spawnPosition,
             UnitPrefab = catalog.KnightBlue
         });
+        
         ecb.Playback(manager);
         ecb.Dispose();
     }

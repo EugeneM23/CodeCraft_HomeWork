@@ -1,8 +1,10 @@
+using ProjectDawn.Navigation;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
+using UnityEngine;
 
 public partial struct SpawnPrefabSystem : ISystem
 {
@@ -11,6 +13,7 @@ public partial struct SpawnPrefabSystem : ISystem
     {
         var ecb = new EntityCommandBuffer(Allocator.Temp);
 
+        var manager = state.EntityManager;
         foreach (var (request, entity) in SystemAPI.Query<SpawnPrefabRequest>().WithEntityAccess())
         {
             var ins = ecb.Instantiate(request.UnitPrefab);
@@ -22,10 +25,12 @@ public partial struct SpawnPrefabSystem : ISystem
                 Scale = 1f
             });
 
+            ecb.AddComponent(ins, new NewUnitTag());
+
             ecb.DestroyEntity(entity);
         }
 
-        ecb.Playback(state.EntityManager);
+        ecb.Playback(manager);
         ecb.Dispose();
     }
 }

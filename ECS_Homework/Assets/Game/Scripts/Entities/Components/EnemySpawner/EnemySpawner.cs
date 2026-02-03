@@ -8,7 +8,7 @@ namespace Game.Scripts.Entities.Systems
 {
     public class EnemySpawner : MonoBehaviour
     {
-        [SerializeField] private float _spawnDelay = 1f;
+        [SerializeField] private float _spawnDelay = 0.1f;
         [SerializeField] private Transform[] _spawnPoints;
         private float _timer;
 
@@ -23,6 +23,8 @@ namespace Game.Scripts.Entities.Systems
                     SpawnKnight();
                 else
                     SpawnArcher();
+
+                gameObject.GetInstanceID();
             }
         }
 

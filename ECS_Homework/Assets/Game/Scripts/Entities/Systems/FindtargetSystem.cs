@@ -3,17 +3,14 @@ using Unity.Entities;
 
 namespace Game.Scripts.Entities.Systems
 {
-    [BurstCompile]
     public partial struct FindTargetSystem : ISystem
     {
-        [BurstCompile]
         public void OnCreate(ref SystemState state)
         {
             state.RequireForUpdate<EnemyCastelTag>();
             state.RequireForUpdate<PlayerCastleTag>();
         }
 
-        [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
             var enemyCastel = state.EntityManager.CreateEntityQuery(typeof(EnemyCastelTag))
