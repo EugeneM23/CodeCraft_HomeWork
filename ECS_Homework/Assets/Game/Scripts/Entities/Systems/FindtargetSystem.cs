@@ -1,8 +1,13 @@
 using Unity.Burst;
 using Unity.Entities;
+using Unity.Physics;
+using Unity.Physics.Systems;
+using Unity.Transforms;
 
 namespace Game.Scripts.Entities.Systems
 {
+    [UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
+    [UpdateAfter(typeof(PhysicsSystemGroup))]
     public partial struct FindTargetSystem : ISystem
     {
         public void OnCreate(ref SystemState state)
@@ -19,16 +24,61 @@ namespace Game.Scripts.Entities.Systems
             var playerCastel = state.EntityManager.CreateEntityQuery(typeof(PlayerCastleTag))
                 .GetSingletonEntity();
 
-            foreach (var target in SystemAPI.Query<RefRW<Target>>().WithAny<PlayerTag>())
+            var collisionWorld = SystemAPI.GetSingleton<PhysicsWorldSingleton>().CollisionWorld;
+            var enemyTagLookup = SystemAPI.GetComponentLookup<EnemyTag>(true);
+            var playerTagLookup = SystemAPI.GetComponentLookup<PlayerTag>(true);
+            var deltaTime = SystemAPI.Time.DeltaTime;
+
+            // Для игроков ищем ближайшего врага
+            foreach (var (target, transform) in SystemAPI.Query<RefRW<Target>, RefRO<LocalTransform>>().WithAll<PlayerTag>())
             {
-                if (target.ValueRO.Value == Entity.Null)
-                    target.ValueRW.Value = enemyCastel;
+                // Обновляем таймер
+                target.ValueRW.UpdateTimer -= deltaTime;
+
+                // Проверяем, нужно ли обновлять цель
+                if (target.ValueRO.UpdateTimer <= 0f)
+                {
+                    // Сбрасываем таймер
+                    target.ValueRW.UpdateTimer = target.ValueRO.UpdateInterval;
+
+                    // Попытка найти ближайшего врага в радиусе
+                    float searchRange = 3f; // Задайте нужный радиус поиска
+                    Entity closestEnemy = TargetRaycastUseCase.FindClosestByTag(
+                        collisionWorld,
+                        enemyTagLookup,
+                        transform.ValueRO.Position,
+                        searchRange
+                    );
+
+                    // Если нашли врага - используем его, иначе - замок врага
+                    target.ValueRW.Value = closestEnemy != Entity.Null ? closestEnemy : enemyCastel;
+                }
             }
 
-            foreach (var target in SystemAPI.Query<RefRW<Target>>().WithAny<EnemyTag>())
+            // Для врагов ищем ближайшего игрока
+            foreach (var (target, transform) in SystemAPI.Query<RefRW<Target>, RefRO<LocalTransform>>().WithAll<EnemyTag>())
             {
-                if (target.ValueRO.Value == Entity.Null)
-                    target.ValueRW.Value = playerCastel;
+                // Обновляем таймер
+                target.ValueRW.UpdateTimer -= deltaTime;
+
+                // Проверяем, нужно ли обновлять цель
+                if (target.ValueRO.UpdateTimer <= 0f)
+                {
+                    // Сбрасываем таймер
+                    target.ValueRW.UpdateTimer = target.ValueRO.UpdateInterval;
+
+                    // Попытка найти ближайшего игрока в радиусе
+                    float searchRange = 3f; // Задайте нужный радиус поиска
+                    Entity closestPlayer = TargetRaycastUseCase.FindClosestByTag(
+                        collisionWorld,
+                        playerTagLookup,
+                        transform.ValueRO.Position,
+                        searchRange
+                    );
+
+                    // Если нашли игрока - используем его, иначе - замок игрока
+                    target.ValueRW.Value = closestPlayer != Entity.Null ? closestPlayer : playerCastel;
+                }
             }
         }
     }

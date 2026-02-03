@@ -19,12 +19,13 @@ namespace Game.Scripts.Entities.Systems
             {
                 _timer = _spawnDelay;
 
-                if (Random.Range(0, 2) > 0)
-                    SpawnKnight();
-                else
-                    SpawnArcher();
+                SpawnKnight();
 
-                gameObject.GetInstanceID();
+                // if (Random.Range(0, 2) > 0)
+                //     SpawnKnight();
+                // else
+                //     SpawnArcher();
+
             }
         }
 

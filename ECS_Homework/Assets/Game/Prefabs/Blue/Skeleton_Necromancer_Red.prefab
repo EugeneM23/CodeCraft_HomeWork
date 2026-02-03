@@ -2043,7 +2043,6 @@ GameObject:
   - component: {fileID: 8650605879124033298}
   - component: {fileID: 8897318013728030475}
   - component: {fileID: 4481563839515227084}
-  - component: {fileID: -4476225111447478412}
   - component: {fileID: -1262736772939623044}
   m_Layer: 3
   m_Name: Skeleton_Necromancer_Red
@@ -2182,25 +2181,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ee49bfe6566471799ffd393beeee639, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Game.Scripts.Entities.Systems.TargetAuthoring
---- !u!114 &-4476225111447478412
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5845351707157135717}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0344116cd75eaaf488b894904a1649d9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ProjectDawn.Navigation.Hybrid::ProjectDawn.Navigation.Hybrid.AgentAvoidAuthoring
-  Radius: 5
-  Angle: 230
-  MaxAngle: 300
-  Mode: 3
-  BlockedStop: 1
-  UseWalls: 0
-  m_Layers: -1
 --- !u!114 &-1262736772939623044
 MonoBehaviour:
   m_ObjectHideFlags: 0

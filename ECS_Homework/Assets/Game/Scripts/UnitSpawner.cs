@@ -16,6 +16,7 @@ public class UnitSpawner : MonoBehaviour
         var spawnPosition = _spawnPoints[Random.Range(0, _spawnPoints.Length)].position;
         var ecb = new EntityCommandBuffer(Allocator.Temp);
         var manager = World.DefaultGameObjectInjectionWorld.EntityManager;
+
         var catalog = manager.CreateEntityQuery(typeof(UnitEntityCatalog)).GetSingleton<UnitEntityCatalog>();
         var entity = ecb.CreateEntity();
 
@@ -24,7 +25,7 @@ public class UnitSpawner : MonoBehaviour
             Position = spawnPosition,
             UnitPrefab = catalog.KnightBlue
         });
-        
+
         ecb.Playback(manager);
         ecb.Dispose();
     }
