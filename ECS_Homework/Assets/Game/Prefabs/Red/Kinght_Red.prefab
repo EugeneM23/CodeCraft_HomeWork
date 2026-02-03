@@ -523,7 +523,7 @@ GameObject:
   - component: {fileID: 6521821489745549453}
   - component: {fileID: 2110392822036436980}
   - component: {fileID: 6110902606865768825}
-  - component: {fileID: 3561395431682847796}
+  - component: {fileID: 837228944334093691}
   m_Layer: 0
   m_Name: Kinght_Red
   m_TagString: Untagged
@@ -697,7 +697,7 @@ CapsuleCollider:
   m_Height: 1.5
   m_Direction: 1
   m_Center: {x: 0, y: 0.8, z: 0}
---- !u!114 &3561395431682847796
+--- !u!114 &837228944334093691
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -709,7 +709,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0344116cd75eaaf488b894904a1649d9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectDawn.Navigation.Hybrid::ProjectDawn.Navigation.Hybrid.AgentAvoidAuthoring
-  Radius: 2
+  Radius: 1
   Angle: 230
   MaxAngle: 300
   Mode: 3

@@ -522,8 +522,8 @@ GameObject:
   - component: {fileID: 8298633788894902668}
   - component: {fileID: 6521821489745549453}
   - component: {fileID: 2053445889337378989}
-  - component: {fileID: 5039111636824848730}
   - component: {fileID: 7046005127540622782}
+  - component: {fileID: 1998931559766666183}
   m_Layer: 0
   m_Name: Kinght_Blue
   m_TagString: Untagged
@@ -661,6 +661,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ee49bfe6566471799ffd393beeee639, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Game.Scripts.Entities.Systems.TargetAuthoring
+  UpdateInterval: 0.2
 --- !u!114 &2053445889337378989
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -673,26 +674,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cf25fa8d4024d8c86c33f0718f66f85, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Game.Scripts.Entities.Systems.PlayerTagAuthoring
---- !u!114 &5039111636824848730
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4620109356902655728}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 42a4cd4cbf6cf044887ce5ff1955fa9e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ProjectDawn.Navigation.Hybrid::ProjectDawn.Navigation.Hybrid.AgentSmartStopAuthoring
-  m_HiveMindStop:
-    Enabled: 1
-    Radius: 1
-    MinDistance: 3.4028235e+38
-  m_GiveUpStop:
-    Enabled: 0
-    FatigueSpeed: 0.5
-    RecoverySpeed: 0.4
 --- !u!136 &7046005127540622782
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -716,6 +697,25 @@ CapsuleCollider:
   m_Height: 1.5
   m_Direction: 1
   m_Center: {x: 0, y: 0.8, z: 0}
+--- !u!114 &1998931559766666183
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4620109356902655728}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0344116cd75eaaf488b894904a1649d9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectDawn.Navigation.Hybrid::ProjectDawn.Navigation.Hybrid.AgentAvoidAuthoring
+  Radius: 1
+  Angle: 230
+  MaxAngle: 300
+  Mode: 3
+  BlockedStop: 0
+  UseWalls: 0
+  m_Layers: -1
 --- !u!1 &4992053240300705693
 GameObject:
   m_ObjectHideFlags: 0
