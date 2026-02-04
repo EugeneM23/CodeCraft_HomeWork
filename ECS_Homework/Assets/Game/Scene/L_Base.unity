@@ -1621,63 +1621,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &1307878796
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 4620109356902655728, guid: 32699622c0f1e49e98471197e262d6b2, type: 3}
-      propertyPath: m_Name
-      value: Kinght_Blue
-      objectReference: {fileID: 0}
-    - target: {fileID: 8296352453908473703, guid: 32699622c0f1e49e98471197e262d6b2, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -4.8682737
-      objectReference: {fileID: 0}
-    - target: {fileID: 8296352453908473703, guid: 32699622c0f1e49e98471197e262d6b2, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -0.00000047683716
-      objectReference: {fileID: 0}
-    - target: {fileID: 8296352453908473703, guid: 32699622c0f1e49e98471197e262d6b2, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -1.2668557
-      objectReference: {fileID: 0}
-    - target: {fileID: 8296352453908473703, guid: 32699622c0f1e49e98471197e262d6b2, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: -0.6636519
-      objectReference: {fileID: 0}
-    - target: {fileID: 8296352453908473703, guid: 32699622c0f1e49e98471197e262d6b2, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8296352453908473703, guid: 32699622c0f1e49e98471197e262d6b2, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0.7480416
-      objectReference: {fileID: 0}
-    - target: {fileID: 8296352453908473703, guid: 32699622c0f1e49e98471197e262d6b2, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8296352453908473703, guid: 32699622c0f1e49e98471197e262d6b2, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8296352453908473703, guid: 32699622c0f1e49e98471197e262d6b2, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: -263.158
-      objectReference: {fileID: 0}
-    - target: {fileID: 8296352453908473703, guid: 32699622c0f1e49e98471197e262d6b2, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 32699622c0f1e49e98471197e262d6b2, type: 3}
 --- !u!1 &1340412550
 GameObject:
   m_ObjectHideFlags: 0
@@ -2879,10 +2822,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28f1f9f8a49e434294bd05ef697afc53, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Game.Scripts.UI.CardFanLayout
-  maxFanAngle: 32.5
-  cardSpacing: 111.7
-  parabolaHeight: 32.7
-  verticalOffset: -123.4
+  maxFanAngle: 21.7
+  cardSpacing: 144.2
+  parabolaHeight: 23.7
+  verticalOffset: -142.9
   cardTilt: 0
   animationSpeed: 10
   useAnimation: 1
@@ -3225,4 +3168,3 @@ SceneRoots:
   - {fileID: 1289758604}
   - {fileID: 122840808}
   - {fileID: 2014652500}
-  - {fileID: 1307878796}
