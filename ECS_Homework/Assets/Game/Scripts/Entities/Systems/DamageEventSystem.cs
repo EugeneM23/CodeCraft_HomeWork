@@ -33,7 +33,6 @@ namespace Game.Scripts.UI.Entities.Components.Health
                     {
                         Target target = manager.GetComponentData<Target>(entity);
 
-                        // Проверки target
                         if (target.Value == Entity.Null ||
                             !manager.Exists(target.Value) ||
                             !manager.HasComponent<Health>(target.Value))
@@ -47,12 +46,31 @@ namespace Game.Scripts.UI.Entities.Components.Health
                         if (targetHealth.ValueRO.Value <= 0)
                         {
                             Entity deadEntity = target.Value;
+
+                            if (manager.HasComponent<PlayerTag>(deadEntity))
+                                ecb.RemoveComponent<PlayerTag>(deadEntity);
+
+                            if (manager.HasComponent<EnemyTag>(deadEntity))
+                                ecb.RemoveComponent<EnemyTag>(deadEntity);
+
+                            ecb.RemoveComponent<Target>(deadEntity);
                             ecb.SetComponent(entity, new Target { Value = Entity.Null });
-                            ecb.DestroyEntity(deadEntity);
+                            ecb.AddComponent(deadEntity, new AnimationRequest { AnimationName = "Death" });
                         }
 
+                        //Effect
                         Entity hitEffectRequset = manager.CreateEntity();
-                        ecb.AddComponent(hitEffectRequset, new SpawnPrefabRequest()
+
+                        ecb.AddComponent(hitEffectRequset, new SpawnPrefabRequest
+                        {
+                            Position = manager.GetComponentData<LocalTransform>(target.Value).Position,
+                            Prefab = manager.GetComponentData<HitEffect>(target.Value).Prefab
+                        });
+
+                        //Sound
+                        Entity hitSoundRequset = manager.CreateEntity();
+
+                        ecb.AddComponent(hitSoundRequset, new SpawnPrefabRequest
                         {
                             Position = manager.GetComponentData<LocalTransform>(target.Value).Position,
                             Prefab = manager.GetComponentData<HitEffect>(target.Value).Prefab

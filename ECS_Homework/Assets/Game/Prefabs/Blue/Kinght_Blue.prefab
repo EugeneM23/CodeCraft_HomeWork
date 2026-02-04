@@ -757,7 +757,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f1227d2733e4287ad606476b39cf369, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Game.Scripts.UI.Entities.Components.Health.HitEffectAuthoring
-  Prefab: {fileID: 2736961300825504487, guid: fe306f873debaec4598f0ab92b1014c8, type: 3}
+  Prefab: {fileID: 1855497614338780, guid: 6cda542e0b2aa94448ad4c7d51a57445, type: 3}
 --- !u!1 &4992053240300705693
 GameObject:
   m_ObjectHideFlags: 0
