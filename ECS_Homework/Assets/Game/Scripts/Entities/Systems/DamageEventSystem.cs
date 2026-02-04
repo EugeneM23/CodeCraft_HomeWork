@@ -1,12 +1,10 @@
 using System;
 using AudioEngine;
-using Game.Animation;
 using Game.Scripts.Entities.Systems;
 using Rukhanka;
 using Rukhanka.Toolbox;
 using Unity.Collections;
 using Unity.Entities;
-using Unity.Mathematics;
 using Unity.Transforms;
 
 namespace Game.Scripts.UI.Entities.Components.Health
@@ -88,41 +86,5 @@ namespace Game.Scripts.UI.Entities.Components.Health
             ecb.Playback(manager);
             ecb.Dispose();
         }
-    }
-}
-
-[UpdateAfter(typeof(RukhankaAnimationSystemGroup))]
-public partial struct DamageEventSystem : ISystem
-{
-    public void OnUpdate(ref SystemState state)
-    {
-        var ecb = new EntityCommandBuffer(Allocator.Temp);
-        var manager = state.EntityManager;
-
-        foreach (var (animEvents, entity) in SystemAPI.Query<DynamicBuffer<AnimationEventComponent>>()
-                     .WithEntityAccess())
-        {
-            foreach (var evt in animEvents)
-            {
-                if (evt.nameHash == AnimationEventType.SpawnProjectile.ToEventName().CalculateHash32())
-                {
-                    var prefab = state.EntityManager.GetComponentData<ProjectilePrefab>(entity);
-                    Entity projectile = state.EntityManager.Instantiate(prefab.Value);
-
-                    var entityTarget = state.EntityManager.GetComponentData<Target>(entity);
-                    state.EntityManager.SetComponentData(projectile, new Target { Value = entityTarget.Value });
-
-                    var transform = state.EntityManager.GetComponentData<LocalTransform>(entity);
-                    state.EntityManager.SetComponentData(projectile, new LocalTransform
-                    {
-                        Position = transform.Position + new float3(0, 1f, 0),
-                        Scale = 1f,
-                    });
-                }
-            }
-        }
-
-        ecb.Playback(manager);
-        ecb.Dispose();
     }
 }
