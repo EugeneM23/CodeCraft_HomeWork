@@ -30,19 +30,19 @@ namespace Game.Scripts.Entities.Systems
             var deltaTime = SystemAPI.Time.DeltaTime;
 
             // Для игроков ищем ближайшего врага
-            foreach (var (target, transform) in SystemAPI.Query<RefRW<Target>, RefRO<LocalTransform>>().WithAll<PlayerTag>())
+            foreach (var (target,cooldown, transform) in SystemAPI.Query<RefRW<Target>,RefRW<UpdateTargetCooldown>, RefRO<LocalTransform>>().WithAll<PlayerTag>())
             {
                 // Обновляем таймер
-                target.ValueRW.UpdateTimer -= deltaTime;
+                cooldown.ValueRW.UpdateTimer -= deltaTime;
 
                 // Проверяем, нужно ли обновлять цель
-                if (target.ValueRO.UpdateTimer <= 0f)
+                if (cooldown.ValueRO.UpdateTimer <= 0f)
                 {
                     // Сбрасываем таймер
-                    target.ValueRW.UpdateTimer = target.ValueRO.UpdateInterval;
+                    cooldown.ValueRW.UpdateTimer = cooldown.ValueRO.UpdateInterval;
 
                     // Попытка найти ближайшего врага в радиусе
-                    float searchRange = 3f; // Задайте нужный радиус поиска
+                    float searchRange = cooldown.ValueRO.Range; // Задайте нужный радиус поиска
                     Entity closestEnemy = TargetRaycastUseCase.FindClosestByTag(
                         collisionWorld,
                         enemyTagLookup,
@@ -56,19 +56,19 @@ namespace Game.Scripts.Entities.Systems
             }
 
             // Для врагов ищем ближайшего игрока
-            foreach (var (target, transform) in SystemAPI.Query<RefRW<Target>, RefRO<LocalTransform>>().WithAll<EnemyTag>())
+            foreach (var (target, cooldown, transform) in SystemAPI.Query<RefRW<Target>, RefRW<UpdateTargetCooldown>, RefRO<LocalTransform>>().WithAll<EnemyTag>())
             {
                 // Обновляем таймер
-                target.ValueRW.UpdateTimer -= deltaTime;
+                cooldown.ValueRW.UpdateTimer -= deltaTime;
 
                 // Проверяем, нужно ли обновлять цель
-                if (target.ValueRO.UpdateTimer <= 0f)
+                if (cooldown.ValueRO.UpdateTimer <= 0f)
                 {
                     // Сбрасываем таймер
-                    target.ValueRW.UpdateTimer = target.ValueRO.UpdateInterval;
+                    cooldown.ValueRW.UpdateTimer = cooldown.ValueRO.UpdateInterval;
 
                     // Попытка найти ближайшего игрока в радиусе
-                    float searchRange = 3f; // Задайте нужный радиус поиска
+                    float searchRange = cooldown.ValueRO.Range; // Задайте нужный радиус поиска
                     Entity closestPlayer = TargetRaycastUseCase.FindClosestByTag(
                         collisionWorld,
                         playerTagLookup,

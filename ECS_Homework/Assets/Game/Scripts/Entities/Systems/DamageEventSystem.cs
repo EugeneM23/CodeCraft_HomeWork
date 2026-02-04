@@ -32,11 +32,19 @@ namespace Game.Scripts.UI.Entities.Components.Health
                 {
                     if (evt.nameHash == _damageHash)
                     {
+                        // ДОБАВЬТЕ ЭТУ ПРОВЕРКУ
+                        if (!manager.HasComponent<Target>(entity))
+                            continue;
+
                         Target target = manager.GetComponentData<Target>(entity);
 
                         if (target.Value == Entity.Null ||
                             !manager.Exists(target.Value) ||
                             !manager.HasComponent<Health>(target.Value))
+                            continue;
+
+                        // ТАКЖЕ ПРОВЕРЬТЕ НАЛИЧИЕ КОМПОНЕНТА Damage
+                        if (!manager.HasComponent<Damage>(entity))
                             continue;
 
                         Damage damage = manager.GetComponentData<Damage>(entity);
@@ -57,7 +65,7 @@ namespace Game.Scripts.UI.Entities.Components.Health
 
                             ecb.RemoveComponent<Target>(deadEntity);
                             ecb.SetComponent(entity, new Target { Value = Entity.Null });
-                            ecb.AddComponent(deadEntity, new AnimationRequest { AnimationName = "Death" });
+                            ecb.AddComponent(deadEntity, new AnimationEventRequest { Parameter = "Death" });
 
                             AudioSystem.Instance.PlayEvent(MasterBankAPI.DeathEvent, transform.Position);
                         }

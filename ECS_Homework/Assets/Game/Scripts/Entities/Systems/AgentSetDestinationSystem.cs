@@ -1,4 +1,5 @@
 using Game.Scripts.Entities.Systems;
+using Game.Scripts.UI.Entities.Components.AttackDistance;
 using ProjectDawn.Navigation;
 using Unity.Collections;
 using Unity.Entities;
@@ -12,8 +13,8 @@ partial struct AgentSetDestinationSystem : ISystem
     {
         var ecb = new EntityCommandBuffer(Allocator.Temp);
 
-        foreach (var (target, body, entityTransform, entity) in SystemAPI
-                     .Query<RefRO<Target>, RefRW<AgentBody>, RefRO<LocalTransform>>()
+        foreach (var (target, attackDistance, body, entityTransform, entity) in SystemAPI
+                     .Query<RefRO<Target>,RefRO<AttackDistance>, RefRW<AgentBody>, RefRO<LocalTransform>>()
                      .WithEntityAccess())
         {
             Entity targetEntity = target.ValueRO.Value;
@@ -31,10 +32,10 @@ partial struct AgentSetDestinationSystem : ISystem
                 targetTransform.ValueRO.Position
             );
 
-            if (distance < 1.1f)
-                ecb.AddComponent(entity, new AnimationRequest { AnimationName = "Attack" });
+            if (distance < attackDistance.ValueRO.Value)
+                ecb.AddComponent(entity, new AnimationEventRequest { Parameter = "Attack" });
             else
-                ecb.AddComponent(entity, new AnimationRequest { AnimationName = "Walk" });
+                ecb.AddComponent(entity, new AnimationEventRequest { Parameter = "Walk" });
 
             body.ValueRW.SetDestination(targetTransform.ValueRO.Position);
         }

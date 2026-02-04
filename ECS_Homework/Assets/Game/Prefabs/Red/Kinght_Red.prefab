@@ -523,10 +523,12 @@ GameObject:
   - component: {fileID: 6110902606865768825}
   - component: {fileID: 837228944334093691}
   - component: {fileID: 2110392822036436980}
-  - component: {fileID: 6521821489745549453}
   - component: {fileID: 2634226695976755565}
   - component: {fileID: 3487593014486143294}
   - component: {fileID: 2880584483501800905}
+  - component: {fileID: 8216164105559208005}
+  - component: {fileID: 6521821489745549453}
+  - component: {fileID: 5124357479795210839}
   m_Layer: 0
   m_Name: Kinght_Red
   m_TagString: Untagged
@@ -706,19 +708,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94dc70055dcb464e8881919b8d1483b0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Game.Scripts.Entities.Systems.EnemyTagAuthoring
---- !u!114 &6521821489745549453
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4620109356902655728}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3ee49bfe6566471799ffd393beeee639, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Game.Scripts.Entities.Systems.TargetAuthoring
-  UpdateInterval: 0.2
 --- !u!114 &2634226695976755565
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -758,6 +747,45 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Game.Scripts.UI.Entities.Components.Health.HitEffectAuthoring
   Prefab: {fileID: 1855497614338780, guid: 6cda542e0b2aa94448ad4c7d51a57445, type: 3}
+--- !u!114 &8216164105559208005
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4620109356902655728}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 581a16699f5d4fda856a05825528aded, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Scripts.Entities.Systems.UpdateTargetCooldownAuthoring
+  UpdateInterval: 1
+  Range: 3
+--- !u!114 &6521821489745549453
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4620109356902655728}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3ee49bfe6566471799ffd393beeee639, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Scripts.Entities.Systems.TargetAuthoring
+--- !u!114 &5124357479795210839
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4620109356902655728}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f685304add84f45b004d5eea4de15ab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Scripts.UI.Entities.Components.AttackDistance.AttackDistanceAuthoring
+  Value: 1.1
 --- !u!1 &4992053240300705693
 GameObject:
   m_ObjectHideFlags: 0

@@ -2038,13 +2038,19 @@ GameObject:
   m_Component:
   - component: {fileID: 1680789209046315069}
   - component: {fileID: 4925141087561311358}
+  - component: {fileID: 3167539192194602759}
   - component: {fileID: 8854336398426994498}
   - component: {fileID: 129843005400026158}
   - component: {fileID: 8650605879124033298}
   - component: {fileID: 8897318013728030475}
-  - component: {fileID: 4481563839515227084}
   - component: {fileID: -4476225111447478412}
   - component: {fileID: 6727435731423170795}
+  - component: {fileID: 4481563839515227084}
+  - component: {fileID: 7738410968665203441}
+  - component: {fileID: 5499531401677617283}
+  - component: {fileID: 4455311633940777957}
+  - component: {fileID: 3568529092261926559}
+  - component: {fileID: -4635668205075746210}
   m_Layer: 3
   m_Name: Skeleton_Necromancer_Blue
   m_TagString: Untagged
@@ -2079,7 +2085,7 @@ Animator:
   m_GameObject: {fileID: 5845351707157135717}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: cb33a48699d642c99396b004ffbfbd1c, type: 3}
-  m_Controller: {fileID: 9100000, guid: 3bbe3062b5f2d4ddaa5b2bb11b0115cd, type: 2}
+  m_Controller: {fileID: 22100000, guid: 0196f742554714295b0988a997746414, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
   m_ApplyRootMotion: 1
@@ -2091,6 +2097,29 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!136 &3167539192194602759
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5845351707157135717}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.3
+  m_Height: 1.5
+  m_Direction: 1
+  m_Center: {x: 0, y: 0.8, z: 0}
 --- !u!114 &8854336398426994498
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2107,7 +2136,7 @@ MonoBehaviour:
   Speed: 1
   Acceleration: 8
   AngularSpeed: 500
-  StoppingDistance: 1.5
+  StoppingDistance: 10
   AutoBreaking: 1
   m_Layers: 1
 --- !u!114 &129843005400026158
@@ -2167,21 +2196,9 @@ MonoBehaviour:
   boneEntityStrippingMode: 0
   rootMotionMode: 0
   boneStrippingMask: {fileID: 0}
-  hasAnimationEvents: 0
+  hasAnimationEvents: 1
   hasAnimatorControllerEvents: 0
   animationEngine: 1
---- !u!114 &4481563839515227084
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5845351707157135717}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3ee49bfe6566471799ffd393beeee639, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Game.Scripts.Entities.Systems.TargetAuthoring
 --- !u!114 &-4476225111447478412
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2213,6 +2230,84 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cf25fa8d4024d8c86c33f0718f66f85, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Game.Scripts.Entities.Systems.PlayerTagAuthoring
+--- !u!114 &4481563839515227084
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5845351707157135717}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3ee49bfe6566471799ffd393beeee639, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Scripts.Entities.Systems.TargetAuthoring
+--- !u!114 &7738410968665203441
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5845351707157135717}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 581a16699f5d4fda856a05825528aded, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Scripts.Entities.Systems.UpdateTargetCooldownAuthoring
+  UpdateInterval: 1
+  Range: 5
+--- !u!114 &5499531401677617283
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5845351707157135717}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 115fe328f27c423e95bd70844b7f620f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Scripts.UI.Entities.Components.Health.HealthAuthoring
+  Health: 100
+--- !u!114 &4455311633940777957
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5845351707157135717}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f1227d2733e4287ad606476b39cf369, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Scripts.UI.Entities.Components.Health.HitEffectAuthoring
+  Prefab: {fileID: 1855497614338780, guid: 6cda542e0b2aa94448ad4c7d51a57445, type: 3}
+--- !u!114 &3568529092261926559
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5845351707157135717}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f685304add84f45b004d5eea4de15ab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Scripts.UI.Entities.Components.AttackDistance.AttackDistanceAuthoring
+  Value: 10
+--- !u!114 &-4635668205075746210
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5845351707157135717}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0804e4e31dc2427bb5f9d7d839657a38, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Scripts.UI.Entities.Components.DamageAuthoring
+  DamageValue: 30
 --- !u!1 &5989569129047307830
 GameObject:
   m_ObjectHideFlags: 0
