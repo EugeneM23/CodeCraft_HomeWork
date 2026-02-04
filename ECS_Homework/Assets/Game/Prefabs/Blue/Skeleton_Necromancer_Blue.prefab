@@ -2051,6 +2051,7 @@ GameObject:
   - component: {fileID: 4455311633940777957}
   - component: {fileID: 3568529092261926559}
   - component: {fileID: -4635668205075746210}
+  - component: {fileID: 8933590116360179128}
   m_Layer: 3
   m_Name: Skeleton_Necromancer_Blue
   m_TagString: Untagged
@@ -2133,10 +2134,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: ProjectDawn.Navigation.Hybrid::ProjectDawn.Navigation.Hybrid.AgentAuthoring
   MotionType: 3
-  Speed: 1
+  Speed: 3
   Acceleration: 8
   AngularSpeed: 500
-  StoppingDistance: 10
+  StoppingDistance: 14
   AutoBreaking: 1
   m_Layers: 1
 --- !u!114 &129843005400026158
@@ -2294,7 +2295,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f685304add84f45b004d5eea4de15ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Game.Scripts.UI.Entities.Components.AttackDistance.AttackDistanceAuthoring
-  Value: 10
+  Value: 15
 --- !u!114 &-4635668205075746210
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2308,6 +2309,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Game.Scripts.UI.Entities.Components.DamageAuthoring
   DamageValue: 30
+--- !u!114 &8933590116360179128
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5845351707157135717}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe40c6902e73459bad4d0664bcd442ed, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ProjectilePrefabAuthoring
+  Prefab: {fileID: 9147861169831921053, guid: c20f6869da70540d7984f6a4db31e484, type: 3}
 --- !u!1 &5989569129047307830
 GameObject:
   m_ObjectHideFlags: 0
