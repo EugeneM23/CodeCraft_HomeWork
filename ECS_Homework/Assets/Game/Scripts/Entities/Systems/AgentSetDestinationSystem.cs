@@ -15,11 +15,11 @@ partial struct AgentSetDestinationSystem : ISystem
 
         foreach (var (target, attackDistance, body, entityTransform, entity) in SystemAPI
                      .Query<RefRO<Target>,RefRO<AttackDistance>, RefRW<AgentBody>, RefRO<LocalTransform>>()
+                     .WithAny<PlayerTag, EnemyTag>()
                      .WithEntityAccess())
         {
             Entity targetEntity = target.ValueRO.Value;
 
-            // ОБЯЗАТЕЛЬНЫЕ ПРОВЕРКИ
             if (targetEntity == Entity.Null ||
                 !SystemAPI.Exists(targetEntity) ||
                 !SystemAPI.HasComponent<LocalTransform>(targetEntity))

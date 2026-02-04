@@ -1,0 +1,82 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 966df4d6c0dc4ec0b855f32895a79c89, type: 3}
+  m_Name: ElectrickHit
+  m_EditorClassIdentifier: AudioEngine::AudioEngine.AudioSourceEvent
+  _poolable: 1
+  duration: 2
+  loop: 0
+  spartialBlend: 1
+  output: {fileID: 0}
+  clip:
+    rid: 1136115578937278472
+  pitch:
+    rid: 1136115578937278473
+  volume:
+    rid: 1136115578937278466
+  reverbZoneMix:
+    rid: 1136115578937278467
+  rolloffMode: 0
+  rolloffCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  minDistance:
+    rid: 1136115578937278468
+  maxDistance:
+    rid: 1136115578937278469
+  dopplerLevel:
+    rid: 1136115578937278470
+  spread:
+    rid: 1136115578937278471
+  behaviours: []
+  actions: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 1136115578937278466
+      type: {class: FloatConst, ns: AudioEngine, asm: AudioEngine}
+      data:
+        value: 1
+    - rid: 1136115578937278467
+      type: {class: FloatConst, ns: AudioEngine, asm: AudioEngine}
+      data:
+        value: 1
+    - rid: 1136115578937278468
+      type: {class: FloatConst, ns: AudioEngine, asm: AudioEngine}
+      data:
+        value: 1
+    - rid: 1136115578937278469
+      type: {class: FloatConst, ns: AudioEngine, asm: AudioEngine}
+      data:
+        value: 500
+    - rid: 1136115578937278470
+      type: {class: FloatConst, ns: AudioEngine, asm: AudioEngine}
+      data:
+        value: 0.8
+    - rid: 1136115578937278471
+      type: {class: FloatConst, ns: AudioEngine, asm: AudioEngine}
+      data:
+        value: 0
+    - rid: 1136115578937278472
+      type: {class: ClipRandom, ns: AudioEngine, asm: AudioEngine}
+      data:
+        clips:
+        - {fileID: 8300000, guid: 5632eb347b9c546c6b39813bb3e19166, type: 3}
+        - {fileID: 8300000, guid: ebcfa4c0ff2f74e68b9a13c9026534f2, type: 3}
+    - rid: 1136115578937278473
+      type: {class: FloatRandom, ns: AudioEngine, asm: AudioEngine}
+      data:
+        minValue: 0.6
+        maxValue: 1

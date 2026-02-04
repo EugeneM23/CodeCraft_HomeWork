@@ -611,7 +611,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: ProjectDawn.Navigation.Hybrid::ProjectDawn.Navigation.Hybrid.AgentAuthoring
   MotionType: 3
-  Speed: 1.5
+  Speed: 2
   Acceleration: 8
   AngularSpeed: 500
   StoppingDistance: 1

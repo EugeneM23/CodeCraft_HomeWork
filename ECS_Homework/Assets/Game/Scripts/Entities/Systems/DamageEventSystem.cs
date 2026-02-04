@@ -1,6 +1,7 @@
 using System;
 using AudioEngine;
 using Game.Scripts.Entities.Systems;
+using ProjectDawn.Navigation;
 using Rukhanka;
 using Rukhanka.Toolbox;
 using Unity.Collections;
@@ -31,7 +32,6 @@ namespace Game.Scripts.UI.Entities.Components.Health
                 {
                     if (evt.nameHash == _damageHash)
                     {
-                        // ДОБАВЬТЕ ЭТУ ПРОВЕРКУ
                         if (!manager.HasComponent<Target>(entity))
                             continue;
 
@@ -42,7 +42,6 @@ namespace Game.Scripts.UI.Entities.Components.Health
                             !manager.HasComponent<Health>(target.Value))
                             continue;
 
-                        // ТАКЖЕ ПРОВЕРЬТЕ НАЛИЧИЕ КОМПОНЕНТА Damage
                         if (!manager.HasComponent<Damage>(entity))
                             continue;
 
@@ -66,10 +65,14 @@ namespace Game.Scripts.UI.Entities.Components.Health
                             ecb.SetComponent(entity, new Target { Value = Entity.Null });
                             ecb.AddComponent(deadEntity, new AnimationEventRequest { Parameter = "Death" });
 
+                            if (manager.HasComponent<AgentBody>(deadEntity))
+                            {
+                                ecb.RemoveComponent<AgentBody>(deadEntity);
+                            }
+
                             AudioSystem.Instance.PlayEvent(MasterBankAPI.DeathEvent, transform.Position);
                         }
 
-                        //Effect
                         Entity hitEffectRequset = manager.CreateEntity();
 
                         ecb.AddComponent(hitEffectRequset, new SpawnPrefabRequest

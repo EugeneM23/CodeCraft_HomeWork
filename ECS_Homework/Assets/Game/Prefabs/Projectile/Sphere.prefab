@@ -23866,6 +23866,8 @@ GameObject:
   - component: {fileID: 4827955021637034073}
   - component: {fileID: 8375003427198452266}
   - component: {fileID: 2757621147631995978}
+  - component: {fileID: 733228161076089995}
+  - component: {fileID: 6501451818368698136}
   m_Layer: 0
   m_Name: Sphere
   m_TagString: Untagged
@@ -23882,7 +23884,7 @@ Transform:
   m_GameObject: {fileID: 9147861169831921053}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.47334, y: 3.15, z: 0.73217}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -24003,3 +24005,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bcb55981f5544c68b0c4c65fbe19ca12, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ProjectileTagAuthoring
+--- !u!114 &733228161076089995
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9147861169831921053}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ff1a5c7ede80414681f875fbf4a0a5a9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ProjectileHitPrefabAuthoring
+  Prefab: {fileID: 7913849497514041293, guid: 0d789a18bbed44ca7a711e45944eb49a, type: 3}
+--- !u!114 &6501451818368698136
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9147861169831921053}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0804e4e31dc2427bb5f9d7d839657a38, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Scripts.UI.Entities.Components.DamageAuthoring
+  DamageValue: 50

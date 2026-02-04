@@ -19,6 +19,8 @@ MonoBehaviour:
     value: {fileID: 11400000, guid: 26a6138dd1bcb4d328d610053769c8a4, type: 2}
   - identifier: death
     value: {fileID: 11400000, guid: c0acc64f82431428f999fb7ff112fc68, type: 2}
+  - identifier: electrick_hit
+    value: {fileID: 11400000, guid: 9d6bdbef0ca584e4bafc9d2273d273f0, type: 2}
   boolParameters: []
   intParameters: []
   floatParameters: []

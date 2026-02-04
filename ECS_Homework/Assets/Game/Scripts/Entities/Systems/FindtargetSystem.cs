@@ -29,20 +29,15 @@ namespace Game.Scripts.Entities.Systems
             var playerTagLookup = SystemAPI.GetComponentLookup<PlayerTag>(true);
             var deltaTime = SystemAPI.Time.DeltaTime;
 
-            // Для игроков ищем ближайшего врага
             foreach (var (target,cooldown, transform) in SystemAPI.Query<RefRW<Target>,RefRW<UpdateTargetCooldown>, RefRO<LocalTransform>>().WithAll<PlayerTag>())
             {
-                // Обновляем таймер
                 cooldown.ValueRW.UpdateTimer -= deltaTime;
 
-                // Проверяем, нужно ли обновлять цель
                 if (cooldown.ValueRO.UpdateTimer <= 0f)
                 {
-                    // Сбрасываем таймер
                     cooldown.ValueRW.UpdateTimer = cooldown.ValueRO.UpdateInterval;
 
-                    // Попытка найти ближайшего врага в радиусе
-                    float searchRange = cooldown.ValueRO.Range; // Задайте нужный радиус поиска
+                    float searchRange = cooldown.ValueRO.Range;
                     Entity closestEnemy = TargetRaycastUseCase.FindClosestByTag(
                         collisionWorld,
                         enemyTagLookup,
@@ -50,25 +45,19 @@ namespace Game.Scripts.Entities.Systems
                         searchRange
                     );
 
-                    // Если нашли врага - используем его, иначе - замок врага
                     target.ValueRW.Value = closestEnemy != Entity.Null ? closestEnemy : enemyCastel;
                 }
             }
 
-            // Для врагов ищем ближайшего игрока
             foreach (var (target, cooldown, transform) in SystemAPI.Query<RefRW<Target>, RefRW<UpdateTargetCooldown>, RefRO<LocalTransform>>().WithAll<EnemyTag>())
             {
-                // Обновляем таймер
                 cooldown.ValueRW.UpdateTimer -= deltaTime;
 
-                // Проверяем, нужно ли обновлять цель
                 if (cooldown.ValueRO.UpdateTimer <= 0f)
                 {
-                    // Сбрасываем таймер
                     cooldown.ValueRW.UpdateTimer = cooldown.ValueRO.UpdateInterval;
 
-                    // Попытка найти ближайшего игрока в радиусе
-                    float searchRange = cooldown.ValueRO.Range; // Задайте нужный радиус поиска
+                    float searchRange = cooldown.ValueRO.Range;
                     Entity closestPlayer = TargetRaycastUseCase.FindClosestByTag(
                         collisionWorld,
                         playerTagLookup,
@@ -76,7 +65,6 @@ namespace Game.Scripts.Entities.Systems
                         searchRange
                     );
 
-                    // Если нашли игрока - используем его, иначе - замок игрока
                     target.ValueRW.Value = closestPlayer != Entity.Null ? closestPlayer : playerCastel;
                 }
             }

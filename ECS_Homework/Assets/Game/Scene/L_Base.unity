@@ -3058,6 +3058,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1117973683}
     m_Modifications:
+    - target: {fileID: 2726544885201778024, guid: 7d0c9dd3f49474e1f872628693a0048d, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.096
+      objectReference: {fileID: 0}
+    - target: {fileID: 2726544885201778024, guid: 7d0c9dd3f49474e1f872628693a0048d, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.869
+      objectReference: {fileID: 0}
+    - target: {fileID: 2726544885201778024, guid: 7d0c9dd3f49474e1f872628693a0048d, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.303
+      objectReference: {fileID: 0}
     - target: {fileID: 7115977585704794611, guid: 7d0c9dd3f49474e1f872628693a0048d, type: 3}
       propertyPath: m_Name
       value: Castel_Blue
@@ -3102,6 +3114,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: -180
       objectReference: {fileID: 0}
+    - target: {fileID: 7705668164829599517, guid: 7d0c9dd3f49474e1f872628693a0048d, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.818
+      objectReference: {fileID: 0}
+    - target: {fileID: 7705668164829599517, guid: 7d0c9dd3f49474e1f872628693a0048d, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.31
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -3117,11 +3137,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1257002610827928725, guid: 7b77e8701dda44f7f85bbd3470a54ff0, type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1257002610827928725, guid: 7b77e8701dda44f7f85bbd3470a54ff0, type: 3}
       propertyPath: _spawnDelay
-      value: 3
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7160150596007185865, guid: 7b77e8701dda44f7f85bbd3470a54ff0, type: 3}
       propertyPath: m_Name
