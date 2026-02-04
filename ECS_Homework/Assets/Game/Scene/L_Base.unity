@@ -566,7 +566,7 @@ MonoBehaviour:
   m_BlockingObjects: 0
   m_BlockingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 63
 --- !u!114 &649233706
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1502,6 +1502,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1289758604}
   - component: {fileID: 1289758603}
+  - component: {fileID: 1289758605}
   m_Layer: 0
   m_Name: '[AUDIO]'
   m_TagString: Untagged
@@ -1522,13 +1523,13 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 79da936525bb87a4789aa8e3d91b7c92, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 1
+  m_Volume: 0.08
   m_Pitch: 1
   Loop: 1
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0
-  Priority: 128
+  Priority: 256
   DopplerLevel: 1
   MinDistance: 1
   MaxDistance: 500
@@ -1621,6 +1622,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1289758605
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1289758602}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16bfdfab4b2840c496246064a99b2650, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: AudioEngine::AudioEngine.AudioSystem
+  initOnAwake: 1
+  initialBanks:
+  - {fileID: 11400000, guid: f2497dbb153d84916805b8c9a273b49f, type: 2}
 --- !u!1 &1340412550
 GameObject:
   m_ObjectHideFlags: 0
@@ -3164,7 +3180,7 @@ SceneRoots:
   - {fileID: 1744826057}
   - {fileID: 1117973683}
   - {fileID: 649233708}
-  - {fileID: 1659466638}
   - {fileID: 1289758604}
+  - {fileID: 1659466638}
   - {fileID: 122840808}
   - {fileID: 2014652500}

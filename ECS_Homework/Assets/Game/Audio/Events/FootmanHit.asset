@@ -13,14 +13,14 @@ MonoBehaviour:
   m_Name: FootmanHit
   m_EditorClassIdentifier: AudioEngine::AudioEngine.AudioSourceEvent
   _poolable: 1
-  duration: 0
+  duration: 2.1942856
   loop: 0
-  spartialBlend: 0
+  spartialBlend: 1
   output: {fileID: 0}
   clip:
-    rid: 1136115567299657971
+    rid: 1136115567623143507
   pitch:
-    rid: 1136115567299657972
+    rid: 1136115567299657979
   volume:
     rid: 1136115567299657973
   reverbZoneMix:
@@ -45,14 +45,6 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: 1136115567299657971
-      type: {class: ClipConst, ns: AudioEngine, asm: AudioEngine}
-      data:
-        clip: {fileID: 0}
-    - rid: 1136115567299657972
-      type: {class: FloatConst, ns: AudioEngine, asm: AudioEngine}
-      data:
-        value: 1
     - rid: 1136115567299657973
       type: {class: FloatConst, ns: AudioEngine, asm: AudioEngine}
       data:
@@ -77,3 +69,16 @@ MonoBehaviour:
       type: {class: FloatConst, ns: AudioEngine, asm: AudioEngine}
       data:
         value: 0
+    - rid: 1136115567299657979
+      type: {class: FloatRandom, ns: AudioEngine, asm: AudioEngine}
+      data:
+        minValue: 0.7
+        maxValue: 1
+    - rid: 1136115567623143507
+      type: {class: ClipRandom, ns: AudioEngine, asm: AudioEngine}
+      data:
+        clips:
+        - {fileID: 8300000, guid: a094ce3176040491a816f5cbcee9d793, type: 3}
+        - {fileID: 8300000, guid: 5d2c27617ad9b4291b67ce7e2e087a4b, type: 3}
+        - {fileID: 8300000, guid: 054f4d717340e4c2aa658ff63140ffe4, type: 3}
+        - {fileID: 8300000, guid: 23b4545057ed5476dba3cff3e031877c, type: 3}

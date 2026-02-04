@@ -1,4 +1,5 @@
 using System;
+using AudioEngine;
 using Game.Scripts.Entities.Systems;
 using Rukhanka;
 using Rukhanka.Toolbox;
@@ -42,6 +43,7 @@ namespace Game.Scripts.UI.Entities.Components.Health
                         RefRW<Health> targetHealth = SystemAPI.GetComponentRW<Health>(target.Value);
 
                         targetHealth.ValueRW.Value -= damage.Value;
+                        var transform = manager.GetComponentData<LocalTransform>(target.Value);
 
                         if (targetHealth.ValueRO.Value <= 0)
                         {
@@ -56,6 +58,8 @@ namespace Game.Scripts.UI.Entities.Components.Health
                             ecb.RemoveComponent<Target>(deadEntity);
                             ecb.SetComponent(entity, new Target { Value = Entity.Null });
                             ecb.AddComponent(deadEntity, new AnimationRequest { AnimationName = "Death" });
+
+                            AudioSystem.Instance.PlayEvent(MasterBankAPI.DeathEvent, transform.Position);
                         }
 
                         //Effect
@@ -63,18 +67,11 @@ namespace Game.Scripts.UI.Entities.Components.Health
 
                         ecb.AddComponent(hitEffectRequset, new SpawnPrefabRequest
                         {
-                            Position = manager.GetComponentData<LocalTransform>(target.Value).Position,
+                            Position = transform.Position,
                             Prefab = manager.GetComponentData<HitEffect>(target.Value).Prefab
                         });
 
-                        //Sound
-                        Entity hitSoundRequset = manager.CreateEntity();
-
-                        ecb.AddComponent(hitSoundRequset, new SpawnPrefabRequest
-                        {
-                            Position = manager.GetComponentData<LocalTransform>(target.Value).Position,
-                            Prefab = manager.GetComponentData<HitEffect>(target.Value).Prefab
-                        });
+                        AudioSystem.Instance.PlayEvent(MasterBankAPI.FootmanHitEvent, transform.Position);
                     }
                 }
             }
