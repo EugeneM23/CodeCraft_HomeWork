@@ -77,7 +77,8 @@ public partial struct ProjectileMoveSystem : ISystem
                 {
                     var hitPrefab = manager.GetComponentData<ProjectileHitPrefab>(entity);
                     var hitEntity = ecb.Instantiate(hitPrefab.Value);
-                    ecb.SetComponent(hitEntity, LocalTransform.FromPosition(targetTransform.Position));
+                    ecb.SetComponent(hitEntity,
+                        LocalTransform.FromPosition(targetTransform.Position + new float3(0, 1f, 0)));
                 }
 
                 continue;
