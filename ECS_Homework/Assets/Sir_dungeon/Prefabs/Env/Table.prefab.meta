@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: fae47a5fc20aa1544bb6df25d3afb792
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 197290
+  packageName: Stylized dungeon
+  packageVersion: 1.0
+  assetPath: Assets/Sir_dungeon/Prefabs/Env/Table.prefab
+  uploadId: 438276

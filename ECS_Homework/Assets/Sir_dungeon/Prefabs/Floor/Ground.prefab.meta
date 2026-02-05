@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: a5980cd8d92b2134a815bec642e3429f
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 197290
+  packageName: Stylized dungeon
+  packageVersion: 1.0
+  assetPath: Assets/Sir_dungeon/Prefabs/Floor/Ground.prefab
+  uploadId: 438276

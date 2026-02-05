@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 555fc42b3bde0294f98d6f53514e7a4d
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 197290
+  packageName: Stylized dungeon
+  packageVersion: 1.0
+  assetPath: Assets/Sir_dungeon/Materials/Wood_metal.mat
+  uploadId: 438276

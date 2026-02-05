@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 9039618b054ebc94e910beb887efd6f2
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 197290
+  packageName: Stylized dungeon
+  packageVersion: 1.0
+  assetPath: Assets/Sir_dungeon/Scripts/Light_flicker.cs
+  uploadId: 438276

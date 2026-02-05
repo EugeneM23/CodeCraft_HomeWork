@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: fbbd88f01ff52884194643a115325a8a
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 197290
+  packageName: Stylized dungeon
+  packageVersion: 1.0
+  assetPath: Assets/Sir_dungeon/Prefabs/Particles/Green_fog_particles.prefab
+  uploadId: 438276

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 5655c692677bb69428824330c45b46b7
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 197290
+  packageName: Stylized dungeon
+  packageVersion: 1.0
+  assetPath: Assets/Sir_dungeon/Effects/Fog_mat_red.mat
+  uploadId: 438276

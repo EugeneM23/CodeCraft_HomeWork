@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: b68c51c9cbffbf749a67593d8a642c2b
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 197290
+  packageName: Stylized dungeon
+  packageVersion: 1.0
+  assetPath: Assets/Sir_dungeon/Prefabs/Floor/Stone_ladder_2.prefab
+  uploadId: 438276

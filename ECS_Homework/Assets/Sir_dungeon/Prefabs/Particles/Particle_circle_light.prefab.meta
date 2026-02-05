@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: eccab585df3ef9543b11840cf0a076f3
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 197290
+  packageName: Stylized dungeon
+  packageVersion: 1.0
+  assetPath: Assets/Sir_dungeon/Prefabs/Particles/Particle_circle_light.prefab
+  uploadId: 438276

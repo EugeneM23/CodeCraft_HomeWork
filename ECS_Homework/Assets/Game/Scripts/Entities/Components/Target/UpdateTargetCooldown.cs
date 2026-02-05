@@ -2,7 +2,7 @@ using Unity.Entities;
 
 namespace Game.Scripts.Entities.Systems
 {
-    public struct UpdateTargetCooldown : IComponentData
+    public struct TargetUpdateSettings : IComponentData
     {
         public float Range;
         public float UpdateTimer;

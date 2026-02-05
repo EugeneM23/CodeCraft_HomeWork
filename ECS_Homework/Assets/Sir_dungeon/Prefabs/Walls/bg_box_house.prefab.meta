@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: f617f739ac88a804e88126188d9a462e
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 197290
+  packageName: Stylized dungeon
+  packageVersion: 1.0
+  assetPath: Assets/Sir_dungeon/Prefabs/Walls/bg_box_house.prefab
+  uploadId: 438276

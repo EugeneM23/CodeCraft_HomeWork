@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 01b660f72cb708d4fb4c48ad22cf43b2
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 197290
+  packageName: Stylized dungeon
+  packageVersion: 1.0
+  assetPath: Assets/Sir_dungeon/Prefabs/Env/Metal_grid_column_small.prefab
+  uploadId: 438276

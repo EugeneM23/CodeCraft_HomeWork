@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 8af59a94d7f295540b32496d48b720ee
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 197290
+  packageName: Stylized dungeon
+  packageVersion: 1.0
+  assetPath: Assets/Sir_dungeon/Prefabs/Env/Stone_fence_ladder_2.prefab
+  uploadId: 438276

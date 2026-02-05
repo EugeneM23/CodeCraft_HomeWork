@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: ca770bb4154b4234c8a52dc5b68c5da9
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 197290
+  packageName: Stylized dungeon
+  packageVersion: 1.0
+  assetPath: Assets/Sir_dungeon/Prefabs/Env/Gold.prefab
+  uploadId: 438276

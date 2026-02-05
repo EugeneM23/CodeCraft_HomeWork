@@ -13,7 +13,7 @@ namespace Game.Scripts.Entities.Systems
             public override void Bake(UpdateTargetCooldownAuthoring authoring)
             {
                 var entity = GetEntity(TransformUsageFlags.Dynamic);
-                AddComponent(entity, new UpdateTargetCooldown
+                AddComponent(entity, new TargetUpdateSettings
                 {
                     UpdateInterval = authoring.UpdateInterval,
                     Range = authoring.Range

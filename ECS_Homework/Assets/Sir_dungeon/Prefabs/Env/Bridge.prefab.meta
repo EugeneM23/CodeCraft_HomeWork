@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 92bf8b38b43596349a61cd41bd622d6e
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 197290
+  packageName: Stylized dungeon
+  packageVersion: 1.0
+  assetPath: Assets/Sir_dungeon/Prefabs/Env/Bridge.prefab
+  uploadId: 438276

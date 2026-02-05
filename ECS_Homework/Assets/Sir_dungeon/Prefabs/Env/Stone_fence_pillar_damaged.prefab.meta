@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: f70e1e357b4f1d3449fcf63128612156
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 197290
+  packageName: Stylized dungeon
+  packageVersion: 1.0
+  assetPath: Assets/Sir_dungeon/Prefabs/Env/Stone_fence_pillar_damaged.prefab
+  uploadId: 438276

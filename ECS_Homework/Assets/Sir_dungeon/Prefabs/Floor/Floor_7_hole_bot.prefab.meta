@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: ed7cc48d44e1f774e87563901513a6c0
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 197290
+  packageName: Stylized dungeon
+  packageVersion: 1.0
+  assetPath: Assets/Sir_dungeon/Prefabs/Floor/Floor_7_hole_bot.prefab
+  uploadId: 438276

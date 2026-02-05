@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: dba7964477928014ebd842878d5e28fd
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 197290
+  packageName: Stylized dungeon
+  packageVersion: 1.0
+  assetPath: Assets/Sir_dungeon/Prefabs/Particles/Fire_prefab.prefab
+  uploadId: 438276

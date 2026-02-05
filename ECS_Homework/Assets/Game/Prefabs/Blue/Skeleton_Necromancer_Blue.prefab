@@ -2052,6 +2052,7 @@ GameObject:
   - component: {fileID: 3568529092261926559}
   - component: {fileID: -4635668205075746210}
   - component: {fileID: 8933590116360179128}
+  - component: {fileID: 5073324759056059844}
   m_Layer: 3
   m_Name: Skeleton_Necromancer_Blue
   m_TagString: Untagged
@@ -2322,6 +2323,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ProjectilePrefabAuthoring
   Prefab: {fileID: 9147861169831921053, guid: c20f6869da70540d7984f6a4db31e484, type: 3}
+--- !u!114 &5073324759056059844
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5845351707157135717}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef92c490e23c476397148dc1c5743a21, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TeamMaskAuthoring
+  Team: 0
 --- !u!1 &5989569129047307830
 GameObject:
   m_ObjectHideFlags: 0

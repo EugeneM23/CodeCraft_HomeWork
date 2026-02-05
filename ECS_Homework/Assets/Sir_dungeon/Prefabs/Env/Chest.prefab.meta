@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 74df6a8fa422d054aa97521c3fd14e67
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 197290
+  packageName: Stylized dungeon
+  packageVersion: 1.0
+  assetPath: Assets/Sir_dungeon/Prefabs/Env/Chest.prefab
+  uploadId: 438276

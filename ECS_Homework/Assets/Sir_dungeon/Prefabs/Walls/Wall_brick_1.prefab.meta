@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: ab8cb7e2de0000c4f9662244f0f8c221
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 197290
+  packageName: Stylized dungeon
+  packageVersion: 1.0
+  assetPath: Assets/Sir_dungeon/Prefabs/Walls/Wall_brick_1.prefab
+  uploadId: 438276

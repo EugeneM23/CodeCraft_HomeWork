@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: f279b8e4cc261b3488e901381ce90fb3
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 197290
+  packageName: Stylized dungeon
+  packageVersion: 1.0
+  assetPath: Assets/Sir_dungeon/Prefabs/Floor/Floor_circle_a.prefab
+  uploadId: 438276

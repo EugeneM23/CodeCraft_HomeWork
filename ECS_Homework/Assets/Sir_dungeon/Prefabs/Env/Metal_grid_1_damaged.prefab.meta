@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: a26ac535d34837a408d3f98de228ec77
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 197290
+  packageName: Stylized dungeon
+  packageVersion: 1.0
+  assetPath: Assets/Sir_dungeon/Prefabs/Env/Metal_grid_1_damaged.prefab
+  uploadId: 438276

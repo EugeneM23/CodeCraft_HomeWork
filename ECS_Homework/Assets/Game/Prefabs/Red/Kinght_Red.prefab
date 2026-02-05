@@ -529,6 +529,7 @@ GameObject:
   - component: {fileID: 8216164105559208005}
   - component: {fileID: 6521821489745549453}
   - component: {fileID: 5124357479795210839}
+  - component: {fileID: -5442905310010028583}
   m_Layer: 0
   m_Name: Kinght_Red
   m_TagString: Untagged
@@ -786,6 +787,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Game.Scripts.UI.Entities.Components.AttackDistance.AttackDistanceAuthoring
   Value: 1.1
+--- !u!114 &-5442905310010028583
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4620109356902655728}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef92c490e23c476397148dc1c5743a21, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TeamMaskAuthoring
+  Team: 1
 --- !u!1 &4992053240300705693
 GameObject:
   m_ObjectHideFlags: 0

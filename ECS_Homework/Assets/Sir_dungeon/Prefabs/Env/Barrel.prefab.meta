@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 665d969216b7b5b4e9e8ca103c7c2f2a
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 197290
+  packageName: Stylized dungeon
+  packageVersion: 1.0
+  assetPath: Assets/Sir_dungeon/Prefabs/Env/Barrel.prefab
+  uploadId: 438276

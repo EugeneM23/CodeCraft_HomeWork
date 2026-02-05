@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: d06be8d6ee306f4458809cd09a2b4f7a
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 197290
+  packageName: Stylized dungeon
+  packageVersion: 1.0
+  assetPath: Assets/Sir_dungeon/Prefabs/Walls/Wall_plane_1_half.prefab
+  uploadId: 438276

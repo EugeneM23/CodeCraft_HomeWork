@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 2c9f50a98820abd48af32e5776e1ed61
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 197290
+  packageName: Stylized dungeon
+  packageVersion: 1.0
+  assetPath: Assets/Sir_dungeon/Prefabs/Env/Wood_window_grid.prefab
+  uploadId: 438276

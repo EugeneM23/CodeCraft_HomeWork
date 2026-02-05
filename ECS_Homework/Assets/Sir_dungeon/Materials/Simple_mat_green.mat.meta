@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 98d75f1c8f78c7842a2c526c4f817e6e
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 197290
+  packageName: Stylized dungeon
+  packageVersion: 1.0
+  assetPath: Assets/Sir_dungeon/Materials/Simple_mat_green.mat
+  uploadId: 438276

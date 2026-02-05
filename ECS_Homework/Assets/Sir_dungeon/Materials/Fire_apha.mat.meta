@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 3f4529f26f7dc5f45bda013e6291c96a
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 197290
+  packageName: Stylized dungeon
+  packageVersion: 1.0
+  assetPath: Assets/Sir_dungeon/Materials/Fire_apha.mat
+  uploadId: 438276

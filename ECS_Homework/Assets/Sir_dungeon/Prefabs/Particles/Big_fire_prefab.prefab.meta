@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 7219315b91ad644429bbfb0a92e7660f
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 197290
+  packageName: Stylized dungeon
+  packageVersion: 1.0
+  assetPath: Assets/Sir_dungeon/Prefabs/Particles/Big_fire_prefab.prefab
+  uploadId: 438276

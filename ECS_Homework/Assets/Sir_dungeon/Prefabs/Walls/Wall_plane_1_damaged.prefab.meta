@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 4ee979115fc487b4ab909c256badc042
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 197290
+  packageName: Stylized dungeon
+  packageVersion: 1.0
+  assetPath: Assets/Sir_dungeon/Prefabs/Walls/Wall_plane_1_damaged.prefab
+  uploadId: 438276

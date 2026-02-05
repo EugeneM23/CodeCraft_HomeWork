@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: d10e78f493bef054e97de394dc788c50
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 197290
+  packageName: Stylized dungeon
+  packageVersion: 1.0
+  assetPath: Assets/Sir_dungeon/Prefabs/Walls/Wall_line_1.prefab
+  uploadId: 438276

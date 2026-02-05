@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 9f17e1be9be923a4eaf1bd0a552d8064
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 197290
+  packageName: Stylized dungeon
+  packageVersion: 1.0
+  assetPath: Assets/Sir_dungeon/Prefabs/Walls/Wall_plane_1_filled.prefab
+  uploadId: 438276

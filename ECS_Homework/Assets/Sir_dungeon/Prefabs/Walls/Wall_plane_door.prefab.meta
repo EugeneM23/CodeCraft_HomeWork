@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 262a5cc44792f134ba7fcb3f657e550c
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 197290
+  packageName: Stylized dungeon
+  packageVersion: 1.0
+  assetPath: Assets/Sir_dungeon/Prefabs/Walls/Wall_plane_door.prefab
+  uploadId: 438276

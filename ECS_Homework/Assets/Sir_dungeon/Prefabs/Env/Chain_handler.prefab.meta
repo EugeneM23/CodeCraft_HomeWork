@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: d7decc0b692a9324cbff1ca3b316f1ed
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 197290
+  packageName: Stylized dungeon
+  packageVersion: 1.0
+  assetPath: Assets/Sir_dungeon/Prefabs/Env/Chain_handler.prefab
+  uploadId: 438276

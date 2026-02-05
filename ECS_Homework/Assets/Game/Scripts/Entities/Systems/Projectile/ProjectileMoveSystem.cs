@@ -43,11 +43,6 @@ public partial struct ProjectileMoveSystem : ISystem
                     {
                         Entity deadEntity = target.ValueRO.Value;
 
-                        if (manager.HasComponent<PlayerTag>(deadEntity))
-                            ecb.RemoveComponent<PlayerTag>(deadEntity);
-
-                        if (manager.HasComponent<EnemyTag>(deadEntity))
-                            ecb.RemoveComponent<EnemyTag>(deadEntity);
 
                         ecb.RemoveComponent<Target>(deadEntity);
                         ecb.AddComponent(deadEntity, new AnimationEventRequest { Parameter = "Death" });
