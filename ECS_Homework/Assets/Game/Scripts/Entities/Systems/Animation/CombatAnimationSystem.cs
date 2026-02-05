@@ -1,3 +1,4 @@
+using Game.Animation;
 using Game.Scripts.Entities.Systems;
 using Game.Scripts.UI.Entities.Components.AttackDistance;
 using Rukhanka;
@@ -23,38 +24,22 @@ public partial struct CombatAnimationSystem : ISystem
             var animator = new AnimatorParametersAspect(animParams, indexes);
 
             // Сбрасываем все параметры
-            animator.SetParameterValue("Attack", false);
-            animator.SetParameterValue("Walk", false);
+            animator.SetParameterValue(ACBase.Attack.ToParameterName(), false);
+            animator.SetParameterValue(ACBase.Walk.ToParameterName(), false);
 
-            // Если цели нет, стоим на месте (idle)
-            if (targetEntity == Entity.Null ||
-                !SystemAPI.Exists(targetEntity) ||
-                !SystemAPI.HasComponent<LocalTransform>(targetEntity))
-            {
+            if (targetEntity == Entity.Null)
                 continue;
-            }
 
             // Получаем позицию цели
-            var targetTransform = SystemAPI.GetComponentRO<LocalTransform>(targetEntity);
-
             // Вычисляем дистанцию до цели
-            float distance = math.distance(
-                entityTransform.ValueRO.Position,
-                targetTransform.ValueRO.Position
-            );
+            var targetTransform = SystemAPI.GetComponentRO<LocalTransform>(targetEntity);
+            var distance = math.distance(entityTransform.ValueRO.Position, targetTransform.ValueRO.Position);
 
             // Переключаем анимацию в зависимости от дистанции
             if (distance < attackDistance.ValueRO.Value)
-            {
-                // В радиусе атаки - атакуем
-                animator.SetParameterValue("Attack", true);
-            }
+                animator.SetParameterValue(ACBase.Attack.ToParameterName(), true);
             else
-            {
-                // Вне радиуса - идём к цели
-                animator.SetParameterValue("Walk", true);
-            }
+                animator.SetParameterValue(ACBase.Walk.ToParameterName(), true);
         }
     }
 }
-
