@@ -2,7 +2,6 @@ using Game.Scripts.UI.Entities.Components.Health;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Transforms;
-using UnityEngine;
 
 public partial struct ApplyDamageSystem : ISystem
 {
@@ -10,7 +9,8 @@ public partial struct ApplyDamageSystem : ISystem
     {
         var ecb = new EntityCommandBuffer(Allocator.Temp);
 
-        foreach (var (damageRequest, health, entity) in SystemAPI.Query<DamageRequest, RefRW<Health>>()
+        foreach (var (damageRequest, health, entity) in SystemAPI
+                     .Query<DamageRequest, RefRW<Health>>()
                      .WithEntityAccess())
         {
             health.ValueRW.Value -= damageRequest.DamageAmount;
@@ -26,9 +26,9 @@ public partial struct ApplyDamageSystem : ISystem
 
             ecb.AddComponent(entity, new DamageSoundRequest
             {
-                Target = entity  // Передаём сущность, которая получила урон
+                Target = entity // Передаём сущность, которая получила урон
             });
-            
+
             ecb.RemoveComponent<DamageRequest>(entity);
         }
 

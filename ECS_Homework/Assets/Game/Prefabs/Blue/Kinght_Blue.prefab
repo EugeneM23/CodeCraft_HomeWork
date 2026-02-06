@@ -520,7 +520,6 @@ GameObject:
   - component: {fileID: 589019017909702483}
   - component: {fileID: 2180445807749005750}
   - component: {fileID: 8298633788894902668}
-  - component: {fileID: 1998931559766666183}
   - component: {fileID: 7046005127540622782}
   - component: {fileID: 4348904975142710351}
   - component: {fileID: 4467693612664204129}
@@ -531,6 +530,7 @@ GameObject:
   - component: {fileID: -7089333173211529596}
   - component: {fileID: -5637476934102556953}
   - component: {fileID: -1468509327195274503}
+  - component: {fileID: -8624935375111085258}
   m_Layer: 0
   m_Name: Kinght_Blue
   m_TagString: Untagged
@@ -656,25 +656,6 @@ MonoBehaviour:
     x: 10
     y: 10
     z: 10
---- !u!114 &1998931559766666183
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4620109356902655728}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0344116cd75eaaf488b894904a1649d9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ProjectDawn.Navigation.Hybrid::ProjectDawn.Navigation.Hybrid.AgentAvoidAuthoring
-  Radius: 1
-  Angle: 230
-  MaxAngle: 300
-  Mode: 3
-  BlockedStop: 0
-  UseWalls: 0
-  m_Layers: -1
 --- !u!136 &7046005127540622782
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -813,6 +794,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0174d0ec32f1487f864ef967618a0895, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TargetDistanceAuthoring
+--- !u!114 &-8624935375111085258
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4620109356902655728}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0344116cd75eaaf488b894904a1649d9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectDawn.Navigation.Hybrid::ProjectDawn.Navigation.Hybrid.AgentAvoidAuthoring
+  Radius: 2
+  Angle: 230
+  MaxAngle: 300
+  Mode: 3
+  BlockedStop: 0
+  UseWalls: 0
+  m_Layers: -1
 --- !u!1 &4992053240300705693
 GameObject:
   m_ObjectHideFlags: 0
