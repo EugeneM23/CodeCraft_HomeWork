@@ -24,6 +24,11 @@ public partial struct ApplyDamageSystem : ISystem
                 Position = transform.Position
             });
 
+            ecb.AddComponent(entity, new DamageSoundRequest
+            {
+                Target = entity  // Передаём сущность, которая получила урон
+            });
+            
             ecb.RemoveComponent<DamageRequest>(entity);
         }
 

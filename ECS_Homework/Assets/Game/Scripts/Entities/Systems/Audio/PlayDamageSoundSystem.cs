@@ -3,7 +3,8 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Transforms;
 
-[UpdateAfter(typeof(ApplyDamageSystem))]
+[UpdateAfter(typeof(CheckDeathSystem))]
+[UpdateBefore(typeof(HandleDeathSystem))]  // Выполняем ДО HandleDeathSystem!
 public partial struct PlayDamageSoundSystem : ISystem
 {
     public void OnUpdate(ref SystemState state)
@@ -15,25 +16,29 @@ public partial struct PlayDamageSoundSystem : ISystem
         foreach (var (request, entity) in SystemAPI.Query<DamageSoundRequest>()
                      .WithEntityAccess())
         {
-            if (request.Target != Entity.Null &&
-                manager.Exists(request.Target) &&
-                manager.HasComponent<LocalTransform>(request.Target))
+            if (request.Target != Entity.Null && manager.HasComponent<LocalTransform>(request.Target))
             {
                 var transform = manager.GetComponentData<LocalTransform>(request.Target);
                 AudioSystem.Instance.PlayEvent(MasterBankAPI.FootmanHitEvent, transform.Position);
             }
 
-            ecb.DestroyEntity(entity);
+            ecb.RemoveComponent<DamageSoundRequest>(entity);
         }
 
-        // Воспроизводим звук смерти
+        // Воспроизводим звук смерти ОДИН РАЗ
         foreach (var (deathEvent, transform, entity) in SystemAPI.Query<DeathEvent, RefRO<LocalTransform>>()
+                     .WithNone<DeathSoundPlayed>()
                      .WithEntityAccess())
         {
             AudioSystem.Instance.PlayEvent(MasterBankAPI.DeathEvent, transform.ValueRO.Position);
+            ecb.AddComponent<DeathSoundPlayed>(entity);
         }
 
         ecb.Playback(manager);
         ecb.Dispose();
     }
+}
+
+public struct DeathSoundPlayed : IComponentData
+{
 }

@@ -24030,4 +24030,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0804e4e31dc2427bb5f9d7d839657a38, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Game.Scripts.UI.Entities.Components.DamageAuthoring
-  DamageValue: 50
+  DamageValue: 51

@@ -29,3 +29,4 @@ namespace Game.Scripts.Components
         public float3 TargetDirection;
     }
 }
+

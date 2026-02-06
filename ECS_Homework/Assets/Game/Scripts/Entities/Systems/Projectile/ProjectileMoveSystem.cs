@@ -36,25 +36,17 @@ public partial struct ProjectileMoveSystem : ISystem
                 if (manager.HasComponent<Health>(target.ValueRO.Value) && manager.HasComponent<Damage>(entity))
                 {
                     var damage = manager.GetComponentData<Damage>(entity);
-                    RefRW<Health> targetHealth = SystemAPI.GetComponentRW<Health>(target.ValueRO.Value);
-                    targetHealth.ValueRW.Value -= damage.Value;
-
-                    if (targetHealth.ValueRO.Value <= 0)
+                    
+                    // Добавляем DamageRequest вместо прямого изменения здоровья
+                    ecb.AddComponent(target.ValueRO.Value, new DamageRequest
                     {
-                        Entity deadEntity = target.ValueRO.Value;
+                        Target = target.ValueRO.Value,
+                        DamageAmount = damage.Value
+                    });
 
-
-                        ecb.RemoveComponent<Target>(deadEntity);
-                        ecb.AddComponent(deadEntity, new AnimationEventRequest { Parameter = "Death" });
-
-                        if (manager.HasComponent<AgentBody>(deadEntity))
-                        {
-                            ecb.RemoveComponent<AgentBody>(deadEntity);
-                        }
-
-                        AudioSystem.Instance.PlayEvent(MasterBankAPI.DeathEvent, targetTransform.Position);
-                    }
-
+                    // Убираем весь код с проверкой смерти - это делает CheckDeathSystem
+                    
+                    // Эффект попадания
                     if (manager.HasComponent<HitEffect>(target.ValueRO.Value))
                     {
                         Entity hitEffectRequest = manager.CreateEntity();
@@ -65,6 +57,7 @@ public partial struct ProjectileMoveSystem : ISystem
                         });
                     }
 
+                    // Звук попадания - оставляем здесь или тоже через систему
                     AudioSystem.Instance.PlayEvent(MasterBankAPI.ElectrickHitEvent, targetTransform.Position);
                 }
 

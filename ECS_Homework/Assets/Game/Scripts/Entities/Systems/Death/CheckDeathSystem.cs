@@ -12,7 +12,7 @@ public partial struct CheckDeathSystem : ISystem
         foreach (var (health, entity) in SystemAPI.Query<RefRO<Health>>().WithEntityAccess())
         {
             if (health.ValueRO.Value > 0) continue;
-            
+
             ecb.AddComponent(entity, new DeathEvent());
             ecb.RemoveComponent<TeamMask>(entity);
         }

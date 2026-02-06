@@ -10,7 +10,7 @@ public class TargetDistanceAuthoring : MonoBehaviour
         public override void Bake(TargetDistanceAuthoring authoring)
         {
             var entity = GetEntity(TransformUsageFlags.Dynamic);
-            AddComponent(entity, new DistanceToTarget());
+            AddComponent(entity, new DistanceToTarget(value: 1000f));
         }
     }
 }
@@ -18,4 +18,9 @@ public class TargetDistanceAuthoring : MonoBehaviour
 public struct DistanceToTarget : IComponentData
 {
     public float Value;
+
+    public DistanceToTarget(float value)
+    {
+        Value = value;
+    }
 }

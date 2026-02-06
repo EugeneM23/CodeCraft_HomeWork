@@ -2044,7 +2044,6 @@ GameObject:
   - component: {fileID: 8650605879124033298}
   - component: {fileID: 8897318013728030475}
   - component: {fileID: -4476225111447478412}
-  - component: {fileID: 6727435731423170795}
   - component: {fileID: 4481563839515227084}
   - component: {fileID: 7738410968665203441}
   - component: {fileID: 5499531401677617283}
@@ -2053,6 +2052,8 @@ GameObject:
   - component: {fileID: -4635668205075746210}
   - component: {fileID: 8933590116360179128}
   - component: {fileID: 5073324759056059844}
+  - component: {fileID: 6251002876611467679}
+  - component: {fileID: 4546051704151723993}
   m_Layer: 3
   m_Name: Skeleton_Necromancer_Blue
   m_TagString: Untagged
@@ -2220,18 +2221,6 @@ MonoBehaviour:
   BlockedStop: 1
   UseWalls: 0
   m_Layers: -1
---- !u!114 &6727435731423170795
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5845351707157135717}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0cf25fa8d4024d8c86c33f0718f66f85, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Game.Scripts.Entities.Systems.PlayerTagAuthoring
 --- !u!114 &4481563839515227084
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2309,7 +2298,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0804e4e31dc2427bb5f9d7d839657a38, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Game.Scripts.UI.Entities.Components.DamageAuthoring
-  DamageValue: 30
+  DamageValue: 31
 --- !u!114 &8933590116360179128
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2336,6 +2325,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TeamMaskAuthoring
   Team: 0
+--- !u!114 &6251002876611467679
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5845351707157135717}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0174d0ec32f1487f864ef967618a0895, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TargetDistanceAuthoring
+--- !u!114 &4546051704151723993
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5845351707157135717}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5e3d588bd00e4ba4882819a8bb8a6a5d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WalkStateTagAuthoring
 --- !u!1 &5989569129047307830
 GameObject:
   m_ObjectHideFlags: 0
