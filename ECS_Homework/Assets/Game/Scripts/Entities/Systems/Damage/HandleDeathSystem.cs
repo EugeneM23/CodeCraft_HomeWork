@@ -30,7 +30,7 @@ public partial struct HandleDeathSystem : ISystem
             // Запускаем анимацию смерти
             ecb.AddComponent(entity, new AnimationEventRequest
             {
-                Parameter = ACBase.Death.ToParameterName()
+                Parameter = ACBase.Death.ToString()
             });
 
             // Удаляем событие смерти

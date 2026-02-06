@@ -16,6 +16,7 @@ public partial struct SetAgentDestinationSystem : ISystem
                 continue;
 
             var targetTransform = SystemAPI.GetComponentRO<LocalTransform>(targetEntity);
+
             body.ValueRW.SetDestination(targetTransform.ValueRO.Position);
         }
     }

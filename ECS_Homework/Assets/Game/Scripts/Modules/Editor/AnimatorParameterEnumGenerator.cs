@@ -104,8 +104,6 @@ public class AnimatorParameterEnumGenerator : EditorWindow
         sb.AppendLine($"// Generated on: {System.DateTime.Now}");
         sb.AppendLine($"// Source: {selectedController.name}");
         sb.AppendLine();
-        sb.AppendLine("using System.Collections.Generic;");
-        sb.AppendLine();
 
         if (includeNamespace && !string.IsNullOrEmpty(namespaceString))
         {
@@ -115,58 +113,16 @@ public class AnimatorParameterEnumGenerator : EditorWindow
 
         string indent = includeNamespace ? "    " : "";
 
-        sb.AppendLine($"{indent}public enum {enumName}");
+        sb.AppendLine($"{indent}public static class {enumName}");
         sb.AppendLine($"{indent}{{");
-        sb.AppendLine($"{indent}    None = 0,");
         
         for (int i = 0; i < foundParameters.Count; i++)
         {
             string paramName = SanitizeEnumName(foundParameters[i].name);
-            sb.AppendLine($"{indent}    {paramName} = {i + 1},");
+            int hash = Animator.StringToHash(foundParameters[i].name);
+            sb.AppendLine($"{indent}    public const int {paramName} = {hash};");
         }
         
-        sb.AppendLine($"{indent}}}");
-        sb.AppendLine();
-
-        sb.AppendLine($"{indent}public static class {enumName}Extensions");
-        sb.AppendLine($"{indent}{{");
-        sb.AppendLine($"{indent}    private static readonly Dictionary<{enumName}, string> ParameterNames = new Dictionary<{enumName}, string>");
-        sb.AppendLine($"{indent}    {{");
-        sb.AppendLine($"{indent}        {{ {enumName}.None, string.Empty }},");
-        
-        for (int i = 0; i < foundParameters.Count; i++)
-        {
-            string enumValue = SanitizeEnumName(foundParameters[i].name);
-            string originalName = foundParameters[i].name;
-            sb.AppendLine($"{indent}        {{ {enumName}.{enumValue}, \"{originalName}\" }},");
-        }
-        
-        sb.AppendLine($"{indent}    }};");
-        sb.AppendLine();
-        sb.AppendLine($"{indent}    private static readonly Dictionary<string, {enumName}> NameToEnum = new Dictionary<string, {enumName}>");
-        sb.AppendLine($"{indent}    {{");
-        sb.AppendLine($"{indent}        {{ string.Empty, {enumName}.None }},");
-        
-        for (int i = 0; i < foundParameters.Count; i++)
-        {
-            string enumValue = SanitizeEnumName(foundParameters[i].name);
-            string originalName = foundParameters[i].name;
-            sb.AppendLine($"{indent}        {{ \"{originalName}\", {enumName}.{enumValue} }},");
-        }
-        
-        sb.AppendLine($"{indent}    }};");
-        sb.AppendLine();
-        
-        sb.AppendLine($"{indent}    public static string ToParameterName(this {enumName} parameter)");
-        sb.AppendLine($"{indent}    {{");
-        sb.AppendLine($"{indent}        return ParameterNames.TryGetValue(parameter, out string name) ? name : string.Empty;");
-        sb.AppendLine($"{indent}    }}");
-        sb.AppendLine();
-        
-        sb.AppendLine($"{indent}    public static {enumName} FromParameterName(string parameterName)");
-        sb.AppendLine($"{indent}    {{");
-        sb.AppendLine($"{indent}        return NameToEnum.TryGetValue(parameterName, out {enumName} parameter) ? parameter : {enumName}.None;");
-        sb.AppendLine($"{indent}    }}");
         sb.AppendLine($"{indent}}}");
 
         if (includeNamespace && !string.IsNullOrEmpty(namespaceString))
