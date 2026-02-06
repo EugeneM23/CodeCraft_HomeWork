@@ -20,7 +20,7 @@ public partial struct ProjectileSpawntSystem : ISystem
         {
             foreach (var evt in animEvents)
             {
-                if (evt.nameHash == AnimationEventType.SpawnProjectile.ToEventName().CalculateHash32())
+                if (evt.nameHash == AnimationEventType.SpawnProjectile.GetHashCode())
                 {
                     var prefab = state.EntityManager.GetComponentData<ProjectilePrefab>(entity);
                     Entity projectile = state.EntityManager.Instantiate(prefab.Value);

@@ -3,6 +3,7 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
+using UnityEngine;
 
 public partial struct SpawnPrefabSystem : ISystem
 {
@@ -15,7 +16,7 @@ public partial struct SpawnPrefabSystem : ISystem
         foreach (var (request, entity) in SystemAPI.Query<SpawnPrefabRequest>().WithEntityAccess())
         {
             var ins = ecb.Instantiate(request.Prefab);
-
+            Debug.Log("spawn");
             ecb.SetComponent(ins, new LocalTransform
             {
                 Position = request.Position,
@@ -24,8 +25,7 @@ public partial struct SpawnPrefabSystem : ISystem
             });
 
             ecb.AddComponent(ins, new NewUnitTag());
-
-            ecb.DestroyEntity(entity);
+            ecb.RemoveComponent<SpawnPrefabRequest>(entity);
         }
 
         ecb.Playback(manager);

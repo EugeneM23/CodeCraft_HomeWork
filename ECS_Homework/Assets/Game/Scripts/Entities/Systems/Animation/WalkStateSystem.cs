@@ -1,10 +1,8 @@
-using Game.Animation;
-using Game.Scripts.Entities.Systems;
+using Game.Scripts.UI.Entities.Components.AttackDistance;
+using Game.Scripts.UI.Entities.Components.Health;
 using Rukhanka;
 using Unity.Collections;
 using Unity.Entities;
-using Unity.Mathematics;
-using Unity.Transforms;
 using UnityEngine;
 
 public partial struct WalkStateSystem : ISystem
@@ -13,17 +11,19 @@ public partial struct WalkStateSystem : ISystem
     {
         var ecb = new EntityCommandBuffer(Allocator.Temp);
 
-        foreach (var (target, entity) in SystemAPI.Query<Target>().WithEntityAccess().WithAny<IsWalking>())
+        foreach (var (distanceToTarget, attackDistance, animatorEntityRef, entity) in SystemAPI
+                     .Query<DistanceToTarget, AttackDistance, AnimatorEntityRefComponent>()
+                     .WithEntityAccess()
+                     .WithAny<IsWalking>())
         {
             Debug.Log("Walk state");
-            var entityTransform = state.EntityManager.GetComponentData<LocalTransform>(entity);
-            var targetTransfrom = state.EntityManager.GetComponentData<LocalTransform>(target.Value);
-            var distance = math.distance(entityTransform.Position, targetTransfrom.Position);
 
-            if (distance < 3)
+            if (distanceToTarget.Value < attackDistance.Value)
             {
                 ecb.AddComponent<IsAttaking>(entity);
                 ecb.RemoveComponent<IsWalking>(entity);
+
+                animatorEntityRef.SetAnimationState(ref state, ("IsAttacking", true), ("IsWalking", false));
             }
         }
 
@@ -38,17 +38,17 @@ public partial struct AttackStateSystem : ISystem
     {
         var ecb = new EntityCommandBuffer(Allocator.Temp);
 
-        foreach (var (target, entity) in SystemAPI.Query<Target>().WithEntityAccess().WithAny<IsAttaking>())
+        foreach (var (distanceToTarget, attackDistance, animatorEntityRef, entity) in SystemAPI
+                     .Query<DistanceToTarget, AttackDistance, AnimatorEntityRefComponent>()
+                     .WithEntityAccess()
+                     .WithAny<IsAttaking>())
         {
-            Debug.Log("attack state");
-            var entityTransform = state.EntityManager.GetComponentData<LocalTransform>(entity);
-            var targetTransfrom = state.EntityManager.GetComponentData<LocalTransform>(target.Value);
-            var distance = math.distance(entityTransform.Position, targetTransfrom.Position);
-
-            if (distance > 3)
+            if (distanceToTarget.Value > attackDistance.Value)
             {
                 ecb.AddComponent<IsWalking>(entity);
                 ecb.RemoveComponent<IsAttaking>(entity);
+
+                animatorEntityRef.SetAnimationState(ref state, ("IsWalking", true), ("IsAttacking", false));
             }
         }
 
@@ -57,41 +57,43 @@ public partial struct AttackStateSystem : ISystem
     }
 }
 
-
-
-public partial struct AnimationStateControllerSystem : ISystem
+public partial struct DeathStateSystem : ISystem
 {
     public void OnUpdate(ref SystemState state)
     {
-        // Переключение на атаку
-        foreach (var animatorEntityRef in SystemAPI.Query<AnimatorEntityRefComponent>()
-                     .WithAll<IsAttaking>()
-                     .WithNone<IsWalking>())
+        var ecb = new EntityCommandBuffer(Allocator.Temp);
+
+        foreach (var (animatorEntityRef, health) in SystemAPI
+                     .Query<AnimatorEntityRefComponent, RefRO<Health>>())
         {
-            Debug.Log("asdasda");
-            var animatorEntity = animatorEntityRef.animatorEntity;
-            
-            var animatorParams = SystemAPI.GetBuffer<AnimatorControllerParameterComponent>(animatorEntity);
-            var indexTable = SystemAPI.GetComponent<AnimatorControllerParameterIndexTableComponent>(animatorEntity);
-            
-            var paramAspect = new AnimatorParametersAspect(animatorParams, indexTable);
-            paramAspect.SetParameterValue("IsAttacking", true);
-            paramAspect.SetParameterValue("IsWalking", false);
+            if (health.ValueRO.Value < 0) 
+                animatorEntityRef.SetAnimationState(ref state, ("IsDead", true));
         }
 
-        // Переключение на ходьбы
-        foreach (var animatorEntityRef in SystemAPI.Query<AnimatorEntityRefComponent>()
-                     .WithAll<IsWalking>()
-                     .WithNone<IsAttaking>())
+        ecb.Playback(state.EntityManager);
+        ecb.Dispose();
+    }
+}
+
+public static class AnimatorEntityRefExtensions
+{
+    public static void SetAnimationState(this in AnimatorEntityRefComponent animatorRef, ref SystemState state,
+        params (string name, bool value)[] parameters)
+    {
+        var em = state.EntityManager;
+        var animatorParams = em.GetBuffer<AnimatorControllerParameterComponent>(animatorRef.animatorEntity);
+        var indexTable =
+            em.GetComponentData<AnimatorControllerParameterIndexTableComponent>(animatorRef.animatorEntity);
+
+        var paramAspect = new AnimatorParametersAspect(animatorParams, indexTable);
+
+        foreach (var (name, value) in parameters)
         {
-            var animatorEntity = animatorEntityRef.animatorEntity;
-            
-            var animatorParams = SystemAPI.GetBuffer<AnimatorControllerParameterComponent>(animatorEntity);
-            var indexTable = SystemAPI.GetComponent<AnimatorControllerParameterIndexTableComponent>(animatorEntity);
-            
-            var paramAspect = new AnimatorParametersAspect(animatorParams, indexTable);
-            paramAspect.SetParameterValue("IsWalking", true);
-            paramAspect.SetParameterValue("IsAttacking", false);
+            paramAspect.SetParameterValue(name, value);
         }
     }
+}
+
+public struct SpawnProjectileTag : IComponentData
+{
 }

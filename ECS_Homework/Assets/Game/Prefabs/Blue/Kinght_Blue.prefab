@@ -530,6 +530,7 @@ GameObject:
   - component: {fileID: 8102541873023403995}
   - component: {fileID: -7089333173211529596}
   - component: {fileID: -5637476934102556953}
+  - component: {fileID: -1468509327195274503}
   m_Layer: 0
   m_Name: Kinght_Blue
   m_TagString: Untagged
@@ -709,7 +710,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0804e4e31dc2427bb5f9d7d839657a38, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Game.Scripts.UI.Entities.Components.DamageAuthoring
-  DamageValue: 10
+  DamageValue: 12
 --- !u!114 &4467693612664204129
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -800,6 +801,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e3d588bd00e4ba4882819a8bb8a6a5d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WalkStateTagAuthoring
+--- !u!114 &-1468509327195274503
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4620109356902655728}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0174d0ec32f1487f864ef967618a0895, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TargetDistanceAuthoring
 --- !u!1 &4992053240300705693
 GameObject:
   m_ObjectHideFlags: 0

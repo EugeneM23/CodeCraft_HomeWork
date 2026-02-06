@@ -10,9 +10,15 @@ public partial struct SetAgentDestinationSystem : ISystem
     {
         foreach (var (target, body) in SystemAPI.Query<RefRO<Target>, RefRW<AgentBody>>())
         {
-            Entity targetEntity = target.ValueRO.Value;
+            var targetEntity = target.ValueRO.Value;
 
             if (targetEntity == Entity.Null)
+                continue;
+
+            if (!state.EntityManager.Exists(targetEntity))
+                continue;
+
+            if (!SystemAPI.HasComponent<LocalTransform>(targetEntity))
                 continue;
 
             var targetTransform = SystemAPI.GetComponentRO<LocalTransform>(targetEntity);
