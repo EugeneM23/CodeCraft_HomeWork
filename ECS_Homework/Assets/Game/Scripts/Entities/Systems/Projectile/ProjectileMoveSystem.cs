@@ -30,9 +30,12 @@ public partial struct ProjectileMoveSystem : ISystem
 
                 var hitPrefab = state.EntityManager.GetComponentData<ProjectileHitPrefab>(entity);
                 var instantiate = ecb.Instantiate(hitPrefab.Value);
-                
+
                 ecb.SetComponent(instantiate,
                     LocalTransform.FromPosition(targetTransform.Position + new float3(0, 1f, 0)));
+                
+                ecb.AddComponent(target.ValueRO.Value, new HitEffectRequest());
+
 
                 ecb.DestroyEntity(entity);
                 continue;

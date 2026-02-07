@@ -3,6 +3,7 @@ using Game.Scripts.Entities.Systems;
 using Rukhanka;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Mathematics;
 using Unity.Transforms;
 
 [UpdateBefore(typeof(SpawnPrefabSystem))]
@@ -12,8 +13,8 @@ public partial struct ProjectileSpawnEventSystem : ISystem
     {
         var ecb = new EntityCommandBuffer(Allocator.Temp);
 
-        foreach (var (animatorRef, target, projectilePrefab, transform) in SystemAPI
-                     .Query<AnimatorEntityRefComponent, Target, ProjectilePrefab, LocalTransform>())
+        foreach (var (animatorRef, target, projectilePrefab, transform, entity) in SystemAPI
+                     .Query<AnimatorEntityRefComponent, Target, ProjectilePrefab, LocalTransform>().WithEntityAccess())
         {
             var eventBuffer = state.EntityManager.GetBuffer<AnimationEventComponent>(animatorRef.animatorEntity);
 
@@ -21,8 +22,13 @@ public partial struct ProjectileSpawnEventSystem : ISystem
             {
                 if (animEvent.nameHash == (uint)AnimationEventType.SpawnProjectile)
                 {
-                    var targetTransform = state.EntityManager.GetComponentData<LocalTransform>(target.Value);
-                    SpawnUseCase.Projectile(target, transform, targetTransform, ecb, projectilePrefab);
+                    ecb.AddComponent(projectilePrefab.Value, new Target { Value = target.Value });
+                    ecb.AddComponent(entity, new SpawnPrefabRequest
+                    {
+                        Prefab = projectilePrefab.Value,
+                        Position = transform.Position + new float3(0, 1, 0),
+                        Rotation = transform.Rotation
+                    });
                 }
             }
         }

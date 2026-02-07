@@ -11,9 +11,8 @@ public partial struct HitEventSystem : ISystem
     {
         var ecb = new EntityCommandBuffer(Allocator.Temp);
 
-        foreach (var (animatorRef, target, damage, entity) in SystemAPI
-                     .Query<AnimatorEntityRefComponent, RefRO<Target>, RefRO<Damage>>()
-                     .WithEntityAccess())
+        foreach (var (animatorRef, target, damage) in SystemAPI
+                     .Query<AnimatorEntityRefComponent, RefRO<Target>, RefRO<Damage>>())
         {
             if (!state.EntityManager.HasBuffer<AnimationEventComponent>(animatorRef.animatorEntity))
                 continue;
@@ -22,7 +21,7 @@ public partial struct HitEventSystem : ISystem
 
             foreach (var animEvent in eventBuffer)
             {
-                if (animEvent.nameHash == (uint)AnimationEventType.DealDamage && target.ValueRO.Value != Entity.Null)
+                if (animEvent.nameHash == (uint)AnimationEventType.DealDamage)
                 {
                     ecb.AddComponent(target.ValueRO.Value, new DamageRequest
                     {
