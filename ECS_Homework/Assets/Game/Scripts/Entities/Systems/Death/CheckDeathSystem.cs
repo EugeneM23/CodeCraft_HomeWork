@@ -10,12 +10,8 @@ public partial struct CheckDeathSystem : ISystem
         var ecb = new EntityCommandBuffer(Allocator.Temp);
 
         foreach (var (health, entity) in SystemAPI.Query<RefRO<Health>>().WithEntityAccess())
-        {
-            if (health.ValueRO.Value > 0) continue;
-
-            ecb.AddComponent(entity, new DeathEvent());
-            ecb.RemoveComponent<TeamMask>(entity);
-        }
+            if (health.ValueRO.Value <= 0)
+                ecb.AddComponent<DeathEvent>(entity);
 
         ecb.Playback(state.EntityManager);
         ecb.Dispose();

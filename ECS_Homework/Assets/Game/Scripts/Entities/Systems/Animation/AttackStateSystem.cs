@@ -3,7 +3,7 @@ using Rukhanka;
 using Unity.Collections;
 using Unity.Entities;
 
-public partial struct WalkStateSystem : ISystem
+public partial struct AttackStateSystem : ISystem
 {
     public void OnUpdate(ref SystemState state)
     {
@@ -11,14 +11,14 @@ public partial struct WalkStateSystem : ISystem
 
         foreach (var (distance, attackDistance, animatorRef, entity) in SystemAPI
                      .Query<DistanceToTarget, AttackDistance, AnimatorEntityRefComponent>()
-                     .WithAll<IsWalking>()
+                     .WithAll<IsAttaking>()
                      .WithEntityAccess())
         {
-            if (distance.Value < attackDistance.Value)
+            if (distance.Value > attackDistance.Value)
             {
-                ecb.AddComponent<IsAttaking>(entity);
-                ecb.RemoveComponent<IsWalking>(entity);
-                animatorRef.SetAnimationState(ref state, ("IsAttacking", true), ("IsWalking", false));
+                ecb.AddComponent<IsWalking>(entity);
+                ecb.RemoveComponent<IsAttaking>(entity);
+                animatorRef.SetAnimationState(ref state, ("IsWalking", true), ("IsAttacking", false));
             }
         }
 

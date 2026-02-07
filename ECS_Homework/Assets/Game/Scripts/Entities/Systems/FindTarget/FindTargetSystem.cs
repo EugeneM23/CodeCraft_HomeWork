@@ -20,16 +20,15 @@ namespace Game.Scripts.Targeting
                          .Query<RefRW<Target>, RefRW<TargetUpdateSettings>, RefRO<LocalTransform>, RefRO<TeamMask>>())
             {
                 cooldown.ValueRW.UpdateTimer -= deltaTime;
-
                 if (cooldown.ValueRO.UpdateTimer > 0f) continue;
 
                 cooldown.ValueRW.UpdateTimer = cooldown.ValueRO.UpdateInterval;
-
-                target.ValueRW.Value =
-                    FindTargetUseCase.FindClosestEnemy(collisionWorld, teamMaskLookup, transform, cooldown, myTeam);
+                target.ValueRW.Value = FindTargetUseCase.FindClosestEnemy(collisionWorld, teamMaskLookup, transform, cooldown, myTeam);
 
                 if (target.ValueRW.Value == Entity.Null)
+                {
                     target.ValueRW.Value = FindTargetUseCase.FindEnemyCastle(state.EntityManager, myTeam);
+                }
             }
         }
     }

@@ -1,8 +1,6 @@
-using AudioEngine;
 using Game.Scripts.Entities.Systems;
 using Game.Scripts.UI.Entities.Components;
-using Game.Scripts.UI.Entities.Components.Health;
-using ProjectDawn.Navigation;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
@@ -12,63 +10,31 @@ public partial struct ProjectileMoveSystem : ISystem
     public void OnUpdate(ref SystemState state)
     {
         float deltaTime = SystemAPI.Time.DeltaTime;
-        var ecb = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
-        var manager = state.EntityManager;
+        var ecb = new EntityCommandBuffer(Allocator.Temp);
 
-        foreach (var (transform, target, speed, entity) in SystemAPI
-                     .Query<RefRW<LocalTransform>, RefRO<Target>, RefRO<Speed>>()
+        foreach (var (transform, target, speed, damage, entity) in SystemAPI
+                     .Query<RefRW<LocalTransform>, RefRO<Target>, RefRO<Speed>, RefRO<Damage>>()
                      .WithAll<ProjectileTag>()
                      .WithEntityAccess())
         {
-            if (target.ValueRO.Value == Entity.Null || !manager.Exists(target.ValueRO.Value))
-            {
-                ecb.DestroyEntity(entity);
-                continue;
-            }
-
-            var targetTransform = manager.GetComponentData<LocalTransform>(target.ValueRO.Value);
+            var targetTransform = state.EntityManager.GetComponentData<LocalTransform>(target.ValueRO.Value);
             float distanceSq = math.distancesq(transform.ValueRO.Position, targetTransform.Position);
 
             if (distanceSq < 2f)
             {
+                ecb.AddComponent(target.ValueRO.Value, new DamageRequest()
+                {
+                    Target = target.ValueRO.Value,
+                    DamageAmount = damage.ValueRO.Value
+                });
+
+                var hitPrefab = state.EntityManager.GetComponentData<ProjectileHitPrefab>(entity);
+                var instantiate = ecb.Instantiate(hitPrefab.Value);
+                
+                ecb.SetComponent(instantiate,
+                    LocalTransform.FromPosition(targetTransform.Position + new float3(0, 1f, 0)));
+
                 ecb.DestroyEntity(entity);
-
-                if (manager.HasComponent<Health>(target.ValueRO.Value) && manager.HasComponent<Damage>(entity))
-                {
-                    var damage = manager.GetComponentData<Damage>(entity);
-                    
-                    // Добавляем DamageRequest вместо прямого изменения здоровья
-                    ecb.AddComponent(target.ValueRO.Value, new DamageRequest
-                    {
-                        Target = target.ValueRO.Value,
-                        DamageAmount = damage.Value
-                    });
-
-                    // Убираем весь код с проверкой смерти - это делает CheckDeathSystem
-                    
-                    // Эффект попадания
-                    if (manager.HasComponent<HitEffect>(target.ValueRO.Value))
-                    {
-                        Entity hitEffectRequest = manager.CreateEntity();
-                        ecb.AddComponent(hitEffectRequest, new SpawnPrefabRequest
-                        {
-                            Position = targetTransform.Position,
-                            Prefab = manager.GetComponentData<HitEffect>(target.ValueRO.Value).Prefab
-                        });
-                    }
-
-                    // Звук попадания - оставляем здесь или тоже через систему
-                    AudioSystem.Instance.PlayEvent(MasterBankAPI.ElectrickHitEvent, targetTransform.Position);
-                }
-
-                if (manager.HasComponent<ProjectileHitPrefab>(entity))
-                {
-                    var hitPrefab = manager.GetComponentData<ProjectileHitPrefab>(entity);
-                    var hitEntity = ecb.Instantiate(hitPrefab.Value);
-                    ecb.SetComponent(hitEntity,
-                        LocalTransform.FromPosition(targetTransform.Position + new float3(0, 1f, 0)));
-                }
-
                 continue;
             }
 
@@ -76,7 +42,7 @@ public partial struct ProjectileMoveSystem : ISystem
             MoveUseCase.Move(ref transform.ValueRW, targetTransform.Position, speed.ValueRO.Value, deltaTime);
         }
 
-        ecb.Playback(manager);
+        ecb.Playback(state.EntityManager);
         ecb.Dispose();
     }
 }

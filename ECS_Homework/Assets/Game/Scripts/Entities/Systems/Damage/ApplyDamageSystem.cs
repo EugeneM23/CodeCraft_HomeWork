@@ -1,7 +1,6 @@
 using Game.Scripts.UI.Entities.Components.Health;
 using Unity.Collections;
 using Unity.Entities;
-using Unity.Transforms;
 
 public partial struct ApplyDamageSystem : ISystem
 {
@@ -14,21 +13,6 @@ public partial struct ApplyDamageSystem : ISystem
                      .WithEntityAccess())
         {
             health.ValueRW.Value -= damageRequest.DamageAmount;
-
-            var hitEffect = state.EntityManager.GetComponentData<HitEffect>(entity);
-            var transform = state.EntityManager.GetComponentData<LocalTransform>(entity);
-
-            ecb.AddComponent(entity, new SpawnPrefabRequest
-            {
-                Prefab = hitEffect.Prefab,
-                Position = transform.Position
-            });
-
-            ecb.AddComponent(entity, new DamageSoundRequest
-            {
-                Target = entity // Передаём сущность, которая получила урон
-            });
-
             ecb.RemoveComponent<DamageRequest>(entity);
         }
 

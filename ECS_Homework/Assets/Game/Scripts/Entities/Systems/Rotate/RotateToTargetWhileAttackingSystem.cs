@@ -7,30 +7,17 @@ public partial struct RotateToTargetWhileAttackingSystem : ISystem
     public void OnUpdate(ref SystemState state)
     {
         float deltaTime = SystemAPI.Time.DeltaTime;
-        var manager = state.EntityManager;
+        var transformLookup = SystemAPI.GetComponentLookup<LocalTransform>(true);
 
-        foreach (var (transform, target, entity) in SystemAPI
+        foreach (var (transform, target) in SystemAPI
                      .Query<RefRW<LocalTransform>, RefRO<Target>>()
-                     .WithAll<IsAttaking>()
-                     .WithEntityAccess())
+                     .WithAll<IsAttaking>())
         {
-            // Проверяем что цель существует
-            if (target.ValueRO.Value == Entity.Null || !manager.Exists(target.ValueRO.Value))
-                continue;
+            if (target.ValueRO.Value == Entity.Null) continue;
+            if (!transformLookup.HasComponent(target.ValueRO.Value)) continue;
 
-            // Получаем позицию цели
-            if (!manager.HasComponent<LocalTransform>(target.ValueRO.Value))
-                continue;
-
-            var targetTransform = manager.GetComponentData<LocalTransform>(target.ValueRO.Value);
-
-            // Поворачиваем к цели
-            RotateUseCase.RotateTowardsPosition(
-                ref transform.ValueRW,
-                targetTransform.Position,
-                rotationSpeedDegrees: 360f, // Скорость поворота - можно настроить
-                deltaTime
-            );
+            var targetPosition = transformLookup[target.ValueRO.Value].Position;
+            RotateUseCase.RotateTowardsPosition(ref transform.ValueRW, targetPosition, 360f, deltaTime);
         }
     }
 }
