@@ -1,36 +1,44 @@
 using Game.Animation;
 using Game.Scripts.Entities.Systems;
 using Game.Scripts.UI.Entities.Components;
+using Game.Scripts.UI.Entities.Components.Health;
 using Rukhanka;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Transforms;
 
+[UpdateBefore(typeof(SpawnPrefabSystem))]
 public partial struct HitEventSystem : ISystem
 {
     public void OnUpdate(ref SystemState state)
     {
         var ecb = new EntityCommandBuffer(Allocator.Temp);
 
-        foreach (var (animatorRef, target, damage) in SystemAPI
-                     .Query<AnimatorEntityRefComponent, RefRO<Target>, RefRO<Damage>>())
+        foreach (var (animatorRef, target, damage, hitEffect) in SystemAPI
+                     .Query<AnimatorEntityRefComponent, Target, Damage, HitEffect>())
         {
-            if (!state.EntityManager.HasBuffer<AnimationEventComponent>(animatorRef.animatorEntity))
-                continue;
-
             var eventBuffer = state.EntityManager.GetBuffer<AnimationEventComponent>(animatorRef.animatorEntity);
 
             foreach (var animEvent in eventBuffer)
             {
                 if (animEvent.nameHash == (uint)AnimationEventType.DealDamage)
                 {
-                    ecb.AddComponent(target.ValueRO.Value, new DamageRequest
+                    var targetTransform = state.EntityManager.GetComponentData<LocalTransform>(target.Value);
+
+                    ecb.AddComponent(target.Value, new DamageRequest
                     {
-                        Target = target.ValueRO.Value,
-                        DamageAmount = damage.ValueRO.Value
+                        Target = target.Value,
+                        DamageAmount = damage.Value
                     });
 
-                    ecb.AddComponent(target.ValueRO.Value, new HitEffectRequest());
-                    ecb.AddComponent(target.ValueRO.Value, new DamageSoundRequest());
+                    ecb.AddComponent(target.Value, new SpawnPrefabRequest
+                    {
+                        Prefab = hitEffect.Prefab,
+                        Position = targetTransform.Position,
+                        Rotaion = targetTransform.Rotation
+                    });
+
+                    ecb.AddComponent(target.Value, new DamageSoundRequest());
                 }
             }
 

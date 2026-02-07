@@ -17,7 +17,7 @@ public partial struct ProjectileSpawnEventSystem : ISystem
                      .Query<AnimatorEntityRefComponent, Target, ProjectilePrefab, LocalTransform>().WithEntityAccess())
         {
             var eventBuffer = state.EntityManager.GetBuffer<AnimationEventComponent>(animatorRef.animatorEntity);
-
+            
             foreach (var animEvent in eventBuffer)
             {
                 if (animEvent.nameHash == (uint)AnimationEventType.SpawnProjectile)
@@ -27,7 +27,7 @@ public partial struct ProjectileSpawnEventSystem : ISystem
                     {
                         Prefab = projectilePrefab.Value,
                         Position = transform.Position + new float3(0, 1, 0),
-                        Rotation = transform.Rotation
+                        Rotaion = transform.Rotation
                     });
                 }
             }

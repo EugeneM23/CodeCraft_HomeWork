@@ -23866,6 +23866,8 @@ GameObject:
   - component: {fileID: 2757621147631995978}
   - component: {fileID: 733228161076089995}
   - component: {fileID: 6501451818368698136}
+  - component: {fileID: -7311965840319485098}
+  - component: {fileID: 6729904055787666997}
   m_Layer: 0
   m_Name: Sphere
   m_TagString: Untagged
@@ -23969,3 +23971,28 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Game.Scripts.UI.Entities.Components.DamageAuthoring
   DamageValue: 51
+--- !u!114 &-7311965840319485098
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9147861169831921053}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0174d0ec32f1487f864ef967618a0895, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TargetDistanceAuthoring
+--- !u!114 &6729904055787666997
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9147861169831921053}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 46f616726c5c4fd9854680ff7bf18a82, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EntityRadiusAuthoring
+  Radius: 1

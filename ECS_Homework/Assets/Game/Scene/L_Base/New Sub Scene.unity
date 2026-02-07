@@ -129,6 +129,7 @@ GameObject:
   m_Component:
   - component: {fileID: 38507477}
   - component: {fileID: 38507478}
+  - component: {fileID: 38507479}
   m_Layer: 0
   m_Name: GameObject
   m_TagString: Untagged
@@ -145,7 +146,7 @@ Transform:
   m_GameObject: {fileID: 38507476}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -2.98, y: 0.26, z: -1.1593}
+  m_LocalPosition: {x: -6.21, y: 0.26, z: -1.05}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -163,6 +164,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e0e4d0f9baf74fc581babead398a3177, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Game.Scripts.Entities.Systems.PlayerCastleTagAuthoring
+--- !u!114 &38507479
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 38507476}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 46f616726c5c4fd9854680ff7bf18a82, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EntityRadiusAuthoring
+  Radius: 2
 --- !u!1 &232167306
 GameObject:
   m_ObjectHideFlags: 0
@@ -223,6 +237,7 @@ GameObject:
   m_Component:
   - component: {fileID: 664726326}
   - component: {fileID: 664726327}
+  - component: {fileID: 664726328}
   m_Layer: 0
   m_Name: GameObject
   m_TagString: Untagged
@@ -257,6 +272,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed271db25a3c4f8891d4a8502cdf8d6d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Game.Scripts.Entities.Systems.EnemyCastelTagAuthoring
+--- !u!114 &664726328
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 664726325}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 46f616726c5c4fd9854680ff7bf18a82, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EntityRadiusAuthoring
+  Radius: 2
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
