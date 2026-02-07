@@ -1,4 +1,3 @@
-using Game.Animation;
 using Game.Scripts.Entities.Systems;
 using ProjectDawn.Navigation;
 using Unity.Collections;
@@ -16,8 +15,9 @@ public partial struct HandleDeathSystem : ISystem
             ecb.RemoveComponent<Target>(entity);
             ecb.RemoveComponent<AgentBody>(entity);
             ecb.RemoveComponent<TeamMask>(entity);
-            ecb.AddComponent(entity, new AnimationEventRequest { Parameter = ACBase.Death.ToString() });
             ecb.RemoveComponent<DeathEvent>(entity);
+            
+            //RequestUseCase.PlaySound(ecb, entity, MasterBankAPI.DeathEvent, new float3());q
         }
 
         ecb.Playback(state.EntityManager);

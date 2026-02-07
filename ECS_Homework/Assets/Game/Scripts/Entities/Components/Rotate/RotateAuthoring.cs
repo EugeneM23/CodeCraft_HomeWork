@@ -14,19 +14,13 @@ namespace Game.Scripts.Components
             {
                 Entity entity = GetEntity(TransformUsageFlags.Dynamic);
 
-                AddComponent(entity, new UnitRotate
+                AddComponent(entity, new Rotate
                 {
                     RotationSpeed = authoring.RotationSpeed,
                     TargetDirection = new float3(0, 0, 1)
                 });
             }
         }
-    }
-    
-    public struct UnitRotate : IComponentData
-    {
-        public float RotationSpeed;
-        public float3 TargetDirection;
     }
 }
 

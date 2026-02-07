@@ -1,7 +1,7 @@
 using Unity.Mathematics;
 using Unity.Transforms;
 
-public static class MoveUseCase
+public static class ProjectileMoveUseCase
 {
     private const float MinDirectionSqr = 0.001f;
 

@@ -17,7 +17,7 @@ namespace Game.Scripts.Targeting
             var deltaTime = SystemAPI.Time.DeltaTime;
 
             foreach (var (target, cooldown, transform, myTeam) in SystemAPI
-                         .Query<RefRW<Target>, RefRW<TargetUpdateSettings>, RefRO<LocalTransform>, RefRO<TeamMask>>())
+                         .Query<RefRW<Target>, RefRW<TargetUpdate>, RefRO<LocalTransform>, RefRO<TeamMask>>())
             {
                 cooldown.ValueRW.UpdateTimer -= deltaTime;
                 if (cooldown.ValueRO.UpdateTimer > 0f) continue;

@@ -14,8 +14,8 @@ public partial struct ProjectileMoveSystem : ISystem
         {
             var targetTransform = state.EntityManager.GetComponentData<LocalTransform>(target.Value);
             
-            RotateUseCase.RotateTowardsPosition(ref transform.ValueRW, targetTransform.Position, 360f, deltaTime);
-            MoveUseCase.Move(ref transform.ValueRW, targetTransform.Position, speed.ValueRO.Value, deltaTime);
+            RotateUseCase.RotateTowards(ref transform.ValueRW, targetTransform.Position, 360f, deltaTime);
+            ProjectileMoveUseCase.Move(ref transform.ValueRW, targetTransform.Position, speed.ValueRO.Value, deltaTime);
         }
     }
 }

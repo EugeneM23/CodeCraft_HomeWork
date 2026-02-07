@@ -1,6 +1,7 @@
 using AudioEngine;
 using Game.Animation;
 using Game.Scripts.Entities.Systems;
+using Game.Scripts.Entities.Systems.Request;
 using Game.Scripts.UI.Entities.Components;
 using Game.Scripts.UI.Entities.Components.Health;
 using Rukhanka;
@@ -26,28 +27,9 @@ public partial struct HitEventSystem : ISystem
                 {
                     var targetTransform = state.EntityManager.GetComponentData<LocalTransform>(target.Value);
 
-                    var damageRequest = ecb.CreateEntity();
-                    ecb.AddComponent(damageRequest, new DamageRequest
-                    {
-                        Target = target.Value,
-                        DamageAmount = damage.Value
-                    });
-
-                    var spawnRequest = ecb.CreateEntity();
-                    ecb.AddComponent(spawnRequest, new SpawnPrefabRequest
-                    {
-                        Prefab = hitEffect.Prefab,
-                        Position = targetTransform.Position,
-                        Rotaion = targetTransform.Rotation
-                    });
-
-                    var soundRequest = ecb.CreateEntity();
-                    ecb.AddComponent(soundRequest, new AudioRequest
-                    {
-                        Target = target.Value,
-                        SoundName = MasterBankAPI.FootmanHitEvent,
-                        Position = targetTransform.Position
-                    });
+                    RequestUseCase.DealDamage(ecb, target.Value, damage.Value);
+                    RequestUseCase.SpawnPrefab(ecb, hitEffect.Prefab, targetTransform.Position, targetTransform.Rotation);
+                    RequestUseCase.PlaySound(ecb, target.Value, MasterBankAPI.FootmanHitEvent, targetTransform.Position);
                 }
             }
 

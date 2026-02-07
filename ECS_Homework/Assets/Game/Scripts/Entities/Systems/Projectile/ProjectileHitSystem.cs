@@ -1,5 +1,6 @@
 using AudioEngine;
 using Game.Scripts.Entities.Systems;
+using Game.Scripts.Entities.Systems.Request;
 using Game.Scripts.UI.Entities.Components;
 using Game.Scripts.UI.Entities.Components.Health;
 using Unity.Collections;
@@ -15,48 +16,22 @@ public partial struct ProjectileHitSystem : ISystem
         var ecb = new EntityCommandBuffer(Allocator.Temp);
 
         foreach (var (target, damage, distanceToTarget, entity) in SystemAPI
-                     .Query<Target, RefRO<Damage>, DistanceToTarget>()
+                     .Query<Target, RefRO<Damage>, TargetDistance>()
                      .WithAll<ProjectileTag>()
                      .WithEntityAccess())
         {
             var targetTransform = state.EntityManager.GetComponentData<LocalTransform>(target.Value);
             var radius = state.EntityManager.GetComponentData<EntityRadius>(target.Value);
 
-
             if (distanceToTarget.Value < radius.Value / 2)
             {
-                var damageReqst = ecb.CreateEntity();
-                ecb.AddComponent(damageReqst, new DamageRequest
-                {
-                    Target = target.Value,
-                    DamageAmount = damage.ValueRO.Value
-                });
-
                 var hitPrefab = state.EntityManager.GetComponentData<ProjectileHitPrefab>(entity);
-                var projectileHit = ecb.CreateEntity();
-                ecb.AddComponent(projectileHit, new SpawnPrefabRequest
-                {
-                    Prefab = hitPrefab.Value,
-                    Position = targetTransform.Position + new float3(0, 1f, 0),
-                    Rotaion = targetTransform.Rotation
-                });
-
                 var hitEffect = state.EntityManager.GetComponentData<HitEffect>(target.Value);
-                var targeHit = ecb.CreateEntity();
-                ecb.AddComponent(targeHit, new SpawnPrefabRequest
-                {
-                    Prefab = hitEffect.Prefab,
-                    Position = targetTransform.Position,
-                    Rotaion = targetTransform.Rotation
-                });
 
-                var soundRequest = ecb.CreateEntity();
-                ecb.AddComponent(soundRequest, new AudioRequest
-                {
-                    Target = target.Value,
-                    SoundName = MasterBankAPI.ElectrickHitEvent,
-                    Position = targetTransform.Position
-                });
+                RequestUseCase.DealDamage(ecb, target.Value, damage.ValueRO.Value);
+                RequestUseCase.SpawnPrefab(ecb, hitEffect.Prefab, targetTransform.Position, targetTransform.Rotation);
+                RequestUseCase.SpawnPrefab(ecb, hitPrefab.Value, targetTransform.Position + new float3(0, 1f, 0), targetTransform.Rotation);
+                RequestUseCase.PlaySound(ecb, target.Value, MasterBankAPI.ElectrickHitEvent, targetTransform.Position);
 
                 ecb.DestroyEntity(entity);
             }
@@ -65,9 +40,4 @@ public partial struct ProjectileHitSystem : ISystem
         ecb.Playback(state.EntityManager);
         ecb.Dispose();
     }
-}
-
-internal struct EntityRadius : IComponentData
-{
-    public float Value;
 }

@@ -12,7 +12,7 @@ namespace Game.Scripts.Targeting
             CollisionWorld collisionWorld,
             ComponentLookup<TeamMask> teamMaskLookup,
             RefRO<LocalTransform> transform,
-            RefRW<TargetUpdateSettings> settings,
+            RefRW<TargetUpdate> settings,
             RefRO<TeamMask> myTeam)
         {
             Entity closestEnemy = Entity.Null;

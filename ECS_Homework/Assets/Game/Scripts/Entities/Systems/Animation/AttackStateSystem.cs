@@ -11,7 +11,7 @@ public partial struct AttackStateSystem : ISystem
         var ecb = new EntityCommandBuffer(Allocator.Temp);
 
         foreach (var (distanceToTarget, attackDistance, animatorRef, entity) in SystemAPI
-                     .Query<DistanceToTarget, AttackDistance, AnimatorEntityRefComponent>()
+                     .Query<TargetDistance, AttackDistance, AnimatorEntityRefComponent>()
                      .WithAll<IsAttaking>()
                      .WithEntityAccess())
         {

@@ -10,7 +10,7 @@ public partial struct WalkStateSystem : ISystem
         var ecb = new EntityCommandBuffer(Allocator.Temp);
 
         foreach (var (distance, attackDistance, animatorRef, entity) in SystemAPI
-                     .Query<DistanceToTarget, AttackDistance, AnimatorEntityRefComponent>()
+                     .Query<TargetDistance, AttackDistance, AnimatorEntityRefComponent>()
                      .WithAll<IsWalking>()
                      .WithEntityAccess())
         {

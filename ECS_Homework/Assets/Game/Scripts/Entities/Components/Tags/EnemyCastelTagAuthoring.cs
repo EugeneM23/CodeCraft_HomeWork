@@ -14,8 +14,4 @@ namespace Game.Scripts.Entities.Systems
             }
         }
     }
-
-    public struct EnemyCastelTag : IComponentData
-    {
-    }
 }

@@ -5,7 +5,7 @@ public static class RotateUseCase
 {
     private const float MinDirectionSqr = 0.001f;
 
-    public static void RotateTowardsPosition(ref LocalTransform transform, float3 targetPosition,
+    public static void RotateTowards(ref LocalTransform transform, float3 targetPosition,
         float rotationSpeedDegrees, float deltaTime)
     {
         float3 direction = targetPosition - transform.Position;

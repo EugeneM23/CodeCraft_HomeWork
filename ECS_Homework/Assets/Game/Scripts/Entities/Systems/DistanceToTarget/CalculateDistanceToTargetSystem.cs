@@ -13,7 +13,7 @@ public partial struct CalculateDistanceToTargetSystem : ISystem
         var radiusLookup = SystemAPI.GetComponentLookup<EntityRadius>(true);
 
         foreach (var (target, myTransform, myRadius, distanceToTarget) in SystemAPI
-                     .Query<RefRO<Target>, RefRO<LocalTransform>, RefRO<EntityRadius>, RefRW<DistanceToTarget>>())
+                     .Query<RefRO<Target>, RefRO<LocalTransform>, RefRO<EntityRadius>, RefRW<TargetDistance>>())
         {
             if (target.ValueRO.Value == Entity.Null)
             {
