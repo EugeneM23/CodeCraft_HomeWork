@@ -1,4 +1,5 @@
 using Game.Scripts.Entities.Systems;
+using Unity.Burst;
 using Unity.Entities;
 using Unity.Physics;
 using Unity.Physics.Systems;
@@ -10,6 +11,7 @@ namespace Game.Scripts.Targeting
     [UpdateAfter(typeof(PhysicsSystemGroup))]
     public partial struct FindTargetSystem : ISystem
     {
+        [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
             var collisionWorld = SystemAPI.GetSingleton<PhysicsWorldSingleton>().CollisionWorld;
@@ -23,7 +25,8 @@ namespace Game.Scripts.Targeting
                 if (cooldown.ValueRO.UpdateTimer > 0f) continue;
 
                 cooldown.ValueRW.UpdateTimer = cooldown.ValueRO.UpdateInterval;
-                target.ValueRW.Value = FindTargetUseCase.FindClosestEnemy(collisionWorld, teamMaskLookup, transform, cooldown, myTeam);
+                target.ValueRW.Value =
+                    FindTargetUseCase.FindClosestEnemy(collisionWorld, teamMaskLookup, transform, cooldown, myTeam);
 
                 if (target.ValueRW.Value == Entity.Null)
                 {
