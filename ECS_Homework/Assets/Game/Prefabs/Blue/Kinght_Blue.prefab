@@ -743,7 +743,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 581a16699f5d4fda856a05825528aded, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Game.Scripts.Entities.Systems.UpdateTargetCooldownAuthoring
-  UpdateInterval: 0.2
+  UpdateInterval: 1
   Range: 3
 --- !u!114 &8102541873023403995
 MonoBehaviour:

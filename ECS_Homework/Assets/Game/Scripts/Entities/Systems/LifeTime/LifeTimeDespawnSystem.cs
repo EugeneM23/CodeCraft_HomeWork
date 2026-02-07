@@ -7,7 +7,7 @@ public partial struct LifeTimeDespawnSystem : ISystem
     {
         var timeDeltaTime = SystemAPI.Time.DeltaTime;
         var ecb = new EntityCommandBuffer(Allocator.Temp);
-        
+
         foreach (var (lifeTime, entity) in SystemAPI.Query<RefRW<LifeTime>>().WithEntityAccess())
         {
             lifeTime.ValueRW.TimeLeft -= timeDeltaTime;

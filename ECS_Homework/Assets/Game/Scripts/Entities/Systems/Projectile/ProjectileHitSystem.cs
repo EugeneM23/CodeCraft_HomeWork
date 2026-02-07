@@ -51,10 +51,11 @@ public partial struct ProjectileHitSystem : ISystem
                 });
 
                 var soundRequest = ecb.CreateEntity();
-                ecb.AddComponent(soundRequest, new DamageSoundRequest()
+                ecb.AddComponent(soundRequest, new AudioRequest
                 {
                     Target = target.Value,
-                    SoundName = MasterBankAPI.ElectrickHitEvent
+                    SoundName = MasterBankAPI.ElectrickHitEvent,
+                    Position = targetTransform.Position
                 });
 
                 ecb.DestroyEntity(entity);

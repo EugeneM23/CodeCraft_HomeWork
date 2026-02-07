@@ -42,10 +42,11 @@ public partial struct HitEventSystem : ISystem
                     });
 
                     var soundRequest = ecb.CreateEntity();
-                    ecb.AddComponent(soundRequest, new DamageSoundRequest()
+                    ecb.AddComponent(soundRequest, new AudioRequest
                     {
                         Target = target.Value,
-                        SoundName = MasterBankAPI.FootmanHitEvent
+                        SoundName = MasterBankAPI.FootmanHitEvent,
+                        Position = targetTransform.Position
                     });
                 }
             }
