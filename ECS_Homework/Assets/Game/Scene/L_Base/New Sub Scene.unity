@@ -130,6 +130,8 @@ GameObject:
   - component: {fileID: 38507477}
   - component: {fileID: 38507478}
   - component: {fileID: 38507479}
+  - component: {fileID: 38507481}
+  - component: {fileID: 38507480}
   m_Layer: 0
   m_Name: GameObject
   m_TagString: Untagged
@@ -177,6 +179,32 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EntityRadiusAuthoring
   Radius: 2
+--- !u!114 &38507480
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 38507476}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f1227d2733e4287ad606476b39cf369, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Scripts.UI.Entities.Components.Health.HitEffectAuthoring
+  Prefab: {fileID: 5880797563127281583, guid: 265d3a5ba69981a4698ceabcedf368b0, type: 3}
+--- !u!114 &38507481
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 38507476}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 115fe328f27c423e95bd70844b7f620f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Scripts.UI.Entities.Components.Health.HealthAuthoring
+  Health: 10000
 --- !u!1 &232167306
 GameObject:
   m_ObjectHideFlags: 0
@@ -238,6 +266,8 @@ GameObject:
   - component: {fileID: 664726326}
   - component: {fileID: 664726327}
   - component: {fileID: 664726328}
+  - component: {fileID: 664726330}
+  - component: {fileID: 664726329}
   m_Layer: 0
   m_Name: GameObject
   m_TagString: Untagged
@@ -285,6 +315,32 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EntityRadiusAuthoring
   Radius: 2
+--- !u!114 &664726329
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 664726325}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f1227d2733e4287ad606476b39cf369, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Scripts.UI.Entities.Components.Health.HitEffectAuthoring
+  Prefab: {fileID: 5880797563127281583, guid: 265d3a5ba69981a4698ceabcedf368b0, type: 3}
+--- !u!114 &664726330
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 664726325}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 115fe328f27c423e95bd70844b7f620f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Scripts.UI.Entities.Components.Health.HealthAuthoring
+  Health: 10000
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

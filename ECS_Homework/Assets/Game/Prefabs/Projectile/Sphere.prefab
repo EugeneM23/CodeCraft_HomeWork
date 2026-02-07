@@ -23868,6 +23868,7 @@ GameObject:
   - component: {fileID: 6501451818368698136}
   - component: {fileID: -7311965840319485098}
   - component: {fileID: 6729904055787666997}
+  - component: {fileID: -116663794977193544}
   m_Layer: 0
   m_Name: Sphere
   m_TagString: Untagged
@@ -23996,3 +23997,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EntityRadiusAuthoring
   Radius: 1
+--- !u!114 &-116663794977193544
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9147861169831921053}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d3c4060b57194eb18ff667f6752945a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LifeTimeAuthoring
+  LifeTime: 1

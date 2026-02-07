@@ -8,12 +8,14 @@ public partial struct ApplyDamageSystem : ISystem
     {
         var ecb = new EntityCommandBuffer(Allocator.Temp);
 
-        foreach (var (damageRequest, health, entity) in SystemAPI
-                     .Query<DamageRequest, RefRW<Health>>()
-                     .WithEntityAccess())
+        foreach (var (damageRequest, entity) in SystemAPI.Query<DamageRequest>().WithEntityAccess())
         {
-            health.ValueRW.Value -= damageRequest.DamageAmount;
-            ecb.RemoveComponent<DamageRequest>(entity);
+            Health health = state.EntityManager.GetComponentData<Health>(damageRequest.Target);
+            health.Value -= damageRequest.DamageAmount;
+            
+            state.EntityManager.SetComponentData(damageRequest.Target, health);
+            
+            ecb.DestroyEntity(entity);
         }
 
         ecb.Playback(state.EntityManager);

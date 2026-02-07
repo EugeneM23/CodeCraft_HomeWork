@@ -23,12 +23,15 @@ public partial struct ProjectileSpawnEventSystem : ISystem
                 if (animEvent.nameHash == (uint)AnimationEventType.SpawnProjectile)
                 {
                     ecb.AddComponent(projectilePrefab.Value, new Target { Value = target.Value });
-                    ecb.AddComponent(entity, new SpawnPrefabRequest
+                    var spawnPrefab = ecb.CreateEntity();
+                    ecb.AddComponent(spawnPrefab, new SpawnPrefabRequest
                     {
                         Prefab = projectilePrefab.Value,
                         Position = transform.Position + new float3(0, 1, 0),
                         Rotaion = transform.Rotation
                     });
+                    
+                    
                 }
             }
         }

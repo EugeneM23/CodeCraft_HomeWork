@@ -9774,6 +9774,7 @@ GameObject:
   - component: {fileID: 7913849497514041290}
   - component: {fileID: 7913849497514041291}
   - component: {fileID: 7913849497514041292}
+  - component: {fileID: -3024883315463753386}
   m_Layer: 0
   m_Name: CFXR Electrified 3
   m_TagString: Untagged
@@ -14671,3 +14672,16 @@ ParticleSystemRenderer:
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
   m_MaskInteraction: 0
+--- !u!114 &-3024883315463753386
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7913849497514041293}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d3c4060b57194eb18ff667f6752945a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LifeTimeAuthoring
+  LifeTime: 1
