@@ -5,15 +5,14 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Rukhanka.Toolbox;
-using Unity.Collections;
 
 public class AnimationEventEnumGenerator : EditorWindow
 {
-    private string enumName = "AnimationEventType";
+    private string className = "AnimationEventType";
     private string outputPath = "Assets/Game/Scripts/CodeGen";
     private string namespaceString = "Game.Animation";
     private Vector2 scrollPosition;
-    private List<string> foundEvents = new List<string>();
+    private Dictionary<string, uint> foundEvents = new Dictionary<string, uint>();
 
     [MenuItem("Tools/Generate Animation Events Enum")]
     public static void ShowWindow()
@@ -26,7 +25,7 @@ public class AnimationEventEnumGenerator : EditorWindow
         GUILayout.Label("Animation Event Enum Generator", EditorStyles.boldLabel);
         EditorGUILayout.Space();
 
-        enumName = EditorGUILayout.TextField("Enum Name:", enumName);
+        className = EditorGUILayout.TextField("Class Name:", className);
         outputPath = EditorGUILayout.TextField("Output Path:", outputPath);
         namespaceString = EditorGUILayout.TextField("Namespace:", namespaceString);
 
@@ -37,61 +36,82 @@ public class AnimationEventEnumGenerator : EditorWindow
             ScanAnimationEvents();
         }
 
+        if (GUILayout.Button("Add Custom Event", GUILayout.Height(25)))
+        {
+            CustomHashDialog.ShowWindow(this);
+        }
+
+        EditorGUILayout.Space();
+
         if (foundEvents.Count > 0)
         {
             GUILayout.Label($"Found {foundEvents.Count} events:", EditorStyles.boldLabel);
 
             scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition, GUILayout.Height(200));
-            foreach (var eventName in foundEvents)
+            foreach (var kvp in foundEvents.OrderBy(x => x.Key))
             {
-                EditorGUILayout.LabelField("• " + eventName);
+                EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.LabelField($"{kvp.Key} = {kvp.Value}u");
+                if (GUILayout.Button("X", GUILayout.Width(30)))
+                {
+                    foundEvents.Remove(kvp.Key);
+                    break;
+                }
+                EditorGUILayout.EndHorizontal();
             }
-
             EditorGUILayout.EndScrollView();
 
-            if (GUILayout.Button("Generate Enum", GUILayout.Height(30)))
+            EditorGUILayout.BeginHorizontal();
+            if (GUILayout.Button("Generate Class", GUILayout.Height(30)))
             {
-                GenerateEnumFile();
+                GenerateClassFile();
             }
+            if (GUILayout.Button("Clear All", GUILayout.Height(30)))
+            {
+                foundEvents.Clear();
+            }
+            EditorGUILayout.EndHorizontal();
         }
+    }
+
+    public void AddCustomHash(string eventName, uint hash)
+    {
+        foundEvents[eventName] = hash;
+        Repaint();
     }
 
     private void ScanAnimationEvents()
     {
         foundEvents.Clear();
-        HashSet<string> eventNames = new HashSet<string>();
-
         string[] guids = AssetDatabase.FindAssets("t:AnimationClip");
 
-        for (int i = 0; i < guids.Length; i++)
+        foreach (string guid in guids)
         {
-            string path = AssetDatabase.GUIDToAssetPath(guids[i]);
+            string path = AssetDatabase.GUIDToAssetPath(guid);
             AnimationClip clip = AssetDatabase.LoadAssetAtPath<AnimationClip>(path);
 
             if (clip != null)
             {
-                AnimationEvent[] events = AnimationUtility.GetAnimationEvents(clip);
-
-                foreach (var animEvent in events)
+                foreach (var animEvent in AnimationUtility.GetAnimationEvents(clip))
                 {
                     if (!string.IsNullOrEmpty(animEvent.functionName))
                     {
-                        eventNames.Add(animEvent.functionName);
+                        string eventName = animEvent.functionName;
+                        uint hash = eventName.CalculateHash32();
+                        
+                        if (!foundEvents.ContainsKey(eventName))
+                        {
+                            foundEvents[eventName] = hash;
+                        }
                     }
                 }
             }
         }
 
-        foundEvents = eventNames.OrderBy(x => x).ToList();
-        Debug.Log($"Found {foundEvents.Count} events");
+        Debug.Log($"Found {foundEvents.Count} unique events");
     }
 
-    private uint ComputeHash(string name)
-    {
-        return name.CalculateHash32();
-    }
-
-    private void GenerateEnumFile()
+    private void GenerateClassFile()
     {
         if (foundEvents.Count == 0)
         {
@@ -105,25 +125,25 @@ public class AnimationEventEnumGenerator : EditorWindow
         }
 
         StringBuilder sb = new StringBuilder();
-
         sb.AppendLine("// Auto-generated");
         sb.AppendLine();
         sb.AppendLine($"namespace {namespaceString}");
         sb.AppendLine("{");
-        sb.AppendLine($"    public enum {enumName} : uint");
+        sb.AppendLine($"    public static class {className}");
         sb.AppendLine("    {");
-        sb.AppendLine("        None = 0,");
+        sb.AppendLine("        public const uint None = 0u;");
+        sb.AppendLine();
 
-        foreach (var eventName in foundEvents)
+        foreach (var kvp in foundEvents.OrderBy(x => x.Key))
         {
-            uint hash = ComputeHash(eventName);
-            sb.AppendLine($"        {SanitizeName(eventName)} = {hash}u,");
+            string sanitizedName = SanitizeName(kvp.Key);
+            sb.AppendLine($"        public const uint {sanitizedName} = {kvp.Value}u;");
         }
 
         sb.AppendLine("    }");
         sb.AppendLine("}");
 
-        string fullPath = Path.Combine(outputPath, $"{enumName}.cs");
+        string fullPath = Path.Combine(outputPath, $"{className}.cs");
         File.WriteAllText(fullPath, sb.ToString());
         AssetDatabase.Refresh();
 
@@ -144,9 +164,47 @@ public class AnimationEventEnumGenerator : EditorWindow
         }
 
         string result = sb.ToString();
-        if (char.IsDigit(result[0]))
+        if (result.Length > 0 && char.IsDigit(result[0]))
             result = "Event_" + result;
 
         return result;
+    }
+}
+
+public class CustomHashDialog : EditorWindow
+{
+    private string eventName = "";
+    private string hashString = "";
+    private AnimationEventEnumGenerator parentWindow;
+
+    public static void ShowWindow(AnimationEventEnumGenerator parent)
+    {
+        CustomHashDialog window = GetWindow<CustomHashDialog>("Add Custom Event");
+        window.parentWindow = parent;
+        window.minSize = new Vector2(300, 100);
+        window.maxSize = new Vector2(300, 100);
+    }
+
+    private void OnGUI()
+    {
+        EditorGUILayout.Space();
+
+        eventName = EditorGUILayout.TextField("Event Name:", eventName);
+        hashString = EditorGUILayout.TextField("Hash:", hashString);
+        
+        EditorGUILayout.Space();
+
+        if (GUILayout.Button("Add"))
+        {
+            if (uint.TryParse(hashString, out uint hash))
+            {
+                parentWindow.AddCustomHash(eventName, hash);
+                Close();
+            }
+            else
+            {
+                EditorUtility.DisplayDialog("Error", "Invalid hash", "OK");
+            }
+        }
     }
 }

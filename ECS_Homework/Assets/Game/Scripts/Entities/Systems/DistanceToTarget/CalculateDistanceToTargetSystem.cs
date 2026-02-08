@@ -2,9 +2,12 @@ using Game.Scripts.Entities.Systems;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
+using UnityEngine;
 
 public partial struct CalculateDistanceToTargetSystem : ISystem
 {
+    public static readonly float3 Offset = new(0, 1f, 0);
+
     public void OnUpdate(ref SystemState state)
     {
         var transformLookup = SystemAPI.GetComponentLookup<LocalTransform>(true);
@@ -23,7 +26,18 @@ public partial struct CalculateDistanceToTargetSystem : ISystem
             float targetRadius = radiusLookup[target.ValueRO.Value].Value;
 
             distanceToTarget.ValueRW.Value =
-                math.distance(myTransform.ValueRO.Position, targetTransform.Position) - targetRadius;
+                math.distance(myTransform.ValueRO.Position - Offset, targetTransform.Position) - targetRadius;
+        }
+    }
+}
+
+public partial struct TestDist : ISystem
+{
+    public void OnUpdate(ref SystemState state)
+    {
+        foreach (var item in SystemAPI.Query<ProjectileTag, TargetDistance>())
+        {
+            Debug.Log(item.Item2.Value);
         }
     }
 }

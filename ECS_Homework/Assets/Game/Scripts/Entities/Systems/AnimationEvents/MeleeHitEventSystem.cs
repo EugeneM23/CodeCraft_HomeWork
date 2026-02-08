@@ -3,7 +3,6 @@ using Game.Animation;
 using Game.Scripts.Entities.Systems;
 using Game.Scripts.Entities.Systems.Request;
 using Game.Scripts.UI.Entities.Components;
-using Game.Scripts.UI.Entities.Components.Health;
 using Rukhanka;
 using Unity.Collections;
 using Unity.Entities;
@@ -16,14 +15,15 @@ public partial struct MeleeHitEventSystem : ISystem
     {
         var ecb = new EntityCommandBuffer(Allocator.Temp);
 
-        foreach (var (animatorRef, target, damage, hitEffect) in SystemAPI
-                     .Query<AnimatorEntityRefComponent, Target, Damage, HitEffect>().WithNone<IsDead>())
+        foreach (var (animatorRef, target, damage) in SystemAPI
+                     .Query<AnimatorEntityRefComponent, Target, Damage>()
+                     .WithNone<IsDead>())
         {
             var eventBuffer = state.EntityManager.GetBuffer<AnimationEventComponent>(animatorRef.animatorEntity);
 
             foreach (var animEvent in eventBuffer)
             {
-                if (animEvent.nameHash == (uint)AnimationEventType.DealDamage)
+                if (animEvent.nameHash == AnimationEventType.DealDamage)
                 {
                     var targetTransform = state.EntityManager.GetComponentData<LocalTransform>(target.Value);
 

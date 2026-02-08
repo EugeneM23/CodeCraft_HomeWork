@@ -6,6 +6,7 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
+using UnityEngine;
 
 [UpdateBefore(typeof(SpawnPrefabSystem))]
 public partial struct ProjectileSpawnEventSystem : ISystem
@@ -21,7 +22,7 @@ public partial struct ProjectileSpawnEventSystem : ISystem
 
             foreach (var animEvent in eventBuffer)
             {
-                if (animEvent.nameHash == (uint)AnimationEventType.SpawnProjectile)
+                if (animEvent.nameHash == AnimationEventType.SpawnProjectile)
                 {
                     ecb.AddComponent(projectilePrefab.Value, new Target { Value = target.Value });
                     RequestUseCase.SpawnPrefab(ecb, projectilePrefab.Value, transform.Position + new float3(0, 1, 0),
