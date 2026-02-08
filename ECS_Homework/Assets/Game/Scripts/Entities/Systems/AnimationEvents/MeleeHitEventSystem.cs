@@ -10,14 +10,14 @@ using Unity.Entities;
 using Unity.Transforms;
 
 [UpdateBefore(typeof(SpawnPrefabSystem))]
-public partial struct HitEventSystem : ISystem
+public partial struct MeleeHitEventSystem : ISystem
 {
     public void OnUpdate(ref SystemState state)
     {
         var ecb = new EntityCommandBuffer(Allocator.Temp);
 
         foreach (var (animatorRef, target, damage, hitEffect) in SystemAPI
-                     .Query<AnimatorEntityRefComponent, Target, Damage, HitEffect>())
+                     .Query<AnimatorEntityRefComponent, Target, Damage, HitEffect>().WithNone<IsDead>())
         {
             var eventBuffer = state.EntityManager.GetBuffer<AnimationEventComponent>(animatorRef.animatorEntity);
 
@@ -28,7 +28,6 @@ public partial struct HitEventSystem : ISystem
                     var targetTransform = state.EntityManager.GetComponentData<LocalTransform>(target.Value);
 
                     RequestUseCase.DealDamage(ecb, target.Value, damage.Value);
-                    RequestUseCase.SpawnPrefab(ecb, hitEffect.Prefab, targetTransform.Position, targetTransform.Rotation);
                     RequestUseCase.PlaySound(ecb, target.Value, MasterBankAPI.FootmanHitEvent, targetTransform.Position);
                 }
             }

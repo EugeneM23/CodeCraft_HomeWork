@@ -26,10 +26,8 @@ public partial struct ProjectileHitSystem : ISystem
             if (distanceToTarget.Value < radius.Value / 2)
             {
                 var hitPrefab = state.EntityManager.GetComponentData<ProjectileHitPrefab>(entity);
-                var hitEffect = state.EntityManager.GetComponentData<HitEffect>(target.Value);
 
                 RequestUseCase.DealDamage(ecb, target.Value, damage.ValueRO.Value);
-                RequestUseCase.SpawnPrefab(ecb, hitEffect.Prefab, targetTransform.Position, targetTransform.Rotation);
                 RequestUseCase.SpawnPrefab(ecb, hitPrefab.Value, targetTransform.Position + new float3(0, 1f, 0), targetTransform.Rotation);
                 RequestUseCase.PlaySound(ecb, target.Value, MasterBankAPI.ElectrickHitEvent, targetTransform.Position);
 

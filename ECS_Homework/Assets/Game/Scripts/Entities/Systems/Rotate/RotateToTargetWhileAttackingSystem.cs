@@ -14,7 +14,6 @@ public partial struct RotateToTargetWhileAttackingSystem : ISystem
                      .WithAll<IsAttaking>())
         {
             if (target.ValueRO.Value == Entity.Null) continue;
-            if (!transformLookup.HasComponent(target.ValueRO.Value)) continue;
 
             var targetPosition = transformLookup[target.ValueRO.Value].Position;
             RotateUseCase.RotateTowards(ref transform.ValueRW, targetPosition, 360f, deltaTime);

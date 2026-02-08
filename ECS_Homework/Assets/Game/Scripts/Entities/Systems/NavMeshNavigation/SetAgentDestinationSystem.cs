@@ -12,14 +12,15 @@ public partial struct SetAgentDestinationSystem : ISystem
         var radiusLookup = SystemAPI.GetComponentLookup<EntityRadius>(true);
 
         foreach (var (target, body, myTransform, myRadius) in SystemAPI
-            .Query<RefRO<Target>, RefRW<AgentBody>, RefRO<LocalTransform>, RefRO<EntityRadius>>())
+                     .Query<RefRO<Target>, RefRW<AgentBody>, RefRO<LocalTransform>, RefRO<EntityRadius>>()
+                     .WithNone<IsDead>())
         {
             if (target.ValueRO.Value == Entity.Null) continue;
             if (!transformLookup.HasComponent(target.ValueRO.Value)) continue;
 
             var targetTransform = transformLookup[target.ValueRO.Value];
             var targetPosition = targetTransform.Position;
-            
+
             // Получаем радиус цели (если есть)
             float targetRadius = 0f;
             if (radiusLookup.HasComponent(target.ValueRO.Value))
@@ -34,7 +35,7 @@ public partial struct SetAgentDestinationSystem : ISystem
             // Вычисляем точку назначения с учетом радиусов обеих энтити
             // Останавливаемся на расстоянии = сумма радиусов
             var combinedRadius = myRadius.ValueRO.Value + targetRadius;
-            
+
             float3 destination;
             if (distance > combinedRadius)
             {

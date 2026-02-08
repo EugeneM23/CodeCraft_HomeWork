@@ -22,7 +22,7 @@ namespace Game.Scripts.Entities.Systems.Request
             {
                 Prefab = prefab,
                 Position = position,
-                Rotaion = rotation
+                Rotation = rotation
             });
         }
 

@@ -14747,7 +14747,6 @@ GameObject:
   - component: {fileID: 4752334129343382}
   - component: {fileID: 199260069059058576}
   - component: {fileID: 198446458854354212}
-  - component: {fileID: -1689402956846334278}
   m_Layer: 0
   m_Name: Blood_Smash_Medium_Red_URP
   m_TagString: Untagged
@@ -19658,19 +19657,6 @@ ParticleSystem:
         m_PostInfinity: 2
         m_RotationOrder: 4
     vectorLabel1_3: W
---- !u!114 &-1689402956846334278
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1855497614338780}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d3c4060b57194eb18ff667f6752945a5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::LifeTimeAuthoring
-  LifeTime: 1
 --- !u!1 &1862925852404722
 GameObject:
   m_ObjectHideFlags: 0

@@ -617,7 +617,7 @@ MonoBehaviour:
   Speed: 2
   Acceleration: 8
   AngularSpeed: 500
-  StoppingDistance: 0.3
+  StoppingDistance: 1
   AutoBreaking: 1
   m_Layers: -1
 --- !u!114 &2180445807749005750
@@ -757,7 +757,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f685304add84f45b004d5eea4de15ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Game.Scripts.UI.Entities.Components.AttackDistance.AttackDistanceAuthoring
-  Value: 1
+  Value: 2
 --- !u!114 &-5442905310010028583
 MonoBehaviour:
   m_ObjectHideFlags: 0

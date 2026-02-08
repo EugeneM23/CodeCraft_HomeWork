@@ -9,7 +9,7 @@ public static class SpawnUseCase
         var instance = ecb.Instantiate(request.ValueRW.Prefab);
 
         ecb.SetComponent(instance,
-            LocalTransform.FromPositionRotation(request.ValueRW.Position, request.ValueRW.Rotaion));
+            LocalTransform.FromPositionRotation(request.ValueRW.Position, request.ValueRW.Rotation));
 
         ecb.RemoveComponent<SpawnPrefabRequest>(entity);
     }
