@@ -12,6 +12,7 @@ namespace Game.Scripts.UI.Entities.Components.AttackDistance
             public override void Bake(AttackDistanceAuthoring authoring)
             {
                 var entity = GetEntity(TransformUsageFlags.Dynamic);
+                //в
                 AddComponent(entity, new AttackDistance { Value = authoring.Value });
             }
         }

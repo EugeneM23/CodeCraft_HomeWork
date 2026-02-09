@@ -1,0 +1,17 @@
+#include "../../Common/Shaders/ShaderConf.hlsl"
+#include "../../Common/Shaders/Debug.hlsl"
+#include "../../Deformation/Resources/DeformationCommon.hlsl"
+#include "../../Deformation/Resources/CopyInitialMeshData.hlsl"
+#include "../../Deformation/Resources/CopyInitialMeshBlendShapes.hlsl"
+#include "../../Deformation/Resources/CreatePerVertexDeformationWorkload.hlsl"
+#include "../../Deformation/Resources/Skinning.hlsl"
+
+//#pragma enable_d3d11_debug_symbols
+//#pragma use_dxc
+
+/////////////////////////////////////////////////////////////////////////////////
+
+#pragma kernel CopyInitialMeshData
+#pragma kernel CopyInitialMeshBlendShapes
+#pragma kernel CreatePerVertexDeformationWorkload
+#pragma kernel Skinning

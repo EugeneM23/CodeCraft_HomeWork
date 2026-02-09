@@ -1,0 +1,17 @@
+
+#pragma kernel ProcessAnimations
+#pragma kernel MakeRigSpaceBoneTransforms
+#pragma kernel ComputeSkinMatrices
+
+//#pragma enable_d3d11_debug_symbols
+//#pragma use_dxc
+
+/////////////////////////////////////////////////////////////////////////////////
+
+#include "../../Common/Shaders/ShaderConf.hlsl"
+#include "../../Common/Shaders/Debug.hlsl"
+#include "../../GPUAnimationEngine/Resources/GPUStructures.hlsl"
+#include "../../GPUAnimationEngine/Resources/MakeSkinMatrices.hlsl"
+#include "../../GPUAnimationEngine/Resources/ProcessAnimations.hlsl"
+#include "../../GPUAnimationEngine/Resources/MakeRigSpaceBoneTransforms.hlsl"
+#include "../../GPUAnimationEngine/Resources/MakeSkinMatrices.hlsl"
