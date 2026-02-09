@@ -9776,7 +9776,7 @@ GameObject:
   - component: {fileID: 7913849497514041292}
   - component: {fileID: -3024883315463753386}
   m_Layer: 0
-  m_Name: CFXR Electrified 3
+  m_Name: IceBulletHit
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -22,7 +22,7 @@ MonoBehaviour:
     - rid: 1136115511567581261
       type: {class: ColliderSubSettings, ns: ProjectDawn.Navigation, asm: ProjectDawn.Navigation}
       data:
-        m_Iterations: 4
+        m_Iterations: 1
     - rid: 1136115511567581262
       type: {class: NavMeshSubSettings, ns: ProjectDawn.Navigation, asm: ProjectDawn.Navigation}
       data:
@@ -37,6 +37,6 @@ MonoBehaviour:
           y: 3
           z: 3
         m_QueryCheck: 32
-        m_QueryCapacity: 8
+        m_QueryCapacity: 2
         m_Layers:
           m_Names: []
