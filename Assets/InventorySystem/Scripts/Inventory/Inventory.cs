@@ -412,7 +412,16 @@ public sealed class Inventory : IEnumerable<Item>
 
     #region Count
 
-    public int GetItemCount(string name) => _items.Values.Count(item => item.itemData.Name == name);
+    public int GetItemCount(string name)
+    {
+        int count = 0;
+        foreach (var item in _items.Values)
+        {
+            if (item.itemData.Name == name) count++;
+        }
+
+        return count;
+    }
 
     #endregion
 

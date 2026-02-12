@@ -2,7 +2,8 @@
     "name": "Inventory",
     "rootNamespace": "",
     "references": [
-        "Unity.TextMeshPro"
+        "Unity.TextMeshPro",
+        "Zenject"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

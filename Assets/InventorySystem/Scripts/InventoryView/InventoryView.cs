@@ -16,6 +16,7 @@ namespace Inventories
         [SerializeField] private InventoryItem _itemPrefab;
         [SerializeField] private RectTransform _gridContainer;
         [SerializeField] private Vector2 _cellSize = new(100f, 100f);
+        
         [SerializeField] private Button _reorganizeButton;
         [SerializeField] private Button _collectAllButton;
         [SerializeField] private Button _closeButton;
