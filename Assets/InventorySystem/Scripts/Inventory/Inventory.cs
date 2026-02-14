@@ -18,7 +18,8 @@ public sealed class Inventory : IEnumerable<Item>
     public int Width => _cells.GetLength(0);
     public int Height => _cells.GetLength(1);
     public int Count => _items.Count;
-
+    public Dictionary<string, Item> Items => _items;
+    
     private readonly Dictionary<string, Item> _items;
     private readonly Item[,] _cells;
 

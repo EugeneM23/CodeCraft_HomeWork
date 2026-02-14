@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
 
@@ -7,12 +8,17 @@ namespace Inventories
     {
         [SerializeField] private Vector2Int _size;
         [SerializeField] private InventoryUI _inventoryUI;
+        [SerializeField] private SceneItem[] _initialItems;
 
         public override void InstallBindings()
         {
+            List<ItemData> items = new();
+            foreach (var initialItem in _initialItems) 
+                items.Add(initialItem.ItemData);
+
             Container
                 .Bind<Inventory>()
-                .FromInstance(new Inventory(_size.x, _size.y))
+                .FromInstance(new Inventory(_size.x, _size.y, items))
                 .AsSingle()
                 .NonLazy();
 

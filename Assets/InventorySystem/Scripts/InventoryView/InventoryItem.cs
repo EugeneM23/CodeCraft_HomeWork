@@ -14,7 +14,7 @@ namespace Inventories
         [SerializeField] private GameObject _countBackGround;
         [SerializeField] private TMP_Text _count;
         [SerializeField] private DoubleClickHandler _doubleClick;
-        
+
         private ItemUseCase _itemUseCase;
         public Item Item { get; private set; }
 
@@ -73,6 +73,11 @@ namespace Inventories
             _rectTransform.sizeDelta = itemSize;
             _presenter = presenter;
             _itemUseCase = item.ItemUseCase;
+        }
+
+        public void SetIcon(Sprite icon)
+        {
+            _itemImage.sprite = icon;
         }
 
         public void OnPointerEnter(PointerEventData eventData)
