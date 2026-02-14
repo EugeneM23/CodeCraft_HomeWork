@@ -52,8 +52,8 @@ public class DragFSM : MonoBehaviour
 
     public void Update()
     {
-        if (_currentState is ITickable tickable)
-            tickable.Tick();
+        // if (_currentState is ITickable tickable)
+        //     tickable.Tick();
     }
 
     public void SetState<T>() where T : BaseState
@@ -65,12 +65,16 @@ public class DragFSM : MonoBehaviour
 
     public bool TryGetComponentUnderMouse<T>(out T component) where T : Component
     {
-        return _raycastDetector.TryGetComponent(out component);
+        //return _raycastDetector.TryGetComponent(out component);
+        component = null;
+        return false;
     }
 
     public bool TryGetSceneRaycastHit(out RaycastHit raycastHit)
     {
-        return _raycastDetector.TryGetSceneRaycastHit(out raycastHit);
+        //return _raycastDetector.TryGetSceneRaycastHit(out raycastHit);
+        raycastHit = default;
+        return false;
     }
 
     public void SetupDragContext(Item item, Vector3 position, InventoryPresenter sourcePresenter,

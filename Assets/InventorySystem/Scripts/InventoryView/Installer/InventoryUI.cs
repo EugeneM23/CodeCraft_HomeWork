@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Sirenix.OdinInspector;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
@@ -8,112 +8,99 @@ namespace Inventories
 {
     public class InventoryUI : MonoBehaviour
     {
-        [SerializeField] private RectTransform _inventoryItem;
-        [SerializeField] private CellView _cellPrefab;
-        [SerializeField] private Vector2Int _cellSize = new(64, 64);
-        [SerializeField] private RectTransform _gridContainer;
         [SerializeField] private Button _reorganizeButton;
         [SerializeField] private Button _closeButton;
 
-        [ShowInInspector] [Inject] private readonly InventoryAdapter _adapter;
+        [Inject] private InventoryAdapter _adapter;
+        [Inject] private DiContainer _container;
 
         private CellView[,] _cells;
-
-        private Dictionary<Vector2Int, InventoryItem> Items = new();
+        private Dictionary<Vector2Int, InventoryItem> _items = new();
 
         private void Start()
         {
-            _cells = new CellView[_adapter.Widht, _adapter.Height];
-
-
-            CreateGrid(_adapter.Widht, _adapter.Height);
-            CreateItem();
+            _cells = new CellView[_adapter.Width, _adapter.Height];
+            CreateGrid();
+            CreateItems();
         }
-
-        public void Show()
-        {
-            this.gameObject.SetActive(true);
-        }
-
-        public void Hide() => this.gameObject.SetActive(false);
 
         private void OnEnable()
         {
-            _adapter.OnItemRemoved += OnIteRemoved;
+            _adapter.OnItemRemoved += OnItemRemoved;
             _adapter.OnStateChanged += OnStateChanged;
-            _reorganizeButton.onClick.AddListener(Reorganize);
+            _reorganizeButton.onClick.AddListener(_adapter.Reorganize);
             _closeButton.onClick.AddListener(Hide);
         }
 
         private void OnDisable()
         {
-            _adapter.OnItemRemoved -= OnIteRemoved;
+            _adapter.OnItemRemoved -= OnItemRemoved;
             _adapter.OnStateChanged -= OnStateChanged;
-            _reorganizeButton.onClick.RemoveListener(Reorganize);
+            _reorganizeButton.onClick.RemoveListener(_adapter.Reorganize);
             _closeButton.onClick.RemoveListener(Hide);
         }
 
-        private void CreateItem()
+        public void Show() => gameObject.SetActive(true);
+
+        public void Hide() => gameObject.SetActive(false);
+
+        private void CreateGrid()
         {
-            foreach ((string id, Item item) in _adapter.Items)
+            for (int y = 0; y < _adapter.Height; y++)
             {
-                RectTransform inventoryItem = Instantiate(_inventoryItem, _gridContainer);
-                Vector2Int size = item.itemData.Size;
+                for (int x = 0; x < _adapter.Width; x++)
+                {
+                    var cell = Instantiate(_adapter.CellPrefab, _adapter.GridContainer);
+                    var rect = cell.GetComponent<RectTransform>();
 
-                inventoryItem.sizeDelta = new Vector2(size.x * _cellSize.x, size.y * _cellSize.y);
+                    rect.sizeDelta = _adapter.CellSize;
+                    rect.anchoredPosition = new Vector2(x * _adapter.CellSize.x, -y * _adapter.CellSize.y);
 
-
-                Vector2Int itemPosition = _adapter.GetItemPosition(id);
-                var rectTransform = _cells[itemPosition.x, itemPosition.y].GetComponent<RectTransform>();
-
-                inventoryItem.anchoredPosition =
-                    new Vector2(rectTransform.anchoredPosition.x, rectTransform.anchoredPosition.y);
-
-                inventoryItem.GetComponent<InventoryItem>().SetIcon(item.itemData.Icon);
-
-                Items[itemPosition] = inventoryItem.GetComponent<InventoryItem>();
+                    _cells[x, y] = cell;
+                }
             }
         }
 
-        private void OnIteRemoved(Vector2Int position)
+        private void CreateItems()
         {
-            Destroy(Items[position].gameObject);
-            Items.Remove(position);
+            foreach (var (id, item) in _adapter.Items)
+            {
+                var itemObject =
+                    _container.InstantiatePrefab(_adapter.InventoryItemPrefab, _adapter.GridContainer.transform);
+                Vector2Int itemPosition = _adapter.GetItemPosition(id);
+                RectTransform cellRect = _cells[itemPosition.x, itemPosition.y].GetComponent<RectTransform>();
+
+                itemObject.GetComponent<RectTransform>().sizeDelta = new Vector2(
+                    item.itemData.Size.x * _adapter.CellSize.x,
+                    item.itemData.Size.y * _adapter.CellSize.y);
+
+                itemObject.GetComponent<RectTransform>().anchoredPosition = cellRect.anchoredPosition;
+                itemObject.GetComponent<InventoryItem>().SetIcon(item.itemData.Icon);
+                itemObject.GetComponent<InventoryItem>().SetView(this);
+
+                _items[itemPosition] = itemObject.GetComponent<InventoryItem>();
+            }
         }
 
-        private void Reorganize()
+        private void OnItemRemoved(Vector2Int position)
         {
-            _adapter.Reorganize();
+            Destroy(_items[position].gameObject);
+            _items.Remove(position);
         }
 
         private void OnStateChanged()
         {
-            foreach (var item in Items)
-                Destroy(item.Value.gameObject);
+            foreach (var item in _items.Values)
+                Destroy(item.gameObject);
 
-            Items.Clear();
-
-
-            CreateItem();
+            _items.Clear();
+            CreateItems();
         }
 
-        private void CreateGrid(int width, int height)
+        public void RemoveItem(InventoryItem inventoryItem)
         {
-            for (int y = 0; y < height; y++)
-            {
-                for (int x = 0; x < width; x++)
-                    CreateCell(x, y);
-            }
-        }
-
-        private void CreateCell(int x, int y)
-        {
-            var cell = Instantiate(_cellPrefab, this._gridContainer);
-            RectTransform rect = cell.GetComponent<RectTransform>();
-            rect.sizeDelta = _cellSize;
-            rect.anchoredPosition = new Vector2(x * _cellSize.x, -y * _cellSize.y);
-
-            _cells[x, y] = cell;
+            var position = _items.FirstOrDefault(x => x.Value == inventoryItem).Key;
+            _adapter.RemoveItem(position);
         }
     }
 }

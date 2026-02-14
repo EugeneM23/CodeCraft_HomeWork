@@ -73,7 +73,7 @@ namespace Inventories
         {
             InventoryItem inventoryItem = _factory.SpawnItem(_itemPrefab, _gridContainer);
             inventoryItem.transform.position = Cells[positions[0].x, positions[0].y].transform.position;
-            inventoryItem.SetupItem(item, _cellSize, presenter);
+            //inventoryItem.SetupItem(item, _cellSize, presenter);
 
             _items[item.ID] = inventoryItem;
 

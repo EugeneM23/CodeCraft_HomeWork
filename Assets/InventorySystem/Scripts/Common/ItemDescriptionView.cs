@@ -57,8 +57,8 @@ public class ItemDescriptionView : MonoBehaviour
         if (_fadeCoroutine != null)
             StopCoroutine(_fadeCoroutine);
 
-        _nameText.text = item.Item.itemData.Name;
-        _descriptionText.text = item.Item.itemData.Description;
+        //_nameText.text = item.Item.itemData.Name;
+        //_descriptionText.text = item.Item.itemData.Description;
 
         if (instant)
         {

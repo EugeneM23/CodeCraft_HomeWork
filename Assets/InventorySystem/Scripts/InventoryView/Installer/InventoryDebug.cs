@@ -17,16 +17,6 @@ namespace Inventories
             GameObject inventory = _container.InstantiatePrefab(_inventoryPrefab, _canvas.transform);
         }
 
-        // [Button]
-        // public void Show()
-        // {
-        //     _inventoryUI.Show();
-        // }
-        //
-        // [Button]
-        // public void Hide()
-        // {
-        //     _inventoryUI.Hide();
-        // }
+       
     }
 }

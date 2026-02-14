@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Inventories
 {
-    public class UpdateDragState : BaseState, ITickable
+    public class UpdateDragState : BaseState
     {
         public UpdateDragState(DragFSM fsm) : base(fsm)
         {

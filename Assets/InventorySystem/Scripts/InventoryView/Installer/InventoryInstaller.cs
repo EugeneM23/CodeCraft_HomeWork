@@ -6,32 +6,44 @@ namespace Inventories
 {
     public class InventoryInstaller : MonoInstaller
     {
-        [SerializeField] private Vector2Int _size;
+        [SerializeField] private Vector2Int _inventorySize;
+        [SerializeField] private Vector2Int _cellSize;
+        [SerializeField] private RectTransform _inventoryItemPrefab;
+        [SerializeField] private CellView _cellPrefab;
+        [SerializeField] private RectTransform _gridContainer;
         [SerializeField] private InventoryUI _inventoryUI;
         [SerializeField] private SceneItem[] _initialItems;
 
         public override void InstallBindings()
         {
-            List<ItemData> items = new();
-            foreach (var initialItem in _initialItems) 
-                items.Add(initialItem.ItemData);
+            var items = new List<ItemData>();
+            foreach (var item in _initialItems)
+                items.Add(item.ItemData);
 
-            Container
-                .Bind<Inventory>()
-                .FromInstance(new Inventory(_size.x, _size.y, items))
-                .AsSingle()
-                .NonLazy();
+            var inventory = new Inventory(_inventorySize.x, _inventorySize.y, items);
 
-            Container
-                .Bind<InventoryAdapter>()
-                .AsSingle()
-                .NonLazy();
+            Container.Bind<Inventory>().FromInstance(inventory).AsSingle();
+            
+            Container.BindInterfacesAndSelfTo<InventoryAdapter>().AsSingle()
+                .WithArguments(_cellSize, _inventoryItemPrefab, _cellPrefab, _gridContainer);
+            
+            Container.Bind<InventoryUI>().FromInstance(_inventoryUI).AsSingle();
+            
+            Container.BindInterfacesTo<DragItemController>().AsSingle();
+            
+            // Установка SignalBus и объявление локального сигнала
+            SignalBusInstaller.Install(Container);
+            Container.DeclareSignal<ItemRemovedSignal>();
+        }
+    }
 
-            Container
-                .BindInterfacesAndSelfTo<InventoryUI>()
-                .FromInstance(_inventoryUI)
-                .AsSingle()
-                .NonLazy();
+    public class ItemRemovedSignal
+    {
+        public InventoryItem Item { get; }
+
+        public ItemRemovedSignal(InventoryItem item)
+        {
+            Item = item;
         }
     }
 }

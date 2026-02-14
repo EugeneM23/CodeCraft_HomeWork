@@ -249,10 +249,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f2514f6ce004803b0a49d06da1bace8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _inventoryItem: {fileID: 6379091871092702191, guid: 4c15baa75d82b483abb917b275ec412d, type: 3}
-  _cellPrefab: {fileID: -8271169620948325552, guid: 9d9acb3550ff64ac18eca0767a708394, type: 3}
-  _cellSize: {x: 64, y: 64}
-  _gridContainer: {fileID: 6439035293085280424}
   _reorganizeButton: {fileID: 8237838803638821418}
   _closeButton: {fileID: 1078775964359812658}
 --- !u!114 &5965572406999213880
@@ -285,7 +281,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e82329362e648218a4bef0b49f842dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _size: {x: 5, y: 5}
+  _inventorySize: {x: 5, y: 5}
+  _cellSize: {x: 75, y: 75}
+  _inventoryItemPrefab: {fileID: 6379091871092702191, guid: 4c15baa75d82b483abb917b275ec412d, type: 3}
+  _cellPrefab: {fileID: -8271169620948325552, guid: 9d9acb3550ff64ac18eca0767a708394, type: 3}
+  _gridContainer: {fileID: 6439035293085280424}
   _inventoryUI: {fileID: 6573021276121650554}
   _initialItems:
   - {fileID: 7070894261933836396, guid: 2d17967c122f4480a9ab865ce1992532, type: 3}

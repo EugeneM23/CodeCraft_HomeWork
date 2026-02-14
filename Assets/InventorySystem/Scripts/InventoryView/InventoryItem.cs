@@ -3,77 +3,21 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using Zenject;
 
 namespace Inventories
 {
-    public class InventoryItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+    public class InventoryItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
     {
         [SerializeField] private Image _background;
         [SerializeField] private Image _itemImage;
         [SerializeField] private RectTransform _rectTransform;
         [SerializeField] private GameObject _countBackGround;
         [SerializeField] private TMP_Text _count;
-        [SerializeField] private DoubleClickHandler _doubleClick;
+        private InventoryUI _ui;
+        
+        [Inject] private SignalBus _signalBus;
 
-        private ItemUseCase _itemUseCase;
-        public Item Item { get; private set; }
-
-        private InventoryPresenter _presenter;
-
-        private void OnEnable()
-        {
-            _doubleClick.OnDoubleClick += OnDoubleClicked;
-            _itemImage.rectTransform.localScale = Vector3.one;
-            SetBackgroundAlpha(0f);
-        }
-
-        private void OnDisable()
-        {
-            _doubleClick.OnDoubleClick -= OnDoubleClicked;
-        }
-
-        private void OnDoubleClicked()
-        {
-            _itemUseCase.Invoke(_presenter, Item);
-        }
-
-        private void OnDestroy()
-        {
-            if (Item != null)
-                Item.OnStackChanged -= UpdateQuantity;
-        }
-
-        private void UpdateQuantity(int quantity)
-        {
-            _count.text = quantity.ToString();
-        }
-
-        public void SetupItem(Item item, Vector2 cellSize, InventoryPresenter presenter)
-        {
-            if (Item != null)
-                Item.OnStackChanged -= UpdateQuantity;
-
-            Item = item;
-            _itemImage.sprite = item.itemData.Icon;
-
-            bool showCount = item.CanStack;
-            _count.gameObject.SetActive(showCount);
-            _countBackGround.SetActive(showCount);
-
-            if (showCount)
-                _count.text = item.StackQuantity.ToString();
-
-            Item.OnStackChanged += UpdateQuantity;
-
-            Vector2 itemSize = new Vector2(
-                cellSize.x * item.itemData.Size.x,
-                cellSize.y * item.itemData.Size.y
-            );
-
-            _rectTransform.sizeDelta = itemSize;
-            _presenter = presenter;
-            _itemUseCase = item.ItemUseCase;
-        }
 
         public void SetIcon(Sprite icon)
         {
@@ -98,6 +42,17 @@ namespace Inventories
             Color color = _background.color;
             color.a = alpha;
             _background.color = color;
+        }
+
+        public void OnPointerClick(PointerEventData eventData)
+        {
+            _signalBus.Fire(new ItemRemovedSignal(this));
+            Debug.Log("Clicked");
+        }
+
+        public void SetView(InventoryUI inventoryUI)
+        {
+             _ui = inventoryUI;
         }
     }
 }

@@ -3,7 +3,7 @@ using Game.Scripts.UI.Equipment.Game.Equipment.View;
 using Inventories;
 using UnityEngine;
 
-public class IdleDragState : BaseState, ITickable
+public class IdleDragState : BaseState
 {
     private Vector3 _mouseDownPosition;
     private bool _isMouseDown;
