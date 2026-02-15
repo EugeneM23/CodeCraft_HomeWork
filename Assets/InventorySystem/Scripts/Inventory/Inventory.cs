@@ -8,8 +8,8 @@ using UnityEngine;
 
 public sealed class Inventory : IEnumerable<Item>
 {
-    public event Action<Item> OnAdded;
-    public event Action<Item> OnRemoved;
+    public event Action<Item, Vector2Int[]> OnAdded;
+    public event Action<Item, Vector2Int[]> OnRemoved;
     public event Action OnCleared;
     public event Action<Item> OnStackIncreased;
     public event Action<Item> OnStackDecreased;
@@ -19,7 +19,7 @@ public sealed class Inventory : IEnumerable<Item>
     public int Height => _cells.GetLength(1);
     public int Count => _items.Count;
     public Dictionary<string, Item> Items => _items;
-    
+
     private readonly Dictionary<string, Item> _items;
     private readonly Item[,] _cells;
 
@@ -85,7 +85,8 @@ public sealed class Inventory : IEnumerable<Item>
             Item item = new Item(itemData, position, quantity);
             PlaceInstanceInGrid(item, position.x, position.y);
             _items.Add(item.ID, item);
-            OnAdded?.Invoke(item);
+            Vector2Int[] positions = GetPositions(item.ID);
+            OnAdded?.Invoke(item, positions);
             return true;
         }
 
@@ -114,7 +115,8 @@ public sealed class Inventory : IEnumerable<Item>
             Item instance = new Item(itemData, position, quantity);
             PlaceInstanceInGrid(instance, position.x, position.y);
             _items.Add(instance.ID, instance);
-            OnAdded?.Invoke(instance);
+            Vector2Int[] positions = GetItemGridPositions(instance);
+            OnAdded?.Invoke(instance, positions);
             return true;
         }
 
@@ -198,7 +200,7 @@ public sealed class Inventory : IEnumerable<Item>
             _cells[position.x, position.y] = null;
 
         _items.Remove(id);
-        OnRemoved?.Invoke(item);
+        OnRemoved?.Invoke(item, positions);
 
         return true;
     }

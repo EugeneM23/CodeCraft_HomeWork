@@ -14,16 +14,18 @@ namespace Inventories
         [SerializeField] private InventoryAudioController _inventoryAudioController;
         [SerializeField] private EquipmentAudioController _equipmentAudioController;
 
-        private InventoryHighlight _inventoryHighlight;
+        // private InventoryHighlight _inventoryHighlight;
 
         public InventoryPresenter Presenter { get; private set; }
         public EquipmentPresenter Equipment => _equipmentPresenter;
 
-        public void Construct(InventoryFactory factory, DragFSM dragFSM, ItemConsumer consumer = null)
+        public void Construct(InventoryFactory factory, 
+            //DragFSM dragFSM,
+            ItemConsumer consumer = null)
         {
             InitializeInventory(factory);
             AddInitialItems();
-            InitializeSystems(dragFSM);
+            //InitializeSystems(dragFSM);
             InitializeEquipment(consumer);
             LinkConsumer(consumer);
 
@@ -44,9 +46,11 @@ namespace Inventories
             }
         }
 
-        private void InitializeSystems(DragFSM dragFSM)
+        private void InitializeSystems(
+            //DragFSM dragFSM
+            )
         {
-            _inventoryHighlight = new InventoryHighlight(dragFSM, _view, Presenter);
+            //_inventoryHighlight = new InventoryHighlight(dragFSM, _view, Presenter);
 
             if (_inventoryAudioController != null)
                 _inventoryAudioController.Initialize(Presenter);
@@ -79,7 +83,7 @@ namespace Inventories
 
         private void Update()
         {
-            _inventoryHighlight?.Tick();
+            // _inventoryHighlight?.Tick();
         }
     }
 }

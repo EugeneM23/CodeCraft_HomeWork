@@ -51,8 +51,8 @@ namespace Inventories
 
         private void Subscribe()
         {
-            _inventory.OnAdded += OnItemAdded;
-            _inventory.OnRemoved += OnItemRemoved;
+            //_inventory.OnAdded += OnItemAdded;
+            //_inventory.OnRemoved += OnItemRemoved;
             _inventory.OnCleared += UpdateView;
             _view.OnReorganizeClicked += _inventory.Reorganize;
             _view.OnCollectAllClicked += OnCollectAll;
@@ -61,8 +61,8 @@ namespace Inventories
 
         private void Unsubscribe()
         {
-            _inventory.OnAdded -= OnItemAdded;
-            _inventory.OnRemoved -= OnItemRemoved;
+            //_inventory.OnAdded -= OnItemAdded;
+            // _inventory.OnRemoved -= OnItemRemoved;
             _inventory.OnCleared -= UpdateView;
             _view.OnReorganizeClicked -= _inventory.Reorganize;
             _view.OnCollectAllClicked -= OnCollectAll;
@@ -86,7 +86,10 @@ namespace Inventories
             _view.DisplayItem(item, positions, this);
         }
 
-        private void OnItemRemoved(Item item) => _view.RemoveItem(item.ID);
+        private void OnItemRemoved(Item item)
+        {
+            // _view.RemoveItem(item.ID);
+        }
 
         private void OnCollectAll()
         {

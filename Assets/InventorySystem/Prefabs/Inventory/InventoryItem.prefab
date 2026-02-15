@@ -538,10 +538,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _background: {fileID: 8304158806905660621}
   _itemImage: {fileID: 1691885995291618795}
-  _rectTransform: {fileID: 6379091871092702191}
   _countBackGround: {fileID: 8634197385032340632}
   _count: {fileID: 3715987727289035597}
-  _doubleClick: {fileID: 7001049065726349089}
 --- !u!114 &7001049065726349089
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -569,7 +567,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Inventories
@@ -13,7 +14,7 @@ namespace Inventories
         public event Action OnEquipClicked;
 
         [SerializeField] private CellView _cellPrefab;
-        [SerializeField] private InventoryItem _itemPrefab;
+        [FormerlySerializedAs("_itemPrefab")] [SerializeField] private InventoryItemView itemViewPrefab;
         [SerializeField] private RectTransform _gridContainer;
         [SerializeField] private Vector2 _cellSize = new(100f, 100f);
         
@@ -23,7 +24,7 @@ namespace Inventories
         [SerializeField] private Button _showEquipmentButton;
 
         public CellView[,] Cells { get; private set; }
-        private readonly Dictionary<string, InventoryItem> _items = new();
+        private readonly Dictionary<string, InventoryItemView> _items = new();
         private InventoryFactory _factory;
 
         private void OnEnable()
@@ -71,39 +72,39 @@ namespace Inventories
 
         public void DisplayItem(Item item, Vector2Int[] positions, InventoryPresenter presenter)
         {
-            InventoryItem inventoryItem = _factory.SpawnItem(_itemPrefab, _gridContainer);
-            inventoryItem.transform.position = Cells[positions[0].x, positions[0].y].transform.position;
+            InventoryItemView inventoryItemView = _factory.SpawnItem(itemViewPrefab, _gridContainer);
+            inventoryItemView.transform.position = Cells[positions[0].x, positions[0].y].transform.position;
             //inventoryItem.SetupItem(item, _cellSize, presenter);
 
-            _items[item.ID] = inventoryItem;
+            _items[item.ID] = inventoryItemView;
 
-            foreach (Vector2Int pos in positions)
-                Cells[pos.x, pos.y].InventoryItem = inventoryItem;
+            // foreach (Vector2Int pos in positions)
+            //     Cells[pos.x, pos.y].InventoryItemView = inventoryItemView;
         }
 
-        public void RemoveItem(string itemId)
-        {
-            if (!_items.TryGetValue(itemId, out InventoryItem item)) return;
-
-            foreach (CellView cell in Cells)
-            {
-                if (cell.InventoryItem == item)
-                    cell.Clear();
-            }
-
-            _factory.DeSpawn(item.gameObject);
-            _items.Remove(itemId);
-        }
+        // public void RemoveItem(string itemId)
+        // {
+        //     if (!_items.TryGetValue(itemId, out InventoryItemView item)) return;
+        //
+        //     foreach (CellView cell in Cells)
+        //     {
+        //         if (cell.InventoryItemView == item)
+        //             cell.Clear();
+        //     }
+        //
+        //     _factory.DeSpawn(item.gameObject);
+        //     _items.Remove(itemId);
+        // }
 
         public void ClearAllItems()
         {
-            foreach (InventoryItem item in _items.Values)
+            foreach (InventoryItemView item in _items.Values)
                 _factory.DeSpawn(item.gameObject);
 
             _items.Clear();
 
-            foreach (CellView cell in Cells)
-                cell.Clear();
+            // foreach (CellView cell in Cells)
+            //     cell.Clear();
         }
 
         private void CreateGrid(int width, int height, InventoryPresenter presenter)
@@ -116,7 +117,7 @@ namespace Inventories
         private void CreateCell(int x, int y, InventoryPresenter presenter)
         {
             CellView cell = _factory.SpawnItem(_cellPrefab, _gridContainer);
-            cell.Construct(presenter, new Vector2Int(x, y));
+            //cell.Construct(presenter, new Vector2Int(x, y));
 
             RectTransform rect = cell.GetComponent<RectTransform>();
             rect.sizeDelta = _cellSize;

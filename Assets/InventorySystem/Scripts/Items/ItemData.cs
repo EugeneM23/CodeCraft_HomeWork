@@ -26,9 +26,9 @@ namespace Inventories
         [field: SerializeField] public bool CanStack { get;  set; }
         [field: SerializeField] public int MaxStackQuantity { get;  set; }
 
-        [Header("Usage")]
-        [field: SerializeField]
-        public ItemUseCase ItemUseCase { get;  set; }
+        // [Header("Usage")]
+        // [field: SerializeField]
+        // public ItemUseCase ItemUseCase { get;  set; }
 
         [field: SerializeField] public ItemAudioData ItemAudioData;
         public ItemData(ItemData itemData)
@@ -44,7 +44,7 @@ namespace Inventories
             CanStack = itemData.CanStack;
             MaxStackQuantity = itemData.MaxStackQuantity;
 
-            ItemUseCase = itemData.ItemUseCase;
+            //ItemUseCase = itemData.ItemUseCase;
             
             ItemAudioData = itemData.ItemAudioData;
         }

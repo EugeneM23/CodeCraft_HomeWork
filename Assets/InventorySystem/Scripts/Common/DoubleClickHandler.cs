@@ -9,7 +9,7 @@ namespace Inventories
         public event Action OnDoubleClick;
         [SerializeField] private float doubleClickTime = 0.3f;
 
-        private ItemUseCase _itemUseCase;
+        // private ItemUseCase _itemUseCase;
         private Inventory _inventory;
 
         private float lastClickTime = 0f;

@@ -1,11 +1,12 @@
 using System.Collections.Generic;
 using Inventories;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class InventoryFactory : MonoBehaviour
 {
-    [SerializeField] private DragItem _dragItemPrefab;
-    [SerializeField] private InventoryItem _inventoryItemPrefab;
+    // [SerializeField] private DragItem _dragItemPrefab;
+    [FormerlySerializedAs("_inventoryItemPrefab")] [SerializeField] private InventoryItemView inventoryItemViewPrefab;
     [SerializeField] private SceneItem[] _itemCatalog;
     [SerializeField] private Canvas _canvas;
 
@@ -38,13 +39,13 @@ public class InventoryFactory : MonoBehaviour
     public void DeSpawn(GameObject sceneItemGameObject) =>
         _prefabPool.DeSpawn(sceneItemGameObject);
 
-    public DragItem SpawnDragItem(Item item, Vector2 cellSize, InventoryPresenter presenter)
-    {
-        DragItem dragItemitem = _prefabPool.Spawn<DragItem>(_dragItemPrefab.gameObject, _canvas.GetComponent<RectTransform>());
-        dragItemitem.transform.SetAsLastSibling();
-        dragItemitem.Construct(item, cellSize, presenter);
-        return dragItemitem;
-    }
+    // public DragItem SpawnDragItem(Item item, Vector2 cellSize, InventoryPresenter presenter)
+    // {
+    //     DragItem dragItemitem = _prefabPool.Spawn<DragItem>(_dragItemPrefab.gameObject, _canvas.GetComponent<RectTransform>());
+    //     dragItemitem.transform.SetAsLastSibling();
+    //     dragItemitem.Construct(item, cellSize, presenter);
+    //     return dragItemitem;
+    // }
 
     public T SpawnItem<T>(T prefab, RectTransform parent) where T : MonoBehaviour
     {

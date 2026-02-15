@@ -16,7 +16,5 @@ namespace Inventories
         {
             GameObject inventory = _container.InstantiatePrefab(_inventoryPrefab, _canvas.transform);
         }
-
-       
     }
 }

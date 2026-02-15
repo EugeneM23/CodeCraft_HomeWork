@@ -34,7 +34,6 @@ namespace Inventories
                     return true;
             }
 
-            Debug.Log("No UI component found");
             return false;
         }
     }

@@ -11,7 +11,7 @@ namespace Inventories
 
         [SerializeField] private GameScreenView _view;
         [SerializeField] private InventoryFactory _factory;
-        [SerializeField] private DragFSM _dragFSM;
+        // [SerializeField] private DragFSM _dragFSM;
         [SerializeField] private CharacterSelector _characterSelector;
 
         private Entity _currentSelectedUnit;
@@ -37,8 +37,8 @@ namespace Inventories
                 SetCurrentUnit(entity);
                 _view.Show();
 
-                if (entity.InventoryPresenter != null)
-                    _dragFSM.SetMainInventory(entity.InventoryPresenter);
+                // if (entity.InventoryPresenter != null)
+                //     _dragFSM.SetMainInventory(entity.InventoryPresenter);
             }
             else
             {
@@ -60,10 +60,10 @@ namespace Inventories
         private void CreateInventory()
         {
             InventoryBootstrap bootstrap = _view.CreateInventory(_currentSelectedUnit.InventoryPrefab);
-            bootstrap.Construct(_factory, _dragFSM, _currentSelectedUnit.ItemConsumer);
+            // bootstrap.Construct(_factory, _dragFSM, _currentSelectedUnit.ItemConsumer);
 
             _currentSelectedUnit.InventoryPresenter = bootstrap.Presenter;
-            _dragFSM.SetMainInventory(bootstrap.Presenter);
+            // _dragFSM.SetMainInventory(bootstrap.Presenter);
             
             // Bootstrap сам инициализирует экипмент внутри
         }

@@ -13,7 +13,7 @@ namespace Game.Scripts.UI.Chest
         [SerializeField] private GameScreenView _gameScreenView;
         [SerializeField] private InventoryBootstrap _inventoryPrefab;
         [SerializeField] private InventoryFactory _factory;
-        [SerializeField] private DragFSM _dragFSM;
+        // [SerializeField] private DragFSM _dragFSM;
         [SerializeField] private CharacterSelector _characterSelector;
 
         private InventoryPresenter _chestInventoryPresenter;
@@ -48,7 +48,7 @@ namespace Game.Scripts.UI.Chest
         private void CreateChestInventory()
         {
             InventoryBootstrap bootstrap = _gameScreenView.CreateInventory(_inventoryPrefab);
-            bootstrap.Construct(_factory, _dragFSM, null);
+            // bootstrap.Construct(_factory, _dragFSM, null);
             _chestInventoryPresenter = bootstrap.Presenter;
         }
     }

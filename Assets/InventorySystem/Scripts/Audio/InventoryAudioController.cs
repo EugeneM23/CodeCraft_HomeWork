@@ -25,8 +25,8 @@ public class InventoryAudioController : MonoBehaviour
     {
         if (_inventoryPresenter == null) return;
 
-        _inventory.OnAdded += OnItemAddedToInventory;
-        _inventory.OnRemoved += OnItemRemovedFromInventory;
+        //_inventory.OnAdded += OnItemAddedToInventory;
+        //_inventory.OnRemoved += OnItemRemovedFromInventory;
 
         _inventoryPresenter.OnShow += PlayOpenSound;
         _inventoryPresenter.OnHide += PlayCloseSound;
@@ -36,8 +36,8 @@ public class InventoryAudioController : MonoBehaviour
     {
         if (_inventoryPresenter == null) return;
 
-        _inventory.OnAdded -= OnItemAddedToInventory;
-        _inventory.OnRemoved -= OnItemRemovedFromInventory;
+        //_inventory.OnAdded -= OnItemAddedToInventory;
+        //_inventory.OnRemoved -= OnItemRemovedFromInventory;
 
         _inventoryPresenter.OnShow -= PlayOpenSound;
         _inventoryPresenter.OnHide -= PlayCloseSound;
