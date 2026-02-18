@@ -152,9 +152,9 @@ GameObject:
   - component: {fileID: 1045006840645051357}
   - component: {fileID: 6726239839054165406}
   - component: {fileID: 1300681890579477598}
-  - component: {fileID: 6573021276121650554}
   - component: {fileID: 5965572406999213880}
   - component: {fileID: 64680358800910497}
+  - component: {fileID: -2486167064748676698}
   m_Layer: 5
   m_Name: InventoryNew
   m_TagString: Untagged
@@ -237,20 +237,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d56be1196f6841dbb17159d22ed820ec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &6573021276121650554
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2835633319985185814}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0f2514f6ce004803b0a49d06da1bace8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _reorganizeButton: {fileID: 8237838803638821418}
-  _closeButton: {fileID: 1078775964359812658}
 --- !u!114 &5965572406999213880
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -282,16 +268,29 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _inventorySize: {x: 5, y: 5}
-  _cellSize: {x: 75, y: 75}
   _inventoryItemPrefab: {fileID: 6379091871092702191, guid: 4c15baa75d82b483abb917b275ec412d, type: 3}
-  _cellPrefab: {fileID: 5007937133850590707, guid: 9d9acb3550ff64ac18eca0767a708394, type: 3}
-  _gridContainer: {fileID: 6439035293085280424}
-  _inventoryUI: {fileID: 6573021276121650554}
+  _inventoryUI: {fileID: -2486167064748676698}
   _initialItems:
   - {fileID: 7070894261933836396, guid: 2d17967c122f4480a9ab865ce1992532, type: 3}
   - {fileID: 7070894261933836396, guid: 68508e5ca913b4977bb5c1fc5926ea03, type: 3}
   - {fileID: 7070894261933836396, guid: 4a28ec6f258124f069038ac2693f8b13, type: 3}
   - {fileID: 7070894261933836396, guid: d00b195c1c8c94d6097850658fc3edc7, type: 3}
+--- !u!114 &-2486167064748676698
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2835633319985185814}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9d0738d833024efbb9a03a9476b595dd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _cellPrefab: {fileID: 5007937133850590707, guid: 9d9acb3550ff64ac18eca0767a708394, type: 3}
+  _inventoryItemPrefab: {fileID: 3334073297244301008, guid: 4c15baa75d82b483abb917b275ec412d, type: 3}
+  _gridContainer: {fileID: 6439035293085280424}
+  _cellSize: {x: 75, y: 75}
 --- !u!1 &3958728104746724530
 GameObject:
   m_ObjectHideFlags: 0

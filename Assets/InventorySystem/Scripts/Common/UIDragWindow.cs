@@ -23,7 +23,7 @@ public class UIDragWindow : MonoBehaviour, IPointerDownHandler, IDragHandler
             return;
         }
 
-
+        gameObject.transform.SetAsLastSibling();
         RectTransformUtility.ScreenPointToLocalPointInRectangle(
             rectTransform,
             eventData.position,
@@ -47,5 +47,4 @@ public class UIDragWindow : MonoBehaviour, IPointerDownHandler, IDragHandler
             rectTransform.anchoredPosition = mousePos - offset;
         }
     }
-
 }

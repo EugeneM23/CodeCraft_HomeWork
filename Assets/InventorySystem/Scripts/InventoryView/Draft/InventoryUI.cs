@@ -47,7 +47,7 @@ namespace Inventories
                     rect.anchoredPosition = new Vector2(x * _adapter.CellSize.x, -y * _adapter.CellSize.y);
 
                     _cells[x, y] = cell.GetComponent<Cell>();
-                    _cells[x, y].Construct(new Vector2Int(x, y));
+                    _cells[x, y].MatrixPosition = new Vector2Int(x, y);
                 }
             }
         }
@@ -61,7 +61,7 @@ namespace Inventories
         private void OnItemAdded(Item item, Vector2Int[] positions)
         {
             foreach (var pos in positions)
-                _cells[pos.x, pos.y].SetItem(item);
+                _cells[pos.x, pos.y].Item = item;
 
             var instance = _container.InstantiatePrefab(_adapter.InventoryItemPrefab, _adapter.GridContainer);
             var itemRect = instance.GetComponent<RectTransform>();
@@ -82,7 +82,7 @@ namespace Inventories
             _itemViews.Remove(item.ID);
 
             foreach (var pos in positions)
-                _cells[pos.x, pos.y].SetItem(null);
+                _cells[pos.x, pos.y].Item = null;
         }
 
         // --- Drag & Drop ---
@@ -112,7 +112,7 @@ namespace Inventories
             Cell targetCell = eventData.pointerEnter?.GetComponent<Cell>();
 
             if (targetCell != null)
-                targetCell.Adapter.AddItem(_draggedItem, targetCell.MatrixPosition);
+                //targetCell.Adapter.AddItem(_draggedItem, targetCell.MatrixPosition);
 
 
             _draggedItem = null;

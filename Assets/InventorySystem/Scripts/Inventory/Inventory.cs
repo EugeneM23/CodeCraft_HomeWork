@@ -204,6 +204,31 @@ public sealed class Inventory : IEnumerable<Item>
 
         return true;
     }
+    public bool RemoveItem(Vector2Int position)
+    {
+        if (position.x < 0 || position.x >= Width || position.y < 0 || position.y >= Height)
+            return false;
+
+        var item = _cells[position.x, position.y];
+    
+        if (item == null)
+            return false;
+
+        // Получаем все позиции, которые занимает этот предмет
+        Vector2Int[] positions = GetItemGridPositions(item);
+
+        // Зачищаем все ячейки, выставляя null
+        foreach (var pos in positions)
+            _cells[pos.x, pos.y] = null;
+
+        // Удаляем из словаря
+        _items.Remove(item.ID);
+    
+        // Вызываем событие
+        OnRemoved?.Invoke(item, positions);
+
+        return true;
+    }
 
     #endregion
 
@@ -356,6 +381,14 @@ public sealed class Inventory : IEnumerable<Item>
 
         item = _cells[x, y];
         return item != null;
+    }
+
+    public Item GetItem(string id)
+    {
+        if (_items.TryGetValue(id, out var item))
+            return item;
+
+        return null;
     }
 
     #endregion

@@ -260,8 +260,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec7e036197ec42e6bf3ecb8aa8d3d35c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _dragItemPrefab: {fileID: 6494077023178959131, guid: ced7a2ab9e9864e21888941e7fc700a8, type: 3}
-  _inventoryItemPrefab: {fileID: 3334073297244301008, guid: 4c15baa75d82b483abb917b275ec412d, type: 3}
+  inventoryItemViewPrefab: {fileID: 3334073297244301008, guid: 4c15baa75d82b483abb917b275ec412d, type: 3}
   _itemCatalog:
   - {fileID: 7070894261933836396, guid: 2d17967c122f4480a9ab865ce1992532, type: 3}
   - {fileID: 1441105143803712864, guid: 9de9593e1e39947b6b50224a5f4988a0, type: 3}
@@ -330,6 +329,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _raycaster: {fileID: 2068645391}
+  _canvas: {fileID: 2068645393}
 --- !u!114 &466712094 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4581580389788706112, guid: 7e5cecfe9d8d74b0bbc58d5b4820c7b4, type: 3}
@@ -1273,7 +1273,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _view: {fileID: 2068645396}
   _factory: {fileID: 66427000}
-  _dragFSM: {fileID: 66426999}
   _characterSelector: {fileID: 66427002}
 --- !u!114 &2068645396
 MonoBehaviour:
@@ -1308,6 +1307,7 @@ MonoBehaviour:
   _descriptionText: {fileID: 963208824}
   _nameText: {fileID: 466712094}
   _dragFSM: {fileID: 66426999}
+  _lastItem: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

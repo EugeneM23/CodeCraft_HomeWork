@@ -7,10 +7,7 @@ namespace Inventories
     public class InventoryInstaller : MonoInstaller
     {
         [SerializeField] private Vector2Int _inventorySize;
-        [SerializeField] private Vector2Int _cellSize;
         [SerializeField] private RectTransform _inventoryItemPrefab;
-        [SerializeField] private Cell _cellPrefab;
-        [SerializeField] private RectTransform _gridContainer;
         [SerializeField] private InventoryViewN _inventoryUI;
         [SerializeField] private SceneItem[] _initialItems;
 
@@ -22,13 +19,21 @@ namespace Inventories
 
             var inventory = new Inventory(_inventorySize.x, _inventorySize.y, items);
 
-            Container.Bind<Inventory>().FromInstance(inventory).AsSingle();
-            
-            Container.BindInterfacesAndSelfTo<InventoryAdapter>()
+            Container
+                .Bind<Inventory>()
+                .FromInstance(inventory)
+                .AsSingle();
+
+            Container
+                .BindInterfacesAndSelfTo<InventoryAdapterN>()
                 .AsSingle()
-                .WithArguments(_cellSize, _inventoryItemPrefab, _cellPrefab, _gridContainer);
-            
-            Container.Bind<InventoryViewN>().FromInstance(_inventoryUI).AsSingle();
+                .WithArguments(_inventorySize)
+                .NonLazy();
+
+            Container
+                .Bind<InventoryViewN>()
+                .FromInstance(_inventoryUI)
+                .AsSingle();
         }
     }
 }
