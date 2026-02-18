@@ -11,7 +11,7 @@ namespace Inventories
         [SerializeField] private RectTransform _inventoryItemPrefab;
         [SerializeField] private Cell _cellPrefab;
         [SerializeField] private RectTransform _gridContainer;
-        [SerializeField] private InventoryUI _inventoryUI;
+        [SerializeField] private InventoryViewN _inventoryUI;
         [SerializeField] private SceneItem[] _initialItems;
 
         public override void InstallBindings()
@@ -28,7 +28,7 @@ namespace Inventories
                 .AsSingle()
                 .WithArguments(_cellSize, _inventoryItemPrefab, _cellPrefab, _gridContainer);
             
-            Container.Bind<InventoryUI>().FromInstance(_inventoryUI).AsSingle();
+            Container.Bind<InventoryViewN>().FromInstance(_inventoryUI).AsSingle();
         }
     }
 }

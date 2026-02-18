@@ -9,7 +9,6 @@ namespace Inventories
     {
         public event Action<Item, Vector2Int[]> OnItemAdded;
         public event Action<Item, Vector2Int[]> OnItemRemoved;
-        public event Action OnStateChanged;
 
         public int Width => _inventory.Width;
         public int Height => _inventory.Height;
@@ -38,42 +37,18 @@ namespace Inventories
         public void Initialize()
         {
             _inventory.OnAdded += (item, positions) => OnItemAdded?.Invoke(item, positions);
-            _inventory.OnRemoved += RemoveItem;
+            _inventory.OnRemoved += (item, positions) => OnItemRemoved?.Invoke(item, positions);
         }
 
-        private void RemoveItem(Item item, Vector2Int[] positions)
-        {
-            OnItemRemoved?.Invoke(item, positions);
-        }
+        public Vector2Int[] GetItemPositions(string id) => _inventory.GetPositions(id);
 
-        public Vector2Int[] GetItemPosition(string id)
-        {
-            var positions = _inventory.GetPositions(id);
-            return positions;
-        }
+        public void RemoveItem(string itemID) => _inventory.RemoveItem(itemID);
 
-        public void AddItem(ItemData itemData)
-        {
-            _inventory.AddItem(itemData);
-        }
+        public void Reorganize() => _inventory.Reorganize();
 
-
-        public void RemoveItem(string itemID)
+        public void AddItem(Item draggedItem, Vector2Int position)
         {
-            if (_inventory.RemoveItem(itemID))
-            {
-                Debug.Log("removed");
-            }
-            else
-            {
-                Debug.Log("not found");
-            }
-        }
-
-        public void Reorganize()
-        {
-            _inventory.Reorganize();
-            //OnStateChanged?.Invoke();
+            _inventory.AddItem(draggedItem.itemData, position);
         }
     }
 }
