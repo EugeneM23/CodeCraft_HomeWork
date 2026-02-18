@@ -52,4 +52,19 @@ public class InventoryAdapterN : IInitializable, IDisposable
             yield return new KeyValuePair<Item, Vector2Int[]>(item, positions);
         }
     }
+
+    public void RemoveItem(Item item)
+    {
+        _inventory.RemoveItem(item.ID);
+    }
+
+    public bool AddItem(Item item, Vector2Int position)
+    {
+        return _inventory.AddItem(item.itemData, position);
+    }
+
+    public Vector2Int GetItemPosition(string itemID)
+    {
+        return _inventory.GetPositions(itemID)[0];
+    }
 }

@@ -5,8 +5,39 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6f0b762c-5415-4a85-b17b-cc44fd47261d" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.CodeCraft_HomeWork/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.CodeCraft_HomeWork/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Audio/InventoryAudioController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Audio/InventoryAudioController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/CharacterSelector.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/CharacterSelector.cs.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Chest.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Chest.cs.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/ChestAnimationController.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/ChestAnimationController.cs.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Entity.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/Gameplay/Entity.cs.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Audio/EquipmentAudioController.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Audio/EquipmentAudioController.cs.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Audio/InventoryAudioController.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Audio/InventoryAudioController.cs.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Equipment/EquipmentPresenter.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Equipment/EquipmentPresenter.cs.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Inventory/InventoryBootstrap.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Inventory/InventoryBootstrap.cs.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Inventory/InventoryPresenter.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Inventory/InventoryPresenter.cs.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/InventoryView/CellView.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/InventoryView/CellView.cs.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/InventoryView/Draft.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/InventoryView/Draft/InventoryAdapter.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/InventoryView/Draft/InventoryAdapter.cs.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/InventoryView/Draft/InventoryItemView.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/InventoryView/Clean/InventoryItemView.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/InventoryView/Draft/InventoryItemView.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/InventoryView/Clean/InventoryItemView.cs.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/InventoryView/Draft/InventoryUI.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/InventoryView/Draft/InventoryUI.cs.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/InventoryView/InventoryView.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/InventoryView/InventoryView.cs.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/ItemConsumer.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/ItemConsumer.cs.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Items/IItemConsumer.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Items/IItemConsumer.cs.meta" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -38,7 +69,7 @@
   }
 }</component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="file://$PROJECT_DIR$/Assets/InventorySystem/Scripts/Inventory/InventoryBootstrap.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/InventorySystem/Scripts/Drag/DragFSM/DragFSM.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.test-framework@5ac417e07314/UnityEditor.TestRunner/TestRun/Tasks/BuildActionTaskBase.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.ugui@03407c6d8751/Runtime/UGUI/EventSystem/EventInterfaces.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$USER_HOME$/Downloads/5. MVx Паттерны/MVx-Homework/Assets/Modules/UIComponents/FloatingAnimation.cs" root0="SKIP_HIGHLIGHTING" />
@@ -176,6 +207,7 @@
       <workItem from="1771078770186" duration="14503000" />
       <workItem from="1771161813213" duration="14800000" />
       <workItem from="1771191344059" duration="1683000" />
+      <workItem from="1771330327258" duration="16543000" />
     </task>
     <task id="LOCAL-00001" summary="Update">
       <option name="closed" value="true" />
