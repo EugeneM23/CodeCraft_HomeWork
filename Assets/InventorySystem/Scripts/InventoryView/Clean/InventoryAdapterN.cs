@@ -25,7 +25,6 @@ public class InventoryAdapterN : IInitializable, IDisposable
     {
         _inventory.OnRemoved += HandleItemRemoved;
         _inventory.OnAdded += HandleItemAdded;
-        Debug.Log("InventoryAdapterN initialized");
     }
 
     public void Dispose()

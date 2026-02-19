@@ -16,7 +16,6 @@ namespace Inventories
         [SerializeField] private Vector2Int _cellSize;
 
         private DragContext _dragContext;
-
         private InventoryAdapterN _adapter;
         private DiContainer _container;
 
@@ -24,10 +23,11 @@ namespace Inventories
         private Dictionary<string, GameObject> _items;
 
         [Inject]
-        public void Construct(InventoryAdapterN adapter, DiContainer container)
+        public void Construct(InventoryAdapterN adapter, DiContainer container, DragContext dragContext)
         {
             _adapter = adapter;
             _container = container;
+            _dragContext = dragContext;
             _cells = new Cell[adapter.Width, adapter.Height];
             _items = new Dictionary<string, GameObject>();
         }
@@ -74,27 +74,22 @@ namespace Inventories
 
         private void CreateItem(Item item, Vector2Int[] positions)
         {
-            // Помечаем все занятые ячейки
             foreach (var pos in positions)
                 _cells[pos.x, pos.y].Item = item;
 
-            // Создаем визуальное представление предмета
             var instance = _container.InstantiatePrefab(_inventoryItemPrefab, _gridContainer);
             var itemRect = instance.GetComponent<RectTransform>();
 
-            // Устанавливаем размер на основе размера предмета
             itemRect.sizeDelta = new Vector2(
                 item.itemData.Size.x * _cellSize.x,
                 item.itemData.Size.y * _cellSize.y);
 
-            // Позиционируем в первой занятой ячейке
             var firstCellRect = _cells[positions[0].x, positions[0].y].GetComponent<RectTransform>();
             itemRect.anchoredPosition = firstCellRect.anchoredPosition;
 
             var inventoryItem = instance.GetComponent<InventoryItemView>();
             inventoryItem.Setup(item.itemData);
 
-            // Сохраняем ссылку на view
             _items[item.ID] = instance;
         }
 
@@ -112,7 +107,8 @@ namespace Inventories
 
         public void OnDrag(PointerEventData eventData)
         {
-            _draggableImage.rectTransform.position = eventData.position + _dragContext.DragOffset;
+            if (_draggableImage != null && _dragContext.IsDragging) 
+                _draggableImage.rectTransform.position = eventData.position + _dragContext.DragOffset;
         }
 
         public void OnBeginDrag(PointerEventData eventData)
@@ -124,11 +120,10 @@ namespace Inventories
             if (cell != null && cell.Item != null)
             {
                 Vector2Int itemStartPosition = _adapter.GetItemPosition(cell.Item.ID);
+                Vector2Int clickOffset = cell.MatrixPosition - itemStartPosition;
+                Vector2 dragOffset = (Vector2)_items[cell.Item.ID].transform.position - eventData.position;
 
-                _dragContext.Item = cell.Item;
-                _dragContext.StartPosition = itemStartPosition;
-                _dragContext.ClickOffset = cell.MatrixPosition - itemStartPosition;
-                _dragContext.DragOffset = (Vector2)_items[cell.Item.ID].transform.position - eventData.position;
+                _dragContext.BeginDrag(cell.Item, itemStartPosition, clickOffset, dragOffset);
 
                 _draggableImage.rectTransform.sizeDelta = new Vector2(
                     cell.Item.itemData.Size.x * _cellSize.x,
@@ -160,6 +155,9 @@ namespace Inventories
 
         public void OnEndDrag(PointerEventData eventData)
         {
+            if (!_dragContext.IsDragging)
+                return;
+
             var cell = eventData.pointerCurrentRaycast.gameObject?.GetComponent<Cell>();
 
             if (cell != null)
@@ -169,22 +167,14 @@ namespace Inventories
                 if (cell.Adapter.AddItem(_dragContext.Item, targetPosition))
                 {
                     _draggableImage.gameObject.SetActive(false);
-                    _dragContext = default;
+                    _dragContext.EndDrag();
                     return;
                 }
             }
 
             _adapter.AddItem(_dragContext.Item, _dragContext.StartPosition);
             _draggableImage.gameObject.SetActive(false);
-            _dragContext = default;
-        }
-
-        private struct DragContext
-        {
-            public Item Item;
-            public Vector2Int StartPosition;
-            public Vector2Int ClickOffset;
-            public Vector2 DragOffset;
+            _dragContext.EndDrag();
         }
     }
 }
