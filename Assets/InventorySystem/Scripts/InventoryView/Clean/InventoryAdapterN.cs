@@ -66,4 +66,14 @@ public class InventoryAdapterN : IInitializable, IDisposable
     {
         return _inventory.GetPositions(itemID)[0];
     }
+
+    public bool IsFree(int x, int y)
+    {
+        return _inventory.IsFree(x, y);
+    }
+
+    public bool IsFree(Vector2Int position)
+    {
+        return _inventory.IsFree(position);
+    }
 }

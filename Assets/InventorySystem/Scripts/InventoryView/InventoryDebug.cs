@@ -8,7 +8,7 @@ namespace Inventories
     {
         [Inject] DiContainer _container;
 
-        [SerializeField] private InventoryViewN _inventoryPrefab;
+        [SerializeField] private InventoryView _inventoryPrefab;
         [SerializeField] private Canvas _canvas;
         private GameObject _inventory;
 

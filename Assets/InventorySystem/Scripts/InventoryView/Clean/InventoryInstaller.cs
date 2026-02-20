@@ -8,7 +8,7 @@ namespace Inventories
     {
         [SerializeField] private Vector2Int _inventorySize;
         [SerializeField] private RectTransform _inventoryItemPrefab;
-        [SerializeField] private InventoryViewN _inventoryUI;
+        [SerializeField] private InventoryView _inventoryUI;
         [SerializeField] private SceneItem[] _initialItems;
 
         public override void InstallBindings()
@@ -31,9 +31,19 @@ namespace Inventories
                 .NonLazy();
 
             Container
-                .Bind<InventoryViewN>()
+                .Bind<InventoryView>()
                 .FromInstance(_inventoryUI)
                 .AsSingle();
+
+            Container
+                .Bind<DragContext>()
+                .AsSingle();
+
+            // Регистрация CellHighlighter
+            Container
+                .BindInterfacesAndSelfTo<CellHighlighter>()
+                .AsSingle()
+                .NonLazy();
         }
     }
 }
