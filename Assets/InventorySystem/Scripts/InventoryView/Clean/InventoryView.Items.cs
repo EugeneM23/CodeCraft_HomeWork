@@ -1,9 +1,16 @@
+using System;
 using UnityEngine;
 
 namespace Inventories
 {
     public partial class InventoryView
     {
+        private void DisplayItems()
+        {
+            foreach (var kvp in _presenter.GetItems())
+                CreateItem(kvp.Key, kvp.Value);
+        }
+
         private void CreateItem(Item item, Vector2Int[] positions)
         {
             // Связываем ячейки с предметом
@@ -43,6 +50,18 @@ namespace Inventories
 
             foreach (var pos in positions)
                 _cells[pos.x, pos.y].Item = null;
+        }
+
+        private void ClearItemsVisual()
+        {
+            foreach (var item in _items)
+                Destroy(item.Value);
+        }
+
+        private void Reorganize()
+        {
+            ClearItemsVisual();
+            DisplayItems();
         }
     }
 }

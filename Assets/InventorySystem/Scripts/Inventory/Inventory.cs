@@ -11,6 +11,8 @@ public sealed class Inventory : IEnumerable<Item>
     public event Action<Item, Vector2Int[]> OnAdded;
     public event Action<Item, Vector2Int[]> OnRemoved;
     public event Action OnCleared;
+
+    public event Action OnReorganize;
     public event Action<Item> OnStackIncreased;
     public event Action<Item> OnStackDecreased;
     public event Action<Item, Vector2Int> OnMoved;
@@ -204,13 +206,14 @@ public sealed class Inventory : IEnumerable<Item>
 
         return true;
     }
+
     public bool RemoveItem(Vector2Int position)
     {
         if (position.x < 0 || position.x >= Width || position.y < 0 || position.y >= Height)
             return false;
 
         var item = _cells[position.x, position.y];
-    
+
         if (item == null)
             return false;
 
@@ -223,7 +226,7 @@ public sealed class Inventory : IEnumerable<Item>
 
         // Удаляем из словаря
         _items.Remove(item.ID);
-    
+
         // Вызываем событие
         OnRemoved?.Invoke(item, positions);
 
@@ -525,12 +528,13 @@ public sealed class Inventory : IEnumerable<Item>
         for (int j = 0; j < _cells.GetLength(1); j++)
             _cells[i, j] = null;
 
-        OnCleared?.Invoke();
 
         foreach (var (data, quantity) in itemsToReorganize)
         {
             AddItem(data, quantity);
         }
+
+        OnReorganize?.Invoke();
     }
 
     #endregion

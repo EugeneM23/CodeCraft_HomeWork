@@ -15,48 +15,57 @@ namespace Inventories
         [SerializeField] private Transform _gridContainer;
         [SerializeField] private Image _selectedArea;
         [SerializeField] private Vector2Int _cellSize;
+        
+        [SerializeField] private Button _closeButton;
+        [SerializeField] private Button _reorganizeButton;
+        [SerializeField] private Button _openEquipment;
 
         private Dictionary<string, GameObject> _items;
         private Cell[,] _cells;
 
         private DragContext _dragContext;
-        private InventoryAdapterN _adapter;
+        private InventoryPresenter _presenter;
         private DiContainer _container;
 
-        public Cell[,] Cells => _cells;
-        public InventoryAdapterN Adapter => _adapter;
+        public IInventoryPresenter Presenter => _presenter;
         public Vector2Int CellSize => _cellSize;
         public Transform GridContainer => _gridContainer;
         public Image SelectedArea => _selectedArea;
 
         [Inject]
-        public void Construct(InventoryAdapterN adapter, DiContainer container, DragContext dragContext)
+        public void Construct(InventoryPresenter presenter, DiContainer container, DragContext dragContext)
         {
-            _adapter = adapter;
+            _presenter = presenter;
             _container = container;
             _dragContext = dragContext;
-            _cells = new Cell[adapter.Width, adapter.Height];
+            _cells = new Cell[presenter.Width, presenter.Height];
             _items = new Dictionary<string, GameObject>();
         }
 
         private void OnEnable()
         {
-            _adapter.OnItemAdded += CreateItem;
-            _adapter.OnItemRemoved += RemoveItem;
+            _presenter.OnItemAdded += CreateItem;
+            _presenter.OnItemRemoved += RemoveItem;
+            _presenter.OnReorganize += Reorganize;
+
+            _reorganizeButton.onClick.AddListener(() => _presenter.Reorganize());
+            _closeButton.onClick.AddListener(() => this.gameObject.SetActive(false));
         }
 
         private void OnDisable()
         {
-            _adapter.OnItemAdded -= CreateItem;
-            _adapter.OnItemRemoved -= RemoveItem;
+            _presenter.OnItemAdded -= CreateItem;
+            _presenter.OnItemRemoved -= RemoveItem;
+            _presenter.OnReorganize -= Reorganize;
         }
 
         private void Start()
         {
             CreateGrid();
-
-            foreach (var kvp in _adapter.GetItems())
-                CreateItem(kvp.Key, kvp.Value);
+            DisplayItems();
         }
+        
+        public Cell[,] GetCells() => (Cell[,])_cells.Clone();
+
     }
 }

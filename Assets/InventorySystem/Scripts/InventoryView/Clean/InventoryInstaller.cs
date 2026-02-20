@@ -7,7 +7,6 @@ namespace Inventories
     public class InventoryInstaller : MonoInstaller
     {
         [SerializeField] private Vector2Int _inventorySize;
-        [SerializeField] private RectTransform _inventoryItemPrefab;
         [SerializeField] private InventoryView _inventoryUI;
         [SerializeField] private SceneItem[] _initialItems;
 
@@ -25,7 +24,7 @@ namespace Inventories
                 .AsSingle();
 
             Container
-                .BindInterfacesAndSelfTo<InventoryAdapterN>()
+                .BindInterfacesAndSelfTo<InventoryPresenter>()
                 .AsSingle()
                 .WithArguments(_inventorySize)
                 .NonLazy();

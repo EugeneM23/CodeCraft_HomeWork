@@ -27,7 +27,7 @@ namespace Inventories
 
             if (cell != null && cell.Item != null)
             {
-                Vector2Int itemStartPosition = _adapter.GetItemPosition(cell.Item.ID);
+                Vector2Int itemStartPosition = _presenter.GetItemPosition(cell.Item.ID);
                 Vector2Int clickOffset = cell.MatrixPosition - itemStartPosition;
                 Vector2 dragOffset = (Vector2)_items[cell.Item.ID].transform.position - eventData.position;
 
@@ -40,7 +40,7 @@ namespace Inventories
                 _draggableImage.gameObject.SetActive(true);
                 _draggableImage.sprite = cell.Item.itemData.Icon;
 
-                _adapter.RemoveItem(cell.Item);
+                _presenter.RemoveItem(cell.Item);
                 return;
             }
 
@@ -58,7 +58,7 @@ namespace Inventories
             int x = Mathf.FloorToInt(localPoint.x / _cellSize.x);
             int y = Mathf.FloorToInt(-localPoint.y / _cellSize.y);
 
-            if (x >= 0 && x < _adapter.Width && y >= 0 && y < _adapter.Height)
+            if (x >= 0 && x < _presenter.Width && y >= 0 && y < _presenter.Height)
                 return _cells[x, y];
 
             return null;
@@ -75,7 +75,7 @@ namespace Inventories
             {
                 Vector2Int targetPosition = cell.MatrixPosition - _dragContext.ClickOffset;
 
-                if (cell.Adapter.AddItem(_dragContext.Item, targetPosition))
+                if (cell.Presenter.AddItem(_dragContext.Item, targetPosition))
                 {
                     _draggableImage.gameObject.SetActive(false);
                     _dragContext.EndDrag();
@@ -83,7 +83,7 @@ namespace Inventories
                 }
             }
 
-            _adapter.AddItem(_dragContext.Item, _dragContext.StartPosition);
+            _presenter.AddItem(_dragContext.Item, _dragContext.StartPosition);
             _draggableImage.gameObject.SetActive(false);
             _dragContext.EndDrag();
         }

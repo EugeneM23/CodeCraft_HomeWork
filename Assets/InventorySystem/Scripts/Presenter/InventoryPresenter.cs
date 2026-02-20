@@ -4,10 +4,11 @@ using Inventories;
 using UnityEngine;
 using Zenject;
 
-public class InventoryAdapterN : IInitializable, IDisposable
+public class InventoryPresenter : IInventoryPresenter, IInitializable, IDisposable
 {
     public event Action<Item, Vector2Int[]> OnItemAdded;
     public event Action<Item, Vector2Int[]> OnItemRemoved;
+    public event Action OnReorganize;
 
     private readonly Vector2Int _inventorySize;
     private readonly Inventory _inventory;
@@ -15,7 +16,7 @@ public class InventoryAdapterN : IInitializable, IDisposable
     public int Height => _inventorySize.y;
     public int Width => _inventorySize.x;
 
-    public InventoryAdapterN(Vector2Int inventorySize, Inventory inventory)
+    public InventoryPresenter(Vector2Int inventorySize, Inventory inventory)
     {
         _inventorySize = inventorySize;
         _inventory = inventory;
@@ -25,12 +26,19 @@ public class InventoryAdapterN : IInitializable, IDisposable
     {
         _inventory.OnRemoved += HandleItemRemoved;
         _inventory.OnAdded += HandleItemAdded;
+        _inventory.OnReorganize += HandleReorganize;
+    }
+
+    private void HandleReorganize()
+    {
+        OnReorganize?.Invoke();
     }
 
     public void Dispose()
     {
         _inventory.OnRemoved -= HandleItemRemoved;
         _inventory.OnAdded -= HandleItemAdded;
+        _inventory.OnReorganize -= HandleReorganize;
     }
 
     private void HandleItemAdded(Item item, Vector2Int[] positions)
@@ -67,13 +75,9 @@ public class InventoryAdapterN : IInitializable, IDisposable
         return _inventory.GetPositions(itemID)[0];
     }
 
-    public bool IsFree(int x, int y)
-    {
-        return _inventory.IsFree(x, y);
-    }
+    public bool IsFree(int x, int y) => _inventory.IsFree(x, y);
 
-    public bool IsFree(Vector2Int position)
-    {
-        return _inventory.IsFree(position);
-    }
+    public bool IsFree(Vector2Int position) => _inventory.IsFree(position);
+
+    public void Reorganize() => _inventory.Reorganize();
 }

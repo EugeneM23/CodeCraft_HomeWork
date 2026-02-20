@@ -6,9 +6,9 @@ namespace Inventories
 {
     public class Cell : MonoBehaviour
     {
-        [Inject] private readonly InventoryAdapterN _adapter;
+        [Inject] private readonly InventoryPresenter _presenter;
 
-        public InventoryAdapterN Adapter => _adapter;
+        public InventoryPresenter Presenter => _presenter;
 
         public Vector2Int MatrixPosition;
         public Item Item;

@@ -90,7 +90,7 @@ GameObject:
   - component: {fileID: 64680358800910497}
   - component: {fileID: -2486167064748676698}
   m_Layer: 5
-  m_Name: InventoryNew
+  m_Name: Inventory
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -120,7 +120,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 500, y: 600}
+  m_SizeDelta: {x: 832.6, y: 595.87}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1045006840645051357
 CanvasRenderer:
@@ -190,8 +190,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e82329362e648218a4bef0b49f842dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _inventorySize: {x: 5, y: 5}
-  _inventoryItemPrefab: {fileID: 6379091871092702191, guid: 4c15baa75d82b483abb917b275ec412d, type: 3}
+  _inventorySize: {x: 8, y: 5}
   _inventoryUI: {fileID: -2486167064748676698}
   _initialItems:
   - {fileID: 7070894261933836396, guid: 2d17967c122f4480a9ab865ce1992532, type: 3}
@@ -216,6 +215,8 @@ MonoBehaviour:
   _gridContainer: {fileID: 6439035293085280424}
   _selectedArea: {fileID: 2695828671201812071}
   _cellSize: {x: 75, y: 75}
+  _closeButton: {fileID: 1078775964359812658}
+  _reorganizeButton: {fileID: 8237838803638821418}
 --- !u!1 &3958728104746724530
 GameObject:
   m_ObjectHideFlags: 0
@@ -251,7 +252,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -0.30000305, y: 0.2999878}
+  m_AnchoredPosition: {x: -0.3000183, y: 0.2999878}
   m_SizeDelta: {x: 50, y: 50}
   m_Pivot: {x: 1, y: 1}
 --- !u!222 &7575061254082239161
@@ -640,11 +641,11 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 8966306138700622761}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 1, y: 1}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -451, y: 0.2999878}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 50, y: 50}
-  m_Pivot: {x: 1, y: 1}
+  m_Pivot: {x: 0, y: 1}
 --- !u!222 &849938876724748130
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -761,7 +762,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -175, y: 235}
+  m_AnchoredPosition: {x: -288.7, y: 217.3}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3651584575578440075

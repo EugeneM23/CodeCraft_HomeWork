@@ -33,7 +33,7 @@ namespace Inventories
 
         private void UpdateHighlight()
         {
-            if (_dragContext.CurrentCell == null || _dragContext.Item == null || _inventoryView.Cells == null)
+            if (_dragContext.CurrentCell == null || _dragContext.Item == null)
             {
                 ClearHighlight();
                 return;
@@ -45,8 +45,8 @@ namespace Inventories
 
             // Проверяем, находится ли targetPosition в пределах сетки
             if (targetPosition.x < 0 || targetPosition.y < 0 ||
-                targetPosition.x + itemSize.x > _inventoryView.Adapter.Width ||
-                targetPosition.y + itemSize.y > _inventoryView.Adapter.Height)
+                targetPosition.x + itemSize.x > _inventoryView.Presenter.Width ||
+                targetPosition.y + itemSize.y > _inventoryView.Presenter.Height)
             {
                 ClearHighlight();
                 return;
@@ -61,7 +61,7 @@ namespace Inventories
                     int cellX = targetPosition.x + x;
                     int cellY = targetPosition.y + y;
 
-                    if (!_dragContext.CurrentCell.Adapter.IsFree(cellX, cellY))
+                    if (!_dragContext.CurrentCell.Presenter.IsFree(cellX, cellY))
                     {
                         allCellsFree = false;
                         break;
@@ -78,7 +78,7 @@ namespace Inventories
             }
 
             // Получаем первую клеточку (левый верхний угол)
-            Cell startCell = _inventoryView.Cells[targetPosition.x, targetPosition.y];
+            Cell startCell = _inventoryView.GetCells()[targetPosition.x, targetPosition.y];
 
             if (startCell == null)
             {

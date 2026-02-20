@@ -6,9 +6,9 @@ namespace Inventories
     {
         private void CreateGrid()
         {
-            for (int y = 0; y < _adapter.Height; y++)
+            for (int y = 0; y < _presenter.Height; y++)
             {
-                for (int x = 0; x < _adapter.Width; x++)
+                for (int x = 0; x < _presenter.Width; x++)
                 {
                     // Создаем ячейку и получаем её компоненты
                     var cell = _container.InstantiatePrefab(_cellPrefab, _gridContainer);
