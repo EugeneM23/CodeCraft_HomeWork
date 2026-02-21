@@ -48,7 +48,7 @@ namespace Inventories
         private void Start()
         {
             CreateGrid();
-            DisplayItems();
+            CreateAllItems();
         }
 
         public InventoryCell[,] GetCells() => (InventoryCell[,])_cells.Clone();

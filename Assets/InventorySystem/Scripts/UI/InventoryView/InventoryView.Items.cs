@@ -5,7 +5,7 @@ namespace Inventories
 {
     public partial class InventoryView
     {
-        private void DisplayItems()
+        private void CreateAllItems()
         {
             foreach (var kvp in _presenter.GetItems())
                 CreateItem(kvp.Key, kvp.Value);
@@ -14,10 +14,8 @@ namespace Inventories
         private void CreateItem(Item item, Vector2Int[] positions)
         {
             // Связываем ячейки с предметом
-            foreach (var pos in positions)
-            {
+            foreach (var pos in positions) 
                 _cells[pos.x, pos.y].Item = item;
-            }
 
             // Создаем визуальный объект предмета
             var itemObject = _container.InstantiatePrefab(_inventoryItemPrefab, _gridContainer);
@@ -52,7 +50,7 @@ namespace Inventories
                 _cells[pos.x, pos.y].Item = null;
         }
 
-        private void ClearItemsVisual()
+        private void DestroyAllItems()
         {
             foreach (var item in _items)
                 Destroy(item.Value);
@@ -60,8 +58,8 @@ namespace Inventories
 
         private void Reorganize()
         {
-            ClearItemsVisual();
-            DisplayItems();
+            DestroyAllItems();
+            CreateAllItems();
         }
     }
 }
