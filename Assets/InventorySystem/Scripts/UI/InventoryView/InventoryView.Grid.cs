@@ -4,6 +4,10 @@ namespace Inventories
 {
     public partial class InventoryView
     {
+        [SerializeField] private Transform _gridContainer;
+        
+        public Transform GridContainer => _gridContainer;
+
         private void CreateGrid()
         {
             for (int y = 0; y < _presenter.Height; y++)

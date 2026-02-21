@@ -4,16 +4,26 @@ using Inventories;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
+using Zenject;
 
 namespace Inventories
 {
     public partial class InventoryView
     {
+        [SerializeField] private Image _draggableImage;
+        [Inject] private readonly DragContext _dragContext;
+        [Inject] private readonly DragChainProcessor _itemDragProcessor;
+
+        #region Drag
+
         public void OnBeginDrag(PointerEventData eventData)
         {
             transform.SetAsLastSibling();
 
-            if (!_dragProcessor.ProcessChain(eventData, _dragContext, _beginDragHandlers))
+            bool success = _itemDragProcessor.ProcessBeginDrag(eventData);
+
+            if (!success)
                 BeginWindowDrag(eventData);
         }
 
@@ -27,9 +37,15 @@ namespace Inventories
 
         public void OnEndDrag(PointerEventData eventData)
         {
-            _dragProcessor.ProcessChain(eventData, _dragContext, _endDragHandlers);
-            CompleteDrag();
+            _itemDragProcessor.ProcessEndDrag(eventData);
+
+            _draggableImage.gameObject.SetActive(false);
+            _dragContext.EndDrag();
         }
+
+        #endregion
+
+        #region AdditionalMethods
 
         public void SetupDraggableImage(Item item)
         {
@@ -41,12 +57,6 @@ namespace Inventories
             _draggableImage.gameObject.SetActive(true);
         }
 
-        private void CompleteDrag()
-        {
-            _draggableImage.gameObject.SetActive(false);
-            _dragContext.EndDrag();
-        }
-        
         private bool TryMoveItem(PointerEventData eventData)
         {
             if (_draggableImage != null && _dragContext.IsDragging)
@@ -61,5 +71,6 @@ namespace Inventories
             return false;
         }
 
+        #endregion
     }
 }

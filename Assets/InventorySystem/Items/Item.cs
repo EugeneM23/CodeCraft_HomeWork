@@ -11,7 +11,6 @@ namespace Inventories
         public ItemData itemData { get; }
         public Vector2Int GridPosition { get; private set; }
         public int StackQuantity { get; private set; }
-        //public ItemUseCase ItemUseCase { get; private set; }
 
         public bool CanStack => itemData.CanStack;
         public bool IsFull => StackQuantity >= itemData.MaxStackQuantity;

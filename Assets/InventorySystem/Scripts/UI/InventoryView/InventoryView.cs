@@ -10,12 +10,9 @@ namespace Inventories
 {
     public partial class InventoryView : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler
     {
-        [FormerlySerializedAs("itemCellPrefab")] [FormerlySerializedAs("_cellPrefab")] [SerializeField]
-        private InventoryCell inventoryCellPrefab;
+        [SerializeField] private InventoryCell inventoryCellPrefab;
 
         [SerializeField] private InventoryItemView _inventoryItemPrefab;
-        [SerializeField] private Image _draggableImage;
-        [SerializeField] private Transform _gridContainer;
         [SerializeField] private Image _selectedArea;
         [SerializeField] private Vector2Int _cellSize;
 
@@ -26,35 +23,18 @@ namespace Inventories
         private Dictionary<string, GameObject> _items;
         private InventoryCell[,] _cells;
 
-        private DragContext _dragContext;
         private InventoryPresenter _presenter;
         private DiContainer _container;
-        
-        private DragChainProcessor _dragProcessor;
-        private List<IDragChainHandler> _beginDragHandlers;
-        private List<IDragChainHandler> _endDragHandlers;
 
         public InventoryPresenter Presenter => _presenter;
         public Vector2Int CellSize => _cellSize;
-        public Transform GridContainer => _gridContainer;
         public Image SelectedArea => _selectedArea;
 
         [Inject]
-        public void Construct(
-            InventoryPresenter presenter, 
-            DiContainer container, 
-            DragContext dragContext,
-            DragChainProcessor dragProcessor,
-            [Inject(Id = "BeginDragHandlers")] List<IDragChainHandler> beginDragHandlers,
-            [Inject(Id = "EndDragHandlers")] List<IDragChainHandler> endDragHandlers)
+        public void Construct(InventoryPresenter presenter, DiContainer container)
         {
             _presenter = presenter;
             _container = container;
-            _dragContext = dragContext;
-            _dragProcessor = dragProcessor;
-            _beginDragHandlers = beginDragHandlers;
-            _endDragHandlers = endDragHandlers;
-            
             _cells = new InventoryCell[presenter.Width, presenter.Height];
             _items = new Dictionary<string, GameObject>();
         }
@@ -88,7 +68,7 @@ namespace Inventories
         }
 
         public InventoryCell[,] GetCells() => (InventoryCell[,])_cells.Clone();
-        
+
         public Dictionary<string, GameObject> GetItems() => _items;
     }
 }
