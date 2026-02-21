@@ -12,20 +12,24 @@ namespace Inventories
 
         public override void InstallBindings()
         {
+            InstallInventoryCore();
+
+            InventoryComponentsInstaller.Install(Container);
+
+            DragSystemInstaller.Install(Container);
+
+            InventorySignalsInstaller.Install(Container);
+        }
+
+        private void InstallInventoryCore()
+        {
             var items = new List<ItemData>();
             foreach (var item in _initialItems)
                 items.Add(item.ItemData);
 
-            var inventory = new Inventory(_inventorySize.x, _inventorySize.y, items);
-
-            SignalBusInstaller.Install(Container);
-
-            Container
-                .DeclareSignal<OpenEquipmentSignal>();
-
             Container
                 .Bind<Inventory>()
-                .FromInstance(inventory)
+                .FromMethod(() => new Inventory(_inventorySize.x, _inventorySize.y, items))
                 .AsSingle();
 
             Container
@@ -38,15 +42,6 @@ namespace Inventories
                 .Bind<InventoryView>()
                 .FromInstance(_inventoryUI)
                 .AsSingle();
-
-            Container
-                .Bind<DragContext>()
-                .AsSingle();
-
-            Container
-                .BindInterfacesAndSelfTo<CellHighlighter>()
-                .AsSingle()
-                .NonLazy();
         }
     }
 }

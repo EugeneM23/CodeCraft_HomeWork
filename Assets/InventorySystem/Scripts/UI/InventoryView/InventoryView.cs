@@ -10,13 +10,15 @@ namespace Inventories
 {
     public partial class InventoryView : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler
     {
-        [FormerlySerializedAs("itemCellPrefab")] [FormerlySerializedAs("_cellPrefab")] [SerializeField] private InventoryCell inventoryCellPrefab;
+        [FormerlySerializedAs("itemCellPrefab")] [FormerlySerializedAs("_cellPrefab")] [SerializeField]
+        private InventoryCell inventoryCellPrefab;
+
         [SerializeField] private InventoryItemView _inventoryItemPrefab;
         [SerializeField] private Image _draggableImage;
         [SerializeField] private Transform _gridContainer;
         [SerializeField] private Image _selectedArea;
         [SerializeField] private Vector2Int _cellSize;
-        
+
         [SerializeField] private Button _closeButton;
         [SerializeField] private Button _reorganizeButton;
         [SerializeField] private Button _openEquipment;
@@ -27,6 +29,10 @@ namespace Inventories
         private DragContext _dragContext;
         private InventoryPresenter _presenter;
         private DiContainer _container;
+        
+        private DragChainProcessor _dragProcessor;
+        private List<IDragChainHandler> _beginDragHandlers;
+        private List<IDragChainHandler> _endDragHandlers;
 
         public InventoryPresenter Presenter => _presenter;
         public Vector2Int CellSize => _cellSize;
@@ -34,11 +40,21 @@ namespace Inventories
         public Image SelectedArea => _selectedArea;
 
         [Inject]
-        public void Construct(InventoryPresenter presenter, DiContainer container, DragContext dragContext)
+        public void Construct(
+            InventoryPresenter presenter, 
+            DiContainer container, 
+            DragContext dragContext,
+            DragChainProcessor dragProcessor,
+            [Inject(Id = "BeginDragHandlers")] List<IDragChainHandler> beginDragHandlers,
+            [Inject(Id = "EndDragHandlers")] List<IDragChainHandler> endDragHandlers)
         {
             _presenter = presenter;
             _container = container;
             _dragContext = dragContext;
+            _dragProcessor = dragProcessor;
+            _beginDragHandlers = beginDragHandlers;
+            _endDragHandlers = endDragHandlers;
+            
             _cells = new InventoryCell[presenter.Width, presenter.Height];
             _items = new Dictionary<string, GameObject>();
         }
@@ -59,7 +75,7 @@ namespace Inventories
             _presenter.OnItemAdded -= CreateItem;
             _presenter.OnItemRemoved -= RemoveItem;
             _presenter.OnReorganize -= Reorganize;
-            
+
             _reorganizeButton.onClick.RemoveAllListeners();
             _closeButton.onClick.RemoveAllListeners();
             _openEquipment.onClick.RemoveAllListeners();
@@ -67,12 +83,12 @@ namespace Inventories
 
         private void Start()
         {
-            InitializeDragProcessor();
             CreateGrid();
             DisplayItems();
         }
-        
+
         public InventoryCell[,] GetCells() => (InventoryCell[,])_cells.Clone();
-       
+        
+        public Dictionary<string, GameObject> GetItems() => _items;
     }
 }

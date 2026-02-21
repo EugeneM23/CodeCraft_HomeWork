@@ -29,7 +29,6 @@ public class InventoryItemView : MonoBehaviour, IPointerEnterHandler, IPointerEx
 
     private void SetBackgroundAlpha(float alpha)
     {
-        Debug.Log(alpha);
         Color color = _background.color;
         color.a = alpha;
         _background.color = color;

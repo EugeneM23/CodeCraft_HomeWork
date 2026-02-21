@@ -9,7 +9,7 @@ namespace Inventories
         private Vector2 _windowOffset;
         private bool _isDraggingWindow;
 
-        private void BeginWindowDrag(PointerEventData eventData)
+        public void BeginWindowDrag(PointerEventData eventData)
         {
             _isDraggingWindow = true;
             transform.SetAsLastSibling();
