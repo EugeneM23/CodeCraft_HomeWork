@@ -34,7 +34,7 @@ namespace Inventories
             Vector2 dragOffset = (Vector2)items[item.ID].transform.position - eventData.position;
 
             // Начинаем драг с сохранением всех смещений
-            dragContext.BeginDrag(item, itemStartPosition, clickOffset, dragOffset);
+            dragContext.BeginDrag(item, itemStartPosition, clickOffset, dragOffset, cell, null);
 
             // Настраиваем визуальное отображение драгаемого предмета
             _view.SetupDraggableImage(item);

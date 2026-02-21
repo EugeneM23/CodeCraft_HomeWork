@@ -44,7 +44,8 @@ namespace Inventories
             Container.Bind<DragConditionHandler>().AsSingle();
             Container.Bind<DropToEquipmentHandler>().AsSingle();
             Container.Bind<DropToInventoryHandler>().AsSingle();
-            Container.Bind<ReturnItemToStartPositionHandler>().AsSingle();
+            Container.Bind<ReturnItemToStartCellHandler>().AsSingle();
+            Container.Bind<ReturnItemToStartSlotHandler>().AsSingle();
         }
 
         private List<IBeginDraghendler> CreateBeginDragHandlers(InjectContext ctx)
@@ -63,7 +64,8 @@ namespace Inventories
                 ctx.Container.Resolve<DragConditionHandler>(),
                 ctx.Container.Resolve<DropToEquipmentHandler>(),
                 ctx.Container.Resolve<DropToInventoryHandler>(),
-                ctx.Container.Resolve<ReturnItemToStartPositionHandler>()
+                ctx.Container.Resolve<ReturnItemToStartCellHandler>(),
+                ctx.Container.Resolve<ReturnItemToStartSlotHandler>(),
             };
         }
     }

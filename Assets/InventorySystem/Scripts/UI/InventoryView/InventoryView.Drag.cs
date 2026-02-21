@@ -9,7 +9,7 @@ using Zenject;
 
 namespace Inventories
 {
-    public partial class InventoryView
+    public partial class InventoryView : IDragHandler, IBeginDragHandler, IEndDragHandler
     {
         [SerializeField] private Image _draggableImage;
         [Inject] private readonly DragContext _dragContext;
@@ -19,28 +19,37 @@ namespace Inventories
 
         public void OnBeginDrag(PointerEventData eventData)
         {
+            // Поднимаем окно инвентаря на передний план при начале драга
             transform.SetAsLastSibling();
 
+            // Пытаемся начать драг предмета через цепочку обработчиков
             bool success = _itemDragProcessor.ProcessBeginDrag(eventData);
 
+            // Если драг предмета не удался, начинаем драг самого окна
             if (!success)
                 BeginWindowDrag(eventData);
         }
 
         public void OnDrag(PointerEventData eventData)
         {
+            // Пытаемся переместить драгаемый предмет
             if (TryMoveItem(eventData))
                 return;
 
+            // Если предмет не драгается, перемещаем само окно инвентаря
             DragWindow(eventData);
         }
 
         public void OnEndDrag(PointerEventData eventData)
         {
+            // Обрабатываем завершение драга через цепочку обработчиков (попытка поместить предмет)
             _itemDragProcessor.ProcessEndDrag(eventData);
 
+            // Скрываем визуальный образ драгаемого предмета
             _draggableImage.gameObject.SetActive(false);
-            _dragContext.EndDrag();
+    
+            // Обнуляем контекст
+            _dragContext.Reset();
         }
 
         #endregion

@@ -10,16 +10,20 @@ public class DragContext
     public Vector2 DragOffset { get; private set; }
     public bool IsDragging { get; private set; }
     public InventoryCell CurrentInventoryCell { get; set; }
-    
-    public EquipmentSlotView Slot { get; set; }
 
-    public void BeginDrag(Item item, Vector2Int startPosition, Vector2Int clickOffset, Vector2 dragOffset)
+    public EquipmentSlotView Slot { get; set; }
+    public InventoryCell StartCell { get; set; }
+
+    public void BeginDrag(Item item, Vector2Int startPosition, Vector2Int clickOffset, Vector2 dragOffset,
+        InventoryCell cell = null, EquipmentSlotView slot = null)
     {
         Item = item;
         StartPosition = startPosition;
         ClickOffset = clickOffset;
         DragOffset = dragOffset;
         IsDragging = true;
+        StartCell = cell;
+        Slot = slot;
     }
 
     public void UpdateCurrentCell(InventoryCell inventoryCell)
@@ -27,7 +31,7 @@ public class DragContext
         CurrentInventoryCell = inventoryCell;
     }
 
-    public void EndDrag()
+    public void Reset()
     {
         Item = null;
         StartPosition = default;
@@ -35,10 +39,7 @@ public class DragContext
         DragOffset = default;
         IsDragging = false;
         CurrentInventoryCell = null;
-    }
-
-    public void Reset()
-    {
-        EndDrag();
+        StartCell = null;
+        Slot = null;
     }
 }

@@ -5,7 +5,7 @@ using Zenject;
 
 namespace Inventories
 {
-    public partial class InventoryView : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler
+    public partial class InventoryView : MonoBehaviour
     {
         [SerializeField] private InventoryCell inventoryCellPrefab;
         [SerializeField] private InventoryItemView _inventoryItemPrefab;
@@ -26,7 +26,7 @@ namespace Inventories
             _cells = new InventoryCell[presenter.Width, presenter.Height];
             _items = new Dictionary<string, GameObject>();
         }
-
+        
         private void OnEnable()
         {
             _presenter.OnItemAdded += CreateItem;

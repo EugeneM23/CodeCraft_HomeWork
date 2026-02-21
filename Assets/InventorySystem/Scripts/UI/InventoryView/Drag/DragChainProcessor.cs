@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine.EventSystems;
-using Zenject;
 
 namespace Inventories
 {

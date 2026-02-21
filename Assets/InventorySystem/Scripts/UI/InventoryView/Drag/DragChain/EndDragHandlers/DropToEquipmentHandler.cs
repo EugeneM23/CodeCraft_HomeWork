@@ -11,7 +11,7 @@ namespace Inventories
             var slot = eventData.pointerCurrentRaycast.gameObject?.GetComponent<EquipmentSlotView>();
 
             // Если курсор не над слотом экипировки, передаем обработку дальше
-            if (slot == null)
+            if (slot == null || !slot.IsEmpty)
                 return false;
 
             // Пытаемся экипировать предмет в слот

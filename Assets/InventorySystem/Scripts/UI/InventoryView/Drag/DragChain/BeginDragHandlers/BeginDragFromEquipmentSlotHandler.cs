@@ -20,12 +20,12 @@ namespace Inventories
 
             // Снимаем предмет со слота экипировки
             Item item = slotView.UnEquip();
-            
+
             // Вычисляем смещение курсора относительно центра слота
             Vector2 dragOffset = (Vector2)slotView.transform.position - eventData.position;
 
             // Начинаем драг без матричных смещений (предмет из экипировки не имеет позиции в сетке)
-            dragContext.BeginDrag(item, Vector2Int.zero, Vector2Int.zero, dragOffset);
+            dragContext.BeginDrag(item, Vector2Int.zero, Vector2Int.zero, dragOffset, null, slotView);
 
             // Настраиваем визуальное отображение драгаемого предмета
             _view.SetupDraggableImage(item);
