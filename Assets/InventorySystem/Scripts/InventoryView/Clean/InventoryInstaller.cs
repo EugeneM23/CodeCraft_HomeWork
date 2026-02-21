@@ -18,6 +18,11 @@ namespace Inventories
 
             var inventory = new Inventory(_inventorySize.x, _inventorySize.y, items);
 
+            SignalBusInstaller.Install(Container);
+
+            Container
+                .DeclareSignal<OpenEquipmentSignal>();
+
             Container
                 .Bind<Inventory>()
                 .FromInstance(inventory)
@@ -38,7 +43,6 @@ namespace Inventories
                 .Bind<DragContext>()
                 .AsSingle();
 
-            // Регистрация CellHighlighter
             Container
                 .BindInterfacesAndSelfTo<CellHighlighter>()
                 .AsSingle()

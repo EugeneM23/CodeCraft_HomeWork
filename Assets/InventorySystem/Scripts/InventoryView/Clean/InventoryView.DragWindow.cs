@@ -1,3 +1,4 @@
+
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -12,7 +13,7 @@ namespace Inventories
         {
             _isDraggingWindow = true;
             transform.SetAsLastSibling();
-
+            
             RectTransformUtility.ScreenPointToLocalPointInRectangle(
                 transform as RectTransform,
                 eventData.position,

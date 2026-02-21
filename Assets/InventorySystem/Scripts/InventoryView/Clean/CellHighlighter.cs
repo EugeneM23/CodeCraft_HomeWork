@@ -33,14 +33,14 @@ namespace Inventories
 
         private void UpdateHighlight()
         {
-            if (_dragContext.CurrentCell == null || _dragContext.Item == null)
+            if (_dragContext.CurrentInventoryCell == null || _dragContext.Item == null)
             {
                 ClearHighlight();
                 return;
             }
 
             // Вычисляем позицию начала предмета с учётом смещения клика
-            Vector2Int targetPosition = _dragContext.CurrentCell.MatrixPosition - _dragContext.ClickOffset;
+            Vector2Int targetPosition = _dragContext.CurrentInventoryCell.MatrixPosition - _dragContext.ClickOffset;
             Vector2Int itemSize = _dragContext.Item.itemData.Size;
 
             // Проверяем, находится ли targetPosition в пределах сетки
@@ -61,7 +61,7 @@ namespace Inventories
                     int cellX = targetPosition.x + x;
                     int cellY = targetPosition.y + y;
 
-                    if (!_dragContext.CurrentCell.Presenter.IsFree(cellX, cellY))
+                    if (!_dragContext.CurrentInventoryCell.Presenter.IsFree(cellX, cellY))
                     {
                         allCellsFree = false;
                         break;
@@ -78,9 +78,9 @@ namespace Inventories
             }
 
             // Получаем первую клеточку (левый верхний угол)
-            Cell startCell = _inventoryView.GetCells()[targetPosition.x, targetPosition.y];
+            InventoryCell startInventoryCell = _inventoryView.GetCells()[targetPosition.x, targetPosition.y];
 
-            if (startCell == null)
+            if (startInventoryCell == null)
             {
                 ClearHighlight();
                 return;
@@ -110,7 +110,7 @@ namespace Inventories
 
                 // Получаем RectTransform картинки и первой клеточки
                 RectTransform highlightRect = _highlightImage.rectTransform;
-                RectTransform startCellRect = startCell.GetComponent<RectTransform>();
+                RectTransform startCellRect = startInventoryCell.GetComponent<RectTransform>();
 
                 // Вычисляем размер области подсветки
                 Vector2 cellSize = _inventoryView.CellSize;

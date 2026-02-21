@@ -4,7 +4,7 @@ using Inventories;
 using UnityEngine;
 using Zenject;
 
-public class InventoryPresenter : IInventoryPresenter, IInitializable, IDisposable
+public class InventoryPresenter :  IInitializable, IDisposable
 {
     public event Action<Item, Vector2Int[]> OnItemAdded;
     public event Action<Item, Vector2Int[]> OnItemRemoved;
@@ -12,14 +12,16 @@ public class InventoryPresenter : IInventoryPresenter, IInitializable, IDisposab
 
     private readonly Vector2Int _inventorySize;
     private readonly Inventory _inventory;
+    private readonly SignalBus _signalBus;
 
     public int Height => _inventorySize.y;
     public int Width => _inventorySize.x;
 
-    public InventoryPresenter(Vector2Int inventorySize, Inventory inventory)
+    public InventoryPresenter(Vector2Int inventorySize, Inventory inventory, SignalBus signalBus)
     {
         _inventorySize = inventorySize;
         _inventory = inventory;
+        _signalBus = signalBus;
     }
 
     public void Initialize()
@@ -80,4 +82,10 @@ public class InventoryPresenter : IInventoryPresenter, IInitializable, IDisposab
     public bool IsFree(Vector2Int position) => _inventory.IsFree(position);
 
     public void Reorganize() => _inventory.Reorganize();
+
+    public void OpenEquipment()
+    {
+        Debug.Log("Open equipment");
+        _signalBus.Fire<OpenEquipmentSignal>();
+    }
 }

@@ -1,10 +1,9 @@
 using UnityEngine;
-using UnityEngine.UI;
 using Zenject;
 
 namespace Inventories
 {
-    public class Cell : MonoBehaviour
+    public class InventoryCell : MonoBehaviour, IItemCell
     {
         [Inject] private readonly InventoryPresenter _presenter;
 
@@ -12,5 +11,23 @@ namespace Inventories
 
         public Vector2Int MatrixPosition;
         public Item Item;
+        
+        public void AddItem(Item item)
+        {
+            
+        }
+    }
+
+    public interface IItemCell
+    {
+        void AddItem(Item item);
+    }
+
+    public class EquipmentCell : IItemCell
+    {
+        public void AddItem(Item item)
+        {
+            
+        }
     }
 }
