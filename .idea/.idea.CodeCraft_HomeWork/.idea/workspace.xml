@@ -6,90 +6,17 @@
   <component name="ChangeListManager">
     <list default="true" id="6f0b762c-5415-4a85-b17b-cc44fd47261d" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.CodeCraft_HomeWork/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.CodeCraft_HomeWork/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Audio.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Audio/AudioPlayer.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Audio/AudioPlayer.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Common/ItemDescriptionView.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/Components/ItemDescriptionView.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Common/ItemDescriptionView.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/Components/ItemDescriptionView.cs.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Common/RaycastDetector.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Common/RaycastDetector.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Common/UIDragWindow.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Common/UIDragWindow.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Common/UITurntable.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/Components/UITurntable.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Common/UITurntable.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/Components/UITurntable.cs.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Items/Item.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Items/Item.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Items/ItemData.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Items/ItemData.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Installers/DragSystemInstaller.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Installers/InventoryDragInstaller.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Installers/DragSystemInstaller.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Installers/InventoryDragInstaller.cs.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Installers/InventoryInstaller.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Installers/InventoryCoreInstaller.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Installers/InventoryInstaller.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Installers/InventoryCoreInstaller.cs.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/InventorySystem.asmdef" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/InventorySystem.asmdef.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Presenter/OpenEquipmentSignal.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/Signals/OpenEquipmentSignal.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Presenter/OpenEquipmentSignal.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/Signals/OpenEquipmentSignal.cs.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/DragChain.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/Drag/DragChain.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/DragChain/BeginDrag.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/Drag/DragChain/BeginDrag.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/DragChain/BeginDrag/BeginDragFromEquipmentSlotHandler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/Drag/DragChain/BeginDrag/BeginDragFromEquipmentSlotHandler.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/DragChain/BeginDrag/BeginDragFromEquipmentSlotHandler.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/Drag/DragChain/BeginDrag/BeginDragFromEquipmentSlotHandler.cs.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/DragChain/BeginDrag/BeginDragFromInventoryCellHandler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/Drag/DragChain/BeginDrag/BeginDragFromInventoryCellHandler.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/DragChain/BeginDrag/BeginDragFromInventoryCellHandler.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/Drag/DragChain/BeginDrag/BeginDragFromInventoryCellHandler.cs.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/DragChain/DragChainProcessor.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/Drag/DragChain/DragChainProcessor.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/DragChain/DragChainProcessor.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/Drag/DragChain/DragChainProcessor.cs.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/DragChain/EndDrag.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/Drag/DragChain/EndDrag.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/DragChain/EndDrag/DragConditionHandler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/Drag/DragChain/EndDrag/DragConditionHandler.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/DragChain/EndDrag/DragConditionHandler.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/Drag/DragChain/EndDrag/DragConditionHandler.cs.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/DragChain/EndDrag/DropToEquipmentHandler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/Drag/DragChain/EndDrag/DropToEquipmentHandler.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/DragChain/EndDrag/DropToEquipmentHandler.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/Drag/DragChain/EndDrag/DropToEquipmentHandler.cs.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/DragChain/EndDrag/DropToInventoryHandler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/Drag/DragChain/EndDrag/DropToInventoryHandler.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/DragChain/EndDrag/DropToInventoryHandler.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/Drag/DragChain/EndDrag/DropToInventoryHandler.cs.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/DragChain/EndDrag/ReturnItemToStartPositionHandler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/Drag/DragChain/EndDrag/ReturnItemToStartPositionHandler.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/DragChain/EndDrag/ReturnItemToStartPositionHandler.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/Drag/DragChain/EndDrag/ReturnItemToStartPositionHandler.cs.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/DragChain/IDragChainHandler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/Drag/DragChain/IDragChainHandler.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/DragChain/IDragChainHandler.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/Drag/DragChain/IDragChainHandler.cs.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/DragContext.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/Drag/DragContext.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/DragContext.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/Drag/DragContext.cs.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/InventoryView.Drag.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/InventoryView.Drag.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/InventoryView.Grid.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/InventoryView.Grid.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Prefabs/Inventory/Inventory.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Prefabs/Inventory/Inventory.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Installers/InventoryComponentsInstaller.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Installers/InventoryComponentsInstaller.cs.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Installers/InventoryCoreInstaller.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Installers/InventoryCoreInstaller.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/Components/CellHighlighter.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/Components/CellHighlighter.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/Drag/DragChain/BeginDrag/BeginDragFromEquipmentSlotHandler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/Drag/DragChain/BeginDrag/BeginDragFromEquipmentSlotHandler.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/Drag/DragChain/BeginDrag/BeginDragFromInventoryCellHandler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/Drag/DragChain/BeginDrag/BeginDragFromInventoryCellHandler.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/Drag/DragChain/EndDrag/DropToEquipmentHandler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/Drag/DragChain/EndDrag/DropToEquipmentHandler.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/Drag/DragChain/EndDrag/DropToInventoryHandler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/Drag/DragChain/EndDrag/DropToInventoryHandler.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/Drag/DragChain/EndDrag/ReturnItemToStartPositionHandler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/Drag/DragChain/EndDrag/ReturnItemToStartPositionHandler.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/InventoryView.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/InventoryView.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Tests.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Tests/InventoryTests.AddOnFreePosition.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Tests/InventoryTests.AddOnFreePosition.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Tests/InventoryTests.AddOnSpecifiedPositionSuccessful.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Tests/InventoryTests.AddOnSpecifiedPositionSuccessful.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Tests/InventoryTests.Clear.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Tests/InventoryTests.Clear.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Tests/InventoryTests.Contains.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Tests/InventoryTests.Contains.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Tests/InventoryTests.CopyTo.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Tests/InventoryTests.CopyTo.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Tests/InventoryTests.Get.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Tests/InventoryTests.Get.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Tests/InventoryTests.GetCount.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Tests/InventoryTests.GetCount.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Tests/InventoryTests.GetFreePosition.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Tests/InventoryTests.GetFreePosition.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Tests/InventoryTests.GetPosition.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Tests/InventoryTests.GetPosition.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Tests/InventoryTests.Instantiate.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Tests/InventoryTests.Instantiate.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Tests/InventoryTests.InventoryTests.CanAddOnFreePosition.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Tests/InventoryTests.InventoryTests.CanAddOnFreePosition.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Tests/InventoryTests.Move.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Tests/InventoryTests.Move.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Tests/InventoryTests.Remove.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Tests/InventoryTests.Remove.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Tests/InventoryTests.Reorganize.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Tests/InventoryTests.Reorganize.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Tests/InventoryTests.TryGet.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Tests/InventoryTests.TryGet.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Tests/InventoryTests.TryGetPosition.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Tests/InventoryTests.TryGetPosition.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Tests/InventoryTests.asmdef" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Tests/InventoryTests.asmdef.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Tests/InventoryTests.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Tests/InventoryTests.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Tests/MoveItemSuccessfulTests.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Tests/MoveItemSuccessfulTests.cs.meta" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -260,7 +187,7 @@
       <workItem from="1771161813213" duration="14800000" />
       <workItem from="1771191344059" duration="1683000" />
       <workItem from="1771330327258" duration="38245000" />
-      <workItem from="1771592512678" duration="49257000" />
+      <workItem from="1771592512678" duration="52363000" />
     </task>
     <task id="LOCAL-00001" summary="Update">
       <option name="closed" value="true" />

@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
@@ -9,15 +8,24 @@ namespace Inventories
     {
         private readonly DragContext _dragContext;
         private readonly InventoryView _inventoryView;
+        private readonly InventoryPresenter _presenter;
+        private readonly Image _highlightImage;
+        private readonly RectTransform _gridContainer;
 
-        private Image _highlightImage;
-        private RectTransform _gridContainer;
-        private bool _isHighlightActive = false;
+        private bool _isHighlightActive;
+        private bool _isInitialized;
 
-        public CellHighlighter(DragContext dragContext, InventoryView inventoryView)
+        public CellHighlighter(
+            DragContext dragContext,
+            InventoryView inventoryView,
+            InventoryPresenter presenter,
+            Image highlightImage)
         {
             _dragContext = dragContext;
             _inventoryView = inventoryView;
+            _presenter = presenter;
+            _highlightImage = highlightImage;
+            _gridContainer = _inventoryView.GridContainer.GetComponent<RectTransform>();
         }
 
         public void Tick()
@@ -33,6 +41,13 @@ namespace Inventories
 
         private void UpdateHighlight()
         {
+            // Инициализируем при первом использовании
+            if (!_isInitialized)
+            {
+                InitializeHighlight();
+            }
+
+            // Проверяем базовые условия
             if (_dragContext.CurrentInventoryCell == null || _dragContext.Item == null)
             {
                 ClearHighlight();
@@ -43,89 +58,89 @@ namespace Inventories
             Vector2Int targetPosition = _dragContext.CurrentInventoryCell.MatrixPosition - _dragContext.ClickOffset;
             Vector2Int itemSize = _dragContext.Item.itemData.Size;
 
-            // Проверяем, находится ли targetPosition в пределах сетки
-            if (targetPosition.x < 0 || targetPosition.y < 0 ||
-                targetPosition.x + itemSize.x > _inventoryView.Presenter.Width ||
-                targetPosition.y + itemSize.y > _inventoryView.Presenter.Height)
+            // Проверяем валидность позиции
+            if (!IsValidPosition(targetPosition, itemSize))
             {
                 ClearHighlight();
                 return;
             }
 
             // Проверяем, что все клеточки свободны
-            bool allCellsFree = true;
-            for (int y = 0; y < itemSize.y; y++)
-            {
-                for (int x = 0; x < itemSize.x; x++)
-                {
-                    int cellX = targetPosition.x + x;
-                    int cellY = targetPosition.y + y;
-
-                    if (!_dragContext.CurrentInventoryCell.Presenter.IsFree(cellX, cellY))
-                    {
-                        allCellsFree = false;
-                        break;
-                    }
-                }
-
-                if (!allCellsFree) break;
-            }
-
-            if (!allCellsFree)
+            if (!AreAllCellsFree(targetPosition, itemSize))
             {
                 ClearHighlight();
                 return;
             }
 
-            // Получаем первую клеточку (левый верхний угол)
-            InventoryCell startInventoryCell = _inventoryView.GetCells()[targetPosition.x, targetPosition.y];
+            // Отображаем подсветку
+            ShowHighlight(targetPosition, itemSize);
+        }
 
-            if (startInventoryCell == null)
+        private void InitializeHighlight()
+        {
+            if (_highlightImage != null && _gridContainer != null)
+            {
+                // Перемещаем картинку в grid контейнер, если она там еще не находится
+                if (_highlightImage.transform.parent != _gridContainer)
+                {
+                    _highlightImage.transform.SetParent(_gridContainer, false);
+                }
+                _isInitialized = true;
+            }
+        }
+
+        private bool IsValidPosition(Vector2Int position, Vector2Int size)
+        {
+            return position.x >= 0 && position.y >= 0 &&
+                   position.x + size.x <= _presenter.Width &&
+                   position.y + size.y <= _presenter.Height;
+        }
+
+        private bool AreAllCellsFree(Vector2Int position, Vector2Int size)
+        {
+            for (int y = 0; y < size.y; y++)
+            {
+                for (int x = 0; x < size.x; x++)
+                {
+                    int cellX = position.x + x;
+                    int cellY = position.y + y;
+
+                    if (!_presenter.IsFree(cellX, cellY))
+                        return false;
+                }
+            }
+
+            return true;
+        }
+
+        private void ShowHighlight(Vector2Int position, Vector2Int itemSize)
+        {
+            // Получаем стартовую ячейку (левый верхний угол)
+            InventoryCell startCell = _inventoryView.GetCells()[position.x, position.y];
+
+            if (startCell == null)
             {
                 ClearHighlight();
                 return;
             }
 
-            // Инициализируем highlight image при первом использовании
-            if (_highlightImage == null)
-            {
-                _highlightImage = _inventoryView.SelectedArea;
-                _gridContainer = _inventoryView.GridContainer.GetComponent<RectTransform>();
+            // Активируем подсветку
+            _highlightImage.gameObject.SetActive(true);
+            _isHighlightActive = true;
 
-                if (_highlightImage != null && _gridContainer != null)
-                {
-                    // Перемещаем картинку в grid контейнер, если она там еще не находится
-                    if (_highlightImage.transform.parent != _gridContainer)
-                    {
-                        _highlightImage.transform.SetParent(_gridContainer, false);
-                    }
-                }
-            }
+            // Настраиваем размер и позицию
+            RectTransform highlightRect = _highlightImage.rectTransform;
+            RectTransform startCellRect = startCell.GetComponent<RectTransform>();
 
-            if (_highlightImage != null)
-            {
-                // Активируем картинку
-                _highlightImage.gameObject.SetActive(true);
-                _isHighlightActive = true;
+            Vector2 cellSize = _inventoryView.CellSize;
+            Vector2 highlightSize = new Vector2(
+                itemSize.x * cellSize.x,
+                itemSize.y * cellSize.y
+            );
 
-                // Получаем RectTransform картинки и первой клеточки
-                RectTransform highlightRect = _highlightImage.rectTransform;
-                RectTransform startCellRect = startInventoryCell.GetComponent<RectTransform>();
-
-                // Вычисляем размер области подсветки
-                Vector2 cellSize = _inventoryView.CellSize;
-                Vector2 highlightSize = new Vector2(
-                    itemSize.x * cellSize.x,
-                    itemSize.y * cellSize.y
-                );
-
-                // Устанавливаем размер и позицию
-                highlightRect.sizeDelta = highlightSize;
-                highlightRect.anchoredPosition = startCellRect.anchoredPosition;
-
-                // Поднимаем на передний план
-                highlightRect.SetAsLastSibling();
-            }
+            highlightRect.sizeDelta = highlightSize;
+            highlightRect.anchoredPosition = startCellRect.anchoredPosition;
+            highlightRect.SetAsLastSibling();
         }
 
         private void ClearHighlight()

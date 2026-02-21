@@ -2603,6 +2603,7 @@ GameObject:
   - component: {fileID: 64680358800910497}
   - component: {fileID: -2486167064748676698}
   - component: {fileID: 6564869613964925928}
+  - component: {fileID: 4668215818912608005}
   m_Layer: 5
   m_Name: Inventory
   m_TagString: Untagged
@@ -2691,6 +2692,7 @@ MonoBehaviour:
   _monoInstallers:
   - {fileID: 64680358800910497}
   - {fileID: 6564869613964925928}
+  - {fileID: 4668215818912608005}
   _installerPrefabs: []
   _autoRun: 1
   _kernel: {fileID: 0}
@@ -2725,15 +2727,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9d0738d833024efbb9a03a9476b595dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  inventoryCellPrefab: {fileID: 5007937133850590707, guid: 9d9acb3550ff64ac18eca0767a708394, type: 3}
-  _inventoryItemPrefab: {fileID: 3334073297244301008, guid: 4c15baa75d82b483abb917b275ec412d, type: 3}
-  _draggableImage: {fileID: 4074530518186395684}
-  _gridContainer: {fileID: 6439035293085280424}
-  _selectedArea: {fileID: 2695828671201812071}
-  _cellSize: {x: 75, y: 75}
   _closeButton: {fileID: 1078775964359812658}
   _reorganizeButton: {fileID: 8237838803638821418}
   _openEquipment: {fileID: 398211929966356094}
+  inventoryCellPrefab: {fileID: 5007937133850590707, guid: 9d9acb3550ff64ac18eca0767a708394, type: 3}
+  _inventoryItemPrefab: {fileID: 3334073297244301008, guid: 4c15baa75d82b483abb917b275ec412d, type: 3}
+  _cellSize: {x: 75, y: 75}
+  _draggableImage: {fileID: 4074530518186395684}
+  _gridContainer: {fileID: 6439035293085280424}
 --- !u!114 &6564869613964925928
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2747,6 +2748,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _equipmentView: {fileID: 5693211042118781436}
+--- !u!114 &4668215818912608005
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2835633319985185814}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e9f1911adad44838c64c3eb58d7391f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _higlightImage: {fileID: 2695828671201812071}
 --- !u!1 &2882787923631989557
 GameObject:
   m_ObjectHideFlags: 0

@@ -7,12 +7,7 @@ namespace Inventories
     {
         [Inject] private readonly InventoryPresenter _presenter;
 
-        public bool Handle(PointerEventData eventData, DragContext dragContext)
-        {
-            if (dragContext.Item == null)
-                return true;
-
-            return _presenter.AddItem(dragContext.Item, dragContext.StartPosition);
-        }
+        public bool Handle(PointerEventData eventData, DragContext dragContext) =>
+            _presenter.AddItem(dragContext.Item, dragContext.StartPosition);
     }
 }

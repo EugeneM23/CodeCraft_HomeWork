@@ -1,9 +1,6 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.Serialization;
-using UnityEngine.UI;
 using Zenject;
 
 namespace Inventories
@@ -11,24 +8,15 @@ namespace Inventories
     public partial class InventoryView : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler
     {
         [SerializeField] private InventoryCell inventoryCellPrefab;
-
         [SerializeField] private InventoryItemView _inventoryItemPrefab;
-        [SerializeField] private Image _selectedArea;
         [SerializeField] private Vector2Int _cellSize;
-
-        [SerializeField] private Button _closeButton;
-        [SerializeField] private Button _reorganizeButton;
-        [SerializeField] private Button _openEquipment;
+        
+        public Vector2Int CellSize => _cellSize;
 
         private Dictionary<string, GameObject> _items;
         private InventoryCell[,] _cells;
-
         private InventoryPresenter _presenter;
         private DiContainer _container;
-
-        public InventoryPresenter Presenter => _presenter;
-        public Vector2Int CellSize => _cellSize;
-        public Image SelectedArea => _selectedArea;
 
         [Inject]
         public void Construct(InventoryPresenter presenter, DiContainer container)
@@ -45,9 +33,7 @@ namespace Inventories
             _presenter.OnItemRemoved += RemoveItem;
             _presenter.OnReorganize += Reorganize;
 
-            _reorganizeButton.onClick.AddListener(() => _presenter.Reorganize());
-            _closeButton.onClick.AddListener(() => this.gameObject.SetActive(false));
-            _openEquipment.onClick.AddListener(() => _presenter.OpenEquipment());
+            SubscribeButtons();
         }
 
         private void OnDisable()
@@ -56,9 +42,7 @@ namespace Inventories
             _presenter.OnItemRemoved -= RemoveItem;
             _presenter.OnReorganize -= Reorganize;
 
-            _reorganizeButton.onClick.RemoveAllListeners();
-            _closeButton.onClick.RemoveAllListeners();
-            _openEquipment.onClick.RemoveAllListeners();
+            UnsubscribeButtons();
         }
 
         private void Start()
@@ -69,6 +53,6 @@ namespace Inventories
 
         public InventoryCell[,] GetCells() => (InventoryCell[,])_cells.Clone();
 
-        public Dictionary<string, GameObject> GetItems() => _items;
+        public IReadOnlyDictionary<string, GameObject> GetItems() => _items;
     }
 }

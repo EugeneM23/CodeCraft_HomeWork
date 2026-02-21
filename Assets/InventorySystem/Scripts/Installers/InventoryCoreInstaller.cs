@@ -13,8 +13,6 @@ namespace Inventories
         public override void InstallBindings()
         {
             InstallInventoryCore();
-
-            InventoryComponentsInstaller.Install(Container);
             InventoryDragInstaller.Install(Container);
             InventorySignalsInstaller.Install(Container);
         }
