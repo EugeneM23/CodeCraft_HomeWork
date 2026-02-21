@@ -2604,6 +2604,7 @@ GameObject:
   - component: {fileID: -2486167064748676698}
   - component: {fileID: 6564869613964925928}
   - component: {fileID: 4668215818912608005}
+  - component: {fileID: 1810652731660993890}
   m_Layer: 5
   m_Name: Inventory
   m_TagString: Untagged
@@ -2693,6 +2694,7 @@ MonoBehaviour:
   - {fileID: 64680358800910497}
   - {fileID: 6564869613964925928}
   - {fileID: 4668215818912608005}
+  - {fileID: 1810652731660993890}
   _installerPrefabs: []
   _autoRun: 1
   _kernel: {fileID: 0}
@@ -2761,6 +2763,26 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _higlightImage: {fileID: 2695828671201812071}
+--- !u!114 &1810652731660993890
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2835633319985185814}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b62b2c2d93fc4b2fbff5c3849a04ee90, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _dropToCellKey:
+    bank: {fileID: 11400000, guid: e4b41ce06ef2940e293fe59906357731, type: 2}
+    eventId: dropToCell
+    identifier: Master.dropToCell
+  _equipKey:
+    bank: {fileID: 11400000, guid: e4b41ce06ef2940e293fe59906357731, type: 2}
+    eventId: equip
+    identifier: Master.equip
 --- !u!1 &2882787923631989557
 GameObject:
   m_ObjectHideFlags: 0

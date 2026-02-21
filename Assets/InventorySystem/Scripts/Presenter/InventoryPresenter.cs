@@ -4,7 +4,7 @@ using Inventories;
 using UnityEngine;
 using Zenject;
 
-public class InventoryPresenter :  IInitializable, IDisposable
+public class InventoryPresenter : IInitializable, IDisposable
 {
     public event Action<Item, Vector2Int[]> OnItemAdded;
     public event Action<Item, Vector2Int[]> OnItemRemoved;
@@ -69,6 +69,8 @@ public class InventoryPresenter :  IInitializable, IDisposable
 
     public bool AddItem(Item item, Vector2Int position)
     {
+        _signalBus.Fire<DropItemAudioSignal>();
+        
         return _inventory.AddItem(item.itemData, position);
     }
 
