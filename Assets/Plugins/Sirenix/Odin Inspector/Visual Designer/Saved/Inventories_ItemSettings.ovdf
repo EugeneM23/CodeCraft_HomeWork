@@ -1,0 +1,65 @@
+OVDF v1.0
+Inventories.ItemSettings, Assembly-CSharp
+
+# $AaXuZGipyM4Yabowxqern5
+Position: $root:41
++ [Sirenix.OdinInspector.FoldoutGroupAttribute]
+	GroupName = "VISUAL"
+	VisibleIf = ""
+
+# $QvsczGsBuTorJ8YnhGC9rK
+Position: $root:42
++ [Sirenix.OdinInspector.FoldoutGroupAttribute]
+	GroupName = "AUDIO"
+
+# $6fXbZKwcRhuMCLVX1w5aqF
+Position: $root:43
++ [Sirenix.OdinInspector.FoldoutGroupAttribute]
+	GroupName = "DESCRIPTION"
+
+# $QN1C71XYMC6q6sAx7viZ9F
+Position: $root:40
++ [Sirenix.OdinInspector.FoldoutGroupAttribute]
+	GroupName = "GENERAL"
+
+# <StartDrag>k__BackingField
+Position: $QvsczGsBuTorJ8YnhGC9rK:1
+
+# <AddItemKey>k__BackingField
+Position: $QvsczGsBuTorJ8YnhGC9rK:3
+
+# <EquipItem>k__BackingField
+Position: $QvsczGsBuTorJ8YnhGC9rK:4
+
+# <DropToScene>k__BackingField
+Position: $QvsczGsBuTorJ8YnhGC9rK:2
+
+# <UseItem>k__BackingField
+Position: $QvsczGsBuTorJ8YnhGC9rK:0
+
+# <Icon>k__BackingField
+Position: $AaXuZGipyM4Yabowxqern5:0
++ [Sirenix.OdinInspector.PreviewFieldAttribute]
+	Height = 150
++ [Sirenix.OdinInspector.GUIColorAttribute]
+	Color = #FFFFFFFF
+
+# <Mesh>k__BackingField
+Position: $AaXuZGipyM4Yabowxqern5:1
++ [Sirenix.OdinInspector.PreviewFieldAttribute]
+	Height = 150
+
+# <Size>k__BackingField
+Position: $QN1C71XYMC6q6sAx7viZ9F:2
+
+# <Name>k__BackingField
+Position: $QN1C71XYMC6q6sAx7viZ9F:0
+
+# <Description>k__BackingField
+Position: $6fXbZKwcRhuMCLVX1w5aqF:0
++ [UnityEngine.TextAreaAttribute]
+	minLines = 5
+	maxLines = 10
+
+# <ItemType>k__BackingField
+Position: $QN1C71XYMC6q6sAx7viZ9F:1

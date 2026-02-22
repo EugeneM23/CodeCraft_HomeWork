@@ -1,4 +1,4 @@
-using Game.Scripts.UI.Equipment.Game.Equipment.View;
+using Equipment;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using Zenject;
@@ -12,7 +12,7 @@ namespace Inventories
         public bool Handle(PointerEventData eventData, DragContext dragContext)
         {
             // Получаем слот экипировки под курсором
-            var slotView = eventData.pointerPressRaycast.gameObject.GetComponent<EquipmentSlotView>();
+            var slotView = eventData.pointerPressRaycast.gameObject.GetComponent<EquipmentSlot>();
 
             // Проверяем что слот существует и не пустой
             if (slotView == null || slotView.IsEmpty)

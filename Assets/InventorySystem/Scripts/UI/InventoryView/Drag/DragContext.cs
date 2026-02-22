@@ -1,4 +1,4 @@
-using Game.Scripts.UI.Equipment.Game.Equipment.View;
+using Equipment;
 using Inventories;
 using UnityEngine;
 
@@ -11,11 +11,11 @@ public class DragContext
     public bool IsDragging { get; private set; }
     public InventoryCell CurrentInventoryCell { get; set; }
 
-    public EquipmentSlotView Slot { get; set; }
+    public EquipmentSlot Slot { get; set; }
     public InventoryCell StartCell { get; set; }
 
     public void BeginDrag(Item item, Vector2Int startPosition, Vector2Int clickOffset, Vector2 dragOffset,
-        InventoryCell cell = null, EquipmentSlotView slot = null)
+        InventoryCell cell = null, EquipmentSlot slot = null)
     {
         Item = item;
         StartPosition = startPosition;

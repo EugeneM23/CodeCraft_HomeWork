@@ -12,6 +12,7 @@ namespace Inventories
     public partial class InventoryView : IDragHandler, IBeginDragHandler, IEndDragHandler
     {
         [SerializeField] private Image _draggableImage;
+        
         [Inject] private readonly DragContext _dragContext;
         [Inject] private readonly DragChainProcessor _itemDragProcessor;
 
