@@ -19,7 +19,7 @@ namespace Inventories
                 return false;
 
             // Снимаем предмет со слота экипировки
-            Item item = slotView.UnEquip();
+            Item item = slotView.Presenter.TryUnEquip(slotView.ItemType);
 
             // Вычисляем смещение курсора относительно центра слота
             Vector2 dragOffset = (Vector2)slotView.transform.position - eventData.position;
@@ -29,6 +29,21 @@ namespace Inventories
 
             // Настраиваем визуальное отображение драгаемого предмета
             _view.SetupDraggableImage(item);
+
+            return true;
+        }
+    }
+
+    public class BeginDragTestlotHandler : IBeginDraghendler
+    {
+        [Inject] private readonly InventoryView _view;
+
+        public bool Handle(PointerEventData eventData, DragContext dragContext)
+        {
+            // Получаем слот экипировки под курсором
+            var transform = eventData.pointerPressRaycast.gameObject.GetComponent<Transform>();
+
+            Debug.Log(transform.name);
 
             return true;
         }

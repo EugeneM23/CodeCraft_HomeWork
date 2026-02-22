@@ -1,23 +1,24 @@
 using System;
+using AudioEngine;
 using Inventories;
-using UnityEngine;
 using Zenject;
 
 namespace Equipment
 {
-    public class CharacterEquipmentController : IInitializable, IDisposable
+    public class EquipmentSlotAudioController : IInitializable, IDisposable
     {
         private readonly EquipmentModel _model;
-        private readonly CharacterEquipment _characterEquipment;
+        private AudioSystem _audioSystem;
 
-        public CharacterEquipmentController(EquipmentModel model, CharacterEquipment characterEquipment)
+        public EquipmentSlotAudioController(EquipmentModel model)
         {
             _model = model;
-            _characterEquipment = characterEquipment;
         }
 
         public void Initialize()
         {
+            _audioSystem = AudioSystem.Instance;
+
             _model.OnEquipped += OnItemEquipped;
             _model.OnUnEquipped += OnItemUnEquipped;
         }
@@ -30,13 +31,12 @@ namespace Equipment
 
         private void OnItemEquipped(ItemType itemType, Item item)
         {
-            Debug.Log(_characterEquipment == null);
-            _characterEquipment.Equip(item);
+            _audioSystem.PlayEvent(MasterBankAPI.EquipItemEvent);
         }
 
         private void OnItemUnEquipped(ItemType itemType, Item item)
         {
-            _characterEquipment.Unequip(item);
+            _audioSystem.PlayEvent(MasterBankAPI.StartDragEvent);
         }
     }
 }

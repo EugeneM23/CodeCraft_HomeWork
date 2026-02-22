@@ -30,12 +30,13 @@ namespace Inventories
 
         private void OnItemAdded(Item item, Vector2Int[] positions)
         {
-            _audioSystem.PlayEvent(item.Settings.AddItemKey);
+            Debug.Log(item.Settings.AddItemKey.EventId);
+            _audioSystem.PlayEvent(MasterBankAPI.AddItemToInventoryEvent);
         }
 
         private void OnItemRemoved(Item item, Vector2Int[] positions)
         {
-            _audioSystem.PlayEvent(item.Settings.StartDrag);
+            _audioSystem.PlayEvent(MasterBankAPI.StartDragEvent);
         }
 
         private void OnItemMoved(Item item, Vector2Int position)

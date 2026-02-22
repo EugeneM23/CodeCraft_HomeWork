@@ -225,21 +225,21 @@ MonoBehaviour:
     <Name>k__BackingField: Leather Armor
     <Description>k__BackingField: Some Description
     <ItemType>k__BackingField: 1
-    <Icon>k__BackingField: {fileID: -5225414936229275880, guid: b30163ee1deef4c89874918e57d9a3db, type: 3}
-    <Mesh>k__BackingField: {fileID: 4085105768523573406, guid: b2a7478a138dfd940bf489af88d0cb9c, type: 3}
+    <Icon>k__BackingField: {fileID: -6776066767185358533, guid: 683e9fccb73dc471d8df37d0fb4068be, type: 3}
+    <Mesh>k__BackingField: {fileID: -4488355420718845585, guid: c19aa0e17c6fef74cb7831da64adf3fe, type: 3}
     <Size>k__BackingField: {x: 2, y: 3}
     <StartDrag>k__BackingField:
       bank: {fileID: 11400000, guid: e4b41ce06ef2940e293fe59906357731, type: 2}
-      eventId: startDrag
-      identifier: Master.startDrag
+      eventId: addItemToInventory
+      identifier: Master.addItemToInventory
     <AddItemKey>k__BackingField:
       bank: {fileID: 11400000, guid: e4b41ce06ef2940e293fe59906357731, type: 2}
       eventId: addItemToInventory
       identifier: Master.addItemToInventory
     <EquipItem>k__BackingField:
       bank: {fileID: 11400000, guid: e4b41ce06ef2940e293fe59906357731, type: 2}
-      eventId: equipItem
-      identifier: Master.equipItem
+      eventId: addItemToInventory
+      identifier: Master.addItemToInventory
     <DropToScene>k__BackingField:
       bank: {fileID: 11400000, guid: e4b41ce06ef2940e293fe59906357731, type: 2}
       eventId: addItemToInventory

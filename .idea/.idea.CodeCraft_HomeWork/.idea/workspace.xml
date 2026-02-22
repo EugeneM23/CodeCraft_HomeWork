@@ -5,392 +5,43 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6f0b762c-5415-4a85-b17b-cc44fd47261d" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Equipment/EquipmentSlotAudioController.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Equipment/EquipmentView.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.CodeCraft_HomeWork/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.CodeCraft_HomeWork/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/AssetPacks/JC_StylizedModularCharacters/Materials/M_StylizedModularCharacter_BG.mat" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/AssetPacks/JC_StylizedModularCharacters/Materials/M_StylizedModularCharacter_BG.mat" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/AssetPacks/JC_StylizedModularCharacters/Materials/M_StylizedModularCharacter_Female_01.mat" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/AssetPacks/JC_StylizedModularCharacters/Materials/M_StylizedModularCharacter_Female_01.mat" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/AssetPacks/JC_StylizedModularCharacters/Materials/M_StylizedModularCharacter_Female_02.mat" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/AssetPacks/JC_StylizedModularCharacters/Materials/M_StylizedModularCharacter_Female_02.mat" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/AssetPacks/JC_StylizedModularCharacters/Materials/M_StylizedModularCharacter_Female_03.mat" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/AssetPacks/JC_StylizedModularCharacters/Materials/M_StylizedModularCharacter_Female_03.mat" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/AssetPacks/JC_StylizedModularCharacters/Materials/M_StylizedModularCharacter_Male_01.mat" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/AssetPacks/JC_StylizedModularCharacters/Materials/M_StylizedModularCharacter_Male_01.mat" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/AssetPacks/JC_StylizedModularCharacters/Materials/M_StylizedModularCharacter_Male_02.mat" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/AssetPacks/JC_StylizedModularCharacters/Materials/M_StylizedModularCharacter_Male_02.mat" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/AssetPacks/JC_StylizedModularCharacters/Materials/M_StylizedModularCharacter_Male_03.mat" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/AssetPacks/JC_StylizedModularCharacters/Materials/M_StylizedModularCharacter_Male_03.mat" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/AssetPacks/JC_StylizedModularCharacters/Materials/M_StylizedModularCharacter_Male_04.mat" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/AssetPacks/JC_StylizedModularCharacters/Materials/M_StylizedModularCharacter_Male_04.mat" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/AssetPacks/JC_StylizedModularCharacters/Prefabs/SM_StylizedMale_Base.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/AssetPacks/JC_StylizedModularCharacters/Prefabs/SM_StylizedMale_Base.prefab" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Game.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Prefabs/Equipment/CharecterUI.renderTexture" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Prefabs/Equipment/CharecterUI.renderTexture" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/InventoryDebug.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/InventoryDebug.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Prefabs/Equipment/EquipmentWindow.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Prefabs/Equipment/EquipmentWindow.prefab" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Equipment/UI/EquipmentInstaller.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Equipment/UI/EquipmentInstaller.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/CHANGELOG.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/CHANGELOG.md.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/How to create MatCaps.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/How to create MatCaps.md.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/ReadMe.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/ReadMe.md.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Basic URP.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Basic URP/Basic URP.unity" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Basic URP/Basic URP.unity.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Basic URP/Materials.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Basic URP/Materials/Anime Outline.mat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Basic URP/Materials/Anime Outline.mat.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Basic URP/Materials/Combined.mat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Basic URP/Materials/Combined.mat.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Basic URP/Materials/Flat.mat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Basic URP/Materials/Flat.mat.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Basic URP/Materials/Ground.mat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Basic URP/Materials/Ground.mat.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Basic URP/Materials/Height Colors + Shadow Overlay.mat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Basic URP/Materials/Height Colors + Shadow Overlay.mat.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Basic URP/Materials/MatCap + Rim.mat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Basic URP/Materials/MatCap + Rim.mat.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Basic URP/Materials/Normal Map.mat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Basic URP/Materials/Normal Map.mat.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Basic URP/Materials/Plant Sway.mat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Basic URP/Materials/Plant Sway.mat.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Basic URP/Materials/Specular Hair.mat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Basic URP/Materials/Specular Hair.mat.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Basic URP/Materials/Three Layers.mat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Basic URP/Materials/Three Layers.mat.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Basic URP/UniversalRenderPipelineAsset.asset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Basic URP/UniversalRenderPipelineAsset.asset.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Basic URP/UniversalRenderPipelineAsset_Renderer.asset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Basic URP/UniversalRenderPipelineAsset_Renderer.asset.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Basic URP/UniversalRenderPipelineGlobalSettings.asset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Basic URP/UniversalRenderPipelineGlobalSettings.asset.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Basic.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Basic/Basic.unity" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Basic/Basic.unity.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Basic/Materials.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Basic/Materials/Anime Outline.mat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Basic/Materials/Anime Outline.mat.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Basic/Materials/Combined.mat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Basic/Materials/Combined.mat.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Basic/Materials/Flat.mat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Basic/Materials/Flat.mat.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Basic/Materials/Ground.mat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Basic/Materials/Ground.mat.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Basic/Materials/Height Colors + Shadow Overlay.mat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Basic/Materials/Height Colors + Shadow Overlay.mat.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Basic/Materials/MatCap + Rim.mat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Basic/Materials/MatCap + Rim.mat.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Basic/Materials/Normal Map.mat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Basic/Materials/Normal Map.mat.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Basic/Materials/Plant Sway.mat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Basic/Materials/Plant Sway.mat.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Basic/Materials/Specular Hair.mat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Basic/Materials/Specular Hair.mat.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Basic/Materials/Three Layers.mat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Basic/Materials/Three Layers.mat.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Basic/Textures.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Basic/Textures/Clouds.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Basic/Textures/Clouds.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Basic/Textures/Moss_Albedo.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Basic/Textures/Moss_Albedo.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Basic/Textures/SmallStones_Albedo.tif" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Basic/Textures/SmallStones_Albedo.tif.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Basic/Textures/SmallStones_Normal.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Basic/Textures/SmallStones_Normal.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Dropship Baked.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Dropship Baked/Dropship.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Dropship Baked/Dropship.unity" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Dropship Baked/Dropship.unity.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Dropship Baked/Dropship/LightingData.asset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Dropship Baked/Dropship/LightingData.asset.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Dropship Baked/Dropship/Lightmap-0_comp_dir.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Dropship Baked/Dropship/Lightmap-0_comp_dir.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Dropship Baked/Dropship/Lightmap-0_comp_light.exr" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Dropship Baked/Dropship/Lightmap-0_comp_light.exr.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Dropship Baked/Dropship/Lightmap-1_comp_dir.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Dropship Baked/Dropship/Lightmap-1_comp_dir.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Dropship Baked/Dropship/Lightmap-1_comp_light.exr" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Dropship Baked/Dropship/Lightmap-1_comp_light.exr.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Dropship Baked/Materials.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Dropship Baked/Materials/Dropship_01_Mat.mat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Dropship Baked/Materials/Dropship_01_Mat.mat.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Dropship Baked/Materials/Dropship_02_Mat.mat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Dropship Baked/Materials/Dropship_02_Mat.mat.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Dropship Baked/Materials/Dropship_03_Mat.mat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Dropship Baked/Materials/Dropship_03_Mat.mat.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Dropship Baked/Materials/Dropship_04_Mat.mat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Dropship Baked/Materials/Dropship_04_Mat.mat.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Dropship Baked/Materials/Dropship_05_Mat.mat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Dropship Baked/Materials/Dropship_05_Mat.mat.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Dropship Baked/Models.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Dropship Baked/Models/Dropship.fbx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Dropship Baked/Models/Dropship.fbx.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Dropship Baked/Textures.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Dropship Baked/Textures/Dropship_01_Albedo.tif" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Dropship Baked/Textures/Dropship_01_Albedo.tif.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Dropship Baked/Textures/Dropship_01_Emission.tif" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Dropship Baked/Textures/Dropship_01_Emission.tif.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Dropship Baked/Textures/Dropship_01_MetallicSmooth.tif" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Dropship Baked/Textures/Dropship_01_MetallicSmooth.tif.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Dropship Baked/Textures/Dropship_01_Normal.tif" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Dropship Baked/Textures/Dropship_01_Normal.tif.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Dropship Baked/Textures/Dropship_01_Occlusion.tif" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Dropship Baked/Textures/Dropship_01_Occlusion.tif.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Dropship Baked/Textures/Dropship_02_Albedo.tif" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Dropship Baked/Textures/Dropship_02_Albedo.tif.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Dropship Baked/Textures/Dropship_02_Emission.tif" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Dropship Baked/Textures/Dropship_02_Emission.tif.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Dropship Baked/Textures/Dropship_02_MetallicSmooth.tif" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Dropship Baked/Textures/Dropship_02_MetallicSmooth.tif.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Dropship Baked/Textures/Dropship_02_Normal.tif" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Dropship Baked/Textures/Dropship_02_Normal.tif.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Dropship Baked/Textures/Dropship_02_Occlusion.tif" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Dropship Baked/Textures/Dropship_02_Occlusion.tif.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Dropship Baked/Textures/Dropship_03_Albedo.tif" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Dropship Baked/Textures/Dropship_03_Albedo.tif.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Dropship Baked/Textures/Dropship_03_MetallicSmooth.tif" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Dropship Baked/Textures/Dropship_03_MetallicSmooth.tif.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Dropship Baked/Textures/Dropship_03_Normal.tif" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Dropship Baked/Textures/Dropship_03_Normal.tif.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Dropship Baked/Textures/Dropship_03_Occlusion.tif" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Dropship Baked/Textures/Dropship_03_Occlusion.tif.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Dropship Baked/Textures/Dropship_04_Albedo.tif" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Dropship Baked/Textures/Dropship_04_Albedo.tif.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Dropship Baked/Textures/Dropship_04_MetallicSmooth.tif" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Dropship Baked/Textures/Dropship_04_MetallicSmooth.tif.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Dropship Baked/Textures/Dropship_04_Occlusion.tif" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Dropship Baked/Textures/Dropship_04_Occlusion.tif.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Dropship Baked/Textures/Dropship_05_Albedo.tif" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Dropship Baked/Textures/Dropship_05_Albedo.tif.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Dropship Baked/Textures/Dropship_05_MetallicSmooth.tif" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Dropship Baked/Textures/Dropship_05_MetallicSmooth.tif.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Dropship Baked/Textures/Dropship_05_Normal.tif" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Dropship Baked/Textures/Dropship_05_Normal.tif.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Ellen.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Ellen/Ellen.unity" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Ellen/Ellen.unity.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Ellen/Materials.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Ellen/Materials/Blue Glass.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Ellen/Materials/Blue Glass/Body.mat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Ellen/Materials/Blue Glass/Body.mat.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Ellen/Materials/Blue Glass/Eye.mat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Ellen/Materials/Blue Glass/Eye.mat.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Ellen/Materials/Blue Glass/Hair.mat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Ellen/Materials/Blue Glass/Hair.mat.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Ellen/Materials/Blue Glass/Head.mat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Ellen/Materials/Blue Glass/Head.mat.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Ellen/Materials/Ice Furnace.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Ellen/Materials/Ice Furnace/Body.mat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Ellen/Materials/Ice Furnace/Body.mat.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Ellen/Materials/Ice Furnace/Eye.mat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Ellen/Materials/Ice Furnace/Eye.mat.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Ellen/Materials/Ice Furnace/Hair.mat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Ellen/Materials/Ice Furnace/Hair.mat.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Ellen/Materials/Ice Furnace/Head.mat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Ellen/Materials/Ice Furnace/Head.mat.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Ellen/Materials/Textured.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Ellen/Materials/Textured/Ellen_Body_Mat.mat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Ellen/Materials/Textured/Ellen_Body_Mat.mat.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Ellen/Materials/Textured/Ellen_Eyes_Mat.mat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Ellen/Materials/Textured/Ellen_Eyes_Mat.mat.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Ellen/Materials/Textured/Ellen_Hair_Mat.mat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Ellen/Materials/Textured/Ellen_Hair_Mat.mat.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Ellen/Materials/Textured/Ellen_Head_Mat.mat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Ellen/Materials/Textured/Ellen_Head_Mat.mat.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Ellen/Materials/Textured/Ellen_Tear_Mat.mat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Ellen/Materials/Textured/Ellen_Tear_Mat.mat.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Ellen/Models.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Ellen/Models/@EllenIdle.controller" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Ellen/Models/@EllenIdle.controller.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Ellen/Models/Ellen.fbx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Ellen/Models/Ellen.fbx.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Ellen/Textures.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Ellen/Textures/Ellen_Body_Albedo.tif" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Ellen/Textures/Ellen_Body_Albedo.tif.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Ellen/Textures/Ellen_Body_Emission.tif" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Ellen/Textures/Ellen_Body_Emission.tif.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Ellen/Textures/Ellen_Body_MetallicSmooth.tif" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Ellen/Textures/Ellen_Body_MetallicSmooth.tif.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Ellen/Textures/Ellen_Body_Normal.tif" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Ellen/Textures/Ellen_Body_Normal.tif.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Ellen/Textures/Ellen_Body_Occlusion.tif" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Ellen/Textures/Ellen_Body_Occlusion.tif.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Ellen/Textures/Ellen_Eye_Albedo.tif" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Ellen/Textures/Ellen_Eye_Albedo.tif.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Ellen/Textures/Ellen_Hair_Albedo.tif" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Ellen/Textures/Ellen_Hair_Albedo.tif.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Ellen/Textures/Ellen_Hair_Normal.tif" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Ellen/Textures/Ellen_Hair_Normal.tif.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Ellen/Textures/Ellen_Head_Albedo.tif" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Ellen/Textures/Ellen_Head_Albedo.tif.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Ellen/Textures/Ellen_Head_Normal.tif" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Ellen/Textures/Ellen_Head_Normal.tif.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Ellen/Textures/Ellen_head_SpecularSmoothness.tif" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Ellen/Textures/Ellen_head_SpecularSmoothness.tif.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/MatCap Textures.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/MatCap Textures/BasicMaterial.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/MatCap Textures/BasicMaterial.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/MatCap Textures/Blue Glass.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/MatCap Textures/Blue Glass.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/MatCap Textures/Clay.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/MatCap Textures/Clay.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/MatCap Textures/Droplet.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/MatCap Textures/Droplet.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/MatCap Textures/Frame.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/MatCap Textures/Frame.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/MatCap Textures/Gold.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/MatCap Textures/Gold.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/MatCap Textures/Hair.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/MatCap Textures/Hair.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/MatCap Textures/Ice Furnace.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/MatCap Textures/Ice Furnace.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/MatCap Textures/Jelly Bean.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/MatCap Textures/Jelly Bean.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/MatCap Textures/Light Forge.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/MatCap Textures/Light Forge.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/MatCap Textures/Metal.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/MatCap Textures/Metal.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/MatCap Textures/Metal2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/MatCap Textures/Metal2.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/MatCap Textures/ReflectedMetal.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/MatCap Textures/ReflectedMetal.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/MatCap Textures/Reflection 2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/MatCap Textures/Reflection 2.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/MatCap Textures/Reflection.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/MatCap Textures/Reflection.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/MatCap Textures/Satin.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/MatCap Textures/Satin.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/MatCap Textures/Skin.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/MatCap Textures/Skin.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/MatCap Textures/Soft White.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/MatCap Textures/Soft White.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Plants Sway.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Plants Sway/Materials.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Plants Sway/Materials/VegetationMedium01_Mat.mat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Plants Sway/Materials/VegetationMedium01_Mat.mat.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Plants Sway/Materials/VegetationMedium03_Mat.mat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Plants Sway/Materials/VegetationMedium03_Mat.mat.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Plants Sway/Models.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Plants Sway/Models/VegetationMedium01.fbx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Plants Sway/Models/VegetationMedium01.fbx.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Plants Sway/Models/VegetationMedium03_02.fbx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Plants Sway/Models/VegetationMedium03_02.fbx.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Plants Sway/Plants.unity" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Plants Sway/Plants.unity.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Plants Sway/Textures.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Plants Sway/Textures/VegetationMedium01_Albedo.tif" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Plants Sway/Textures/VegetationMedium01_Albedo.tif.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Plants Sway/Textures/VegetationMedium01_Emission.tif" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Plants Sway/Textures/VegetationMedium01_Emission.tif.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Plants Sway/Textures/VegetationMedium01_Normals.tif" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Plants Sway/Textures/VegetationMedium01_Normals.tif.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Plants Sway/Textures/VegetationMedium01_Occlusion.tif" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Plants Sway/Textures/VegetationMedium01_Occlusion.tif.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Plants Sway/Textures/VegetationMedium03_Albedo.tif" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Plants Sway/Textures/VegetationMedium03_Albedo.tif.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Plants Sway/Textures/VegetationMedium03_Normals.tif" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Plants Sway/Textures/VegetationMedium03_Normals.tif.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Plants Sway/Textures/VegetationMedium03_Occlusion.tif" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Plants Sway/Textures/VegetationMedium03_Occlusion.tif.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Unity-chan Cel.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Unity-chan Cel/Materials.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Unity-chan Cel/Materials/Outline.mat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Unity-chan Cel/Materials/Outline.mat.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Unity-chan Cel/Materials/OutlineHideInterior.mat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Unity-chan Cel/Materials/OutlineHideInterior.mat.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Unity-chan Cel/Materials/body no outline.mat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Unity-chan Cel/Materials/body no outline.mat.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Unity-chan Cel/Materials/body.mat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Unity-chan Cel/Materials/body.mat.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Unity-chan Cel/Materials/eye_L1.mat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Unity-chan Cel/Materials/eye_L1.mat.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Unity-chan Cel/Materials/eye_R1.mat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Unity-chan Cel/Materials/eye_R1.mat.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Unity-chan Cel/Materials/eye_base.mat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Unity-chan Cel/Materials/eye_base.mat.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Unity-chan Cel/Materials/eyeline.mat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Unity-chan Cel/Materials/eyeline.mat.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Unity-chan Cel/Materials/face.mat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Unity-chan Cel/Materials/face.mat.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Unity-chan Cel/Materials/hair.mat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Unity-chan Cel/Materials/hair.mat.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Unity-chan Cel/Materials/mat_cheek.mat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Unity-chan Cel/Materials/mat_cheek.mat.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Unity-chan Cel/Materials/skin1.mat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Unity-chan Cel/Materials/skin1.mat.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Unity-chan Cel/Models.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Unity-chan Cel/Models/unitychan.fbx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Unity-chan Cel/Models/unitychan.fbx.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Unity-chan Cel/Prefabs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Unity-chan Cel/Prefabs/Unity-chan.prefab" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Unity-chan Cel/Prefabs/Unity-chan.prefab.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Unity-chan Cel/Textures.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Unity-chan Cel/Textures/body_01.tga" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Unity-chan Cel/Textures/body_01.tga.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Unity-chan Cel/Textures/body_01_NRM.tga" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Unity-chan Cel/Textures/body_01_NRM.tga.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Unity-chan Cel/Textures/body_01_SPEC.tga" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Unity-chan Cel/Textures/body_01_SPEC.tga.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Unity-chan Cel/Textures/cheek_00.tga" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Unity-chan Cel/Textures/cheek_00.tga.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Unity-chan Cel/Textures/eye_iris_L_00.tga" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Unity-chan Cel/Textures/eye_iris_L_00.tga.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Unity-chan Cel/Textures/eye_iris_R_00.tga" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Unity-chan Cel/Textures/eye_iris_R_00.tga.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Unity-chan Cel/Textures/eyeline_00.tga" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Unity-chan Cel/Textures/eyeline_00.tga.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Unity-chan Cel/Textures/face_00.tga" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Unity-chan Cel/Textures/face_00.tga.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Unity-chan Cel/Textures/hair_01.tga" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Unity-chan Cel/Textures/hair_01.tga.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Unity-chan Cel/Textures/hair_01_NRM.tga" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Unity-chan Cel/Textures/hair_01_NRM.tga.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Unity-chan Cel/Textures/hair_01_SPEC.tga" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Unity-chan Cel/Textures/hair_01_SPEC.tga.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Unity-chan Cel/Textures/skin_01.tga" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Unity-chan Cel/Textures/skin_01.tga.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Unity-chan Cel/Unity-chan.unity" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Unity-chan Cel/Unity-chan.unity.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Vertex Paint Ground.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Vertex Paint Ground/Materials.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Vertex Paint Ground/Materials/Vertex Paint RGB.mat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Vertex Paint Ground/Materials/Vertex Paint RGB.mat.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Vertex Paint Ground/Materials/Vertex Paint.mat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Vertex Paint Ground/Materials/Vertex Paint.mat.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Vertex Paint Ground/Models.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Vertex Paint Ground/Models/PolybrushMesh.asset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Vertex Paint Ground/Models/PolybrushMesh.asset.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Vertex Paint Ground/Prefabs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Vertex Paint Ground/Prefabs/Ground.prefab" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Vertex Paint Ground/Prefabs/Ground.prefab.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Vertex Paint Ground/Textures.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Vertex Paint Ground/Textures/Rock_042_BaseColor.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Vertex Paint Ground/Textures/Rock_042_BaseColor.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Vertex Paint Ground/Textures/Rock_042_Normal.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Vertex Paint Ground/Textures/Rock_042_Normal.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Vertex Paint Ground/Textures/Rock_Moss_001_basecolor.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Vertex Paint Ground/Textures/Rock_Moss_001_basecolor.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Vertex Paint Ground/Textures/Rock_Moss_001_normal.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Vertex Paint Ground/Textures/Rock_Moss_001_normal.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Vertex Paint Ground/Vertex Paint Ground.unity" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Samples/Vertex Paint Ground/Vertex Paint Ground.unity.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Scripts.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Scripts/Editor.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Scripts/Editor/OmniShade.Editor.asmdef" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Scripts/Editor/OmniShade.Editor.asmdef.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Scripts/Editor/OmniShadeGUI.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Scripts/Editor/OmniShadeGUI.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Scripts/OmniShade.asmdef" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Scripts/OmniShade.asmdef.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Scripts/OmniShade.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Scripts/OmniShade.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Scripts/OmniShadeAnimateTexture.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Scripts/OmniShadeAnimateTexture.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Shaders.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Shaders/OmniShade URP.shader" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Shaders/OmniShade URP.shader.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Shaders/OmniShade.shader" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Shaders/OmniShade.shader.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Shaders/OmniShadeCore.cginc" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Shaders/OmniShadeCore.cginc.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Shaders/OmniShadeURP.cginc" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Shaders/OmniShadeURP.cginc.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Shaders/ShaderLibrary.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Shaders/ShaderLibrary/FoveatedRenderingKeywords.hlsl" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/OmniShade/Shaders/ShaderLibrary/FoveatedRenderingKeywords.hlsl.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Prefabs/Inventory/Inventory.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Prefabs/Inventory/Inventory.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Prefabs/InventoryItems/Armor_02.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Prefabs/InventoryItems/Armor_02.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Prefabs/InventoryItems/Boots_01.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Prefabs/InventoryItems/Boots_01.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Prefabs/InventoryItems/Gauntlets_01.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Prefabs/InventoryItems/Gauntlets_01.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Prefabs/InventoryItems/Pants_01.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Prefabs/InventoryItems/Pants_01.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Prefabs/InventoryItems/Shield_01.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Prefabs/InventoryItems/Shield_01.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/SceneSystemInstaller.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/SceneSystemInstaller.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Audio/Controllers/InventoryAudioController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Audio/Controllers/InventoryAudioController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Equipment/CharacterEquipment/CharacterEquipmentController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Equipment/CharacterEquipment/CharacterEquipmentController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Equipment/UI/Controllers.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Equipment/UI/Controllers/EquipmentSlotAudioController.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Equipment/UI/Controllers/EquipmentSlotAudioController.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Equipment/EquipmentSlotAudioController.cs.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Equipment/UI/Controllers/EquipmentToggleController.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Equipment/UI/Controllers/EquipmentToggleController.cs.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Equipment/UI/EquipmentInstaller.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Equipment/EquipmentInstaller.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Equipment/UI/EquipmentInstaller.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Equipment/EquipmentInstaller.cs.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Equipment/UI/EquipmentSlot.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Equipment/EquipmentSlot.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Equipment/UI/EquipmentSlot.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Equipment/EquipmentSlot.cs.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Equipment/UI/EquipmentView.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Equipment/UI/EquipmentView.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Equipment/EquipmentView.cs.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Installers/InventoryCoreInstaller.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Installers/InventoryCoreInstaller.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Installers/InventoryDragInstaller.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Installers/InventoryDragInstaller.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/Drag/DragChain/BeginDragHandlers/BeginDragFromEquipmentSlotHandler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/Drag/DragChain/BeginDragHandlers/BeginDragFromEquipmentSlotHandler.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/Drag/DragChain/EndDragHandlers/DropToEquipmentHandler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/Drag/DragChain/EndDragHandlers/DropToEquipmentHandler.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/Drag/DragChain/EndDragHandlers/ReturnItemToStartSlotHandler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/Drag/DragChain/EndDragHandlers/ReturnItemToStartSlotHandler.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/UseCases.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/UseCases/EquipItemUseCase.asset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/UseCases/EquipItemUseCase.asset.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/UseCases/HealPotionUseCase.asset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/UseCases/HealPotionUseCase.asset.meta" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Plugins/Zenject/OptionalExtras/IntegrationTests/Misc/TestAnimationStateBehaviourInject/AnimatorController.controller" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Plugins/Zenject/OptionalExtras/IntegrationTests/Misc/TestAnimationStateBehaviourInject/AnimatorController.controller" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -562,7 +213,8 @@
       <workItem from="1771161813213" duration="14800000" />
       <workItem from="1771191344059" duration="1683000" />
       <workItem from="1771330327258" duration="38245000" />
-      <workItem from="1771592512678" duration="80584000" />
+      <workItem from="1771592512678" duration="85248000" />
+      <workItem from="1771783251787" duration="5756000" />
     </task>
     <task id="LOCAL-00001" summary="Update">
       <option name="closed" value="true" />

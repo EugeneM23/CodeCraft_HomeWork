@@ -15,7 +15,9 @@ namespace Inventories
                 return false;
 
             // Пытаемся экипировать предмет в слот
-            return slot.Equip(dragContext.Item);
+            var success = slot.Presenter.TryEquip(dragContext.Item);
+
+            return success;
         }
     }
 }

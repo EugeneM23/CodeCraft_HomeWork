@@ -225,8 +225,8 @@ MonoBehaviour:
     <Name>k__BackingField: Pants
     <Description>k__BackingField: Some Description
     <ItemType>k__BackingField: 6
-    <Icon>k__BackingField: {fileID: 7958257570448774133, guid: 39a6dc44576384f9bab6711b20ebcc8d, type: 3}
-    <Mesh>k__BackingField: {fileID: 4172649862315779155, guid: a8a60ec357ea8e345878ab81ed75c145, type: 3}
+    <Icon>k__BackingField: {fileID: 6119813525165072544, guid: 8f7c078b723e14861befef4cba948600, type: 3}
+    <Mesh>k__BackingField: {fileID: 8414825643437843575, guid: c19aa0e17c6fef74cb7831da64adf3fe, type: 3}
     <Size>k__BackingField: {x: 2, y: 3}
     <StartDrag>k__BackingField:
       bank: {fileID: 11400000, guid: e4b41ce06ef2940e293fe59906357731, type: 2}

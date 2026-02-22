@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using NUnit.Framework.Internal;
 using Zenject;
 
 namespace Inventories
@@ -35,8 +36,9 @@ namespace Inventories
 
         private void InstallBeginDragHandlers()
         {
-            Container.Bind<BeginDragFromEquipmentSlotHandler>().AsSingle();
+            //Container.Bind<BeginDragTestlotHandler>().AsSingle();
             Container.Bind<BeginDragFromInventoryCellHandler>().AsSingle();
+            Container.Bind<BeginDragFromEquipmentSlotHandler>().AsSingle();
         }
 
         private void InstallEndDragHandlers()
@@ -52,8 +54,9 @@ namespace Inventories
         {
             return new List<IBeginDraghendler>
             {
-                ctx.Container.Resolve<BeginDragFromEquipmentSlotHandler>(),
+                //ctx.Container.Resolve<BeginDragTestlotHandler>(),
                 ctx.Container.Resolve<BeginDragFromInventoryCellHandler>(),
+                ctx.Container.Resolve<BeginDragFromEquipmentSlotHandler>(),
             };
         }
 
