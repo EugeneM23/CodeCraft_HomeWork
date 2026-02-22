@@ -2,12 +2,12 @@ using Zenject;
 
 namespace Equipment
 {
-    public class EquipmentPresenter : IInitializable, System.IDisposable
+    public class EquipmentToggleController : IInitializable, System.IDisposable
     {
         private readonly SignalBus _signalBus;
         private readonly EquipmentView _equipmentView;
 
-        public EquipmentPresenter(SignalBus signalBus, EquipmentView equipmentView)
+        public EquipmentToggleController(SignalBus signalBus, EquipmentView equipmentView)
         {
             _signalBus = signalBus;
             _equipmentView = equipmentView;

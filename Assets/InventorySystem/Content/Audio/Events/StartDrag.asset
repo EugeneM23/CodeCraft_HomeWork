@@ -10,21 +10,21 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 966df4d6c0dc4ec0b855f32895a79c89, type: 3}
-  m_Name: DropToCell
+  m_Name: StartDrag
   m_EditorClassIdentifier: 
   _poolable: 1
-  duration: 0.468
+  duration: 0.36571428
   loop: 0
   spartialBlend: 0
   output: {fileID: 0}
   clip:
-    rid: 1136115958516547657
+    rid: 1136115977481355337
   pitch:
-    rid: 1136115958516547665
+    rid: 1136115977481355345
   volume:
-    rid: 1136115958516547659
+    rid: 1136115977481355339
   reverbZoneMix:
-    rid: 1136115958516547660
+    rid: 1136115977481355340
   rolloffMode: 0
   rolloffCurve:
     serializedVersion: 2
@@ -33,48 +33,48 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   minDistance:
-    rid: 1136115958516547661
+    rid: 1136115977481355341
   maxDistance:
-    rid: 1136115958516547662
+    rid: 1136115977481355342
   dopplerLevel:
-    rid: 1136115958516547663
+    rid: 1136115977481355343
   spread:
-    rid: 1136115958516547664
+    rid: 1136115977481355344
   behaviours: []
   actions: []
   references:
     version: 2
     RefIds:
-    - rid: 1136115958516547657
+    - rid: 1136115977481355337
       type: {class: ClipConst, ns: AudioEngine, asm: AudioEngine}
       data:
-        clip: {fileID: 8300000, guid: bd596346bfc3b45fe86766471e755820, type: 3}
-    - rid: 1136115958516547659
+        clip: {fileID: 8300000, guid: 7158c841a58444b8f9afc0d1d75f096b, type: 3}
+    - rid: 1136115977481355339
       type: {class: FloatConst, ns: AudioEngine, asm: AudioEngine}
       data:
         value: 1
-    - rid: 1136115958516547660
+    - rid: 1136115977481355340
       type: {class: FloatConst, ns: AudioEngine, asm: AudioEngine}
       data:
         value: 1
-    - rid: 1136115958516547661
+    - rid: 1136115977481355341
       type: {class: FloatConst, ns: AudioEngine, asm: AudioEngine}
       data:
         value: 1
-    - rid: 1136115958516547662
+    - rid: 1136115977481355342
       type: {class: FloatConst, ns: AudioEngine, asm: AudioEngine}
       data:
         value: 500
-    - rid: 1136115958516547663
+    - rid: 1136115977481355343
       type: {class: FloatConst, ns: AudioEngine, asm: AudioEngine}
       data:
         value: 0.8
-    - rid: 1136115958516547664
+    - rid: 1136115977481355344
       type: {class: FloatConst, ns: AudioEngine, asm: AudioEngine}
       data:
         value: 0
-    - rid: 1136115958516547665
+    - rid: 1136115977481355345
       type: {class: FloatRandom, ns: AudioEngine, asm: AudioEngine}
       data:
         minValue: 0.7
-        maxValue: 1.1
+        maxValue: 1

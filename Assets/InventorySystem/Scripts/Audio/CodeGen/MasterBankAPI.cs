@@ -7,8 +7,9 @@ namespace AudioEngine
     public static class MasterBankAPI
     {
         ///Events
-        public const string AddEvent = "Master.add";
-        public const string EquipEvent = "Master.equip";
+        public const string AddItemToInventoryEvent = "Master.addItemToInventory";
+        public const string EquipItemEvent = "Master.equipItem";
+        public const string StartDragEvent = "Master.startDrag";
 
         ///Parameters
 

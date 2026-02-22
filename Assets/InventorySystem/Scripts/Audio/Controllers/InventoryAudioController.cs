@@ -10,15 +10,12 @@ namespace Inventories
         private readonly Inventory _inventory;
         private AudioSystem _audioSystem;
 
-        public InventoryAudioController(Inventory inventory)
-        {
+        public InventoryAudioController(Inventory inventory) =>
             _inventory = inventory;
-        }
 
         public void Initialize()
         {
             _audioSystem = AudioSystem.Instance;
-
             _inventory.OnAdded += OnItemAdded;
             _inventory.OnRemoved += OnItemRemoved;
             _inventory.OnMoved += OnItemMoved;
@@ -38,7 +35,7 @@ namespace Inventories
 
         private void OnItemRemoved(Item item, Vector2Int[] positions)
         {
-            _audioSystem.PlayEvent(item.Settings.DropToScene);
+            _audioSystem.PlayEvent(item.Settings.StartDrag);
         }
 
         private void OnItemMoved(Item item, Vector2Int position)

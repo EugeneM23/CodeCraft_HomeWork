@@ -6,6 +6,8 @@ namespace Equipment
     public class EquipmentInstaller : MonoInstaller
     {
         [SerializeField] private EquipmentView _equipmentView;
+        [SerializeField] private EquipmentSlot[] _slots;
+        [SerializeField] private CharacterEquipment _characterEquipment;
 
         public override void InstallBindings()
         {
@@ -15,9 +17,29 @@ namespace Equipment
                 .AsSingle();
 
             Container
-                .BindInterfacesAndSelfTo<EquipmentPresenter>()
+                .Bind<EquipmentSlot[]>()
+                .FromInstance(_slots)
+                .AsSingle();
+
+            Container
+                .BindInterfacesAndSelfTo<EquipmentToggleController>()
                 .AsSingle()
                 .NonLazy();
+
+            Container
+                .BindInterfacesAndSelfTo<EquipmentSlotAudioController>()
+                .AsSingle()
+                .NonLazy();
+
+            Container
+                .BindInterfacesAndSelfTo<CharacterEquipmentController>()
+                .AsSingle()
+                .NonLazy();
+            
+            Container
+                .Bind<CharacterEquipment>()
+                .FromInstance(_characterEquipment)
+                .AsSingle();
         }
     }
 }

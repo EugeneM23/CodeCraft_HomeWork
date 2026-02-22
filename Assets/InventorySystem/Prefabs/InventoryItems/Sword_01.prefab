@@ -251,24 +251,24 @@ MonoBehaviour:
     <Size>k__BackingField: {x: 1, y: 3}
     <StartDrag>k__BackingField:
       bank: {fileID: 11400000, guid: e4b41ce06ef2940e293fe59906357731, type: 2}
-      eventId: add
-      identifier: Master.add
+      eventId: startDrag
+      identifier: Master.startDrag
     <AddItemKey>k__BackingField:
       bank: {fileID: 11400000, guid: e4b41ce06ef2940e293fe59906357731, type: 2}
-      eventId: equip
-      identifier: Master.equip
+      eventId: addItemToInventory
+      identifier: Master.addItemToInventory
     <EquipItem>k__BackingField:
       bank: {fileID: 11400000, guid: e4b41ce06ef2940e293fe59906357731, type: 2}
-      eventId: add
-      identifier: Master.add
+      eventId: equipItem
+      identifier: Master.equipItem
     <DropToScene>k__BackingField:
       bank: {fileID: 11400000, guid: e4b41ce06ef2940e293fe59906357731, type: 2}
-      eventId: add
-      identifier: Master.add
+      eventId: addItemToInventory
+      identifier: Master.addItemToInventory
     <UseItem>k__BackingField:
       bank: {fileID: 11400000, guid: e4b41ce06ef2940e293fe59906357731, type: 2}
-      eventId: add
-      identifier: Master.add
+      eventId: addItemToInventory
+      identifier: Master.addItemToInventory
 --- !u!114 &-2382888620409020614
 MonoBehaviour:
   m_ObjectHideFlags: 0
