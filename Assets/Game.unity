@@ -301,7 +301,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3dac0b6e12cc47189311317ea35caaaa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _raycaster: {fileID: 2068645391}
   _canvas: {fileID: 2068645393}
 --- !u!114 &66427005
 MonoBehaviour:

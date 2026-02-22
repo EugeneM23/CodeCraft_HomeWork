@@ -7,7 +7,6 @@ namespace Equipment
     {
         [SerializeField] private EquipmentView _equipmentView;
         [SerializeField] private EquipmentSlot[] _slots;
-        [SerializeField] private CharacterEquipment _characterEquipment;
 
         public override void InstallBindings()
         {
@@ -30,16 +29,6 @@ namespace Equipment
                 .BindInterfacesAndSelfTo<EquipmentSlotAudioController>()
                 .AsSingle()
                 .NonLazy();
-
-            Container
-                .BindInterfacesAndSelfTo<CharacterEquipmentController>()
-                .AsSingle()
-                .NonLazy();
-            
-            Container
-                .Bind<CharacterEquipment>()
-                .FromInstance(_characterEquipment)
-                .AsSingle();
         }
     }
 }
