@@ -7,7 +7,7 @@ namespace AudioEngine
     public static class MasterBankAPI
     {
         ///Events
-        public const string DropToCellEvent = "Master.dropToCell";
+        public const string AddEvent = "Master.add";
         public const string EquipEvent = "Master.equip";
 
         ///Parameters

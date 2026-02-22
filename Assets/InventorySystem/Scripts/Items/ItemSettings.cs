@@ -1,10 +1,11 @@
 using System;
+using AudioEngine;
 using UnityEngine;
 
 namespace Inventories
 {
     [Serializable]
-    public struct ItemData
+    public struct ItemSettings
     {
         [Header("General")]
         [field: SerializeField]
@@ -23,11 +24,16 @@ namespace Inventories
         [field: SerializeField]
         public Vector2Int Size { get; set; }
 
-        [field: SerializeField] public bool CanStack { get; set; }
-        [field: SerializeField] public int MaxStackQuantity { get; set; }
-        [field: SerializeField] public ItemAudioData ItemAudioData;
+        [Header("Audio")]
+        [field: SerializeField]
+        public AudioEventKey StartDrag { get; set; }
 
-        public ItemData(ItemData itemData)
+        [field: SerializeField] public AudioEventKey AddItemKey { get; set; }
+        [field: SerializeField] public AudioEventKey EquipItem { get; set; }
+        [field: SerializeField] public AudioEventKey DropToScene { get; set; }
+        [field: SerializeField] public AudioEventKey UseItem { get; set; }
+
+        public ItemSettings(ItemSettings itemData)
         {
             Name = itemData.Name;
             Description = itemData.Description;
@@ -37,10 +43,12 @@ namespace Inventories
             Mesh = itemData.Mesh;
 
             Size = itemData.Size;
-            CanStack = itemData.CanStack;
-            MaxStackQuantity = itemData.MaxStackQuantity;
 
-            ItemAudioData = itemData.ItemAudioData;
+            StartDrag = itemData.StartDrag;
+            AddItemKey = itemData.AddItemKey;
+            EquipItem = itemData.EquipItem;
+            DropToScene = itemData.DropToScene;
+            UseItem = itemData.UseItem;
         }
     }
 }

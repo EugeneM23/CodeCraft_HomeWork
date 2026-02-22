@@ -23,8 +23,8 @@ namespace Inventories
             // Настраиваем размер предмета на основе его данных
             var itemRect = itemObject.GetComponent<RectTransform>();
             itemRect.sizeDelta = new Vector2(
-                item.itemData.Size.x * _cellSize.x,
-                item.itemData.Size.y * _cellSize.y);
+                item.Settings.Size.x * _cellSize.x,
+                item.Settings.Size.y * _cellSize.y);
 
             // Позиционируем предмет в первой занятой ячейке
             var firstCell = _cells[positions[0].x, positions[0].y];
@@ -32,7 +32,7 @@ namespace Inventories
 
             // Инициализируем визуальное представление
             var itemView = itemObject.GetComponent<InventoryItemView>();
-            itemView.Setup(item.itemData);
+            itemView.Setup(item.Settings);
 
             // Сохраняем ссылку на созданный предмет
             _items[item.ID] = itemObject;

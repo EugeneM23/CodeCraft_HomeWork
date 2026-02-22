@@ -59,10 +59,10 @@ namespace Inventories
         public void SetupDraggableImage(Item item)
         {
             _draggableImage.rectTransform.sizeDelta = new Vector2(
-                item.itemData.Size.x * _cellSize.x,
-                item.itemData.Size.y * _cellSize.y);
+                item.Settings.Size.x * _cellSize.x,
+                item.Settings.Size.y * _cellSize.y);
 
-            _draggableImage.sprite = item.itemData.Icon;
+            _draggableImage.sprite = item.Settings.Icon;
             _draggableImage.gameObject.SetActive(true);
         }
 

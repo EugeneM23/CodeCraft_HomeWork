@@ -221,36 +221,33 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0fa84783d20a428185a38a9c1db40342, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ItemData:
+  itemSettings:
     <Name>k__BackingField: Sword
     <Description>k__BackingField: Some Description
     <ItemType>k__BackingField: 0
     <Icon>k__BackingField: {fileID: 6672203870441472929, guid: e17fbe2cab92a41059e2ef4d80488266, type: 3}
     <Mesh>k__BackingField: {fileID: -2544109580854566363, guid: c4ee69f08dc865c458547e9a01d06ab7, type: 3}
     <Size>k__BackingField: {x: 1, y: 3}
-    <CanStack>k__BackingField: 0
-    <MaxStackQuantity>k__BackingField: 2
-    ItemAudioData:
-      <StartDrag>k__BackingField:
-        bank: {fileID: 11400000, guid: e4b41ce06ef2940e293fe59906357731, type: 2}
-        eventId: dropToCell
-        identifier: Master.dropToCell
-      <DropToInventory>k__BackingField:
-        bank: {fileID: 11400000, guid: e4b41ce06ef2940e293fe59906357731, type: 2}
-        eventId: dropToCell
-        identifier: Master.dropToCell
-      <EquipItem>k__BackingField:
-        bank: {fileID: 11400000, guid: e4b41ce06ef2940e293fe59906357731, type: 2}
-        eventId: equip
-        identifier: Master.equip
-      <DropToScene>k__BackingField:
-        bank: {fileID: 11400000, guid: e4b41ce06ef2940e293fe59906357731, type: 2}
-        eventId: dropToCell
-        identifier: Master.dropToCell
-      <UseItem>k__BackingField:
-        bank: {fileID: 11400000, guid: e4b41ce06ef2940e293fe59906357731, type: 2}
-        eventId: equip
-        identifier: Master.equip
+    <StartDrag>k__BackingField:
+      bank: {fileID: 11400000, guid: e4b41ce06ef2940e293fe59906357731, type: 2}
+      eventId: add
+      identifier: Master.add
+    <AddItemKey>k__BackingField:
+      bank: {fileID: 11400000, guid: e4b41ce06ef2940e293fe59906357731, type: 2}
+      eventId: equip
+      identifier: Master.equip
+    <EquipItem>k__BackingField:
+      bank: {fileID: 11400000, guid: e4b41ce06ef2940e293fe59906357731, type: 2}
+      eventId: add
+      identifier: Master.add
+    <DropToScene>k__BackingField:
+      bank: {fileID: 11400000, guid: e4b41ce06ef2940e293fe59906357731, type: 2}
+      eventId: add
+      identifier: Master.add
+    <UseItem>k__BackingField:
+      bank: {fileID: 11400000, guid: e4b41ce06ef2940e293fe59906357731, type: 2}
+      eventId: add
+      identifier: Master.add
   Quantity: 1
 --- !u!65 &5899807608685920841
 BoxCollider:

@@ -2716,7 +2716,9 @@ MonoBehaviour:
   - {fileID: 7070894261933836396, guid: 68508e5ca913b4977bb5c1fc5926ea03, type: 3}
   - {fileID: 7070894261933836396, guid: 4a28ec6f258124f069038ac2693f8b13, type: 3}
   - {fileID: 7070894261933836396, guid: 79b534e7ec75a462b89b81d5956eb237, type: 3}
-  - {fileID: 7070894261933836396, guid: ec20105428d41482aab5eeab60532850, type: 3}
+  - {fileID: 1441105143803712864, guid: 9de9593e1e39947b6b50224a5f4988a0, type: 3}
+  - {fileID: 7070894261933836396, guid: d00b195c1c8c94d6097850658fc3edc7, type: 3}
+  - {fileID: 7070894261933836396, guid: 4a28ec6f258124f069038ac2693f8b13, type: 3}
 --- !u!114 &-2486167064748676698
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2775,14 +2777,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b62b2c2d93fc4b2fbff5c3849a04ee90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _dropToCellKey:
-    bank: {fileID: 11400000, guid: e4b41ce06ef2940e293fe59906357731, type: 2}
-    eventId: dropToCell
-    identifier: Master.dropToCell
-  _equipKey:
-    bank: {fileID: 11400000, guid: e4b41ce06ef2940e293fe59906357731, type: 2}
-    eventId: equip
-    identifier: Master.equip
 --- !u!1 &2882787923631989557
 GameObject:
   m_ObjectHideFlags: 0

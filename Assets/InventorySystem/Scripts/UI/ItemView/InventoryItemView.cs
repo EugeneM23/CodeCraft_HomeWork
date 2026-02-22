@@ -11,9 +11,9 @@ public class InventoryItemView : MonoBehaviour, IPointerEnterHandler, IPointerEx
     [SerializeField] private GameObject _countBackGround;
     [SerializeField] private TMP_Text _count;
 
-    public void Setup(ItemData itemData)
+    public void Setup(ItemSettings itemSettings)
     {
-        _itemImage.sprite = itemData.Icon;
+        _itemImage.sprite = itemSettings.Icon;
         SetBackgroundAlpha(0f);
     }
 

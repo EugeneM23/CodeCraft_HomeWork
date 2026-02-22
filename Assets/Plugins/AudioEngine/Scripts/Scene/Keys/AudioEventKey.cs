@@ -8,9 +8,7 @@ namespace AudioEngine
     [Serializable, InlineProperty]
     public struct AudioEventKey : ISerializationCallbackReceiver
     {
-        [HorizontalGroup]
-        [OnValueChanged("OnValidate")]
-        [SerializeField]
+        [HorizontalGroup] [OnValueChanged("OnValidate")] [SerializeField]
         private AudioBank bank;
 
         [HorizontalGroup]
@@ -20,14 +18,15 @@ namespace AudioEngine
         [SerializeField]
         private string eventId; //Выдавать список ивентов dropdown
 
-        [SerializeField, HideInInspector]
-        private string identifier;
+        public string EventId => eventId;
+
+        [SerializeField, HideInInspector] private string identifier;
 
         public static implicit operator string(AudioEventKey it) => it.identifier;
 
         private void OnValidate()
         {
-            if (this.bank != null && this.eventId != null) 
+            if (this.bank != null && this.eventId != null)
                 this.identifier = this.bank.identifier + "." + this.eventId;
         }
 

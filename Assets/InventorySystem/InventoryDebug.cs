@@ -32,7 +32,7 @@ namespace Inventories
         public void AddItem(SceneItem item)
         {
             var inventory = _inventory.GetComponent<GameObjectContext>().Container.Resolve<Inventory>();
-            inventory.AddItem(item.ItemData);
+            inventory.AddItem(item.itemSettings);
         }
     }
 }

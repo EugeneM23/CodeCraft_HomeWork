@@ -11,16 +11,13 @@ public sealed class Inventory : IEnumerable<Item>
     public event Action<Item, Vector2Int[]> OnAdded;
     public event Action<Item, Vector2Int[]> OnRemoved;
     public event Action OnCleared;
-
     public event Action OnReorganize;
-    public event Action<Item> OnStackIncreased;
-    public event Action<Item> OnStackDecreased;
     public event Action<Item, Vector2Int> OnMoved;
 
     public int Width => _cells.GetLength(0);
     public int Height => _cells.GetLength(1);
     public int Count => _items.Count;
-    public Dictionary<string, Item> Items => _items;
+    public  Dictionary<string, Item> Items => _items;
 
     private readonly Dictionary<string, Item> _items;
     private readonly Item[,] _cells;
@@ -36,7 +33,7 @@ public sealed class Inventory : IEnumerable<Item>
         _items = new Dictionary<string, Item>();
     }
 
-    public Inventory(int width, int height, IEnumerable<KeyValuePair<ItemData, Vector2Int>> items)
+    public Inventory(int width, int height, IEnumerable<KeyValuePair<ItemSettings, Vector2Int>> items)
         : this(width, height)
     {
         if (items == null)
@@ -48,12 +45,12 @@ public sealed class Inventory : IEnumerable<Item>
         }
     }
 
-    public Inventory(int width, int height, KeyValuePair<ItemData, Vector2Int>[] items)
-        : this(width, height, (IEnumerable<KeyValuePair<ItemData, Vector2Int>>)items)
+    public Inventory(int width, int height, KeyValuePair<ItemSettings, Vector2Int>[] items)
+        : this(width, height, (IEnumerable<KeyValuePair<ItemSettings, Vector2Int>>)items)
     {
     }
 
-    public Inventory(int width, int height, IEnumerable<ItemData> items)
+    public Inventory(int width, int height, IEnumerable<ItemSettings> items)
         : this(width, height)
     {
         if (items == null)
@@ -65,8 +62,8 @@ public sealed class Inventory : IEnumerable<Item>
         }
     }
 
-    public Inventory(int width, int height, ItemData[] items)
-        : this(width, height, (IEnumerable<ItemData>)items)
+    public Inventory(int width, int height, ItemSettings[] items)
+        : this(width, height, (IEnumerable<ItemSettings>)items)
     {
     }
 
@@ -74,17 +71,17 @@ public sealed class Inventory : IEnumerable<Item>
 
     #region Add Item
 
-    public bool AddItem(in ItemData itemData, Vector2Int position, int quantity = 1)
+    public bool AddItem(in ItemSettings itemSettings, Vector2Int position, int quantity = 1)
     {
-        if (itemData.Equals(default(ItemData)))
+        if (itemSettings.Equals(default(ItemSettings)))
             return false;
 
-        if (itemData.Size.x <= 0 || itemData.Size.y <= 0)
+        if (itemSettings.Size.x <= 0 || itemSettings.Size.y <= 0)
             throw new ArgumentException("Item size must be positive");
 
-        if (Fit(itemData.Size, position.x, position.y))
+        if (Fit(itemSettings.Size, position.x, position.y))
         {
-            Item item = new Item(itemData, position, quantity);
+            Item item = new Item(itemSettings, position);
             PlaceInstanceInGrid(item, position.x, position.y);
             _items.Add(item.ID, item);
             Vector2Int[] positions = GetPositions(item.ID);
@@ -95,26 +92,22 @@ public sealed class Inventory : IEnumerable<Item>
         return false;
     }
 
-    public bool AddItem(in ItemData itemData, int x, int y, int quantity = 1)
+    public bool AddItem(in ItemSettings itemSettings, int x, int y, int quantity = 1)
     {
-        return AddItem(itemData, new Vector2Int(x, y), quantity);
+        return AddItem(itemSettings, new Vector2Int(x, y), quantity);
     }
 
-    public bool AddItem(in ItemData itemData, int quantity = 1)
+    public bool AddItem(in ItemSettings itemSettings, int quantity = 1)
     {
-        if (itemData.Equals(default(ItemData)))
+        if (itemSettings.Equals(default(ItemSettings)))
             return false;
 
-        if (itemData.Size.x <= 0 || itemData.Size.y <= 0)
+        if (itemSettings.Size.x <= 0 || itemSettings.Size.y <= 0)
             throw new ArgumentException("Item size must be positive");
 
-        if (itemData.CanStack)
-            if (AddStack(itemData, ref quantity))
-                return true;
-
-        if (FindFreePosition(itemData.Size, out var position))
+        if (FindFreePosition(itemSettings.Size, out var position))
         {
-            Item instance = new Item(itemData, position, quantity);
+            Item instance = new Item(itemSettings, position);
             PlaceInstanceInGrid(instance, position.x, position.y);
             _items.Add(instance.ID, instance);
             Vector2Int[] positions = GetItemGridPositions(instance);
@@ -125,66 +118,30 @@ public sealed class Inventory : IEnumerable<Item>
         return false;
     }
 
-    private bool AddStack(ItemData itemData, ref int quantity)
-    {
-        if (!itemData.CanStack || quantity <= 0)
-            return false;
-
-        int originalQuantity = quantity;
-
-        foreach (var item in _items.Values)
-        {
-            // Проверяем, что это тот же предмет
-            if (item.itemData.Name != itemData.Name)
-                continue;
-
-            // Проверяем, что стак не полон
-            if (item.IsFull)
-                continue;
-
-            // Пытаемся добавить
-            int canAdd = Mathf.Min(quantity, item.RemainingCapacity);
-
-            if (item.TryAddQuantity(canAdd))
-            {
-                quantity -= canAdd;
-                OnStackIncreased?.Invoke(item);
-
-                // Если всё добавили - выходим
-                if (quantity == 0)
-                    return true;
-            }
-        }
-
-        // Возвращаем true если хоть что-то добавили к существующим стакам
-        // Это позволит создать новый стак для оставшегося количества
-        return quantity < originalQuantity;
-    }
-
     #endregion
 
     #region CanAdd
 
-    public bool CanAddItem(ItemData itemData)
+    public bool CanAddItem(ItemSettings itemSettings)
     {
-        if (itemData.Equals(default(ItemData)))
+        if (itemSettings.Equals(default(ItemSettings)))
             return false;
 
-        if (itemData.Size.x <= 0 || itemData.Size.y <= 0)
+        if (itemSettings.Size.x <= 0 || itemSettings.Size.y <= 0)
             throw new ArgumentException("Item size must be positive");
 
-        return FindFreePosition(itemData.Size, out _);
+        return FindFreePosition(itemSettings.Size, out _);
     }
 
-    public bool CanAddItem(ItemData itemData, Vector2Int position)
+    public bool CanAddItem(ItemSettings itemSettings, Vector2Int position)
     {
-        if (itemData.Equals(default(ItemData)))
+        if (itemSettings.Equals(default(ItemSettings)))
             return false;
 
-        if (itemData.Size.x <= 0 || itemData.Size.y <= 0)
+        if (itemSettings.Size.x <= 0 || itemSettings.Size.y <= 0)
             throw new ArgumentException("Item size must be positive");
 
-        return Fit(itemData.Size, position.x, position.y);
+        return Fit(itemSettings.Size, position.x, position.y);
     }
 
     #endregion
@@ -246,13 +203,13 @@ public sealed class Inventory : IEnumerable<Item>
             return false;
 
         // Проверяем, что новая позиция валидна
-        if (!IsPositionValid(item.itemData.Size, newPosition.x, newPosition.y))
+        if (!IsPositionValid(item.Settings.Size, newPosition.x, newPosition.y))
             return false;
 
         // Проверяем, что новая позиция свободна (игнорируя клетки самого предмета)
-        for (int x = newPosition.x; x < newPosition.x + item.itemData.Size.x; x++)
+        for (int x = newPosition.x; x < newPosition.x + item.Settings.Size.x; x++)
         {
-            for (int y = newPosition.y; y < newPosition.y + item.itemData.Size.y; y++)
+            for (int y = newPosition.y; y < newPosition.y + item.Settings.Size.y; y++)
             {
                 var cell = _cells[x, y];
                 if (cell != null && cell != item)
@@ -425,14 +382,14 @@ public sealed class Inventory : IEnumerable<Item>
 
     public Vector2Int[] GetItemGridPositions(Item instance)
     {
-        ItemData itemData = instance.itemData;
-        int cellCount = itemData.Size.x * itemData.Size.y;
+        ItemSettings itemSettings = instance.Settings;
+        int cellCount = itemSettings.Size.x * itemSettings.Size.y;
         Vector2Int[] positions = new Vector2Int[cellCount];
 
         int index = 0;
-        for (int x = instance.GridPosition.x; x < instance.GridPosition.x + itemData.Size.x; x++)
+        for (int x = instance.GridPosition.x; x < instance.GridPosition.x + itemSettings.Size.x; x++)
         {
-            for (int y = instance.GridPosition.y; y < instance.GridPosition.y + itemData.Size.y; y++)
+            for (int y = instance.GridPosition.y; y < instance.GridPosition.y + itemSettings.Size.y; y++)
             {
                 positions[index++] = new Vector2Int(x, y);
             }
@@ -456,7 +413,7 @@ public sealed class Inventory : IEnumerable<Item>
         int count = 0;
         foreach (var item in _items.Values)
         {
-            if (item.itemData.Name == name) count++;
+            if (item.Settings.Name == name) count++;
         }
 
         return count;
@@ -502,25 +459,22 @@ public sealed class Inventory : IEnumerable<Item>
         if (Count == 0)
             return;
 
-        var itemsToReorganize = new List<(ItemData data, int quantity)>();
+        var itemsToReorganize = new List<ItemSettings>();
 
         foreach (var item in _items.Values)
         {
-            itemsToReorganize.Add((item.itemData, item.StackQuantity));
+            itemsToReorganize.Add(item.Settings);
         }
 
         itemsToReorganize.Sort((a, b) =>
         {
-            if (a.data.CanStack != b.data.CanStack)
-                return a.data.CanStack ? -1 : 1;
-
-            int areaA = a.data.Size.x * a.data.Size.y;
-            int areaB = b.data.Size.x * b.data.Size.y;
+            int areaA = a.Size.x * a.Size.y;
+            int areaB = b.Size.x * b.Size.y;
 
             if (areaA != areaB)
                 return areaB.CompareTo(areaA);
 
-            return string.Compare(a.data.Name, b.data.Name, StringComparison.Ordinal);
+            return string.Compare(a.Name, b.Name, StringComparison.Ordinal);
         });
 
         _items.Clear();
@@ -528,10 +482,9 @@ public sealed class Inventory : IEnumerable<Item>
         for (int j = 0; j < _cells.GetLength(1); j++)
             _cells[i, j] = null;
 
-
-        foreach (var (data, quantity) in itemsToReorganize)
+        foreach (var data in itemsToReorganize)
         {
-            AddItem(data, quantity);
+            AddItem(data);
         }
 
         OnReorganize?.Invoke();
@@ -559,9 +512,9 @@ public sealed class Inventory : IEnumerable<Item>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void PlaceInstanceInGrid(Item instance, int posX, int posY)
     {
-        ItemData itemData = instance.itemData;
-        for (int x = posX; x < posX + itemData.Size.x; x++)
-        for (int y = posY; y < posY + itemData.Size.y; y++)
+        ItemSettings itemSettings = instance.Settings;
+        for (int x = posX; x < posX + itemSettings.Size.x; x++)
+        for (int y = posY; y < posY + itemSettings.Size.y; y++)
             _cells[x, y] = instance;
     }
 

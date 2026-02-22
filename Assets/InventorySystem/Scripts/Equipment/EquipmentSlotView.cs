@@ -23,18 +23,14 @@ namespace Game.Scripts.UI.Equipment.Game.Equipment.View
 
         public bool Equip(Item item)
         {
-            if (item?.itemData.ItemType != _itemType)
+            if (item?.Settings.ItemType != _itemType)
                 return false;
 
             CurrentItem = item;
             _itemIcon.enabled = true;
-            _itemIcon.sprite = item.itemData.Icon;
+            _itemIcon.sprite = item.Settings.Icon;
             _background.sprite = _occupiedSprite;
 
-            _signalBus.Fire(new EqipItemAudioSignal
-            {
-                AudioKey = item.itemData.ItemAudioData.EquipItem,
-            });
 
             return true;
         }

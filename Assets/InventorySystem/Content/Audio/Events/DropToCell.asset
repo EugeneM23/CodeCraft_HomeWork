@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: DropToCell
   m_EditorClassIdentifier: 
   _poolable: 1
-  duration: 1.4367347
+  duration: 1.3322449
   loop: 0
   spartialBlend: 0
   output: {fileID: 0}

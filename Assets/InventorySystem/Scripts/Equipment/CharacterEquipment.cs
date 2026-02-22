@@ -44,8 +44,8 @@ public class CharacterEquipment : MonoBehaviour
 
     public void Equip(Item item)
     {
-        var itemType = item.itemData.ItemType;
-        var mesh = item.itemData.Mesh;
+        var itemType = item.Settings.ItemType;
+        var mesh = item.Settings.Mesh;
 
         if (itemType == ItemType.Weapon)
             _weaponFilter.mesh = mesh;
@@ -57,7 +57,7 @@ public class CharacterEquipment : MonoBehaviour
 
     public void Unequip(Item item)
     {
-        var itemType = item.itemData.ItemType;
+        var itemType = item.Settings.ItemType;
 
         if (itemType == ItemType.Weapon)
             _weaponFilter.mesh = null;

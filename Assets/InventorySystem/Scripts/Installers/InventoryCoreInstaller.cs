@@ -19,9 +19,9 @@ namespace Inventories
 
         private void InstallInventoryCore()
         {
-            var items = new List<ItemData>();
+            var items = new List<ItemSettings>();
             foreach (var item in _initialItems)
-                items.Add(item.ItemData);
+                items.Add(item.itemSettings);
 
             Container
                 .Bind<Inventory>()

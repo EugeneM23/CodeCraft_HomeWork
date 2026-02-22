@@ -56,7 +56,7 @@ namespace Inventories
 
             // Вычисляем позицию начала предмета с учётом смещения клика
             Vector2Int targetPosition = _dragContext.CurrentInventoryCell.MatrixPosition - _dragContext.ClickOffset;
-            Vector2Int itemSize = _dragContext.Item.itemData.Size;
+            Vector2Int itemSize = _dragContext.Item.Settings.Size;
 
             // Проверяем валидность позиции
             if (!IsValidPosition(targetPosition, itemSize))

@@ -1,4 +1,5 @@
 using System;
+using AudioEngine;
 using UnityEngine;
 using Zenject;
 
@@ -7,29 +8,42 @@ namespace Inventories
     public class InventoryAudioController : IInitializable, IDisposable
     {
         private readonly Inventory _inventory;
-        private readonly SignalBus _signalBus;
+        private AudioSystem _audioSystem;
 
-        public InventoryAudioController(SignalBus signalBus, Inventory inventory)
+        public InventoryAudioController(Inventory inventory)
         {
-            _signalBus = signalBus;
             _inventory = inventory;
         }
 
         public void Initialize()
         {
-            _inventory.OnAdded += OnItemAdded;
-        }
+            _audioSystem = AudioSystem.Instance;
 
-        private void OnItemAdded(Item item, Vector2Int[] _)
-        {
-            _signalBus.Fire(new DropItemAudioSignal
-            {
-                AudioKey = item.itemData.ItemAudioData.DropToInventory
-            });
+            _inventory.OnAdded += OnItemAdded;
+            _inventory.OnRemoved += OnItemRemoved;
+            _inventory.OnMoved += OnItemMoved;
         }
 
         public void Dispose()
         {
+            _inventory.OnAdded -= OnItemAdded;
+            _inventory.OnRemoved -= OnItemRemoved;
+            _inventory.OnMoved -= OnItemMoved;
+        }
+
+        private void OnItemAdded(Item item, Vector2Int[] positions)
+        {
+            _audioSystem.PlayEvent(item.Settings.AddItemKey);
+        }
+
+        private void OnItemRemoved(Item item, Vector2Int[] positions)
+        {
+            _audioSystem.PlayEvent(item.Settings.DropToScene);
+        }
+
+        private void OnItemMoved(Item item, Vector2Int position)
+        {
+            _audioSystem.PlayEvent(item.Settings.AddItemKey);
         }
     }
 }

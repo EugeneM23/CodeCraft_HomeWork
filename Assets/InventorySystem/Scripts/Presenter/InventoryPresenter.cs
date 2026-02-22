@@ -69,16 +69,7 @@ public class InventoryPresenter : IInitializable, IDisposable
 
     public bool AddItem(Item item, Vector2Int position)
     {
-        
-        if (_inventory.AddItem(item.itemData, position))
-        {
-            Debug.Log(item.itemData.Name);
-
-
-            return true;
-        }
-
-        return false;
+        return _inventory.AddItem(item.Settings, position);
     }
 
     public Vector2Int GetItemPosition(string itemID)
