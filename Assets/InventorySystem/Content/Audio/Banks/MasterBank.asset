@@ -15,8 +15,10 @@ MonoBehaviour:
   identifier: Master
   codeGenPath: Assets/InventorySystem/Scripts/Audio/CodeGen
   eventParameters:
-  - identifier: test
+  - identifier: dropToCell
     value: {fileID: 11400000, guid: dfcaf08318d294e2a9f2ec858b433cb0, type: 2}
+  - identifier: equip
+    value: {fileID: 11400000, guid: 63e58c3e026a1418d9c5cf3bb9470bd7, type: 2}
   boolParameters: []
   intParameters: []
   floatParameters: []

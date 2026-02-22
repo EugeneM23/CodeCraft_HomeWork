@@ -1,4 +1,5 @@
 using System;
+using AudioEngine;
 using UnityEngine;
 
 namespace Inventories
@@ -6,11 +7,11 @@ namespace Inventories
     [Serializable]
     public struct ItemAudioData
     {
-        [field: SerializeField] public AudioClip StartDrag { get; private set; }
-        [field: SerializeField] public AudioClip DropToInventory { get; private set; }
-        [field: SerializeField] public AudioClip EquipItem { get; private set; }
-        [field: SerializeField] public AudioClip DropToScene { get; private set; }
-        [field: SerializeField] public AudioClip UseItem { get; private set; }
+        [field: SerializeField] public AudioEventKey StartDrag { get; private set; }
+        [field: SerializeField] public AudioEventKey DropToInventory { get; private set; }
+        [field: SerializeField] public AudioEventKey EquipItem { get; private set; }
+        [field: SerializeField] public AudioEventKey DropToScene { get; private set; }
+        [field: SerializeField] public AudioEventKey UseItem { get; private set; }
 
         public ItemAudioData(ItemAudioData itemData)
         {

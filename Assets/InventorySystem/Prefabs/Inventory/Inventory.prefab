@@ -2713,10 +2713,10 @@ MonoBehaviour:
   _inventorySize: {x: 8, y: 5}
   _inventoryUI: {fileID: -2486167064748676698}
   _initialItems:
-  - {fileID: 7070894261933836396, guid: 2d17967c122f4480a9ab865ce1992532, type: 3}
   - {fileID: 7070894261933836396, guid: 68508e5ca913b4977bb5c1fc5926ea03, type: 3}
   - {fileID: 7070894261933836396, guid: 4a28ec6f258124f069038ac2693f8b13, type: 3}
-  - {fileID: 7070894261933836396, guid: d00b195c1c8c94d6097850658fc3edc7, type: 3}
+  - {fileID: 7070894261933836396, guid: 79b534e7ec75a462b89b81d5956eb237, type: 3}
+  - {fileID: 7070894261933836396, guid: ec20105428d41482aab5eeab60532850, type: 3}
 --- !u!114 &-2486167064748676698
 MonoBehaviour:
   m_ObjectHideFlags: 0

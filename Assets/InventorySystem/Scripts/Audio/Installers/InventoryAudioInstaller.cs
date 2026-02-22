@@ -11,23 +11,14 @@ namespace Inventories
 
         public override void InstallBindings()
         {
-            Container
-                .BindInterfacesAndSelfTo<DropToCellAudioController>()
-                .AsSingle()
-                .WithArguments(_dropToCellKey)
-                .NonLazy();
+            Container.DeclareSignal<EqipItemAudioSignal>();
+            Container.DeclareSignal<DropItemAudioSignal>();
 
-            Container
-                .DeclareSignal<DropItemAudioSignal>();
+            Container.BindSignal<DropItemAudioSignal>()
+                .ToMethod((signal) => AudioSystem.Instance.PlayEvent(signal.AudioKey));
 
-            Container
-                .BindInterfacesAndSelfTo<EqipAudioController>()
-                .AsSingle()
-                .WithArguments(_equipKey)
-                .NonLazy();
-
-            Container
-                .DeclareSignal<EqipItemAudioSignal>();
+            Container.BindSignal<EqipItemAudioSignal>()
+                .ToMethod((signal) => AudioSystem.Instance.PlayEvent(signal.AudioKey));
         }
     }
 }

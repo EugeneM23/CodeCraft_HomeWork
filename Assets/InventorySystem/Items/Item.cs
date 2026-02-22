@@ -22,7 +22,6 @@ namespace Inventories
             itemData = data;
             GridPosition = position;
             StackQuantity = Mathf.Clamp(quantity, 1, data.MaxStackQuantity);
-            //ItemUseCase = data.ItemUseCase;
         }
 
         public bool TryAddQuantity(int amount)

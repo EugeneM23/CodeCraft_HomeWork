@@ -69,9 +69,16 @@ public class InventoryPresenter : IInitializable, IDisposable
 
     public bool AddItem(Item item, Vector2Int position)
     {
-        _signalBus.Fire<DropItemAudioSignal>();
         
-        return _inventory.AddItem(item.itemData, position);
+        if (_inventory.AddItem(item.itemData, position))
+        {
+            Debug.Log(item.itemData.Name);
+
+
+            return true;
+        }
+
+        return false;
     }
 
     public Vector2Int GetItemPosition(string itemID)

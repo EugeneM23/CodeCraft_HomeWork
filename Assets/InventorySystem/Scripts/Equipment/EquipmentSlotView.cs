@@ -31,7 +31,10 @@ namespace Game.Scripts.UI.Equipment.Game.Equipment.View
             _itemIcon.sprite = item.itemData.Icon;
             _background.sprite = _occupiedSprite;
 
-            _signalBus.Fire<EqipItemAudioSignal>();
+            _signalBus.Fire(new EqipItemAudioSignal
+            {
+                AudioKey = item.itemData.ItemAudioData.EquipItem,
+            });
 
             return true;
         }

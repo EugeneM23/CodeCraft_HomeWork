@@ -230,13 +230,27 @@ MonoBehaviour:
     <Size>k__BackingField: {x: 1, y: 2}
     <CanStack>k__BackingField: 0
     <MaxStackQuantity>k__BackingField: 0
-    <ItemUseCase>k__BackingField: {fileID: 11400000, guid: f2a989a94ab8b47909f243ffe364f5c1, type: 2}
     ItemAudioData:
-      <StartDrag>k__BackingField: {fileID: 8300000, guid: 5d6f29bcef96c48e5bcf58037006a43f, type: 3}
-      <DropToInventory>k__BackingField: {fileID: 0}
-      <EquipItem>k__BackingField: {fileID: 0}
-      <DropToScene>k__BackingField: {fileID: 0}
-      <UseItem>k__BackingField: {fileID: 0}
+      <StartDrag>k__BackingField:
+        bank: {fileID: 11400000, guid: e4b41ce06ef2940e293fe59906357731, type: 2}
+        eventId: dropToCell
+        identifier: Master.dropToCell
+      <DropToInventory>k__BackingField:
+        bank: {fileID: 11400000, guid: e4b41ce06ef2940e293fe59906357731, type: 2}
+        eventId: dropToCell
+        identifier: Master.dropToCell
+      <EquipItem>k__BackingField:
+        bank: {fileID: 11400000, guid: e4b41ce06ef2940e293fe59906357731, type: 2}
+        eventId: equip
+        identifier: Master.equip
+      <DropToScene>k__BackingField:
+        bank: {fileID: 11400000, guid: e4b41ce06ef2940e293fe59906357731, type: 2}
+        eventId: dropToCell
+        identifier: Master.dropToCell
+      <UseItem>k__BackingField:
+        bank: {fileID: 11400000, guid: e4b41ce06ef2940e293fe59906357731, type: 2}
+        eventId: equip
+        identifier: Master.equip
   Quantity: 1
 --- !u!65 &6009434718875001729
 BoxCollider:
