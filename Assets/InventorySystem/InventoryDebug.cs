@@ -1,3 +1,4 @@
+using System;
 using Inventories;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -13,6 +14,11 @@ public class InventoryDebug : MonoBehaviour
     [SerializeField] private Button _openInventoryButton;
 
     private GameObject _inventory;
+    private InventoryView _inventoryView;
+
+    // События для камеры
+    public event Action OnInventoryOpened;
+    public event Action OnInventoryClosed;
 
     private void Start()
     {
@@ -22,6 +28,7 @@ public class InventoryDebug : MonoBehaviour
     private void OnDestroy()
     {
         _openInventoryButton.onClick.RemoveListener(ToggleInventory);
+        UnsubscribeFromInventory();
     }
 
     private void ToggleInventory()
@@ -33,13 +40,39 @@ public class InventoryDebug : MonoBehaviour
             return;
         }
 
-        // Если создан - переключаем видимость
+        // Переключаем видимость
         _inventory.SetActive(!_inventory.activeSelf);
     }
 
     private void CreateInventory()
     {
         _inventory = _container.InstantiatePrefab(_inventoryPrefab, _canvas.transform);
+        _inventoryView = _inventory.GetComponent<InventoryView>();
+
+        // Подписываемся на события инвентаря
+        _inventoryView.OnInventoryOpened += HandleInventoryOpened;
+        _inventoryView.OnInventoryClosed += HandleInventoryClosed;
+
+        OnInventoryOpened?.Invoke();
+    }
+
+    private void UnsubscribeFromInventory()
+    {
+        if (_inventoryView != null)
+        {
+            _inventoryView.OnInventoryOpened -= HandleInventoryOpened;
+            _inventoryView.OnInventoryClosed -= HandleInventoryClosed;
+        }
+    }
+
+    private void HandleInventoryOpened()
+    {
+        OnInventoryOpened?.Invoke();
+    }
+
+    private void HandleInventoryClosed()
+    {
+        OnInventoryClosed?.Invoke();
     }
 
     [Button]

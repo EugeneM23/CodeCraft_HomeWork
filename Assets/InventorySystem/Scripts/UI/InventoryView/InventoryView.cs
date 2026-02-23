@@ -1,16 +1,19 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using Zenject;
 
 namespace Inventories
 {
     public partial class InventoryView : MonoBehaviour
     {
+        public event Action OnInventoryOpened;
+        public event Action OnInventoryClosed;
+
         [SerializeField] private InventoryCell inventoryCellPrefab;
         [SerializeField] private InventoryItemView _inventoryItemPrefab;
         [SerializeField] private Vector2Int _cellSize;
-        
+
         public Vector2Int CellSize => _cellSize;
 
         private Dictionary<string, GameObject> _items;
@@ -26,7 +29,7 @@ namespace Inventories
             _cells = new InventoryCell[presenter.Width, presenter.Height];
             _items = new Dictionary<string, GameObject>();
         }
-        
+
         private void OnEnable()
         {
             _presenter.OnItemAdded += CreateItem;
@@ -34,6 +37,8 @@ namespace Inventories
             _presenter.OnReorganize += Reorganize;
 
             SubscribeButtons();
+
+            OnInventoryOpened?.Invoke();
         }
 
         private void OnDisable()
@@ -43,6 +48,8 @@ namespace Inventories
             _presenter.OnReorganize -= Reorganize;
 
             UnsubscribeButtons();
+
+            OnInventoryClosed?.Invoke();
         }
 
         private void Start()
