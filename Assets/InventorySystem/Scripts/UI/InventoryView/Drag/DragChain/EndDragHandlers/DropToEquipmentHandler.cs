@@ -14,10 +14,11 @@ namespace Inventories
             if (slot == null || !slot.IsEmpty)
                 return false;
 
+            slot.Equip(dragContext.Item);
             // Пытаемся экипировать предмет в слот
-            var success = slot.Presenter.TryEquip(dragContext.Item);
+            //var success = slot.Presenter.TryEquip(dragContext.Item);
 
-            return success;
+            return true;
         }
     }
 }

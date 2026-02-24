@@ -29,8 +29,6 @@ public class EquipmentModel
         if (_slots[itemType] != null)
             return false;
 
-        Debug.Log(itemType);
-
         _slots[itemType] = item;
 
         OnEquipped?.Invoke(itemType, item);
@@ -39,14 +37,10 @@ public class EquipmentModel
 
     public Item UnEquip(ItemType itemType)
     {
-        if (!_slots.ContainsKey(itemType))
-            return null;
-
         var item = _slots[itemType];
-        if (item == null)
-            return null;
 
         _slots[itemType] = null;
+
         OnUnEquipped?.Invoke(itemType, item);
         return item;
     }

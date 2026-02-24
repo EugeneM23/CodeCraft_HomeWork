@@ -2,6 +2,7 @@ using System;
 using Equipment;
 using Equipment.Equipment;
 using Inventories;
+using UnityEditor;
 using Zenject;
 
 public class EquipmentPresenter : IInitializable, IDisposable
@@ -43,10 +44,7 @@ public class EquipmentPresenter : IInitializable, IDisposable
         return _model.Equip(item);
     }
 
-    public Item TryUnEquip(ItemType itemType)
-    {
-        return _model.UnEquip(itemType);
-    }
+    public Item UnEquip(ItemType itemType) => _model.UnEquip(itemType);
 
     private void ToggleEquipment()
     {

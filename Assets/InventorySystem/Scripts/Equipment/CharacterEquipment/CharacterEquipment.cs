@@ -64,6 +64,6 @@ public class CharacterEquipment : MonoBehaviour
         else if (itemType == ItemType.Shield)
             _shieldFilter.mesh = null;
         else
-            _renderers[itemType].sharedMesh = _defaults[itemType];
+            _renderers[itemType].sharedMesh = null;
     }
 }

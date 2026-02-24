@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -22,7 +23,7 @@ namespace Inventories
                 return false;
 
             var item = cell.Item;
-            var items = _view.GetItems();
+            IReadOnlyDictionary<string, GameObject> items = _view.GetItems();
 
             // Вычисляем позицию предмета в инвентаре
             Vector2Int itemStartPosition = _presenter.GetItemPosition(item.ID);

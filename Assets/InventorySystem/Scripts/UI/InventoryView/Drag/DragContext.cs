@@ -10,7 +10,6 @@ public class DragContext
     public Vector2 DragOffset { get; private set; }
     public bool IsDragging { get; private set; }
     public InventoryCell CurrentInventoryCell { get; set; }
-
     public EquipmentSlot Slot { get; set; }
     public InventoryCell StartCell { get; set; }
 

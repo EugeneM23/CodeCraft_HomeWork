@@ -54,7 +54,6 @@ namespace Inventories
         {
             return new List<IBeginDraghendler>
             {
-                //ctx.Container.Resolve<BeginDragTestlotHandler>(),
                 ctx.Container.Resolve<BeginDragFromInventoryCellHandler>(),
                 ctx.Container.Resolve<BeginDragFromEquipmentSlotHandler>(),
             };

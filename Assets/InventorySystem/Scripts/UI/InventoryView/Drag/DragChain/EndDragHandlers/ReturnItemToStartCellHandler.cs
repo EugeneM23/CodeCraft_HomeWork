@@ -13,10 +13,7 @@ namespace Inventories
             if (dragContext.StartCell == null)
                 return false;
 
-            if (dragContext.StartCell.Presenter.AddItem(dragContext.Item, dragContext.StartPosition))
-                return true;
-
-            return false;
+            return dragContext.StartCell.Presenter.AddItem(dragContext.Item, dragContext.StartPosition);
         }
     }
 }

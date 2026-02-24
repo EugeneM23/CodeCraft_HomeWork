@@ -12,7 +12,7 @@ namespace Inventories
     public partial class InventoryView : IDragHandler, IBeginDragHandler, IEndDragHandler
     {
         [SerializeField] private Image _draggableImage;
-        
+
         [Inject] private readonly DragContext _dragContext;
         [Inject] private readonly DragChainProcessor _itemDragProcessor;
 
@@ -48,7 +48,7 @@ namespace Inventories
 
             // Скрываем визуальный образ драгаемого предмета
             _draggableImage.gameObject.SetActive(false);
-    
+
             // Обнуляем контекст
             _dragContext.Reset();
         }
@@ -59,6 +59,7 @@ namespace Inventories
 
         public void SetupDraggableImage(Item item)
         {
+            Debug.Log(_draggableImage == null);
             _draggableImage.rectTransform.sizeDelta = new Vector2(
                 item.Settings.Size.x * _cellSize.x,
                 item.Settings.Size.y * _cellSize.y);

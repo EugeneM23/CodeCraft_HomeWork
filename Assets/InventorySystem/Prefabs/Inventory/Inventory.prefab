@@ -1023,6 +1023,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 9
       objectReference: {fileID: 0}
+    - target: {fileID: 2650305217973283051, guid: c9faf404781eb4cd29af43a2c29ceab4, type: 3}
+      propertyPath: m_Name
+      value: Shield
+      objectReference: {fileID: 0}
     - target: {fileID: 2723667744619504440, guid: c9faf404781eb4cd29af43a2c29ceab4, type: 3}
       propertyPath: m_Layer
       value: 9
@@ -1430,6 +1434,14 @@ PrefabInstance:
     - target: {fileID: 8701484401476310039, guid: c9faf404781eb4cd29af43a2c29ceab4, type: 3}
       propertyPath: m_AnchoredPosition.x
       value: 233.20001
+      objectReference: {fileID: 0}
+    - target: {fileID: 8734120956557222971, guid: c9faf404781eb4cd29af43a2c29ceab4, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 61.53501
+      objectReference: {fileID: 0}
+    - target: {fileID: 8734120956557222971, guid: c9faf404781eb4cd29af43a2c29ceab4, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -0.5
       objectReference: {fileID: 0}
     - target: {fileID: 8840480780028346183, guid: c9faf404781eb4cd29af43a2c29ceab4, type: 3}
       propertyPath: m_Layer
