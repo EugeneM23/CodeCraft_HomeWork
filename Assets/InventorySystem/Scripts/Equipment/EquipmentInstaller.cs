@@ -11,20 +11,17 @@ namespace Equipment
 
         public override void InstallBindings()
         {
-            // View
             Container
                 .Bind<EquipmentView>()
                 .FromInstance(_equipmentView)
                 .AsSingle()
                 .NonLazy();
 
-            // Presenter
             Container
                 .BindInterfacesAndSelfTo<EquipmentPresenter>()
                 .AsSingle()
                 .NonLazy();
 
-            // Controllers
             Container
                 .BindInterfacesAndSelfTo<EquipmentSlotAudioController>()
                 .AsSingle()

@@ -1,4 +1,5 @@
 using UnityEngine;
+using Zenject;
 
 namespace Equipment
 {
@@ -19,9 +20,11 @@ namespace Equipment
             [SerializeField] private EquipmentSlot _weaponSlot;
             [SerializeField] private EquipmentSlot _shieldSlot;
 
+            [Inject] private readonly EquipmentPresenter _presenter;
             public event Action<ItemType> OnSlotClicked;
 
             private Dictionary<ItemType, EquipmentSlot> _slots;
+
 
             private void Awake()
             {
@@ -39,10 +42,8 @@ namespace Equipment
 
             public void ShowItem(ItemType itemType, Item item)
             {
-                if (_slots.TryGetValue(itemType, out var slot))
-                {
+                if (_slots.TryGetValue(itemType, out var slot)) 
                     slot.Equip(item);
-                }
             }
 
             public void HideItem(ItemType itemType)

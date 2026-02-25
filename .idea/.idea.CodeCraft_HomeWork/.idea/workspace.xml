@@ -6,21 +6,15 @@
   <component name="ChangeListManager">
     <list default="true" id="6f0b762c-5415-4a85-b17b-cc44fd47261d" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.CodeCraft_HomeWork/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.CodeCraft_HomeWork/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/AssetPacks/JC_StylizedModularCharacters/Materials/M_StylizedModularCharacter_Male_02.mat" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/AssetPacks/JC_StylizedModularCharacters/Materials/M_StylizedModularCharacter_Male_02.mat" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/AssetPacks/OmniShade/Samples/Unity-chan Cel/Materials/Outline.mat" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/AssetPacks/OmniShade/Samples/Unity-chan Cel/Materials/Outline.mat" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/AssetPacks/Polytope Studio/Lowpoly_Weapons/Sources/Materials/PT_Weapons_Material.mat" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/AssetPacks/Polytope Studio/Lowpoly_Weapons/Sources/Materials/PT_Weapons_Material.mat" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Prefabs/Inventory/Inventory.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Prefabs/Inventory/Inventory.prefab" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Equipment/CharacterEquipment/CharacterEquipment.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Equipment/CharacterEquipment/CharacterEquipment.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/UI.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Equipment/EquipmentInstaller.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Equipment/EquipmentInstaller.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Equipment/EquipmentModel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Equipment/EquipmentModel.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Equipment/EquipmentPresenter.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Equipment/EquipmentPresenter.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Installers/InventoryDragInstaller.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Installers/InventoryDragInstaller.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Equipment/EquipmentView.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Equipment/EquipmentView.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Equipment/UI.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Installers/InventoryCoreInstaller.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Installers/InventoryCoreInstaller.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/Drag/DragChain/BeginDragHandlers/BeginDragFromEquipmentSlotHandler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/Drag/DragChain/BeginDragHandlers/BeginDragFromEquipmentSlotHandler.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/Drag/DragChain/BeginDragHandlers/BeginDragFromInventoryCellHandler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/Drag/DragChain/BeginDragHandlers/BeginDragFromInventoryCellHandler.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/Drag/DragChain/EndDragHandlers/DropToEquipmentHandler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/Drag/DragChain/EndDragHandlers/DropToEquipmentHandler.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/Drag/DragChain/EndDragHandlers/ReturnItemToStartCellHandler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/Drag/DragChain/EndDragHandlers/ReturnItemToStartCellHandler.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/Drag/DragContext.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/Drag/DragContext.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/InventoryView.Drag.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/InventoryView.Drag.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/Drag/DragChain/EndDragHandlers/ReturnItemToStartSlotHandler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/Drag/DragChain/EndDragHandlers/ReturnItemToStartSlotHandler.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -33,7 +27,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="Inventory_View" />
+        <entry key="$PROJECT_DIR$" value="HomeWork_09_ECS" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -193,6 +187,8 @@
       <workItem from="1771330327258" duration="38245000" />
       <workItem from="1771592512678" duration="85248000" />
       <workItem from="1771783251787" duration="22524000" />
+      <workItem from="1771962916594" duration="11000" />
+      <workItem from="1772039190418" duration="2052000" />
     </task>
     <task id="LOCAL-00001" summary="Update">
       <option name="closed" value="true" />

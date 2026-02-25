@@ -19,8 +19,6 @@ namespace Inventories
 
         private void InstallInventoryCore()
         {
-           
-
             Container
                 .BindInterfacesAndSelfTo<InventoryPresenter>()
                 .AsSingle()

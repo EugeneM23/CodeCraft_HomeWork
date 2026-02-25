@@ -12,7 +12,8 @@ namespace Inventories
             if (dragContext.Slot == null)
                 return false;
 
-            dragContext.Slot.Equip(dragContext.Item);
+            dragContext.Slot.Presenter.TryEquip(dragContext.Item);
+            
             return true;
         }
     }

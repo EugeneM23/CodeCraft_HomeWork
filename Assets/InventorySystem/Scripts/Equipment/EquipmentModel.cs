@@ -44,14 +44,4 @@ public class EquipmentModel
         OnUnEquipped?.Invoke(itemType, item);
         return item;
     }
-
-    public Item GetItem(ItemType itemType)
-    {
-        return _slots.ContainsKey(itemType) ? _slots[itemType] : null;
-    }
-
-    public bool IsSlotEmpty(ItemType itemType)
-    {
-        return _slots.ContainsKey(itemType) && _slots[itemType] == null;
-    }
 }
