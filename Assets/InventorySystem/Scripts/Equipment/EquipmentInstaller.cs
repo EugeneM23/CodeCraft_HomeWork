@@ -1,4 +1,3 @@
-using Equipment.Equipment;
 using UnityEngine;
 using Zenject;
 

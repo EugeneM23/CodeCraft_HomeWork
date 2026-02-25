@@ -1,6 +1,7 @@
 using Equipment;
 using Inventories;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class DragContext
 {
@@ -10,11 +11,11 @@ public class DragContext
     public Vector2 DragOffset { get; private set; }
     public bool IsDragging { get; private set; }
     public InventoryCell CurrentInventoryCell { get; set; }
-    public EquipmentSlot Slot { get; set; }
     public InventoryCell StartCell { get; set; }
+    public Image EquipmentSlotImage { get; set; }
 
     public void BeginDrag(Item item, Vector2Int startPosition, Vector2Int clickOffset, Vector2 dragOffset,
-        InventoryCell cell = null, EquipmentSlot slot = null)
+        InventoryCell cell = null, Image equipmentSlotImage = null)
     {
         Item = item;
         StartPosition = startPosition;
@@ -22,7 +23,7 @@ public class DragContext
         DragOffset = dragOffset;
         IsDragging = true;
         StartCell = cell;
-        Slot = slot;
+        EquipmentSlotImage = equipmentSlotImage;
     }
 
     public void UpdateCurrentCell(InventoryCell inventoryCell)
@@ -39,6 +40,6 @@ public class DragContext
         IsDragging = false;
         CurrentInventoryCell = null;
         StartCell = null;
-        Slot = null;
+        EquipmentSlotImage = null;
     }
 }

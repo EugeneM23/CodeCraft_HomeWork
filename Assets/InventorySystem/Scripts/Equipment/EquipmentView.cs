@@ -1,67 +1,75 @@
+using System;
+using System.Collections.Generic;
+using Inventories;
 using UnityEngine;
+using UnityEngine.UI;
 using Zenject;
 
-namespace Equipment
+public class EquipmentView : MonoBehaviour
 {
-    using System;
-    using System.Collections.Generic;
-    using Inventories;
-    using UnityEngine;
+    [SerializeField] private Image _headSlot;
+    [SerializeField] private Image _bodySlot;
+    [SerializeField] private Image _handsSlot;
+    [SerializeField] private Image _legsSlot;
+    [SerializeField] private Image _bootsSlot;
+    [SerializeField] private Image _weaponSlot;
+    [SerializeField] private Image _shieldSlot;
 
-    namespace Equipment
+    [Inject] private readonly EquipmentPresenter _presenter;
+
+    private Dictionary<ItemType, Image> _slots;
+
+    private void Awake()
     {
-        public class EquipmentView : MonoBehaviour
+        _slots = new Dictionary<ItemType, Image>
         {
-            [SerializeField] private EquipmentSlot _headSlot;
-            [SerializeField] private EquipmentSlot _bodySlot;
-            [SerializeField] private EquipmentSlot _handsSlot;
-            [SerializeField] private EquipmentSlot _legsSlot;
-            [SerializeField] private EquipmentSlot _bootsSlot;
-            [SerializeField] private EquipmentSlot _weaponSlot;
-            [SerializeField] private EquipmentSlot _shieldSlot;
+            { ItemType.Head, _headSlot },
+            { ItemType.Body, _bodySlot },
+            { ItemType.Hands, _handsSlot },
+            { ItemType.Legs, _legsSlot },
+            { ItemType.Boots, _bootsSlot },
+            { ItemType.Weapon, _weaponSlot },
+            { ItemType.Shield, _shieldSlot }
+        };
+    }
 
-            [Inject] private readonly EquipmentPresenter _presenter;
-            public event Action<ItemType> OnSlotClicked;
+    private void OnEnable()
+    {
+        _presenter.OnEquipped += HandleEquipped;
+        _presenter.OnUnEquipped += HandleUnEquipped;
+    }
 
-            private Dictionary<ItemType, EquipmentSlot> _slots;
+    private void OnDisable()
+    {
+        _presenter.OnEquipped -= HandleEquipped;
+        _presenter.OnUnEquipped -= HandleUnEquipped;
+    }
 
+    private bool RequestEquip(Item item)
+    {
+        return _presenter.TryEquip(item);
+    }
 
-            private void Awake()
-            {
-                _slots = new Dictionary<ItemType, EquipmentSlot>
-                {
-                    { ItemType.Head, _headSlot },
-                    { ItemType.Body, _bodySlot },
-                    { ItemType.Hands, _handsSlot },
-                    { ItemType.Legs, _legsSlot },
-                    { ItemType.Boots, _bootsSlot },
-                    { ItemType.Weapon, _weaponSlot },
-                    { ItemType.Shield, _shieldSlot }
-                };
-            }
+    public Item RequestUnEquip(ItemType itemType)
+    {
+        return _presenter.UnEquip(itemType);
+    }
 
-            public void ShowItem(ItemType itemType, Item item)
-            {
-                if (_slots.TryGetValue(itemType, out var slot)) 
-                    slot.Equip(item);
-            }
+    private void HandleEquipped(ItemType itemType, Item item)
+    {
+        if (_slots.TryGetValue(itemType, out var image))
+        {
+            image.sprite = item.Settings.Icon;
+            image.enabled = true;
+        }
+    }
 
-            public void HideItem(ItemType itemType)
-            {
-                if (_slots.TryGetValue(itemType, out var slot))
-                {
-                    slot.UnEquip();
-                }
-            }
-
-            public EquipmentSlot[] GetAllSlots()
-            {
-                return new[]
-                {
-                    _headSlot, _bodySlot, _handsSlot, _legsSlot,
-                    _bootsSlot, _weaponSlot, _shieldSlot
-                };
-            }
+    private void HandleUnEquipped(ItemType itemType, Item item)
+    {
+        if (_slots.TryGetValue(itemType, out var image))
+        {
+            image.sprite = null;
+            image.enabled = false;
         }
     }
 }

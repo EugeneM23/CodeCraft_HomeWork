@@ -1,22 +1,29 @@
 using Equipment;
 using UnityEngine.EventSystems;
+using Zenject;
 
 namespace Inventories
 {
     public class DropToEquipmentHandler : IEndDraghendler
     {
+        [Inject] private readonly EquipmentPresenter _equipmentView;
+
         public bool Handle(PointerEventData eventData, DragContext dragContext)
         {
-            // Получаем слот экипировки под курсором при отпускании предмета
-            EquipmentSlot slot = eventData.pointerCurrentRaycast.gameObject?.GetComponent<EquipmentSlot>();
+            var slotObject = eventData.pointerCurrentRaycast.gameObject;
 
-            // Если курсор не над слотом экипировки, передаем обработку дальше
-            if (slot == null || !slot.IsEmpty || slot.ItemType != dragContext.Item.Settings.ItemType)
+            if (slotObject == null)
                 return false;
 
-            slot.Presenter.TryEquip(dragContext.Item);
+            var slotMarker = slotObject.GetComponentInParent<EquipmentSlotMarker>();
 
-            return true;
+            if (slotMarker == null)
+                return false;
+
+            if (dragContext.Item.Settings.ItemType != slotMarker.ItemType)
+                return false;
+
+            return _equipmentView.TryEquip(dragContext.Item);
         }
     }
 }

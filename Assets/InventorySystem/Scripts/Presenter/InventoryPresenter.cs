@@ -80,6 +80,11 @@ public class InventoryPresenter : IInitializable, IDisposable
     public bool IsFree(int x, int y) => _inventory.IsFree(x, y);
 
     public bool IsFree(Vector2Int position) => _inventory.IsFree(position);
+    
+    public bool TryPlaceItem(Item item, Vector2Int position)
+    {
+        return _inventory.AddItem(item.Settings, position);
+    }
 
     public void Reorganize() => _inventory.Reorganize();
 

@@ -4,17 +4,22 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6f0b762c-5415-4a85-b17b-cc44fd47261d" name="Changes" comment="">
+    <list default="true" id="6f0b762c-5415-4a85-b17b-cc44fd47261d" name="Changes" comment="asdasd">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.CodeCraft_HomeWork/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.CodeCraft_HomeWork/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Game/Scripts/UI.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Prefabs/Inventory/Inventory.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Prefabs/Inventory/Inventory.prefab" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Equipment/EquipmentInstaller.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Equipment/EquipmentInstaller.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Equipment/EquipmentModel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Equipment/EquipmentModel.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Equipment/EquipmentPresenter.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Equipment/EquipmentPresenter.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Equipment/EquipmentSlot.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Equipment/EquipmentSlot.cs.meta" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Equipment/EquipmentView.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Equipment/EquipmentView.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Equipment/UI.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Installers/InventoryCoreInstaller.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Installers/InventoryCoreInstaller.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Presenter/InventoryPresenter.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/Presenter/InventoryPresenter.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/Drag/DragChain/BeginDragHandlers/BeginDragFromEquipmentSlotHandler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/Drag/DragChain/BeginDragHandlers/BeginDragFromEquipmentSlotHandler.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/Drag/DragChain/EndDragHandlers/DropToEquipmentHandler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/Drag/DragChain/EndDragHandlers/DropToEquipmentHandler.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/Drag/DragChain/EndDragHandlers/ReturnItemToStartCellHandler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/Drag/DragChain/EndDragHandlers/ReturnItemToStartCellHandler.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/Drag/DragChain/EndDragHandlers/ReturnItemToStartSlotHandler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/Drag/DragChain/EndDragHandlers/ReturnItemToStartSlotHandler.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/Drag/DragContext.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InventorySystem/Scripts/UI/InventoryView/Drag/DragContext.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts.meta" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -46,7 +51,8 @@
   }
 }</component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/eugene/Desktop/untitled folder/CodeCraft_HomeWork/Assets/InventorySystem/Scripts/Equipment/EquipmentView.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/eugene/Desktop/untitled folder/CodeCraft_HomeWork/Assets/InventorySystem/Scripts/UI/InventoryView/Drag/DragChain/BeginDragHandlers/BeginDragFromEquipmentSlotHandler.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.test-framework@5ac417e07314/UnityEditor.TestRunner/TestRun/Tasks/BuildActionTaskBase.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.ugui@03407c6d8751/Runtime/UGUI/EventSystem/EventInterfaces.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$USER_HOME$/Downloads/5. MVx Паттерны/MVx-Homework/Assets/Modules/UIComponents/FloatingAnimation.cs" root0="SKIP_HIGHLIGHTING" />
@@ -188,7 +194,7 @@
       <workItem from="1771592512678" duration="85248000" />
       <workItem from="1771783251787" duration="22524000" />
       <workItem from="1771962916594" duration="11000" />
-      <workItem from="1772039190418" duration="2052000" />
+      <workItem from="1772039190418" duration="9968000" />
     </task>
     <task id="LOCAL-00001" summary="Update">
       <option name="closed" value="true" />
@@ -238,7 +244,23 @@
       <option name="project" value="LOCAL" />
       <updated>1765483646219</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="asd">
+      <option name="closed" value="true" />
+      <created>1772048855200</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1772048855200</updated>
+    </task>
+    <task id="LOCAL-00008" summary="asdasd">
+      <option name="closed" value="true" />
+      <created>1772048864921</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1772048864921</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -330,7 +352,9 @@
     <MESSAGE value="Revert &quot;Update&quot;&#10;&#10;This reverts commit f4bd0825" />
     <MESSAGE value="Update" />
     <MESSAGE value="ASD" />
-    <option name="LAST_COMMIT_MESSAGE" value="ASD" />
+    <MESSAGE value="asd" />
+    <MESSAGE value="asdasd" />
+    <option name="LAST_COMMIT_MESSAGE" value="asdasd" />
   </component>
   <component name="XPathView.XPathProjectComponent">
     <history />

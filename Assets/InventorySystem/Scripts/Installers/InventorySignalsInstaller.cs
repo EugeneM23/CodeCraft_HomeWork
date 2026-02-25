@@ -6,9 +6,8 @@ namespace Inventories
     {
         public override void InstallBindings()
         {
-            SignalBusInstaller.Install(Container);
+           
 
-            Container.DeclareSignal<OpenEquipmentSignal>();
         }
     }
 }

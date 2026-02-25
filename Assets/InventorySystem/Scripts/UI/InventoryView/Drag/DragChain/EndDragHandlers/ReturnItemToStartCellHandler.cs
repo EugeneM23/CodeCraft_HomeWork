@@ -7,7 +7,6 @@ namespace Inventories
     {
         [Inject] private readonly InventoryPresenter _presenter;
 
-        // Пытаемся вернуть предмет в ячейку из которой его взяли
         public bool Handle(PointerEventData eventData, DragContext dragContext)
         {
             if (dragContext.StartCell == null)

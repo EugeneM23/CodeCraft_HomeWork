@@ -30,6 +30,9 @@ namespace Inventories
                 .Bind<Inventory>()
                 .FromMethod(() => new Inventory(_inventorySize.x, _inventorySize.y, items))
                 .AsSingle();
+
+            SignalBusInstaller.Install(Container);
+            Container.DeclareSignal<OpenEquipmentSignal>();
         }
     }
 }

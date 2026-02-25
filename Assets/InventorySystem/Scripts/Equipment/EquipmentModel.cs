@@ -37,7 +37,13 @@ public class EquipmentModel
 
     public Item UnEquip(ItemType itemType)
     {
+        if (!_slots.ContainsKey(itemType))
+            return null;
+
         var item = _slots[itemType];
+
+        if (item == null)
+            return null;
 
         _slots[itemType] = null;
 
