@@ -21,6 +21,8 @@ public class EquipmentView : MonoBehaviour
 
     private void Awake()
     {
+        _presenter.OnToggle += HandleToggle;
+
         _slots = new Dictionary<ItemType, Image>
         {
             { ItemType.Head, _headSlot },
@@ -45,15 +47,14 @@ public class EquipmentView : MonoBehaviour
         _presenter.OnUnEquipped -= HandleUnEquipped;
     }
 
-    private bool RequestEquip(Item item)
-    {
-        return _presenter.TryEquip(item);
-    }
+    private void HandleToggle() =>
+        gameObject.SetActive(!gameObject.activeSelf);
 
-    public Item RequestUnEquip(ItemType itemType)
-    {
-        return _presenter.UnEquip(itemType);
-    }
+    private bool RequestEquip(Item item) =>
+        _presenter.TryEquip(item);
+
+    public Item RequestUnEquip(ItemType itemType) =>
+        _presenter.UnEquip(itemType);
 
     private void HandleEquipped(ItemType itemType, Item item)
     {

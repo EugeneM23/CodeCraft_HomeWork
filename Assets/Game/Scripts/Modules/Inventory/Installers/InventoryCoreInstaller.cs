@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
 
@@ -14,7 +13,6 @@ namespace Inventories
         {
             InstallInventoryCore();
             InventoryDragInstaller.Install(Container);
-            InventorySignalsInstaller.Install(Container);
         }
 
         private void InstallInventoryCore()

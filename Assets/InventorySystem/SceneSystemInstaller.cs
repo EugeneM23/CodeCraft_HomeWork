@@ -1,8 +1,5 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.UI;
 using Zenject;
 
 namespace Inventories
@@ -32,7 +29,6 @@ namespace Inventories
                 .AsSingle();
 
             SignalBusInstaller.Install(Container);
-            Container.DeclareSignal<OpenEquipmentSignal>();
         }
     }
 }

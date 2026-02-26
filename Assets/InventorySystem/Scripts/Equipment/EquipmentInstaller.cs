@@ -30,6 +30,9 @@ namespace Equipment
                 .BindInterfacesAndSelfTo<CharacterEquipmentController>()
                 .AsSingle()
                 .NonLazy();
+
+            Container
+                .DeclareSignal<OpenEquipmentSignal>();
         }
     }
 }

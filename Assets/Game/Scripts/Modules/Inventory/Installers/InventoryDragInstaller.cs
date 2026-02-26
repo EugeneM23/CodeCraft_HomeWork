@@ -8,17 +8,14 @@ namespace Inventories
     {
         public override void InstallBindings()
         {
-            // Регистрация DragContext
             Container
                 .Bind<DragContext>()
                 .AsSingle();
 
-            // Регистрация процессора драга
             Container
                 .Bind<DragChainProcessor>()
                 .AsSingle();
 
-            // Регистрация всех хендлеров
             InstallBeginDragHandlers();
             InstallEndDragHandlers();
 

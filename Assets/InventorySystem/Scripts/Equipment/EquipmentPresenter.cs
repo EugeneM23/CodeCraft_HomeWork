@@ -1,16 +1,16 @@
 using System;
-using Equipment;
 using Inventories;
-using UnityEditor;
 using Zenject;
 
 public class EquipmentPresenter : IInitializable, IDisposable
 {
-    private readonly EquipmentModel _model;
-    private readonly SignalBus _signalBus;
+    public event Action OnToggle;
 
     public event Action<ItemType, Item> OnEquipped;
     public event Action<ItemType, Item> OnUnEquipped;
+
+    private readonly EquipmentModel _model;
+    private readonly SignalBus _signalBus;
 
     public EquipmentPresenter(EquipmentModel model, SignalBus signalBus)
     {
@@ -33,29 +33,18 @@ public class EquipmentPresenter : IInitializable, IDisposable
         _model.OnUnEquipped -= HandleModelUnEquipped;
     }
 
-    public bool TryEquip(Item item)
-    {
-        return _model.Equip(item);
-    }
+    public bool TryEquip(Item item) =>
+        _model.Equip(item);
 
-    public Item UnEquip(ItemType itemType)
-    {
-        return _model.UnEquip(itemType);
-    }
+    public Item UnEquip(ItemType itemType) =>
+        _model.UnEquip(itemType);
 
-    private void ToggleEquipment()
-    {
-        // Логика открытия/закрытия окна экипировки
-        // Можно через сигнал управлять
-    }
+    private void ToggleEquipment() =>
+        OnToggle?.Invoke();
 
-    private void HandleModelEquipped(ItemType itemType, Item item)
-    {
+    private void HandleModelEquipped(ItemType itemType, Item item) =>
         OnEquipped?.Invoke(itemType, item);
-    }
 
-    private void HandleModelUnEquipped(ItemType itemType, Item item)
-    {
+    private void HandleModelUnEquipped(ItemType itemType, Item item) =>
         OnUnEquipped?.Invoke(itemType, item);
-    }
 }

@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using Inventories;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -9,60 +5,46 @@ using Zenject;
 
 namespace Inventories
 {
-    public partial class InventoryView : IDragHandler, IBeginDragHandler, IEndDragHandler
+    public class InventoryDragHandler : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler
     {
         [SerializeField] private Image _draggableImage;
+        [SerializeField] private Vector2Int _cellSize;
 
         [Inject] private readonly DragContext _dragContext;
         [Inject] private readonly DragChainProcessor _itemDragProcessor;
 
-        #region Drag
+        private Vector2 _windowOffset;
 
         public void OnBeginDrag(PointerEventData eventData)
         {
-            // Поднимаем окно инвентаря на передний план при начале драга
             transform.SetAsLastSibling();
 
-            // Пытаемся начать драг предмета через цепочку обработчиков
             bool success = _itemDragProcessor.ProcessBeginDrag(eventData);
 
-            // Если драг предмета не удался, начинаем драг самого окна
             if (!success)
                 BeginWindowDrag(eventData);
         }
 
         public void OnDrag(PointerEventData eventData)
         {
-            // Пытаемся переместить драгаемый предмет
             if (TryMoveItem(eventData))
                 return;
 
-            // Если предмет не драгается, перемещаем само окно инвентаря
             DragWindow(eventData);
         }
 
         public void OnEndDrag(PointerEventData eventData)
         {
-            // Обрабатываем завершение драга через цепочку обработчиков (попытка поместить предмет)
             _itemDragProcessor.ProcessEndDrag(eventData);
-
-            // Скрываем визуальный образ драгаемого предмета
             _draggableImage.gameObject.SetActive(false);
-
-            // Обнуляем контекст
             _dragContext.Reset();
         }
 
-        #endregion
-
-        #region AdditionalMethods
-
-        public void SetupDraggableImage(Item item)
+        public void SetupDraggableImage(Item item, Vector2Int cellSize)
         {
-            Debug.Log(_draggableImage == null);
             _draggableImage.rectTransform.sizeDelta = new Vector2(
-                item.Settings.Size.x * _cellSize.x,
-                item.Settings.Size.y * _cellSize.y);
+                item.Settings.Size.x * cellSize.x,
+                item.Settings.Size.y * cellSize.y);
 
             _draggableImage.sprite = item.Settings.Icon;
             _draggableImage.gameObject.SetActive(true);
@@ -82,6 +64,31 @@ namespace Inventories
             return false;
         }
 
-        #endregion
+        private void BeginWindowDrag(PointerEventData eventData)
+        {
+            transform.SetAsLastSibling();
+
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                transform as RectTransform,
+                eventData.position,
+                eventData.pressEventCamera,
+                out _windowOffset
+            );
+        }
+
+        private void DragWindow(PointerEventData eventData)
+        {
+            var canvas = GetComponentInParent<Canvas>();
+            var rectTransform = transform as RectTransform;
+
+            if (RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                    canvas.transform as RectTransform,
+                    eventData.position,
+                    eventData.pressEventCamera,
+                    out Vector2 mousePos))
+            {
+                rectTransform.anchoredPosition = mousePos - _windowOffset;
+            }
+        }
     }
 }
