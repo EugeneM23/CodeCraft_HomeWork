@@ -5,6 +5,7 @@ using Zenject;
 public class EquipmentPresenter : IInitializable, IDisposable
 {
     public event Action OnToggle;
+    public event Action OnClose;
 
     public event Action<ItemType, Item> OnEquipped;
     public event Action<ItemType, Item> OnUnEquipped;
@@ -20,7 +21,8 @@ public class EquipmentPresenter : IInitializable, IDisposable
 
     public void Initialize()
     {
-        _signalBus.Subscribe<OpenEquipmentSignal>(ToggleEquipment);
+        _signalBus.Subscribe<ToggleEquipmentSignal>(ToggleEquipment);
+        _signalBus.Subscribe<CloseEquipmentSignal>(CloseEquipment);
 
         _model.OnEquipped += HandleModelEquipped;
         _model.OnUnEquipped += HandleModelUnEquipped;
@@ -28,23 +30,22 @@ public class EquipmentPresenter : IInitializable, IDisposable
 
     public void Dispose()
     {
-        _signalBus.Unsubscribe<OpenEquipmentSignal>(ToggleEquipment);
+        _signalBus.Unsubscribe<ToggleEquipmentSignal>(ToggleEquipment);
+        _signalBus.Unsubscribe<CloseEquipmentSignal>(ToggleEquipment);
+
         _model.OnEquipped -= HandleModelEquipped;
         _model.OnUnEquipped -= HandleModelUnEquipped;
     }
 
-    public bool TryEquip(Item item) =>
-        _model.Equip(item);
+    private void CloseEquipment() => OnClose?.Invoke();
 
-    public Item UnEquip(ItemType itemType) =>
-        _model.UnEquip(itemType);
+    public bool TryEquip(Item item) => _model.Equip(item);
 
-    private void ToggleEquipment() =>
-        OnToggle?.Invoke();
+    public Item UnEquip(ItemType itemType) => _model.UnEquip(itemType);
 
-    private void HandleModelEquipped(ItemType itemType, Item item) =>
-        OnEquipped?.Invoke(itemType, item);
+    private void ToggleEquipment() => OnToggle?.Invoke();
 
-    private void HandleModelUnEquipped(ItemType itemType, Item item) =>
-        OnUnEquipped?.Invoke(itemType, item);
+    private void HandleModelEquipped(ItemType itemType, Item item) => OnEquipped?.Invoke(itemType, item);
+
+    private void HandleModelUnEquipped(ItemType itemType, Item item) => OnUnEquipped?.Invoke(itemType, item);
 }

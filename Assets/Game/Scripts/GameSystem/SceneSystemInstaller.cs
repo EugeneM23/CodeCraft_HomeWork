@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Inventories.Scripts;
 using UnityEngine;
 using Zenject;
 
@@ -7,8 +8,8 @@ namespace Inventories
     public class SceneSystemInstaller : MonoInstaller
     {
         [SerializeField] private Canvas _canvas;
-        [SerializeField] private Vector2Int _inventorySize;
-        [SerializeField] private SceneItem[] _initialItems;
+
+        [SerializeField] private Entity _player;
 
         public override void InstallBindings()
         {
@@ -18,21 +19,25 @@ namespace Inventories
                 .AsSingle()
                 .NonLazy();
 
-            var items = new List<ItemSettings>();
-
-            foreach (var item in _initialItems)
-                items.Add(item.itemSettings);
-
             Container
-                .Bind<Inventory>()
-                .FromMethod(() => new Inventory(_inventorySize.x, _inventorySize.y, items))
-                .AsSingle();
-            
+                .Bind<PlayerCharacterProvider>()
+                .FromNew()
+                .AsSingle()
+                .WithArguments(_player)
+                .NonLazy();
+
+
             Container
                 .Bind<DragContext>()
                 .AsSingle();
 
             SignalBusInstaller.Install(Container);
+
+            Container
+                .DeclareSignal<ToggleEquipmentSignal>();
+            
+            Container
+                .DeclareSignal<CloseEquipmentSignal>();
         }
     }
 }

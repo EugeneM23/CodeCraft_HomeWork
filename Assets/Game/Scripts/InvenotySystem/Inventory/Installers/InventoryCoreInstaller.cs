@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
 
@@ -18,8 +19,18 @@ namespace Inventories
                 .NonLazy();
 
             Container
-                .Bind<InventoryView>()
+                .BindInterfacesAndSelfTo<InventoryView>()
                 .FromInstance(_inventoryUI)
+                .AsSingle();
+
+            var items = new List<ItemSettings>();
+
+            foreach (var item in _initialItems)
+                items.Add(item.itemSettings);
+
+            Container
+                .Bind<Inventory>()
+                .FromMethod(() => new Inventory(_inventorySize.x, _inventorySize.y, items))
                 .AsSingle();
         }
     }

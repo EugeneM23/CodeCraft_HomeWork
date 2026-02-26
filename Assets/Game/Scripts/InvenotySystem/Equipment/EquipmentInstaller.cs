@@ -17,6 +17,10 @@ namespace Equipment
                 .NonLazy();
 
             Container
+                .Bind<EquipmentModel>()
+                .AsSingle();
+
+            Container
                 .BindInterfacesAndSelfTo<EquipmentPresenter>()
                 .AsSingle()
                 .NonLazy();
@@ -31,8 +35,7 @@ namespace Equipment
                 .AsSingle()
                 .NonLazy();
 
-            Container
-                .DeclareSignal<OpenEquipmentSignal>();
+            
         }
     }
 }

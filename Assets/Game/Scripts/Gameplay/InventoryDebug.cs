@@ -1,5 +1,6 @@
 using System;
 using Inventories;
+using Inventories.Scripts;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,15 +9,14 @@ using Zenject;
 public class InventoryDebug : MonoBehaviour
 {
     [Inject] private DiContainer _container;
+    [Inject] private PlayerCharacterProvider _characterProvider;
 
-    [SerializeField] private InventoryView _inventoryPrefab;
     [SerializeField] private Canvas _canvas;
     [SerializeField] private Button _openInventoryButton;
 
     private GameObject _inventory;
-    private InventoryView _inventoryView;
+    private GameObject _equipment;
 
-    // События для камеры
     public event Action OnInventoryOpened;
     public event Action OnInventoryClosed;
 
@@ -28,51 +28,55 @@ public class InventoryDebug : MonoBehaviour
     private void OnDestroy()
     {
         _openInventoryButton.onClick.RemoveListener(ToggleInventory);
-        UnsubscribeFromInventory();
     }
 
     private void ToggleInventory()
     {
-        // Если инвентарь еще не создан - создаем
         if (_inventory == null)
         {
             CreateInventory();
             return;
         }
 
-        // Переключаем видимость
-        _inventory.SetActive(!_inventory.activeSelf);
+        bool willBeActive = !_inventory.activeSelf;
+        SetInventoryActive(willBeActive);
     }
 
     private void CreateInventory()
     {
-        _inventory = _container.InstantiatePrefab(_inventoryPrefab, _canvas.transform);
-        _inventoryView = _inventory.GetComponent<InventoryView>();
+        Entity entity = _characterProvider.GetCharacterEntity();
 
-        // Подписываемся на события инвентаря
-        _inventoryView.OnInventoryOpened += HandleInventoryOpened;
-        _inventoryView.OnInventoryClosed += HandleInventoryClosed;
+        var inventoryPrefab = entity.ResolveComponent<InventoryView>(UIPrefabs.InventoryPrefab);
+        _inventory = _container.InstantiatePrefabForComponent<InventoryView>(inventoryPrefab, _canvas.transform).gameObject;
 
-        OnInventoryOpened?.Invoke();
+        var equipmentPrefab = entity.ResolveComponent<EquipmentView>(UIPrefabs.EquipmentPrefab);
+        _equipment = _container.InstantiatePrefabForComponent<EquipmentView>(equipmentPrefab, _canvas.transform).gameObject;
+
+        SubscribeToInventoryClose();
+        SetInventoryActive(true);
     }
 
-    private void UnsubscribeFromInventory()
+    private void SubscribeToInventoryClose()
     {
-        if (_inventoryView != null)
-        {
-            _inventoryView.OnInventoryOpened -= HandleInventoryOpened;
-            _inventoryView.OnInventoryClosed -= HandleInventoryClosed;
-        }
+        var inventoryEntity = _inventory.GetComponent<Entity>();
+        var presenter = inventoryEntity.ResolveComponent<InventoryPresenter>();
+        presenter.OnClose += HandleInventoryClose;
     }
 
-    private void HandleInventoryOpened()
+    private void SetInventoryActive(bool isActive)
     {
-        OnInventoryOpened?.Invoke();
+        _inventory.SetActive(isActive);
+        _equipment.SetActive(isActive);
+
+        if (isActive)
+            OnInventoryOpened?.Invoke();
+        else
+            OnInventoryClosed?.Invoke();
     }
 
-    private void HandleInventoryClosed()
+    private void HandleInventoryClose()
     {
-        OnInventoryClosed?.Invoke();
+        SetInventoryActive(false);
     }
 
     [Button]
@@ -80,9 +84,9 @@ public class InventoryDebug : MonoBehaviour
     {
         if (_inventory == null) return;
 
-        var inventory = _inventory.GetComponent<GameObjectContext>().Container.Resolve<Inventory>();
-        bool removeItem = inventory.RemoveItem(position);
-        Debug.Log("Item removed: " + removeItem);
+        var inventory = GetInventory();
+        bool removed = inventory.RemoveItem(position);
+        Debug.Log("Item removed: " + removed);
     }
 
     [Button]
@@ -90,7 +94,12 @@ public class InventoryDebug : MonoBehaviour
     {
         if (_inventory == null) return;
 
-        var inventory = _inventory.GetComponent<GameObjectContext>().Container.Resolve<Inventory>();
+        var inventory = GetInventory();
         inventory.AddItem(item.itemSettings);
+    }
+
+    private Inventory GetInventory()
+    {
+        return _inventory.GetComponent<GameObjectContext>().Container.Resolve<Inventory>();
     }
 }

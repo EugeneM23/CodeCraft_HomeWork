@@ -8,10 +8,7 @@ namespace Inventories
 {
     public partial class InventoryView : MonoBehaviour
     {
-        public event Action OnInventoryOpened;
-        public event Action OnInventoryClosed;
-
-        [FormerlySerializedAs("inventoryCellPrefab")] [SerializeField] private CellView cellViewPrefab;
+        [SerializeField] private CellView cellViewPrefab;
         [SerializeField] private InventoryItemView _inventoryItemPrefab;
         [SerializeField] private Vector2Int _cellSize;
 
@@ -38,8 +35,6 @@ namespace Inventories
             _presenter.OnReorganize += Reorganize;
 
             SubscribeButtons();
-
-            OnInventoryOpened?.Invoke();
         }
 
         private void OnDisable()
@@ -49,8 +44,6 @@ namespace Inventories
             _presenter.OnReorganize -= Reorganize;
 
             UnsubscribeButtons();
-
-            OnInventoryClosed?.Invoke();
         }
 
         private void Start()

@@ -23,8 +23,13 @@ namespace Inventories
             _openEquipment.onClick.RemoveAllListeners();
         }
 
-        private void HandleClose() => gameObject.SetActive(false);
+        private void HandleClose()
+        {
+            _presenter.Close();
+            gameObject.SetActive(false);
+        }
+
         private void HandleReorganize() => _presenter.Reorganize();
-        private void HandleOpenEquipment() => _presenter.OpenEquipment();
+        private void HandleOpenEquipment() => _presenter.ToggleEquipment();
     }
 }
