@@ -8,7 +8,7 @@ namespace Inventories
     {
         public bool Handle(PointerEventData eventData, DragContext dragContext)
         {
-            if (dragContext.EquipmentSlotImage != null)
+            if (dragContext.EquipmentPresenter != null)
             {
                 dragContext.EquipmentPresenter.TryEquip(dragContext.Item);
                 return true;

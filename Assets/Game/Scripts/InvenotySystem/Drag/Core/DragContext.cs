@@ -10,13 +10,12 @@ public class DragContext
     public Vector2Int ClickOffset { get; private set; }
     public Vector2 DragOffset { get; private set; }
     public bool IsDragging { get; private set; }
-    public CellView CurrentCellView { get; set; }
-    public CellView StartCellView { get; set; }
-    public Image EquipmentSlotImage { get; set; }
-    public EquipmentPresenter EquipmentPresenter { get; set; }
+    public CellView CurrentCellView { get; private set; }
+    public CellView StartCellView { get; private set; }
+    public EquipmentPresenter EquipmentPresenter { get; private set; }
 
     public void BeginDrag(Item item, Vector2Int startPosition, Vector2Int clickOffset, Vector2 dragOffset,
-        CellView cellView = null, Image equipmentSlotImage = null)
+        CellView cellView = null, EquipmentPresenter equipmentPresenter = null)
     {
         Item = item;
         StartPosition = startPosition;
@@ -24,7 +23,7 @@ public class DragContext
         DragOffset = dragOffset;
         IsDragging = true;
         StartCellView = cellView;
-        EquipmentSlotImage = equipmentSlotImage;
+        EquipmentPresenter = equipmentPresenter;
     }
 
     public void UpdateCurrentCell(CellView cellView)
@@ -41,6 +40,6 @@ public class DragContext
         IsDragging = false;
         CurrentCellView = null;
         StartCellView = null;
-        EquipmentSlotImage = null;
+        EquipmentPresenter = null;
     }
 }
