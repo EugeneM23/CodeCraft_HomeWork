@@ -6,13 +6,11 @@ namespace Inventories
 {
     public class ReturnItemToStartSlotHandler : IEndDraghendler
     {
-        [Inject] private readonly EquipmentPresenter _equipmentView;
-
         public bool Handle(PointerEventData eventData, DragContext dragContext)
         {
             if (dragContext.EquipmentSlotImage != null)
             {
-                _equipmentView.TryEquip(dragContext.Item);
+                dragContext.EquipmentPresenter.TryEquip(dragContext.Item);
                 return true;
             }
 

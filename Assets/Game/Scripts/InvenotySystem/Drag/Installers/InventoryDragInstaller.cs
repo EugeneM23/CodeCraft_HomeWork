@@ -35,10 +35,12 @@ namespace Inventories
         private void InstallEndDragHandlers()
         {
             Container.Bind<DragConditionHandler>().AsSingle();
-            Container.Bind<DropToEquipmentHandler>().AsSingle();
             Container.Bind<DropToInventoryHandler>().AsSingle();
             Container.Bind<ReturnItemToStartCellHandler>().AsSingle();
+            
             Container.Bind<ReturnItemToStartSlotHandler>().AsSingle();
+            Container.Bind<DropToEquipmentHandler>().AsSingle();
+
         }
 
         private List<IBeginDraghendler> CreateBeginDragHandlers(InjectContext ctx)
@@ -54,10 +56,12 @@ namespace Inventories
             return new List<IEndDraghendler>
             {
                 ctx.Container.Resolve<DragConditionHandler>(),
-                ctx.Container.Resolve<DropToEquipmentHandler>(),
                 ctx.Container.Resolve<DropToInventoryHandler>(),
-                ctx.Container.Resolve<ReturnItemToStartCellHandler>(),
+                
+                ctx.Container.Resolve<DropToEquipmentHandler>(),
+                
                 ctx.Container.Resolve<ReturnItemToStartSlotHandler>(),
+                ctx.Container.Resolve<ReturnItemToStartCellHandler>(),
             };
         }
     }

@@ -1,15 +1,13 @@
-using Equipment;
+using UnityEngine;
 using UnityEngine.EventSystems;
-using Zenject;
 
 namespace Inventories
 {
     public class DropToEquipmentHandler : IEndDraghendler
     {
-        [Inject] private readonly EquipmentPresenter _equipmentView;
-
         public bool Handle(PointerEventData eventData, DragContext dragContext)
         {
+            Debug.Log("DropToEquipmentHandler");
             var slotObject = eventData.pointerCurrentRaycast.gameObject;
 
             if (slotObject == null)
@@ -23,7 +21,7 @@ namespace Inventories
             if (dragContext.Item.Settings.ItemType != slotMarker.ItemType)
                 return false;
 
-            return _equipmentView.TryEquip(dragContext.Item);
+            return slotMarker.Presenter.TryEquip(dragContext.Item);
         }
     }
 }

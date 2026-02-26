@@ -12,14 +12,7 @@ public class CharacterEquipment : MonoBehaviour
     [SerializeField] private MeshFilter _weaponFilter;
     [SerializeField] private MeshFilter _shieldFilter;
 
-    [SerializeField] private Mesh _defaultHead;
-    [SerializeField] private Mesh _defaultBody;
-    [SerializeField] private Mesh _defaultLegs;
-    [SerializeField] private Mesh _defaultBoots;
-    [SerializeField] private Mesh _defaultHands;
-
     private Dictionary<ItemType, SkinnedMeshRenderer> _renderers;
-    private Dictionary<ItemType, Mesh> _defaults;
 
     private void Awake()
     {
@@ -30,15 +23,6 @@ public class CharacterEquipment : MonoBehaviour
             [ItemType.Legs] = _legsRenderer,
             [ItemType.Boots] = _bootsRenderer,
             [ItemType.Hands] = _handsRenderer
-        };
-
-        _defaults = new Dictionary<ItemType, Mesh>
-        {
-            [ItemType.Head] = _defaultHead,
-            [ItemType.Body] = _defaultBody,
-            [ItemType.Legs] = _defaultLegs,
-            [ItemType.Boots] = _defaultBoots,
-            [ItemType.Hands] = _defaultHands
         };
     }
 

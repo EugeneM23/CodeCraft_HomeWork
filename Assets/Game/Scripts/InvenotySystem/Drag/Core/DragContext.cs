@@ -13,6 +13,7 @@ public class DragContext
     public CellView CurrentCellView { get; set; }
     public CellView StartCellView { get; set; }
     public Image EquipmentSlotImage { get; set; }
+    public EquipmentPresenter EquipmentPresenter { get; set; }
 
     public void BeginDrag(Item item, Vector2Int startPosition, Vector2Int clickOffset, Vector2 dragOffset,
         CellView cellView = null, Image equipmentSlotImage = null)
