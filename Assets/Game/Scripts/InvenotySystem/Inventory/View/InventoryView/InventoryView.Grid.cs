@@ -15,8 +15,8 @@ namespace Inventories
                 for (int x = 0; x < _presenter.Width; x++)
                 {
                     // Создаем ячейку и получаем её компоненты
-                    var cell = _container.InstantiatePrefab(inventoryCellPrefab, _gridContainer);
-                    var cellComponent = cell.GetComponent<InventoryCell>();
+                    var cell = _container.InstantiatePrefab(cellViewPrefab, _gridContainer);
+                    var cellComponent = cell.GetComponent<CellView>();
 
                     // Настраиваем размер и позицию ячейки
                     var rect = cell.GetComponent<RectTransform>();

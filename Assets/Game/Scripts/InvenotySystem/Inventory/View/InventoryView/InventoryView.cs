@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Zenject;
 
 namespace Inventories
@@ -10,14 +11,14 @@ namespace Inventories
         public event Action OnInventoryOpened;
         public event Action OnInventoryClosed;
 
-        [SerializeField] private InventoryCell inventoryCellPrefab;
+        [FormerlySerializedAs("inventoryCellPrefab")] [SerializeField] private CellView cellViewPrefab;
         [SerializeField] private InventoryItemView _inventoryItemPrefab;
         [SerializeField] private Vector2Int _cellSize;
 
         public Vector2Int CellSize => _cellSize;
 
         private Dictionary<string, GameObject> _items;
-        private InventoryCell[,] _cells;
+        private CellView[,] _cells;
         private InventoryPresenter _presenter;
         private DiContainer _container;
 
@@ -26,7 +27,7 @@ namespace Inventories
         {
             _presenter = presenter;
             _container = container;
-            _cells = new InventoryCell[presenter.Width, presenter.Height];
+            _cells = new CellView[presenter.Width, presenter.Height];
             _items = new Dictionary<string, GameObject>();
         }
 
@@ -58,7 +59,7 @@ namespace Inventories
             CreateAllItems();
         }
 
-        public InventoryCell[,] GetCells() => (InventoryCell[,])_cells.Clone();
+        public CellView[,] GetCells() => (CellView[,])_cells.Clone();
 
         public IReadOnlyDictionary<string, GameObject> GetItems() => _items;
     }

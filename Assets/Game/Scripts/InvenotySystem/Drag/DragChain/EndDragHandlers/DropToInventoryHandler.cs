@@ -8,7 +8,7 @@ namespace Inventories
         public bool Handle(PointerEventData eventData, DragContext dragContext)
         {
             // Получаем ячейку инвентаря под курсором при отпускании предмета
-            var cell = eventData.pointerCurrentRaycast.gameObject?.GetComponent<InventoryCell>();
+            var cell = eventData.pointerCurrentRaycast.gameObject?.GetComponent<CellView>();
 
             // Если курсор не над ячейкой инвентаря, передаем обработку дальше
             if (cell == null)

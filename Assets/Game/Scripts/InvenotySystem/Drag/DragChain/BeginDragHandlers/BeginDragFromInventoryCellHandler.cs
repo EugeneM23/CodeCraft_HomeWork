@@ -20,7 +20,7 @@ namespace Inventories
 
         public bool Handle(PointerEventData eventData, DragContext dragContext)
         {
-            var cell = eventData.pointerPressRaycast.gameObject.GetComponent<InventoryCell>();
+            var cell = eventData.pointerPressRaycast.gameObject.GetComponent<CellView>();
             if (cell == null || cell.Item == null)
                 return false;
 

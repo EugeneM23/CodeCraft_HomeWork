@@ -9,10 +9,10 @@ namespace Inventories
 
         public bool Handle(PointerEventData eventData, DragContext dragContext)
         {
-            if (dragContext.StartCell == null)
+            if (dragContext.StartCellView == null)
                 return false;
 
-            return dragContext.StartCell.Presenter.AddItem(dragContext.Item, dragContext.StartPosition);
+            return dragContext.StartCellView.Presenter.AddItem(dragContext.Item, dragContext.StartPosition);
         }
     }
 }

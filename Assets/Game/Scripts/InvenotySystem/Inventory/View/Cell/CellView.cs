@@ -3,7 +3,7 @@ using Zenject;
 
 namespace Inventories
 {
-    public class InventoryCell : MonoBehaviour
+    public class CellView : MonoBehaviour
     {
         [Inject] private readonly InventoryPresenter _presenter;
 

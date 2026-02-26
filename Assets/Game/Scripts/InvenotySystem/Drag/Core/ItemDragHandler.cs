@@ -24,7 +24,7 @@ namespace Inventories
             {
                 _draggableImage.rectTransform.position = eventData.position + _dragContext.DragOffset;
 
-                var cell = eventData.pointerCurrentRaycast.gameObject.GetComponent<InventoryCell>();
+                var cell = eventData.pointerCurrentRaycast.gameObject.GetComponent<CellView>();
                 _dragContext.UpdateCurrentCell(cell);
             }
         }

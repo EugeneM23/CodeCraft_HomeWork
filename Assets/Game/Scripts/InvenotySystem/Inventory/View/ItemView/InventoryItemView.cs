@@ -17,21 +17,14 @@ public class InventoryItemView : MonoBehaviour, IPointerEnterHandler, IPointerEx
         SetBackgroundAlpha(0f);
     }
 
-    public void OnPointerEnter(PointerEventData eventData)
-    {
-        SetBackgroundAlpha(1f);
-    }
+    public void OnPointerEnter(PointerEventData eventData) => SetBackgroundAlpha(1f);
 
-    public void OnPointerExit(PointerEventData eventData)
-    {
-        SetBackgroundAlpha(0f);
-    }
+    public void OnPointerExit(PointerEventData eventData) => SetBackgroundAlpha(0f);
 
     private void SetBackgroundAlpha(float alpha)
     {
         Color color = _background.color;
         color.a = alpha;
         _background.color = color;
-        //фыв
     }
 }

@@ -48,14 +48,14 @@ namespace Inventories
             }
 
             // Проверяем базовые условия
-            if (_dragContext.CurrentInventoryCell == null || _dragContext.Item == null)
+            if (_dragContext.CurrentCellView == null || _dragContext.Item == null)
             {
                 ClearHighlight();
                 return;
             }
 
             // Вычисляем позицию начала предмета с учётом смещения клика
-            Vector2Int targetPosition = _dragContext.CurrentInventoryCell.MatrixPosition - _dragContext.ClickOffset;
+            Vector2Int targetPosition = _dragContext.CurrentCellView.MatrixPosition - _dragContext.ClickOffset;
             Vector2Int itemSize = _dragContext.Item.Settings.Size;
 
             // Проверяем валидность позиции
@@ -116,9 +116,9 @@ namespace Inventories
         private void ShowHighlight(Vector2Int position, Vector2Int itemSize)
         {
             // Получаем стартовую ячейку (левый верхний угол)
-            InventoryCell startCell = _inventoryView.GetCells()[position.x, position.y];
+            CellView startCellView = _inventoryView.GetCells()[position.x, position.y];
 
-            if (startCell == null)
+            if (startCellView == null)
             {
                 ClearHighlight();
                 return;
@@ -130,7 +130,7 @@ namespace Inventories
 
             // Настраиваем размер и позицию
             RectTransform highlightRect = _highlightImage.rectTransform;
-            RectTransform startCellRect = startCell.GetComponent<RectTransform>();
+            RectTransform startCellRect = startCellView.GetComponent<RectTransform>();
 
             Vector2 cellSize = _inventoryView.CellSize;
             Vector2 highlightSize = new Vector2(
