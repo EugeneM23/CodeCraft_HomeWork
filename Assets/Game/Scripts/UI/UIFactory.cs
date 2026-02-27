@@ -26,13 +26,13 @@ public class UIFactory
         return (inventory, equipment);
     }
 
-    private GameObject CreateInventory(Entity entity)
+    private GameObject CreateInventory(Entity character)
     {
         var inventoryPrefab = _prefabCatalog.GetPrefabComponent<InventoryView>(UIPrefabs.InventoryPrefab);
         return _container.InstantiatePrefabForComponent<InventoryView>(inventoryPrefab, _canvas.transform).gameObject;
     }
 
-    private GameObject CreateEquipment(Entity entity)
+    private GameObject CreateEquipment(Entity character)
     {
         var equipmentPrefab = _prefabCatalog.GetPrefabComponent<EquipmentView>(UIPrefabs.EquipmentPrefab);
         return _container.InstantiatePrefabForComponent<EquipmentView>(equipmentPrefab, _canvas.transform).gameObject;
@@ -53,9 +53,11 @@ public class UIFactory
         var equipmentPresenter = equipmentContext.Container.Resolve<EquipmentPresenter>();
 
         var controller = new EquipmentEnableController(inventoryPresenter, equipmentPresenter);
+        
         inventoryContext.Container.BindInterfacesAndSelfTo<EquipmentEnableController>()
             .FromInstance(controller)
             .AsSingle();
+        
         controller.Initialize();
     }
 

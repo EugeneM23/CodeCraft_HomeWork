@@ -28,14 +28,8 @@ namespace Equipment
             _model.OnUnEquipped -= OnItemUnEquipped;
         }
 
-        private void OnItemEquipped(ItemType itemType, Item item)
-        {
-            _characterEquipment.Equip(item);
-        }
+        private void OnItemEquipped(ItemType itemType, Item item) => _characterEquipment.Equip(item);
 
-        private void OnItemUnEquipped(ItemType itemType, Item item)
-        {
-            _characterEquipment.Unequip(item);
-        }
+        private void OnItemUnEquipped(ItemType itemType, Item item) => _characterEquipment.Unequip(item);
     }
 }

@@ -278,6 +278,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _canvas: {fileID: 2068645393}
   _player: {fileID: 6111472879743891196}
+  _prefabCatalog: {fileID: 11400000, guid: e8743d436cf5d4939af219b0e9c7e695, type: 2}
 --- !u!114 &66427006
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -290,7 +291,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91cd8f086ca0468fb2b0623e76e02310, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _canvas: {fileID: 2068645393}
   _openInventoryButton: {fileID: 877946181}
 --- !u!1 &271999240
 GameObject:
@@ -588,7 +588,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2528605341073268712, guid: ec34f27ab5b01401cbdaa0ce082e31de, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 600
+      value: -717
       objectReference: {fileID: 0}
     - target: {fileID: 2528605341073268712, guid: ec34f27ab5b01401cbdaa0ce082e31de, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -612,7 +612,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6355975676697150328, guid: ec34f27ab5b01401cbdaa0ce082e31de, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -964,7 +964,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2835633319985185814, guid: 149a24b01c948411cb2d4b00aba50372, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8966306138700622761, guid: 149a24b01c948411cb2d4b00aba50372, type: 3}
       propertyPath: m_Pivot.x
@@ -1028,7 +1028,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8966306138700622761, guid: 149a24b01c948411cb2d4b00aba50372, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 600
+      value: -717
       objectReference: {fileID: 0}
     - target: {fileID: 8966306138700622761, guid: 149a24b01c948411cb2d4b00aba50372, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -1733,7 +1733,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _cameraMovement: {fileID: 1611256441}
-  _inventoryDebug: {fileID: 66427006}
+  gameScreen: {fileID: 66427006}
 --- !u!224 &1682055753 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 8966306138700622761, guid: 149a24b01c948411cb2d4b00aba50372, type: 3}
@@ -5216,7 +5216,6 @@ GameObject:
   - component: {fileID: 6111472879743891195}
   - component: {fileID: 6111472879743891197}
   - component: {fileID: 6111472879743891199}
-  - component: {fileID: 6111472879743891198}
   m_Layer: 0
   m_Name: Character
   m_TagString: Untagged
@@ -5267,26 +5266,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96cf3d1378ae488e8cc3685252851ae1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _inventoryPrefab: {fileID: -2486167064748676698, guid: 149a24b01c948411cb2d4b00aba50372, type: 3}
-  _equipmentPrefab: {fileID: 1754586225902810272, guid: ec34f27ab5b01401cbdaa0ce082e31de, type: 3}
---- !u!114 &6111472879743891198
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6111472879743891194}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0166d8ff8d905b048b2448179e1f5d11, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _components:
-  - {fileID: 6111472879743891199}
-  _identifier: 
-  _useSceneContext: 1
-  _context: {fileID: 0}
-  _bindType: 2
+  _equipment: {fileID: 6111472879743891199}
 --- !u!114 &6111472879743891199
 MonoBehaviour:
   m_ObjectHideFlags: 0

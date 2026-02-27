@@ -12,4 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed4bd5ce8b8f4dc483795a22ad8b3c1e, type: 3}
   m_Name: UIPrefabCatalog
   m_EditorClassIdentifier: 
-  _prefabs: []
+  _prefabs:
+  - id: 0
+    prefab: {fileID: 2835633319985185814, guid: 149a24b01c948411cb2d4b00aba50372, type: 3}
+  - id: 1
+    prefab: {fileID: 6355975676697150328, guid: ec34f27ab5b01401cbdaa0ce082e31de, type: 3}
