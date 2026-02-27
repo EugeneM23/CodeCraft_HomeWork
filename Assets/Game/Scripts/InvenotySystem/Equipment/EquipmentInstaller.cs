@@ -6,7 +6,6 @@ namespace Equipment
     public class EquipmentInstaller : MonoInstaller
     {
         [SerializeField] private EquipmentView _equipmentView;
-        [SerializeField] private CharacterEquipment _characterEquipment;
 
         public override void InstallBindings()
         {
@@ -29,13 +28,6 @@ namespace Equipment
                 .BindInterfacesAndSelfTo<EquipmentAudioController>()
                 .AsSingle()
                 .NonLazy();
-
-            Container
-                .BindInterfacesAndSelfTo<CharacterEquipmentController>()
-                .AsSingle()
-                .NonLazy();
-
-            
         }
     }
 }

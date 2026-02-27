@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using Zenject;
 
@@ -7,17 +8,29 @@ namespace Inventories
     /// <summary>
     /// Код написан чатом, я не знаю что тут происходит 🤓 
     /// </summary>
-    public partial class InventoryView : ITickable
+    public partial class InventoryView : IPointerEnterHandler, IPointerExitHandler
     {
         [SerializeField] private Image _highlightImage;
 
         [Inject] private DragContext _dragContext;
 
         private bool _isHighlightActive;
+        private bool _isPointerOver;
 
-        public void Tick()
+        public void OnPointerEnter(PointerEventData eventData)
         {
-            if (!_dragContext.IsDragging)
+            _isPointerOver = true;
+        }
+
+        public void OnPointerExit(PointerEventData eventData)
+        {
+            _isPointerOver = false;
+            ClearHighlight();
+        }
+
+        private void Update()
+        {
+            if (!_isPointerOver || !_dragContext.IsDragging)
             {
                 ClearHighlight();
                 return;

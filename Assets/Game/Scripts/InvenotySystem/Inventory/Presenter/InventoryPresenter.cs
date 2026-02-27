@@ -10,19 +10,18 @@ public class InventoryPresenter : IInitializable, IDisposable
     public event Action<Item, Vector2Int[]> OnItemRemoved;
     public event Action OnReorganize;
     public event Action OnClose;
+    public event Action OnToggleEquipment;
 
     private readonly Vector2Int _inventorySize;
     private readonly Inventory _inventory;
-    private readonly SignalBus _signalBus;
 
     public int Height => _inventorySize.y;
     public int Width => _inventorySize.x;
 
-    public InventoryPresenter(Vector2Int inventorySize, Inventory inventory, SignalBus signalBus)
+    public InventoryPresenter(Vector2Int inventorySize, Inventory inventory)
     {
         _inventorySize = inventorySize;
         _inventory = inventory;
-        _signalBus = signalBus;
     }
 
     public void Initialize()
@@ -44,15 +43,9 @@ public class InventoryPresenter : IInitializable, IDisposable
         _inventory.OnReorganize -= HandleReorganize;
     }
 
-    private void HandleItemAdded(Item item, Vector2Int[] positions)
-    {
-        OnItemAdded?.Invoke(item, positions);
-    }
+    private void HandleItemAdded(Item item, Vector2Int[] positions) => OnItemAdded?.Invoke(item, positions);
 
-    private void HandleItemRemoved(Item item, Vector2Int[] positions)
-    {
-        OnItemRemoved?.Invoke(item, positions);
-    }
+    private void HandleItemRemoved(Item item, Vector2Int[] positions) => OnItemRemoved?.Invoke(item, positions);
 
     public IEnumerable<KeyValuePair<Item, Vector2Int[]>> GetItems()
     {
@@ -63,40 +56,21 @@ public class InventoryPresenter : IInitializable, IDisposable
         }
     }
 
-    public void RemoveItem(Item item)
-    {
-        _inventory.RemoveItem(item.ID);
-    }
+    public void RemoveItem(Item item) => _inventory.RemoveItem(item.ID);
 
-    public bool AddItem(Item item, Vector2Int position)
-    {
-        return _inventory.AddItem(item.Settings, position);
-    }
+    public bool AddItem(Item item, Vector2Int position) => _inventory.AddItem(item.Settings, position);
 
-    public Vector2Int GetItemPosition(string itemID)
-    {
-        return _inventory.GetPositions(itemID)[0];
-    }
+    public Vector2Int GetItemPosition(string itemID) => _inventory.GetPositions(itemID)[0];
 
     public bool IsFree(int x, int y) => _inventory.IsFree(x, y);
 
     public bool IsFree(Vector2Int position) => _inventory.IsFree(position);
 
-    public bool TryPlaceItem(Item item, Vector2Int position)
-    {
-        return _inventory.AddItem(item.Settings, position);
-    }
+    public bool TryPlaceItem(Item item, Vector2Int position) => _inventory.AddItem(item.Settings, position);
 
     public void Reorganize() => _inventory.Reorganize();
 
-    public void ToggleEquipment()
-    {
-        _signalBus.Fire<ToggleEquipmentSignal>();
-    }
+    public void ToggleEquipment() => OnToggleEquipment?.Invoke();
 
-    public void Close()
-    {
-        _signalBus.Fire<CloseEquipmentSignal>();
-        OnClose?.Invoke();
-    }
+    public void Close() => OnClose?.Invoke();
 }

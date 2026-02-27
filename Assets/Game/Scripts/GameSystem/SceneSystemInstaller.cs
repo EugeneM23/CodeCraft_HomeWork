@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Inventories.Scripts;
 using UnityEngine;
 using Zenject;
@@ -8,7 +7,6 @@ namespace Inventories
     public class SceneSystemInstaller : MonoInstaller
     {
         [SerializeField] private Canvas _canvas;
-
         [SerializeField] private Entity _player;
 
         public override void InstallBindings()
@@ -26,18 +24,13 @@ namespace Inventories
                 .WithArguments(_player)
                 .NonLazy();
 
-
             Container
                 .Bind<DragContext>()
                 .AsSingle();
 
-            SignalBusInstaller.Install(Container);
-
             Container
-                .DeclareSignal<ToggleEquipmentSignal>();
-            
-            Container
-                .DeclareSignal<CloseEquipmentSignal>();
+                .Bind<UIFactory>()
+                .AsSingle();
         }
     }
 }

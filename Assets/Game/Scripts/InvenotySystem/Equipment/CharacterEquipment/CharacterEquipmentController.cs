@@ -30,7 +30,6 @@ namespace Equipment
 
         private void OnItemEquipped(ItemType itemType, Item item)
         {
-            Debug.Log(_characterEquipment == null);
             _characterEquipment.Equip(item);
         }
 

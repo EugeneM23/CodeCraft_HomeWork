@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Inventories;
 using UnityEngine;
 using Zenject;
@@ -19,5 +18,7 @@ public class PlayerCharacterInstaller : MonoInstaller
             .WithId(UIPrefabs.EquipmentPrefab)
             .FromComponentInNewPrefab(_equipmentPrefab)
             .AsSingle();
+
+        
     }
 }

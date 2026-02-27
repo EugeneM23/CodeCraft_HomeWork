@@ -8,10 +8,9 @@ using Zenject;
 
 public class InventoryDebug : MonoBehaviour
 {
-    [Inject] private DiContainer _container;
+    [Inject] private UIFactory _uiFactory;
     [Inject] private PlayerCharacterProvider _characterProvider;
 
-    [SerializeField] private Canvas _canvas;
     [SerializeField] private Button _openInventoryButton;
 
     private GameObject _inventory;
@@ -45,12 +44,7 @@ public class InventoryDebug : MonoBehaviour
     private void CreateInventory()
     {
         Entity entity = _characterProvider.GetCharacterEntity();
-
-        var inventoryPrefab = entity.ResolveComponent<InventoryView>(UIPrefabs.InventoryPrefab);
-        _inventory = _container.InstantiatePrefabForComponent<InventoryView>(inventoryPrefab, _canvas.transform).gameObject;
-
-        var equipmentPrefab = entity.ResolveComponent<EquipmentView>(UIPrefabs.EquipmentPrefab);
-        _equipment = _container.InstantiatePrefabForComponent<EquipmentView>(equipmentPrefab, _canvas.transform).gameObject;
+        (_inventory, _equipment) = _uiFactory.CreateInventoryWithEquipment(entity);
 
         SubscribeToInventoryClose();
         SetInventoryActive(true);
@@ -77,29 +71,5 @@ public class InventoryDebug : MonoBehaviour
     private void HandleInventoryClose()
     {
         SetInventoryActive(false);
-    }
-
-    [Button]
-    public void RemoveItem(Vector2Int position)
-    {
-        if (_inventory == null) return;
-
-        var inventory = GetInventory();
-        bool removed = inventory.RemoveItem(position);
-        Debug.Log("Item removed: " + removed);
-    }
-
-    [Button]
-    public void AddItem(SceneItem item)
-    {
-        if (_inventory == null) return;
-
-        var inventory = GetInventory();
-        inventory.AddItem(item.itemSettings);
-    }
-
-    private Inventory GetInventory()
-    {
-        return _inventory.GetComponent<GameObjectContext>().Container.Resolve<Inventory>();
     }
 }
