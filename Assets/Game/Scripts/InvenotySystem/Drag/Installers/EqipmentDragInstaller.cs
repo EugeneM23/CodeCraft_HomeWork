@@ -1,9 +1,12 @@
 using System.Collections.Generic;
+using UnityEngine;
 using Zenject;
 
 namespace Inventories
 {
-    public class EqipmentDragInstaller : MonoInstaller
+    [CreateAssetMenu(fileName = "EqipmentDragInstaller", menuName = "Inventories/EqipmentDragInstaller")]
+
+    public class EqipmentDragInstaller : ScriptableObjectInstaller
     {
         public override void InstallBindings()
         {

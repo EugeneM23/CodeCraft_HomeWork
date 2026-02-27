@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
 
-public class InventoryDebug : MonoBehaviour
+public class GameScreen : MonoBehaviour
 {
     [Inject] private UIFactory _uiFactory;
     [Inject] private PlayerCharacterProvider _characterProvider;

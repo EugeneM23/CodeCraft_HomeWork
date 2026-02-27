@@ -4,14 +4,20 @@ using Zenject;
 
 namespace Inventories
 {
-    public class InventoryCoreInstaller : MonoInstaller
+    public class InventoryInstaller : MonoInstaller
     {
         [SerializeField] private Vector2Int _inventorySize;
         [SerializeField] private InventoryView _inventoryUI;
         [SerializeField] private SceneItem[] _initialItems;
+        [SerializeField] private ItemDragHandler _itemDragHandler;
 
         public override void InstallBindings()
         {
+            Container
+                .Bind<ItemDragHandler>()
+                .FromInstance(_itemDragHandler)
+                .AsSingle();
+
             Container
                 .BindInterfacesAndSelfTo<InventoryPresenter>()
                 .AsSingle()
@@ -22,6 +28,11 @@ namespace Inventories
                 .BindInterfacesAndSelfTo<InventoryView>()
                 .FromInstance(_inventoryUI)
                 .AsSingle();
+
+            Container
+                .BindInterfacesAndSelfTo<InventoryAudioController>()
+                .AsSingle()
+                .NonLazy();
 
             var items = new List<ItemSettings>();
 

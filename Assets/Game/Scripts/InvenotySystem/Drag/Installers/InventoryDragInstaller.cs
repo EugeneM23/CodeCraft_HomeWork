@@ -1,10 +1,12 @@
 using System.Collections.Generic;
 using NUnit.Framework.Internal;
+using UnityEngine;
 using Zenject;
 
 namespace Inventories
 {
-    public class InventoryDragInstaller : MonoInstaller
+    [CreateAssetMenu(fileName = "InventoryDragInstaller", menuName = "Inventories/InventoryDragInstaller")]
+    public class InventoryDragInstaller : ScriptableObjectInstaller
     {
         public override void InstallBindings()
         {

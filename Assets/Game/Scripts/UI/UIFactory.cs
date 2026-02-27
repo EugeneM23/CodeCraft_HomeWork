@@ -7,11 +7,13 @@ public class UIFactory
 {
     private readonly DiContainer _container;
     private readonly Canvas _canvas;
+    private readonly UIPrefabCatalog _prefabCatalog;
 
-    public UIFactory(DiContainer container, Canvas canvas)
+    public UIFactory(DiContainer container, Canvas canvas, UIPrefabCatalog prefabCatalog)
     {
         _container = container;
         _canvas = canvas;
+        _prefabCatalog = prefabCatalog;
     }
 
     public (GameObject inventory, GameObject equipment) CreateInventoryWithEquipment(Entity entity)
@@ -26,13 +28,13 @@ public class UIFactory
 
     private GameObject CreateInventory(Entity entity)
     {
-        var inventoryPrefab = entity.ResolveComponent<InventoryView>(UIPrefabs.InventoryPrefab);
+        var inventoryPrefab = _prefabCatalog.GetPrefabComponent<InventoryView>(UIPrefabs.InventoryPrefab);
         return _container.InstantiatePrefabForComponent<InventoryView>(inventoryPrefab, _canvas.transform).gameObject;
     }
 
     private GameObject CreateEquipment(Entity entity)
     {
-        var equipmentPrefab = entity.ResolveComponent<EquipmentView>(UIPrefabs.EquipmentPrefab);
+        var equipmentPrefab = _prefabCatalog.GetPrefabComponent<EquipmentView>(UIPrefabs.EquipmentPrefab);
         return _container.InstantiatePrefabForComponent<EquipmentView>(equipmentPrefab, _canvas.transform).gameObject;
     }
 

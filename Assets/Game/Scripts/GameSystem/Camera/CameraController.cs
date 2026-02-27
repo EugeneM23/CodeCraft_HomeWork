@@ -5,24 +5,24 @@ using Zenject;
 public class CameraController : IInitializable, IDisposable
 {
     private readonly CameraMovement _cameraMovement;
-    private readonly InventoryDebug _inventoryDebug;
+    private readonly GameScreen _gameScreen;
 
-    public CameraController(CameraMovement cameraMovement, InventoryDebug inventoryDebug)
+    public CameraController(CameraMovement cameraMovement, GameScreen gameScreen)
     {
         _cameraMovement = cameraMovement;
-        _inventoryDebug = inventoryDebug;
+        _gameScreen = gameScreen;
     }
 
     public void Initialize()
     {
-        _inventoryDebug.OnInventoryOpened += HandleInventoryOpened;
-        _inventoryDebug.OnInventoryClosed += HandleInventoryClosed;
+        _gameScreen.OnInventoryOpened += HandleInventoryOpened;
+        _gameScreen.OnInventoryClosed += HandleInventoryClosed;
     }
 
     public void Dispose()
     {
-        _inventoryDebug.OnInventoryOpened -= HandleInventoryOpened;
-        _inventoryDebug.OnInventoryClosed -= HandleInventoryClosed;
+        _gameScreen.OnInventoryOpened -= HandleInventoryOpened;
+        _gameScreen.OnInventoryClosed -= HandleInventoryClosed;
     }
 
     private void HandleInventoryOpened()

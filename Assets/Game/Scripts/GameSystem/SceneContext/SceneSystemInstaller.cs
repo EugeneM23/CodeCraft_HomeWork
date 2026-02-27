@@ -8,6 +8,7 @@ namespace Inventories
     {
         [SerializeField] private Canvas _canvas;
         [SerializeField] private Entity _player;
+        [SerializeField] private UIPrefabCatalog _prefabCatalog;
 
         public override void InstallBindings()
         {
@@ -26,6 +27,10 @@ namespace Inventories
 
             Container
                 .Bind<DragContext>()
+                .AsSingle();
+
+            Container.Bind<UIPrefabCatalog>()
+                .FromInstance(_prefabCatalog)
                 .AsSingle();
 
             Container

@@ -252,7 +252,6 @@ GameObject:
   - component: {fileID: 6077416362513809044}
   - component: {fileID: 7024401688121170493}
   - component: {fileID: 4329921851221886722}
-  - component: {fileID: 6299471778878838760}
   - component: {fileID: 4474189428095669647}
   m_Layer: 5
   m_Name: WeaponSlot
@@ -320,19 +319,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &6299471778878838760
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1288940682574970523}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 96c2e257ea5942b0ac1888957af4ae1e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  doubleClickTime: 0.3
 --- !u!114 &4474189428095669647
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -507,7 +493,6 @@ GameObject:
   - component: {fileID: 3779384520055901260}
   - component: {fileID: 3641993725230665581}
   - component: {fileID: 4356985933360590229}
-  - component: {fileID: 4658343849759672236}
   - component: {fileID: 3464356235693907028}
   m_Layer: 5
   m_Name: LegSlot
@@ -575,19 +560,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &4658343849759672236
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1985272186297369101}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 96c2e257ea5942b0ac1888957af4ae1e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  doubleClickTime: 0.3
 --- !u!114 &3464356235693907028
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -655,7 +627,6 @@ GameObject:
   - component: {fileID: 8015454422587666397}
   - component: {fileID: 8800744294253574014}
   - component: {fileID: 860326376395181191}
-  - component: {fileID: 5100010352594450026}
   - component: {fileID: 806631832964821245}
   m_Layer: 5
   m_Name: HeadSlot
@@ -723,19 +694,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &5100010352594450026
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2019269271089134668}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 96c2e257ea5942b0ac1888957af4ae1e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  doubleClickTime: 0.3
 --- !u!114 &806631832964821245
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1435,7 +1393,6 @@ GameObject:
   - component: {fileID: 555644596034318329}
   - component: {fileID: 2144780159162388940}
   - component: {fileID: 4993389336620757603}
-  - component: {fileID: 2522205515133456762}
   - component: {fileID: 3183913512631522382}
   m_Layer: 5
   m_Name: ArmorSlot
@@ -1503,19 +1460,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &2522205515133456762
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5910075624905826106}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 96c2e257ea5942b0ac1888957af4ae1e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  doubleClickTime: 0.3
 --- !u!114 &3183913512631522382
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1619,8 +1563,6 @@ GameObject:
   - component: {fileID: 1716317390195783600}
   - component: {fileID: 3277803444417201735}
   - component: {fileID: 8618500563141932144}
-  - component: {fileID: 5165896843639009528}
-  - component: {fileID: 1589880194752061362}
   m_Layer: 5
   m_Name: EquipmentWindow
   m_TagString: Untagged
@@ -1721,7 +1663,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _equipmentView: {fileID: 1754586225902810272}
-  _characterEquipment: {fileID: 0}
+  _itemDragHandler: {fileID: 8618500563141932144}
 --- !u!114 &3277803444417201735
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1734,10 +1676,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 08eca9f7688a0a24685b89133b020c8e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _scriptableObjectInstallers: []
+  _scriptableObjectInstallers:
+  - {fileID: 11400000, guid: 393bb7a31d0ea418897bbc3f0c4ad39c, type: 2}
   _monoInstallers:
   - {fileID: 1716317390195783600}
-  - {fileID: 5165896843639009528}
   _installerPrefabs: []
   _autoRun: 1
   _kernel: {fileID: 0}
@@ -1754,36 +1696,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _draggableImage: {fileID: 8704037866748677932}
---- !u!114 &5165896843639009528
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6355975676697150328}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 70687d4aadf44933ad0d5bd46261a73f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1589880194752061362
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6355975676697150328}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0166d8ff8d905b048b2448179e1f5d11, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _components:
-  - {fileID: 8618500563141932144}
-  _identifier: 
-  _useSceneContext: 1
-  _context: {fileID: 3277803444417201735}
-  _bindType: 2
 --- !u!1 &6430010432873378660
 GameObject:
   m_ObjectHideFlags: 0
@@ -1870,7 +1782,6 @@ GameObject:
   - component: {fileID: 8940296977265592558}
   - component: {fileID: 7588427901638684200}
   - component: {fileID: 7819677295234447987}
-  - component: {fileID: 6412579808839906870}
   - component: {fileID: 1895924536736705058}
   m_Layer: 5
   m_Name: BootsSlot
@@ -1938,19 +1849,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &6412579808839906870
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6730155493460665955}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 96c2e257ea5942b0ac1888957af4ae1e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  doubleClickTime: 0.3
 --- !u!114 &1895924536736705058
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1975,7 +1873,6 @@ GameObject:
   - component: {fileID: 7669378282743467938}
   - component: {fileID: 59893647309806945}
   - component: {fileID: 5527269472193024259}
-  - component: {fileID: 254999352784272784}
   - component: {fileID: 6737324117476441454}
   m_Layer: 5
   m_Name: Shield
@@ -2043,19 +1940,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &254999352784272784
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6800850946110996029}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 96c2e257ea5942b0ac1888957af4ae1e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  doubleClickTime: 0.3
 --- !u!114 &6737324117476441454
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2155,7 +2039,6 @@ GameObject:
   - component: {fileID: 173211148112577217}
   - component: {fileID: 8902734453103462248}
   - component: {fileID: 7844173900444309998}
-  - component: {fileID: 7755896969323916836}
   - component: {fileID: 6571728392492037301}
   m_Layer: 5
   m_Name: ItemSlot
@@ -2223,19 +2106,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &7755896969323916836
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6964083898289970859}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 96c2e257ea5942b0ac1888957af4ae1e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  doubleClickTime: 0.3
 --- !u!114 &6571728392492037301
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -1,10 +1,11 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 using Zenject;
 
 public class CameraInstaller : MonoInstaller
 {
     [SerializeField] private CameraMovement _cameraMovement;
-    [SerializeField] private InventoryDebug _inventoryDebug;
+    [FormerlySerializedAs("_inventoryDebug")] [SerializeField] private GameScreen gameScreen;
 
     public override void InstallBindings()
     {
@@ -14,8 +15,8 @@ public class CameraInstaller : MonoInstaller
             .AsSingle();
 
         Container
-            .Bind<InventoryDebug>()
-            .FromInstance(_inventoryDebug)
+            .Bind<GameScreen>()
+            .FromInstance(gameScreen)
             .AsSingle();
 
         Container

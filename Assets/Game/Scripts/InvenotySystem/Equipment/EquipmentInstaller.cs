@@ -1,3 +1,4 @@
+using Inventories;
 using UnityEngine;
 using Zenject;
 
@@ -6,9 +7,14 @@ namespace Equipment
     public class EquipmentInstaller : MonoInstaller
     {
         [SerializeField] private EquipmentView _equipmentView;
+        [SerializeField] private ItemDragHandler _itemDragHandler;
 
         public override void InstallBindings()
         {
+            Container
+                .Bind<ItemDragHandler>()
+                .FromInstance(_itemDragHandler);
+
             Container
                 .Bind<EquipmentView>()
                 .FromInstance(_equipmentView)
