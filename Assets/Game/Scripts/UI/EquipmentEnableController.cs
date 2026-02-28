@@ -1,26 +1,34 @@
 using System;
+using Inventories;
+using UnityEngine;
 using Zenject;
 
 public class EquipmentEnableController : IInitializable, IDisposable
 {
-    private readonly InventoryPresenter _inventory;
-    private readonly EquipmentPresenter _equipment;
+    private readonly EquipmentView _equipment;
+    private readonly SignalBus _signalBus;
 
-    public EquipmentEnableController(InventoryPresenter inventory, EquipmentPresenter equipment)
+    public EquipmentEnableController(EquipmentView equipment, SignalBus signalBus)
     {
-        _inventory = inventory;
         _equipment = equipment;
+        _signalBus = signalBus;
     }
 
     public void Initialize()
     {
-        _inventory.OnToggleEquipment += _equipment.ToggleEquipment;
-        _inventory.OnClose += _equipment.CloseEquipment;
+        Debug.Log($"Initializing Equipment View: {_equipment.name}");
+        _signalBus.Subscribe<EnableEquipmentSignal>(HandleEnableEquipment);
     }
 
     public void Dispose()
     {
-        _inventory.OnToggleEquipment -= _equipment.ToggleEquipment;
-        _inventory.OnClose -= _equipment.CloseEquipment;
+        _signalBus.Unsubscribe<EnableEquipmentSignal>(HandleEnableEquipment);
+    }
+
+    private void HandleEnableEquipment(EnableEquipmentSignal signal)
+    {
+        Debug.Log($"Equipment ID: {signal.ID}");
+        if (_equipment.ID == signal.ID) 
+            _equipment.gameObject.SetActive(signal.IsEnable);
     }
 }

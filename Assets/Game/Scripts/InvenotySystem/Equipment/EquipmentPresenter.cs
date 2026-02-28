@@ -1,8 +1,7 @@
 using System;
 using Inventories;
-using Zenject;
 
-public class EquipmentPresenter : IInitializable, IDisposable
+public class EquipmentPresenter : IDisposable
 {
     public event Action OnToggle;
     public event Action OnClose;
@@ -12,10 +11,7 @@ public class EquipmentPresenter : IInitializable, IDisposable
 
     private readonly EquipmentModel _model;
 
-    public EquipmentPresenter(EquipmentModel model)
-    {
-        _model = model;
-    }
+    public EquipmentPresenter(EquipmentModel model) => _model = model;
 
     public void Initialize()
     {
@@ -31,13 +27,19 @@ public class EquipmentPresenter : IInitializable, IDisposable
 
     public void CloseEquipment() => OnClose?.Invoke();
 
-    public bool TryEquip(Item item) => _model.Equip(item);
+    public bool TryEquip(Item item)
+    {
+        return _model.Equip(item);
+    }
 
     public Item UnEquip(ItemType itemType) => _model.UnEquip(itemType);
 
     public void ToggleEquipment() => OnToggle?.Invoke();
 
-    private void HandleModelEquipped(ItemType itemType, Item item) => OnEquipped?.Invoke(itemType, item);
+    private void HandleModelEquipped(ItemType itemType, Item item)
+    {
+        OnEquipped?.Invoke(itemType, item);
+    }
 
     private void HandleModelUnEquipped(ItemType itemType, Item item) => OnUnEquipped?.Invoke(itemType, item);
 }

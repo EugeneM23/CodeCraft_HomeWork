@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using Inventories;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,24 +8,25 @@ using Zenject;
 
 public class EquipmentView : MonoBehaviour
 {
-    [SerializeField] private Image _headSlot;
-    [SerializeField] private Image _bodySlot;
-    [SerializeField] private Image _handsSlot;
-    [SerializeField] private Image _legsSlot;
-    [SerializeField] private Image _bootsSlot;
-    [SerializeField] private Image _weaponSlot;
-    [SerializeField] private Image _shieldSlot;
+    [SerializeField] private EquipmentSlot _headSlot;
+    [SerializeField] private EquipmentSlot _bodySlot;
+    [SerializeField] private EquipmentSlot _handsSlot;
+    [SerializeField] private EquipmentSlot _legsSlot;
+    [SerializeField] private EquipmentSlot _bootsSlot;
+    [SerializeField] private EquipmentSlot _weaponSlot;
+    [SerializeField] private EquipmentSlot _shieldSlot;
 
-    [Inject] private readonly EquipmentPresenter _presenter;
+    private EquipmentPresenter _presenter;
 
-    private Dictionary<ItemType, Image> _slots;
+    private Dictionary<ItemType, EquipmentSlot> _slots;
+    public int ID => gameObject.GetInstanceID();
 
-    private void Awake()
+    [Inject]
+    public void Construct(EquipmentPresenter presenter)
     {
-        _presenter.OnToggle += HandleToggle;
-        _presenter.OnClose += HandleClose;
+        _presenter = presenter;
 
-        _slots = new Dictionary<ItemType, Image>
+        _slots = new Dictionary<ItemType, EquipmentSlot>
         {
             { ItemType.Head, _headSlot },
             { ItemType.Body, _bodySlot },
@@ -34,6 +36,12 @@ public class EquipmentView : MonoBehaviour
             { ItemType.Weapon, _weaponSlot },
             { ItemType.Shield, _shieldSlot }
         };
+
+        foreach (var item in _slots)
+        {
+            var slot = item.Value.gameObject.GetComponent<EquipmentSlot>();
+            slot.Construct(presenter);
+        }
     }
 
     private void HandleClose() => gameObject.SetActive(false);
@@ -54,19 +62,16 @@ public class EquipmentView : MonoBehaviour
 
     private void HandleEquipped(ItemType itemType, Item item)
     {
-        if (_slots.TryGetValue(itemType, out var image))
+        if (_slots.TryGetValue(itemType, out var slot))
         {
-            image.sprite = item.Settings.Icon;
-            image.enabled = true;
+            slot.ItemIcon.sprite = item.Settings.Icon;
+            slot.ItemIcon.enabled = true;
         }
     }
 
     private void HandleUnEquipped(ItemType itemType, Item item)
     {
-        if (_slots.TryGetValue(itemType, out var image))
-        {
-            image.sprite = null;
-            image.enabled = false;
-        }
+        if (_slots.TryGetValue(itemType, out var slot))
+            slot.ItemIcon.enabled = false;
     }
 }

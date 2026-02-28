@@ -9,6 +9,8 @@ namespace Inventories
         [SerializeField] private Button _reorganizeButton;
         [SerializeField] private Button _openEquipment;
 
+        private int _equipmentID;
+
         private void SubscribeButtons()
         {
             _reorganizeButton.onClick.AddListener(HandleReorganize);
@@ -25,11 +27,18 @@ namespace Inventories
 
         private void HandleClose()
         {
-            _presenter.Close();
             gameObject.SetActive(false);
         }
 
         private void HandleReorganize() => _presenter.Reorganize();
-        private void HandleOpenEquipment() => _presenter.ToggleEquipment();
+
+        private void HandleOpenEquipment()
+        {
+            _signalBuss.Fire(new EnableEquipmentSignal
+            {
+                ID = _equipmentID,
+                IsEnable = false
+            });
+        }
     }
 }

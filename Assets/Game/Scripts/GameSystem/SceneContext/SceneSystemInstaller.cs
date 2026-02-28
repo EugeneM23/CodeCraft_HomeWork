@@ -39,12 +39,7 @@ namespace Inventories
 
             SignalBusInstaller.Install(Container);
 
-            Container.DeclareSignal<OpenEquipmentSignal>();
+            Container.DeclareSignal<EnableEquipmentSignal>();
         }
-    }
-
-    public struct OpenEquipmentSignal
-    {
-        public string ID;
     }
 }

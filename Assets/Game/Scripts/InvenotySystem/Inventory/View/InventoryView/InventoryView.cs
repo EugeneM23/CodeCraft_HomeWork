@@ -18,12 +18,15 @@ namespace Inventories
         private CellView[,] _cells;
         private InventoryPresenter _presenter;
         private DiContainer _container;
+        private SignalBus _signalBuss;
 
         [Inject]
-        public void Construct(InventoryPresenter presenter, DiContainer container)
+        public void Construct(InventoryPresenter presenter, DiContainer container, SignalBus signalBus)
         {
             _presenter = presenter;
             _container = container;
+            _signalBuss = signalBus;
+
             _cells = new CellView[presenter.Width, presenter.Height];
             _items = new Dictionary<string, GameObject>();
         }
@@ -55,5 +58,10 @@ namespace Inventories
         public CellView[,] GetCells() => (CellView[,])_cells.Clone();
 
         public IReadOnlyDictionary<string, GameObject> GetItems() => _items;
+
+        public void SetEquipmentID(int equipmentId)
+        {
+            _equipmentID = equipmentId;
+        }
     }
 }

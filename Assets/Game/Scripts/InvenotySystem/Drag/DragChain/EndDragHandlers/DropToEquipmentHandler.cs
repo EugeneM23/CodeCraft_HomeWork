@@ -7,13 +7,13 @@ namespace Inventories
     {
         public bool Handle(PointerEventData eventData, DragContext dragContext)
         {
-            Debug.Log("DropToEquipmentHandler");
             var slotObject = eventData.pointerCurrentRaycast.gameObject;
 
             if (slotObject == null)
                 return false;
 
-            var slotMarker = slotObject.GetComponentInParent<EquipmentSlotMarker>();
+            var slotMarker = slotObject.GetComponentInParent<EquipmentSlot>();
+
 
             if (slotMarker == null)
                 return false;

@@ -16,60 +16,36 @@ public class UIFactory
         _prefabCatalog = prefabCatalog;
     }
 
-    public (GameObject inventory, GameObject equipment) CreateInventoryWithEquipment(Entity entity)
-    {
-        var inventory = CreateInventory(entity);
-        var equipment = CreateEquipment(entity);
-
-        SetupControllers(entity, inventory, equipment);
-
-        return (inventory, equipment);
-    }
-
-    private GameObject CreateInventory(Entity character)
+    public GameObject CreateInventory(int equipmentId)
     {
         var inventoryPrefab = _prefabCatalog.GetPrefabComponent<InventoryView>(UIPrefabs.InventoryPrefab);
-        return _container.InstantiatePrefabForComponent<InventoryView>(inventoryPrefab, _canvas.transform).gameObject;
+
+        InventoryView inventory =
+            _container.InstantiatePrefabForComponent<InventoryView>(inventoryPrefab, _canvas.transform);
+
+        inventory.SetEquipmentID(equipmentId);
+
+        return inventory.gameObject;
     }
 
-    private GameObject CreateEquipment(Entity character)
+    public EquipmentView CreateEquipment()
     {
+        var equipment = new EquipmentModel();
+        var equipmentPresenter = new EquipmentPresenter(equipment);
+
+        equipmentPresenter.Initialize();
+
         var equipmentPrefab = _prefabCatalog.GetPrefabComponent<EquipmentView>(UIPrefabs.EquipmentPrefab);
-        return _container.InstantiatePrefabForComponent<EquipmentView>(equipmentPrefab, _canvas.transform).gameObject;
-    }
 
-    private void SetupControllers(Entity entity, GameObject inventory, GameObject equipment)
-    {
-        var inventoryContext = inventory.GetComponent<GameObjectContext>();
-        var equipmentContext = equipment.GetComponent<GameObjectContext>();
+        var view = _container.InstantiatePrefabForComponent<EquipmentView>(equipmentPrefab, _canvas.transform,
+            new object[] { equipmentPresenter }
+        );
 
-        SetupEquipmentEnableController(inventoryContext, equipmentContext);
-        SetupCharacterEquipmentController(entity, equipmentContext);
-    }
-
-    private void SetupEquipmentEnableController(GameObjectContext inventoryContext, GameObjectContext equipmentContext)
-    {
-        var inventoryPresenter = inventoryContext.Container.Resolve<InventoryPresenter>();
-        var equipmentPresenter = equipmentContext.Container.Resolve<EquipmentPresenter>();
-
-        var controller = new EquipmentEnableController(inventoryPresenter, equipmentPresenter);
-        
-        inventoryContext.Container.BindInterfacesAndSelfTo<EquipmentEnableController>()
-            .FromInstance(controller)
-            .AsSingle();
-        
+        // Создаем контроллер напрямую через контейнер
+        var controller = _container.Instantiate<EquipmentEnableController>(new object[] { view });
+        // Вызываем Initialize вручную
         controller.Initialize();
-    }
 
-    private void SetupCharacterEquipmentController(Entity entity, GameObjectContext equipmentContext)
-    {
-        var characterEquipment = entity.ResolveComponent<CharacterEquipment>();
-        var equipmentModel = equipmentContext.Container.Resolve<EquipmentModel>();
-
-        var controller = new CharacterEquipmentController(equipmentModel, characterEquipment);
-        equipmentContext.Container.BindInterfacesAndSelfTo<CharacterEquipmentController>()
-            .FromInstance(controller)
-            .AsSingle();
-        controller.Initialize();
+        return view;
     }
 }

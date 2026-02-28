@@ -9,8 +9,6 @@ public class InventoryPresenter : IInitializable, IDisposable
     public event Action<Item, Vector2Int[]> OnItemAdded;
     public event Action<Item, Vector2Int[]> OnItemRemoved;
     public event Action OnReorganize;
-    public event Action OnClose;
-    public event Action OnToggleEquipment;
 
     private readonly Vector2Int _inventorySize;
     private readonly Inventory _inventory;
@@ -64,13 +62,5 @@ public class InventoryPresenter : IInitializable, IDisposable
 
     public bool IsFree(int x, int y) => _inventory.IsFree(x, y);
 
-    public bool IsFree(Vector2Int position) => _inventory.IsFree(position);
-
-    public bool TryPlaceItem(Item item, Vector2Int position) => _inventory.AddItem(item.Settings, position);
-
     public void Reorganize() => _inventory.Reorganize();
-
-    public void ToggleEquipment() => OnToggleEquipment?.Invoke();
-
-    public void Close() => OnClose?.Invoke();
 }

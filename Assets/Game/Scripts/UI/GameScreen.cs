@@ -38,38 +38,20 @@ public class GameScreen : MonoBehaviour
         }
 
         bool willBeActive = !_inventory.activeSelf;
-        SetInventoryActive(willBeActive);
-    }
+        _inventory.SetActive(willBeActive);
+        _equipment.SetActive(willBeActive);
 
-    private void CreateInventory()
-    {
-        Entity entity = _characterProvider.GetCharacterEntity();
-        (_inventory, _equipment) = _uiFactory.CreateInventoryWithEquipment(entity);
-
-        SubscribeToInventoryClose();
-        SetInventoryActive(true);
-    }
-
-    private void SubscribeToInventoryClose()
-    {
-        var inventoryEntity = _inventory.GetComponent<Entity>();
-        var presenter = inventoryEntity.ResolveComponent<InventoryPresenter>();
-        presenter.OnClose += HandleInventoryClose;
-    }
-
-    private void SetInventoryActive(bool isActive)
-    {
-        _inventory.SetActive(isActive);
-        _equipment.SetActive(isActive);
-
-        if (isActive)
+        if (willBeActive)
             OnInventoryOpened?.Invoke();
         else
             OnInventoryClosed?.Invoke();
     }
 
-    private void HandleInventoryClose()
+    private void CreateInventory()
     {
-        SetInventoryActive(false);
+        Entity entity = _characterProvider.GetCharacterEntity();
+
+        EquipmentView equipment = _uiFactory.CreateEquipment();
+        GameObject inventory = _uiFactory.CreateInventory(equipment.ID);
     }
 }
