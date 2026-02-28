@@ -1,6 +1,5 @@
 using System;
 using Inventories;
-using UnityEngine;
 using Zenject;
 
 public class EquipmentEnableController : IInitializable, IDisposable
@@ -16,7 +15,6 @@ public class EquipmentEnableController : IInitializable, IDisposable
 
     public void Initialize()
     {
-        Debug.Log($"Initializing Equipment View: {_equipment.name}");
         _signalBus.Subscribe<EnableEquipmentSignal>(HandleEnableEquipment);
     }
 
@@ -27,8 +25,7 @@ public class EquipmentEnableController : IInitializable, IDisposable
 
     private void HandleEnableEquipment(EnableEquipmentSignal signal)
     {
-        Debug.Log($"Equipment ID: {signal.ID}");
-        if (_equipment.ID == signal.ID) 
-            _equipment.gameObject.SetActive(signal.IsEnable);
+        if (_equipment.ID == signal.ID)
+            _equipment.HandleToggle();
     }
 }

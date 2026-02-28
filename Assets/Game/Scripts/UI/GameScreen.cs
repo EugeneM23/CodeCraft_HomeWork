@@ -38,6 +38,7 @@ public class GameScreen : MonoBehaviour
         }
 
         bool willBeActive = !_inventory.activeSelf;
+        
         _inventory.SetActive(willBeActive);
         _equipment.SetActive(willBeActive);
 

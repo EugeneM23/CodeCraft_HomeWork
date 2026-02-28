@@ -58,7 +58,7 @@ public class EquipmentView : MonoBehaviour
         _presenter.OnUnEquipped -= HandleUnEquipped;
     }
 
-    private void HandleToggle() => gameObject.SetActive(!gameObject.activeSelf);
+    public void HandleToggle() => gameObject.SetActive(!gameObject.activeSelf);
 
     private void HandleEquipped(ItemType itemType, Item item)
     {
