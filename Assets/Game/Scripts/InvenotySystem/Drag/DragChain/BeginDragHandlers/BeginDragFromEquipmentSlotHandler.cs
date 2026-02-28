@@ -7,7 +7,7 @@ namespace Inventories
     {
         public bool Handle(PointerEventData eventData, DragContext dragContext)
         {
-            var slotObject = eventData.pointerPressRaycast.gameObject;
+            GameObject slotObject = eventData.pointerPressRaycast.gameObject;
 
             if (!slotObject.TryGetComponent(out EquipmentSlot slotMarker))
                 return false;
@@ -15,7 +15,7 @@ namespace Inventories
             var itemType = slotMarker.ItemType;
             var item = slotMarker.Presenter.UnEquip(itemType);
 
-            var handler = slotMarker.GetComponent<ItemDragHandler>();
+            var handler = slotMarker.ItemDragHandler;
 
             if (item == null)
                 return false;
