@@ -36,6 +36,15 @@ namespace Inventories
             Container
                 .Bind<UIFactory>()
                 .AsSingle();
+
+            SignalBusInstaller.Install(Container);
+
+            Container.DeclareSignal<OpenEquipmentSignal>();
         }
+    }
+
+    public struct OpenEquipmentSignal
+    {
+        public string ID;
     }
 }

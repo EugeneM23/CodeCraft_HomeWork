@@ -12,5 +12,6 @@ public class PlayerCharacterInstaller : MonoInstaller
             .FromInstance(_equipment)
             .AsSingle()
             .NonLazy();
+        
     }
 }
