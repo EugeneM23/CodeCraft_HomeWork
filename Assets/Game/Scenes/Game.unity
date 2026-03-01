@@ -294,13 +294,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _openInventoryButton: {fileID: 877946181}
   _sceneItems:
-  - {fileID: 7070894261933836396, guid: 68508e5ca913b4977bb5c1fc5926ea03, type: 3}
-  - {fileID: 7070894261933836396, guid: ea5f6afd969ac49daa20ad34c6c37261, type: 3}
   - {fileID: 7070894261933836396, guid: 79b534e7ec75a462b89b81d5956eb237, type: 3}
+  - {fileID: 7070894261933836396, guid: ec20105428d41482aab5eeab60532850, type: 3}
+  - {fileID: 7070894261933836396, guid: 68508e5ca913b4977bb5c1fc5926ea03, type: 3}
+  - {fileID: 1441105143803712864, guid: 9de9593e1e39947b6b50224a5f4988a0, type: 3}
   - {fileID: 7070894261933836396, guid: 4a28ec6f258124f069038ac2693f8b13, type: 3}
   _equipmentItems:
-  - {fileID: 7070894261933836396, guid: 68508e5ca913b4977bb5c1fc5926ea03, type: 3}
-  - {fileID: 7070894261933836396, guid: 4a28ec6f258124f069038ac2693f8b13, type: 3}
+  - {fileID: 7070894261933836396, guid: ea5f6afd969ac49daa20ad34c6c37261, type: 3}
 --- !u!1 &271999240
 GameObject:
   m_ObjectHideFlags: 0
@@ -434,8 +434,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 457318525}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0.06087441, y: -0, z: -0, w: 0.99814546}
+  m_LocalPosition: {x: 0.02, y: -0.39, z: 0.059999943}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1114,8 +1114,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1611256434}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0.06087441, y: -0, z: -0, w: 0.99814546}
+  m_LocalPosition: {x: 0.02, y: -0.39, z: 0.059999943}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1405,6 +1405,10 @@ PrefabInstance:
     - target: {fileID: 3583167354004295582, guid: d72b1218c1c13453cad3a3b98103c7e1, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3661403445842934091, guid: d72b1218c1c13453cad3a3b98103c7e1, type: 3}
+      propertyPath: m_Mesh
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 6159243238603613747, guid: d72b1218c1c13453cad3a3b98103c7e1, type: 3}
       propertyPath: m_Name

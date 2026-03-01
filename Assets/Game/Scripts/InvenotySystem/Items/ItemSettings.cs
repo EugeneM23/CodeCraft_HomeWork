@@ -32,6 +32,7 @@ namespace Inventories
         [field: SerializeField] public AudioEventKey EquipItem { get; set; }
         [field: SerializeField] public AudioEventKey DropToScene { get; set; }
         [field: SerializeField] public AudioEventKey UseItem { get; set; }
+        [field: SerializeField] public RuntimeAnimatorController AnimatorController { get; set; }
 
         public ItemSettings(ItemSettings itemData)
         {
@@ -49,6 +50,7 @@ namespace Inventories
             EquipItem = itemData.EquipItem;
             DropToScene = itemData.DropToScene;
             UseItem = itemData.UseItem;
+            AnimatorController = itemData.AnimatorController;
         }
     }
 }

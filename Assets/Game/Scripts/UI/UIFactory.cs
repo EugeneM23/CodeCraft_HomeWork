@@ -78,6 +78,7 @@ public class UIFactory
         BindController<EquipmentAudioController>(context, model);
         BindController<CharacterEquipmentController>(context, model);
         BindController<EquipmentEnableController>(context, view);
+        BindAnimSetController(context, model);
 
         return view;
     }
@@ -95,6 +96,19 @@ public class UIFactory
             .NonLazy();
 
         return context.Resolve<EquipmentView>();
+    }
+
+    private void BindAnimSetController(DiContainer context, EquipmentModel model)
+    {
+        var animator = _playerCharacterProvider.GetCharacterEntity().GetComponent<Animator>();
+        
+        context
+            .BindInterfacesAndSelfTo<AnimSetController>()
+            .AsSingle()
+            .WithArguments(model, animator)
+            .NonLazy();
+
+        context.Resolve<AnimSetController>().Initialize();
     }
 
     #endregion
