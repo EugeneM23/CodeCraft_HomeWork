@@ -1,6 +1,7 @@
 using System;
 using AudioEngine;
 using Inventories;
+using UnityEngine;
 using Zenject;
 
 namespace Equipment
@@ -31,12 +32,12 @@ namespace Equipment
 
         private void OnItemEquipped(ItemType itemType, Item item)
         {
-            _audioSystem.PlayEvent(MasterBankAPI.EquipItemEvent);
+            _audioSystem.PlayEvent(InventoryBankAPI.EquipItemEvent);
         }
 
         private void OnItemUnEquipped(ItemType itemType, Item item)
         {
-            _audioSystem.PlayEvent(MasterBankAPI.StartDragEvent);
+            _audioSystem.PlayEvent(InventoryBankAPI.StartDragEvent);
         }
     }
 }

@@ -44,8 +44,6 @@ public class EquipmentView : MonoBehaviour
         }
     }
 
-    private void HandleClose() => gameObject.SetActive(false);
-
     private void OnEnable()
     {
         _presenter.OnEquipped += HandleEquipped;
@@ -58,7 +56,7 @@ public class EquipmentView : MonoBehaviour
         _presenter.OnUnEquipped -= HandleUnEquipped;
     }
 
-    public void HandleToggle() => gameObject.SetActive(!gameObject.activeSelf);
+    public void HandleToggle(bool isEnable) => gameObject.SetActive(isEnable);
 
     private void HandleEquipped(ItemType itemType, Item item)
     {

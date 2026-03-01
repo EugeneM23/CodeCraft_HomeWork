@@ -13,10 +13,6 @@ namespace Inventories
 
         private void CreateItem(Item item, Vector2Int[] positions)
         {
-            // Связываем ячейки с предметом
-            foreach (var pos in positions) 
-                _cells[pos.x, pos.y].Item = item;
-
             // Создаем визуальный объект предмета
             var itemObject = _container.InstantiatePrefab(_inventoryItemPrefab, _gridContainer);
 
@@ -36,6 +32,13 @@ namespace Inventories
 
             // Сохраняем ссылку на созданный предмет
             _items[item.ID] = itemObject;
+
+            // Связываем ячейки с предметом и устанавливаем визуальный объект
+            foreach (var pos in positions)
+            {
+                _cells[pos.x, pos.y].Item = item;
+                _cells[pos.x, pos.y].ItemVisual = itemObject; // Устанавливаем визуальный объект
+            }
         }
 
         private void RemoveItem(Item item, Vector2Int[] positions)
@@ -47,7 +50,10 @@ namespace Inventories
             }
 
             foreach (var pos in positions)
+            {
                 _cells[pos.x, pos.y].Item = null;
+                _cells[pos.x, pos.y].ItemVisual = null; // Очищаем ссылку на визуальный объект
+            }
         }
 
         private void DestroyAllItems()

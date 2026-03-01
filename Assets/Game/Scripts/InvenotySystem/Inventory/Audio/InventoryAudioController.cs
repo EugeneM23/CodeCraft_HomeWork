@@ -7,36 +7,36 @@ namespace Inventories
 {
     public class InventoryAudioController : IInitializable, IDisposable
     {
-        private readonly Inventory _inventory;
+        private readonly InventoryModel _inventoryModel;
         private AudioSystem _audioSystem;
 
-        public InventoryAudioController(Inventory inventory) =>
-            _inventory = inventory;
+        public InventoryAudioController(InventoryModel inventoryModel) =>
+            _inventoryModel = inventoryModel;
 
         public void Initialize()
         {
             _audioSystem = AudioSystem.Instance;
-            _inventory.OnAdded += OnItemAdded;
-            _inventory.OnRemoved += OnItemRemoved;
-            _inventory.OnMoved += OnItemMoved;
+            _inventoryModel.OnItemAdded += OnItemAdded;
+            _inventoryModel.OnItemRemoved += OnItemRemoved;
+            _inventoryModel.OnMoved += OnItemMoved;
         }
 
         public void Dispose()
         {
-            _inventory.OnAdded -= OnItemAdded;
-            _inventory.OnRemoved -= OnItemRemoved;
-            _inventory.OnMoved -= OnItemMoved;
+            _inventoryModel.OnItemAdded -= OnItemAdded;
+            _inventoryModel.OnItemRemoved -= OnItemRemoved;
+            _inventoryModel.OnMoved -= OnItemMoved;
         }
 
         private void OnItemAdded(Item item, Vector2Int[] positions)
         {
             Debug.Log(item.Settings.AddItemKey.EventId);
-            _audioSystem.PlayEvent(MasterBankAPI.AddItemToInventoryEvent);
+            _audioSystem.PlayEvent(InventoryBankAPI.AddItemToInventoryEvent);
         }
 
         private void OnItemRemoved(Item item, Vector2Int[] positions)
         {
-            _audioSystem.PlayEvent(MasterBankAPI.StartDragEvent);
+            _audioSystem.PlayEvent(InventoryBankAPI.StartDragEvent);
         }
 
         private void OnItemMoved(Item item, Vector2Int position)

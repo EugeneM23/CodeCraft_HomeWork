@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 71c59311ed514f81aa536eb0ff91b011, type: 3}
-  m_Name: MasterBank
+  m_Name: InventoyBank
   m_EditorClassIdentifier: 
-  identifier: Master
-  codeGenPath: Assets/InventorySystem/Scripts/Audio/CodeGen
+  identifier: Enventory
+  codeGenPath: Assets/Game/Scripts/InvenotySystem/CodeGen
   eventParameters:
   - identifier: addItemToInventory
     value: {fileID: 11400000, guid: dfcaf08318d294e2a9f2ec858b433cb0, type: 2}

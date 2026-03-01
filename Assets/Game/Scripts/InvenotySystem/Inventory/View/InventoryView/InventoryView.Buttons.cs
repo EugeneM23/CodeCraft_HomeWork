@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -5,11 +6,14 @@ namespace Inventories
 {
     public partial class InventoryView
     {
+      
+        
         [SerializeField] private Button _closeButton;
         [SerializeField] private Button _reorganizeButton;
         [SerializeField] private Button _openEquipment;
 
         private int _equipmentID;
+        private bool _isEquipmentEnabled = true;
 
         private void SubscribeButtons()
         {
@@ -27,6 +31,12 @@ namespace Inventories
 
         private void HandleClose()
         {
+            _signalBuss.Fire(new EnableEquipmentSignal
+            {
+                ID = _equipmentID,
+                IsEnable = false
+            });
+
             gameObject.SetActive(false);
         }
 
@@ -34,10 +44,12 @@ namespace Inventories
 
         private void HandleOpenEquipment()
         {
+            _isEquipmentEnabled = !_isEquipmentEnabled;
+
             _signalBuss.Fire(new EnableEquipmentSignal
             {
                 ID = _equipmentID,
-                IsEnable = false
+                IsEnable = _isEquipmentEnabled
             });
         }
     }

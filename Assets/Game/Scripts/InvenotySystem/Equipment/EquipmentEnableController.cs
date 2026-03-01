@@ -26,6 +26,6 @@ public class EquipmentEnableController : IInitializable, IDisposable
     private void HandleEnableEquipment(EnableEquipmentSignal signal)
     {
         if (_equipment.ID == signal.ID)
-            _equipment.HandleToggle();
+            _equipment.HandleToggle(signal.IsEnable);
     }
 }

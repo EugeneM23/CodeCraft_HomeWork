@@ -6,10 +6,10 @@ using System.Runtime.CompilerServices;
 using Inventories;
 using UnityEngine;
 
-public sealed class Inventory : IEnumerable<Item>
+public sealed class InventoryModel : IEnumerable<Item>
 {
-    public event Action<Item, Vector2Int[]> OnAdded;
-    public event Action<Item, Vector2Int[]> OnRemoved;
+    public event Action<Item, Vector2Int[]> OnItemAdded;
+    public event Action<Item, Vector2Int[]> OnItemRemoved;
     public event Action OnCleared;
     public event Action OnReorganize;
     public event Action<Item, Vector2Int> OnMoved;
@@ -24,7 +24,7 @@ public sealed class Inventory : IEnumerable<Item>
 
     #region Constructors
 
-    public Inventory(in int width, in int height)
+    public InventoryModel(in int width, in int height)
     {
         if (width <= 0 || height <= 0)
             throw new ArgumentOutOfRangeException();
@@ -33,7 +33,7 @@ public sealed class Inventory : IEnumerable<Item>
         _items = new Dictionary<string, Item>();
     }
 
-    public Inventory(int width, int height, IEnumerable<KeyValuePair<ItemSettings, Vector2Int>> items)
+    public InventoryModel(int width, int height, IEnumerable<KeyValuePair<ItemSettings, Vector2Int>> items)
         : this(width, height)
     {
         if (items == null)
@@ -45,12 +45,12 @@ public sealed class Inventory : IEnumerable<Item>
         }
     }
 
-    public Inventory(int width, int height, KeyValuePair<ItemSettings, Vector2Int>[] items)
+    public InventoryModel(int width, int height, KeyValuePair<ItemSettings, Vector2Int>[] items)
         : this(width, height, (IEnumerable<KeyValuePair<ItemSettings, Vector2Int>>)items)
     {
     }
 
-    public Inventory(int width, int height, IEnumerable<ItemSettings> items)
+    public InventoryModel(int width, int height, IEnumerable<ItemSettings> items)
         : this(width, height)
     {
         if (items == null)
@@ -62,7 +62,7 @@ public sealed class Inventory : IEnumerable<Item>
         }
     }
 
-    public Inventory(int width, int height, ItemSettings[] items)
+    public InventoryModel(int width, int height, ItemSettings[] items)
         : this(width, height, (IEnumerable<ItemSettings>)items)
     {
     }
@@ -85,7 +85,7 @@ public sealed class Inventory : IEnumerable<Item>
             PlaceInstanceInGrid(item, position.x, position.y);
             _items.Add(item.ID, item);
             Vector2Int[] positions = GetPositions(item.ID);
-            OnAdded?.Invoke(item, positions);
+            OnItemAdded?.Invoke(item, positions);
             return true;
         }
 
@@ -111,7 +111,7 @@ public sealed class Inventory : IEnumerable<Item>
             PlaceInstanceInGrid(instance, position.x, position.y);
             _items.Add(instance.ID, instance);
             Vector2Int[] positions = GetItemGridPositions(instance);
-            OnAdded?.Invoke(instance, positions);
+            OnItemAdded?.Invoke(instance, positions);
             return true;
         }
 
@@ -159,7 +159,7 @@ public sealed class Inventory : IEnumerable<Item>
             _cells[position.x, position.y] = null;
 
         _items.Remove(id);
-        OnRemoved?.Invoke(item, positions);
+        OnItemRemoved?.Invoke(item, positions);
 
         return true;
     }
@@ -185,7 +185,7 @@ public sealed class Inventory : IEnumerable<Item>
         _items.Remove(item.ID);
 
         // Вызываем событие
-        OnRemoved?.Invoke(item, positions);
+        OnItemRemoved?.Invoke(item, positions);
 
         return true;
     }

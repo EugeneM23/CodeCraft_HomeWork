@@ -8,11 +8,15 @@ namespace Inventories
 {
     public partial class InventoryView : MonoBehaviour
     {
+        public event Action OnShow;
+        public event Action OnHide;
+
         [SerializeField] private CellView cellViewPrefab;
         [SerializeField] private InventoryItemView _inventoryItemPrefab;
         [SerializeField] private Vector2Int _cellSize;
 
-        public Vector2Int CellSize => _cellSize;
+        public int ID => gameObject.GetInstanceID();
+        public InventoryPresenter Presenter => _presenter;
 
         private Dictionary<string, GameObject> _items;
         private CellView[,] _cells;
@@ -38,6 +42,10 @@ namespace Inventories
             _presenter.OnReorganize += Reorganize;
 
             SubscribeButtons();
+
+            _isEquipmentEnabled = true;
+
+            OnShow?.Invoke();
         }
 
         private void OnDisable()
@@ -47,6 +55,8 @@ namespace Inventories
             _presenter.OnReorganize -= Reorganize;
 
             UnsubscribeButtons();
+
+            OnHide?.Invoke();
         }
 
         private void Start()
@@ -55,13 +65,12 @@ namespace Inventories
             CreateAllItems();
         }
 
-        public CellView[,] GetCells() => (CellView[,])_cells.Clone();
+        public void SetEquipmentID(int equipmentId) => _equipmentID = equipmentId;
 
-        public IReadOnlyDictionary<string, GameObject> GetItems() => _items;
-
-        public void SetEquipmentID(int equipmentId)
-        {
-            _equipmentID = equipmentId;
-        }
+        // // Метод для получения визуального GameObject предмета по ID
+        // public GameObject GetItemVisual(string itemId)
+        // {
+        //     return _items.TryGetValue(itemId, out var visual) ? visual : null;
+        // }
     }
 }

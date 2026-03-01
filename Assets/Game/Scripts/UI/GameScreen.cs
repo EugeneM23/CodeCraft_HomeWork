@@ -1,58 +1,71 @@
 using System;
+using System.Collections.Generic;
 using Inventories;
 using Inventories.Scripts;
-using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
 
 public class GameScreen : MonoBehaviour
 {
-    [Inject] private UIFactory _uiFactory;
-    [Inject] private PlayerCharacterProvider _characterProvider;
-
     [SerializeField] private Button _openInventoryButton;
+    [SerializeField] private List<SceneItem> _sceneItems = new();
 
-    private GameObject _inventory;
-    private GameObject _equipment;
+    private UIFactory _uiFactory;
+    private PlayerCharacterProvider _characterProvider;
+
+    [Inject]
+    public void Construct(PlayerCharacterProvider characterProvider, UIFactory uiFactory)
+    {
+        _characterProvider = characterProvider;
+        _uiFactory = uiFactory;
+    }
 
     public event Action OnInventoryOpened;
     public event Action OnInventoryClosed;
 
-    private void Start()
+    private void OnEnable()
     {
         _openInventoryButton.onClick.AddListener(ToggleInventory);
     }
 
-    private void OnDestroy()
+    private void OnDisable()
     {
         _openInventoryButton.onClick.RemoveListener(ToggleInventory);
     }
 
     private void ToggleInventory()
     {
-        if (_inventory == null)
+        var entity = _characterProvider.GetCharacterEntity();
+
+        if (!entity.TryResolveComponent<InventoryView>(out var inventoryView))
         {
-            CreateInventory();
+            CreateInventoryAndEquipment(entity);
             return;
         }
 
-        bool willBeActive = !_inventory.activeSelf;
+        ToggleInventory(entity, inventoryView);
+    }
+
+    private void CreateInventoryAndEquipment(Entity entity)
+    {
+        var equipmentView = _uiFactory.CreateEquipment();
+        var inventoryView = _uiFactory.CreateInventory(equipmentView.ID, new Vector2Int(7, 5), _sceneItems);
         
-        _inventory.SetActive(willBeActive);
-        _equipment.SetActive(willBeActive);
+        OnInventoryOpened?.Invoke();
+    }
+
+    private void ToggleInventory(Entity entity, InventoryView inventoryView)
+    {
+        entity.TryResolveComponent<EquipmentView>(out var equipmentView);
+        bool willBeActive = !inventoryView.gameObject.activeSelf;
+
+        inventoryView.gameObject.SetActive(willBeActive);
+        equipmentView.gameObject.SetActive(willBeActive);
 
         if (willBeActive)
             OnInventoryOpened?.Invoke();
         else
             OnInventoryClosed?.Invoke();
-    }
-
-    private void CreateInventory()
-    {
-        Entity entity = _characterProvider.GetCharacterEntity();
-
-        EquipmentView equipment = _uiFactory.CreateEquipment();
-        GameObject inventory = _uiFactory.CreateInventory(equipment.ID);
     }
 }

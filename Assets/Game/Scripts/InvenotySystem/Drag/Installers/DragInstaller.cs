@@ -5,8 +5,7 @@ using Zenject;
 namespace Inventories
 {
     [CreateAssetMenu(fileName = "EqipmentDragInstaller", menuName = "Inventories/EqipmentDragInstaller")]
-
-    public class EqipmentDragInstaller : ScriptableObjectInstaller
+    public class DragInstaller : ScriptableObjectInstaller
     {
         public override void InstallBindings()
         {
@@ -32,6 +31,7 @@ namespace Inventories
         private void InstallBeginDragHandlers()
         {
             Container.Bind<BeginDragFromEquipmentSlotHandler>().AsSingle();
+            Container.Bind<BeginDragFromInventoryCellHandler>().AsSingle();
         }
 
         private void InstallEndDragHandlers()
@@ -40,6 +40,7 @@ namespace Inventories
             Container.Bind<DropToEquipmentHandler>().AsSingle();
             Container.Bind<DropToInventoryHandler>().AsSingle();
             Container.Bind<ReturnItemToStartSlotHandler>().AsSingle();
+            Container.Bind<ReturnItemToStartCellHandler>().AsSingle();
         }
 
         private List<IBeginDraghendler> CreateBeginDragHandlers(InjectContext ctx)
@@ -47,6 +48,7 @@ namespace Inventories
             return new List<IBeginDraghendler>
             {
                 ctx.Container.Resolve<BeginDragFromEquipmentSlotHandler>(),
+                ctx.Container.Resolve<BeginDragFromInventoryCellHandler>(),
             };
         }
 
@@ -58,6 +60,7 @@ namespace Inventories
                 ctx.Container.Resolve<DropToEquipmentHandler>(),
                 ctx.Container.Resolve<DropToInventoryHandler>(),
                 ctx.Container.Resolve<ReturnItemToStartSlotHandler>(),
+                ctx.Container.Resolve<ReturnItemToStartCellHandler>(),
             };
         }
     }

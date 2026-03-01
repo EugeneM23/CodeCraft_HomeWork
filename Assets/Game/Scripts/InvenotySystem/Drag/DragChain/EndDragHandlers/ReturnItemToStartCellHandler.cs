@@ -5,7 +5,6 @@ namespace Inventories
 {
     public class ReturnItemToStartCellHandler : IEndDraghendler
     {
-        [Inject] private readonly InventoryPresenter _presenter;
 
         public bool Handle(PointerEventData eventData, DragContext dragContext)
         {

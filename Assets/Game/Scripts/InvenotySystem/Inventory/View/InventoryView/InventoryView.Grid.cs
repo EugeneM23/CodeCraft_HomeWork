@@ -26,6 +26,9 @@ namespace Inventories
                     // Сохраняем позицию в матрице и добавляем в массив
                     cellComponent.MatrixPosition = new Vector2Int(x, y);
                     _cells[x, y] = cellComponent;
+                    
+                    //Устанавливаем презентер 
+                    cellComponent.SetPresenter(_presenter);
                 }
             }
         }

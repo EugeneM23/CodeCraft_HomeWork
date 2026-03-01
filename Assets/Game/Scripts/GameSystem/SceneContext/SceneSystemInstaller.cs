@@ -40,6 +40,7 @@ namespace Inventories
             SignalBusInstaller.Install(Container);
 
             Container.DeclareSignal<EnableEquipmentSignal>();
+            Container.DeclareSignal<EnableInventorySignal>();
         }
     }
 }
