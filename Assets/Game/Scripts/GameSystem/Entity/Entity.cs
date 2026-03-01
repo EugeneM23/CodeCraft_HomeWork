@@ -21,6 +21,4 @@ public class Entity : MonoBehaviour
         component = _context.Container.TryResolve<T>();
         return component != null;
     }
-
-    
 }

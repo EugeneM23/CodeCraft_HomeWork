@@ -30,31 +30,27 @@ public class UIFactory
 
     public InventoryView CreateInventory(int equipmentId, Vector2Int inventorySize, List<SceneItem> sceneItems)
     {
-        var characterEntity = _playerCharacterProvider.GetCharacterEntity();
-        DiContainer characterContext = characterEntity.Context.Container;
-
-        // Create and bind model
+        var context = GetCharacterContext();
         var initialItems = sceneItems.Select(x => x.itemSettings).ToList();
-        var model = new InventoryModel(inventorySize.x, inventorySize.y, initialItems);
         
-        characterContext
-            .BindInterfacesAndSelfTo<InventoryModel>()
-            .FromInstance(model)
-            .AsSingle();
-
-        // Create and bind presenter
-        var presenter = new InventoryPresenter(model);
-        presenter.Initialize();
+        var model = BindModel(context, new InventoryModel(inventorySize.x, inventorySize.y, initialItems));
+        var presenter = BindPresenter(context, new InventoryPresenter(model));
+        var view = BindInventoryView(context, presenter);
         
-        characterContext
-            .BindInterfacesAndSelfTo<InventoryPresenter>()
-            .FromInstance(presenter)
-            .AsSingle();
+        view.gameObject.SetActive(false);
+        view.SetEquipmentID(equipmentId);
+        
+        BindController<InventoryAudioController>(context, model);
+        BindController<InventoryEnableController>(context, view);
 
-        // Create and bind view
+        return view;
+    }
+
+    private InventoryView BindInventoryView(DiContainer context, InventoryPresenter presenter)
+    {
         var prefab = _prefabCatalog.GetPrefabComponent<InventoryView>(UIPrefabs.InventoryPrefab);
-        
-        characterContext
+
+        context
             .BindInterfacesAndSelfTo<InventoryView>()
             .FromComponentInNewPrefab(prefab)
             .UnderTransform(_canvas.transform)
@@ -62,69 +58,35 @@ public class UIFactory
             .WithArguments(presenter, _container, _container.Resolve<SignalBus>())
             .NonLazy();
 
-        var view = characterContext.Resolve<InventoryView>();
-
-        view.SetEquipmentID(equipmentId);
-
-        CreateInventoryControllers(view, model);
-
-        return view;
-    }
-
-    private void CreateInventoryControllers(InventoryView view, InventoryModel model)
-    {
-        var characterEntity = _playerCharacterProvider.GetCharacterEntity();
-        DiContainer characterContext = characterEntity.Context.Container;
-
-        // Audio controller
-        characterContext
-            .BindInterfacesAndSelfTo<InventoryAudioController>()
-            .AsSingle()
-            .WithArguments(model)
-            .NonLazy();
-
-        characterContext.Resolve<InventoryAudioController>().Initialize();
-
-        // Visibility controller
-        characterContext
-            .BindInterfacesAndSelfTo<InventoryEnableController>()
-            .AsSingle()
-            .WithArguments(view)
-            .NonLazy();
-
-        characterContext.Resolve<InventoryEnableController>().Initialize();
+        return context.Resolve<InventoryView>();
     }
 
     #endregion
 
     #region Equipment
 
-    public EquipmentView CreateEquipment()
+    public EquipmentView CreateEquipment(List<Item> initialItems = null)
     {
-        var characterEntity = _playerCharacterProvider.GetCharacterEntity();
-        DiContainer characterContext = characterEntity.Context.Container;
+        var context = GetCharacterContext();
 
-        // Create and bind model
-        var model = new EquipmentModel();
+        var model = BindModel(context, initialItems != null ? new EquipmentModel(initialItems) : new EquipmentModel());
+        var presenter = BindPresenter(context, new EquipmentPresenter(model));
+        var view = BindEquipmentView(context, presenter);
         
-        characterContext
-            .BindInterfacesAndSelfTo<EquipmentModel>()
-            .FromInstance(model)
-            .AsSingle();
-
-        // Create and bind presenter
-        var presenter = new EquipmentPresenter(model);
-        presenter.Initialize();
+        view.gameObject.SetActive(false);
         
-        characterContext
-            .BindInterfacesAndSelfTo<EquipmentPresenter>()
-            .FromInstance(presenter)
-            .AsSingle();
+        BindController<EquipmentAudioController>(context, model);
+        BindController<CharacterEquipmentController>(context, model);
+        BindController<EquipmentEnableController>(context, view);
 
-        // Create and bind view
+        return view;
+    }
+
+    private EquipmentView BindEquipmentView(DiContainer context, EquipmentPresenter presenter)
+    {
         var prefab = _prefabCatalog.GetPrefabComponent<EquipmentView>(UIPrefabs.EquipmentPrefab);
-        
-        characterContext
+
+        context
             .BindInterfacesAndSelfTo<EquipmentView>()
             .FromComponentInNewPrefab(prefab)
             .UnderTransform(_canvas.transform)
@@ -132,44 +94,35 @@ public class UIFactory
             .WithArguments(presenter)
             .NonLazy();
 
-        var view = characterContext.Resolve<EquipmentView>();
-
-        CreateEquipmentControllers(view, model);
-
-        return view;
+        return context.Resolve<EquipmentView>();
     }
 
-    private void CreateEquipmentControllers(EquipmentView view, EquipmentModel model)
+    #endregion
+
+    #region Helpers
+
+    private DiContainer GetCharacterContext()
     {
-        var characterEntity = _playerCharacterProvider.GetCharacterEntity();
-        DiContainer characterContext = characterEntity.Context.Container;
+        return _playerCharacterProvider.GetCharacterEntity().Context.Container;
+    }
 
-        // Audio controller
-        characterContext
-            .BindInterfacesAndSelfTo<EquipmentAudioController>()
-            .AsSingle()
-            .WithArguments(model)
-            .NonLazy();
+    private T BindModel<T>(DiContainer context, T model) where T : class
+    {
+        context.BindInterfacesAndSelfTo<T>().FromInstance(model).AsSingle();
+        return model;
+    }
 
-        characterContext.Resolve<EquipmentAudioController>().Initialize();
+    private T BindPresenter<T>(DiContainer context, T presenter) where T : class
+    {
+        presenter.GetType().GetMethod("Initialize")?.Invoke(presenter, null);
+        context.BindInterfacesAndSelfTo<T>().FromInstance(presenter).AsSingle();
+        return presenter;
+    }
 
-        // Character equipment controller
-        characterContext
-            .BindInterfacesAndSelfTo<CharacterEquipmentController>()
-            .AsSingle()
-            .WithArguments(model)
-            .NonLazy();
-
-        characterContext.Resolve<CharacterEquipmentController>().Initialize();
-
-        // Visibility controller
-        characterContext
-            .BindInterfacesAndSelfTo<EquipmentEnableController>()
-            .AsSingle()
-            .WithArguments(view)
-            .NonLazy();
-
-        characterContext.Resolve<EquipmentEnableController>().Initialize();
+    private void BindController<T>(DiContainer context, object arg) where T : class
+    {
+        context.BindInterfacesAndSelfTo<T>().AsSingle().WithArguments(arg).NonLazy();
+        context.Resolve<T>().GetType().GetMethod("Initialize")?.Invoke(context.Resolve<T>(), null);
     }
 
     #endregion

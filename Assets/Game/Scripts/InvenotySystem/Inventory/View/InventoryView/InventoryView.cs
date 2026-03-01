@@ -16,7 +16,6 @@ namespace Inventories
         [SerializeField] private Vector2Int _cellSize;
 
         public int ID => gameObject.GetInstanceID();
-        public InventoryPresenter Presenter => _presenter;
 
         private Dictionary<string, GameObject> _items;
         private CellView[,] _cells;
@@ -66,11 +65,6 @@ namespace Inventories
         }
 
         public void SetEquipmentID(int equipmentId) => _equipmentID = equipmentId;
-
-        // // Метод для получения визуального GameObject предмета по ID
-        // public GameObject GetItemVisual(string itemId)
-        // {
-        //     return _items.TryGetValue(itemId, out var visual) ? visual : null;
-        // }
+        
     }
 }

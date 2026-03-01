@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-public class InventoryItemView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+class InventoryItemView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     [SerializeField] private Image _background;
     [SerializeField] private Image _itemImage;

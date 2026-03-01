@@ -44,6 +44,11 @@ public class EquipmentView : MonoBehaviour
         }
     }
 
+    private void Start()
+    {
+        DrawInitialItems();
+    }
+
     private void OnEnable()
     {
         _presenter.OnEquipped += HandleEquipped;
@@ -57,6 +62,20 @@ public class EquipmentView : MonoBehaviour
     }
 
     public void HandleToggle(bool isEnable) => gameObject.SetActive(isEnable);
+
+    private void DrawInitialItems()
+    {
+        foreach (var slot in _slots)
+        {
+            var item = _presenter.GetEquippedItem(slot.Key);
+            
+            if (item != null)
+            {
+                slot.Value.ItemIcon.sprite = item.Settings.Icon;
+                slot.Value.ItemIcon.enabled = true;
+            }
+        }
+    }
 
     private void HandleEquipped(ItemType itemType, Item item)
     {

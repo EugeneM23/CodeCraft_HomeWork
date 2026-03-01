@@ -25,7 +25,7 @@ Transform:
   m_GameObject: {fileID: 195476352847408788}
   serializedVersion: 2
   m_LocalRotation: {x: -0.7127239, y: -0, z: -0, w: 0.7014447}
-  m_LocalPosition: {x: 0.179, y: 0, z: 0}
+  m_LocalPosition: {x: 0.179, y: 0, z: -1.646}
   m_LocalScale: {x: 4, y: 4, z: 4}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -59,7 +59,7 @@ Transform:
   m_GameObject: {fileID: 1270611999658988431}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.0024284273, y: -1.0228304, z: 0.13001567}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -117,7 +117,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1270611999658988431}
-  m_Mesh: {fileID: 4282267958280526585, guid: 40856c604e445cb488c824f843a118d8, type: 3}
+  m_Mesh: {fileID: -2544109580854566363, guid: c4ee69f08dc865c458547e9a01d06ab7, type: 3}
 --- !u!1 &3172102141589766498
 GameObject:
   m_ObjectHideFlags: 0
@@ -129,12 +129,12 @@ GameObject:
   - component: {fileID: 5633370403166231957}
   - component: {fileID: 7528259036273102345}
   - component: {fileID: 2461049266000352800}
+  - component: {fileID: 5899807608685920841}
   - component: {fileID: 7070894261933836396}
-  - component: {fileID: 6009434718875001729}
-  - component: {fileID: 5788470103612728187}
-  - component: {fileID: 6665546906518358661}
+  - component: {fileID: -2382888620409020614}
+  - component: {fileID: 1820131372345963397}
   m_Layer: 0
-  m_Name: Gauntlets_01
+  m_Name: Sword
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -209,6 +209,27 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &5899807608685920841
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3172102141589766498}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.9084, y: 1, z: 3.4372501}
+  m_Center: {x: 0.14777684, y: 0, z: -0.4690628}
 --- !u!114 &7070894261933836396
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -222,12 +243,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   itemSettings:
-    <Name>k__BackingField: Gauntlets
+    <Name>k__BackingField: Sword
     <Description>k__BackingField: Some Description
-    <ItemType>k__BackingField: 8
-    <Icon>k__BackingField: {fileID: 6468281594801190350, guid: f87808af06add46ccafd3eb9e9da2596, type: 3}
-    <Mesh>k__BackingField: {fileID: -758172254690646520, guid: 1ce208a689a6f6c4bb1b61c451ff6c90, type: 3}
-    <Size>k__BackingField: {x: 1, y: 2}
+    <ItemType>k__BackingField: 0
+    <Icon>k__BackingField: {fileID: 6672203870441472929, guid: e17fbe2cab92a41059e2ef4d80488266, type: 3}
+    <Mesh>k__BackingField: {fileID: -2544109580854566363, guid: c4ee69f08dc865c458547e9a01d06ab7, type: 3}
+    <Size>k__BackingField: {x: 1, y: 3}
     <StartDrag>k__BackingField:
       bank: {fileID: 11400000, guid: e4b41ce06ef2940e293fe59906357731, type: 2}
       eventId: startDrag
@@ -248,28 +269,7 @@ MonoBehaviour:
       bank: {fileID: 11400000, guid: e4b41ce06ef2940e293fe59906357731, type: 2}
       eventId: addItemToInventory
       identifier: Master.addItemToInventory
---- !u!65 &6009434718875001729
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3172102141589766498}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 3.7147827}
-  m_Center: {x: 0, y: 0, z: 1.3573914}
---- !u!114 &5788470103612728187
+--- !u!114 &-2382888620409020614
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -524,7 +524,7 @@ MonoBehaviour:
   hitFxFadeOutDuration: 0.25
   hitFxColor: {r: 1, g: 1, b: 1, a: 1}
   hitFxRadius: 0.5
---- !u!114 &6665546906518358661
+--- !u!114 &1820131372345963397
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -536,4 +536,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 26ef9b845ca247c082b408361b28fad0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  highlightEffect: {fileID: 5788470103612728187}
+  highlightEffect: {fileID: -2382888620409020614}

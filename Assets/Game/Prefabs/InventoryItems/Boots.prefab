@@ -59,7 +59,7 @@ Transform:
   m_GameObject: {fileID: 1270611999658988431}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.0024284273, y: -1.0228304, z: 0.13001567}
+  m_LocalPosition: {x: 0.0024284273, y: -0.516, z: 0.13}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -117,7 +117,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1270611999658988431}
-  m_Mesh: {fileID: 4282267958280526585, guid: 40856c604e445cb488c824f843a118d8, type: 3}
+  m_Mesh: {fileID: 4631457162544768386, guid: 66aa96aaab0b4bd4493c8c411e7d764d, type: 3}
 --- !u!1 &3172102141589766498
 GameObject:
   m_ObjectHideFlags: 0
@@ -132,7 +132,7 @@ GameObject:
   - component: {fileID: 7070894261933836396}
   - component: {fileID: 6009434718875001729}
   m_Layer: 0
-  m_Name: Pants_01
+  m_Name: Boots
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -220,32 +220,32 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   itemSettings:
-    <Name>k__BackingField: Pants
+    <Name>k__BackingField: Boots
     <Description>k__BackingField: Some Description
-    <ItemType>k__BackingField: 6
-    <Icon>k__BackingField: {fileID: 6119813525165072544, guid: 8f7c078b723e14861befef4cba948600, type: 3}
-    <Mesh>k__BackingField: {fileID: 8414825643437843575, guid: c19aa0e17c6fef74cb7831da64adf3fe, type: 3}
-    <Size>k__BackingField: {x: 2, y: 3}
+    <ItemType>k__BackingField: 7
+    <Icon>k__BackingField: {fileID: 7104411420755877180, guid: d1c8a87b57b2f40fb9d007351f49eb8d, type: 3}
+    <Mesh>k__BackingField: {fileID: -5483441392058454776, guid: c19aa0e17c6fef74cb7831da64adf3fe, type: 3}
+    <Size>k__BackingField: {x: 2, y: 2}
     <StartDrag>k__BackingField:
       bank: {fileID: 11400000, guid: e4b41ce06ef2940e293fe59906357731, type: 2}
       eventId: startDrag
-      identifier: Master.startDrag
+      identifier: Inventory.startDrag
     <AddItemKey>k__BackingField:
       bank: {fileID: 11400000, guid: e4b41ce06ef2940e293fe59906357731, type: 2}
       eventId: addItemToInventory
-      identifier: Master.addItemToInventory
+      identifier: Inventory.addItemToInventory
     <EquipItem>k__BackingField:
       bank: {fileID: 11400000, guid: e4b41ce06ef2940e293fe59906357731, type: 2}
       eventId: equipItem
-      identifier: Master.equipItem
+      identifier: Inventory.equipItem
     <DropToScene>k__BackingField:
       bank: {fileID: 11400000, guid: e4b41ce06ef2940e293fe59906357731, type: 2}
       eventId: addItemToInventory
-      identifier: Master.addItemToInventory
+      identifier: Inventory.addItemToInventory
     <UseItem>k__BackingField:
       bank: {fileID: 11400000, guid: e4b41ce06ef2940e293fe59906357731, type: 2}
-      eventId: addItemToInventory
-      identifier: Master.addItemToInventory
+      eventId: startDrag
+      identifier: Inventory.startDrag
 --- !u!65 &6009434718875001729
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -265,5 +265,5 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 3.7147827}
-  m_Center: {x: 0, y: 0, z: 1.3573914}
+  m_Size: {x: 1.4366424, y: 1.4710104, z: 2.0024896}
+  m_Center: {x: 0.2183212, y: 0.71765935, z: 1.1698978}

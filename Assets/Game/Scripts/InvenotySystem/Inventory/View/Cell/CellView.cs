@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Inventories
 {
-    public class CellView : MonoBehaviour
+    public class CellView : MonoBehaviour, ICellPresenter
     {
         private InventoryPresenter _presenter;
         private GameObject _itemVisual;
@@ -26,5 +26,9 @@ namespace Inventories
             get => _itemVisual;
             set => _itemVisual = value;
         }
+    }
+
+    public interface ICellPresenter
+    {
     }
 }

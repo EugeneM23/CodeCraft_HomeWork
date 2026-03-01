@@ -15,7 +15,6 @@ public class InventoryPresenter : IInitializable, IDisposable
 
     public int Height => _inventoryModel.Height;
     public int Width => _inventoryModel.Width;
-    public InventoryModel InventoryModel => _inventoryModel;
 
     public InventoryPresenter(InventoryModel inventoryModel)
     {

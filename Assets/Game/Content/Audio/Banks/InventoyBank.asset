@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 71c59311ed514f81aa536eb0ff91b011, type: 3}
   m_Name: InventoyBank
   m_EditorClassIdentifier: 
-  identifier: Enventory
+  identifier: Inventory
   codeGenPath: Assets/Game/Scripts/InvenotySystem/CodeGen
   eventParameters:
   - identifier: addItemToInventory

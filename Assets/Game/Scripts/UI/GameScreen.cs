@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Inventories;
 using Inventories.Scripts;
 using UnityEngine;
@@ -10,6 +11,7 @@ public class GameScreen : MonoBehaviour
 {
     [SerializeField] private Button _openInventoryButton;
     [SerializeField] private List<SceneItem> _sceneItems = new();
+    [SerializeField] private List<SceneItem> _equipmentItems = new();
 
     private UIFactory _uiFactory;
     private PlayerCharacterProvider _characterProvider;
@@ -19,6 +21,11 @@ public class GameScreen : MonoBehaviour
     {
         _characterProvider = characterProvider;
         _uiFactory = uiFactory;
+    }
+
+    private void Start()
+    {
+        CreateInventoryAndEquipment();
     }
 
     public event Action OnInventoryOpened;
@@ -37,22 +44,20 @@ public class GameScreen : MonoBehaviour
     private void ToggleInventory()
     {
         var entity = _characterProvider.GetCharacterEntity();
-
-        if (!entity.TryResolveComponent<InventoryView>(out var inventoryView))
-        {
-            CreateInventoryAndEquipment(entity);
-            return;
-        }
+        InventoryView inventoryView = entity.ResolveComponent<InventoryView>();
 
         ToggleInventory(entity, inventoryView);
     }
 
-    private void CreateInventoryAndEquipment(Entity entity)
+    private void CreateInventoryAndEquipment()
     {
-        var equipmentView = _uiFactory.CreateEquipment();
+        var initialEquipment = _equipmentItems.Count > 0
+            ? _equipmentItems.Select(x => new Item(x.itemSettings, new Vector2Int())).ToList()
+            : null;
+
+        var equipmentView = _uiFactory.CreateEquipment(initialEquipment);
         var inventoryView = _uiFactory.CreateInventory(equipmentView.ID, new Vector2Int(7, 5), _sceneItems);
-        
-        OnInventoryOpened?.Invoke();
+
     }
 
     private void ToggleInventory(Entity entity, InventoryView inventoryView)

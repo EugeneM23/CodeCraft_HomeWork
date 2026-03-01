@@ -32,7 +32,7 @@ namespace Equipment
 
         private void OnItemEquipped(ItemType itemType, Item item)
         {
-            _audioSystem.PlayEvent(InventoryBankAPI.EquipItemEvent);
+            _audioSystem.PlayEvent(item.Settings.EquipItem);
         }
 
         private void OnItemUnEquipped(ItemType itemType, Item item)

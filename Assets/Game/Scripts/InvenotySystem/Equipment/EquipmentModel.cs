@@ -19,6 +19,26 @@ public class EquipmentModel
         { ItemType.Shield, null }
     };
 
+    public EquipmentModel() { }
+
+    public EquipmentModel(List<Item> initialItems)
+    {
+        foreach (var item in initialItems)
+        {
+            var itemType = item.Settings.ItemType;
+            
+            if (_slots.ContainsKey(itemType) && _slots[itemType] == null)
+            {
+                _slots[itemType] = item;
+            }
+        }
+    }
+
+    public Item GetEquippedItem(ItemType itemType)
+    {
+        return _slots.ContainsKey(itemType) ? _slots[itemType] : null;
+    }
+
     public bool Equip(Item item)
     {
         var itemType = item.Settings.ItemType;

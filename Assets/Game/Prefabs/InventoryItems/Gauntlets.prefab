@@ -59,7 +59,7 @@ Transform:
   m_GameObject: {fileID: 1270611999658988431}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.0024284273, y: -0.516, z: 0.13}
+  m_LocalPosition: {x: 0.0024284273, y: -1.0228304, z: 0.13001567}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -117,7 +117,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1270611999658988431}
-  m_Mesh: {fileID: 4631457162544768386, guid: 66aa96aaab0b4bd4493c8c411e7d764d, type: 3}
+  m_Mesh: {fileID: 4282267958280526585, guid: 40856c604e445cb488c824f843a118d8, type: 3}
 --- !u!1 &3172102141589766498
 GameObject:
   m_ObjectHideFlags: 0
@@ -131,10 +131,10 @@ GameObject:
   - component: {fileID: 2461049266000352800}
   - component: {fileID: 7070894261933836396}
   - component: {fileID: 6009434718875001729}
-  - component: {fileID: 2389421021406045830}
-  - component: {fileID: 3858911217526798864}
+  - component: {fileID: 5788470103612728187}
+  - component: {fileID: 6665546906518358661}
   m_Layer: 0
-  m_Name: Boots_01
+  m_Name: Gauntlets
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -222,12 +222,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   itemSettings:
-    <Name>k__BackingField: Boots
+    <Name>k__BackingField: Gauntlets
     <Description>k__BackingField: Some Description
-    <ItemType>k__BackingField: 7
-    <Icon>k__BackingField: {fileID: 7104411420755877180, guid: d1c8a87b57b2f40fb9d007351f49eb8d, type: 3}
-    <Mesh>k__BackingField: {fileID: -5483441392058454776, guid: c19aa0e17c6fef74cb7831da64adf3fe, type: 3}
-    <Size>k__BackingField: {x: 2, y: 2}
+    <ItemType>k__BackingField: 8
+    <Icon>k__BackingField: {fileID: 6468281594801190350, guid: f87808af06add46ccafd3eb9e9da2596, type: 3}
+    <Mesh>k__BackingField: {fileID: -758172254690646520, guid: 1ce208a689a6f6c4bb1b61c451ff6c90, type: 3}
+    <Size>k__BackingField: {x: 1, y: 2}
     <StartDrag>k__BackingField:
       bank: {fileID: 11400000, guid: e4b41ce06ef2940e293fe59906357731, type: 2}
       eventId: startDrag
@@ -267,9 +267,9 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1.4366424, y: 1.4710104, z: 2.0024896}
-  m_Center: {x: 0.2183212, y: 0.71765935, z: 1.1698978}
---- !u!114 &2389421021406045830
+  m_Size: {x: 1, y: 1, z: 3.7147827}
+  m_Center: {x: 0, y: 0, z: 1.3573914}
+--- !u!114 &5788470103612728187
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -524,7 +524,7 @@ MonoBehaviour:
   hitFxFadeOutDuration: 0.25
   hitFxColor: {r: 1, g: 1, b: 1, a: 1}
   hitFxRadius: 0.5
---- !u!114 &3858911217526798864
+--- !u!114 &6665546906518358661
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -536,4 +536,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 26ef9b845ca247c082b408361b28fad0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  highlightEffect: {fileID: 2389421021406045830}
+  highlightEffect: {fileID: 5788470103612728187}
