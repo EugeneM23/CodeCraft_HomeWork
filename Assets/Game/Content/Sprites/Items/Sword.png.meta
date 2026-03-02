@@ -126,7 +126,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: "ChatGPT Image 27 \u0433\u0440\u0443\u0434. 2025 \u0440., 22_24_14_0"
+      name: Sword
       rect:
         serializedVersion: 2
         x: 254
@@ -161,7 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      "ChatGPT Image 27 \u0433\u0440\u0443\u0434. 2025 \u0440., 22_24_14_0": 6672203870441472929
+      Sword: 6672203870441472929
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

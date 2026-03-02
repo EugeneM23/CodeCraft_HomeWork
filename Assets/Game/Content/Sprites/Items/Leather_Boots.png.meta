@@ -126,7 +126,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: "ChatGPT Image 22 \u043B\u044E\u0442. 2026 \u0440., 20_23_03_0"
+      name: Leather_Boots
       rect:
         serializedVersion: 2
         x: 19
@@ -134,7 +134,7 @@ TextureImporter:
         width: 1003
         height: 979
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -151,7 +151,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: d115c797f7bf24cdb9c1faae09a43ac6
     internalID: 0
     vertices: []
     indices: 
@@ -161,7 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      "ChatGPT Image 22 \u043B\u044E\u0442. 2026 \u0440., 20_23_03_0": 7104411420755877180
+      Leather_Boots: 7104411420755877180
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

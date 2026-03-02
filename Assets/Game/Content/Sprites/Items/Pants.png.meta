@@ -139,8 +139,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: "\u041F\u0430\u0440\u0430 \u0448\u0442\u0430\u043D\u0456\u0432 \u0437
-        \u0437\u043E\u043B\u043E\u0442\u0438\u0441\u0442\u0438\u043C \u0432\u0456\u0434\u0431\u043B\u0438\u0441\u043A\u043E\u043C_0"
+      name: Pants
       rect:
         serializedVersion: 2
         x: 0
@@ -148,7 +147,7 @@ TextureImporter:
         width: 1024
         height: 1531
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -171,7 +170,7 @@ TextureImporter:
         width: 12
         height: 11
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -194,7 +193,7 @@ TextureImporter:
         width: 8
         height: 7
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -217,7 +216,7 @@ TextureImporter:
         width: 7
         height: 6
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -234,7 +233,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 199bf163498ad4c079a56a7a5023c159
     internalID: 0
     vertices: []
     indices: 
@@ -244,7 +243,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      "\u041F\u0430\u0440\u0430 \u0448\u0442\u0430\u043D\u0456\u0432 \u0437 \u0437\u043E\u043B\u043E\u0442\u0438\u0441\u0442\u0438\u043C \u0432\u0456\u0434\u0431\u043B\u0438\u0441\u043A\u043E\u043C_0": 6119813525165072544
+      Pants: 6119813525165072544
       "\u041F\u0430\u0440\u0430 \u0448\u0442\u0430\u043D\u0456\u0432 \u0437 \u0437\u043E\u043B\u043E\u0442\u0438\u0441\u0442\u0438\u043C \u0432\u0456\u0434\u0431\u043B\u0438\u0441\u043A\u043E\u043C_1": 7547908258795891154
       "\u041F\u0430\u0440\u0430 \u0448\u0442\u0430\u043D\u0456\u0432 \u0437 \u0437\u043E\u043B\u043E\u0442\u0438\u0441\u0442\u0438\u043C \u0432\u0456\u0434\u0431\u043B\u0438\u0441\u043A\u043E\u043C_2": 2202298040229680972
       "\u041F\u0430\u0440\u0430 \u0448\u0442\u0430\u043D\u0456\u0432 \u0437 \u0437\u043E\u043B\u043E\u0442\u0438\u0441\u0442\u0438\u043C \u0432\u0456\u0434\u0431\u043B\u0438\u0441\u043A\u043E\u043C_3": -5321027623816572357
