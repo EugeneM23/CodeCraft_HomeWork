@@ -19,7 +19,7 @@ public class CharacterEquipment : MonoBehaviour
         _renderers = new Dictionary<ItemType, SkinnedMeshRenderer>
         {
             [ItemType.Head] = _headRenderer,
-            [ItemType.Body] = _bodyRenderer,
+            [ItemType.Armor] = _bodyRenderer,
             [ItemType.Legs] = _legsRenderer,
             [ItemType.Boots] = _bootsRenderer,
             [ItemType.Hands] = _handsRenderer

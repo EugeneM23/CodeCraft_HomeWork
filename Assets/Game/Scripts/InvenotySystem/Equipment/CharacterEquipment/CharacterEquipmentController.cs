@@ -32,7 +32,7 @@ namespace Equipment
 
         private void DrawInitialItems()
         {
-            var types = new[] { ItemType.Head, ItemType.Body, ItemType.Hands, ItemType.Legs, ItemType.Boots, ItemType.Weapon, ItemType.Shield };
+            var types = new[] { ItemType.Head, ItemType.Armor, ItemType.Hands, ItemType.Legs, ItemType.Boots, ItemType.Weapon, ItemType.Shield };
             
             foreach (var type in types)
             {

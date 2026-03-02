@@ -29,7 +29,7 @@ public class EquipmentView : MonoBehaviour
         _slots = new Dictionary<ItemType, EquipmentSlot>
         {
             { ItemType.Head, _headSlot },
-            { ItemType.Body, _bodySlot },
+            { ItemType.Armor, _bodySlot },
             { ItemType.Hands, _handsSlot },
             { ItemType.Legs, _legsSlot },
             { ItemType.Boots, _bootsSlot },

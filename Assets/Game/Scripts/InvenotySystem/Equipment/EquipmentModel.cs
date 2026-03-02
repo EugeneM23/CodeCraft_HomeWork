@@ -11,7 +11,7 @@ public class EquipmentModel
     private readonly Dictionary<ItemType, Item> _slots = new()
     {
         { ItemType.Head, null },
-        { ItemType.Body, null },
+        { ItemType.Armor, null },
         { ItemType.Hands, null },
         { ItemType.Legs, null },
         { ItemType.Boots, null },

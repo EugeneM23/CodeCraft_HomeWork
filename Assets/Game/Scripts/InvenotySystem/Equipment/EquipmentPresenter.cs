@@ -35,7 +35,7 @@ public class EquipmentPresenter : IDisposable
     public Dictionary<ItemType, Item> GetAllEquippedItems()
     {
         var equipped = new Dictionary<ItemType, Item>();
-        var types = new[] { ItemType.Head, ItemType.Body, ItemType.Hands, ItemType.Legs, ItemType.Boots, ItemType.Weapon, ItemType.Shield };
+        var types = new[] { ItemType.Head, ItemType.Armor, ItemType.Hands, ItemType.Legs, ItemType.Boots, ItemType.Weapon, ItemType.Shield };
         
         foreach (var type in types)
         {

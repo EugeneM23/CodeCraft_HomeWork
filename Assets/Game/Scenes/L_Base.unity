@@ -209,7 +209,6 @@ GameObject:
   - component: {fileID: 66426998}
   - component: {fileID: 66427003}
   - component: {fileID: 66427004}
-  - component: {fileID: 66427006}
   m_Layer: 0
   m_Name: '[SYSTEM]'
   m_TagString: Untagged
@@ -280,27 +279,6 @@ MonoBehaviour:
   _canvas: {fileID: 2068645393}
   _player: {fileID: 6111472879743891196}
   _prefabCatalog: {fileID: 11400000, guid: e8743d436cf5d4939af219b0e9c7e695, type: 2}
---- !u!114 &66427006
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 66426997}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 91cd8f086ca0468fb2b0623e76e02310, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _openInventoryButton: {fileID: 877946181}
-  _sceneItems:
-  - {fileID: 7070894261933836396, guid: 79b534e7ec75a462b89b81d5956eb237, type: 3}
-  - {fileID: 7070894261933836396, guid: ec20105428d41482aab5eeab60532850, type: 3}
-  - {fileID: 7070894261933836396, guid: 68508e5ca913b4977bb5c1fc5926ea03, type: 3}
-  - {fileID: 1441105143803712864, guid: 9de9593e1e39947b6b50224a5f4988a0, type: 3}
-  - {fileID: 7070894261933836396, guid: 4a28ec6f258124f069038ac2693f8b13, type: 3}
-  _equipmentItems:
-  - {fileID: 7070894261933836396, guid: ea5f6afd969ac49daa20ad34c6c37261, type: 3}
 --- !u!1 &271999240
 GameObject:
   m_ObjectHideFlags: 0
@@ -1207,7 +1185,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _cameraMovement: {fileID: 1611256441}
-  gameScreen: {fileID: 66427006}
+  gameScreen: {fileID: 0}
 --- !u!1 &2068645390
 GameObject:
   m_ObjectHideFlags: 0
@@ -1220,6 +1198,7 @@ GameObject:
   - component: {fileID: 2068645393}
   - component: {fileID: 2068645392}
   - component: {fileID: 2068645391}
+  - component: {fileID: 2068645395}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -1313,6 +1292,27 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &2068645395
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2068645390}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 91cd8f086ca0468fb2b0623e76e02310, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _openInventoryButton: {fileID: 877946181}
+  _sceneItems:
+  - {fileID: 7070894261933836396, guid: 79b534e7ec75a462b89b81d5956eb237, type: 3}
+  - {fileID: 7070894261933836396, guid: ec20105428d41482aab5eeab60532850, type: 3}
+  - {fileID: 7070894261933836396, guid: 68508e5ca913b4977bb5c1fc5926ea03, type: 3}
+  - {fileID: 1441105143803712864, guid: 9de9593e1e39947b6b50224a5f4988a0, type: 3}
+  - {fileID: 7070894261933836396, guid: 4a28ec6f258124f069038ac2693f8b13, type: 3}
+  _equipmentItems:
+  - {fileID: 7070894261933836396, guid: ea5f6afd969ac49daa20ad34c6c37261, type: 3}
 --- !u!1 &2134388051
 GameObject:
   m_ObjectHideFlags: 0

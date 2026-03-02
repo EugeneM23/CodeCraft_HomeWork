@@ -87,7 +87,7 @@ GameObject:
   - component: {fileID: 1511114534891308873}
   - component: {fileID: 1691885995291618795}
   m_Layer: 5
-  m_Name: Item
+  m_Name: ItemIcon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -409,7 +409,7 @@ GameObject:
   - component: {fileID: 5023634846026189013}
   - component: {fileID: 8304158806905660621}
   m_Layer: 5
-  m_Name: BackGround
+  m_Name: ItemBackGround
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -484,7 +484,6 @@ GameObject:
   - component: {fileID: 6379091871092702191}
   - component: {fileID: 3685472314209000568}
   - component: {fileID: 3334073297244301008}
-  - component: {fileID: 7001049065726349089}
   - component: {fileID: 6411819508369694099}
   m_Layer: 5
   m_Name: InventoryItem
@@ -540,19 +539,6 @@ MonoBehaviour:
   _itemImage: {fileID: 1691885995291618795}
   _countBackGround: {fileID: 8634197385032340632}
   _count: {fileID: 3715987727289035597}
---- !u!114 &7001049065726349089
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8561450526089673285}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 96c2e257ea5942b0ac1888957af4ae1e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  doubleClickTime: 0.3
 --- !u!114 &6411819508369694099
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -595,7 +581,7 @@ GameObject:
   - component: {fileID: 4707811150962560170}
   - component: {fileID: 1569724957469115506}
   m_Layer: 5
-  m_Name: Image
+  m_Name: CountBackground
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

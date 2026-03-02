@@ -3,7 +3,7 @@ namespace Inventories
     public enum ItemType
     {
         Weapon,
-        Body,
+        Armor,
         Ammo,
         Item,
         Consumable,
