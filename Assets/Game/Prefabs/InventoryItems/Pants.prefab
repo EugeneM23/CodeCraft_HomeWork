@@ -44,7 +44,7 @@ GameObject:
   - component: {fileID: 9008907008430455989}
   - component: {fileID: 7295906713072721225}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: Visual
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -88,7 +88,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 6f1a3abc3e476eb4f823f1ab4687b4ed, type: 2}
+  - {fileID: 2100000, guid: f0e8b35ff52445e45b7aaa07b0af7d38, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -117,7 +117,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1270611999658988431}
-  m_Mesh: {fileID: 4282267958280526585, guid: 40856c604e445cb488c824f843a118d8, type: 3}
+  m_Mesh: {fileID: 8414825643437843575, guid: c19aa0e17c6fef74cb7831da64adf3fe, type: 3}
 --- !u!1 &3172102141589766498
 GameObject:
   m_ObjectHideFlags: 0
@@ -246,6 +246,7 @@ MonoBehaviour:
       bank: {fileID: 11400000, guid: e4b41ce06ef2940e293fe59906357731, type: 2}
       eventId: startDrag
       identifier: Inventory.startDrag
+    <AnimatorController>k__BackingField: {fileID: 0}
 --- !u!65 &6009434718875001729
 BoxCollider:
   m_ObjectHideFlags: 0

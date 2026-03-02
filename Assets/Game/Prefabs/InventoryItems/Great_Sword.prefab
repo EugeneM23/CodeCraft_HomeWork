@@ -25,7 +25,7 @@ Transform:
   m_GameObject: {fileID: 195476352847408788}
   serializedVersion: 2
   m_LocalRotation: {x: -0.7127239, y: -0, z: -0, w: 0.7014447}
-  m_LocalPosition: {x: 0.179, y: 0, z: 0}
+  m_LocalPosition: {x: 0.179, y: 0, z: -1.646}
   m_LocalScale: {x: 4, y: 4, z: 4}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -59,7 +59,7 @@ Transform:
   m_GameObject: {fileID: 1270611999658988431}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.0024284273, y: -0.27, z: 0.13}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -88,7 +88,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: f0e8b35ff52445e45b7aaa07b0af7d38, type: 2}
+  - {fileID: 2100000, guid: a48f899da920b455a95cf2732849ee4f, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -117,7 +117,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1270611999658988431}
-  m_Mesh: {fileID: -5483441392058454776, guid: c19aa0e17c6fef74cb7831da64adf3fe, type: 3}
+  m_Mesh: {fileID: -6885968380382307156, guid: fdb44201b7369ed48bc5aa87d479e6f9, type: 3}
 --- !u!1 &3172102141589766498
 GameObject:
   m_ObjectHideFlags: 0
@@ -129,10 +129,10 @@ GameObject:
   - component: {fileID: 5633370403166231957}
   - component: {fileID: 7528259036273102345}
   - component: {fileID: 2461049266000352800}
+  - component: {fileID: 5899807608685920841}
   - component: {fileID: 7070894261933836396}
-  - component: {fileID: 6009434718875001729}
   m_Layer: 0
-  m_Name: Boots
+  m_Name: Great_Sword
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -207,47 +207,7 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &7070894261933836396
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3172102141589766498}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0fa84783d20a428185a38a9c1db40342, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  itemSettings:
-    <Name>k__BackingField: Boots
-    <Description>k__BackingField: Some Description
-    <ItemType>k__BackingField: 7
-    <Icon>k__BackingField: {fileID: 7104411420755877180, guid: d1c8a87b57b2f40fb9d007351f49eb8d, type: 3}
-    <Mesh>k__BackingField: {fileID: -5483441392058454776, guid: c19aa0e17c6fef74cb7831da64adf3fe, type: 3}
-    <Size>k__BackingField: {x: 2, y: 2}
-    <StartDrag>k__BackingField:
-      bank: {fileID: 11400000, guid: e4b41ce06ef2940e293fe59906357731, type: 2}
-      eventId: startDrag
-      identifier: Inventory.startDrag
-    <AddItemKey>k__BackingField:
-      bank: {fileID: 11400000, guid: e4b41ce06ef2940e293fe59906357731, type: 2}
-      eventId: addItemToInventory
-      identifier: Inventory.addItemToInventory
-    <EquipItem>k__BackingField:
-      bank: {fileID: 11400000, guid: e4b41ce06ef2940e293fe59906357731, type: 2}
-      eventId: equipItem
-      identifier: Inventory.equipItem
-    <DropToScene>k__BackingField:
-      bank: {fileID: 11400000, guid: e4b41ce06ef2940e293fe59906357731, type: 2}
-      eventId: addItemToInventory
-      identifier: Inventory.addItemToInventory
-    <UseItem>k__BackingField:
-      bank: {fileID: 11400000, guid: e4b41ce06ef2940e293fe59906357731, type: 2}
-      eventId: startDrag
-      identifier: Inventory.startDrag
-    <AnimatorController>k__BackingField: {fileID: 0}
---- !u!65 &6009434718875001729
+--- !u!65 &5899807608685920841
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -266,5 +226,45 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1.4366424, y: 1.4710104, z: 2.0024896}
-  m_Center: {x: 0.2183212, y: 0.71765935, z: 1.1698978}
+  m_Size: {x: 1.9084, y: 1, z: 3.4372501}
+  m_Center: {x: 0.14777684, y: 0, z: -0.4690628}
+--- !u!114 &7070894261933836396
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3172102141589766498}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0fa84783d20a428185a38a9c1db40342, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemSettings:
+    <Name>k__BackingField: Sword
+    <Description>k__BackingField: Some Description
+    <ItemType>k__BackingField: 0
+    <Icon>k__BackingField: {fileID: 2162415766981484021, guid: 7ccdedc0eea7a4045b423845454df34e, type: 3}
+    <Mesh>k__BackingField: {fileID: -6885968380382307156, guid: fdb44201b7369ed48bc5aa87d479e6f9, type: 3}
+    <Size>k__BackingField: {x: 2, y: 4}
+    <StartDrag>k__BackingField:
+      bank: {fileID: 11400000, guid: e4b41ce06ef2940e293fe59906357731, type: 2}
+      eventId: startDrag
+      identifier: Inventory.startDrag
+    <AddItemKey>k__BackingField:
+      bank: {fileID: 11400000, guid: e4b41ce06ef2940e293fe59906357731, type: 2}
+      eventId: addItemToInventory
+      identifier: Inventory.addItemToInventory
+    <EquipItem>k__BackingField:
+      bank: {fileID: 11400000, guid: e4b41ce06ef2940e293fe59906357731, type: 2}
+      eventId: equipItem
+      identifier: Inventory.equipItem
+    <DropToScene>k__BackingField:
+      bank: {fileID: 11400000, guid: e4b41ce06ef2940e293fe59906357731, type: 2}
+      eventId: addItemToInventory
+      identifier: Inventory.addItemToInventory
+    <UseItem>k__BackingField:
+      bank: {fileID: 11400000, guid: e4b41ce06ef2940e293fe59906357731, type: 2}
+      eventId: addItemToInventory
+      identifier: Inventory.addItemToInventory
+    <AnimatorController>k__BackingField: {fileID: 22100000, guid: bf2708abadf044a99a3afbcbf7ed3aad, type: 2}
