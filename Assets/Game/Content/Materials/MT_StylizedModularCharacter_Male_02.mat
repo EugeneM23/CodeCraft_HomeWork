@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: MT_StylizedModularCharacter_Male_02
-  m_Shader: {fileID: 4800000, guid: 124e8c1d64ac24c13aa406f05ca2d222, type: 3}
+  m_Shader: {fileID: 4800000, guid: a2a06e22c08354d9699356710b69ca9c, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
@@ -61,6 +61,7 @@ Material:
   - RayTracingPrepass
   - MOTIONVECTORS
   - ALWAYS
+  - SRPDEFAULTUNLIT
   m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
@@ -277,7 +278,7 @@ Material:
     - _Anisotropy: 0
     - _BlendMode: 0
     - _BlendOp: 0
-    - _Brightness: 1
+    - _Brightness: 1.5
     - _BumpScale: 1
     - _CameraFadeEnd: 0
     - _CameraFadeInvert: 0
@@ -378,6 +379,7 @@ Material:
     - _Metallic: 0
     - _MetallicRemapMax: 1
     - _MetallicRemapMin: 0
+    - _MixedLighting: 0
     - _Mode: 0
     - _Normal2Strength: 1
     - _NormalMapSpace: 0
@@ -421,11 +423,11 @@ Material:
     - _RenderQueueType: 1
     - _RequireSplitLighting: 0
     - _Rim: 1
-    - _RimAmount: 0.7
+    - _RimAmount: 1.1
     - _RimBlend: 1
     - _RimContrast: 4.2
     - _RimInverse: 0
-    - _Saturation: 1.925
+    - _Saturation: 1.4
     - _ShadowOverlayAnimation: 0
     - _ShadowOverlayBrightness: 0.681
     - _ShadowOverlaySpeedU: 0.1
@@ -439,7 +441,7 @@ Material:
     - _Specular: 1
     - _SpecularAAScreenSpaceVariance: 0.1
     - _SpecularAAThreshold: 0.2
-    - _SpecularBrightness: 5.1
+    - _SpecularBrightness: 7.6
     - _SpecularHair: 0
     - _SpecularHighlights: 1
     - _SpecularOcclusionMode: 1

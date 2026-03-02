@@ -9,10 +9,14 @@ public class CharacterEquipment : MonoBehaviour
     [SerializeField] private SkinnedMeshRenderer _bootsRenderer;
     [SerializeField] private SkinnedMeshRenderer _legsRenderer;
     [SerializeField] private SkinnedMeshRenderer _handsRenderer;
-    [SerializeField] private MeshFilter _weaponFilter;
-    [SerializeField] private MeshFilter _shieldFilter;
+
+    [SerializeField] private Transform _weaponRoot;
+    [SerializeField] private Transform _shieldRoot;
 
     private Dictionary<ItemType, SkinnedMeshRenderer> _renderers;
+
+    private GameObject _weapon;
+    private GameObject _shield;
 
     private void Awake()
     {
@@ -29,14 +33,23 @@ public class CharacterEquipment : MonoBehaviour
     public void Equip(Item item)
     {
         var itemType = item.Settings.ItemType;
-        var mesh = item.Settings.Mesh;
 
         if (itemType == ItemType.Weapon)
-            _weaponFilter.mesh = mesh;
+        {
+            _weapon = Instantiate(item.Settings.ItemPrefab, _weaponRoot);
+            _weapon.transform.position = _weaponRoot.transform.position;
+        }
         else if (itemType == ItemType.Shield)
-            _shieldFilter.mesh = mesh;
+        {
+            Destroy(_shield);
+
+            _shield = Instantiate(item.Settings.ItemPrefab, _shieldRoot);
+        }
         else
+        {
+            var mesh = item.Settings.Mesh;
             _renderers[itemType].sharedMesh = mesh;
+        }
     }
 
     public void Unequip(Item item)
@@ -44,10 +57,16 @@ public class CharacterEquipment : MonoBehaviour
         var itemType = item.Settings.ItemType;
 
         if (itemType == ItemType.Weapon)
-            _weaponFilter.mesh = null;
+        {
+            Destroy(_weapon);
+        }
         else if (itemType == ItemType.Shield)
-            _shieldFilter.mesh = null;
+        {
+            Destroy(_shield);
+        }
         else
+        {
             _renderers[itemType].sharedMesh = null;
+        }
     }
 }

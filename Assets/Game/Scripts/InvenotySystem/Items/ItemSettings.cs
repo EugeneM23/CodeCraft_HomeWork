@@ -1,6 +1,7 @@
 using System;
 using AudioEngine;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace Inventories
 {
@@ -33,24 +34,26 @@ namespace Inventories
         [field: SerializeField] public AudioEventKey DropToScene { get; set; }
         [field: SerializeField] public AudioEventKey UseItem { get; set; }
         [field: SerializeField] public RuntimeAnimatorController AnimatorController { get; set; }
+        [field: SerializeField] public GameObject ItemPrefab { get; set; }
 
-        public ItemSettings(ItemSettings itemData)
+        public ItemSettings(ItemSettings itemSetings)
         {
-            Name = itemData.Name;
-            Description = itemData.Description;
-            ItemType = itemData.ItemType;
+            Name = itemSetings.Name;
+            Description = itemSetings.Description;
+            ItemType = itemSetings.ItemType;
 
-            Icon = itemData.Icon;
-            Mesh = itemData.Mesh;
+            Icon = itemSetings.Icon;
+            Mesh = itemSetings.Mesh;
 
-            Size = itemData.Size;
+            Size = itemSetings.Size;
 
-            StartDrag = itemData.StartDrag;
-            AddItemKey = itemData.AddItemKey;
-            EquipItem = itemData.EquipItem;
-            DropToScene = itemData.DropToScene;
-            UseItem = itemData.UseItem;
-            AnimatorController = itemData.AnimatorController;
+            StartDrag = itemSetings.StartDrag;
+            AddItemKey = itemSetings.AddItemKey;
+            EquipItem = itemSetings.EquipItem;
+            DropToScene = itemSetings.DropToScene;
+            UseItem = itemSetings.UseItem;
+            AnimatorController = itemSetings.AnimatorController;
+            ItemPrefab = itemSetings.ItemPrefab;
         }
     }
 }

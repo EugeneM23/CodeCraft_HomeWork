@@ -72,7 +72,7 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 2048
+    maxTextureSize: 256
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 1
@@ -129,12 +129,12 @@ TextureImporter:
       name: "ChatGPT Image 27 \u0433\u0440\u0443\u0434. 2025 \u0440., 22_24_14_0"
       rect:
         serializedVersion: 2
-        x: 0
-        y: 8
-        width: 1024
+        x: 254
+        y: 15
+        width: 478
         height: 1480
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -151,7 +151,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 78f3a595d1b654aacab6c51be742b67f
     internalID: 0
     vertices: []
     indices: 

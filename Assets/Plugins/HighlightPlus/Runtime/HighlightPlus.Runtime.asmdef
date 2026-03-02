@@ -1,0 +1,19 @@
+{
+    "name": "HighlightPlus.Runtime",
+    "rootNamespace": "HighlightPlus",
+    "references": [
+        "Unity.RenderPipelines.Core.Runtime",
+        "Unity.TextMeshPro",
+        "Unity.InputSystem",
+        "Unity.RenderPipelines.Universal.Runtime"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

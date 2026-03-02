@@ -32,20 +32,6 @@ public class EquipmentPresenter : IDisposable
 
     public Item GetEquippedItem(ItemType itemType) => _model.GetEquippedItem(itemType);
 
-    public Dictionary<ItemType, Item> GetAllEquippedItems()
-    {
-        var equipped = new Dictionary<ItemType, Item>();
-        var types = new[] { ItemType.Head, ItemType.Armor, ItemType.Hands, ItemType.Legs, ItemType.Boots, ItemType.Weapon, ItemType.Shield };
-        
-        foreach (var type in types)
-        {
-            var item = _model.GetEquippedItem(type);
-            if (item != null)
-                equipped[type] = item;
-        }
-        
-        return equipped;
-    }
 
     private void HandleModelEquipped(ItemType itemType, Item item)
     {
