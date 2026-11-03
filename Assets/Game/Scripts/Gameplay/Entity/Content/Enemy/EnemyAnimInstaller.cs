@@ -16,6 +16,12 @@ namespace Game.Gameplay
             entity.AddBehaviour<SwitchAnimatorBehaviour>();
             entity.AddBehaviour<CharacterMoveAnimBehaviour>();
             entity.AddBehaviour<DeathAnimBehaviour>();
+
+            // AC_Zombie reaches Attack and TakeDamage only through AnyState transitions on those
+            // triggers, and nothing used to set them, so neither animation could ever play. These
+            // two are enemy-only on purpose: AC_BaseCharacter declares no such parameters.
+            entity.AddBehaviour<EnemyAttackAnimBehaviour>();
+            entity.AddBehaviour<EnemyTakeDamageAnimBehaviour>();
         }
     }
 }
