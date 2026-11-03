@@ -26,6 +26,9 @@ namespace Game
             _poolsParent = poolsParent;
         }
 
+        /// <summary>Registered pools by id. For debug readouts — do not mutate.</summary>
+        public IReadOnlyDictionary<string, EntityPrefabPool> Pools => _poolsById;
+
         public IEntity Create(MonoEntity prefab)
         {
             if (!_poolsByPrefab.TryGetValue(prefab, out EntityPrefabPool pool))

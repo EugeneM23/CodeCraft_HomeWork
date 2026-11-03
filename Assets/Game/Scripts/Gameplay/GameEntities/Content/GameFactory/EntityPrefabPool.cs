@@ -27,6 +27,9 @@ namespace Game
             _container = container;
         }
 
+        /// <summary>How many instances are parked and ready to be rented.</summary>
+        public int Count => _queue.Count;
+
         public void Init(int count)
         {
             for (int i = 0; i < count; i++)
