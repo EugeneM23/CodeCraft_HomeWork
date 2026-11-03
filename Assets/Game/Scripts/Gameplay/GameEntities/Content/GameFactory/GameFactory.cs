@@ -67,15 +67,22 @@ namespace Game
         {
             string entityID = entity.GetEntityID();
 
-            // This used to recover from an unknown id by registering the live instance as the
-            // pool prefab. For characters GetTransform() is the character root, not the entity
-            // root, so GetComponent returned null and the next Rent instantiated null; when it
-            // did find a component, the pool started cloning a mutated, deactivated runtime
-            // object. An unregistered id is a wiring mistake, so say so.
+            // No pool for this id means the entity was never rented from one: the buff and dash
+            // pickups are placed in the scene by hand and still go through here. Destroy it for
+            // real instead of pooling it.
+            //
+            // This used to recover by registering the live instance as the pool prefab, which is
+            // what must not happen: for characters GetTransform() is the character root rather
+            // than the entity root, so the component was null and the next Rent instantiated
+            // null; when it was found, the pool started cloning a mutated, deactivated runtime
+            // object whose values were already populated.
             if (!_poolsById.TryGetValue(entityID, out EntityPrefabPool pool))
-                throw new InvalidOperationException(
-                    $"GameFactory: no pool registered for id '{entityID}', cannot return the entity. " +
-                    "Register the prefab in GameContextInstaller before spawning it.");
+            {
+                if (MonoEntity.TryCast(entity, out MonoEntity monoEntity))
+                    MonoEntity.Destroy(monoEntity);
+
+                return;
+            }
 
             pool.Return(entity);
         }
