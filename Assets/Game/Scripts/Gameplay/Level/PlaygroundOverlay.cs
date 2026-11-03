@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Text;
 using Atomic.Entities;
 using Modules.Gameplay;
@@ -153,7 +154,17 @@ namespace Game.Gameplay
         {
             sb.Append("Buffs: ");
 
-            if (character == null || !character.TryGetBuffsEffects(out var buffs) || buffs.Count == 0)
+            if (character == null || !character.TryGetBuffsEffects(out var effects))
+            {
+                sb.AppendLine("none");
+                return;
+            }
+
+            // Through IList: IReactiveList implements both IList and IReadOnlyReactiveList, so
+            // Count and the indexer are ambiguous on the interface itself.
+            IList<BuffBase> buffs = effects;
+
+            if (buffs.Count == 0)
             {
                 sb.AppendLine("none");
                 return;
