@@ -38,6 +38,11 @@ namespace Game
             entity.AddDamageableTag();
             entity.AddEnemyTag();
 
+            // Enemies are spawned through GameFactory, whose Destroy starts from this value, and
+            // GetEntityID throws for a missing key. The id has to match the pool key, which is the
+            // prefab name, so it is derived the same way the bullet and effect installers do it.
+            entity.AddEntityID(gameObject.name.Replace("(Clone)", ""));
+
             // Core
             entity.AddMoveSpeed(new ReactiveFloat(_moveSpeed));
             entity.AddDamage(new ReactiveInt(_damage));

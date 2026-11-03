@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Game.Gameplay
 {
-    public class HitSoundBehaviour : IEntityInit
+    public class HitSoundBehaviour : IEntityInit, IEntityDispose
     {
         private readonly AudioClip[] _damageClips;
         private readonly AudioSource _audioSource;
@@ -22,8 +22,21 @@ namespace Game.Gameplay
             _health.OnHealthChanged += PlayHitSound;
         }
 
-        private void PlayHitSound(int obj)
+        public void Dispose(IEntity entity)
         {
+            // Without this the handler outlived the entity on a Health instance that the pool
+            // hands back out, so a reused body played the previous owner sounds as well.
+            if (_health != null)
+                _health.OnHealthChanged -= PlayHitSound;
+
+            _health = null;
+        }
+
+        private void PlayHitSound(int health)
+        {
+            if (_audioSource == null || _damageClips == null || _damageClips.Length == 0)
+                return;
+
             int range = Random.Range(0, _damageClips.Length);
             _audioSource.PlayOneShot(_damageClips[range]);
         }

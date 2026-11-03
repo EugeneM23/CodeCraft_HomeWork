@@ -16,7 +16,9 @@ namespace Game
             _gameContext = GameContext.Instance;
             entity.AddEntityID(gameObject.name.Replace("(Clone)", ""));
             entity.AddTransform(transform);
-            entity.AddLifeTime(new Cooldown(3f));
+            // Was hardcoded 3f, which made the serialized field inert and pinned the pool turnover
+            // rate: a short impact effect held its pooled slot for three seconds.
+            entity.AddLifeTime(new Cooldown(_lifeTime));
             entity.AddDestroyAction(new InlineAction(() => SpawnUseCase.UnSpawnEntity(_gameContext.GetGameFactory(), entity)));
             entity.AddBehaviour<LifeTimeBehaviour>();
         }

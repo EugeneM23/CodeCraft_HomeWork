@@ -69,8 +69,8 @@ namespace Game
             //CameraShake
             entity.AddCameraShakeArgs(_shakeArgs);
 
-            entity.OnTicked += deltaTime => entity.GetWeaponCooldown().Tick(deltaTime);
+            entity.AddBehaviour<TickCooldownBehaviour>();
         }
-        
+
     }
 }

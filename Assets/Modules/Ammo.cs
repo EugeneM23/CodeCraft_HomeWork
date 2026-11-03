@@ -41,6 +41,16 @@ namespace Modules.Gameplay
             }
         }
 
-        public void SpendAll() => count = 0;
+        public void SpendAll()
+        {
+            if (this.count == 0)
+                return;
+
+            this.count = 0;
+
+            // The only mutator that used to stay silent, so anything observing the ammo kept
+            // showing the old count until the next Add or Spend happened to fire.
+            this.OnStateChanged?.Invoke();
+        }
     }
 }

@@ -26,7 +26,9 @@ namespace Game.Gameplay
         {
             entity.AddAudioSource(_audioSource);
             entity.AddBehaviour(new HitSoundBehaviour(_damageClips, _audioSource));
-            entity.AddBehaviour(new AttackSoundBehaviour(_damageClips, _audioSource));
+            // _attackClips, not _damageClips: enemies grunted in pain whenever they swung, and
+            // the attack clips were serialized but never used by anything.
+            entity.AddBehaviour(new AttackSoundBehaviour(_attackClips, _audioSource));
             entity.AddBehaviour(new MoveStepSoundBehaviour(_moveStepClips, _stepTime));
             entity.AddBehaviour(new DeathSoundBehaviour(_deathClips));
         }

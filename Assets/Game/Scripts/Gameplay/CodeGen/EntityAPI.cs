@@ -54,6 +54,13 @@ namespace Game
 
         // was BaseFunction<bool>, which is gone; IFunction<bool> is the surviving abstraction.
         public static readonly ValueKey<IEntity, IFunction<bool>> JumpCondition = new(nameof(JumpCondition));
+
+        /// <summary>
+        /// How many sources currently grant jumping (effect areas, buffs). The jump values are
+        /// added when it reaches one and removed when it falls back to zero, so two overlapping
+        /// grants no longer let the first release take jumping away from the second.
+        /// </summary>
+        public static readonly ValueKey<IEntity, int> JumpSourceCount = new(nameof(JumpSourceCount));
         public static readonly ValueKey<IEntity, float> JumpForce = new(nameof(JumpForce));
         public static readonly ValueKey<IEntity, IEvent> JumpEvent = new(nameof(JumpEvent));
 

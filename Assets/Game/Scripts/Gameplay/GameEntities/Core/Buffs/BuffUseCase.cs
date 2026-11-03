@@ -14,8 +14,14 @@ namespace Game.Gameplay
             if (buffsEffects.Any(b => b.Name == buff.Name))
                 return false;
 
+            // Apply first, record second. The buff is allowed to refuse — ExtraDamageBuff needs a
+            // weapon — and this used to add it to the list regardless: a buff that never attached
+            // its behaviour, so nothing ever ticked it to expiry, sat in the list for the rest of
+            // the session blocking every later attempt by the same name.
+            if (!buff.Apply(character))
+                return false;
+
             buffsEffects.Add(buff);
-            buff.Apply(character);
 
             return true;
         }

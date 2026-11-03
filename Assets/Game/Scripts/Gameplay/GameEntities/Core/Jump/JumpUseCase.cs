@@ -1,3 +1,4 @@
+using Atomic.Elements;
 using Atomic.Entities;
 using UnityEngine;
 
@@ -13,6 +14,57 @@ namespace Game.Gameplay
         /// around it — 11 ThrowItem, 12 Bullet, 13 Weapon. Layer names come from ProjectSettings/TagManager.asset.
         /// </summary>
         private const int GROUND_MASK = ~((1 << 9) | (1 << 11) | (1 << 12) | (1 << 13));
+
+        /// <summary>
+        /// Registers one source of jumping — an effect area, a buff — and grants the jump values
+        /// on the first one.
+        /// </summary>
+        /// <remarks>
+        /// JumpAspect and JumpBuff used to add and delete the four jump values directly. Add is
+        /// TryAdd and Del removes unconditionally, so with two overlapping grants the second Apply
+        /// did nothing and the first Discard stripped jumping from a character still standing in
+        /// the area that granted it.
+        /// </remarks>
+        public static void AddJumpSource(IEntity entity, float jumpForce)
+        {
+            int count = entity.TryGetJumpSourceCount(out int current) ? current : 0;
+
+            if (count == 0)
+            {
+                entity.AddJumpableTag();
+
+                if (!entity.HasJumpForce())
+                    entity.AddJumpForce(jumpForce);
+
+                if (!entity.HasJumpEvent())
+                    entity.AddJumpEvent(new Atomic.Elements.Event());
+
+                if (!entity.HasJumpCondition())
+                    entity.AddJumpCondition(new InlineFunction<bool>(entity.GetHealth().Exists));
+            }
+
+            entity.SetJumpSourceCount(count + 1);
+        }
+
+        /// <summary>
+        /// Releases one source of jumping, removing the jump values once the last one is gone.
+        /// </summary>
+        public static void DelJumpSource(IEntity entity)
+        {
+            if (!entity.TryGetJumpSourceCount(out int current) || current <= 0)
+                return;
+
+            int count = current - 1;
+            entity.SetJumpSourceCount(count);
+
+            if (count > 0)
+                return;
+
+            entity.DelJumpableTag();
+            entity.DelJumpForce();
+            entity.DelJumpEvent();
+            entity.DelJumpCondition();
+        }
 
         public static bool Jump(IEntity entity)
         {

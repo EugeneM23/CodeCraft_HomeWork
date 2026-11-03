@@ -1,5 +1,5 @@
-using Atomic.Elements;
 using Atomic.Entities;
+using Game.Gameplay;
 
 namespace Game
 {
@@ -17,28 +17,10 @@ namespace Game
             return true;
         }
 
-        // Same guards as JumpAspect, and for the same reason: the effect-area aspect grants these
-        // four as well, so whichever gets there first wins instead of the second one throwing.
-        protected override void OnApply(IEntity entity)
-        {
-            entity.AddJumpableTag();
+        // Shares the refcounted grant with JumpAspect: the effect area and this buff can be active
+        // at the same time, and whichever ends first no longer takes jumping away from the other.
+        protected override void OnApply(IEntity entity) => JumpUseCase.AddJumpSource(entity, _jumpForce);
 
-            if (!entity.HasJumpForce())
-                entity.AddJumpForce(_jumpForce);
-
-            if (!entity.HasJumpEvent())
-                entity.AddJumpEvent(new Atomic.Elements.Event());
-
-            if (!entity.HasJumpCondition())
-                entity.AddJumpCondition(new InlineFunction<bool>(() => entity.GetHealth().GetCurrent() > 0));
-        }
-
-        protected override void OnDiscard(IEntity entity)
-        {
-            entity.DelJumpableTag(); 
-            entity.DelJumpForce();
-            entity.DelJumpEvent();
-            entity.DelJumpCondition();
-        }
+        protected override void OnDiscard(IEntity entity) => JumpUseCase.DelJumpSource(entity);
     }
 }
