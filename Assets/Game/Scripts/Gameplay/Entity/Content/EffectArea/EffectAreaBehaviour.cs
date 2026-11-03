@@ -1,6 +1,5 @@
 using Atomic.Elements;
 using Atomic.Entities;
-using Atomic.Extensions;
 using UnityEngine;
 
 namespace Game.Gameplay
@@ -16,13 +15,13 @@ namespace Game.Gameplay
             _entityAspect = entityAspect;
         }
 
-        public void  Init(in IEntity entity)
+        public void Init(IEntity entity)
         {
             _trigger.OnEntered += OnTriggerEnter;
             _trigger.OnExited += OnTriggerExit;
         }
 
-        public void Dispose(in IEntity entity)
+        public void Dispose(IEntity entity)
         { 
             _trigger.OnEntered -= OnTriggerEnter;
             _trigger.OnExited -= OnTriggerExit;

@@ -3,12 +3,12 @@ using Atomic.Entities;
 
 namespace Game
 {
-    public class CameraInstaller : SceneEntityInstaller
+    public class CameraInstaller : MonoEntityInstaller
     {
         public override void Install(IEntity entity)
         {
             entity.AddTransform(transform);
-            entity.AddCameraShakeEvent(new BaseEvent<CameraShakeArgs>());
+            entity.AddCameraShakeEvent(new Atomic.Elements.Event<CameraShakeArgs>());
 
             entity.AddBehaviour<CameraShakeBehaviour>();
         }

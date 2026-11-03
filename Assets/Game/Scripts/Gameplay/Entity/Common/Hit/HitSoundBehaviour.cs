@@ -16,7 +16,7 @@ namespace Game.Gameplay
             _audioSource = audioSource;
         }
 
-        public void Init(in IEntity entity)
+        public void Init(IEntity entity)
         {
             _health = entity.GetHealth();
             _health.OnHealthChanged += PlayHitSound;

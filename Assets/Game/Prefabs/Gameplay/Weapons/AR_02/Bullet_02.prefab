@@ -14,7 +14,6 @@ GameObject:
   - component: {fileID: 843169723521355603}
   - component: {fileID: 4751814292507788537}
   - component: {fileID: 8681404430408860655}
-  - component: {fileID: 7004281855503442550}
   - component: {fileID: 2807187463229867269}
   - component: {fileID: 1720412144135045913}
   m_Layer: 12
@@ -126,13 +125,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3142498ee69840069f3a93c11b1e1f75, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  installOnAwake: 1
-  installInEditMode: 0
+  useUnityLifecycle: 1
   disposeValues: 1
-  installers:
+  installOnAwake: 1
+  uninstallOnDestroy: 1
+  scriptableInstallers: []
+  sceneInstallers:
   - {fileID: 8681404430408860655}
-  _onlySelectedGizmos: 0
-  _onlyEditModeGizmos: 0
+  onlySelectedGizmos: 0
+  onlyEditModeGizmos: 0
+  autoCompile: 0
+  initialTagCapacity: 1
+  initialValueCapacity: 1
+  initialBehaviourCapacity: 0
 --- !u!114 &8681404430408860655
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -150,20 +155,6 @@ MonoBehaviour:
   _lifeTime: 1
   _hitPrefab: {fileID: 531043401270881185, guid: 70f7f741b91fe42e3848a87d8b4087ff, type: 3}
   _collisionEventReceiver: {fileID: 2807187463229867269}
---- !u!114 &7004281855503442550
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 903107765364537449}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 603a745f80e14d1d8cd57cf70a50187f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  entities:
-  - {fileID: 4751814292507788537}
 --- !u!114 &2807187463229867269
 MonoBehaviour:
   m_ObjectHideFlags: 0

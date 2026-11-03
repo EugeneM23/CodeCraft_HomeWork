@@ -2,10 +2,11 @@ using Atomic.Elements;
 using Atomic.Entities;
 using Modules.Gameplay;
 using UnityEngine;
+using Cooldown = Modules.Gameplay.Cooldown;
 
 namespace Game
 {
-    public class AudioSourceInstaller : SceneEntityInstaller
+    public class AudioSourceInstaller : MonoEntityInstaller
     {
         [SerializeField] private AudioSource _audioSource;
 
@@ -15,7 +16,7 @@ namespace Game
             entity.AddAudioSource(_audioSource);
             entity.AddLifeTime(new Cooldown(1f));
             entity.AddBehaviour<LifeTimeBehaviour>();
-            entity.AddDestroyAction(new BaseAction(() =>
+            entity.AddDestroyAction(new InlineAction(() =>
                 GameContext.Instance.GetGameFactory().Destroy(entity)));
         }
     }

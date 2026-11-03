@@ -1,10 +1,9 @@
-using Atomic.Contexts;
 using Atomic.Elements;
 using Atomic.Entities;
 
 namespace Game
 {
-    public class CharacterShakeController : IContextInit<IPlayerContext>
+    public class CharacterShakeController : IPlayerContextInit
     {
         private IEntity _character;
         private IReactiveVariable<IEntity> _weapon;

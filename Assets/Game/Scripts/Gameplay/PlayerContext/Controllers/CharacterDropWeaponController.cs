@@ -1,10 +1,9 @@
-using Atomic.Contexts;
 using Atomic.Entities;
 using UnityEngine;
 
 namespace Game
 {
-    public class CharacterDropWeaponController : IContextInit<IPlayerContext>, IContextUpdate
+    public class CharacterDropWeaponController : IPlayerContextInit, IPlayerContextTick
     {
         private IEntity _character;
         private GameContext _gameContext;
@@ -15,7 +14,7 @@ namespace Game
             _gameContext = GameContext.Instance;
         }
 
-        public void OnUpdate(IContext context, float deltaTime)
+        public void Tick(IPlayerContext context, float deltaTime)
         {
             if (Input.GetKeyDown(KeyCode.G))
             {

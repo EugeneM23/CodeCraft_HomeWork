@@ -3,7 +3,7 @@ using Game.Gameplay;
 
 namespace Game
 {
-    public abstract class TemporaryBuff : BuffBase, IEntityFixedUpdate
+    public abstract class TemporaryBuff : BuffBase, IEntityFixedTick
     {
         private readonly float _duration;
         private readonly string _name;
@@ -37,7 +37,7 @@ namespace Game
         protected abstract void OnApply(IEntity entity);
         protected abstract void OnDiscard(IEntity entity);
 
-        public void OnFixedUpdate(in IEntity entity, in float deltaTime)
+        public void FixedTick(IEntity entity, float deltaTime)
         {
             _currentTime += deltaTime;
  

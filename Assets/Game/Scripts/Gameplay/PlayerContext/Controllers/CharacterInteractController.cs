@@ -1,11 +1,10 @@
 using System.Collections.Generic;
-using Atomic.Contexts;
 using Atomic.Entities;
 using UnityEngine;
 
 namespace Game
 {
-    public class CharacterInteractController : IContextInit<IPlayerContext>, IContextUpdate
+    public class CharacterInteractController : IPlayerContextInit, IPlayerContextTick
     {
         private IEntity _character;
 
@@ -14,7 +13,7 @@ namespace Game
             _character = context.GetCharacter().Value;
         }
 
-        public void OnUpdate(IContext context, float deltaTime)
+        public void Tick(IPlayerContext context, float deltaTime)
         {
             if (Input.GetKeyDown(KeyCode.Q))
             {

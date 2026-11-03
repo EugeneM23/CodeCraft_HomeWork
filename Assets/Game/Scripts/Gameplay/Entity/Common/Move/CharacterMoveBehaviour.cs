@@ -4,18 +4,18 @@ using UnityEngine;
 
 namespace Game.Gameplay
 {
-    public class CharacterMoveBehaviour : IEntityInit, IEntityUpdate
+    public class CharacterMoveBehaviour : IEntityInit, IEntityTick
     {
         private IExpression<bool> _moveCondition;
         private IValue<Vector3> _moveDirection;
 
-        public void Init(in IEntity entity)
+        public void Init(IEntity entity)
         {
             _moveCondition = entity.GetMoveCondition();
             _moveDirection = entity.GetMoveDirection();
         }
 
-        public void OnUpdate(in IEntity entity, in float deltaTime)
+        public void Tick(IEntity entity, float deltaTime)
         {
             if (!_moveCondition.Value)
             {

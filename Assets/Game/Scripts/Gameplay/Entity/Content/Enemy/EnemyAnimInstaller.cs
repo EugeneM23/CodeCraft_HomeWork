@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Game.Gameplay
 {
-    public sealed class EnemyAnimInstaller : SceneEntityInstaller
+    public sealed class EnemyAnimInstaller : MonoEntityInstaller
     {
         [SerializeField] private Animator _animator;
         [SerializeField] private AnimationEventReceiver _animationReceiver;

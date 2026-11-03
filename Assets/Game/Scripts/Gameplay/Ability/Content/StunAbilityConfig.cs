@@ -18,15 +18,15 @@ namespace Game.Content
         {
             ability.AddTargetAbilityTag();
 
-            ability.AddTargetCondition(new BaseFunction<IEntity, bool>(point =>
+            ability.AddTargetCondition(new InlineFunction<IEntity, bool>(point =>
                 ManaUseCase.Enough(context, _manaCost)));
 
-            ability.AddTargetAction(new BaseAction<IEntity>(target => { ManaUseCase.Spend(context, _manaCost); }));
+            ability.AddTargetAction(new InlineAction<IEntity>(target => { ManaUseCase.Spend(context, _manaCost); }));
 
-            ability.AddTargetEvent(new BaseEvent<IEntity>());
+            ability.AddTargetEvent(new Atomic.Elements.Event<IEntity>());
             ability.AddManaCost(new Const<int>(_manaCost));
 
-            ability.WhenUpdate(dt =>
+            ability.WhenTick(dt =>
             {
                 if (Input.GetKeyDown(_abilityKey))
                 {

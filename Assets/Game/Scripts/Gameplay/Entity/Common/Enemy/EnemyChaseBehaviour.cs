@@ -4,14 +4,14 @@ using UnityEngine;
 
 namespace Game.Gameplay
 {
-    public class EnemyChaseBehaviour : IEntityInit, IEntityUpdate
+    public class EnemyChaseBehaviour : IEntityInit, IEntityTick
     {
         private IReactiveVariable<IEntity> _target;
         private IReactiveVariable<Vector3> _moveVector;
         private IReactiveVariable<Vector3> _rotateVector;
         private Transform _enemy;
 
-        public void Init(in IEntity entity)
+        public void Init(IEntity entity)
         {
             _target = entity.GetTarget();
             _moveVector = entity.GetMoveDirection();
@@ -19,7 +19,7 @@ namespace Game.Gameplay
             _enemy = entity.GetTransform();
         }
 
-        public void OnUpdate(in IEntity entity, in float deltaTime)
+        public void Tick(IEntity entity, float deltaTime)
         {
             if (_target.Value != null)
             {

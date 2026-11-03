@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Game.Gameplay
 {
-    public sealed class CharacterVfxInstaller : SceneEntityInstaller
+    public sealed class CharacterVfxInstaller : MonoEntityInstaller
     {
         [SerializeField] private ParticleSystem _bulletBlood;
 

@@ -27,7 +27,7 @@ namespace Game
         private static void SpawnPickUpWeapon(GameContext gameContext, IEntity weapon,
             Transform weaponTransform)
         {
-            SceneEntity pickUpWeapon = gameContext.GetWeaponCatalog().GetPickUpWeapon(weapon.GetWeaponId());
+            MonoEntity pickUpWeapon = gameContext.GetWeaponCatalog().GetPickUpWeapon(weapon.GetWeaponId());
             pickUpWeapon.GetTransform().SetPositionAndRotation(weaponTransform.position, Quaternion.identity);
 
             if (!weapon.TryGetAmmo(out var currentAmmo))

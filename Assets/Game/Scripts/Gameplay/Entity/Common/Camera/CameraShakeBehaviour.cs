@@ -4,10 +4,10 @@ using UnityEngine;
 
 namespace Game
 {
-    public class CameraShakeBehaviour : IEntityUpdate, IEntityInit
+    public class CameraShakeBehaviour : IEntityTick, IEntityInit
     {
         private Transform _cameraTransform;
-        private BaseEvent<CameraShakeArgs> _cameraShakeEvent;
+        private IEvent<CameraShakeArgs> _cameraShakeEvent;
 
         private bool _isShaking;
         private float _shakeTimeRemaining;
@@ -15,7 +15,7 @@ namespace Game
         private float _shakeDuration;
         private Vector3 _originalPosition;
 
-        public void Init(in IEntity entity)
+        public void Init(IEntity entity)
         {
             _cameraShakeEvent = entity.GetCameraShakeEvent();
             _cameraShakeEvent.Subscribe(OnShake);
@@ -31,7 +31,7 @@ namespace Game
             _originalPosition = _cameraTransform.localPosition;
         }
 
-        public void OnUpdate(in IEntity entity, in float deltaTime)
+        public void Tick(IEntity entity, float deltaTime)
         {
             if (!_isShaking) return;
 

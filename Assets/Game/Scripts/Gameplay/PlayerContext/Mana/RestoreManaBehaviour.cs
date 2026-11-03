@@ -1,11 +1,11 @@
 using System;
-using Atomic.Contexts;
 using Atomic.Elements;
 using Modules.Gameplay;
+using Cooldown = Modules.Gameplay.Cooldown;
 
 namespace Game
 {
-    public sealed class RestoreManaBehaviour : IContextInit<IPlayerContext>, IContextFixedUpdate
+    public sealed class RestoreManaBehaviour : IPlayerContextInit, IPlayerContextFixedTick
     {
         private readonly Cooldown _period;
         private readonly IValue<int> _restore;
@@ -25,7 +25,7 @@ namespace Game
             _maxMana = context.GetMaxMana();
         }
 
-        public void OnFixedUpdate(IContext context, float deltaTime)
+        public void FixedTick(IPlayerContext context, float deltaTime)
         {
             if (_currentMana.Value == _maxMana.Value)
                 return;

@@ -8,7 +8,7 @@ namespace Game.Gameplay
     {
         private readonly AudioClip[] _audionClips;
         private readonly AudioSource _audioSource;
-        private BaseEvent _fireEvent;
+        private IEvent _fireEvent;
 
         public AttackSoundBehaviour(AudioClip[] attaClips, AudioSource audioSource)
         {
@@ -16,7 +16,7 @@ namespace Game.Gameplay
             _audioSource = audioSource;
         }
 
-        public void Init(in IEntity entity)
+        public void Init(IEntity entity)
         {
             _fireEvent = entity.GetFireEvent();
             _fireEvent.Subscribe(PlaySound);

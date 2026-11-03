@@ -1,13 +1,14 @@
+using Atomic.Entities;
 using System;
-using Atomic.Contexts;
 using Atomic.Elements;
 using Modules.Gameplay;
 using UnityEngine;
+using Cooldown = Modules.Gameplay.Cooldown;
 
 namespace Game
 {
     [Serializable]
-    public sealed class ManaSystemInstaller : IContextInstaller<IPlayerContext>
+    public sealed class ManaSystemInstaller : IEntityInstaller<IPlayerContext>
     {
         [SerializeField]
         private Const<int> _maxMana = 10;
@@ -22,7 +23,7 @@ namespace Game
         {
             context.AddMaxMana(_maxMana);
             context.AddCurrentMana(new ReactiveInt(_maxMana.Value));
-            context.AddController(new RestoreManaBehaviour(new Cooldown(_restoreManaPeriod), _restoreAmount));
+            context.AddBehaviour(new RestoreManaBehaviour(new Cooldown(_restoreManaPeriod), _restoreAmount));
         }
     }
 }

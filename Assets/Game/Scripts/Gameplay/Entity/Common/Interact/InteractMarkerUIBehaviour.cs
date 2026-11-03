@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Game
 {
-    public class InteractMarkerUIBehaviour : IEntityInit, IEntityDispose, IEntityLateUpdate
+    public class InteractMarkerUIBehaviour : IEntityInit, IEntityDispose, IEntityLateTick
     {
         private readonly GameObject _view;
         private readonly GameContext _gameContext;
@@ -18,7 +18,7 @@ namespace Game
             _view = view;
         }
 
-        public void Init(in IEntity entity)
+        public void Init(IEntity entity)
         {
             _targetInteractable = _gameContext.GetPlayerContext().GetCharacter().Value.GetTargetInteractable();
             _camera = _gameContext.GetPlayerContext().GetCamera();
@@ -26,7 +26,7 @@ namespace Game
             _positionOffset = entity.GetPositionOffset();
         }
 
-        public void Dispose(in IEntity entity)
+        public void Dispose(IEntity entity)
         {
             _targetInteractable.Unsubscribe(OnTargetChanged);
         }
@@ -45,7 +45,7 @@ namespace Game
             }
         }
 
-        public void OnLateUpdate(in IEntity entity, in float deltaTime)
+        public void LateTick(IEntity entity, float deltaTime)
         {
             var transformRotation = Quaternion.LookRotation(_view.transform.position - _camera.GetTransform().position);
             transformRotation.z = 0;

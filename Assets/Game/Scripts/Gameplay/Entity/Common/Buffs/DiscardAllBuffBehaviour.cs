@@ -9,7 +9,7 @@ namespace Game
         private IEntity _character;
         private Health _health;
 
-        public void Init(in IEntity entity)
+        public void Init(IEntity entity)
         {
             _character = entity;
             _health = entity.GetHealth();

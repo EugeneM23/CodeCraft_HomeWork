@@ -1,11 +1,10 @@
-using Atomic.Contexts;
 using Atomic.Entities;
 using Game.Gameplay;
 using UnityEngine;
 
 namespace Game
 {
-    public class CharacterJumpController : IContextInit<IPlayerContext>, IContextLateUpdate
+    public class CharacterJumpController : IPlayerContextInit, IPlayerContextLateTick
     {
         private IEntity _character;
 
@@ -14,7 +13,7 @@ namespace Game
             _character = context.GetCharacter().Value;
         }
 
-        public void OnLateUpdate(IContext context, float deltaTime)
+        public void LateTick(IPlayerContext context, float deltaTime)
         {
             if (!_character.HasJumpableTag()) return;
 

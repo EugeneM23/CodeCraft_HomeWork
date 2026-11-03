@@ -1,17 +1,16 @@
 using System.Collections.Generic;
-using Atomic.Contexts;
 using Atomic.Entities;
 
 namespace Game
 {
     public class AbilityRunner :
-        IContextInit<IPlayerContext>,
-        IContextUpdate,
-        IContextFixedUpdate,
-        IContextLateUpdate,
-        IContextEnable,
-        IContextDisable,
-        IContextDispose
+        IPlayerContextInit,
+        IPlayerContextTick,
+        IPlayerContextFixedTick,
+        IPlayerContextLateTick,
+        IPlayerContextEnable,
+        IPlayerContextDisable,
+        IPlayerContextDispose
     {
         private readonly List<Ability> _ability = new List<Ability>();
 
@@ -24,37 +23,37 @@ namespace Game
                 item.Init();
         }
 
-        public void OnUpdate(IContext context, float deltaTime)
+        public void Tick(IPlayerContext context, float deltaTime)
         {
             foreach (var item in _ability)
-                item.OnUpdate(deltaTime);
+                item.Tick(deltaTime);
         }
 
-        public void OnFixedUpdate(IContext context, float deltaTime)
+        public void FixedTick(IPlayerContext context, float deltaTime)
         {
             foreach (var item in _ability)
-                item.OnFixedUpdate(deltaTime);
+                item.FixedTick(deltaTime);
         }
 
-        public void OnLateUpdate(IContext context, float deltaTime)
+        public void LateTick(IPlayerContext context, float deltaTime)
         {
             foreach (var item in _ability)
-                item.OnLateUpdate(deltaTime);
+                item.LateTick(deltaTime);
         }
 
-        public void Enable(IContext context)
+        public void Enable(IPlayerContext context)
         {
             foreach (var item in _ability)
                 item.Enable();
         }
 
-        public void Disable(IContext context)
+        public void Disable(IPlayerContext context)
         {
             foreach (var item in _ability)
                 item.Disable();
         }
 
-        public void Dispose(IContext context)
+        public void Dispose(IPlayerContext context)
         {
             foreach (var item in _ability)
                 item.Dispose();

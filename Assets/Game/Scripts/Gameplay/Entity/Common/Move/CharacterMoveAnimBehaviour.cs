@@ -14,7 +14,7 @@ namespace Game.Gameplay
         private IEntity _character;
         private Transform _characterTransform;
 
-        public void Init(in IEntity entity)
+        public void Init(IEntity entity)
         {
             _rotateDirection = entity.GetRotateDirection();
             _characterTransform = entity.GetTransform();
@@ -26,7 +26,7 @@ namespace Game.Gameplay
             _rotateDirection.Observe(OnDirectionChanged);
         }
 
-        public void Dispose(in IEntity entity)
+        public void Dispose(IEntity entity)
         {
             _moveDirection.Unsubscribe(OnDirectionChanged);
             _rotateDirection.Unsubscribe(OnDirectionChanged);

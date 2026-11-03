@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Game
 {
-    public class DamageCastBehaviour : IEntityInit, IEntityDispose, IEntityUpdate
+    public class DamageCastBehaviour : IEntityInit, IEntityDispose, IEntityTick
     {
         private const float CAST_TIME = 0.1f;
         private IReactiveVariable<IEntity> _weapon;
@@ -13,7 +13,7 @@ namespace Game
 
         private float _castTimer;
 
-        public void Init(in IEntity entity)
+        public void Init(IEntity entity)
         {
             _receiver = entity.GetAnimationEventReceiver();
             _receiver.OnEvent += OnDamageCast;
@@ -22,7 +22,7 @@ namespace Game
             _castTimer = 0f;
         }
 
-        public void Dispose(in IEntity entity) => _receiver.OnEvent -= OnDamageCast;
+        public void Dispose(IEntity entity) => _receiver.OnEvent -= OnDamageCast;
 
         private void OnDamageCast(string eventName)
         {
@@ -30,7 +30,7 @@ namespace Game
                 _castTimer = CAST_TIME;
         }
 
-        public void OnUpdate(in IEntity entity, in float deltaTime)
+        public void Tick(IEntity entity, float deltaTime)
         {
             if (_castTimer <= 0f) return;
 

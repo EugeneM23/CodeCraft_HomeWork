@@ -10,8 +10,8 @@ namespace Game
         private readonly ParticleSystem meleeBlood;
         private readonly Transform originTransform;
 
-        private IReactive<TakeDamageArgs> _damageEvent;
-        private IReactive<TakeDamageArgs> _deathEvent;
+        private ISignal<TakeDamageArgs> _damageEvent;
+        private ISignal<TakeDamageArgs> _deathEvent;
 
         public TakeDamageBloodBehaviour(
             ParticleSystem bulletBlood,
@@ -24,7 +24,7 @@ namespace Game
             this.originTransform = originTransform;
         }
 
-        public void Init(in IEntity entity)
+        public void Init(IEntity entity)
         {
             _damageEvent = entity.GetDamageTakenEvent();
             _deathEvent = entity.GetDeathTakenEvent();
@@ -33,7 +33,7 @@ namespace Game
             _deathEvent.Subscribe(this.OnDamageTaken);
         }
 
-        public void Dispose(in IEntity entity)
+        public void Dispose(IEntity entity)
         {
             _damageEvent.Subscribe(this.OnDamageTaken);
             _deathEvent.Subscribe(this.OnDamageTaken);

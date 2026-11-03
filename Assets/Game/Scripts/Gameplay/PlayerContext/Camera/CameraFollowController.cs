@@ -1,11 +1,10 @@
-using Atomic.Contexts;
 using Atomic.Elements;
 using Atomic.Entities;
 using UnityEngine;
 
 namespace Game
 {
-    public class CameraFollowController : IContextInit<IPlayerContext>, IContextLateUpdate
+    public class CameraFollowController : IPlayerContextInit, IPlayerContextLateTick
     {
         private IEntity _character;
         private IValue<Vector3> _offset;
@@ -20,7 +19,7 @@ namespace Game
             _speed = context.GetCameraSpeed();
         }
 
-        public void OnLateUpdate(IContext context, float deltaTime)
+        public void LateTick(IPlayerContext context, float deltaTime)
         {
             CameraFollowUseCase.Follow(_cameraRoot, _character.GetCameraPoint(), deltaTime, _speed.Value, _offset.Value);
         }

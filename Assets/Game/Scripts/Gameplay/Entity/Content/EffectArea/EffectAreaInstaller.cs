@@ -1,10 +1,9 @@
 using Atomic.Entities;
-using Atomic.Extensions;
 using UnityEngine;
 
 namespace Game.Gameplay
 {
-    public class EffectAreaInstaller : SceneEntityInstaller
+    public class EffectAreaInstaller : MonoEntityInstaller
     {
         [SerializeField] private TriggerEventReceiver _triggerEventReceiver;
         [SerializeField] private ScriptableEntityAspect _entityAspect;

@@ -1,6 +1,7 @@
 using Atomic.Entities;
 using Modules.Gameplay;
 using UnityEngine;
+using Cooldown = Modules.Gameplay.Cooldown;
 
 namespace Game
 {
@@ -47,7 +48,7 @@ namespace Game
             factory.Destroy(entity);
         }
 
-        public static void SpawnCharacter(SceneEntity characterPrefab, Transform spawnPoint, IEntityWorld entityWorld,
+        public static void SpawnCharacter(MonoEntity characterPrefab, Transform spawnPoint, IEntityWorld<IEntity> entityWorld,
             GameFactory gameFactory)
         {
             IEntity entity = gameFactory.Create(characterPrefab);

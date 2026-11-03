@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Game
 {
-    public class HealthPickUpInstaller : SceneEntityInstaller
+    public class HealthPickUpInstaller : MonoEntityInstaller
     {
         [SerializeField] private int _healthAmount = 100;
 
@@ -12,10 +12,10 @@ namespace Game
         {
             entity.AddTransform(transform);
             entity.AddInteractableTag();
-            entity.AddPickUpEvent(new BaseEvent());
+            entity.AddPickUpEvent(new Atomic.Elements.Event());
 
             entity.AddInteractAction(
-                new BaseAction<IEntity>((character =>
+                new InlineAction<IEntity>((character =>
                 {
                     entity.GetPickUpEvent().Invoke();
                     character.GetHealth().Add(_healthAmount);

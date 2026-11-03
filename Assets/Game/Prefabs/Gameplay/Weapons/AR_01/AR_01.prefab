@@ -9743,7 +9743,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1186510011896613227}
-  - component: {fileID: 724852821602437460}
   - component: {fileID: 2915102572323193772}
   - component: {fileID: 5247850647910185787}
   - component: {fileID: 3078069582712398499}
@@ -9771,20 +9770,6 @@ Transform:
   - {fileID: 4901645410455188793}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &724852821602437460
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3845865988584237931}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 603a745f80e14d1d8cd57cf70a50187f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  entities:
-  - {fileID: 5247850647910185787}
 --- !u!114 &2915102572323193772
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9797,15 +9782,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 122cc892058f495ebd53bbedae2ebd2c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  serializationData:
-    SerializedFormat: 2
-    SerializedBytes: 
-    ReferencedUnityObjects: []
-    SerializedBytesString: 
-    Prefab: {fileID: 0}
-    PrefabModificationsReferencedUnityObjects: []
-    PrefabModifications: []
-    SerializationNodes: []
   _id: 2
   _fireRate:
     _current: 0
@@ -9833,14 +9809,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3142498ee69840069f3a93c11b1e1f75, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  installOnAwake: 1
-  installInEditMode: 0
+  useUnityLifecycle: 1
   disposeValues: 1
-  installers:
+  installOnAwake: 1
+  uninstallOnDestroy: 1
+  scriptableInstallers: []
+  sceneInstallers:
   - {fileID: 2915102572323193772}
   - {fileID: 3078069582712398499}
-  _onlySelectedGizmos: 0
-  _onlyEditModeGizmos: 0
+  onlySelectedGizmos: 0
+  onlyEditModeGizmos: 0
+  autoCompile: 0
+  initialTagCapacity: 1
+  initialValueCapacity: 1
+  initialBehaviourCapacity: 0
 --- !u!114 &3078069582712398499
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9853,15 +9835,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9aa297b3426d4115bed2d29a147ef532, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  serializationData:
-    SerializedFormat: 2
-    SerializedBytes: 
-    ReferencedUnityObjects: []
-    SerializedBytesString: 
-    Prefab: {fileID: 0}
-    PrefabModificationsReferencedUnityObjects: []
-    PrefabModifications: []
-    SerializationNodes: []
   _particleSystem: {fileID: 9110696331277760037}
   _audioSource: {fileID: 6834367083426194635}
   _fireLightCooldown:

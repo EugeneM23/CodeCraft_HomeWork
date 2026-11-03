@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Game.Gameplay
 {
-    public sealed class EnemyAudioInstaller : SceneEntityInstaller
+    public sealed class EnemyAudioInstaller : MonoEntityInstaller
     {
         [SerializeField] private AudioSource _audioSource;
 

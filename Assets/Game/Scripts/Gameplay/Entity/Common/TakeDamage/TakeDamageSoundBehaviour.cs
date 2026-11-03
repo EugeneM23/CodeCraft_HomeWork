@@ -7,7 +7,7 @@ namespace Game.Gameplay
 {
     public sealed class TakeDamageSoundBehaviour : IEntityInit, IEntityDispose
     {
-        private IReactive<TakeDamageArgs> _damageEvent;
+        private ISignal<TakeDamageArgs> _damageEvent;
         private AudioSource _audioSource;
 
         private readonly AudioClip audioClips;
@@ -18,7 +18,7 @@ namespace Game.Gameplay
             this.audioClips = audioClips;
         }
 
-        public void Init(in IEntity entity)
+        public void Init(IEntity entity)
         {
             _audioSource = entity.GetAudioSource();
             _damageEvent = entity.GetDamageTakenEvent();
@@ -26,7 +26,7 @@ namespace Game.Gameplay
             _damageEvent.Subscribe(this.OnDamageTaken);
         }
 
-        public void Dispose(in IEntity entity)
+        public void Dispose(IEntity entity)
         {
             _damageEvent.Unsubscribe(this.OnDamageTaken);
         }

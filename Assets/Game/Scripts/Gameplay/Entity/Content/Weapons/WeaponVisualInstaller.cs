@@ -3,10 +3,11 @@ using Atomic.Elements;
 using Atomic.Entities;
 using Modules.Gameplay;
 using UnityEngine;
+using Cooldown = Modules.Gameplay.Cooldown;
 
 namespace Game
 {
-    public class WeaponVisualInstaller : SceneEntityInstaller
+    public class WeaponVisualInstaller : MonoEntityInstaller
     {
         [SerializeField] private ParticleSystem _particleSystem;
         [SerializeField] private AudioSource _audioSource;
@@ -25,7 +26,7 @@ namespace Game
         }
     }
 
-    public class FireLightBehaviour : IEntityUpdate, IEntityInit, IEntityDispose
+    public class FireLightBehaviour : IEntityTick, IEntityInit, IEntityDispose
     {
         private readonly Cooldown _fireLightCooldown;
         private readonly GameObject _light;
@@ -36,9 +37,9 @@ namespace Game
             _light = light;
         }
 
-        public void Init(in IEntity entity) => entity.GetFireEvent().Subscribe(OnFire);
+        public void Init(IEntity entity) => entity.GetFireEvent().Subscribe(OnFire);
 
-        public void Dispose(in IEntity entity) => entity.GetFireEvent().Unsubscribe(OnFire);
+        public void Dispose(IEntity entity) => entity.GetFireEvent().Unsubscribe(OnFire);
 
         private void OnFire()
         {
@@ -46,7 +47,7 @@ namespace Game
             _light.SetActive(true);
         }
 
-        public void OnUpdate(in IEntity entity, in float deltaTime)
+        public void Tick(IEntity entity, float deltaTime)
         {
             _fireLightCooldown.Tick(deltaTime);
             if (_fireLightCooldown.IsExpired())

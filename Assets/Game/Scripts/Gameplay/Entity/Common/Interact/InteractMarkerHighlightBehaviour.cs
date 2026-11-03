@@ -10,14 +10,14 @@ namespace Game
         private IEntity _currentItem;
         private IReactiveVariable<IEntity> _targetInteractable;
 
-        public void Init(in IEntity entity)
+        public void Init(IEntity entity)
         {
             _character = GameContext.Instance.GetPlayerContext().GetCharacter();
             _targetInteractable = _character.Value.GetTargetInteractable();
             _targetInteractable.Subscribe(OnTargetChanged);
         }
 
-        public void Dispose(in IEntity entity)
+        public void Dispose(IEntity entity)
         {
             _targetInteractable.Unsubscribe(OnTargetChanged);
         }

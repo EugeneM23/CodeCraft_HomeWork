@@ -206,7 +206,6 @@ GameObject:
   - component: {fileID: 3100126443347532207}
   - component: {fileID: 3605461924348906491}
   - component: {fileID: 290291851011333334}
-  - component: {fileID: 9200552537943194964}
   - component: {fileID: 6864264276133849839}
   m_Layer: 6
   m_Name: HealthItem
@@ -297,28 +296,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3142498ee69840069f3a93c11b1e1f75, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  installOnAwake: 1
-  installInEditMode: 0
+  useUnityLifecycle: 1
   disposeValues: 1
-  installers:
+  installOnAwake: 1
+  uninstallOnDestroy: 1
+  scriptableInstallers: []
+  sceneInstallers:
   - {fileID: 3605461924348906491}
   - {fileID: 393305246776948499}
-  _onlySelectedGizmos: 0
-  _onlyEditModeGizmos: 0
---- !u!114 &9200552537943194964
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5903764127141603557}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 603a745f80e14d1d8cd57cf70a50187f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  entities:
-  - {fileID: 290291851011333334}
+  onlySelectedGizmos: 0
+  onlyEditModeGizmos: 0
+  autoCompile: 0
+  initialTagCapacity: 1
+  initialValueCapacity: 1
+  initialBehaviourCapacity: 0
 --- !u!54 &6864264276133849839
 Rigidbody:
   m_ObjectHideFlags: 0

@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Game.Gameplay
 {
-    public sealed class MoveStepSoundBehaviour : IEntityInit, IEntityUpdate
+    public sealed class MoveStepSoundBehaviour : IEntityInit, IEntityTick
     {
         private const float TOLERANCE = 0.1f;
         private readonly AudioClip[] _audioClips;
@@ -20,13 +20,13 @@ namespace Game.Gameplay
             _stepTime = stepTime;
         }
 
-        public void Init(in IEntity entity)
+        public void Init(IEntity entity)
         {
             _audioSource = entity.GetAudioSource();
             _velocity = entity.GetVelocity();
         }
 
-        public void OnUpdate(in IEntity entity, in float deltaTime)
+        public void Tick(IEntity entity, float deltaTime)
         {
             if (_velocity.Value < TOLERANCE)
             {

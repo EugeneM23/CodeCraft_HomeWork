@@ -7,7 +7,7 @@ namespace Game.Gameplay
     [RequireComponent(typeof(Collider))]
     public sealed class EnemyTrigger : MonoBehaviour
     {
-        [SerializeField] private SceneEntity[] _enemies;
+        [SerializeField] private MonoEntity[] _enemies;
 
         private void OnTriggerEnter(Collider other)
         {

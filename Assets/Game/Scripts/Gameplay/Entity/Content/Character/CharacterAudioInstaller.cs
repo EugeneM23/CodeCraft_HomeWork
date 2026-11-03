@@ -4,7 +4,7 @@ using UnityEngine.Serialization;
 
 namespace Game.Gameplay
 {
-    public sealed class CharacterAudioInstaller : SceneEntityInstaller
+    public sealed class CharacterAudioInstaller : MonoEntityInstaller
     {
         [SerializeField] private AudioSource _audioSource;
 

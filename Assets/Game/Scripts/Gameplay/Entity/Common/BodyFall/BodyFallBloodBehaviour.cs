@@ -20,13 +20,13 @@
 //             this.groundPoint = groundPoint;
 //         }
 //
-//         public void Init(in IEntity entity)
+//         public void Init(IEntity entity)
 //         {
 //             _eventReceiver = entity.GetAnimationEventReceiver();
 //             _eventReceiver.OnEvent += OnAnimEvent;
 //         }
 //
-//         public void Dispose(in IEntity entity)
+//         public void Dispose(IEntity entity)
 //         {
 //             _eventReceiver.OnEvent -= OnAnimEvent;
 //         }

@@ -1,8 +1,8 @@
-using Atomic.Contexts;
+using Atomic.Entities;
 
 namespace Game
 {
-    public class GameContext : SingletonSceneContext<GameContext>, IGameContext
+    public class GameContext : MonoEntitySingleton<GameContext>, IGameContext
     {
     }
 }

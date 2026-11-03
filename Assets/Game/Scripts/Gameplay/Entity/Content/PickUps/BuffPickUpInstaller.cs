@@ -6,7 +6,7 @@ using UnityEngine.Serialization;
 
 namespace Game
 {
-    public class BuffPickUpInstaller : SceneEntityInstaller
+    public class BuffPickUpInstaller : MonoEntityInstaller
     {
         [SerializeField] private BuffConfig buffConfig;
 
@@ -15,9 +15,9 @@ namespace Game
             entity.AddEntityID(gameObject.name.Replace("(Clone)", ""));
             entity.AddTransform(transform);
             entity.AddInteractableTag();
-            entity.AddPickUpEvent(new BaseEvent());
+            entity.AddPickUpEvent(new Atomic.Elements.Event());
 
-            entity.AddInteractAction(new BaseAction<IEntity>(character =>
+            entity.AddInteractAction(new InlineAction<IEntity>(character =>
             {
                 entity.GetPickUpEvent().Invoke();
                 BuffUseCase.Apply(character, buffConfig.CreateBuff());

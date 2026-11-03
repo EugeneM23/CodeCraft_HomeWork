@@ -28744,7 +28744,6 @@ GameObject:
   - component: {fileID: 4501894551670667032}
   - component: {fileID: 1228928465511542595}
   - component: {fileID: 5814017759711512355}
-  - component: {fileID: 3442436001124420441}
   - component: {fileID: -2425649843860657557}
   m_Layer: 0
   m_Name: Bullet_GoldFire_Big_Impact_Template
@@ -33598,27 +33597,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3142498ee69840069f3a93c11b1e1f75, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  installOnAwake: 1
-  installInEditMode: 0
+  useUnityLifecycle: 1
   disposeValues: 1
-  installers:
+  installOnAwake: 1
+  uninstallOnDestroy: 1
+  scriptableInstallers: []
+  sceneInstallers:
   - {fileID: -2425649843860657557}
-  _onlySelectedGizmos: 0
-  _onlyEditModeGizmos: 0
---- !u!114 &3442436001124420441
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7227899826569764260}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 603a745f80e14d1d8cd57cf70a50187f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  entities:
-  - {fileID: 5814017759711512355}
+  onlySelectedGizmos: 0
+  onlyEditModeGizmos: 0
+  autoCompile: 0
+  initialTagCapacity: 1
+  initialValueCapacity: 1
+  initialBehaviourCapacity: 0
 --- !u!114 &-2425649843860657557
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -33631,6 +33622,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0be58d62f4f848aebcd299b8e53a0ba4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _lifeTime: 3
 --- !u!1 &8004557520131863994
 GameObject:
   m_ObjectHideFlags: 0

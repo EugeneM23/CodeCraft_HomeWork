@@ -16,7 +16,7 @@ namespace Game.Gameplay
             _gameContext = gameContext;
         }
 
-        public void Init(in IEntity entity)
+        public void Init(IEntity entity)
         {
             _entity = entity;
             _health = entity.GetHealth();
@@ -24,7 +24,7 @@ namespace Game.Gameplay
             _health.OnHealthEmpty += OnHealthEmpty;
         }
 
-        public void Dispose(in IEntity entity) => _health.OnHealthEmpty -= OnHealthEmpty;
+        public void Dispose(IEntity entity) => _health.OnHealthEmpty -= OnHealthEmpty;
 
         private void OnHealthEmpty()
         {
@@ -36,8 +36,8 @@ namespace Game.Gameplay
             if (_entity.GetGameObject().TryGetComponent(out CapsuleCollider collider))
                 collider.enabled = false;
 
-            if (_gameContext.GetEntityWorld().Has(_entity))
-                _gameContext.GetEntityWorld().Del(_entity);
+            if (_gameContext.GetEntityWorld().Contains(_entity))
+                _gameContext.GetEntityWorld().Remove(_entity);
         }
     }
 }

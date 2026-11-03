@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using NUnit.Framework;
+using UnityEngine;
+using static Atomic.Elements.ReactiveDictionary<string,int>;
 
 namespace Atomic.Elements
 {
@@ -222,7 +224,7 @@ namespace Atomic.Elements
         }
 
         [Test]
-        public void WhenSetSameKeyAndValueThenWillNotHappened()
+        public void SetValue_SameKeyAndValue_NothingHappened()
         {
             string addedKey = null;
             int addedValue = -1;
@@ -263,7 +265,7 @@ namespace Atomic.Elements
         }
 
         [Test]
-        public void OnBeforSerialize()
+        public void OnBeforeSerialize()
         {
             //Arrange:
             var dictionary = new ReactiveDictionary<string, int>
@@ -273,21 +275,17 @@ namespace Atomic.Elements
                 {"Butter", 2}
             };
 
-
             //Act:
-            dictionary.OnBeforeSerialize();
+            ((ISerializationCallbackReceiver) dictionary).OnBeforeSerialize();
 
             //Assert:
-            var pairs = typeof(ReactiveDictionary<string, int>)
-                .GetField("pairs", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly)!
-                .GetValue(dictionary) as ReactiveDictionary<string, int>.Pair[];
-
-            Assert.AreEqual(new ReactiveDictionary<string, int>.Pair[]
+            Pair[] items = dictionary.serializedItems;
+            Assert.AreEqual(new Pair[]
             {
                 new() {key = "Milk", value = 5},
                 new() {key = "Bread", value = 3},
                 new() {key = "Butter", value = 2},
-            }, pairs);
+            }, items);
         }
 
         [Test]
@@ -299,20 +297,18 @@ namespace Atomic.Elements
             var dictionary = new ReactiveDictionary<string, int>();
             dictionary.OnStateChanged += () => stateChanged = true;
 
-            typeof(ReactiveDictionary<string, int>)
-                .GetField("pairs", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly)!
-                .SetValue(dictionary, new ReactiveDictionary<string, int>.Pair[]
-                {
-                    new() {key = "Milk", value = 5},
-                    new() {key = "Bread", value = 3},
-                    new() {key = "Butter", value = 2},
-                });
+            dictionary.serializedItems = new Pair[]
+            {
+                new() {key = "Milk", value = 5},
+                new() {key = "Bread", value = 3},
+                new() {key = "Butter", value = 2},
+            };
 
             //Pre-assert:
             Assert.AreEqual(0, dictionary.Count);
 
             //Act:
-            dictionary.OnAfterDeserialize();
+            ((ISerializationCallbackReceiver) dictionary).OnAfterDeserialize();
 
             //Assert:
             Assert.IsTrue(stateChanged);
@@ -454,7 +450,7 @@ namespace Atomic.Elements
             var dictionary = new ReactiveDictionary<string, int>();
 
             //Act:
-            dictionary.OnCleared += () => wasEvent = true;
+            dictionary.OnStateChanged += () => wasEvent = true;
             dictionary.Clear();
 
             Assert.IsFalse(wasEvent);
@@ -473,7 +469,7 @@ namespace Atomic.Elements
             };
 
             //Act:
-            dictionary.OnCleared += () => wasEvent = true;
+            dictionary.OnStateChanged += () => wasEvent = true;
             dictionary.Clear();
 
             Assert.IsTrue(wasEvent);

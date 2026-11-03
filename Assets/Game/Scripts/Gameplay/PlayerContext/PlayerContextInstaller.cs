@@ -1,4 +1,3 @@
-using Atomic.Contexts;
 using Atomic.Elements;
 using Atomic.Entities;
 using Modules.Common;
@@ -6,10 +5,10 @@ using UnityEngine;
 
 namespace Game
 {
-    public class PlayerContextInstaller : SceneContextInstaller<IPlayerContext>
+    public class PlayerContextInstaller : MonoEntityInstaller<PlayerContext>
     {
         [SerializeField] private PlayerID _playerID;
-        [SerializeField] private SceneEntity _playerEntity;
+        [SerializeField] private MonoEntity _playerEntity;
         [SerializeField] private Joystick _movementJoystick;
         [SerializeField] private Joystick _rotationJoystick;
         [SerializeField] private CharacterSystemInstaller _characterSystem;
@@ -17,7 +16,7 @@ namespace Game
         [SerializeField] private AbilitySystemInstaller _abilitySystem;
         [SerializeField] private ManaSystemInstaller _manaSystem;
 
-        protected override void Install(IPlayerContext context)
+        public override void Install(PlayerContext context)
         {
             _characterSystem.Install(context);
             _cameraSystem.Install(context);

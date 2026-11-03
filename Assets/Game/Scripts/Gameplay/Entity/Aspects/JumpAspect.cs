@@ -1,6 +1,5 @@
 using Atomic.Elements;
 using Atomic.Entities;
-using Atomic.Extensions;
 using UnityEngine;
 
 namespace Game.Gameplay
@@ -14,8 +13,8 @@ namespace Game.Gameplay
         {
             entity.AddJumpableTag();
             entity.AddJumpForce(_jumpForce);
-            entity.AddJumpEvent(new BaseEvent());
-            entity.AddJumpCondition(new BaseFunction<bool>(() => entity.GetHealth().GetCurrent() > 0));
+            entity.AddJumpEvent(new Atomic.Elements.Event());
+            entity.AddJumpCondition(new InlineFunction<bool>(() => entity.GetHealth().GetCurrent() > 0));
         }
 
         public override void Discard(IEntity entity)

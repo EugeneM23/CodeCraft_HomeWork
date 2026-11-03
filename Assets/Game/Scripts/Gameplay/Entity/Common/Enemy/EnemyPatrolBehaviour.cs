@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Game.Gameplay
 {
-    public class EnemyPatrolBehaviour : IEntityInit, IEntityUpdate
+    public class EnemyPatrolBehaviour : IEntityInit, IEntityTick
     {
         private IReactiveVariable<Vector3> _moveDirection;
         private IReactiveVariable<Vector3> _rotateDirection;
@@ -15,7 +15,7 @@ namespace Game.Gameplay
         private Transform[] _patrolTransfroms;
         private readonly List<Vector3> _patrolPoints = new();
 
-        public void Init(in IEntity entity)
+        public void Init(IEntity entity)
         {
             _moveDirection = entity.GetMoveDirection();
             _rotateDirection = entity.GetRotateDirection();
@@ -27,7 +27,7 @@ namespace Game.Gameplay
                 _patrolPoints.Add(item.position);
         }
 
-        public void OnUpdate(in IEntity entity, in float deltaTime)
+        public void Tick(IEntity entity, float deltaTime)
         {
             if (_patrolTransfroms.Length == 0) return;
             if (_target.Value != null) return;

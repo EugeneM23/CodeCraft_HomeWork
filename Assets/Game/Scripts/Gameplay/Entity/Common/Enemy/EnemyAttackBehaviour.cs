@@ -5,19 +5,19 @@ using UnityEngine;
 
 namespace Game.Gameplay
 {
-    public class EnemyAttackBehaviour : IEntityInit, IEntityUpdate
+    public class EnemyAttackBehaviour : IEntityInit, IEntityTick
     {
         private const float ATTACK_DISTANCE = 1;
         private IReactiveVariable<IEntity> _target;
         private Transform _enemy;
 
-        public void Init(in IEntity entity)
+        public void Init(IEntity entity)
         {
             _target = entity.GetTarget();
             _enemy = entity.GetTransform();
         }
 
-        public void OnUpdate(in IEntity entity, in float deltaTime)
+        public void Tick(IEntity entity, float deltaTime)
         {
             if (_target.Value == null) return;
 

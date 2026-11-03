@@ -1,8 +1,8 @@
-using Atomic.Contexts;
+using Atomic.Entities;
 
 namespace Game
 {
-    public class PlayerContext : SceneContext, IPlayerContext
+    public class PlayerContext : MonoEntity, IPlayerContext
     {
     }
 }

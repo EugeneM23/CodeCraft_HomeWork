@@ -10,7 +10,7 @@ namespace Game
         private IEntity _bullet;
         private GameFactory _gameFactory;
 
-        public void Init(in IEntity entity)
+        public void Init(IEntity entity)
         {
             _gameFactory = GameContext.Instance.GetGameFactory();
             _collisionEventReceiver = entity.GetCollisionReceiver();
@@ -18,7 +18,7 @@ namespace Game
             _collisionEventReceiver.OnEntered += Destroy;
         }
 
-        public void Dispose(in IEntity entity) => _collisionEventReceiver.OnEntered -= Destroy;
+        public void Dispose(IEntity entity) => _collisionEventReceiver.OnEntered -= Destroy;
 
         private void Destroy(Collision collision)
         {

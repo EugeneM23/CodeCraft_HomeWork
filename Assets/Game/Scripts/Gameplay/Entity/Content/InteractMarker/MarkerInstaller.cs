@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Game
 {
-    public class MarkerInstaller : SceneEntityInstaller
+    public class MarkerInstaller : MonoEntityInstaller
     {
         [SerializeField] private Vector3 _positionOffset;
         [SerializeField] private GameObject _view;

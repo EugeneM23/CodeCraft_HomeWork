@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Game
 {
-    public class WeaponPickUpInstaller : SceneEntityInstaller
+    public class WeaponPickUpInstaller : MonoEntityInstaller
     {
         [SerializeField] private WeaponID _id;
         [SerializeField] private Ammo _ammo;
@@ -21,10 +21,10 @@ namespace Game
 
             entity.AddTransform(transform);
             entity.AddInteractableTag();
-            entity.AddPickUpEvent(new BaseEvent());
-            entity.AddDropEvent(new BaseEvent());
+            entity.AddPickUpEvent(new Atomic.Elements.Event());
+            entity.AddDropEvent(new Atomic.Elements.Event());
 
-            entity.AddInteractAction(new BaseAction<IEntity>(character =>
+            entity.AddInteractAction(new InlineAction<IEntity>(character =>
             {
                 entity.GetPickUpEvent().Invoke();
                 PickUpWeaponUseCase.PickUpWeapon(character, entity, _gameContext);

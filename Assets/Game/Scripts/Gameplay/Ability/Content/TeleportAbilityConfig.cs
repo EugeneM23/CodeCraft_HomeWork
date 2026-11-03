@@ -17,21 +17,21 @@ namespace Game.Content
         {
             ability.AddPointAbilityTag();
 
-            ability.AddPointCondition(new BaseFunction<Vector3, bool>(point =>
+            ability.AddPointCondition(new InlineFunction<Vector3, bool>(point =>
                 ManaUseCase.Enough(context, _manaCost) &&
                 VectorUseCase.LessOrEqualsDistance(context.GetCharacter().Value, point, _radius)));
 
-            ability.AddPointAction(new BaseAction<Vector3>(point =>
+            ability.AddPointAction(new InlineAction<Vector3>(point =>
             {
                 ManaUseCase.Spend(context, _manaCost);
                 context.GetCharacter().Value.GetTransform().position = point;
             }));
 
-            ability.AddPointEvent(new BaseEvent<Vector3>());
+            ability.AddPointEvent(new Atomic.Elements.Event<Vector3>());
             ability.AddManaCost(new Const<int>(_manaCost));
             ability.AddRadius(new Const<float>(_radius));
 
-            ability.WhenUpdate(dt =>
+            ability.WhenTick(dt =>
             {
                 if (Input.GetKey(_teleportKey) && Input.GetMouseButtonDown(0))
                 {

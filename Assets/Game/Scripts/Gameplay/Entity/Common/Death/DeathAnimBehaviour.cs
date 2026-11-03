@@ -7,10 +7,10 @@ namespace Game.Gameplay
     public class DeathAnimBehaviour : IEntityInit
     {
         private static int DEATH = Animator.StringToHash("Death");
-        private BaseEvent<TakeDamageArgs> _deathTakenEvent;
+        private IEvent<TakeDamageArgs> _deathTakenEvent;
         private Animator _animator;
 
-        public void Init(in IEntity entity)
+        public void Init(IEntity entity)
         {
             _deathTakenEvent = entity.GetDeathTakenEvent();
             _animator = entity.GetAnimator();

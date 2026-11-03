@@ -1,5 +1,4 @@
 using Atomic.Entities;
-using Atomic.Extensions;
 using UnityEngine;
 
 namespace Game.Gameplay

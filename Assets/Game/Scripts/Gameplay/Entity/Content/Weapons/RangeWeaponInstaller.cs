@@ -7,22 +7,23 @@ using Modules.Gameplay;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.Serialization;
+using Cooldown = Modules.Gameplay.Cooldown;
 
 namespace Game
 {
-    public class RangeWeaponInstaller : SceneEntityInstaller
+    public class RangeWeaponInstaller : MonoEntityInstaller
     {
         [SerializeField] private WeaponID _id;
         [SerializeField] private Cooldown _fireRate;
         [SerializeField] private int _damage;
 
         [SerializeField] private Transform _firePoint;
-        [SerializeField] private SceneEntity _bulletPrefab;
+        [SerializeField] private MonoEntity _bulletPrefab;
 
         [SerializeField] private bool _hasAmmo = true;
         [ShowIf("_hasAmmo")] [SerializeField] private int _ammoCount = 50;
         [ShowIf("_hasAmmo")] [SerializeField] private Transform _shellPoint;
-        [ShowIf("_hasAmmo")] [SerializeField] private SceneEntity _shellPrefab;
+        [ShowIf("_hasAmmo")] [SerializeField] private MonoEntity _shellPrefab;
 
         [SerializeField] private CameraShakeArgs _shakeArgs;
 
@@ -46,29 +47,29 @@ namespace Game
             entity.AddTransform(transform);
 
             //Movement
-            entity.AddMoveCondition(new AndExpression((() => true)));
+            entity.AddMoveCondition(new AndExpression(new ExpressionMember<bool>(() => true)));
 
             //Fire
             entity.AddDamage(new ReactiveInt(_damage));
             entity.AddExtraDamage(new IntSumExpression()); 
             entity.AddWeaponCooldown(_fireRate);
-            entity.AddFireEvent(new BaseEvent());
+            entity.AddFireEvent(new Atomic.Elements.Event());
             entity.AddFireAction(new RangeWeaponFireAction(entity, _gameContext));
             entity.AddFireCondition(new AndExpression());
 
             if (_hasAmmo)
             {
                 entity.AddAmmo(new Ammo(_ammoCount));
-                entity.GetFireCondition().Append(() => entity.GetAmmo().GetCount() > 0);
+                entity.GetFireCondition().Add(() => entity.GetAmmo().GetCount() > 0);
                 entity.AddShellPoint(_shellPoint);
             }
 
-            entity.GetFireCondition().Append(entity.GetWeaponCooldown().IsExpired);
+            entity.GetFireCondition().Add(entity.GetWeaponCooldown().IsExpired);
 
             //CameraShake
             entity.AddCameraShakeArgs(_shakeArgs);
 
-            entity.OnUpdated += deltaTime => entity.GetWeaponCooldown().Tick(deltaTime);
+            entity.OnTicked += deltaTime => entity.GetWeaponCooldown().Tick(deltaTime);
         }
         
     }

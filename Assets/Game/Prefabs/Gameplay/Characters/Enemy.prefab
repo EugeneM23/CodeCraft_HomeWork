@@ -674,6 +674,8 @@ MonoBehaviour:
   _bodyFallClip: {fileID: 8300000, guid: 3352ade033aba4780b3044e404093b9a, type: 3}
   _meleeDamageClip: {fileID: 8300000, guid: 27c68b20ba4a5423fbf39c3f0eb4db38, type: 3}
   _bulletDamageClip: {fileID: 8300000, guid: 9d3eb7466db37493ea798163778d02c3, type: 3}
+  _moveStepClips: []
+  _stepTime: 1
 --- !u!1 &3743989194806349236
 GameObject:
   m_ObjectHideFlags: 0
@@ -1664,7 +1666,6 @@ GameObject:
   - component: {fileID: 4361596233082998913}
   - component: {fileID: 501587286819408059}
   - component: {fileID: 8179233504444308434}
-  - component: {fileID: 1456475128600411091}
   - component: {fileID: 7949207010831900094}
   m_Layer: 10
   m_Name: Enemy
@@ -1706,16 +1707,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3142498ee69840069f3a93c11b1e1f75, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  installOnAwake: 1
-  installInEditMode: 0
+  useUnityLifecycle: 1
   disposeValues: 1
-  installers:
+  installOnAwake: 1
+  uninstallOnDestroy: 1
+  scriptableInstallers: []
+  sceneInstallers:
   - {fileID: 5256318650505570873}
   - {fileID: 647656227805482429}
   - {fileID: 4518519460149995683}
   - {fileID: 7949207010831900094}
-  _onlySelectedGizmos: 0
-  _onlyEditModeGizmos: 0
+  onlySelectedGizmos: 0
+  onlyEditModeGizmos: 0
+  autoCompile: 0
+  initialTagCapacity: 1
+  initialValueCapacity: 1
+  initialBehaviourCapacity: 0
 --- !u!54 &8179233504444308434
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1743,21 +1750,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 84
   m_CollisionDetection: 0
---- !u!114 &1456475128600411091
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6355162821186015845}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 603a745f80e14d1d8cd57cf70a50187f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  entities:
-  - {fileID: 501587286819408059}
-  - {fileID: 431807103196903562}
 --- !u!114 &7949207010831900094
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1771,15 +1763,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _damage: 50
-  _health: 100
-  _rotationSpeed: 15
   _weapon: {fileID: 3542445738175065560, guid: b815100e119f34356ae54e7adf16cf6b, type: 3}
-  _triggerReceiver: {fileID: 0}
   _weaponRoot: {fileID: 7405375498600190727}
-  _characterRoot: {fileID: 1383350002564321792}
+  _moveSpeed: 1
+  _rotationSpeed: 15
   _patrolPoints:
   - {fileID: 0}
   - {fileID: 0}
+  _health: 100
+  _triggerReceiver: {fileID: 0}
+  _characterRoot: {fileID: 1383350002564321792}
 --- !u!1 &6519369982854541961
 GameObject:
   m_ObjectHideFlags: 0
@@ -2804,17 +2797,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1d8166845e4d241e8afd28e8a9249ace, type: 3}
---- !u!114 &431807103196903562 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3542445738175065560, guid: 1d8166845e4d241e8afd28e8a9249ace, type: 3}
-  m_PrefabInstance: {fileID: 3807615246241092946}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3142498ee69840069f3a93c11b1e1f75, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &2845756347370805700 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1416792984943742102, guid: 1d8166845e4d241e8afd28e8a9249ace, type: 3}

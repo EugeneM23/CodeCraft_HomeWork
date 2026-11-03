@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1416792984943742102}
   - component: {fileID: 3542445738175065560}
-  - component: {fileID: 3418872541097179993}
   - component: {fileID: 7779472713387022580}
   m_Layer: 0
   m_Name: Zombie_Hand
@@ -46,27 +45,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3142498ee69840069f3a93c11b1e1f75, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  installOnAwake: 1
-  installInEditMode: 0
+  useUnityLifecycle: 1
   disposeValues: 1
-  installers:
+  installOnAwake: 1
+  uninstallOnDestroy: 1
+  scriptableInstallers: []
+  sceneInstallers:
   - {fileID: 7779472713387022580}
-  _onlySelectedGizmos: 0
-  _onlyEditModeGizmos: 0
---- !u!114 &3418872541097179993
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7223745350942996134}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 603a745f80e14d1d8cd57cf70a50187f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  entities:
-  - {fileID: 3542445738175065560}
+  onlySelectedGizmos: 0
+  onlyEditModeGizmos: 0
+  autoCompile: 0
+  initialTagCapacity: 1
+  initialValueCapacity: 1
+  initialBehaviourCapacity: 0
 --- !u!114 &7779472713387022580
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -82,6 +73,9 @@ MonoBehaviour:
   _id: 0
   _damage: 10
   _damageRadius: 0.5
+  _shakeArgs:
+    <ShakeDuration>k__BackingField: 0
+    <ShakeStrength>k__BackingField: 0
   _damageLayer:
     serializedVersion: 2
     m_Bits: 512

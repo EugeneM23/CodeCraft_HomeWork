@@ -1,6 +1,7 @@
 using Atomic.Entities;
 using Modules.Gameplay;
 using UnityEngine;
+using Cooldown = Modules.Gameplay.Cooldown;
 
 namespace Game
 {

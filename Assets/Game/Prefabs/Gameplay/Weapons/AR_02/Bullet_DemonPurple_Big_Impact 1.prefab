@@ -33522,7 +33522,6 @@ GameObject:
   - component: {fileID: 198936614657003924}
   - component: {fileID: 6664256835540992201}
   - component: {fileID: 8994959488206599622}
-  - component: {fileID: 8810977171683345159}
   m_Layer: 0
   m_Name: Bullet_DemonPurple_Big_Impact 1
   m_TagString: Untagged
@@ -38375,13 +38374,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3142498ee69840069f3a93c11b1e1f75, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  installOnAwake: 1
-  installInEditMode: 0
+  useUnityLifecycle: 1
   disposeValues: 1
-  installers:
+  installOnAwake: 1
+  uninstallOnDestroy: 1
+  scriptableInstallers: []
+  sceneInstallers:
   - {fileID: 8994959488206599622}
-  _onlySelectedGizmos: 0
-  _onlyEditModeGizmos: 0
+  onlySelectedGizmos: 0
+  onlyEditModeGizmos: 0
+  autoCompile: 0
+  initialTagCapacity: 1
+  initialValueCapacity: 1
+  initialBehaviourCapacity: 0
 --- !u!114 &8994959488206599622
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -38395,20 +38400,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _lifeTime: 3
---- !u!114 &8810977171683345159
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1879272669879180}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 603a745f80e14d1d8cd57cf70a50187f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  entities:
-  - {fileID: 6664256835540992201}
 --- !u!1 &1947723841646622
 GameObject:
   m_ObjectHideFlags: 0

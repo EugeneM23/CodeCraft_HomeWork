@@ -10,14 +10,14 @@ namespace Game
         private Animator _animator;
         private IReactiveVariable<IEntity> _weapon;
 
-        public void Init(in IEntity entity)
+        public void Init(IEntity entity)
         {
             _animator = entity.GetAnimator();
             _weapon = entity.GetWeapon();
             _weapon.Observe(OnWeaponChanged);
         }
 
-        public void Dispose(in IEntity entity)
+        public void Dispose(IEntity entity)
         {
             _weapon.Unsubscribe(OnWeaponChanged);
         }

@@ -19,19 +19,19 @@ namespace Game.Content
 
             IEntity character = context.GetCharacter().Value;
             
-            ability.AddBaseCondition(new BaseFunction<bool>(() =>
+            ability.AddBaseCondition(new InlineFunction<bool>(() =>
                 ability.GetCharges().Value > 0 && BuffUseCase.CanApply(character, _dashBuff)));
 
-            ability.AddBaseAction(new BaseAction(() =>
+            ability.AddBaseAction(new InlineAction(() =>
             {
                 ability.GetCharges().Value--;
                 BuffUseCase.Apply(character, _dashBuff.CreateBuff());
             }));
 
-            ability.AddBaseEvent(new BaseEvent());
+            ability.AddBaseEvent(new Atomic.Elements.Event());
             ability.AddCharges(new ReactiveInt(_initialCharges));
             
-            ability.WhenUpdate(dt =>
+            ability.WhenTick(dt =>
             {
                 if (Input.GetKeyDown(_dashKey))
                     AbilityUseCase.Use(ability);

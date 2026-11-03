@@ -22,7 +22,7 @@ namespace Game.Gameplay
         //     _damageLevels = damageLevels;
         // }
         //
-        // public void Init(in IEntity entity)
+        // public void Init(IEntity entity)
         // {
         //     _health = entity.GetHealth();
         //     _audioSource = entity.GetAudioSource();
@@ -30,7 +30,7 @@ namespace Game.Gameplay
         //     _damageEvent.Subscribe(this.OnDamageTaken);
         // }
         //
-        // public void Dispose(in IEntity entity)
+        // public void Dispose(IEntity entity)
         // {
         //     _damageEvent.Unsubscribe(this.OnDamageTaken);
         // }

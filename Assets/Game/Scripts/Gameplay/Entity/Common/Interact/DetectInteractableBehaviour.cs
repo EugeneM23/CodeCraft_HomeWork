@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Game
 {
-    public class DetectInteractableBehaviour : IEntityFixedUpdate, IEntityInit
+    public class DetectInteractableBehaviour : IEntityFixedTick, IEntityInit
     {
         private IReactiveVariable<IEntity> _target;
 
@@ -26,12 +26,12 @@ namespace Game
             _triggerInteraction = triggerInteraction;
         }
 
-        public void Init(in IEntity entity)
+        public void Init(IEntity entity)
         {
             _target = entity.GetTargetInteractable();
         }
 
-        public void OnFixedUpdate(in IEntity entity, in float deltaTime)
+        public void FixedTick(IEntity entity, float deltaTime)
         {
             InteractUseCase.FindClosestItem(_center, _radius, _layerMask, _triggerInteraction, out IEntity target);
             _target.Value = target;

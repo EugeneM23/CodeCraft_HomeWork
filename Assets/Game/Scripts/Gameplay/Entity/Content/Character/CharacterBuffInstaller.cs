@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Game
 {
-    public class CharacterBuffInstaller : SceneEntityInstaller
+    public class CharacterBuffInstaller : MonoEntityInstaller
     {
         [OdinSerialize]
         private Dictionary<string, ParticleSystem> _buffsParticles = new();

@@ -34422,15 +34422,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e97f8178934f4d14984f6d6c3b2ec91d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  serializationData:
-    SerializedFormat: 2
-    SerializedBytes: 
-    ReferencedUnityObjects: []
-    SerializedBytesString: 
-    Prefab: {fileID: 0}
-    PrefabModificationsReferencedUnityObjects: []
-    PrefabModifications: []
-    SerializationNodes: []
   _bulletBlood: {fileID: 1397500873394493863}
   _meleeBlood: {fileID: 4613126615347874241}
   _deadBlood: {fileID: 6969091000190684034}
@@ -34486,15 +34477,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9d2159821d814c319ae60ca8f9ac27a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  serializationData:
-    SerializedFormat: 2
-    SerializedBytes: 
-    ReferencedUnityObjects: []
-    SerializedBytesString: 
-    Prefab: {fileID: 0}
-    PrefabModificationsReferencedUnityObjects: []
-    PrefabModifications: []
-    SerializationNodes: []
   _animator: {fileID: 123430797005601165}
   _animationReceiver: {fileID: 9055388531866104605}
 --- !u!95 &123430797005601165
@@ -45455,15 +45437,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 61ffc19ed6dc41aabf0d8cddc6990d11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  serializationData:
-    SerializedFormat: 2
-    SerializedBytes: 
-    ReferencedUnityObjects: []
-    SerializedBytesString: 
-    Prefab: {fileID: 0}
-    PrefabModificationsReferencedUnityObjects: []
-    PrefabModifications: []
-    SerializationNodes: []
   _audioSource: {fileID: 3627697062291606585}
   _painLevels:
   - percent: 1
@@ -45630,7 +45603,6 @@ GameObject:
   - component: {fileID: 316805732574230050}
   - component: {fileID: 1898013775761668428}
   - component: {fileID: 4320819671531259427}
-  - component: {fileID: 2205158597523050121}
   - component: {fileID: 1165893141415791770}
   - component: {fileID: 4616703252290710376}
   - component: {fileID: 3048431767749504645}
@@ -45716,20 +45688,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 116
   m_CollisionDetection: 1
---- !u!114 &2205158597523050121
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8960151380294811584}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 603a745f80e14d1d8cd57cf70a50187f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  entities:
-  - {fileID: 1165893141415791770}
 --- !u!114 &1165893141415791770
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -45742,17 +45700,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3142498ee69840069f3a93c11b1e1f75, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  installOnAwake: 1
-  installInEditMode: 0
+  useUnityLifecycle: 1
   disposeValues: 1
-  installers:
+  installOnAwake: 1
+  uninstallOnDestroy: 1
+  scriptableInstallers: []
+  sceneInstallers:
   - {fileID: 3048431767749504645}
   - {fileID: 487026641681000122}
   - {fileID: 8763916999641850177}
   - {fileID: 5494673911464095107}
   - {fileID: 1851841673115217562}
-  _onlySelectedGizmos: 0
-  _onlyEditModeGizmos: 0
+  onlySelectedGizmos: 0
+  onlyEditModeGizmos: 0
+  autoCompile: 0
+  initialTagCapacity: 1
+  initialValueCapacity: 1
+  initialBehaviourCapacity: 0
 --- !u!114 &4616703252290710376
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -45777,15 +45741,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb3ce9d4cea846659e40d9b68a5ced90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  serializationData:
-    SerializedFormat: 2
-    SerializedBytes: 
-    ReferencedUnityObjects: []
-    SerializedBytesString: 
-    Prefab: {fileID: 0}
-    PrefabModificationsReferencedUnityObjects: []
-    PrefabModifications: []
-    SerializationNodes: []
   _moveSpeed: 5
   _rotationSpeed: 15
   _health: 100
@@ -45838,63 +45793,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f312ab9752914155925f8b2dff4b9249, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  serializationData:
-    SerializedFormat: 2
-    SerializedBytes: 
-    ReferencedUnityObjects:
-    - {fileID: 11400000, guid: 62799eb40e55649f8adf91d7328f75bd, type: 2}
-    - {fileID: 3299975842509128336}
-    - {fileID: 11400000, guid: b2a16bfb0b7d5457c8237d13293de8e0, type: 2}
-    - {fileID: 3929565614427405732}
-    SerializedBytesString: 
-    Prefab: {fileID: 0}
-    PrefabModificationsReferencedUnityObjects: []
-    PrefabModifications: []
-    SerializationNodes:
-    - Name: _buffsParticles
-      Entry: 7
-      Data: 0|System.Collections.Generic.Dictionary`2[[Game.BaseBuff, Assembly-CSharp],[UnityEngine.ParticleSystem,
-        UnityEngine.ParticleSystemModule]], mscorlib
-    - Name: comparer
-      Entry: 7
-      Data: 1|System.Collections.Generic.ObjectEqualityComparer`1[[Game.BaseBuff,
-        Assembly-CSharp]], mscorlib
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 12
-      Data: 2
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 10
-      Data: 0
-    - Name: $v
-      Entry: 10
-      Data: 1
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 10
-      Data: 2
-    - Name: $v
-      Entry: 10
-      Data: 3
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
 --- !u!1001 &8712503236358806611
 PrefabInstance:
   m_ObjectHideFlags: 0

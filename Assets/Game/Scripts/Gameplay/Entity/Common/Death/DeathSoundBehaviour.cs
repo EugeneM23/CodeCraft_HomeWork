@@ -14,16 +14,16 @@ namespace Game.Gameplay
         }
         
         private AudioSource _audioSource;
-        private IReactive<TakeDamageArgs> _deathEvent;
+        private ISignal<TakeDamageArgs> _deathEvent;
 
-        public void Init(in IEntity entity)
+        public void Init(IEntity entity)
         {
             _audioSource = entity.GetAudioSource();
             _deathEvent = entity.GetDeathTakenEvent();
             _deathEvent.Subscribe(this.OnDeath);
         }
 
-        public void Dispose(in IEntity entity)
+        public void Dispose(IEntity entity)
         {
             _deathEvent.Unsubscribe(this.OnDeath);
         }

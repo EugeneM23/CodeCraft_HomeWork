@@ -6,7 +6,7 @@ namespace Game.Gameplay
 {
     public class CharacterDebug : MonoBehaviour
     {
-        [SerializeField] private SceneEntity _character;
+        [SerializeField] private MonoEntity _character;
 
         [Button]
         public bool Apply(BuffConfig buff) => BuffUseCase.Apply(_character, buff.CreateBuff());

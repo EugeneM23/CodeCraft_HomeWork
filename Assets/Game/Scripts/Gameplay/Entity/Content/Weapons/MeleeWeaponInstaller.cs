@@ -3,10 +3,11 @@ using Atomic.Entities;
 using Game.Gameplay;
 using Modules.Gameplay;
 using UnityEngine;
+using Cooldown = Modules.Gameplay.Cooldown;
 
 namespace Game
 {
-    public class MeleeWeaponInstaller : SceneEntityInstaller
+    public class MeleeWeaponInstaller : MonoEntityInstaller
     {
         [SerializeField] private WeaponID _id;
         [SerializeField] private int _damage;
@@ -37,22 +38,22 @@ namespace Game
             //Attack
             entity.AddMoveCondition(new AndExpression());
             entity.AddWeaponCooldown(_cooldown);
-            entity.GetMoveCondition().Append(_cooldown.IsExpired);
+            entity.GetMoveCondition().Add(_cooldown.IsExpired);
 
-            entity.AddFireAction(new BaseAction(() =>
+            entity.AddFireAction(new InlineAction(() =>
             {
                 entity.GetWeaponCooldown().Reset();
                 entity.GetFireEvent().Invoke();
             }));
             
-            entity.AddFireEvent(new BaseEvent());
+            entity.AddFireEvent(new Atomic.Elements.Event());
 
-            entity.AddFireCondition(new AndExpression(() => entity.GetWeaponCooldown().IsExpired()));
+            entity.AddFireCondition(new AndExpression(new ExpressionMember<bool>(() => entity.GetWeaponCooldown().IsExpired())));
 
             //CameraShake
             entity.AddCameraShakeArgs(_shakeArgs);
 
-            entity.OnUpdated += deltaTime => entity.GetWeaponCooldown().Tick(deltaTime);
+            entity.OnTicked += deltaTime => entity.GetWeaponCooldown().Tick(deltaTime);
         }
     }
 }

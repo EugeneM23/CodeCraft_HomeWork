@@ -16,18 +16,18 @@ namespace Game
             _particles = particles;
         }
 
-        public void Init(in IEntity entity)
+        public void Init(IEntity entity)
         {
             _buffsEffects = entity.GetBuffsEffects();
 
-            _buffsEffects.OnItemDeleted += OnItemRemoved;
-            _buffsEffects.OnItemInserted += OnItemAdded;
+            _buffsEffects.OnItemRemoved += OnItemRemoved;
+            _buffsEffects.OnItemAdded += OnItemAdded;
         }
 
-        public void Dispose(in IEntity entity)
+        public void Dispose(IEntity entity)
         {
-            _buffsEffects.OnItemDeleted -= OnItemRemoved;
-            _buffsEffects.OnItemInserted -= OnItemAdded;
+            _buffsEffects.OnItemRemoved -= OnItemRemoved;
+            _buffsEffects.OnItemAdded -= OnItemAdded;
         }
 
         private void OnItemAdded(int index, BuffBase buff)

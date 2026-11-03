@@ -10,17 +10,17 @@ namespace Game
     [Serializable]
     public class WeaponCatalog : SerializedMonoBehaviour
     {
-        [OdinSerialize] private Dictionary<WeaponID, SceneEntity> _weapons = new();
-        [OdinSerialize] private Dictionary<WeaponID, SceneEntity> _pickUpWeapons = new();
+        [OdinSerialize] private Dictionary<WeaponID, MonoEntity> _weapons = new();
+        [OdinSerialize] private Dictionary<WeaponID, MonoEntity> _pickUpWeapons = new();
 
-        public SceneEntity GetPickUpWeapon(WeaponID id)
+        public MonoEntity GetPickUpWeapon(WeaponID id)
         {
-            return SceneEntity.Create(_pickUpWeapons[id], transform.position, transform.rotation);
+            return MonoEntity.Create(_pickUpWeapons[id], transform.position, transform.rotation);
         }
 
-        public SceneEntity GetWeapon(WeaponID id)
+        public MonoEntity GetWeapon(WeaponID id)
         {
-            return SceneEntity.Create(_weapons[id], transform.position, transform.rotation);
+            return MonoEntity.Create(_weapons[id], transform.position, transform.rotation);
         }
     }
 }

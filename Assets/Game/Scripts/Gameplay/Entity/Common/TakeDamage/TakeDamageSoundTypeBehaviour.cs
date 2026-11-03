@@ -20,7 +20,7 @@
 //             _bulletSFX = bulletSfx;
 //         }
 //         
-//         public void Init(in IEntity entity)
+//         public void Init(IEntity entity)
 //         {
 //             _audioSource = entity.GetAudioSource();
 //             _damageEvent = entity.GetDamageTakenEvent();
@@ -29,7 +29,7 @@
 //             _deathEvent.Subscribe(this.OnDamageTaken);
 //         }
 //
-//         public void Dispose(in IEntity entity)
+//         public void Dispose(IEntity entity)
 //         {
 //             _damageEvent.Unsubscribe(this.OnDamageTaken);
 //             _deathEvent.Unsubscribe(this.OnDamageTaken);

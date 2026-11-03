@@ -21,14 +21,14 @@
 //             this.audioClips = audioClips;
 //         }
 //
-//         public void Init(in IEntity entity)
+//         public void Init(IEntity entity)
 //         {
 //             _audioSource = entity.GetAudioSource();
 //             _animationReceiver = entity.GetAnimationEventReceiver();
 //             _animationReceiver.OnEvent += this.OnAnimEvent;
 //         }
 //
-//         public void Dispose(in IEntity entity)
+//         public void Dispose(IEntity entity)
 //         {
 //             _animationReceiver.OnEvent -= this.OnAnimEvent;
 //         }

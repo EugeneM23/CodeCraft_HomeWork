@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 564611938943864507}
   - component: {fileID: 7555112873565226703}
   - component: {fileID: 1339688308719421396}
-  - component: {fileID: 1708779625709847107}
   - component: {fileID: 3701451248916585044}
   m_Layer: 0
   m_Name: Knife_01
@@ -114,20 +113,6 @@ MonoBehaviour:
     _current: 0
     _duration: 0.3
   _animController: {fileID: 22100000, guid: 7c5b95bb9cebe498c82f344aa4afc1b0, type: 2}
---- !u!114 &1708779625709847107
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1884965874358334194}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 603a745f80e14d1d8cd57cf70a50187f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  entities:
-  - {fileID: 3701451248916585044}
 --- !u!114 &3701451248916585044
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -140,10 +125,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3142498ee69840069f3a93c11b1e1f75, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  installOnAwake: 1
-  installInEditMode: 0
+  useUnityLifecycle: 1
   disposeValues: 1
-  installers:
+  installOnAwake: 1
+  uninstallOnDestroy: 1
+  scriptableInstallers: []
+  sceneInstallers:
   - {fileID: 1339688308719421396}
-  _onlySelectedGizmos: 0
-  _onlyEditModeGizmos: 0
+  onlySelectedGizmos: 0
+  onlyEditModeGizmos: 0
+  autoCompile: 0
+  initialTagCapacity: 1
+  initialValueCapacity: 1
+  initialBehaviourCapacity: 0

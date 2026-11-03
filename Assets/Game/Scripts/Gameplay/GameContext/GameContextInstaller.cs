@@ -1,56 +1,55 @@
-using Atomic.Contexts;
 using Atomic.Entities;
 using UnityEngine;
 
 namespace Game
 {
-    public class GameContextInstaller : SceneContextInstaller<IGameContext>
+    public class GameContextInstaller : MonoEntityInstaller<GameContext>
     {
         [SerializeField] private WeaponCatalog _weaponsCatalog;
         [SerializeField] private PlayerContext _playerContext;
         [SerializeField] private Transform _poolsParent;
-        [SerializeField] private SceneEntity _audioPrefab;
-        [SerializeField] private SceneEntity _hitEffectPrefab;
-        [SerializeField] private SceneEntityWorld _entityWorld;
+        [SerializeField] private MonoEntity _audioPrefab;
+        [SerializeField] private MonoEntity _hitEffectPrefab;
+        [SerializeField] private MonoEntityWorld _entityWorld;
 
-        [SerializeField] private SceneEntity _enemyPrefab;
+        [SerializeField] private MonoEntity _enemyPrefab;
         [SerializeField] private Transform _spawnPoint;
 
-        protected override void Install(IGameContext context)
+        public override void Install(GameContext context)
         {
             context.AddEntityWorld(_entityWorld);
             context.AddWeaponCatalog(_weaponsCatalog);
             context.AddPlayerContext(_playerContext);
             context.AddGameFactory(new GameFactory(_poolsParent));
             context.GetGameFactory().RegisterNewPrefab(_audioPrefab, GameFactoryID.AudioSource.ToString());
-            context.AddController(new EnemyController(_enemyPrefab, _spawnPoint));
+            context.AddBehaviour(new EnemyController(_enemyPrefab, _spawnPoint));
             context.AddEnemyFilter(new EntityFilter(_entityWorld, entity => entity.HasEnemyTag()));
         }
     }
 
-    public class EnemyController : IContextUpdate, IContextInit<GameContext>
+    public class EnemyController : IGameContextTick, IGameContextInit
     {
-        private IEntityWorld _entityWorld;
-        private IEntityFilter _enemyFilter;
+        private IEntityWorld<IEntity> _entityWorld;
+        private EntityFilter _enemyFilter;
         private GameFactory _gameFactory;
 
-        private readonly SceneEntity _enemyPrefab;
+        private readonly MonoEntity _enemyPrefab;
         private readonly Transform _spawnPoint;
 
-        public EnemyController(SceneEntity enemyPrefab, Transform spawnPoint)
+        public EnemyController(MonoEntity enemyPrefab, Transform spawnPoint)
         {
             _enemyPrefab = enemyPrefab;
             _spawnPoint = spawnPoint;
         }
 
-        public void Init(GameContext context)
+        public void Init(IGameContext context)
         {
             _entityWorld = context.GetEntityWorld();
             _enemyFilter = context.GetEnemyFilter();
             _gameFactory = context.GetGameFactory();
         }
 
-        public void OnUpdate(IContext context, float deltaTime)
+        public void Tick(IGameContext context, float deltaTime)
         {
             if (Input.GetKeyDown(KeyCode.M)) 
                 SpawnUseCase.SpawnCharacter(_enemyPrefab, _spawnPoint, _entityWorld, _gameFactory);

@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Game.Gameplay
 {
-    public sealed class ItemVisualInstaller : SceneEntityInstaller
+    public sealed class ItemVisualInstaller : MonoEntityInstaller
     {
         [SerializeField] private ParticleSystem _vfx;
         [SerializeField] private HighlightEffect _highlight;

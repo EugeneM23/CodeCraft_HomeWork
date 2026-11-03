@@ -2,10 +2,11 @@ using Atomic.Elements;
 using Atomic.Entities;
 using Modules.Gameplay;
 using UnityEngine;
+using Cooldown = Modules.Gameplay.Cooldown;
 
 namespace Game
 {
-    public class ShellInstaller : SceneEntityInstaller
+    public class ShellInstaller : MonoEntityInstaller
     {
         [SerializeField] private Rigidbody _rb;
 
@@ -21,7 +22,7 @@ namespace Game
             entity.AddRiggedBody(_rb);
             entity.AddGameObject(transform.gameObject);
             entity.AddTransform(transform);
-            entity.AddDestroyAction(new BaseAction(() => SpawnUseCase.UnSpawnEntity(_gameFactory, entity)));
+            entity.AddDestroyAction(new InlineAction(() => SpawnUseCase.UnSpawnEntity(_gameFactory, entity)));
 
             //LifeTime
             entity.AddLifeTime(new Cooldown(_lifeTime));

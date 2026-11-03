@@ -19,7 +19,7 @@ namespace Game.Content
             return false;
         }
 
-        public static bool RayCastTarget(out SceneEntity target, LayerMask layerMask)
+        public static bool RayCastTarget(out MonoEntity target, LayerMask layerMask)
         {
             target = null;
 
@@ -27,7 +27,7 @@ namespace Game.Content
 
             if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, layerMask))
             {
-                if (hit.collider.TryGetComponent(out SceneEntity sceneEntity))
+                if (hit.collider.TryGetComponent(out MonoEntity sceneEntity))
                 {
                     target = sceneEntity;
                     return true;

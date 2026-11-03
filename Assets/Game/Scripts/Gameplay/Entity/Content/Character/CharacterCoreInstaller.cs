@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Game
 {
-    public sealed class CharacterCoreInstaller : SceneEntityInstaller
+    public sealed class CharacterCoreInstaller : MonoEntityInstaller
     {
         [Header("Movement Settings")] [SerializeField]
         private float _moveSpeed = 15f;
@@ -17,7 +17,7 @@ namespace Game
         private int _health = 100;
 
         [Header("Combat Settings")] [SerializeField]
-        private SceneEntity _weapon;
+        private MonoEntity _weapon;
 
         [SerializeField] private Transform _weaponRoot;
 
@@ -48,16 +48,16 @@ namespace Game
 
             // Health
             entity.AddHealth(new Health(_health, _health));
-            entity.AddDamageTakenEvent(new BaseEvent<TakeDamageArgs>());
-            entity.AddDeathTakenEvent(new BaseEvent<TakeDamageArgs>());
+            entity.AddDamageTakenEvent(new Atomic.Elements.Event<TakeDamageArgs>());
+            entity.AddDeathTakenEvent(new Atomic.Elements.Event<TakeDamageArgs>());
             entity.AddBehaviour(new DeathBehaviour(_gameContext));
 
             // Movement
-            entity.AddRotationSpeed(new BaseVariable<float>(_rotationSpeed));
+            entity.AddRotationSpeed(new Variable<float>(_rotationSpeed));
             entity.AddMoveSpeed(new ReactiveFloat(_moveSpeed));
             entity.AddMoveCondition(new AndExpression(
-                entity.GetHealth().Exists,
-                () => entity.GetWeapon().Value.GetMoveCondition().Invoke()
+                new ExpressionMember<bool>(entity.GetHealth().Exists),
+                new ExpressionMember<bool>(() => entity.GetWeapon().Value.GetMoveCondition().Invoke())
             ));
             entity.AddMoveDirection(new ReactiveVariable<Vector3>());
             entity.AddRotateDirection(new ReactiveVariable<Vector3>());
@@ -69,7 +69,7 @@ namespace Game
             entity.AddWeapon(new ReactiveVariable<IEntity>(_weapon));
             entity.AddHandWeapon(new ReactiveVariable<IEntity>(_weapon));
             entity.AddWeaponRoot(_weaponRoot);
-            entity.AddFireCondition(new AndExpression(entity.GetHealth().Exists));
+            entity.AddFireCondition(new AndExpression(new ExpressionMember<bool>(entity.GetHealth().Exists)));
             entity.AddFireAction(new CharacterFireAction(entity));
             entity.AddBehaviour(new DamageCastBehaviour());
 

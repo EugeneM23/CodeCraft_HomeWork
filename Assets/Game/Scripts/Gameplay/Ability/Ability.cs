@@ -4,7 +4,7 @@ namespace Game
 {
     public class Ability : Entity
     {
-        public Ability(in string name) : base(in name)
+        public Ability(string name) : base(name)
         {
         }
     }

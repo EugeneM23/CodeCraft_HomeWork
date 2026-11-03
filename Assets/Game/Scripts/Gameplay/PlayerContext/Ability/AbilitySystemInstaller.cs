@@ -1,5 +1,5 @@
+using Atomic.Entities;
 using System;
-using Atomic.Contexts;
 using Atomic.Elements;
 using Game.Content;
 using UnityEngine;
@@ -7,7 +7,7 @@ using UnityEngine;
 namespace Game
 {
     [Serializable]
-    public class AbilitySystemInstaller : IContextInstaller<IPlayerContext>
+    public class AbilitySystemInstaller : IEntityInstaller<IPlayerContext>
     {
         [SerializeField] private DashAbilityConfig _dashAbility;
         [SerializeField] private TeleportAbilityConfig _teleportAbility;
@@ -19,7 +19,7 @@ namespace Game
             context.GetAbilities().Add(_dashAbility.name, _dashAbility.Create(context));
             context.GetAbilities().Add(_teleportAbility.name, _teleportAbility.Create(context));
             context.GetAbilities().Add(_stunAbility.name, _stunAbility.Create(context));
-            context.AddController<AbilityRunner>();
+            context.AddBehaviour<AbilityRunner>();
         }
     }
 }

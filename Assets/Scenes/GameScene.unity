@@ -1611,11 +1611,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 6809944706259094416, guid: 0a3972e964dcd2b47b2a3bc58d35d554, type: 3}
   m_PrefabInstance: {fileID: 767430354}
   m_PrefabAsset: {fileID: 0}
---- !u!198 &107672435 stripped
-ParticleSystem:
-  m_CorrespondingSourceObject: {fileID: 6809944706259094417, guid: 0a3972e964dcd2b47b2a3bc58d35d554, type: 3}
-  m_PrefabInstance: {fileID: 767430354}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &110230586
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2380,7 +2375,6 @@ GameObject:
   - component: {fileID: 173130350}
   - component: {fileID: 173130349}
   - component: {fileID: 173130348}
-  - component: {fileID: 173130347}
   - component: {fileID: 173130346}
   - component: {fileID: 173130345}
   - component: {fileID: 173130344}
@@ -2658,15 +2652,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e957f2852a774d8c81c2c6fda31fc6d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  serializationData:
-    SerializedFormat: 2
-    SerializedBytes: 
-    ReferencedUnityObjects: []
-    SerializedBytesString: 
-    Prefab: {fileID: 0}
-    PrefabModificationsReferencedUnityObjects: []
-    PrefabModifications: []
-    SerializationNodes: []
   _vfx: {fileID: 0}
   _highlight: {fileID: 173130344}
   _visual: {fileID: 0}
@@ -2685,30 +2670,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d2f8af3e35c9e44aa9f52a523101551d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  serializationData:
-    SerializedFormat: 2
-    SerializedBytes: 
-    ReferencedUnityObjects: []
-    SerializedBytesString: 
-    Prefab: {fileID: 0}
-    PrefabModificationsReferencedUnityObjects: []
-    PrefabModifications: []
-    SerializationNodes: []
   buffConfig: {fileID: 11400000, guid: a3b01be62ed2d4e23be5df63c67afcaf, type: 2}
---- !u!114 &173130347
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 173130343}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 603a745f80e14d1d8cd57cf70a50187f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  entities:
-  - {fileID: 173130348}
 --- !u!114 &173130348
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2721,14 +2683,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3142498ee69840069f3a93c11b1e1f75, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  installOnAwake: 1
-  installInEditMode: 0
+  useUnityLifecycle: 1
   disposeValues: 1
-  installers:
+  installOnAwake: 1
+  uninstallOnDestroy: 1
+  scriptableInstallers: []
+  sceneInstallers:
   - {fileID: 173130346}
   - {fileID: 173130345}
-  _onlySelectedGizmos: 0
-  _onlyEditModeGizmos: 0
+  onlySelectedGizmos: 0
+  onlyEditModeGizmos: 0
+  autoCompile: 0
+  initialTagCapacity: 1
+  initialValueCapacity: 1
+  initialBehaviourCapacity: 0
 --- !u!65 &173130349
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -3625,7 +3593,6 @@ GameObject:
   - component: {fileID: 234369370}
   - component: {fileID: 234369369}
   - component: {fileID: 234369368}
-  - component: {fileID: 234369367}
   - component: {fileID: 234369366}
   - component: {fileID: 234369365}
   - component: {fileID: 234369364}
@@ -3648,15 +3615,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 824fae2dca47422a8f40a80bf6a68539, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  serializationData:
-    SerializedFormat: 2
-    SerializedBytes: 
-    ReferencedUnityObjects: []
-    SerializedBytesString: 
-    Prefab: {fileID: 0}
-    PrefabModificationsReferencedUnityObjects: []
-    PrefabModifications: []
-    SerializationNodes: []
 --- !u!114 &234369365
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3924,35 +3882,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e957f2852a774d8c81c2c6fda31fc6d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  serializationData:
-    SerializedFormat: 2
-    SerializedBytes: 
-    ReferencedUnityObjects: []
-    SerializedBytesString: 
-    Prefab: {fileID: 0}
-    PrefabModificationsReferencedUnityObjects: []
-    PrefabModifications: []
-    SerializationNodes: []
   _vfx: {fileID: 0}
   _highlight: {fileID: 234369365}
   _visual: {fileID: 0}
   _audioSource: {fileID: 0}
   _pickUpSound: {fileID: 8300000, guid: 32f565ba94f200f49adb407cce64e873, type: 3}
   _dropSound: {fileID: 0}
---- !u!114 &234369367
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 234369363}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 603a745f80e14d1d8cd57cf70a50187f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  entities:
-  - {fileID: 234369368}
 --- !u!114 &234369368
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3965,14 +3900,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3142498ee69840069f3a93c11b1e1f75, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  installOnAwake: 1
-  installInEditMode: 0
+  useUnityLifecycle: 1
   disposeValues: 1
-  installers:
+  installOnAwake: 1
+  uninstallOnDestroy: 1
+  scriptableInstallers: []
+  sceneInstallers:
   - {fileID: 234369364}
   - {fileID: 234369366}
-  _onlySelectedGizmos: 0
-  _onlyEditModeGizmos: 0
+  onlySelectedGizmos: 0
+  onlyEditModeGizmos: 0
+  autoCompile: 0
+  initialTagCapacity: 1
+  initialValueCapacity: 1
+  initialBehaviourCapacity: 0
 --- !u!65 &234369369
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -5309,7 +5250,6 @@ GameObject:
   m_Component:
   - component: {fileID: 332372746}
   - component: {fileID: 332372749}
-  - component: {fileID: 332372748}
   - component: {fileID: 332372747}
   m_Layer: 0
   m_Name: InteractMarker
@@ -5346,31 +5286,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9387d53d062d47dd84694d0e17dd2617, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  serializationData:
-    SerializedFormat: 2
-    SerializedBytes: 
-    ReferencedUnityObjects: []
-    SerializedBytesString: 
-    Prefab: {fileID: 0}
-    PrefabModificationsReferencedUnityObjects: []
-    PrefabModifications: []
-    SerializationNodes: []
   _positionOffset: {x: 0, y: 2.4, z: 0.5}
   _view: {fileID: 1480429783}
---- !u!114 &332372748
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 332372745}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 603a745f80e14d1d8cd57cf70a50187f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  entities:
-  - {fileID: 332372749}
 --- !u!114 &332372749
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5383,13 +5300,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3142498ee69840069f3a93c11b1e1f75, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  installOnAwake: 1
-  installInEditMode: 0
+  useUnityLifecycle: 1
   disposeValues: 1
-  installers:
+  installOnAwake: 1
+  uninstallOnDestroy: 1
+  scriptableInstallers: []
+  sceneInstallers:
   - {fileID: 332372747}
-  _onlySelectedGizmos: 0
-  _onlyEditModeGizmos: 0
+  onlySelectedGizmos: 0
+  onlyEditModeGizmos: 0
+  autoCompile: 0
+  initialTagCapacity: 1
+  initialValueCapacity: 1
+  initialBehaviourCapacity: 0
 --- !u!1001 &338406016
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6679,7 +6602,6 @@ GameObject:
   - component: {fileID: 430235453}
   - component: {fileID: 430235452}
   - component: {fileID: 430235451}
-  - component: {fileID: 430235450}
   - component: {fileID: 430235449}
   - component: {fileID: 430235448}
   m_Layer: 9
@@ -6701,17 +6623,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff31f68abaa2447ca89ea987f26cce98, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  serializationData:
-    SerializedFormat: 2
-    SerializedBytes: 
-    ReferencedUnityObjects: []
-    SerializedBytesString: 
-    Prefab: {fileID: 0}
-    PrefabModificationsReferencedUnityObjects: []
-    PrefabModifications: []
-    SerializationNodes: []
   _triggerEventReceiver: {fileID: 430235449}
-  _entityAspect: {fileID: 11400000, guid: a9a51db15db69495ba8e8a37c4a918d5, type: 2}
+  _entityAspect: {fileID: 0}
 --- !u!114 &430235449
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6724,20 +6637,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f7e1bcad94a740f18cf6a67630cec709, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &430235450
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 430235447}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 603a745f80e14d1d8cd57cf70a50187f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  entities:
-  - {fileID: 430235451}
 --- !u!114 &430235451
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6750,13 +6649,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3142498ee69840069f3a93c11b1e1f75, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  installOnAwake: 1
-  installInEditMode: 0
+  useUnityLifecycle: 1
   disposeValues: 1
-  installers:
+  installOnAwake: 1
+  uninstallOnDestroy: 1
+  scriptableInstallers: []
+  sceneInstallers:
   - {fileID: 430235448}
-  _onlySelectedGizmos: 0
-  _onlyEditModeGizmos: 0
+  onlySelectedGizmos: 0
+  onlyEditModeGizmos: 0
+  autoCompile: 0
+  initialTagCapacity: 1
+  initialValueCapacity: 1
+  initialBehaviourCapacity: 0
 --- !u!65 &430235452
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -7661,13 +7566,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1534323f1074a2797a7089f92f73a53, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  installOnAwake: 0
-  installInEditMode: 0
-  dontDestroyOnLoad: 0
-  initialParent: {fileID: 1225762021}
-  installers:
+  useUnityLifecycle: 1
+  disposeValues: 1
+  installOnAwake: 1
+  uninstallOnDestroy: 1
+  scriptableInstallers: []
+  sceneInstallers:
   - {fileID: 460514777}
-  children: []
+  onlySelectedGizmos: 0
+  onlyEditModeGizmos: 0
+  autoCompile: 0
+  initialTagCapacity: 1
+  initialValueCapacity: 1
+  initialBehaviourCapacity: 0
 --- !u!1001 &462553793
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -12502,11 +12413,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3049428253405200658, guid: e62e775cb5c996a4c944ff20f3cec481, type: 3}
   m_PrefabInstance: {fileID: 1259097604}
   m_PrefabAsset: {fileID: 0}
---- !u!198 &810418779 stripped
-ParticleSystem:
-  m_CorrespondingSourceObject: {fileID: 3049428253405200659, guid: e62e775cb5c996a4c944ff20f3cec481, type: 3}
-  m_PrefabInstance: {fileID: 1259097604}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &812537795 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4203557328866918, guid: 73903ee6163682f4bb561c7b19894ac8, type: 3}
@@ -13255,7 +13161,6 @@ GameObject:
   - component: {fileID: 888554422}
   - component: {fileID: 888554421}
   - component: {fileID: 888554420}
-  - component: {fileID: 888554419}
   - component: {fileID: 888554425}
   - component: {fileID: 888554427}
   - component: {fileID: 888554426}
@@ -13266,20 +13171,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &888554419
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 888554416}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 603a745f80e14d1d8cd57cf70a50187f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  entities:
-  - {fileID: 888554420}
 --- !u!114 &888554420
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13292,14 +13183,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3142498ee69840069f3a93c11b1e1f75, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  installOnAwake: 1
-  installInEditMode: 0
+  useUnityLifecycle: 1
   disposeValues: 1
-  installers:
+  installOnAwake: 1
+  uninstallOnDestroy: 1
+  scriptableInstallers: []
+  sceneInstallers:
   - {fileID: 888554425}
   - {fileID: 888554427}
-  _onlySelectedGizmos: 0
-  _onlyEditModeGizmos: 0
+  onlySelectedGizmos: 0
+  onlyEditModeGizmos: 0
+  autoCompile: 0
+  initialTagCapacity: 1
+  initialValueCapacity: 1
+  initialBehaviourCapacity: 0
 --- !u!65 &888554421
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -13401,15 +13298,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d2f8af3e35c9e44aa9f52a523101551d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  serializationData:
-    SerializedFormat: 2
-    SerializedBytes: 
-    ReferencedUnityObjects: []
-    SerializedBytesString: 
-    Prefab: {fileID: 0}
-    PrefabModificationsReferencedUnityObjects: []
-    PrefabModifications: []
-    SerializationNodes: []
   buffConfig: {fileID: 11400000, guid: d79af216988cc48f1bc3e88cf7533253, type: 2}
 --- !u!114 &888554426
 MonoBehaviour:
@@ -13678,15 +13566,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e957f2852a774d8c81c2c6fda31fc6d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  serializationData:
-    SerializedFormat: 2
-    SerializedBytes: 
-    ReferencedUnityObjects: []
-    SerializedBytesString: 
-    Prefab: {fileID: 0}
-    PrefabModificationsReferencedUnityObjects: []
-    PrefabModifications: []
-    SerializationNodes: []
   _vfx: {fileID: 0}
   _highlight: {fileID: 888554426}
   _visual: {fileID: 0}
@@ -15234,7 +15113,7 @@ MonoBehaviour:
     SerializationNodes:
     - Name: _weapons
       Entry: 7
-      Data: 0|System.Collections.Generic.Dictionary`2[[Game.WeaponID, Assembly-CSharp],[Atomic.Entities.SceneEntity,
+      Data: 0|System.Collections.Generic.Dictionary`2[[Game.WeaponID, Assembly-CSharp],[Atomic.Entities.MonoEntity,
         Atomic.Entities]], mscorlib
     - Name: comparer
       Entry: 7
@@ -15320,7 +15199,7 @@ MonoBehaviour:
       Data: 
     - Name: _pickUpWeapons
       Entry: 7
-      Data: 2|System.Collections.Generic.Dictionary`2[[Game.WeaponID, Assembly-CSharp],[Atomic.Entities.SceneEntity,
+      Data: 2|System.Collections.Generic.Dictionary`2[[Game.WeaponID, Assembly-CSharp],[Atomic.Entities.MonoEntity,
         Atomic.Entities]], mscorlib
     - Name: comparer
       Entry: 9
@@ -17976,9 +17855,7 @@ GameObject:
   - component: {fileID: 1225762019}
   - component: {fileID: 1225762020}
   - component: {fileID: 1225762021}
-  - component: {fileID: 1225762022}
   - component: {fileID: 1225762023}
-  - component: {fileID: 1225762024}
   m_Layer: 0
   m_Name: '[Context]'
   m_TagString: Untagged
@@ -18037,31 +17914,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 499ffa7f432e4da1a345925db637e7b0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  useUnityLifecycle: 1
+  disposeValues: 1
   installOnAwake: 1
-  installInEditMode: 0
-  dontDestroyOnLoad: 0
-  initialParent: {fileID: 0}
-  installers:
+  uninstallOnDestroy: 1
+  scriptableInstallers: []
+  sceneInstallers:
   - {fileID: 1225762020}
-  children:
-  - {fileID: 460514778}
---- !u!114 &1225762022
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1225762018}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2f2414fcf5314631b6dda955bd109e3e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  installOnAwake: 0
-  diEnabled: 1
-  contexts:
-  - {fileID: 1225762021}
-  - {fileID: 460514778}
+  onlySelectedGizmos: 0
+  onlyEditModeGizmos: 0
+  autoCompile: 0
+  initialTagCapacity: 1
+  initialValueCapacity: 1
+  initialBehaviourCapacity: 0
+  dontDestroyOnLoad: 0
 --- !u!114 &1225762023
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18074,20 +17940,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad3a3ede6b224e529f623d5ca96c67f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scanOnAwake: 1
-  includeInactiveOnScan: 1
---- !u!114 &1225762024
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1225762018}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 407cad5a76d8477a9f84f56295495421, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  useUnityLifecycle: 1
+  dontDestroyOnLoad: 0
+  collectOnAwake: 1
+  includeInactiveOnCollect: 1
 --- !u!1001 &1228514620
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -18188,7 +18044,6 @@ GameObject:
   - component: {fileID: 1229551805}
   - component: {fileID: 1229551804}
   - component: {fileID: 1229551803}
-  - component: {fileID: 1229551802}
   - component: {fileID: 1229551801}
   - component: {fileID: 1229551800}
   - component: {fileID: 1229551799}
@@ -18211,15 +18066,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 824fae2dca47422a8f40a80bf6a68539, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  serializationData:
-    SerializedFormat: 2
-    SerializedBytes: 
-    ReferencedUnityObjects: []
-    SerializedBytesString: 
-    Prefab: {fileID: 0}
-    PrefabModificationsReferencedUnityObjects: []
-    PrefabModifications: []
-    SerializationNodes: []
 --- !u!114 &1229551800
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18487,35 +18333,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e957f2852a774d8c81c2c6fda31fc6d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  serializationData:
-    SerializedFormat: 2
-    SerializedBytes: 
-    ReferencedUnityObjects: []
-    SerializedBytesString: 
-    Prefab: {fileID: 0}
-    PrefabModificationsReferencedUnityObjects: []
-    PrefabModifications: []
-    SerializationNodes: []
   _vfx: {fileID: 0}
   _highlight: {fileID: 1229551800}
   _visual: {fileID: 0}
   _audioSource: {fileID: 0}
   _pickUpSound: {fileID: 8300000, guid: 32f565ba94f200f49adb407cce64e873, type: 3}
   _dropSound: {fileID: 0}
---- !u!114 &1229551802
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1229551798}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 603a745f80e14d1d8cd57cf70a50187f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  entities:
-  - {fileID: 1229551803}
 --- !u!114 &1229551803
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18528,14 +18351,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3142498ee69840069f3a93c11b1e1f75, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  installOnAwake: 1
-  installInEditMode: 0
+  useUnityLifecycle: 1
   disposeValues: 1
-  installers:
+  installOnAwake: 1
+  uninstallOnDestroy: 1
+  scriptableInstallers: []
+  sceneInstallers:
   - {fileID: 1229551799}
   - {fileID: 1229551801}
-  _onlySelectedGizmos: 0
-  _onlyEditModeGizmos: 0
+  onlySelectedGizmos: 0
+  onlyEditModeGizmos: 0
+  autoCompile: 0
+  initialTagCapacity: 1
+  initialValueCapacity: 1
+  initialBehaviourCapacity: 0
 --- !u!65 &1229551804
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -24215,7 +24044,6 @@ GameObject:
   - component: {fileID: 1641317528}
   - component: {fileID: 1641317527}
   - component: {fileID: 1641317526}
-  - component: {fileID: 1641317525}
   - component: {fileID: 1641317524}
   - component: {fileID: 1641317523}
   - component: {fileID: 1641317522}
@@ -24238,15 +24066,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 824fae2dca47422a8f40a80bf6a68539, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  serializationData:
-    SerializedFormat: 2
-    SerializedBytes: 
-    ReferencedUnityObjects: []
-    SerializedBytesString: 
-    Prefab: {fileID: 0}
-    PrefabModificationsReferencedUnityObjects: []
-    PrefabModifications: []
-    SerializationNodes: []
 --- !u!114 &1641317523
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -24514,35 +24333,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e957f2852a774d8c81c2c6fda31fc6d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  serializationData:
-    SerializedFormat: 2
-    SerializedBytes: 
-    ReferencedUnityObjects: []
-    SerializedBytesString: 
-    Prefab: {fileID: 0}
-    PrefabModificationsReferencedUnityObjects: []
-    PrefabModifications: []
-    SerializationNodes: []
   _vfx: {fileID: 0}
   _highlight: {fileID: 1641317523}
   _visual: {fileID: 0}
   _audioSource: {fileID: 0}
   _pickUpSound: {fileID: 8300000, guid: 32f565ba94f200f49adb407cce64e873, type: 3}
   _dropSound: {fileID: 0}
---- !u!114 &1641317525
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1641317521}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 603a745f80e14d1d8cd57cf70a50187f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  entities:
-  - {fileID: 1641317526}
 --- !u!114 &1641317526
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -24555,14 +24351,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3142498ee69840069f3a93c11b1e1f75, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  installOnAwake: 1
-  installInEditMode: 0
+  useUnityLifecycle: 1
   disposeValues: 1
-  installers:
+  installOnAwake: 1
+  uninstallOnDestroy: 1
+  scriptableInstallers: []
+  sceneInstallers:
   - {fileID: 1641317522}
   - {fileID: 1641317524}
-  _onlySelectedGizmos: 0
-  _onlyEditModeGizmos: 0
+  onlySelectedGizmos: 0
+  onlyEditModeGizmos: 0
+  autoCompile: 0
+  initialTagCapacity: 1
+  initialValueCapacity: 1
+  initialBehaviourCapacity: 0
 --- !u!65 &1641317527
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -25676,7 +25478,6 @@ GameObject:
   - component: {fileID: 1715537674}
   - component: {fileID: 1715537673}
   - component: {fileID: 1715537672}
-  - component: {fileID: 1715537671}
   - component: {fileID: 1715537670}
   - component: {fileID: 1715537669}
   - component: {fileID: 1715537668}
@@ -25954,15 +25755,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e957f2852a774d8c81c2c6fda31fc6d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  serializationData:
-    SerializedFormat: 2
-    SerializedBytes: 
-    ReferencedUnityObjects: []
-    SerializedBytesString: 
-    Prefab: {fileID: 0}
-    PrefabModificationsReferencedUnityObjects: []
-    PrefabModifications: []
-    SerializationNodes: []
   _vfx: {fileID: 0}
   _highlight: {fileID: 1715537668}
   _visual: {fileID: 0}
@@ -25981,30 +25773,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d2f8af3e35c9e44aa9f52a523101551d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  serializationData:
-    SerializedFormat: 2
-    SerializedBytes: 
-    ReferencedUnityObjects: []
-    SerializedBytesString: 
-    Prefab: {fileID: 0}
-    PrefabModificationsReferencedUnityObjects: []
-    PrefabModifications: []
-    SerializationNodes: []
   buffConfig: {fileID: 11400000, guid: b2ec6038b96d14a5b83ae1a948833c9a, type: 2}
---- !u!114 &1715537671
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1715537667}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 603a745f80e14d1d8cd57cf70a50187f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  entities:
-  - {fileID: 1715537672}
 --- !u!114 &1715537672
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -26017,14 +25786,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3142498ee69840069f3a93c11b1e1f75, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  installOnAwake: 1
-  installInEditMode: 0
+  useUnityLifecycle: 1
   disposeValues: 1
-  installers:
+  installOnAwake: 1
+  uninstallOnDestroy: 1
+  scriptableInstallers: []
+  sceneInstallers:
   - {fileID: 1715537670}
   - {fileID: 1715537669}
-  _onlySelectedGizmos: 0
-  _onlyEditModeGizmos: 0
+  onlySelectedGizmos: 0
+  onlyEditModeGizmos: 0
+  autoCompile: 0
+  initialTagCapacity: 1
+  initialValueCapacity: 1
+  initialBehaviourCapacity: 0
 --- !u!65 &1715537673
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -40677,13 +40452,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3142498ee69840069f3a93c11b1e1f75, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  installOnAwake: 1
-  installInEditMode: 0
+  useUnityLifecycle: 1
   disposeValues: 1
-  installers:
+  installOnAwake: 1
+  uninstallOnDestroy: 1
+  scriptableInstallers: []
+  sceneInstallers:
   - {fileID: 5828885169939616493}
-  _onlySelectedGizmos: 0
-  _onlyEditModeGizmos: 0
+  onlySelectedGizmos: 0
+  onlyEditModeGizmos: 0
+  autoCompile: 0
+  initialTagCapacity: 1
+  initialValueCapacity: 1
+  initialBehaviourCapacity: 0
 --- !u!1001 &757640612756630599
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -41033,15 +40814,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e97f8178934f4d14984f6d6c3b2ec91d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  serializationData:
-    SerializedFormat: 2
-    SerializedBytes: 
-    ReferencedUnityObjects: []
-    SerializedBytesString: 
-    Prefab: {fileID: 0}
-    PrefabModificationsReferencedUnityObjects: []
-    PrefabModifications: []
-    SerializationNodes: []
   _bulletBlood: {fileID: 5809517287063785453}
   _meleeBlood: {fileID: 287800078471683979}
   _deadBlood: {fileID: 2543489003666759112}
@@ -41193,20 +40965,6 @@ Transform:
   - {fileID: 2934962312611251855}
   m_Father: {fileID: 5160812569022390376}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1468216825813872960
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6858286264800132287}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 603a745f80e14d1d8cd57cf70a50187f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  entities:
-  - {fileID: 737229949194823617}
 --- !u!114 &1495571586755054362
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -52305,15 +52063,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 61ffc19ed6dc41aabf0d8cddc6990d11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  serializationData:
-    SerializedFormat: 2
-    SerializedBytes: 
-    ReferencedUnityObjects: []
-    SerializedBytesString: 
-    Prefab: {fileID: 0}
-    PrefabModificationsReferencedUnityObjects: []
-    PrefabModifications: []
-    SerializationNodes: []
   _audioSource: {fileID: 8188474117843393139}
   _painLevels:
   - percent: 1
@@ -52779,15 +52528,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fdbbfcf63e744a86a3d59c489c02b45c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  serializationData:
-    SerializedFormat: 2
-    SerializedBytes: 
-    ReferencedUnityObjects: []
-    SerializedBytesString: 
-    Prefab: {fileID: 0}
-    PrefabModificationsReferencedUnityObjects: []
-    PrefabModifications: []
-    SerializationNodes: []
 --- !u!114 &4861445287701015072
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -52800,13 +52540,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3142498ee69840069f3a93c11b1e1f75, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  installOnAwake: 1
-  installInEditMode: 0
+  useUnityLifecycle: 1
   disposeValues: 1
-  installers:
+  installOnAwake: 1
+  uninstallOnDestroy: 1
+  scriptableInstallers: []
+  sceneInstallers:
   - {fileID: 4861445287701015070}
-  _onlySelectedGizmos: 0
-  _onlyEditModeGizmos: 0
+  onlySelectedGizmos: 0
+  onlyEditModeGizmos: 0
+  autoCompile: 0
+  initialTagCapacity: 1
+  initialValueCapacity: 1
+  initialBehaviourCapacity: 0
 --- !u!114 &4861445287701015074
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -52945,15 +52691,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9d2159821d814c319ae60ca8f9ac27a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  serializationData:
-    SerializedFormat: 2
-    SerializedBytes: 
-    ReferencedUnityObjects: []
-    SerializedBytesString: 
-    Prefab: {fileID: 0}
-    PrefabModificationsReferencedUnityObjects: []
-    PrefabModifications: []
-    SerializationNodes: []
   _animator: {fileID: 4777726797415133127}
   _animationReceiver: {fileID: 4490182797827368279}
 --- !u!114 &5143273600617937951
@@ -58071,15 +57808,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f11ddf0b427944eb95ac7199cc6cc36a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  serializationData:
-    SerializedFormat: 2
-    SerializedBytes: 
-    ReferencedUnityObjects: []
-    SerializedBytesString: 
-    Prefab: {fileID: 0}
-    PrefabModificationsReferencedUnityObjects: []
-    PrefabModifications: []
-    SerializationNodes: []
   _id: 0
   _damage: 50
   _damageRadius: 0.5
@@ -62706,17 +62434,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3142498ee69840069f3a93c11b1e1f75, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  installOnAwake: 1
-  installInEditMode: 0
+  useUnityLifecycle: 1
   disposeValues: 1
-  installers:
+  installOnAwake: 1
+  uninstallOnDestroy: 1
+  scriptableInstallers: []
+  sceneInstallers:
   - {fileID: 7617084607911835855}
   - {fileID: 4988056222765396208}
   - {fileID: 4207723803234498315}
   - {fileID: 1133330809638091721}
   - {fileID: 6505580100604115152}
-  _onlySelectedGizmos: 0
-  _onlyEditModeGizmos: 0
+  onlySelectedGizmos: 0
+  onlyEditModeGizmos: 0
+  autoCompile: 0
+  initialTagCapacity: 1
+  initialValueCapacity: 1
+  initialBehaviourCapacity: 0
 --- !u!1 &6072089229248587389
 GameObject:
   m_ObjectHideFlags: 0
@@ -63432,73 +63166,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f312ab9752914155925f8b2dff4b9249, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  serializationData:
-    SerializedFormat: 2
-    SerializedBytes: 
-    ReferencedUnityObjects:
-    - {fileID: 107672435}
-    - {fileID: 810418779}
-    SerializedBytesString: 
-    Prefab: {fileID: 0}
-    PrefabModificationsReferencedUnityObjects: []
-    PrefabModifications: []
-    SerializationNodes:
-    - Name: _buffsParticles
-      Entry: 7
-      Data: 0|System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[UnityEngine.ParticleSystem,
-        UnityEngine.ParticleSystemModule]], mscorlib
-    - Name: comparer
-      Entry: 7
-      Data: 1|System.Collections.Generic.GenericEqualityComparer`1[[System.String,
-        mscorlib]], mscorlib
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 12
-      Data: 3
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 1
-      Data: MoveSpeed
-    - Name: $v
-      Entry: 10
-      Data: 0
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 1
-      Data: Damage
-    - Name: $v
-      Entry: 10
-      Data: 1
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 1
-      Data: Jump
-    - Name: $v
-      Entry: 10
-      Data: 1
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
 --- !u!1 &6548350276547997885
 GameObject:
   m_ObjectHideFlags: 0
@@ -63564,7 +63231,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2934962312611251855}
   - component: {fileID: 737229949194823617}
-  - component: {fileID: 1468216825813872960}
   - component: {fileID: 5828885169939616493}
   m_Layer: 0
   m_Name: Hand
@@ -63829,15 +63495,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb3ce9d4cea846659e40d9b68a5ced90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  serializationData:
-    SerializedFormat: 2
-    SerializedBytes: 
-    ReferencedUnityObjects: []
-    SerializedBytesString: 
-    Prefab: {fileID: 0}
-    PrefabModificationsReferencedUnityObjects: []
-    PrefabModifications: []
-    SerializationNodes: []
   _moveSpeed: 5
   _rotationSpeed: 15
   _health: 100

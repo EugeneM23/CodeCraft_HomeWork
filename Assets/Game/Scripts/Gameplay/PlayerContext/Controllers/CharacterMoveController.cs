@@ -1,11 +1,10 @@
-using Atomic.Contexts;
 using Atomic.Entities;
 using Modules.Common;
 using UnityEngine;
 
 namespace Game
 {
-    public class CharacterMoveController : IContextInit<IPlayerContext>, IContextLateUpdate
+    public class CharacterMoveController : IPlayerContextInit, IPlayerContextLateTick
     {
         private Joystick _joystick;
         private IEntity _character;
@@ -29,6 +28,6 @@ namespace Game
             _character.GetMoveDirection().Value = direction;
         }
 
-        public void OnLateUpdate(IContext context, float deltaTime) => Move();
+        public void LateTick(IPlayerContext context, float deltaTime) => Move();
     }
 }

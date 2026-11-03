@@ -18,14 +18,14 @@
 //             _clip = clip;
 //         }
 //
-//         public void Init(in IEntity entity)
+//         public void Init(IEntity entity)
 //         {
 //             _audioSource = entity.GetAudioSource();
 //             _eventReceiver = entity.GetAnimationEventReceiver();
 //             _eventReceiver.OnEvent += this.OnAnimEvent;
 //         }
 //
-//         public void Dispose(in IEntity entity)
+//         public void Dispose(IEntity entity)
 //         {
 //             _eventReceiver.OnEvent -= this.OnAnimEvent;
 //         }

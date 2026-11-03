@@ -1,25 +1,10 @@
-using System;
-using System.Collections.Generic;
-
 namespace Atomic.Entities
 {
-    public partial interface IEntityWorld : IEnumerable<IEntity>
+    /// <summary>
+    /// Non-generic version of <see cref="IEntityWorld{E}"/> specialized for <see cref="IEntity"/>.
+    /// Provides a convenient base abstraction when a specific entity type is not required.
+    /// </summary>
+    public interface IEntityWorld : IEntityWorld<IEntity>
     {
-        event Action OnStateChanged;
-        event Action<IEntity> OnAdded;
-        event Action<IEntity> OnDeleted;
-
-        string Name { get; set; }
-        int Count { get; }
-        IReadOnlyCollection<IEntity> All { get; }
-
-        bool Add(in IEntity entity);
-        bool Has(in IEntity entity);
-        bool Del(in IEntity entity);
-        void Clear();
-
-        IEntity[] GetAll();
-        int GetAll(in IEntity[] results);
-        void CopyTo(ICollection<IEntity> results);
     }
 }

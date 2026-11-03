@@ -10,7 +10,7 @@ namespace Game
             DropWeaponUseCase.DropWeapon(character, gameContext);
             character.GetTargetInteractable().Value = null;
 
-            SceneEntity characterWeapon = gameContext.GetWeaponCatalog().GetWeapon(sceneWeapon.GetWeaponId());
+            MonoEntity characterWeapon = gameContext.GetWeaponCatalog().GetWeapon(sceneWeapon.GetWeaponId());
 
             if (sceneWeapon.TryGetAmmo(out var pickUpValue) && characterWeapon.TryGetAmmo(out var ammo))
             {
@@ -25,7 +25,7 @@ namespace Game
             weaponTransform.SetPositionAndRotation(weaponRoot.position, weaponRoot.rotation);
             weaponTransform.SetParent(weaponRoot);
 
-            SceneEntity.Destroy(sceneWeapon);
+            MonoEntity.Destroy(sceneWeapon);
 
             character.GetHandWeapon().Value.GetGameObject().SetActive(false);
             return true;

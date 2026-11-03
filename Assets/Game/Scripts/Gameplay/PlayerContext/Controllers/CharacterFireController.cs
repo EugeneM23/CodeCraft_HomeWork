@@ -1,11 +1,10 @@
-using Atomic.Contexts;
 using Atomic.Elements;
 using Atomic.Entities;
 using UnityEngine;
 
 namespace Game
 {
-    public class CharacterFireController : IContextInit<IPlayerContext>, IContextLateUpdate
+    public class CharacterFireController : IPlayerContextInit, IPlayerContextLateTick
     {
         private IEntity _character;
         private IReactiveVariable<IEntity> _weapon;
@@ -16,7 +15,7 @@ namespace Game
             _weapon = _character.GetWeapon();
         }
 
-        public void OnLateUpdate(IContext context, float deltaTime)
+        public void LateTick(IPlayerContext context, float deltaTime)
         {
             if (!_character.GetFireCondition().Invoke()) return;
 

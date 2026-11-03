@@ -2,7 +2,7 @@ using Atomic.Entities;
 
 namespace Game.Gameplay
 {
-    public sealed class ProjectileCoreInstaller : SceneEntityInstaller
+    public sealed class ProjectileCoreInstaller : MonoEntityInstaller
     {
         public override void Install(IEntity entity)
         {

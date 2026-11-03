@@ -1,6 +1,5 @@
 using Atomic.Elements;
 using Atomic.Entities;
-using SampleGame;
 using Unity.Mathematics;
 using UnityEngine;
 

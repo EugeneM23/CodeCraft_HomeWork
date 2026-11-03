@@ -4,16 +4,16 @@ using UnityEngine;
 
 namespace Game.Gameplay
 {
-    public class CharacterRotateBehaviour : IEntityInit, IEntityUpdate
+    public class CharacterRotateBehaviour : IEntityInit, IEntityTick
     {
         private IValue<Vector3> _rotateDirection;
 
-        public void Init(in IEntity entity)
+        public void Init(IEntity entity)
         {
             _rotateDirection = entity.GetRotateDirection();
         }
 
-        public void OnUpdate(in IEntity entity, in float deltaTime)
+        public void Tick(IEntity entity, float deltaTime)
         {
             Vector3 direction = _rotateDirection.Value;
             RotateUseCase.Rotate(entity, direction, deltaTime);

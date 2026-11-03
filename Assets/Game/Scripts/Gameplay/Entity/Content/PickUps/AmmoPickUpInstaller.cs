@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Game
 {
-    public class AmmoPickUpInstaller : SceneEntityInstaller
+    public class AmmoPickUpInstaller : MonoEntityInstaller
     {
         [SerializeField] private int _ammoAmount;
 
@@ -12,10 +12,10 @@ namespace Game
         {
             entity.AddTransform(transform);
             entity.AddInteractableTag();
-            entity.AddPickUpEvent(new BaseEvent());
+            entity.AddPickUpEvent(new Atomic.Elements.Event());
 
             entity.AddInteractAction(
-                new BaseAction<IEntity>((character =>
+                new InlineAction<IEntity>((character =>
                 {
                     IEntity weapon = character.GetWeapon().Value;
                     if (weapon == null || !weapon.TryGetAmmo(out var ammo)) return;
