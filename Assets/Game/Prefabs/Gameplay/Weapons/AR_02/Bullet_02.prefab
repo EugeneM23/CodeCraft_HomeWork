@@ -4972,7 +4972,7 @@ ParticleSystemRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 5761576d2d8b55549bb01953b3d2a60c, type: 2}
+  - {fileID: 2100000, guid: a3b3bf29afebfb8fe0a2981a6c58d399, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -5065,7 +5065,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5592654034276765173}
-  m_Mesh: {fileID: 4300004, guid: 6db9b63ba56ce374e8ba9d8ef2f5af9a, type: 3}
+  m_Mesh: {fileID: 4300004, guid: cadc748457ba3515cfb3b8c89a0ec422, type: 3}
 --- !u!23 &5605120625205657073
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -5089,7 +5089,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 41833273f32b10d47b2e6ec751448a6a, type: 2}
+  - {fileID: 2100000, guid: 4c1569ea36ed3ed03a83159230f680a2, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -14892,7 +14892,7 @@ ParticleSystemRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 5443f785d54fccc40bcfb484c85d5c77, type: 2}
+  - {fileID: 2100000, guid: a4f34a152ed9b81c9ce2dcf853c80cb0, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -14936,7 +14936,7 @@ ParticleSystemRenderer:
   m_VertexStreams: 0001030405
   m_UseCustomTrailVertexStreams: 0
   m_TrailVertexStreams: 00010304
-  m_Mesh: {fileID: 4300006, guid: 6db9b63ba56ce374e8ba9d8ef2f5af9a, type: 3}
+  m_Mesh: {fileID: 4300006, guid: cadc748457ba3515cfb3b8c89a0ec422, type: 3}
   m_Mesh1: {fileID: 0}
   m_Mesh2: {fileID: 0}
   m_Mesh3: {fileID: 0}

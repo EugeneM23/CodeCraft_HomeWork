@@ -151,7 +151,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 2100000, guid: 41833273f32b10d47b2e6ec751448a6a, type: 2}
+  - {fileID: 2100000, guid: 4c1569ea36ed3ed03a83159230f680a2, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -177,7 +177,7 @@ MeshFilter:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1598420234293714}
-  m_Mesh: {fileID: 4300004, guid: 6db9b63ba56ce374e8ba9d8ef2f5af9a, type: 3}
+  m_Mesh: {fileID: 4300004, guid: cadc748457ba3515cfb3b8c89a0ec422, type: 3}
 --- !u!54 &54929995699331496
 Rigidbody:
   m_ObjectHideFlags: 1
@@ -204,7 +204,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 538d28f745155f34fba977c5c1026e39, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  impactPrefab: {fileID: 1879272669879180, guid: ea1bc5884e0d9de4b92ff44d5fe86d3c,
+  impactPrefab: {fileID: 1879272669879180, guid: 45aed6fac38d53ce6922d166644c4b4e,
     type: 2}
   explosionPrefab: {fileID: 0}
   thrust: 0
@@ -10437,8 +10437,8 @@ ParticleSystemRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 0
   m_Materials:
-  - {fileID: 2100000, guid: 5443f785d54fccc40bcfb484c85d5c77, type: 2}
-  - {fileID: 2100000, guid: 5443f785d54fccc40bcfb484c85d5c77, type: 2}
+  - {fileID: 2100000, guid: a4f34a152ed9b81c9ce2dcf853c80cb0, type: 2}
+  - {fileID: 2100000, guid: a4f34a152ed9b81c9ce2dcf853c80cb0, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -10471,7 +10471,7 @@ ParticleSystemRenderer:
   m_Pivot: {x: 0, y: 0, z: 0}
   m_UseCustomVertexStreams: 0
   m_VertexStreams: 0001030405
-  m_Mesh: {fileID: 4300006, guid: 6db9b63ba56ce374e8ba9d8ef2f5af9a, type: 3}
+  m_Mesh: {fileID: 4300006, guid: cadc748457ba3515cfb3b8c89a0ec422, type: 3}
   m_Mesh1: {fileID: 0}
   m_Mesh2: {fileID: 0}
   m_Mesh3: {fileID: 0}
@@ -10491,8 +10491,8 @@ ParticleSystemRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 0
   m_Materials:
-  - {fileID: 2100000, guid: 5761576d2d8b55549bb01953b3d2a60c, type: 2}
-  - {fileID: 2100000, guid: 5761576d2d8b55549bb01953b3d2a60c, type: 2}
+  - {fileID: 2100000, guid: a3b3bf29afebfb8fe0a2981a6c58d399, type: 2}
+  - {fileID: 2100000, guid: a3b3bf29afebfb8fe0a2981a6c58d399, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

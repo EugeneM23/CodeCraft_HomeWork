@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 8c0d21d6357388de76e30dd08502bbe3
+timeCreated: 1478447706
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 106979
+  packageName: Stylized Projectile Pack 1
+  packageVersion: 1.62
+  assetPath: Assets/EffectCore/materials/fire/muzzleflare_flash_additive.mat
+  uploadId: 414036

@@ -4774,7 +4774,7 @@ ParticleSystemRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: e653836c30661fe419b8992e230ca189, type: 2}
+  - {fileID: 2100000, guid: 95272a45c4fc28a7eb59e3c67bc9e6f5, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -9812,7 +9812,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4391966223333904145}
-  m_Mesh: {fileID: 4300000, guid: ec8cf73e762387746aa1825262cc030d, type: 3}
+  m_Mesh: {fileID: 4300000, guid: 6f5b93a1e8d633c0af2b6934f6c0ffcf, type: 3}
 --- !u!23 &4812473715011768489
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -9836,7 +9836,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 5bb68a94905ffc0418608fc7e572ea42, type: 2}
+  - {fileID: 2100000, guid: ff381c68d9a6973fb4dd25957020e887, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -10024,7 +10024,7 @@ MonoBehaviour:
   targetFXCornerLength: 0.25
   targetFXFrameMinOpacity: 0
   targetFXGroundMinAltitude: -1000
-  targetFXTexture: {fileID: 2800000, guid: 1de3c566a6c8c405b9f6f453137273ec, type: 3}
+  targetFXTexture: {fileID: 2800000, guid: 988b32833fd6581e1d520b964bd7f6a0, type: 3}
   targetFXColor: {r: 0.18934397, g: 1, b: 0.051886797, a: 1}
   targetFXCenter: {fileID: 0}
   targetFXRotationSpeed: 50
@@ -10049,7 +10049,7 @@ MonoBehaviour:
   iconFX: 0
   iconFXAssetType: 0
   iconFXPrefab: {fileID: 0}
-  iconFXMesh: {fileID: 3613567641014311022, guid: 0619ab933f4044ef7bca0b64517837b3, type: 3}
+  iconFXMesh: {fileID: 3613567641014311022, guid: bb6010decf09d014798536482a566f1e, type: 3}
   iconFXLightColor: {r: 1, g: 1, b: 1, a: 1}
   iconFXDarkColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   iconFXCenter: {fileID: 0}
@@ -10066,7 +10066,7 @@ MonoBehaviour:
   labelText: Ammo
   labelTextSize: 14
   labelColor: {r: 1, g: 1, b: 1, a: 1}
-  labelPrefab: {fileID: 7963606135631250497, guid: 933a5612c43104c29af0a700ea5fa149, type: 3}
+  labelPrefab: {fileID: 7963606135631250497, guid: 88b7e15026ac403a510859bd873e3b3f, type: 3}
   labelViewportOffset: {x: 0, y: 0}
   labelVerticalOffset: 0
   labelLineLength: 200
@@ -15020,7 +15020,7 @@ ParticleSystemRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: e653836c30661fe419b8992e230ca189, type: 2}
+  - {fileID: 2100000, guid: 95272a45c4fc28a7eb59e3c67bc9e6f5, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

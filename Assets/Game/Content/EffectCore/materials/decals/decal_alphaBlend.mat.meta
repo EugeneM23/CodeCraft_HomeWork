@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: c3e5d3cdd80becc80f791da19f4d831a
+timeCreated: 1488405478
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 106979
+  packageName: Stylized Projectile Pack 1
+  packageVersion: 1.62
+  assetPath: Assets/EffectCore/materials/decals/decal_alphaBlend.mat
+  uploadId: 414036

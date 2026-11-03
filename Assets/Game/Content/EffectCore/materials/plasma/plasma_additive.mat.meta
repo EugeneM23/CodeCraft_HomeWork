@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: dd8edd7d40c7b37b8ad5c8271c878441
+timeCreated: 1478434455
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 106979
+  packageName: Stylized Projectile Pack 1
+  packageVersion: 1.62
+  assetPath: Assets/EffectCore/materials/plasma/plasma_additive.mat
+  uploadId: 414036
