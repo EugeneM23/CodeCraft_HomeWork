@@ -1,6 +1,5 @@
 using Atomic.Elements;
 using Atomic.Entities;
-using Modules.Common;
 using UnityEngine;
 
 namespace Game
@@ -16,10 +15,10 @@ namespace Game
         public static readonly ValueKey<IPlayerContext, IValue<Vector3>> CameraOffset = new(nameof(CameraOffset));
         public static readonly ValueKey<IPlayerContext, Transform> CameraRoot = new(nameof(CameraRoot));
         public static readonly ValueKey<IPlayerContext, IValue<int>> CameraSpeed = new(nameof(CameraSpeed));
-        public static readonly ValueKey<IPlayerContext, Joystick> MoveJoystick = new(nameof(MoveJoystick));
-        public static readonly ValueKey<IPlayerContext, Joystick> RotateJoystick = new(nameof(RotateJoystick));
         public static readonly ValueKey<IPlayerContext, IValue<int>> MaxMana = new(nameof(MaxMana));
         public static readonly ValueKey<IPlayerContext, IReactiveVariable<int>> CurrentMana = new(nameof(CurrentMana));
+
+        // MoveJoystick / RotateJoystick removed with the on-screen sticks.
 
         #region Ability
 

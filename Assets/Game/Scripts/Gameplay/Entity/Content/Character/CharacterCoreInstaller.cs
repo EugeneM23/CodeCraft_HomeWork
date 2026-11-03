@@ -63,8 +63,10 @@ namespace Game
             ));
             entity.AddMoveDirection(new ReactiveVariable<Vector3>());
             entity.AddRotateDirection(new ReactiveVariable<Vector3>());
-            entity.AddBehaviour<CharacterMoveBehaviour>();
-            entity.AddBehaviour<CharacterRotateBehaviour>();
+            // Rigidbody-driven, authored in FixedTick. Enemies and bullets keep the
+            // transform-writing CharacterMoveBehaviour, which is correct for bodies they do not have.
+            entity.AddBehaviour<RigidbodyMoveBehaviour>();
+            entity.AddBehaviour<RigidbodyRotateBehaviour>();
             entity.AddBehaviour<CharacterVelocityBehaviour>();
 
             // Combat

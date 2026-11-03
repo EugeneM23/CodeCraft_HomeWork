@@ -26,7 +26,11 @@ namespace Game
         public static void Rotate(this Transform transform, in Quaternion targetRotation, float rotationSpeed,
             in float deltaTime)
         {
-            transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, rotationSpeed * deltaTime);
+            // Frame-rate independent smoothing. The old factor was `rotationSpeed * deltaTime`,
+            // which made turn speed depend on frame rate (0.25 at 60 fps vs 0.10 at 144 fps) and
+            // passed 1.0 on any frame longer than 1/rotationSpeed seconds, snapping the facing.
+            float t = 1f - Mathf.Exp(-rotationSpeed * deltaTime);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, t);
         }
 
         public static void Rotate(this Transform transform, in Quaternion targetRotation)

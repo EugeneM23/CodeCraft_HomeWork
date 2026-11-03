@@ -24,7 +24,21 @@ namespace Game.Content
             ability.AddPointAction(new InlineAction<Vector3>(point =>
             {
                 ManaUseCase.Spend(context, _manaCost);
-                context.GetCharacter().Value.GetTransform().position = point;
+
+                IEntity character = context.GetCharacter().Value;
+
+                // The character body is interpolated, so writing the transform would be
+                // rubber-banded back to the physics pose on the next step. Move the body itself
+                // and drop the velocity it was carrying into the teleport.
+                if (character.TryGetRiggedBody(out Rigidbody body))
+                {
+                    body.position = point;
+                    body.linearVelocity = Vector3.zero;
+                }
+                else
+                {
+                    character.GetTransform().position = point;
+                }
             }));
 
             ability.AddPointEvent(new Atomic.Elements.Event<Vector3>());

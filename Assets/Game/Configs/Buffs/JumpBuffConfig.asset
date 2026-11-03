@@ -15,4 +15,4 @@ MonoBehaviour:
   <Name>k__BackingField: Jump
   <Icon>k__BackingField: {fileID: 21300000, guid: e7696de7dcdfb41eb9ad1421bc8f7b7a, type: 3}
   <Duration>k__BackingField: 20
-  <JumpForce>k__BackingField: 0.25
+  <JumpForce>k__BackingField: 4.85

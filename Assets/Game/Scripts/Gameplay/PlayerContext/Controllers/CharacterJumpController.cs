@@ -4,23 +4,40 @@ using UnityEngine;
 
 namespace Game
 {
-    public class CharacterJumpController : IPlayerContextInit, IPlayerContextLateTick
+    /// <summary>
+    /// Jump input.
+    ///
+    /// Runs in FixedTick and on GetKeyDown. Previously it ran in LateUpdate with GetKey, so an
+    /// Impulse — which is a velocity step and does not scale with deltaTime — was applied once per
+    /// rendered frame for as long as the key was held: the launch height depended on frame rate and
+    /// holding the key stacked impulses.
+    /// </summary>
+    public class CharacterJumpController : IPlayerContextInit, IPlayerContextTick, IPlayerContextFixedTick
     {
         private IEntity _character;
+        private bool _jumpRequested;
 
         public void Init(IPlayerContext context)
         {
             _character = context.GetCharacter().Value;
         }
 
-        public void LateTick(IPlayerContext context, float deltaTime)
+        /// <summary>
+        /// GetKeyDown is only reliable in Update: a fixed step can be skipped or run twice in a
+        /// frame, so the press is latched here and consumed by the physics step.
+        /// </summary>
+        public void Tick(IPlayerContext context, float deltaTime)
         {
-            if (!_character.HasJumpableTag()) return;
+            if (Input.GetKeyDown(KeyCode.V))
+                _jumpRequested = true;
+        }
 
-            if (!_character.GetJumpCondition().Invoke()) return;
+        public void FixedTick(IPlayerContext context, float deltaTime)
+        {
+            if (!_jumpRequested) return;
+            _jumpRequested = false;
 
-            if (Input.GetKey(KeyCode.V))
-                JumpUseCase.Jump(_character);
+            JumpUseCase.Jump(_character);
         }
     }
 }

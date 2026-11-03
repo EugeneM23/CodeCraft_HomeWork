@@ -17,12 +17,20 @@ namespace Game
             return true;
         }
 
+        // Same guards as JumpAspect, and for the same reason: the effect-area aspect grants these
+        // four as well, so whichever gets there first wins instead of the second one throwing.
         protected override void OnApply(IEntity entity)
         {
             entity.AddJumpableTag();
-            entity.AddJumpForce(_jumpForce);
-            entity.AddJumpEvent(new Atomic.Elements.Event());
-            entity.AddJumpCondition(new InlineFunction<bool>(() => entity.GetHealth().GetCurrent() > 0));
+
+            if (!entity.HasJumpForce())
+                entity.AddJumpForce(_jumpForce);
+
+            if (!entity.HasJumpEvent())
+                entity.AddJumpEvent(new Atomic.Elements.Event());
+
+            if (!entity.HasJumpCondition())
+                entity.AddJumpCondition(new InlineFunction<bool>(() => entity.GetHealth().GetCurrent() > 0));
         }
 
         protected override void OnDiscard(IEntity entity)

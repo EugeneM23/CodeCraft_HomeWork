@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a80d16241f64758820636cb4f3c8123, type: 3}
   m_Name: JumpAspect
   m_EditorClassIdentifier: 
-  _jumpForce: 0.2
+  _jumpForce: 4.85

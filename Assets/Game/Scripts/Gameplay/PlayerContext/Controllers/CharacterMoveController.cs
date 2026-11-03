@@ -1,28 +1,26 @@
 using Atomic.Entities;
-using Modules.Common;
 using UnityEngine;
 
 namespace Game
 {
+    /// <summary>
+    /// Samples movement input and publishes it as a direction on the character.
+    /// The on-screen joysticks were removed: this is keyboard only now.
+    /// </summary>
     public class CharacterMoveController : IPlayerContextInit, IPlayerContextLateTick
     {
-        private Joystick _joystick;
         private IEntity _character;
 
         public void Init(IPlayerContext context)
         {
             _character = context.GetCharacter().Value;
-            _joystick = context.GetMoveJoystick();
         }
 
         private void Move()
         {
-            Vector3 direction = new Vector3(_joystick.Horizontal, 0, _joystick.Vertical);
+            Vector3 direction = new Vector3(Input.GetAxisRaw("Horizontal"), 0f, Input.GetAxisRaw("Vertical"));
 
-            if (direction == Vector3.zero)
-                direction = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
-
-            if (direction.magnitude > 1f)
+            if (direction.sqrMagnitude > 1f)
                 direction.Normalize();
 
             _character.GetMoveDirection().Value = direction;
