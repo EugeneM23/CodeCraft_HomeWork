@@ -1,3 +1,4 @@
+using Atomic.Elements;
 using Atomic.Entities;
 using UnityEngine;
 
@@ -11,24 +12,37 @@ namespace Game
     /// never turned at all.
     ///
     /// The cursor is projected onto a horizontal plane through the character rather than
-    /// raycast against level colliders, deliberately: a good part of this level's floor has
-    /// no collider, and aiming must not break over those gaps.
+    /// raycast against level colliders, deliberately: a good part of this level has floor
+    /// without colliders, and aiming must not break over those gaps.
     /// </summary>
-    public class CharacterRotateController : IPlayerContextInit, IPlayerContextLateTick
+    public class CharacterRotateController : IPlayerContextInit, IPlayerContextDispose, IPlayerContextLateTick
     {
-        private IEntity _character;
+        private IReactiveVariable<IEntity> _characterSource;
+        private Subscription<IEntity> _characterSubscription;
+
+        private IReactiveVariable<Vector3> _rotateDirection;
         private Transform _characterTransform;
         private UnityEngine.Camera _camera;
 
         public void Init(IPlayerContext context)
         {
-            _character = context.GetCharacter().Value;
-            _characterTransform = _character.GetTransform();
+            _characterSource = context.GetCharacter();
+            _characterSubscription = _characterSource.Observe(OnCharacterChanged);
             _camera = UnityEngine.Camera.main;
+        }
+
+        public void Dispose(IPlayerContext context) => _characterSubscription.Dispose();
+
+        private void OnCharacterChanged(IEntity character)
+        {
+            _rotateDirection = character?.GetRotateDirection();
+            _characterTransform = character?.GetTransform();
         }
 
         private void Rotate()
         {
+            if (_rotateDirection == null || _characterTransform == null) return;
+
             if (_camera == null)
             {
                 // The camera can be destroyed on scene teardown; re-resolving is cheap enough
@@ -49,7 +63,7 @@ namespace Game
             // Cursor sitting on the character itself: keep the current facing.
             if (direction.sqrMagnitude < 0.0001f) return;
 
-            _character.GetRotateDirection().Value = direction.normalized;
+            _rotateDirection.Value = direction.normalized;
         }
 
         public void LateTick(IPlayerContext context, float deltaTime) => Rotate();

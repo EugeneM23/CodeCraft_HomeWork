@@ -23,14 +23,13 @@ namespace Game
             context.AddGameFactory(new GameFactory(_poolsParent));
             context.GetGameFactory().RegisterNewPrefab(_audioPrefab, GameFactoryID.AudioSource.ToString());
             context.AddBehaviour(new EnemyController(_enemyPrefab, _spawnPoint));
-            context.AddEnemyFilter(new EntityFilter(_entityWorld, entity => entity.HasEnemyTag()));
+            context.AddEnemyFilter(new EntityFilter(_entityWorld, static entity => entity.HasEnemyTag()));
         }
     }
 
     public class EnemyController : IGameContextTick, IGameContextInit
     {
         private IEntityWorld<IEntity> _entityWorld;
-        private EntityFilter _enemyFilter;
         private GameFactory _gameFactory;
 
         private readonly MonoEntity _enemyPrefab;
@@ -45,16 +44,13 @@ namespace Game
         public void Init(IGameContext context)
         {
             _entityWorld = context.GetEntityWorld();
-            _enemyFilter = context.GetEnemyFilter();
             _gameFactory = context.GetGameFactory();
         }
 
         public void Tick(IGameContext context, float deltaTime)
         {
-            if (Input.GetKeyDown(KeyCode.M)) 
+            if (Input.GetKeyDown(KeyCode.M))
                 SpawnUseCase.SpawnCharacter(_enemyPrefab, _spawnPoint, _entityWorld, _gameFactory);
-
-            Debug.Log(_enemyFilter.Count);
         }
     }
 }

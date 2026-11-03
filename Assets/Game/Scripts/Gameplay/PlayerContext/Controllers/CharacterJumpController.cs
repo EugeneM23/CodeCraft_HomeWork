@@ -1,3 +1,4 @@
+using Atomic.Elements;
 using Atomic.Entities;
 using Game.Gameplay;
 using UnityEngine;
@@ -12,14 +13,31 @@ namespace Game
     /// rendered frame for as long as the key was held: the launch height depended on frame rate and
     /// holding the key stacked impulses.
     /// </summary>
-    public class CharacterJumpController : IPlayerContextInit, IPlayerContextTick, IPlayerContextFixedTick
+    public class CharacterJumpController :
+        IPlayerContextInit,
+        IPlayerContextDispose,
+        IPlayerContextTick,
+        IPlayerContextFixedTick
     {
+        private IReactiveVariable<IEntity> _characterSource;
+        private Subscription<IEntity> _characterSubscription;
         private IEntity _character;
         private bool _jumpRequested;
 
         public void Init(IPlayerContext context)
         {
-            _character = context.GetCharacter().Value;
+            _characterSource = context.GetCharacter();
+            _characterSubscription = _characterSource.Observe(OnCharacterChanged);
+        }
+
+        public void Dispose(IPlayerContext context) => _characterSubscription.Dispose();
+
+        private void OnCharacterChanged(IEntity character)
+        {
+            _character = character;
+
+            // A pending press belongs to the character that was holding the pad when it happened.
+            _jumpRequested = false;
         }
 
         /// <summary>
@@ -37,7 +55,8 @@ namespace Game
             if (!_jumpRequested) return;
             _jumpRequested = false;
 
-            JumpUseCase.Jump(_character);
+            if (_character != null)
+                JumpUseCase.Jump(_character);
         }
     }
 }

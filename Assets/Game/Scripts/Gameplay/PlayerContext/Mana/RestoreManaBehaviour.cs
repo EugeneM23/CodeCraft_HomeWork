@@ -27,14 +27,19 @@ namespace Game
 
         public void FixedTick(IPlayerContext context, float deltaTime)
         {
-            if (_currentMana.Value == _maxMana.Value)
+            int maxMana = _maxMana.Value;
+
+            // >=, not ==: a restore amount that does not divide the missing mana exactly used to
+            // step straight past the maximum, after which the equality never held again and mana
+            // grew without bound.
+            if (_currentMana.Value >= maxMana)
                 return;
-            
+
             _period.Tick(deltaTime);
             if (!_period.IsExpired())
                 return;
 
-            _currentMana.Value += _restore.Value;
+            _currentMana.Value = Math.Min(_currentMana.Value + _restore.Value, maxMana);
             _period.Reset();
         }
     }

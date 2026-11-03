@@ -13,8 +13,8 @@ namespace Game
         [SerializeField]
         private Const<int> _maxMana = 10;
         
-        [SerializeField]
-        private float _restoreManaPeriod;
+        [SerializeField, Tooltip("Seconds between mana grants. 0 restores on every physics step.")]
+        private float _restoreManaPeriod = 1f;
 
         [SerializeField]
         private Const<int> _restoreAmount = 1;
@@ -23,7 +23,11 @@ namespace Game
         {
             context.AddMaxMana(_maxMana);
             context.AddCurrentMana(new ReactiveInt(_maxMana.Value));
-            context.AddBehaviour(new RestoreManaBehaviour(new Cooldown(_restoreManaPeriod), _restoreAmount));
+            // Cooldown starts at 0, i.e. already expired, so the old one-argument form granted mana
+            // on the very first physics step and then on every step the period allowed. Start it
+            // wound up so the first grant waits out a full period.
+            context.AddBehaviour(new RestoreManaBehaviour(
+                new Cooldown(_restoreManaPeriod, _restoreManaPeriod), _restoreAmount));
         }
     }
 }

@@ -18,10 +18,19 @@ namespace Game.Content
         {
             ability.AddTargetAbilityTag();
 
-            ability.AddTargetCondition(new InlineFunction<IEntity, bool>(point =>
-                ManaUseCase.Enough(context, _manaCost)));
+            ability.AddTargetCondition(new InlineFunction<IEntity, bool>(target =>
+                target != null && ManaUseCase.Enough(context, _manaCost)));
 
-            ability.AddTargetAction(new InlineAction<IEntity>(target => { ManaUseCase.Spend(context, _manaCost); }));
+            // The stun itself lives in the action, behind the condition. It used to be applied by
+            // the input handler next to AbilityUseCase.Use, which returns void: the mana check
+            // failed silently and the target was stunned anyway, so the ability was free.
+            ability.AddTargetAction(new InlineAction<IEntity>(target =>
+            {
+                if (!ManaUseCase.Spend(context, _manaCost))
+                    return;
+
+                BuffUseCase.Apply(target, _stunBuff.CreateBuff());
+            }));
 
             ability.AddTargetEvent(new Atomic.Elements.Event<IEntity>());
             ability.AddManaCost(new Const<int>(_manaCost));
@@ -31,10 +40,7 @@ namespace Game.Content
                 if (Input.GetKeyDown(_abilityKey))
                 {
                     if (RayCastUseCase.RayCastTarget(out var target, _layerMask))
-                    {
                         AbilityUseCase.Use(ability, target);
-                        BuffUseCase.Apply(target, _stunBuff.CreateBuff());
-                    }
                 }
             });
         }

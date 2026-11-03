@@ -17,13 +17,23 @@ namespace Game.Content
         {
             ability.AddBaseAbilityTag();
 
-            IEntity character = context.GetCharacter().Value;
-            
+            // The character is read inside the closures, not captured at Install: Character is a
+            // reactive variable precisely because the entity is replaceable, and a captured one
+            // means the dash keeps buffing the body left behind by the last respawn.
             ability.AddBaseCondition(new InlineFunction<bool>(() =>
-                ability.GetCharges().Value > 0 && BuffUseCase.CanApply(character, _dashBuff)));
+            {
+                IEntity character = context.GetCharacter().Value;
+                return character != null
+                       && ability.GetCharges().Value > 0
+                       && BuffUseCase.CanApply(character, _dashBuff);
+            }));
 
             ability.AddBaseAction(new InlineAction(() =>
             {
+                IEntity character = context.GetCharacter().Value;
+                if (character == null)
+                    return;
+
                 ability.GetCharges().Value--;
                 BuffUseCase.Apply(character, _dashBuff.CreateBuff());
             }));
