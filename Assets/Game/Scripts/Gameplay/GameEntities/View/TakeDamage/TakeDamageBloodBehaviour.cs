@@ -35,8 +35,8 @@ namespace Game
 
         public void Dispose(IEntity entity)
         {
-            _damageEvent.Subscribe(this.OnDamageTaken);
-            _deathEvent.Subscribe(this.OnDamageTaken);
+            _damageEvent.Unsubscribe(this.OnDamageTaken);
+            _deathEvent.Unsubscribe(this.OnDamageTaken);
         }
 
         private void OnDamageTaken(TakeDamageArgs args)

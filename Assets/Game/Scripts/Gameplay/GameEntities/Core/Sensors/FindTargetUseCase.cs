@@ -18,19 +18,28 @@ namespace Game
 
             Collider[] colliders = ArrayPool<Collider>.Shared.Rent(COLLIDER_BUFFER_SIZE);
 
-            int count = Physics.OverlapSphereNonAlloc(position, radius, colliders, damageLayer);
-
-            for (int i = 0; i < count; i++)
+            // try/finally, because the hit path returns from inside the loop: it used to skip the
+            // Return below, so every connected swing leaked a buffer out of the shared pool until
+            // Rent fell back to allocating a fresh array per frame.
+            try
             {
-                if (colliders[i].TryGetEntity(out IEntity entity) && entity.HasDamageableTag())
-                {
-                    target = entity;
-                    return true;
-                }
-            }
+                int count = Physics.OverlapSphereNonAlloc(position, radius, colliders, damageLayer);
 
-            ArrayPool<Collider>.Shared.Return(colliders);
-            return false;
+                for (int i = 0; i < count; i++)
+                {
+                    if (colliders[i].TryGetEntity(out IEntity entity) && entity.HasDamageableTag())
+                    {
+                        target = entity;
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+            finally
+            {
+                ArrayPool<Collider>.Shared.Return(colliders);
+            }
         }
     }
 }

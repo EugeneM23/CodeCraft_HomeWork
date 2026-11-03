@@ -23,6 +23,11 @@ namespace Game.Gameplay
             _target = entity.GetTarget();
             _patrolTransfroms = entity.GetPatrolPoints();
 
+            // Init runs again whenever the behaviour is re-added to a live entity, which is exactly
+            // what StunBuff does when it removes and restores the patrol behaviour. Without this
+            // Clear the point list grew by one lap per stun.
+            _patrolPoints.Clear();
+
             // Enemy.prefab ships two unassigned patrol points; dereferencing them threw and
             // aborted Init() for every behaviour after this one. Pre-existing, not a migration
             // regression, but it makes the M-spawned enemy unusable.

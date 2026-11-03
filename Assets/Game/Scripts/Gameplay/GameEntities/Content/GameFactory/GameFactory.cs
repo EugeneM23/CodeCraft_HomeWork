@@ -1,12 +1,24 @@
-using Atomic.Elements;
+using System;
+using System.Collections.Generic;
 using Atomic.Entities;
 using UnityEngine;
 
 namespace Game
 {
+    /// <summary>
+    /// Pool of pooled entity prefabs, keyed both by prefab reference and by the EntityID its
+    /// installers write.
+    /// </summary>
+    /// <remarks>
+    /// The prefab dictionary exists to keep the spawn path allocation-free. Create used to derive
+    /// a string key with <c>prefab.name.Replace("(Clone)", "")</c>: GameObject.name marshals a new
+    /// string out of native Unity on every call and Replace allocated a second one, even though a
+    /// prefab name never contains "(Clone)". That ran for every bullet, shell and impact effect.
+    /// </remarks>
     public class GameFactory
     {
-        private readonly ReactiveDictionary<string, EntityPrefabPool> _pools = new();
+        private readonly Dictionary<MonoEntity, EntityPrefabPool> _poolsByPrefab = new();
+        private readonly Dictionary<string, EntityPrefabPool> _poolsById = new();
         private readonly Transform _poolsParent;
 
         public GameFactory(Transform poolsParent)
@@ -16,39 +28,56 @@ namespace Game
 
         public IEntity Create(MonoEntity prefab)
         {
-            string id = prefab.gameObject.name.Replace("(Clone)", "");
+            if (!_poolsByPrefab.TryGetValue(prefab, out EntityPrefabPool pool))
+                pool = RegisterNewPrefab(prefab, prefab.name);
 
-            if (!_pools.ContainsKey(id))
-                RegisterNewPrefab(prefab, id);
-
-            return Create(id);
+            return pool.Rent();
         }
 
         public IEntity Create(string id)
         {
-            IEntity entity = _pools[id].Rent();
-            return entity;
+            if (!_poolsById.TryGetValue(id, out EntityPrefabPool pool))
+                throw new InvalidOperationException(
+                    $"GameFactory: no pool registered for id '{id}'. " +
+                    "Register the prefab in GameContextInstaller before spawning it.");
+
+            return pool.Rent();
         }
 
-        public void RegisterNewPrefab(MonoEntity prefab, string id)
+        /// <param name="prewarm">
+        /// Instances to instantiate up front. Left at zero, the pool grows by a synchronous
+        /// Instantiate during the first burst of fire, which is the frame spike it exists to avoid.
+        /// </param>
+        public EntityPrefabPool RegisterNewPrefab(MonoEntity prefab, string id, int prewarm = 0)
         {
             GameObject poolContainer = new GameObject($"Pool_{id}");
             poolContainer.transform.SetParent(_poolsParent);
 
             EntityPrefabPool pool = new EntityPrefabPool(prefab, poolContainer.transform);
-            _pools[id] = pool;
+
+            if (prewarm > 0)
+                pool.Init(prewarm);
+
+            _poolsByPrefab[prefab] = pool;
+            _poolsById[id] = pool;
+            return pool;
         }
 
         public void Destroy(IEntity entity)
         {
             string entityID = entity.GetEntityID();
 
-            if (!_pools.ContainsKey(entityID))
-            {
-                RegisterNewPrefab(entity.GetTransform().GetComponent<MonoEntity>(), entityID);
-            }
+            // This used to recover from an unknown id by registering the live instance as the
+            // pool prefab. For characters GetTransform() is the character root, not the entity
+            // root, so GetComponent returned null and the next Rent instantiated null; when it
+            // did find a component, the pool started cloning a mutated, deactivated runtime
+            // object. An unregistered id is a wiring mistake, so say so.
+            if (!_poolsById.TryGetValue(entityID, out EntityPrefabPool pool))
+                throw new InvalidOperationException(
+                    $"GameFactory: no pool registered for id '{entityID}', cannot return the entity. " +
+                    "Register the prefab in GameContextInstaller before spawning it.");
 
-            _pools[entityID].Return(entity);
+            pool.Return(entity);
         }
     }
 }

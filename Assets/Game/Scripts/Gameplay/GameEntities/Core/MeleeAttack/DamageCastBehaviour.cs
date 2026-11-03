@@ -36,9 +36,20 @@ namespace Game
 
             _castTimer -= deltaTime;
 
-            if (FindTargetUseCase.TryGetTarget(_weapon.Value, out IEntity target))
+            // This behaviour sits on every character, not just the melee ones, and the weapon can
+            // be swapped inside the 0.1s cast window. FindTargetUseCase reads DamageRadius and
+            // DamageLayer unconditionally, and only a melee weapon carries them: without this gate
+            // swinging and then switching to a firearm threw KeyNotFoundException from the tick.
+            IEntity weapon = _weapon.Value;
+            if (weapon == null || !weapon.HasDamageRadius() || !weapon.HasDamageLayer())
             {
-                DamageUseCase.TakeDamage(target, new TakeDamageArgs(_weapon.Value));
+                _castTimer = 0f;
+                return;
+            }
+
+            if (FindTargetUseCase.TryGetTarget(weapon, out IEntity target))
+            {
+                DamageUseCase.TakeDamage(target, new TakeDamageArgs(weapon));
                 _castTimer = 0f;
             }
         }

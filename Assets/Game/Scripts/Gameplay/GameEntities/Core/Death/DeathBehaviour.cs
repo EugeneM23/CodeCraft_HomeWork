@@ -36,6 +36,14 @@ namespace Game.Gameplay
             if (_entity.GetGameObject().TryGetComponent(out CapsuleCollider collider))
                 collider.enabled = false;
 
+            // Disable only stops the ticks, and EntityWorld.Remove just drops the entity from the
+            // world dictionary — neither runs IEntityDispose. Without this every behaviour on the
+            // corpse stayed subscribed to its Health, its events and the context: the blood, sound
+            // and buff behaviours kept the dead entity reachable for the rest of the process.
+            // The death event is invoked above, before the handlers are released.
+            // Dead characters are never returned to the pool, so there is no instance to reuse.
+            _entity.Dispose();
+
             if (_gameContext.GetEntityWorld().Contains(_entity))
                 _gameContext.GetEntityWorld().Remove(_entity);
         }

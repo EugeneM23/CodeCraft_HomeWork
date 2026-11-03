@@ -21,11 +21,21 @@ namespace Game.Gameplay
 
         public void Tick(IEntity entity, float deltaTime)
         {
-            if (_target.Value != null)
-            {
-                _moveVector.Value = DirectionUseCase.Get(_enemy, _target.Value.GetTransform());
-                _rotateVector.Value = DirectionUseCase.Get(_enemy, _target.Value.GetTransform());
-            }
+            IEntity target = _target.Value;
+            if (target == null)
+                return;
+
+            // DirectionUseCase.Get returns the raw offset, and MoveUseCase multiplies it by speed
+            // and deltaTime: unnormalized, chase speed scaled with distance, so an enemy 20m away
+            // moved at 20x its MoveSpeed and tunnelled through geometry while a close one crawled.
+            // EnemyPatrolBehaviour normalizes for the same reason.
+            Vector3 direction = DirectionUseCase.Get(_enemy, target.GetTransform());
+            direction.y = 0f;
+
+            Vector3 normalized = direction.sqrMagnitude > 1e-6f ? direction.normalized : Vector3.zero;
+
+            _moveVector.Value = normalized;
+            _rotateVector.Value = normalized;
         }
     }
 }

@@ -21,7 +21,8 @@ namespace Game
             context.AddWeaponCatalog(_weaponsCatalog);
             context.AddPlayerContext(_playerContext);
             context.AddGameFactory(new GameFactory(_poolsParent));
-            context.GetGameFactory().RegisterNewPrefab(_audioPrefab, GameFactoryID.AudioSource.ToString());
+            context.GetGameFactory()
+                .RegisterNewPrefab(_audioPrefab, GameFactoryID.AudioSource.ToString(), prewarm: 8);
             context.AddBehaviour(new EnemyController(_enemyPrefab, _spawnPoint));
             context.AddEnemyFilter(new EntityFilter(_entityWorld, static entity => entity.HasEnemyTag()));
         }

@@ -10,7 +10,7 @@ namespace Game
         private readonly GameContext _gameContext;
         private IReactiveVariable<IEntity> _targetInteractable;
         private Vector3 _positionOffset;
-        private IEntity _camera;
+        private Transform _cameraTransform;
 
         public InteractMarkerUIBehaviour(GameObject view, GameContext gameContext)
         {
@@ -21,7 +21,7 @@ namespace Game
         public void Init(IEntity entity)
         {
             _targetInteractable = _gameContext.GetPlayerContext().GetCharacter().Value.GetTargetInteractable();
-            _camera = _gameContext.GetPlayerContext().GetCamera();
+            _cameraTransform = _gameContext.GetPlayerContext().GetCamera().GetTransform();
             _targetInteractable.Subscribe(OnTargetChanged);
             _positionOffset = entity.GetPositionOffset();
         }
@@ -47,11 +47,20 @@ namespace Game
 
         public void LateTick(IEntity entity, float deltaTime)
         {
-            var transformRotation = Quaternion.LookRotation(_view.transform.position - _camera.GetTransform().position);
-            transformRotation.z = 0;
-            transformRotation.y = 0;
-            _view.transform.rotation =
-                transformRotation;
+            if (!_view.activeSelf)
+                return;
+
+            // The marker should only yaw towards the camera, so the direction is flattened before
+            // building the rotation. This used to zero the y and z components of the quaternion
+            // itself, which are not independent axis rotations: the result was a non-unit
+            // quaternion and an arbitrary pitch that drifted as the camera orbited.
+            Vector3 toCamera = _view.transform.position - _cameraTransform.position;
+            toCamera.y = 0f;
+
+            if (toCamera.sqrMagnitude < 1e-6f)
+                return;
+
+            _view.transform.rotation = Quaternion.LookRotation(toCamera, Vector3.up);
         }
     }
 }
