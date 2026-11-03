@@ -15121,11 +15121,11 @@ MonoBehaviour:
     SerializationNodes:
     - Name: _weapons
       Entry: 7
-      Data: 0|System.Collections.Generic.Dictionary`2[[Game.WeaponID, Assembly-CSharp],[Atomic.Entities.MonoEntity,
+      Data: 0|System.Collections.Generic.Dictionary`2[[Game.WeaponID, Game],[Atomic.Entities.MonoEntity,
         Atomic.Entities]], mscorlib
     - Name: comparer
       Entry: 7
-      Data: 1|System.Collections.Generic.EnumEqualityComparer`1[[Game.WeaponID, Assembly-CSharp]],
+      Data: 1|System.Collections.Generic.EnumEqualityComparer`1[[Game.WeaponID, Game]],
         mscorlib
     - Name: 
       Entry: 12
@@ -15207,7 +15207,7 @@ MonoBehaviour:
       Data: 
     - Name: _pickUpWeapons
       Entry: 7
-      Data: 2|System.Collections.Generic.Dictionary`2[[Game.WeaponID, Assembly-CSharp],[Atomic.Entities.MonoEntity,
+      Data: 2|System.Collections.Generic.Dictionary`2[[Game.WeaponID, Game],[Atomic.Entities.MonoEntity,
         Atomic.Entities]], mscorlib
     - Name: comparer
       Entry: 9
