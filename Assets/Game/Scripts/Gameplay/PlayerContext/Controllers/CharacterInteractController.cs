@@ -15,7 +15,7 @@ namespace Game
 
         public void Tick(IPlayerContext context, float deltaTime)
         {
-            if (Input.GetKeyDown(KeyCode.Q))
+            if (Input.GetKeyDown(KeyCode.E))
             {
                 InteractUseCase.InteractWithCharacter(_character);
             }

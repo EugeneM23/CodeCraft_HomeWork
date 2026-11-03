@@ -23,8 +23,12 @@ namespace Game.Gameplay
             _target = entity.GetTarget();
             _patrolTransfroms = entity.GetPatrolPoints();
 
-            foreach (var item in _patrolTransfroms) 
-                _patrolPoints.Add(item.position);
+            // Enemy.prefab ships two unassigned patrol points; dereferencing them threw and
+            // aborted Init() for every behaviour after this one. Pre-existing, not a migration
+            // regression, but it makes the M-spawned enemy unusable.
+            foreach (var item in _patrolTransfroms)
+                if (item != null)
+                    _patrolPoints.Add(item.position);
         }
 
         public void Tick(IEntity entity, float deltaTime)

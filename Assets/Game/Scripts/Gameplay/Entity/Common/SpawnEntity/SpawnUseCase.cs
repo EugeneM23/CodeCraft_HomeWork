@@ -24,7 +24,9 @@ namespace Game
         {
             IEntity bullet = gameFactory.Create(weapon.GetBulletPrefab());
 
-            bullet.AddDamage(weapon.GetDamage());
+            // Bullets come from a pool, so a re-rented one already carries Damage. AddValue now
+            // throws on a duplicate key instead of ignoring it, and SetValue upserts.
+            bullet.SetDamage(weapon.GetDamage());
             bullet.GetTransform().SetPositionAndRotation(firePoint.position, firePoint.rotation);
             bullet.GetMoveDirection().Value = bullet.GetTransform().forward;
             bullet.GetLifeTime().Reset();

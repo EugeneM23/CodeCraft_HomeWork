@@ -23,7 +23,9 @@ namespace Game
             _abilitySystem.Install(context);
             _manaSystem.Install(context);
 
-            context.AddCharacter(new ReactiveVariable<IEntity>(_playerEntity));
+            // CharacterSystemInstaller already added Character above. Under the old API the
+            // second AddValue returned false and did nothing; the new one throws on a
+            // duplicate key, so the redundant add is dropped and the first one still wins.
             context.AddMoveJoystick(_movementJoystick);
             context.AddRotateJoystick(_rotationJoystick);
         }

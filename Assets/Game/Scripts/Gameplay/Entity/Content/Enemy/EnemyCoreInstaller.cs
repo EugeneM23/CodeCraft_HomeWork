@@ -41,7 +41,9 @@ namespace Game
             // Core
             entity.AddMoveSpeed(new ReactiveFloat(_moveSpeed));
             entity.AddDamage(new ReactiveInt(_damage));
-            entity.AddTriggerEventReceiver(_triggerReceiver);
+            // AddValue now throws on null, which would abort the rest of Install.
+            if (_triggerReceiver != null)
+                entity.AddTriggerEventReceiver(_triggerReceiver);
             entity.AddGameObject(transform.gameObject);
             entity.AddTransform(_characterRoot);
             entity.AddPatrolPoints(_patrolPoints);

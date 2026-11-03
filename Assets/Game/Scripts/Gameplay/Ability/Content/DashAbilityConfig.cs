@@ -10,7 +10,7 @@ namespace Game.Content
     {
         [SerializeField] private int _initialCharges;
         [SerializeField] private float _multiplier = 2;
-        [SerializeField] private KeyCode _dashKey = KeyCode.Space;
+        [SerializeField] private KeyCode _dashKey = KeyCode.LeftShift;
         [SerializeField] private BuffConfig _dashBuff;
 
         protected override void Install(Ability ability, IPlayerContext context)
