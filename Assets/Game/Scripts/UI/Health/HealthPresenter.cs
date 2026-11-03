@@ -28,7 +28,10 @@ namespace Game
 
         protected override void OnHide()
         {
-            _character.GetHealth().OnHealthChanged -= OnHealthChanged;
+            // OnHide also runs while the scene is being torn down, and MonoEntity.OnDestroy now
+            // clears its values (the old SceneEntity only disposed them), so the lookup can fail.
+            if (_character != null && _character.TryGetHealth(out var health))
+                health.OnHealthChanged -= OnHealthChanged;
         }
 
         private void OnHealthChanged(int health)

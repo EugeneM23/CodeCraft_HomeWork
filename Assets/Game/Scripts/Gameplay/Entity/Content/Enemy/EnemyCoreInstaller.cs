@@ -84,7 +84,11 @@ namespace Game
             entity.AddBehaviour<EnemyAttackBehaviour>();
 
             //Buffs
-            entity.AddBuffsEffects(new ReactiveList<BuffBase>());
+            // Zombie.prefab carries CharacterBuffInstaller too, and it adds BuffsEffects as well.
+            // The old AddValue ignored the second add, so whichever installer ran first won;
+            // the new one throws, so the check keeps that behaviour.
+            if (!entity.HasBuffsEffects())
+                entity.AddBuffsEffects(new ReactiveList<BuffBase>());
         }
     }
 }

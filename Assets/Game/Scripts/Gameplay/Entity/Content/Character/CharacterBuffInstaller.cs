@@ -13,7 +13,9 @@ namespace Game
 
         public override void Install(IEntity entity)
         {
-            entity.AddBuffsEffects(new ReactiveList<BuffBase>());
+            // On Zombie.prefab EnemyCoreInstaller adds BuffsEffects too; first one wins, as before.
+            if (!entity.HasBuffsEffects())
+                entity.AddBuffsEffects(new ReactiveList<BuffBase>());
             entity.AddBehaviour<DiscardAllBuffBehaviour>();
             entity.AddBehaviour(new BuffVFXBehaviour(_buffsParticles));
         }

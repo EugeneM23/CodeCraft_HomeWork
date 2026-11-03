@@ -44,13 +44,18 @@ namespace Game
         private void OnFire()
         {
             _fireLightCooldown.Reset();
-            _light.SetActive(true);
+            if (_light != null)
+                _light.SetActive(true);
         }
 
+        // PT_01.prefab has no _light assigned and a zero-duration cooldown, so IsExpired() is
+        // true from the first frame and this threw every frame. Neither TickableManager.Update
+        // nor MonoEntity.Tick wraps the loop in a try/catch, so that throw also stopped every
+        // tick source registered after this weapon -- enemies among them.
         public void Tick(IEntity entity, float deltaTime)
         {
             _fireLightCooldown.Tick(deltaTime);
-            if (_fireLightCooldown.IsExpired())
+            if (_fireLightCooldown.IsExpired() && _light != null)
                 _light.SetActive(false);
         }
     }

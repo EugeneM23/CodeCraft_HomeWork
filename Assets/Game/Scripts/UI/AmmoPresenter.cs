@@ -46,7 +46,8 @@ namespace Game
 
         protected override void OnHide()
         {
-            if (_weapon.Value.TryGetAmmo(out var ammo)) 
+            // Same teardown guard as HealthPresenter: by OnHide the weapon entity may already be gone.
+            if (_weapon?.Value != null && _weapon.Value.TryGetAmmo(out var ammo))
                 ammo.OnStateChanged -= UpdateAmmo;
         }
     }
