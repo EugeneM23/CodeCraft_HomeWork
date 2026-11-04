@@ -58,6 +58,12 @@ namespace Game.EditorTools
         /// </summary>
         private const float DAMAGE_CAST_FRACTION = 0.8f / 2.5f;
 
+        /// <summary>
+        /// The creature's capsule height over the zombie's, used to lift the blood to the same
+        /// place on a body more than twice as tall.
+        /// </summary>
+        private const float HEIGHT_SCALE = 4.28f / 1.8f;
+
         [MenuItem("Tools/Regax/Build")]
         public static void Build()
         {
@@ -166,7 +172,13 @@ namespace Game.EditorTools
             }
 
             GameObject root = (GameObject) PrefabUtility.InstantiatePrefab(sourcePrefab);
-            PrefabUtility.UnpackPrefabInstance(root, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
+
+            // OutermostRoot, not Completely: the zombie carries its weapon as a nested prefab
+            // instance, and Completely would unpack that too, leaving the new enemy's weapon a
+            // loose copy that no longer follows Regax_Hand.prefab.
+            PrefabUtility.UnpackPrefabInstance(root, PrefabUnpackMode.OutermostRoot,
+                InteractionMode.AutomatedAction);
+
             root.name = "Regax";
 
             if (!SwapSkeletonAndSkin(root) ||
@@ -178,6 +190,9 @@ namespace Game.EditorTools
                 Object.DestroyImmediate(root);
                 return;
             }
+
+            // The zombie had every child on its own layer; the art and the effects arrive on 0.
+            SetLayerRecursively(root, root.layer);
 
             PrefabUtility.SaveAsPrefabAsset(root, TARGET_PREFAB);
             Object.DestroyImmediate(root);
@@ -269,9 +284,6 @@ namespace Game.EditorTools
             animator.avatar = avatar;
             animator.runtimeAnimatorController = controller;
 
-            SetLayerRecursively(skeleton.gameObject, root.layer);
-            SetLayerRecursively(renderer.gameObject, root.layer);
-
             return true;
         }
 
@@ -330,24 +342,33 @@ namespace Game.EditorTools
             // TakeDamageBloodBehaviour plays these two by name of field, one for bullets and one
             // for melee, and calls Play(withChildren: true) -- so a single instance each, with
             // the pack's own Wave, Particles and Glow underneath, is all that is needed.
-            AddEffect(hit, vfx, "BulletDamageBlood", active: true);
-            AddEffect(hit, vfx, "MeleeDamageBlood", active: true);
+            //
+            // The heights are the zombie's own, scaled to this body. The hit effect's asset sits
+            // at (15, 1, 5) -- it was authored at a position in the other project's scene -- so
+            // leaving its transform alone would play the blood off to one side of the creature.
+            AddEffect(hit, vfx, "BulletDamageBlood", 1f * HEIGHT_SCALE, active: true);
+            AddEffect(hit, vfx, "MeleeDamageBlood", 1.4f * HEIGHT_SCALE, active: true);
 
             // The volumetric blood has no ParticleSystem -- it is a mesh animated from its own
             // BFX scripts, and it plays the moment it is enabled. So it goes in switched off, and
-            // DeathEffectBehaviour switches it on when the creature dies.
-            AddEffect(death, vfx, "DeathBlood", active: false);
+            // DeathEffectBehaviour switches it on when the creature dies. Its own scale of 4 is
+            // left alone: the other project used this very effect on this very creature.
+            AddEffect(death, vfx, "DeathBlood", 1.4f * HEIGHT_SCALE, active: false);
 
             return true;
         }
 
-        private static void AddEffect(GameObject prefab, Transform parent, string name, bool active)
+        private static void AddEffect(GameObject prefab, Transform parent, string name, float localY,
+            bool active)
         {
+            // Left as a nested prefab instance, so edits to the effect still reach the enemy.
+            // The rename, the playOnAwake change and the active flag become overrides on it.
             GameObject instance = (GameObject) PrefabUtility.InstantiatePrefab(prefab);
-            PrefabUtility.UnpackPrefabInstance(instance, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
 
             instance.name = name;
             instance.transform.SetParent(parent, false);
+            instance.transform.localPosition = new Vector3(0f, localY, 0f);
+            instance.transform.localRotation = Quaternion.identity;
 
             // These prefabs were built to be spawned on impact, so they start themselves. Here
             // they are children that get Play() called on them instead.
@@ -381,8 +402,8 @@ namespace Game.EditorTools
             for (int i = weapons.childCount - 1; i >= 0; i--)
                 Object.DestroyImmediate(weapons.GetChild(i).gameObject);
 
+            // A nested instance, as it is on the zombie.
             GameObject weapon = (GameObject) PrefabUtility.InstantiatePrefab(weaponAsset);
-            PrefabUtility.UnpackPrefabInstance(weapon, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
             weapon.transform.SetParent(weapons, false);
 
             return true;
