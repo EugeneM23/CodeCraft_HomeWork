@@ -334,9 +334,8 @@ namespace Game.EditorTools
             AddEffect(hit, vfx, "MeleeDamageBlood", active: true);
 
             // The volumetric blood has no ParticleSystem -- it is a mesh animated from its own
-            // BFX scripts, and it plays the moment it is enabled. Nothing in this project drives
-            // a death effect (EnemyVfxInstaller.Install never reads _deadBlood or _deathBloodVfx),
-            // so it goes in switched off rather than firing the instant the creature spawns.
+            // BFX scripts, and it plays the moment it is enabled. So it goes in switched off, and
+            // DeathEffectBehaviour switches it on when the creature dies.
             AddEffect(death, vfx, "DeathBlood", active: false);
 
             return true;
@@ -411,6 +410,13 @@ namespace Game.EditorTools
             SetField(effects, "_bulletBlood", FindParticles(vfx, "BulletDamageBlood"));
             SetField(effects, "_meleeBlood", FindParticles(vfx, "MeleeDamageBlood"));
             SetField(effects, "_rootTransform", skeleton);
+
+            Transform deathEffect = vfx.Find("DeathBlood");
+
+            if (deathEffect == null)
+                Debug.LogError($"{LOG} no DeathBlood under <VFX>");
+
+            SetField(effects, "_deathEffect", deathEffect == null ? null : deathEffect.gameObject);
 
             // The zombie's _groundPoint was its Spine_01 bone, which went out with the skeleton.
             Transform spine = skeleton.GetComponentsInChildren<Transform>(true)
