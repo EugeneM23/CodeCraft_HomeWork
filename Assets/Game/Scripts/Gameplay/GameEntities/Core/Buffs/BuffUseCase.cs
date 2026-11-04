@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Atomic.Elements;
 using Atomic.Entities;
 using UnityEngine;
 
@@ -54,7 +55,9 @@ namespace Game.Gameplay
 
         public static void DiscardAll(IEntity character)
         {
-            IList<BuffBase> buffsEffects = character.GetBuffsEffects();
+            // Not every damageable entity carries buffs — shooting targets, for one — so a
+            // missing list is a no-op rather than a throw from the generated getter.
+            if (!character.TryGetBuffsEffects(out IReactiveList<BuffBase> buffsEffects)) return;
 
             foreach (var buff in buffsEffects)
                 buff.Discard(character);

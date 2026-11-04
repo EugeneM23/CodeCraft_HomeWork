@@ -53,6 +53,13 @@ namespace Game.Gameplay
             if (!collider.TryGetEntity(out IEntity entity))
                 return;
 
+            // An effect area is for characters. Without this any entity that flies through gets
+            // the aspect applied, and the aspects assume a character: JumpAspect builds its jump
+            // condition from GetHealth().Exists, which throws for a bullet. Damageable is the tag
+            // every character carries and no projectile or pickup does.
+            if (!entity.HasDamageableTag())
+                return;
+
             if (_inside.TryGetValue(entity, out int colliders))
             {
                 _inside[entity] = colliders + 1;

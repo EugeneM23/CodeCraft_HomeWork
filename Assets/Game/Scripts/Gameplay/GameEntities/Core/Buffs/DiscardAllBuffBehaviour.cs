@@ -36,6 +36,12 @@ namespace Game
 
         private void DiscardAllBuffs()
         {
+            // Health can still raise OnHealthEmpty after this behaviour has been disposed — the
+            // entity is removed from the world without being disposed, so a later hit reaches a
+            // handler whose entity is already gone. Without this guard the null entity reaches
+            // the generated getter and throws there.
+            if (_character is not { IsValid: true }) return;
+
             BuffUseCase.DiscardAll(_character);
         }
     }

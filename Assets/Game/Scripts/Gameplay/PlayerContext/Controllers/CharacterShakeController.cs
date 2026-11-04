@@ -71,7 +71,12 @@ namespace Game
 
         private void UnbindWeapon()
         {
-            if (_currentWeapon != null)
+            // On teardown Unity destroys objects in an arbitrary order, so the weapon may already
+            // be gone by the time the context disposes. A destroyed MonoEntity is still a non-null
+            // interface reference — Unity's null-overload does not apply through IEntity — so
+            // reading a value off it throws, and building the exception message throws again on
+            // the destroyed object's name. IsValid is the check that survives that.
+            if (_currentWeapon is { IsValid: true })
                 _currentWeapon.GetFireEvent().Unsubscribe(Shake);
 
             _currentWeapon = null;
