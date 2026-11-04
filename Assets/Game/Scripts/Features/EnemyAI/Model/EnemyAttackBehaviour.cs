@@ -19,9 +19,11 @@ namespace Game
 
         public void Tick(IEntity entity, float deltaTime)
         {
-            if (_target.Value == null) return;
+            // Same guard as the chase: a dead target is disposed but still referenced, and asking
+            // it for a transform throws.
+            if (!TargetUseCase.TryResolve(_target, out Transform targetTransform)) return;
 
-            float distance = Vector3.Distance(_target.Value.GetTransform().position, _enemy.position);
+            float distance = Vector3.Distance(targetTransform.position, _enemy.position);
 
             if (distance < ATTACK_DISTANCE)
             {

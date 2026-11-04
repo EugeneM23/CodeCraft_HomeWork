@@ -262,3 +262,24 @@ only; enemies made by the spawn button still have no way to acquire a target.
 
 Played end to end: the player entering the zone gets the creature the target, it closes 13.4 →
 10.2 → 7.6 → 5.3 → 2.3 → 0.99, plays `Rapax_Attack`, and the player drops to 80.
+
+## Two things only a reachable enemy could reveal
+
+Giving enemies a target woke up code that had never run, and both faults surfaced the first time
+a creature chased a player to death.
+
+`EnemyChaseBehaviour` and `EnemyAttackBehaviour` threw `KeyNotFoundException` every frame once
+the player died. A dead entity is disposed, which strips its values but leaves the object, so the
+reference the enemy holds stays non-null while `GetTransform` on it throws. `TargetUseCase`
+resolves the transform and clears the variable when it cannot — clearing matters, because
+`EnemyPatrolBehaviour` stands down while a target is set, so a stale one leaves the enemy neither
+chasing nor patrolling.
+
+`CharacterFireAction` plays Fire on animator layer 1 and Melee on layer 2. Those are
+`AC_BaseCharacter`'s, and only the player has them: `AC_Zombie` has two layers, `AC_Rapax` one.
+Every swing logged "Invalid Layer Index '2'". The call now checks `layerCount` first. Enemies
+get their attack animation from `EnemyAttackAnimBehaviour`'s trigger, so nothing is lost.
+
+Verified: aggro, chase, kill, and the enemy back to patrolling, with zero errors and four
+warnings in the console — the three missing scripts on `[CameraRoot]/[Camera]/cm` and the Legacy
+clip, none of them this work's.

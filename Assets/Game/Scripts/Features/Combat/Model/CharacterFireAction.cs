@@ -25,11 +25,24 @@ namespace Game
 
             weapon.GetFireAction().Invoke();
 
-            if (_weapon.Value.HasRangeWeaponTag()) 
-                _character.GetAnimator().Play(_fire, 1);
+            // Layers 1 and 2 are AC_BaseCharacter's Fire and Melee, and only the player's
+            // controller has them: AC_Zombie has two layers, AC_Rapax one. Playing a layer that
+            // is not there logs "Invalid Layer Index" on every swing, which went unnoticed only
+            // because until recently no enemy ever reached a target to swing at. Enemies get
+            // their attack animation from EnemyAttackAnimBehaviour's trigger instead.
+            if (_weapon.Value.HasRangeWeaponTag())
+                PlayOnLayer(_fire, 1);
 
             if (_weapon.Value.HasMeleeWeaponTag())
-                _character.GetAnimator().Play(_melee, 2);
+                PlayOnLayer(_melee, 2);
+        }
+
+        private void PlayOnLayer(int state, int layer)
+        {
+            Animator animator = _character.GetAnimator();
+
+            if (layer < animator.layerCount)
+                animator.Play(state, layer);
         }
     }
 }
