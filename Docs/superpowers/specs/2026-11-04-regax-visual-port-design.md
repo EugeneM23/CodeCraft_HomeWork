@@ -31,7 +31,7 @@ Copied with their `.meta` files so GUIDs survive and internal references keep re
 - `SK_Rapax.fbx` (rig: Humanoid, `animationType: 3`, avatar created from the model)
 - `Materials/M_Rapax*.mat` (4), `Textures/T_Rapax_*.png` (11), `Rapax_Mask.mask`
 - Animation FBX files, **excluding every `_RM` duplicate** — those carry root motion, and
-  movement here is driven by the NavMesh agent and the transform, not by the clip:
+  movement here is driven by `CharacterMoveBehaviour` moving the transform, not by the clip:
   `IdleBreathe`, `IdleLookAround`, `Walk`, `Run`, `Death`, `GetHitFront/Back/Left/Right`,
   `LeftClawsAttack`, `RightClawsAttack`, `2HitComboClawsAttack`, `JumpClawsAttack`,
   `JumpForward`, `JumpBackwards`, `StrafeLeft`, `StrafeRight`, `Turn90Left`, `Turn90Right`, `Roar`
@@ -84,7 +84,8 @@ What changes:
 - `<Skeleton>` — Rapax bone hierarchy; the `Animator` lives here, and gets the `SK_Rapax`
   avatar and `AC_Rapax`
 - `<Skin>` — Rapax `SkinnedMeshRenderer`, material `M_Rapax` (red)
-- `<Collider>` — capsule resized to the Rapax silhouette
+- `<Collider>` — the capsule on `<Collider>` and the one on the root both go from radius 0.3,
+  height 1.8 to radius 0.71, height 4.28, centre `(0, 2, 0)`, matching `Enemy_Regax`
 - `<VFX>` — `BulletDamageBlood` and `MeleeDamageBlood` become `HitImpact_VFX_Zombie`;
   `DeathBlood` and `DeadBlood` become `Blood7_02`
 - `<Weapons>` — holds `Regax_Hand` instead of `Zombie_Hand`
@@ -115,3 +116,11 @@ touched; the zombie stays there.
 `AC_Zombie` declares a float parameter `MoveZ`, while `CharacterMoveAnimBehaviour` writes
 `MoveY`. The second blend-tree axis therefore never receives a value. This predates the port
 and belongs to the logic, which stays as it is.
+
+## Assumption: Rapax keeps its native size
+
+Rapax is roughly 4.3 units tall against the zombie's 1.8, and it is ported at scale 1 — shrinking
+it to human height would throw away the silhouette the port is for. Two consequences are
+expected and are not treated as defects of the port: the creature towers over the 4-unit
+playground walls, and melee reach tuned for the zombie will read as short against it. Both live
+in the logic and the arena, not in the visuals, so neither is changed here.
