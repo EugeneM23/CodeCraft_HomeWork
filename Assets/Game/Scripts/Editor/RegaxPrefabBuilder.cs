@@ -335,7 +335,13 @@ namespace Game.EditorTools
             // BFX scripts, and it plays the moment it is enabled. So it goes in switched off, and
             // DeathEffectBehaviour switches it on when the creature dies. Its own scale of 4 is
             // left alone: the other project used this very effect on this very creature.
-            AddEffect(death, vfx, "DeathBlood", 1.4f * HEIGHT_SCALE, active: false);
+            //
+            // Near the feet, not at chest height like the hit blood. The effect carries a ground
+            // decal that finds the floor by raycasting five units down; from up on the creature's
+            // chest that ray falls short, the script writes an unusable position, and Unity
+            // reports "Invalid worldAABB. Object is too large or too far away from the origin."
+            // A pool of blood belongs on the ground anyway.
+            AddEffect(death, vfx, "DeathBlood", 0.3f, active: false);
 
             return true;
         }
