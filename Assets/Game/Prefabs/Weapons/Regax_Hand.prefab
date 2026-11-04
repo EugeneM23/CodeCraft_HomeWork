@@ -82,4 +82,4 @@ MonoBehaviour:
   _cooldown:
     _current: 0
     _duration: 0.3
-  _animController: {fileID: 22100000, guid: 8ddeb817277a446daa8db8a190047a33, type: 2}
+  _animController: {fileID: 9100000, guid: 3f70c806784b52f44bd2bf10c59caa80, type: 2}

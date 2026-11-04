@@ -1,7 +1,6 @@
 using System.Linq;
 using Atomic.Entities;
 using UnityEditor;
-using UnityEditor.Animations;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -30,7 +29,7 @@ namespace Game.EditorTools
 
         private const string MODEL = "Assets/3rdParty/Rapax/FBX Files/SK_Rapax.fbx";
         private const string MATERIAL = "Assets/3rdParty/Rapax/Materials/M_Rapax.mat";
-        private const string CONTROLLER = "Assets/Game/Animations/Rapax/AC_Rapax.overrideController";
+        private const string CONTROLLER = "Assets/Game/Animations/Rapax/AC_Rapax.controller";
         private const string WEAPON = "Assets/Game/Prefabs/Weapons/Regax_Hand.prefab";
 
         private const string ATTACK_MODEL = "Assets/3rdParty/Rapax/FBX Files/Rapax@RightClawsAttack.fbx";
@@ -40,9 +39,6 @@ namespace Game.EditorTools
             "Assets/3rdParty/RPG_VFXPack/Prefab/HitImpact_VFX_Pref/HitImpact_VFX_Zombie.prefab";
 
         private const string DEATH_EFFECT = "Assets/3rdParty/VolumetricBloodFX/Prefabs/Blood7_02.prefab";
-
-        /// <summary>The clip AC_Zombie plays in its Attack state, and so the override's key.</summary>
-        private const string ATTACK_STATE_CLIP = "Zombie_Attack";
 
         /// <summary>
         /// The bone the blood is anchored to, standing in for the zombie's Spine_01.
@@ -76,27 +72,19 @@ namespace Game.EditorTools
         // ------------------------------------------------------------------ attack clip
 
         /// <summary>
-        /// Copies the Rapax swing into a standalone clip carrying damage_cast_event, and points
-        /// AC_Rapax's attack override at it.
+        /// Refreshes the standalone attack clip that AC_Rapax's Attack state plays, carrying the
+        /// damage_cast_event this project listens for.
         /// </summary>
         /// <remarks>
         /// The enemy's melee damage does not come from its animator at all: DamageCastBehaviour
         /// opens a 0.1s damage window when it hears damage_cast_event, and that event lives in
         /// Zombie_Attack.anim. Swap the clip for one of Rapax's and the creature swings without
         /// ever dealing damage. The event cannot be added to the clip inside the FBX, so the clip
-        /// is copied out as an asset of its own and the event added there.
+        /// is copied out as an asset of its own and the event added there. AC_Rapax points at
+        /// that asset, so refreshing it in place is all this has to do.
         /// </remarks>
         private static bool BuildAttackClip()
         {
-            AnimatorOverrideController controller =
-                AssetDatabase.LoadAssetAtPath<AnimatorOverrideController>(CONTROLLER);
-
-            if (controller == null)
-            {
-                Debug.LogError($"{LOG} missing {CONTROLLER}");
-                return false;
-            }
-
             AnimationClip source = AssetDatabase.LoadAllAssetsAtPath(ATTACK_MODEL)
                 .OfType<AnimationClip>()
                 .FirstOrDefault(clip => !clip.name.StartsWith("__preview__"));
@@ -141,27 +129,6 @@ namespace Game.EditorTools
             // which nothing here implements, and Unity logs an error for every one that fires.
             AnimationUtility.SetAnimationEvents(clip, new[] { cast });
             EditorUtility.SetDirty(clip);
-
-            AnimationClip original = controller.animationClips
-                .FirstOrDefault(c => c != null && c.name == ATTACK_STATE_CLIP);
-
-            if (original == null)
-            {
-                // animationClips reports the clips in use, so once the override is in place the
-                // original is no longer among them -- read the base controller instead.
-                original = (controller.runtimeAnimatorController as AnimatorController)
-                    ?.animationClips.FirstOrDefault(c => c != null && c.name == ATTACK_STATE_CLIP);
-            }
-
-            if (original == null)
-            {
-                Debug.LogError($"{LOG} {ATTACK_STATE_CLIP} is not a clip of AC_Rapax's base controller");
-                return false;
-            }
-
-            controller[original] = clip;
-            EditorUtility.SetDirty(controller);
-
             AssetDatabase.SaveAssets();
             Debug.Log($"{LOG} attack clip ready, damage cast at {cast.time:0.###}s of {clip.length:0.###}s");
 
@@ -223,8 +190,8 @@ namespace Game.EditorTools
 
             GameObject modelAsset = AssetDatabase.LoadAssetAtPath<GameObject>(MODEL);
             Material material = AssetDatabase.LoadAssetAtPath<Material>(MATERIAL);
-            AnimatorOverrideController controller =
-                AssetDatabase.LoadAssetAtPath<AnimatorOverrideController>(CONTROLLER);
+            RuntimeAnimatorController controller =
+                AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>(CONTROLLER);
             Avatar avatar = AssetDatabase.LoadAllAssetsAtPath(MODEL).OfType<Avatar>().FirstOrDefault();
 
             if (modelAsset == null || material == null || controller == null || avatar == null)
