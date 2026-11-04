@@ -14,7 +14,7 @@ namespace Game.Gameplay
     /// </remarks>
     public sealed class EnemyTakeDamageAnimBehaviour : IEntityInit, IEntityDispose
     {
-        private static readonly int TakeDamage = Animator.StringToHash("TakeDamage");
+        private readonly AnimatorTrigger _takeDamage = new("TakeDamage");
 
         private Animator _animator;
         private Health _health;
@@ -39,7 +39,7 @@ namespace Game.Gameplay
             if (!_health.Exists())
                 return;
 
-            _animator.SetTrigger(TakeDamage);
+            _takeDamage.Fire(_animator);
         }
     }
 }

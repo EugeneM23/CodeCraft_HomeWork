@@ -19,7 +19,7 @@ namespace Game.Gameplay
     /// </remarks>
     public sealed class EnemyAttackAnimBehaviour : IEntityInit, IEntityDispose
     {
-        private static readonly int Attack = Animator.StringToHash("Attack");
+        private readonly AnimatorTrigger _attack = new("Attack");
 
         private Animator _animator;
         private IReactiveVariable<IEntity> _weapon;
@@ -58,6 +58,6 @@ namespace Game.Gameplay
             _current = null;
         }
 
-        private void OnFire() => _animator.SetTrigger(Attack);
+        private void OnFire() => _attack.Fire(_animator);
     }
 }
