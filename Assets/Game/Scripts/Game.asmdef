@@ -4,10 +4,12 @@
     "references": [
         "Atomic.Elements",
         "Atomic.Entities",
-        "Modules",
         "HighlightPlus",
         "Unity.TextMeshPro",
-        "Unity.Mathematics"
+        "Unity.Mathematics",
+        "UniTask",
+        "DOTweenModules",
+        "UnityEngine.UI"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

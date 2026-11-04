@@ -3,7 +3,6 @@
     "rootNamespace": "Game.Tests",
     "references": [
         "Game",
-        "Modules",
         "Atomic.Elements",
         "Atomic.Entities",
         "UnityEngine.TestRunner",

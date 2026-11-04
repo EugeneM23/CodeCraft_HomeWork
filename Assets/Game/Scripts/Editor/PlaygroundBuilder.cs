@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using Atomic.Entities;
-using Game.Gameplay;
+using Game.Sandbox;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
