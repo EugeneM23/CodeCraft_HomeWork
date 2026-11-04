@@ -298,17 +298,17 @@ namespace Game.EditorTools
 
         private static void BuildEnemies()
         {
-            GameObject zombiePrefab =
-                AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/Characters/Zombie.prefab");
+            GameObject enemyPrefab =
+                AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/Characters/Regax.prefab");
 
-            if (zombiePrefab == null)
+            if (enemyPrefab == null)
             {
-                Debug.LogError("[PGBUILD] missing Zombie prefab");
+                Debug.LogError("[PGBUILD] missing Regax prefab");
                 return;
             }
 
             Transform enemies = new GameObject("<Enemies>").transform;
-            GameObject standing = (GameObject) PrefabUtility.InstantiatePrefab(zombiePrefab);
+            GameObject standing = (GameObject) PrefabUtility.InstantiatePrefab(enemyPrefab);
             standing.transform.SetParent(enemies, false);
             standing.transform.position = new Vector3(6f, 0.05f, 6f);
 
@@ -330,13 +330,13 @@ namespace Game.EditorTools
             MonoEntity entity = button.AddComponent<MonoEntity>();
             SpawnButtonInstaller installer = button.AddComponent<SpawnButtonInstaller>();
 
-            MonoEntity zombieEntity = zombiePrefab.GetComponent<MonoEntity>();
+            MonoEntity enemyEntity = enemyPrefab.GetComponent<MonoEntity>();
 
-            if (zombieEntity == null)
-                Debug.LogError("[PGBUILD] Zombie prefab has no MonoEntity");
+            if (enemyEntity == null)
+                Debug.LogError("[PGBUILD] Regax prefab has no MonoEntity");
 
             SetPrivateField(installer, "_trigger", trigger);
-            SetPrivateField(installer, "_enemyPrefab", zombieEntity);
+            SetPrivateField(installer, "_enemyPrefab", enemyEntity);
             SetPrivateField(installer, "_spawnPoint", spawn.transform);
             AttachInstaller(entity, installer);
         }

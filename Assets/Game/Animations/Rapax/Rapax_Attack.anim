@@ -64272,7 +64272,7 @@ AnimationClip:
   m_HasGenericRootTransform: 0
   m_HasMotionFloatCurves: 0
   m_Events:
-  - time: 0.42666668
+  - time: 0.37918663
     functionName: ReceiveEvent
     data: damage_cast_event
     objectReferenceParameter: {fileID: 0}

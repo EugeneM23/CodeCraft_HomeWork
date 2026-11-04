@@ -123,13 +123,22 @@ namespace Game.EditorTools
                 clip.name = "Rapax_Attack";
             }
 
+            // The animators who made this swing marked where it lands, with an event of their
+            // own project's naming: CallEvent("DamageCast"). Their timing beats any guess, so it
+            // is reused and only the call renamed to the one this project listens for. The
+            // zombie's fraction is the fallback if a clip carries no such mark.
+            AnimationEvent authored = AnimationUtility.GetAnimationEvents(source)
+                .FirstOrDefault(e => e.stringParameter == "DamageCast");
+
             AnimationEvent cast = new()
             {
-                time = clip.length * DAMAGE_CAST_FRACTION,
+                time = authored?.time ?? clip.length * DAMAGE_CAST_FRACTION,
                 functionName = "ReceiveEvent",
                 stringParameter = DAMAGE_CAST_EVENT
             };
 
+            // Everything else the clip came with goes: the pack's other events call CallEvent,
+            // which nothing here implements, and Unity logs an error for every one that fires.
             AnimationUtility.SetAnimationEvents(clip, new[] { cast });
             EditorUtility.SetDirty(clip);
 
