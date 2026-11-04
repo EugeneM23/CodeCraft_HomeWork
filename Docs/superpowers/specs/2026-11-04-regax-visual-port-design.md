@@ -248,3 +248,17 @@ Worth writing down so they are not chased again. `Assets/Game/Materials/PolygonP
 points at a shader GUID that does not resolve and renders magenta; it was last touched by the
 commit that rearranged the project. `[CameraRoot]/[Camera]/cm`, cloned into the playground from
 GameScene, carries three missing scripts. Neither is touched by this work.
+
+## The enemy can now notice the player
+
+Nothing in the project ever set an enemy's target, so `EnemyChaseBehaviour` and
+`EnemyAttackBehaviour` both returned early forever and an enemy dropped into a scene patrolled
+past the player. The mechanism existed and was wired nowhere: `EnemyTrigger`, a trigger volume
+holding a list of enemies, which hands each of them the player on enter and clears it on exit.
+
+The playground now has an `AggroZone` — 14 by 6 by 14 around the standing enemy — carrying it,
+in `PlaygroundBuilder` and in the scene. Its list is fixed, so this covers the standing enemy
+only; enemies made by the spawn button still have no way to acquire a target.
+
+Played end to end: the player entering the zone gets the creature the target, it closes 13.4 →
+10.2 → 7.6 → 5.3 → 2.3 → 0.99, plays `Rapax_Attack`, and the player drops to 80.

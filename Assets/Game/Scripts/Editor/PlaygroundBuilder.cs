@@ -36,6 +36,7 @@ namespace Game.EditorTools
         private const float WALL_HEIGHT = 4f;
         private const float WALL_THICKNESS = 1f;
         private const float STATION_STEP = 2.5f;
+        private const float AGGRO_ZONE_SIZE = 14f;
 
         [MenuItem("Tools/Playground/Build")]
         public static void Build()
@@ -339,6 +340,47 @@ namespace Game.EditorTools
             SetPrivateField(installer, "_enemyPrefab", enemyEntity);
             SetPrivateField(installer, "_spawnPoint", spawn.transform);
             AttachInstaller(entity, installer);
+
+            BuildAggroZone(triggers.transform, standing);
+        }
+
+        /// <summary>
+        /// The zone that hands the standing enemy its target when the player walks in.
+        /// </summary>
+        /// <remarks>
+        /// Nothing else does. EnemyChaseBehaviour and EnemyAttackBehaviour both return early on a
+        /// null target, and the only thing in the project that sets one is EnemyTrigger, which
+        /// until now was used nowhere -- so an enemy dropped into a scene patrolled and never
+        /// noticed the player. It holds a fixed list, so this covers the standing enemy only; the
+        /// ones the spawn button makes still have no way to acquire a target.
+        /// </remarks>
+        private static void BuildAggroZone(Transform parent, GameObject enemy)
+        {
+            MonoEntity entity = enemy.GetComponent<MonoEntity>();
+
+            if (entity == null)
+            {
+                Debug.LogError("[PGBUILD] the standing enemy has no MonoEntity to aggro");
+                return;
+            }
+
+            GameObject zone = new("AggroZone");
+            zone.transform.SetParent(parent, false);
+            zone.transform.position = enemy.transform.position;
+
+            BoxCollider collider = zone.AddComponent<BoxCollider>();
+            collider.isTrigger = true;
+            // Wide enough to cross on the way to the enemy, tall enough to catch the player.
+            collider.size = new Vector3(AGGRO_ZONE_SIZE, 6f, AGGRO_ZONE_SIZE);
+            collider.center = new Vector3(0f, 3f, 0f);
+
+            EnemyTrigger aggro = zone.AddComponent<EnemyTrigger>();
+
+            SerializedObject serialized = new(aggro);
+            SerializedProperty list = serialized.FindProperty("_enemies");
+            list.arraySize = 1;
+            list.GetArrayElementAtIndex(0).objectReferenceValue = entity;
+            serialized.ApplyModifiedPropertiesWithoutUndo();
         }
 
         // ------------------------------------------------------------------ helpers
