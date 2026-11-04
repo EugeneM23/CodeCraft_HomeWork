@@ -166,7 +166,7 @@ namespace Game.EditorTools
             }
 
             GameObject root = (GameObject) PrefabUtility.InstantiatePrefab(sourcePrefab);
-            PrefabUtility.UnpackPrefabInstanceCompletely(root, InteractionMode.AutomatedAction);
+            PrefabUtility.UnpackPrefabInstance(root, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
             root.name = "Regax";
 
             if (!SwapSkeletonAndSkin(root) ||
@@ -210,7 +210,7 @@ namespace Game.EditorTools
             }
 
             GameObject model = (GameObject) PrefabUtility.InstantiatePrefab(modelAsset);
-            PrefabUtility.UnpackPrefabInstanceCompletely(model, InteractionMode.AutomatedAction);
+            PrefabUtility.UnpackPrefabInstance(model, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
 
             SkinnedMeshRenderer renderer = model.GetComponentInChildren<SkinnedMeshRenderer>();
 
@@ -344,7 +344,7 @@ namespace Game.EditorTools
         private static void AddEffect(GameObject prefab, Transform parent, string name, bool active)
         {
             GameObject instance = (GameObject) PrefabUtility.InstantiatePrefab(prefab);
-            PrefabUtility.UnpackPrefabInstanceCompletely(instance, InteractionMode.AutomatedAction);
+            PrefabUtility.UnpackPrefabInstance(instance, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
 
             instance.name = name;
             instance.transform.SetParent(parent, false);
@@ -382,7 +382,7 @@ namespace Game.EditorTools
                 Object.DestroyImmediate(weapons.GetChild(i).gameObject);
 
             GameObject weapon = (GameObject) PrefabUtility.InstantiatePrefab(weaponAsset);
-            PrefabUtility.UnpackPrefabInstanceCompletely(weapon, InteractionMode.AutomatedAction);
+            PrefabUtility.UnpackPrefabInstance(weapon, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
             weapon.transform.SetParent(weapons, false);
 
             return true;
