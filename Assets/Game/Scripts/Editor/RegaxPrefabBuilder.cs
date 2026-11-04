@@ -270,15 +270,21 @@ namespace Game.EditorTools
             for (int i = skeleton.childCount - 1; i >= 0; i--)
                 Object.DestroyImmediate(skeleton.GetChild(i).gameObject);
 
-            int skinIndex = skin.GetSiblingIndex();
             renderer.sharedMaterial = material;
 
             Object.DestroyImmediate(skin.gameObject);
 
             bones.SetParent(skeleton, false);
-            renderer.transform.SetParent(root.transform, false);
+
+            // Under <Skeleton>, not beside it as the zombie has it. An Animator decides whether
+            // to cull itself by looking for renderers in its own hierarchy, and with the skin a
+            // sibling it finds none, concludes it is never on screen, and -- on the prefab's
+            // CullUpdateTransforms -- stops writing the bones. The animation runs, the state
+            // machine advances, and the creature stands frozen. The source project nests it this
+            // way too. The zombie has the same arrangement and the same frozen locomotion; it is
+            // left alone here, since this port does not touch that prefab.
+            renderer.transform.SetParent(skeleton, false);
             renderer.gameObject.name = "<Skin>";
-            renderer.transform.SetSiblingIndex(skinIndex);
 
             Object.DestroyImmediate(model);
 
