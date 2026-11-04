@@ -211,10 +211,19 @@ swapped for the creature in place instead, and both `_enemyPrefab` fields repoin
 button's, and `GameContextInstaller`'s, which drives the automatic spawner. `PlaygroundBuilder`
 is updated too, so a future rebuild agrees with the scene.
 
-## Still out of scope, and now measured
+## The MoveZ / MoveY mismatch, fixed after all
 
-The `MoveZ` / `MoveY` mismatch is worse than it looked: `CharacterMoveAnimBehaviour` calls
-`SetFloat("MoveY")` every frame the enemy moves, and `AC_Zombie` declares `MoveZ`, so Unity logs
-a warning per enemy per frame — roughly nine thousand in twelve seconds of play. It predates the
-port and is shared with the zombie, so it is still not fixed here, but it is a one-word change in
-either the controller or the behaviour.
+Out of scope twice over — it predates the port and is shared with the zombie — until play showed
+its size. `CharacterMoveAnimBehaviour` calls `SetFloat("MoveY")` every frame an enemy moves while
+`AC_Zombie` declared `MoveZ`, so Unity logged a warning per enemy per frame: roughly nine thousand
+in twelve seconds. The parameter is renamed to `MoveY` in both `AC_Zombie` and `AC_Rapax`. Nothing
+read it — no transition condition, no blend tree, checked before renaming — so the rename only
+lets the value arrive where the code was already sending it. Play now logs four warnings in all,
+none from this.
+
+## Two warnings that are not the port's
+
+Worth writing down so they are not chased again. `Assets/Game/Materials/PolygonParticleFX_Blood.mat`
+points at a shader GUID that does not resolve and renders magenta; it was last touched by the
+commit that rearranged the project. `[CameraRoot]/[Camera]/cm`, cloned into the playground from
+GameScene, carries three missing scripts. Neither is touched by this work.
