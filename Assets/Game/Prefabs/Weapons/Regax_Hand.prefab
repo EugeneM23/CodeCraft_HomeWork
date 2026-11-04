@@ -72,7 +72,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _id: 0
   _damage: 10
-  _damageRadius: 0.5
+  _damageRadius: 0.9
   _shakeArgs:
     <ShakeDuration>k__BackingField: 0
     <ShakeStrength>k__BackingField: 0

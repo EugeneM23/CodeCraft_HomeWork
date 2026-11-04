@@ -279,9 +279,15 @@ namespace Game.EditorTools
                 return false;
             }
 
-            // The creature stands about 4.3 units tall against the zombie's 1.8. Both capsules --
-            // the one on <Collider> and the one on the root, which DeathBehaviour switches off --
-            // take the figures from the source project's own enemy.
+            // The creature stands about 4.3 units tall against the zombie's 1.8, so both capsules
+            // -- the one on <Collider> and the one on the root, which DeathBehaviour switches off
+            // -- take the source project's height.
+            //
+            // The radius does not: the source enemy's 0.71 makes the creature unable to attack
+            // here. EnemyAttackBehaviour swings only inside one unit, measured centre to centre,
+            // and 0.71 against the player's 0.38 keeps the two capsules 1.09 apart at their
+            // closest -- the zombie's 0.3 left it 0.68 and well inside. At 0.5 the pair closes to
+            // 0.88 and the creature can reach, which is what the number is for.
             foreach (CapsuleCollider capsule in new[]
                      {
                          collider.GetComponent<CapsuleCollider>(),
@@ -291,7 +297,7 @@ namespace Game.EditorTools
                 if (capsule == null)
                     continue;
 
-                capsule.radius = 0.71f;
+                capsule.radius = 0.5f;
                 capsule.height = 4.28f;
                 capsule.center = new Vector3(0f, 2f, 0f);
             }

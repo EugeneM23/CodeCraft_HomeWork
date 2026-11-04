@@ -123,10 +123,31 @@ and belongs to the logic, which stays as it is.
 ## Assumption: Rapax keeps its native size
 
 Rapax is roughly 4.3 units tall against the zombie's 1.8, and it is ported at scale 1 — shrinking
-it to human height would throw away the silhouette the port is for. Two consequences are
-expected and are not treated as defects of the port: the creature towers over the 4-unit
-playground walls, and melee reach tuned for the zombie will read as short against it. Both live
-in the logic and the arena, not in the visuals, so neither is changed here.
+it to human height would throw away the silhouette the port is for. The creature therefore towers
+over the 4-unit playground walls, which is left as it is.
+
+The other consequence turned out worse than "reads as short", and is dealt with below.
+
+## What the size did to melee, and what fixes it
+
+The creature could not attack at all, and this took measuring to see rather than guessing.
+
+`EnemyAttackBehaviour` swings only within one unit, centre to centre. With the source enemy's
+capsule radius of 0.71 against the player's 0.38 the two bodies stop 1.09 apart — the condition
+can never be true. The zombie's 0.3 left 0.68, comfortably inside. The creature's capsule is
+therefore 0.5 rather than 0.71, which brings the pair to 0.88.
+
+That let the swing play, and still nothing was damaged. The damage is an overlap sphere cast from
+the weapon's transform, and `Regax_Hand` inherited the zombie's 0.5 radius. From a creature held
+0.97 away by its own collider, 0.5 does not reach a player whose capsule is 0.38 — it is short by
+0.02. The hand's radius is now 0.9, which suits a creature with that reach.
+
+Verified by playing it: with the creature given the player as a target, it closed to 0.99, played
+`Rapax_Attack`, and the player went 100 → 80 → dead, the entity disposed by `DeathBehaviour`.
+
+Worth knowing for that test: nothing in the playground ever gives an enemy a target. The target
+comes from a `TriggerEventReceiver`, and `_triggerReceiver` is null on `Zombie.prefab` and so on
+`Regax.prefab` too. Left alone — it is the same for both enemies and predates the port.
 
 ---
 
