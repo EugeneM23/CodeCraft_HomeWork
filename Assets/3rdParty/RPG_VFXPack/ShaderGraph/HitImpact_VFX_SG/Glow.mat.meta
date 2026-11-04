@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: a3d2f35961fd0d34183ed5fd7d8c9519
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 315488
+  packageName: RPG VFX pack
+  packageVersion: 1.0
+  assetPath: Assets/RPG_VFXPack/RPG_VFX/ShaderGraph/HitImpact_VFX_SG/Glow.mat
+  uploadId: 745464
