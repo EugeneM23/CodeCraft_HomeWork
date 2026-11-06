@@ -121,3 +121,13 @@ Controllables/
 - Набор GUID всех `*.cs.meta` в `Assets/Game/Scripts` до и после совпадает.
 - Префабы и `Playground.unity` без новых «missing script».
 - Нет пустых папок и папок без `.meta`; `Entities/` и `Features/Vehicles/` исчезли.
+
+## Результат
+
+Прогон: 64 переноса, 0 ошибок; папка `Vehicles/` переименована в `Controllables/`, `Enemies/Model` → `AI`,
+`Enemies/View` → `Animation` (у папок GUID сохранился); `Entities/` удалена. Четыре класса
+переименованы вместе с файлами, плюс тест `VehicleUseCaseTests` → `ControllableUseCaseTests`
+(его в списке выше не было). GUID всех 232 скриптов совпали с состоянием до переноса. Компиляция
+чистая. В 97 префабах и сценах `Assets/Game` неразрешённые ссылки на скрипты есть только в
+`GameScene.unity` и `Playground.unity`, и ни один из этих GUID не принадлежит нашим скриптам —
+это компоненты Cinemachine, пакета которого в проекте нет.
