@@ -48,7 +48,8 @@ does. Unlike the tank it has no `DriveInput`. It carries the keys a walking char
 
 ## Code changes
 
-- New: `Entities/Mount/MountInstaller.cs`, `Features/Mount/Model/MountDeathBehaviour.cs`,
+- New: `Entities/Vehicle/MountInstaller.cs` (first put in `Entities/Mount/`, moved beside the tank
+  and helicopter installers the same day), `Features/Mount/Model/MountDeathBehaviour.cs`,
   `Editor/RegaxMountBuilder.cs`.
 - `VehicleUseCase.Exit`: `DriveInput` is now optional, and a vehicle with a `MoveDirection` has it
   zeroed on exit too, so a dismounted creature does not keep walking.
