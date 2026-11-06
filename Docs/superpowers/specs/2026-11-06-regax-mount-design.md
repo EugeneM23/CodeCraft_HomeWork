@@ -21,7 +21,7 @@ Changed:
 | --- | --- | --- |
 | Core installer | `EnemyCoreInstaller` (patrol, chase, attack AI) | `MountInstaller` (no AI) |
 | Layer | 8 Enemy | 9 Character, like the tank and helicopter |
-| Rigidbody | linear damping 10 000, Y rotation free | damping 0, rotation frozen like the player's |
+| Rigidbody | linear damping 10 000, Y rotation free, no interpolation | damping 0, rotation frozen like the player's, interpolated |
 | Claws | hit layer 9, 10 dmg, 0.9 m sphere at the feet | hit layer 8, 50 dmg, 1.4 m sphere 1.3 m ahead, 1 m up |
 | Extra children | `<PatrolPoints>` | `<CameraPoint>`, `<ExitPoints>` (Left, Right, Back) |
 | Highlight | none | pickups' outline on `<Skeleton>` |
@@ -58,6 +58,12 @@ does. Unlike the tank it has no `DriveInput`. It carries the keys a walking char
 The enemy's Rigidbody damping of 10 000 is invisible to an enemy (moved by transform), but it
 ate the whole velocity `RigidbodyMoveBehaviour` gives within the same physics step: the creature
 played its walk animation on the spot. The builder sets damping to 0.
+
+The enemy's body is not interpolated either. Ridden, it shook: the body moves in 50 Hz physics
+steps while the camera follows it every rendered frame, so at ~100 fps every other frame showed it
+standing still and the next one jumping twice as far. Measured over 60 frames at 7 m/s: per-frame
+speed 0–14.9 m/s (σ 6.0) without interpolation, a flat 7.0 m/s (σ 0) with it. The builder sets
+`Interpolate`, as the tank and helicopter have.
 
 ## Verified in Play mode
 
