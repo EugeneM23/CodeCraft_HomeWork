@@ -52,3 +52,15 @@
 `Editor/` и тесты. GUID всех скриптов и тестов совпали. Компиляция чистая, у 10 переименованных
 инсталлеров `MonoScript.GetClass()` находит класс. В префабах и сценах — те же 7 неразрешённых
 ссылок Cinemachine, новых нет.
+
+## Дополнение: общая папка `Character/`
+
+```
+Features/Character/
+├── CharacterMovement/   ← Features/Movement
+├── PlayerCharacter/     ← Features/PlayerCharacter
+└── EnemyCharacter/      ← Features/EnemyCharacter
+```
+
+Три переноса папок через `MoveAsset`, GUID папок и скриптов сохранены, компиляция чистая, новых
+неразрешённых скриптов в префабах и сценах нет. `Features/Attack/` осталась на верхнем уровне.
