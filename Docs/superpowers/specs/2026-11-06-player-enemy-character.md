@@ -57,10 +57,12 @@
 
 ```
 Features/Character/
+├── CharacterAttack/     ← Features/Attack
 ├── CharacterMovement/   ← Features/Movement
 ├── PlayerCharacter/     ← Features/PlayerCharacter
 └── EnemyCharacter/      ← Features/EnemyCharacter
 ```
 
 Три переноса папок через `MoveAsset`, GUID папок и скриптов сохранены, компиляция чистая, новых
-неразрешённых скриптов в префабах и сценах нет. `Features/Attack/` осталась на верхнем уровне.
+неразрешённых скриптов в префабах и сценах нет. Следом `Features/Attack/` перенесена в
+`Character/CharacterAttack/` (общая атака игрока, врага и Regax) — тот же результат проверки.
