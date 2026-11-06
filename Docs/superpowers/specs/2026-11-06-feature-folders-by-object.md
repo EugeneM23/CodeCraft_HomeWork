@@ -171,3 +171,29 @@ Features/
 
 **Проверка:** GUID всех 232 скриптов в `Assets/Game/Scripts` до и после совпали. Пропавших скриптов
 в префабах `Assets/Game` нет, пустых папок в `Features/` нет, компиляция без ошибок.
+
+## Дополнение: всё, во что садятся, — в одной папке
+
+Следом решено собрать код транспорта целиком в одном месте, а не держать танк, вертолёт и Регакса
+соседями пуль и гранат. Папки объектов переехали внутрь `Vehicles/` целиком, со своими GUID; общий
+код остался на верхнем уровне `Vehicles/`.
+
+```
+Features/Vehicles/
+├── Input/       VehicleDriveController, VehicleFireController   ← общее
+├── Model/       VehicleUseCase                                  ← общее
+├── Tank/        Model/ View/
+├── Helicopter/  Model/ View/
+└── Mount/       Model/
+
+Entities/Vehicle/   TankInstaller, HelicopterInstaller, MountInstaller, VehicleHighlight
+Editor/Vehicles/    TankBuilder, TankFxBuilder, HelicopterBuilder, RegaxMountBuilder
+```
+
+Установщики остались в `Entities/Vehicle/` — правило «инсталлеры в `Entities/`» не меняется, а там
+они и так вместе. Билдеры транспорта собраны в `Editor/Vehicles/`: сборка `Game.Editor` покрывает
+подпапки; `RegaxPrefabBuilder` (враг) и остальные билдеры остались в корне `Editor/`.
+
+**Проверка:** GUID всех 232 скриптов совпали до и после, GUID папок `Tank/`, `Helicopter/`, `Mount/`
+сохранились, пропавших скриптов в префабах нет, пустых папок и папок без `.meta` нет, компиляция
+без ошибок. Код не менялся.
