@@ -82,3 +82,22 @@ Editor/Controllables/           ← Editor/Vehicles
 - GUID всех 254 скриптов и тестов совпали; у переименованных MonoBehaviour (`HitEffectInstaller`,
   `EnemyAggroZone`, `CasingInstaller`) `MonoScript.GetClass()` находит класс. В префабах и сценах —
   те же 7 неразрешённых ссылок Cinemachine, новых нет. 134 теста `Game.Tests` проходят.
+
+## Вторая волна: решения пользователя
+
+1. **Тело существа → `Features/Character/Creature/`.** `EnemyCharacterAnim/Audio/VfxInstaller` →
+   `CreatureAnim/Audio/VfxInstaller`; `Animation/` (`CreatureAttackAnimBehaviour`,
+   `CreatureTakeDamageAnimBehaviour`, `AnimatorTrigger`) и `Audio/` (`AttackSoundBehaviour`) —
+   туда же. Их ставят Zombie, Regax, Enemy и Regax_Mount. В `EnemyCharacter/` остались
+   `EnemyCharacterCoreInstaller` и `AI/` — только враг.
+2. **Контроллеры, которые ведут и технику, → `Player*`:** `PlayerMoveController`,
+   `PlayerAimController` (был `…RotateController`: наводит и башню танка, и нос вертолёта),
+   `PlayerInteractController`, `PlayerShakeController`. `PlayerCharacter*` остались те, что работают
+   только пешком: Fire, Jump, Grenade, DropWeapon, Death.
+3. **Ударная волна танка удалена:** `TankShockwaveBehaviour`, три поля и ветка в `TankInstaller`,
+   `BuildShockwave` с помощниками и цветами пыли в `TankFxBuilder`, параметр в `TankBuilder`,
+   префаб `FX_TankShockwave`.
+
+Проверка: компиляция чистая; GUID совпали, кроме удалённого `TankShockwaveBehaviour`; у трёх
+Creature-инсталлеров `MonoScript.GetClass()` находит класс; в префабах и сценах — те же 7 ссылок
+Cinemachine; 134 теста проходят.
