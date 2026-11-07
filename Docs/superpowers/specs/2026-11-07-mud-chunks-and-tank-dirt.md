@@ -20,14 +20,20 @@ away; turning throws the most; the tank gets dirty; the mud is twice as deep.
   spreads to 1.12) and sink away.
 - The collision plane sits at `thickness × (1 − _clumpSink)` (0.45): sunk into fresh mud so a
   chunk reads as part of the ground, near the bottom of a rut.
-- Tracks throw 4 per rolled metre (was 6; the chunks are much bigger).
-- Chunks go to the sides, never back onto the ruts: each leaves from past the track's outer edge
-  (0.4–0.7 × track width out) at 2.8–4.8 m/s outwards, plus the old backwards share, with only
-  0.35 m/s of random spread. They land about 1–1.5 m out, clear of the rut and its berm.
+- Every chunk leaves a mark where it lands. `Throw` works out the landing point and time from the
+  arc (gravity × the system's gravity modifier, no drag) down to the clumps' floor, and at that
+  moment presses a splat: a rough dent `0.6 × size` long (up to 1.6× longer along a fast flight),
+  `0.5 × size` wide, `clamp(0.9 × size, 0.08, 0.35)` deep, with a rim of 0.5–0.8. Throws whose
+  landing is off the mud leave nothing.
+- A rolling track throws a steady stream off its trailing end, against the way it moves: 9 per
+  rolled metre and never fewer than 8 a second, however slowly it creeps. Each flies back at
+  `0.8 × track speed + 1.5–3.5` m/s, out to the side at 0.8–3.2 m/s and up at 2.8–4.2 m/s, from
+  across the end (−0.2 to 0.6 × track width out), with 0.6 m/s of random spread: a wide fan
+  behind and beside the track.
 
 ## Turns (TankTrackMarksBehaviour.ScrapeClumps)
 
-In a turn each end of each track slides sideways at `yawRate × arm`. Per metre slid it shoves 9 chunks
+In a turn each end of each track slides sideways at `yawRate × arm`. Per metre slid it shoves 14 chunks
 (size 1.15), always out past that track's outer edge (whichever way the end slides), at 2.8–4.8 m/s
 plus 0.6× the slide speed, carried a little along the slide. Turning on the spot throws mud from all
 four track ends.
@@ -36,11 +42,11 @@ four track ends.
 
 - `MT_Tank_Body` and `MT_Tank_Track` use `Game/TankDirt`: Standard lighting plus a mud layer. At
   `_Dirt` 0 it looks as before.
-- The track marks report mud churned: 0.0015 per rolled metre, 0.003 per metre slid in a turn
-  (per side; the first rates caked the whole tank in seconds of turning). Dirt caps at 1 and never
-  washes off. Every splash makes it wet (glossy, dark); it dries dull over 30 s.
+- The track marks report mud churned: 0.005 per rolled metre, 0.01 per metre slid in a turn
+  (per side): spots show within seconds and the tank is at its dirtiest after a minute or so of
+  driving. Dirt caps at 1 and never washes off. Every splash makes it wet (glossy, dark); it dries dull over 30 s.
 - Spots of mud, never a coat: patches where 3-octave noise (3.5/m) passes a threshold of
-  `0.72 − _Dirt × lerp(0.04, 0.26, (1 − height)^1.5)`, so the spots grow and multiply with dirt,
+  `0.7 − _Dirt × lerp(0.1, 0.36, (1 − height)^1.5)`, so the spots grow and multiply with dirt,
   the lower parts far more than the top, plus small flecks between them. Even at `_Dirt` 1 the
   hull and turret keep most of their paint. (A solid band climbing the tank was tried and read as
   the tank being painted over.)
