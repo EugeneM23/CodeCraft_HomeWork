@@ -69,14 +69,22 @@ four track ends.
 
 - `MT_Tank_Body` and `MT_Tank_Track` use `Game/TankDirt`: Standard lighting plus a mud layer. At
   `_Dirt` 0 it looks as before.
-- The track marks report mud churned: 0.005 per rolled metre, 0.01 per metre slid in a turn
-  (per side): spots show within seconds and the tank is at its dirtiest after a minute or so of
-  driving. Dirt caps at 1 and never washes off. Every splash makes it wet (glossy, dark); it dries dull over 30 s.
+- Dirt builds up with manoeuvring. The track marks report mud churned: 0.005 per rolled metre,
+  0.02 per metre slid in a turn (per side), so turning dirties far faster than driving straight.
+  Dirt caps at 1. Every splash makes it wet (glossy, dark); it dries dull over 30 s.
+- A cannon shot over mud (TankMuzzleMudBehaviour, on the cannon's FireEvent) blows the mud about
+  under the barrel: it finds the mud 0.6 m ahead of the muzzle within 2.5 m below, blows a shallow
+  scoop there (0.7 × 0.5 m along the shot, 0.3 deep, rim 0.4), throws 14 clumps — most out along
+  the shot and to the sides, one in four back at the tank — and splashes 0.06 dirt onto the tank.
+  All of it weaker the higher the muzzle stands above the mud.
+- Standing still, the mud melts: once the tank has been still (under 0.3 m/s and 0.15 rad/s) for
+  2 s, dirt drains at 1/45 a second, so the dirtiest tank is clean in 45 s. Moving stops it.
 - Spots of mud, never a coat: patches where 3-octave noise (3.5/m) passes a threshold of
-  `0.7 − _Dirt × lerp(0.1, 0.36, (1 − height)^1.5)`, so the spots grow and multiply with dirt,
-  the lower parts far more than the top, plus small flecks between them. Even at `_Dirt` 1 the
-  hull and turret keep most of their paint. (A solid band climbing the tank was tried and read as
-  the tank being painted over.)
+  `0.72 − _Dirt × lerp(0.16, 0.5, (1 − height)^1.5)`, so the spots grow and multiply with dirt,
+  the lower parts far more than the top, plus small flecks between them. At `_Dirt` 1 the running
+  gear and lower hull are caked nearly solid and the top is about half covered; lightly dirty,
+  only a few spots low down. (A solid band climbing the tank was tried and read as the tank being
+  painted over.)
 - The mud stands proud of the paint (bump, no parallax). `DirtField` gives a thickness 0..1:
   thicker the further inside a spot (a lip at the edge, a heap in the middle), flecks thin, all of
   it lumpy (noise at 14× the spot scale). Its slope is measured by central differences 8 mm apart
