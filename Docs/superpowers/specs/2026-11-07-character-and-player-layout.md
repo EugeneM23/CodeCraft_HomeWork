@@ -102,3 +102,35 @@ Features/
 MonoBehaviour `MonoScript.GetClass()` находит класс; в префабах и сценах — только прежние 7 ссылок
 Cinemachine; поле `_controlSystem` в обеих сценах заполнено; тесты `Game.Tests`; в Play персонаж
 ходит, целится и стреляет, способности работают.
+
+## Дополнение: гранаты и взаимодействие — фичи, а не части тела
+
+Попали в `PlayerCharacter/` по правилу «ставится на один вид — лежит в его папке». Но это способности,
+которые телу выдают, а не то, из чего тело сделано: `PlayerCharacterGrenadeInstaller` даёт запас
+гранат, выбор, бросок и HUD; `PlayerCharacterFlashInstaller` — ослепление от флешки с белым экраном;
+`InteractInstaller` — поиск того, с чем взаимодействовать. Так же уже лежат баффы:
+`CharacterBuffInstaller` — в `Features/Buffs`.
+
+**Уточнение правила 2.** `Character/` — тела: как собраны (Core/Anim/Audio/Vfx-инсталлеры) и из чего
+сделано любое ходячее тело (`Common/`: движение, атака, облик существа). Способности, которые телу
+можно выдать (гранаты, взаимодействие, баффы, способности игрока), — фичи со своим инсталлером в
+`Features/`, даже если сейчас их выдают одному телу.
+
+```
+Features/Grenades/                граната целиком
+├── (снаряд, как был: GrenadeInstaller, FlashInstaller, FlashUseCase, GrenadeFuseBehaviour,
+│    GrenadeLandingBehaviour, GrenadeType)
+├── Throwing/   GrenadeThrowerInstaller (был PlayerCharacterGrenadeInstaller), GrenadeThrowAction,
+│               GrenadeSwitchAction, GrenadeTrajectory, UI/GrenadeHudBehaviour
+└── Flashed/    FlashScreenInstaller (был PlayerCharacterFlashInstaller), UI/FlashScreenBehaviour
+Features/Interaction/             ← Character/PlayerCharacter/Interaction/ (папкой)
+├── InteractInstaller, InteractUseCase, DetectInteractableBehaviour
+├── Markers/    MarkerInstaller, InteractMarkerHighlightBehaviour, InteractMarkerUIBehaviour
+└── Weapons/    PickUpWeaponUseCase, DropWeaponUseCase
+Character/PlayerCharacter/        PlayerCharacterCore/Anim/Audio/VfxInstaller + Animation/
+```
+
+Два MonoBehaviour переименовываются вместе с файлами (`RenameAsset`, GUID сохраняется): они стоят на
+`[Character].prefab` и в `Playground.unity`. `GrenadeBuilder` и комментарии правятся под новые имена.
+`InteractInstaller` — `[Serializable]`, лежит в поле `_interactInstaller` у `PlayerCharacterCoreInstaller`
+(и `TankBuilder` пишет `_interactInstaller._layerMask`) — имя поля не меняется.
