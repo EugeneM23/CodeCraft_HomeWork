@@ -83,8 +83,8 @@ then.
 
    | Killed by | Speed | Lift | Spin |
    | --- | --- | --- | --- |
-   | Bullet, melee | 6 m/s rising to 18 m/s as the hit's damage approaches 100 | 0.5 | 8 rad/s |
-   | Explosion (tank shell, rocket) | 8 m/s at the blast's edge to 16 m/s at its centre | 0.6 | 15 rad/s |
+   | Bullet, melee | 3 m/s rising to 8 m/s as the hit's damage approaches 100 | 0.4 | 5 rad/s |
+   | Explosion (tank shell, rocket) | 4 m/s at the blast's edge to 8 m/s at its centre | 0.5 | 8 rad/s |
 
    A source counts as an explosion when it has `ExplosionRadius`. How close the creature stood is
    read back from the hit's `damageFactor`.
@@ -96,6 +96,7 @@ then.
 - **Rifle kill:** the pieces separate and land 1–5 m from the body. Blood plays, no errors.
 - **Tank shell 2.9 m away:** Regax (HP 60) dies to one shell. The pieces leave at 14–18 m/s and
   land across the arena.
+- **Spread halved afterwards** at the user's request (the speeds above). Not yet checked in Play: the editor was unreachable.
 
 ## Known gaps
 
