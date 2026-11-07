@@ -23,6 +23,11 @@ away; turning throws the most; the tank gets dirty; the mud is twice as deep.
 - The collision plane sits at `thickness × (1 − _clumpSink)` (0.12): just under the surface, so a
   chunk lies bedded in its own splat. At 0.45 the mud swallowed the chunks whole and only their
   splats showed, as if the marks came first.
+- `Throw` lifts every start point to at least 0.08 m above the visible mud (collider top +
+  thickness). Callers pass points on the collider — a track's contact, a bullet's or blast's hit —
+  which lie under the mud: started there, a chunk hit its own floor from below at once and stuck,
+  so chunks and splats seemed to appear from nowhere with nothing flying (seen in Play: every
+  chunk under 0.3 s old sat at 0.28 m, under the 0.32 m surface).
 - Every chunk leaves a mark where it lands. `Throw` works out the landing point and time from the
   arc (gravity × the system's gravity modifier, no drag) down to the clumps' floor (checked in Play
   against a live particle), and 0.08 s after it presses a splat no bigger than the chunk: a rough
