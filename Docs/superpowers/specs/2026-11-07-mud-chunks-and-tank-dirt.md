@@ -69,15 +69,15 @@ four track ends.
 
 - `MT_Tank_Body` and `MT_Tank_Track` use `Game/TankDirt`: Standard lighting plus a mud layer. At
   `_Dirt` 0 it looks as before.
-- Dirt builds up with manoeuvring. The track marks report mud churned: 0.005 per rolled metre,
-  0.02 per metre slid in a turn (per side), so turning dirties far faster than driving straight.
+- Dirt builds up with manoeuvring. The track marks report mud churned: 0.012 per rolled metre,
+  0.045 per metre slid in a turn (per side), so turning dirties far faster than driving straight.
   Dirt caps at 1. Every splash makes it wet (glossy, dark); it dries dull over 30 s.
 - A cannon shot over mud (TankMuzzleMudBehaviour, on the cannon's FireEvent) blows the mud about
   under the barrel: it finds the mud 0.6 m ahead of the muzzle within 2.5 m below, blows a scoop
   there (1 × 0.75 m along the shot, 0.4 deep, rim 0.5), throws a wide burst of 28 clumps (size
   0.8–1.3) — most out along the shot at 1–5.5 m/s and off to the sides at up to 4.5 m/s, one in
   four back at the tank at 1.8–3.6 m/s, all up at 3.5–6.5 m/s with 0.6 m/s of spread — and
-  splashes 0.08 dirt onto the tank.
+  splashes 0.15 dirt onto the tank.
   All of it weaker the higher the muzzle stands above the mud.
 - Standing still, the mud melts: once the tank has been still (under 0.3 m/s and 0.15 rad/s) for
   2 s, dirt drains at 1/45 a second, so the dirtiest tank is clean in 45 s. Moving stops it.
@@ -104,6 +104,24 @@ four track ends.
 
 `_MudThickness` 0.16 → 0.32, `_BermHeight` 0.06 → 0.12 (MT_MudGround and the shader defaults). The
 mud mesh's bounds (`MAX_LIFT`) go 0.3 → 0.55 so the lifted mud is not culled.
+
+### Puddles: twice as deep, and the tank sinks
+
+- Under a puddle the mud's bottom lies a whole mud thickness (0.32 m) below the floor's collider:
+  the mud there is twice as deep. `MudPuddleSink` (MudCommon) eases it in over the puddle's first
+  6 mm of relief (over 2 cm, almost no puddle reached full depth: they are only ~2 cm deep). A
+  full rut goes down to that bottom, so ruts in puddles are twice as deep.
+- `MudSurface.SinkAt` works out the same on the CPU: the ground shader's relief (hash, value noise,
+  3-octave fbm) ported to C#, its parameters read off MT_MudGround. Keep the two alike.
+- `TankSuspensionBehaviour` adds that sink under each wheel standing on mud to its spring length
+  (and lowers its contact point), so the springs let the hull down into the puddle. Its ground
+  cast now starts 0.4 m above the mount (`CAST_LIFT`, distances measured from the mount again):
+  sunk that deep, a cast starting at the mount began inside the floor, found nothing, and the
+  tank fell onto its belly (seen in Play: root at −0.45). Now it settles at −0.35 in the deepest
+  puddle (sink 0.32 + spring sag).
+- The hull's box collider starts at 0.45 m (`HULL_COLLIDER_BOTTOM`, TankBuilder; was 0.225, the
+  visible belly): low down it would sit on the floor and hold the tank up out of the puddle. Set
+  on Tank_01.prefab directly as well as in the builder.
 
 ## Not done
 
