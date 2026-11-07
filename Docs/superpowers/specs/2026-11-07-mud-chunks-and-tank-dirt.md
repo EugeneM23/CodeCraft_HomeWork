@@ -77,6 +77,14 @@ four track ends.
   the lower parts far more than the top, plus small flecks between them. Even at `_Dirt` 1 the
   hull and turret keep most of their paint. (A solid band climbing the tank was tried and read as
   the tank being painted over.)
+- The mud stands proud of the paint (bump, no parallax). `DirtField` gives a thickness 0..1:
+  thicker the further inside a spot (a lip at the edge, a heap in the middle), flecks thin, all of
+  it lumpy (noise at 14× the spot scale). Its slope is measured by central differences 8 mm apart
+  in vehicle space, kept to the surface and scaled to 22 mm of relief, tilts the normal; the
+  normal goes into the surface's tangent frame (its tangent, binormal and normal carried into
+  vehicle space by `_DirtFrame`). Thin mud at the edge is darker. Only pixels under mud pay for it
+  (seven field evaluations). Fresh mud is at most smoothness 0.38: glossier, the bumps caught the
+  sky and read as tar. Shader target 3.5 for the extra interpolators.
 - Each renderer gets a fixed frame into the tank's space at start (property block), so the pattern
   sticks to the part: it turns with the wheels and swings with the turret.
 - The tank's bottom and top come from the meshes through those frames, not from renderer bounds,
