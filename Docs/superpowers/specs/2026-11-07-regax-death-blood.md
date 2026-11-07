@@ -30,6 +30,13 @@ the decal living 30 s, and ground height detected automatically.
 `BFX_ShaderProperies` swaps the decal material for a runtime copy as soon as the effect is
 instantiated, the prefab saves an override to nothing, and the pool draws as a white box.
 
+**Green, and in proportion.** The creature bleeds green. `Assets/Game/Materials/Blood/` holds copies of the
+pack's blood7 materials, retinted: `M_RegaxBlood_Fluid` (`_Color` 0.25, 0.75, 0.05 in place of the
+pack's 0.75, 0, 0) and `M_RegaxBlood_Decal` (`_TintColor` 0.13, 0.44, 0.02 in place of 0.44, 0, 0).
+The pack's own materials stay red. On top of the 3.2, the gush (`Blood`) is scaled �2
+(`DEATH_FLUID_SCALE`) and the pool (`Decal`) �0.8 (`DEATH_DECAL_SCALE`). The builder puts these on in
+`AddDeathBlood`, so both Refresh and Build keep them.
+
 **Random heading.** `DeathEffectBehaviour` turns the effect to a random angle around the vertical
 just before switching it on, so no two deaths splash the same way. It does not tilt the effect,
 because the fall is baked into the animation. The behaviour is shared, so zombies get the random
@@ -37,7 +44,8 @@ heading too.
 
 ## Checked in Play
 
-Two rifle kills at scale 3.2 gave two large pools with spatter, turned 46° and 260°. No new errors.
+Two rifle kills at scale 3.2 gave two large pools with spatter, turned 46° and 260°. No new errors. After the green and the resize: one rifle kill, green gush above the creature's
+height, a smaller green pool, no errors.
 
 ## Left as is
 
