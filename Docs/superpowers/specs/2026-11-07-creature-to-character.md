@@ -58,3 +58,16 @@ Health/Animation/
 переименованных MonoBehaviour. На Enemy, Zombie, Regax и Regax_Mount нет пропавших скриптов.
 `[Character].prefab` и обе сцены ссылаются на те же GUID, что и раньше. `grep -ri creature` по
 `Assets/Game` и `Tools/` ничего не находит. Тесты `Game.Tests`.
+
+## Результат
+
+- 12 операций `MoveAsset`/`DeleteAsset`, ошибок 0. Папки `Creature/` больше нет.
+- Компиляция чистая. Набор GUID `*.cs.meta` до и после совпадает. Прибавились только три новых
+  файла параллельной сессии (`Health/Vfx/DeathBlood*`).
+- `MonoScript.GetClass()` находит `CharacterAnim/Audio/VfxInstaller`, `CharacterGibsInstaller` и `Gibs`.
+  Пропавших скриптов нет на Enemy, Zombie, Regax, Regax_Gibs, Regax_Mount и `[Character]`; у последнего
+  установщиков `Character*` нет, как и раньше.
+- `grep -ri creature` по `Assets/Game/Scripts` и `Tools/` ничего не находит, кроме нового файла
+  параллельной сессии (`DeathBloodConfig`, ей сказали).
+- Тесты `Game.Tests`: 141 из 141.
+- В игре не запускали: смерть Regax с гибсами и анимации врагов руками не проверены.
