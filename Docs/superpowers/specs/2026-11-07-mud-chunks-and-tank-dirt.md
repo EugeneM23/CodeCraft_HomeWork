@@ -18,24 +18,26 @@ away; turning throws the most; the tank gets dirty; the mud is twice as deep.
 - They live 7–11 s. On landing they stop dead (dampen 1, bounce 0, no lifetime lost). Size over
   lifetime, per axis: they keep their shape until about 60%, then slump (height drops first, width
   spreads to 1.12) and sink away.
-- The collision plane sits at `thickness × (1 − _clumpSink)` (0.45): sunk into fresh mud so a
-  chunk reads as part of the ground, near the bottom of a rut.
+- The collision plane sits at `thickness × (1 − _clumpSink)` (0.12): just under the surface, so a
+  chunk lies bedded in its own splat. At 0.45 the mud swallowed the chunks whole and only their
+  splats showed, as if the marks came first.
 - Every chunk leaves a mark where it lands. `Throw` works out the landing point and time from the
-  arc (gravity × the system's gravity modifier, no drag) down to the clumps' floor, and at that
-  moment presses a splat: a rough dent `0.6 × size` long (up to 1.6× longer along a fast flight),
-  `0.5 × size` wide, `clamp(0.9 × size, 0.08, 0.35)` deep, with a rim of 0.5–0.8. Throws whose
-  landing is off the mud leave nothing.
+  arc (gravity × the system's gravity modifier, no drag) down to the clumps' floor (checked in Play
+  against a live particle), and 0.08 s after it presses a splat no bigger than the chunk: a rough
+  dent `0.32 × size` long (up to 1.3× longer along a fast flight), `0.28 × size` wide,
+  `clamp(0.35 × size, 0.03, 0.12)` deep, rim 0.25–0.45. Throws whose landing is off the mud leave
+  nothing.
 - A rolling track throws a steady stream off its trailing end, against the way it moves: 9 per
-  rolled metre and never fewer than 8 a second, however slowly it creeps. Each flies back at
-  `0.8 × track speed + 1.5–3.5` m/s, out to the side at 0.8–3.2 m/s and up at 2.8–4.2 m/s, from
-  across the end (−0.2 to 0.6 × track width out), with 0.6 m/s of random spread: a wide fan
-  behind and beside the track.
+  rolled metre and never fewer than 8 a second, however slowly it creeps. Short, low arcs: back at
+  `0.3 × track speed + 0.6–1.6` m/s, out to the side at 0.4–1.5 m/s, up at `1.6–2.6 + 0.08 × speed`
+  m/s, from across the end (−0.2 to 0.6 × track width out), 0.35 m/s of spread. They come down
+  within a metre or so behind and beside the track.
 
 ## Turns (TankTrackMarksBehaviour.ScrapeClumps)
 
 In a turn each end of each track slides sideways at `yawRate × arm`. Per metre slid it shoves 14 chunks
-(size 1.15), always out past that track's outer edge (whichever way the end slides), at 2.8–4.8 m/s
-plus 0.6× the slide speed, carried a little along the slide. Turning on the spot throws mud from all
+(size 1.15), always out past that track's outer edge (whichever way the end slides), at 1.2–2.2 m/s
+plus 0.35× the slide speed, up at `1.6 + 0.2 × slide speed`, carried a little along the slide. Turning on the spot throws mud from all
 four track ends.
 
 ## Tank dirt (TankDirtBehaviour, Game/TankDirt)
