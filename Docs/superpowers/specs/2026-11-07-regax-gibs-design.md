@@ -3,8 +3,8 @@
 ## Goal
 
 When a Regax dies, its body splits into seven ragdolled pieces that fly away from whatever killed
-it, starting from the pose the creature was in. A tank shell kills it in one hit and throws the
-pieces much harder than a bullet does.
+it in random clusters, starting from the pose the creature was in. A tank shell kills it in one
+hit and throws the pieces a little harder than a bullet does.
 
 The seven pieces: the head, the left and right halves of the torso (cut vertically along the
 spine, tail included), the left and right arms, and the left and right legs.
@@ -77,18 +77,34 @@ then.
 2. `Gibs.Burst` switches the gibs off and copies each bone's world pose from the creature bone of
    the same name. It then switches them back on, so the joints take the death pose as their rest
    rather than the T-pose.
-3. Each piece gets a velocity away from the killing hit's source position (the bullet, the shell
-   where it went off), plus lift, a little scatter and a random spin. The speed is
-   mass-independent:
+3. The seams between pieces are rolled. A seam that holds is jointed and keeps its two pieces in
+   one cluster. The torso halves are welded with a FixedJoint; limbs and the head hang on a
+   CharacterJoint (twist ±25°, swing 35°/25°). If every seam holds, random seams are released
+   until there are at least two clusters.
 
-   | Killed by | Speed | Lift | Spin |
+   | Seam | Bodies | Holds |
+   | --- | --- | --- |
+   | Torso L – Torso R | Spine2 – Spine2, welded | 50% |
+   | Torso – Arm, each side | Spine2 – UpperArm | 40% |
+   | Torso – Leg, each side | Pelvis – Thigh | 35% |
+   | Torso – Head, each side | Spine2 – Neck | 20% |
+
+   This gives, among others: the chest with both arms (spine and both arm seams hold), one half
+   with its arm and leg, the whole body without its head, or seven loose pieces. Four kills in a
+   row in Play came out as four different splits.
+4. Each cluster gets one velocity away from the killing hit's source position (the bullet, the
+   shell where it went off), plus lift, scatter and a random spin. The speed is mass-independent
+   and is scaled per cluster by a random factor of 0.6–1.4. The scatter is up to 40% of the
+   speed. Spin is slower the more bodies a cluster has.
+
+   | Killed by | Speed | Lift | Spin (lone piece) |
    | --- | --- | --- | --- |
-   | Bullet, melee | 3 m/s rising to 8 m/s as the hit's damage approaches 100 | 0.4 | 5 rad/s |
-   | Explosion (tank shell, rocket) | 4 m/s at the blast's edge to 8 m/s at its centre | 0.5 | 8 rad/s |
+   | Bullet, melee | 1.5 m/s rising to 4 m/s as the hit's damage approaches 100 | 0.35 | 3 rad/s |
+   | Explosion (tank shell, rocket) | 2 m/s at the blast's edge to 4 m/s at its centre | 0.4 | 5 rad/s |
 
    A source counts as an explosion when it has `ExplosionRadius`. How close the creature stood is
    read back from the hit's `damageFactor`.
-4. After 10 s the bodies turn kinematic, their colliders switch off, and the gibs sink 1 m over
+5. After 10 s the bodies turn kinematic, their colliders switch off, and the gibs sink 1 m over
    2 s and are destroyed.
 
 ## Checked in Play
@@ -96,7 +112,9 @@ then.
 - **Rifle kill:** the pieces separate and land 1–5 m from the body. Blood plays, no errors.
 - **Tank shell 2.9 m away:** Regax (HP 60) dies to one shell. The pieces leave at 14–18 m/s and
   land across the arena.
-- **Spread halved afterwards** at the user's request (the speeds above). Not yet checked in Play: the editor was unreachable.
+- **Speeds then cut to a quarter** at the user's request, and clusters added (the values above).
+  Four rifle kills: clusters left at 1–2.7 m/s and settled in a heap a metre or two around each
+  body, with no errors.
 
 ## Known gaps
 
