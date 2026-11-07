@@ -37,19 +37,33 @@ away; turning throws the most; the tank gets dirty; the mud is twice as deep.
   `clamp(0.35 × size, 0.03, 0.12)` deep, rim 0.25–0.45. Throws whose landing is off the mud leave
   nothing.
 - A rolling track throws a sparse, steady stream off its trailing end, against the way it moves:
-  1.5 per rolled metre and never fewer than 1 a second. 70% leave from the track's outer edge
+  0.8 per rolled metre and never fewer than 0.5 a second. Half leave from the track's outer edge
   (0.5–0.8 × track width out) and land just past the rut and its berm, about half a metre out:
-  out at 0.9–1.4 m/s; 30% leave from across the track (±0.3 × width) with almost no sideways push
+  out at 0.9–1.4 m/s; the other half leave from across the track (±0.3 × width) with almost no sideways push
   (±0.15 m/s) and drop back into the rut behind. All of them: back at `0.15 × track speed + 0.3–0.9` m/s, up at `1.4–2 + 0.05 × speed`
   m/s, 0.2 m/s of spread. Thrown inward or straight back, chunks fell into the ruts; thrown harder,
   they flew metres.
 
 ## Turns (TankTrackMarksBehaviour.ScrapeClumps)
 
-In a turn each end of each track slides sideways at `yawRate × arm`. Per metre slid it shoves 2.5 chunks
+In a turn each end of each track slides sideways at `yawRate × arm`. Per metre slid it shoves 1.2 chunks
 (size 1.15), always out past that track's outer edge (whichever way the end slides), at 0.8–1.4 m/s
 plus 0.25× the slide speed, up at `1.2 + 0.15 × slide speed`, carried a little along the slide. Turning on the spot throws mud from all
 four track ends.
+
+## Ruts (MudStamp, MudCommon, MudSurface)
+
+- A rut always shows the track's tread. The track map is ARGBHalf; B holds the tread: 0 where no
+  track has been, 0.5 a ridge, 1 a groove. A Tread pass (MudStamp pass 3, no blending, ColorMask
+  B) draws the frame's Press strips again and overwrites B inside the track, so the last pass's
+  pattern is the one shown. Dig, Press and Dent write only RG and no longer carry the tread.
+- `MudTracks` (MudCommon) holds the ridges up: where B marks a tread, the rut under a ridge is
+  `MUD_TREAD_RIDGE` (0.7) of its depth, under a groove the full depth. Before, the tread lived in
+  R as 0.4 vs 1 per pass; passes add up, so after a few the ridges reached the bottom too and the
+  rut went smooth. Seen in Play: six passes over one strip still show ridges, water in the grooves.
+- The rut's edge is ragged: the track's half width wanders 0.82–1.14× along the ground (two noise
+  octaves, each side on its own), the edge rounds off over its outer fifth, and the berm is heaped
+  0.45–1.45× unevenly along it.
 
 ## Tank dirt (TankDirtBehaviour, Game/TankDirt)
 
