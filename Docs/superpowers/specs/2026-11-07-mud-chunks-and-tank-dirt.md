@@ -9,13 +9,15 @@ away; turning throws the most; the tank gets dirty; the mud is twice as deep.
 
 - Mesh particles instead of billboards: `Assets/Game/Models/MudClump.asset`, a low torn splat, not
   a ball: radius swings 0.55–1.35, squashed to about half height, flat underneath, pivot at the
-  bottom, and faceted (no shared vertices) so it shades as broken earth. Round, smooth, glossy lumps
-  read as chocolate. `MT_MudClump` is opaque, untextured and matte (smoothness 0.18); the particle
-  colour tints it, from the ground's wet-mud browns (0.15/0.095/0.05 to 0.29/0.2/0.115). The chunks
-  cast shadows.
+  bottom, smooth-shaded like the ground (hard facets read as rocks set on the mud). Round, glossy,
+  orange-brown lumps read as chocolate. `MT_MudClump` is opaque and untextured, smoothness 0.3
+  (between the ground's wet and dry sheen). Colours come from the ground's own material at start
+  (`MudSurface.TakeGroundColours`): its wet and dry mud mixed at its `_Wetness`, 35% either way
+  towards wet and dry, so a clump is the floor's colour. The serialized colours are only a
+  fallback. The chunks cast shadows.
 - Size 0.18–0.32 m, one in five 1.5× bigger, times the caller's `size`: few and big enough to be
-  seen flying from the game camera. Gravity modifier 2.2: heavy wet mud in a short, fast arc (1.3
-  made them float like light flakes). Each one is flattened (3D
+  seen flying from the game camera. Gravity modifier 3: heavy wet mud in a short, fast arc (1.3
+  made them float like light flakes, 2.2 still too light). Each one is flattened (3D
   size, height 0.5–0.8 of width) and turned randomly around Y, tilted up to 20°.
 - They live 7–11 s. On landing they stop dead (dampen 1, bounce 0, no lifetime lost). Size over
   lifetime, per axis: they keep their shape until about 60%, then slump (height drops first, width
@@ -35,15 +37,16 @@ away; turning throws the most; the tank gets dirty; the mud is twice as deep.
   `clamp(0.35 × size, 0.03, 0.12)` deep, rim 0.25–0.45. Throws whose landing is off the mud leave
   nothing.
 - A rolling track throws a sparse, steady stream off its trailing end, against the way it moves:
-  2.5 per rolled metre and never fewer than 2 a second. Each leaves from the track's outer edge
-  (0.5–0.8 × track width out) and lands just past the rut and its berm, about half a metre out:
-  out at 0.9–1.4 m/s, back at `0.15 × track speed + 0.3–0.9` m/s, up at `1.4–2 + 0.05 × speed`
+  1.5 per rolled metre and never fewer than 1 a second. 70% leave from the track's outer edge
+  (0.5–0.8 × track width out) and land just past the rut and its berm, about half a metre out:
+  out at 0.9–1.4 m/s; 30% leave from across the track (±0.3 × width) with almost no sideways push
+  (±0.15 m/s) and drop back into the rut behind. All of them: back at `0.15 × track speed + 0.3–0.9` m/s, up at `1.4–2 + 0.05 × speed`
   m/s, 0.2 m/s of spread. Thrown inward or straight back, chunks fell into the ruts; thrown harder,
   they flew metres.
 
 ## Turns (TankTrackMarksBehaviour.ScrapeClumps)
 
-In a turn each end of each track slides sideways at `yawRate × arm`. Per metre slid it shoves 4 chunks
+In a turn each end of each track slides sideways at `yawRate × arm`. Per metre slid it shoves 2.5 chunks
 (size 1.15), always out past that track's outer edge (whichever way the end slides), at 0.8–1.4 m/s
 plus 0.25× the slide speed, up at `1.2 + 0.15 × slide speed`, carried a little along the slide. Turning on the spot throws mud from all
 four track ends.
