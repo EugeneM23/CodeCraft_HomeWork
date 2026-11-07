@@ -13,7 +13,9 @@ away; turning throws the most; the tank gets dirty; the mud is twice as deep.
   read as chocolate. `MT_MudClump` is opaque, untextured and matte (smoothness 0.18); the particle
   colour tints it, from the ground's wet-mud browns (0.15/0.095/0.05 to 0.29/0.2/0.115). The chunks
   cast shadows.
-- Size 0.12–0.26 m, one in five 1.6× bigger, times the caller's `size`. Each one is flattened (3D
+- Size 0.18–0.32 m, one in five 1.5× bigger, times the caller's `size`: few and big enough to be
+  seen flying from the game camera. Gravity modifier 1.3 (was 2), so an arc lasts long enough to
+  watch. Each one is flattened (3D
   size, height 0.5–0.8 of width) and turned randomly around Y, tilted up to 20°.
 - They live 7–11 s. On landing they stop dead (dampen 1, bounce 0, no lifetime lost). Size over
   lifetime, per axis: they keep their shape until about 60%, then slump (height drops first, width
@@ -27,15 +29,15 @@ away; turning throws the most; the tank gets dirty; the mud is twice as deep.
   dent `0.32 × size` long (up to 1.3× longer along a fast flight), `0.28 × size` wide,
   `clamp(0.35 × size, 0.03, 0.12)` deep, rim 0.25–0.45. Throws whose landing is off the mud leave
   nothing.
-- A rolling track throws a steady stream off its trailing end, against the way it moves: 9 per
-  rolled metre and never fewer than 8 a second, however slowly it creeps. Short, low arcs: back at
-  `0.3 × track speed + 0.6–1.6` m/s, out to the side at 0.4–1.5 m/s, up at `1.6–2.6 + 0.08 × speed`
-  m/s, from across the end (−0.2 to 0.6 × track width out), 0.35 m/s of spread. They come down
-  within a metre or so behind and beside the track.
+- A rolling track throws a sparse, steady stream off its trailing end, against the way it moves:
+  2.5 per rolled metre and never fewer than 2 a second. Each leaves from the track's outer edge
+  (0.5–0.8 × track width out) and always lands clear of the rut and its berm: out at 1.2–2 m/s,
+  back at `0.3 × track speed + 0.6–1.6` m/s, up at `2.4–3.2 + 0.08 × speed` m/s, 0.2 m/s of
+  spread. Thrown inward or straight back, chunks fell into the ruts.
 
 ## Turns (TankTrackMarksBehaviour.ScrapeClumps)
 
-In a turn each end of each track slides sideways at `yawRate × arm`. Per metre slid it shoves 14 chunks
+In a turn each end of each track slides sideways at `yawRate × arm`. Per metre slid it shoves 4 chunks
 (size 1.15), always out past that track's outer edge (whichever way the end slides), at 1.2–2.2 m/s
 plus 0.35× the slide speed, up at `1.6 + 0.2 × slide speed`, carried a little along the slide. Turning on the spot throws mud from all
 four track ends.
