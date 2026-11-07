@@ -134,3 +134,25 @@ Character/PlayerCharacter/        PlayerCharacterCore/Anim/Audio/VfxInstaller + 
 `[Character].prefab` и в `Playground.unity`. `GrenadeBuilder` и комментарии правятся под новые имена.
 `InteractInstaller` — `[Serializable]`, лежит в поле `_interactInstaller` у `PlayerCharacterCoreInstaller`
 (и `TankBuilder` пишет `_interactInstaller._layerMask`) — имя поля не меняется.
+
+## Результат
+
+- **Переносы.** Два шага — раскладка (23 операции `MoveAsset`/`RenameAsset`) и гранаты со
+  взаимодействием (12). Ошибок 0, пустых папок не осталось. В `Character/PlayerCharacter/` теперь
+  четыре инсталлера (Core/Anim/Audio/Vfx) и `Animation/`, а не шесть, как в раскладке выше: гранаты и
+  вспышка ушли в `Grenades/Throwing` и `Grenades/Flashed`.
+- **Ссылки.** Компиляция чистая. Набор GUID `*.cs.meta` до и после совпадает, кроме удалённого
+  `PlayerUseCase`. `MonoScript.GetClass()` находит класс у всех перенесённых и переименованных
+  MonoBehaviour; `GrenadeThrowerInstaller` и `FlashScreenInstaller` стоят на `[Character].prefab`.
+  В префабах и сценах — только прежние 7 ссылок Cinemachine.
+- **Настройка сцен.** `Playground.unity` уже пересохранена и хранит `_controlSystem`. `GameScene.unity`
+  пока хранит `_characterSystem`, его подхватывает `[FormerlySerializedAs]`. В обеих сценах ссылка на
+  `[Character]` прежняя.
+- **Play** (только чтение, в запуске другой сессии):
+  - у контекста есть слот Character и все десять контроллеров;
+  - у `[Character]` есть запас гранат, бросок, выбор гранаты, событие ослепления и цель
+    взаимодействия;
+  - маркер взаимодействия один.
+- **Тесты** `Game.Tests`: 141 из 141.
+- **Не проверено руками:** ходьба, стрельба, бросок гранаты и способности в игре. Проверено только, что
+  ключи и поведения на месте.
