@@ -73,9 +73,11 @@ four track ends.
   0.02 per metre slid in a turn (per side), so turning dirties far faster than driving straight.
   Dirt caps at 1. Every splash makes it wet (glossy, dark); it dries dull over 30 s.
 - A cannon shot over mud (TankMuzzleMudBehaviour, on the cannon's FireEvent) blows the mud about
-  under the barrel: it finds the mud 0.6 m ahead of the muzzle within 2.5 m below, blows a shallow
-  scoop there (0.7 × 0.5 m along the shot, 0.3 deep, rim 0.4), throws 14 clumps — most out along
-  the shot and to the sides, one in four back at the tank — and splashes 0.06 dirt onto the tank.
+  under the barrel: it finds the mud 0.6 m ahead of the muzzle within 2.5 m below, blows a scoop
+  there (1 × 0.75 m along the shot, 0.4 deep, rim 0.5), throws a wide burst of 28 clumps (size
+  0.8–1.3) — most out along the shot at 1–5.5 m/s and off to the sides at up to 4.5 m/s, one in
+  four back at the tank at 1.8–3.6 m/s, all up at 3.5–6.5 m/s with 0.6 m/s of spread — and
+  splashes 0.08 dirt onto the tank.
   All of it weaker the higher the muzzle stands above the mud.
 - Standing still, the mud melts: once the tank has been still (under 0.3 m/s and 0.15 rad/s) for
   2 s, dirt drains at 1/45 a second, so the dirtiest tank is clean in 45 s. Moving stops it.
