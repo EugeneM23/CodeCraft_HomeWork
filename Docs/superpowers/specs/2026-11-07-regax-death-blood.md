@@ -20,23 +20,27 @@ So all that showed at a death was a short squirt and the pool.
 
 `RegaxPrefabBuilder.DEATH_EFFECT` points at the pack's own
 `Assets/3rdParty/KriptoFX/VolumetricBloodFX/Prefabs/Blood7.prefab`. It is a nested prefab
-instance at 0.3 m above the feet, scaled by `DEATH_EFFECT_SCALE` = 1.6: the pack is sized for a
-person, and the creature is half as tall again. The pack's settings are kept: animation speed 1,
+instance at 0.3 m above the feet, scaled by `DEATH_EFFECT_SCALE` = 3.2. The pack is sized for a
+person, and the creature is half as tall again; at 1.6 the blood read too small, so it is doubled. The pack's settings are kept: animation speed 1,
 the decal living 30 s, and ground height detected automatically.
 
 **Tools/Regax/Refresh Death Blood** replaces `DeathBlood` on the built `Regax.prefab` and rewires
 `CreatureVfxInstaller._deathEffect`, without rebuilding the creature from the zombie.
-**Tools/Regax/Build** puts in the same effect.
+**Tools/Regax/Build** puts in the same effect. Refresh refuses to run in Play: there
+`BFX_ShaderProperies` swaps the decal material for a runtime copy as soon as the effect is
+instantiated, the prefab saves an override to nothing, and the pool draws as a white box.
+
+**Random heading.** `DeathEffectBehaviour` turns the effect to a random angle around the vertical
+just before switching it on, so no two deaths splash the same way. It does not tilt the effect,
+because the fall is baked into the animation. The behaviour is shared, so zombies get the random
+heading too.
 
 ## Checked in Play
 
-A rifle kill shows the full gush at the body, with droplets thrown well above the creature's
-height. It settles into a pool with spatter around it, alongside the gibs. No new errors.
+Two rifle kills at scale 3.2 gave two large pools with spatter, turned 46° and 260°. No new errors.
 
 ## Left as is
 
 - `Regax_Mount.prefab` still carries `Blood7_02` until it is rebuilt (**Tools/Regax/Build Mount**
   starts from `Regax.prefab`). Nothing else uses `Blood7_02`, so it can be deleted once the mount
   is rebuilt.
-- The pack's readme asks for the effect to be turned along the hit direction, because gravity is
-  baked into the animation. The death blood keeps the creature's own rotation.
