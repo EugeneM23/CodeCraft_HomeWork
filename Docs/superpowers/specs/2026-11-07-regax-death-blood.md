@@ -52,3 +52,38 @@ height, a smaller green pool, no errors.
 - `Regax_Mount.prefab` still carries `Blood7_02` until it is rebuilt (**Tools/Regax/Build Mount**
   starts from `Regax.prefab`). Nothing else uses `Blood7_02`, so it can be deleted once the mount
   is rebuilt.
+
+## Every effect in the pack (current)
+
+The death blood is no longer a switched-off child of `Regax.prefab`. **`DeathBloodInstaller`** on
+`<VFX>` adds a **`DeathBloodBehaviour`**. When Regax dies, the behaviour spawns one effect from the
+pack's prefab, at `<VFX>` plus 0.3 m and at a random heading around the vertical, and removes it
+after 35 s. (`Features/Health/Vfx/`: `DeathBloodConfig`, `DeathBloodBehaviour`,
+`DeathBloodInstaller`.)
+
+- **Which effect.** `Assets/Game/Configs/Vfx/RegaxDeathBlood.asset` lists all 17 effects in
+  `KriptoFX/VolumetricBloodFX/Prefabs` that have a gush: Blood1, Blood2, Blood2_Left, Blood2_Right
+  and Blood3 to Blood15. AttachedBloodDecal has no gush and is left out, and so are the
+  SimplePlaneDecals copies. A death picks one at random. The installer's `_variant` (0 and up)
+  pins one effect instead.
+- **Size.** The whole effect is 15% smaller than before: 2.72 instead of 3.2. On top of that,
+  every gush mesh (`BFX_Blood`) is ×2 and every pool (`BFX_Decal`) is ×0.8. This covers the
+  combined effects Blood10 to Blood15 too, which carry several of each.
+- **Green.**
+  - Gush: `_Color` (0.25, 0.75, 0.05) through a MaterialPropertyBlock.
+    `BFX_ManualAnimationUpdate` reads the block back before writing its frame values, so the
+    colour stays.
+  - Pool: `_TintColor` (0.13, 0.44, 0.02) on the material copy that `BFX_ShaderProperies` makes
+    in Awake. A property block on the decal blanked its other instanced values and drew it black.
+  - The pack's materials are untouched, so the earlier green copies were removed.
+- **Builder.** **Tools/Regax/Refresh Death Blood** rebuilds the config from the pack folder (sizes
+  and colours are kept) and puts the installer on `Regax.prefab`, listed in its installers. It
+  also clears `CharacterVfxInstaller._deathEffect` and removes the old `DeathBlood` child.
+  **Tools/Regax/Build** does the same in `Rewire`.
+
+**Targets.** The 10 `Regax_Target_*` in Playground each have `_variant` pinned: targets 1 to 10
+play Blood1 to Blood10, and the effect is in each target's name. Blood11 to Blood15 and
+Blood2_Left/Right show up on ordinary Regax deaths.
+
+Checked in Play: all 10 targets killed at once gave 10 green gushes and 10 green pools, and the
+targets broke into gibs. No errors.
