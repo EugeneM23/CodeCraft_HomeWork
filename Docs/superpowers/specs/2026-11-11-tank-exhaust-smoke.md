@@ -26,8 +26,8 @@ move.
   texture is a puff with a dense round core, so a few big dark particles read as separate balls
   flying out (seen in Play). Instead many small, faint ones start at the mouth and swell 6× (fast at
   first) into one another over 1.6–2.6 s, in a 16° cone, turning ±60°/s, rising a little (gravity
-  −0.08), braked by drag (2.5) and torn up by two-octave noise (strength 0.6). At most 800
-  particles a pipe.
+  −0.08), braked by drag (2.5) and torn up by two-octave noise (strength 0.6). At most 2500
+  particles a pipe (Shift on the gas: 4 × 300 a second for about 2 s).
 - Built with the tank (`Tools/Tank/Build`). `Tools/Tank/Add Exhaust` adds the pipes to the existing
   `Tank_01` prefab without rebuilding the rest (replacing pipes already there).
 
@@ -51,5 +51,7 @@ move.
   on the gas it wanted twice the smoke; the cruise load and the per-metre rate were doubled with it.)
 - While the engine runs each pipe also emits 16 puffs per metre it travels, so the trail has no gaps
   at speed.
+- Shift held with the stick pushed: 4× the smoke — both the rate and the per-metre rate — on top of
+  the load, rising within about 0.12 s and falling back over about 0.5 s on letting go.
 - Engine off: the pipes stop emitting; smoke already out thins away. It simulates in world space, so
   at speed it is left behind as a trail.
