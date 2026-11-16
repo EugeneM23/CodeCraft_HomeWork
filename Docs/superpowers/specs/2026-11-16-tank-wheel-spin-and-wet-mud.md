@@ -19,10 +19,11 @@
   released. A look only: the drive's push is unchanged.
 - `TankTrackView` runs the road wheels `Spin × 9` m/s faster than the ground goes by.
 - `VoxelTrackRuts` (`WheelSpin`, `SpinDirection`), even with the tank standing:
-  - a rooster tail of crumbs off the rear end of the tracks (the front in reverse): 220/s at full
-    spin, 4.5–9 cm, 3–7.5 m/s back, 2–5.5 m/s up, the colour of the ground (mud or earth; on
+  - a rooster tail of crumbs off the rear end of the tracks (the front in reverse): 480/s at full
+    spin, 5–11 cm, 4–10 m/s back, 3–7.5 m/s up, fanned out up to 3 m/s sideways, the colour of
+    the ground (mud or earth; on
     grass four in ten are green turf);
-  - clods of a few voxels, 14/s in mud, a third of that on hard ground;
+  - clods of a few voxels, 32/s in mud, a third of that on hard ground;
   - in mud the spinning tracks dig in: 10 bites/s, no deeper than the rut limit.
 
 ## Full-gas ram
@@ -32,3 +33,8 @@
   thrown 1.7× harder, 0.6× the interval, always across the whole bow, plus one more bite further
   into the wall.
 - RayFire walls (`TankRamBehaviour`): breach radius 1.5×, pieces thrown 1.6× faster.
+
+## Changed after a look
+
+- More earth flying at full gas: crumbs 220 → 480/s, 4.5–9 → 5–11 cm, back 3–7.5 → 4–10 m/s,
+  up 2–5.5 → 3–7.5 m/s, sideways fan −0.4…1.6 → −1…3 m/s; clods 14 → 32/s.
