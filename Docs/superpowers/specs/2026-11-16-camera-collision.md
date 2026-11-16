@@ -48,7 +48,10 @@ turns `CameraOffset` and the rig round the tank with the mouse (see
   camera fell back to closing in and went **down**. A straight rise has no such cap.
 - **Tilt.** The camera child is turned by the same rotation that takes the old tank-to-camera
   direction to the new one, so the tank stays where it was on screen. The root's own rotation (the
-  game's angle, the sandbox orbit) is left alone.
+  game's angle, the sandbox orbit) is left alone. The swing goes on top of the camera's own local
+  rotation from the scene, kept from `Init`. Until 2026-11-16 the swing alone was written, so a
+  camera tilted under the root in the scene (VoxelSandbox's, −24.5°) looked straight along the root
+  in Play.
 - **Easing.** The camera rises at `RiseSpeed` (10/s) and settles back down at `ReturnSpeed` (3/s).
   Both are frame-rate independent.
 - **Nothing clears it** (the tank is inside a house, under its roof): no rise, and the camera stays
