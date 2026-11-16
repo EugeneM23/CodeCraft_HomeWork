@@ -1,54 +1,69 @@
-# Camera keeps out of walls
+# Camera rises over houses
 
 ## Goal
 
-The follow camera (on foot and in a vehicle) never shows anything through a wall or a house. When a
-wall, a voxel house or a standing RayFire wall gets between the camera point and the camera, the
-camera moves in along that line to just in front of it. When the obstacle is gone, the camera eases
-back out to its normal distance.
+A house never hides the tank (or the character) the camera follows, and the camera never shows
+anything through a wall. When a house stands between the camera and the tank, the camera **rises
+straight up** until it sees the tank over the roof. It doesn't come closer to the tank for that.
+When the house is out of the way, the camera eases back down to where the follow puts it.
+
+Only buildings move the camera: voxel houses, Victorian houses and towers. The ground, trees, plain
+voxel walls, RayFire walls and anything moving never do.
 
 ## How the camera works
 
 `CameraFollowController` (player context, LateTick) eases `CameraRoot` towards
 `CameraPoint + offset`. The offset is `CameraOffset × CameraDistance`, plus the cursor look's shift
-and pull-back. The camera sits at the root (local zero); the shake moves the camera locally.
-`VoxelSandboxOrbit` turns `CameraOffset` and the rig.
+and pull-back. The camera is a child of the root; the shake moves it locally. `VoxelSandboxOrbit`
+turns `CameraOffset` and the rig, up to nearly straight down over the tank.
 
 ## Design
 
 - **Two positions.** The follow eases a position of its own, exactly as it eased the root before.
-  The root is then set on the line from the camera point to that eased position, as far out as the
-  walls allow. If the root itself were eased, each frame would start from the pulled-in spot.
-- **Sweep.** `CameraCollisionUseCase.Clearance` sweeps a sphere (`Physics.SphereCastNonAlloc`,
-  radius 0.35 m, wider than the near plane) from the camera point towards the camera, and returns
-  the distance to the first obstacle. These hits are skipped:
+  The root is then raised from there. If the root itself were eased, each frame would start from
+  the raised spot.
+- **What counts as a building.** `CameraCollisionUseCase.IsBuilding` accepts a collider under a
+  `VoxelStructure` whose new `IsBuilding` getter is true (shape House, Victorian or Tower). Only the
+  `Obstacles` layers are searched (Default, where the voxel houses are). These never count:
   - triggers;
-  - anything under the followed entity's `Transform` (the tank hull);
-  - any non-kinematic rigidbody: loose RayFire pieces, knocked-off voxel chunks, other tanks and
-    casings, so the camera doesn't jump every time a brick flies past;
-  - hits already overlapping at the start (distance 0). The camera point sits at ground level, so
-    it would otherwise always hit the ground.
-- **Layers** (`CameraCollisionSettings.Obstacles`): Default (voxel houses are BoxColliders on
-  Default), Ground, Platform and Destructible (standing RayFire walls). Characters, bullets, Debris
-  and Rubble are left out. Instanced debris cubes have no colliders.
-- **Easing.** What is eased is how far the walls pull the camera in, not the distance itself.
-  Pulling in is instant, so a wall is never seen through. Easing back out runs at `ReturnSpeed`
-  (4/s, frame-rate independent). The follow's own zoom (look pull-back, `CameraDistance`) still
-  passes straight through.
-- **No minimum distance.** If the camera point is right under a ceiling, the camera goes right up
-  to it. Holding it farther out would put it inside the wall.
-- **Settings.** `CameraSystemInstaller._collision` (`Enabled`, `Radius`, `ReturnSpeed`,
-  `Obstacles`) is installed as `PlayerContextAPI.CameraCollisionSettings`. It is optional: a
-  context without it (the follow tests) follows through walls as before.
+  - anything under the followed entity's `Transform`;
+  - any non-kinematic rigidbody (knocked-off voxel chunks).
+- **Seeing the tank.** `Sees` sweeps a sphere of `ViewRadius` (0.8 m) from the camera towards a
+  point `TargetHeight` (1 m) above the camera point, stopping `ViewRadius` short of it. Two reasons:
+  - Clearing a thin line to the point on the ground was not enough: the camera rose until that
+    point showed while the tank itself stayed hidden behind the roof ridge.
+  - Sweeping from the camera, not from the tank, means a wall right next to the tank still counts.
+    A sweep from the tank would start inside that wall and skip it.
+- **Rising.** `RiseToClear` raises the camera in 0.5 m steps, up to `MaxRise` (30 m), until it
+  sees the tank. The first version swung the camera round the tank instead, capped at 80° above the
+  horizon. With the sandbox orbit already near vertical there was no room left to swing, so the
+  camera fell back to closing in and went **down**. A straight rise has no such cap.
+- **Tilt.** The camera child is turned by the same rotation that takes the old tank-to-camera
+  direction to the new one, so the tank stays where it was on screen. The root's own rotation (the
+  game's angle, the sandbox orbit) is left alone.
+- **Easing.** The camera rises at `RiseSpeed` (10/s) and settles back down at `ReturnSpeed` (3/s).
+  Both are frame-rate independent.
+- **Inside a house.** If no rise sees the tank (it is under a roof), there is no rise. The camera
+  comes in along its line, under the ceiling: `Clearance` sweeps a sphere of `Radius` (0.35 m) from
+  the camera point. Coming in is instant and going back out is eased. This is the only case where
+  the camera closes in.
+- **Settings.** `CameraSystemInstaller._collision` is installed as
+  `PlayerContextAPI.CameraCollisionSettings`. It is optional: a context without it (the follow
+  tests) follows through houses as before.
 
 ## Checked
 
-- `CameraCollisionUseCaseTests` (EditMode): wall stops the camera; triggers, moving bodies, the
-  followed body and other layers don't; a kinematic body does; pulling in is instant and the
-  return is gradual. These and the existing `CameraFollowControllerTests` pass.
-- VoxelSandbox, in Play, against the real voxel houses:
-  - Camera point behind House_02: the camera stops 2 m out, in front of the wall, instead of 16.8 m
-    out behind the house.
-  - Camera point in an empty room of House_02: the camera stays under the ceiling, 2 m out, and
-    shows the room.
-  - Normal driving: the camera keeps its full distance.
+- `CameraCollisionUseCaseTests` (EditMode) cover:
+  - the sweep: triggers, moving bodies, the followed body, other layers and filtered-out colliders
+    don't stop it; a kinematic body does;
+  - the rise: it goes up just enough (half a metre less still doesn't see over), it still goes up
+    when the camera is already high over the tank, and it doesn't clear under a roof;
+  - the easing.
+  The rise version and its tests build without errors outside the editor, but they have not run
+  in the editor yet: Play was running and the editor could not recompile. The earlier swing
+  version's tests passed in the editor, along with `CameraFollowControllerTests` and
+  `CameraFollowUseCaseTests`.
+- In VoxelSandbox, the swing version rose with the tank behind House_03 (61° → 70°, distance
+  kept), but the tank stayed half hidden behind the ridge. That is what led to `Sees` with a view
+  radius and a target height. Then the swing went down instead of up when the orbit was near
+  vertical, which led to the straight rise.
