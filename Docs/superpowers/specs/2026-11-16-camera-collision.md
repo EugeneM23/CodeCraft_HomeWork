@@ -59,11 +59,19 @@ turns `CameraOffset` and the rig, up to nearly straight down over the tank.
   - the rise: it goes up just enough (half a metre less still doesn't see over), it still goes up
     when the camera is already high over the tank, and it doesn't clear under a roof;
   - the easing.
-  The rise version and its tests build without errors outside the editor, but they have not run
-  in the editor yet: Play was running and the editor could not recompile. The earlier swing
-  version's tests passed in the editor, along with `CameraFollowControllerTests` and
+  All 23 pass in the editor, along with `CameraFollowControllerTests` and
   `CameraFollowUseCaseTests`.
-- In VoxelSandbox, the swing version rose with the tank behind House_03 (61° → 70°, distance
+- In VoxelSandbox, in Play, with the rise version:
+  - Tank 1.8 m behind the 13 m House_03, camera almost straight above. Without a rise the house
+    hides the tank. The camera rose straight up from 16 m to 46 m (the 30 m cap), tilted 13.5°,
+    and showed the tank over the roof. Against a house that tall and that close, only that much
+    height sees over the ridge.
+  - Tank moved into the open: the camera came back down to its normal height in about 1.5 s, and
+    the tilt went back to 0.
+  - Tank inside a house: not driven in Play. That case uses the same pull-in that was checked
+    against a real room of House_02 in the first version (camera under the ceiling, showing the
+    room).
+- Earlier, the swing version rose with the tank behind House_03 (61° → 70°, distance
   kept), but the tank stayed half hidden behind the ridge. That is what led to `Sees` with a view
   radius and a target height. Then the swing went down instead of up when the orbit was near
   vertical, which led to the straight rise.
