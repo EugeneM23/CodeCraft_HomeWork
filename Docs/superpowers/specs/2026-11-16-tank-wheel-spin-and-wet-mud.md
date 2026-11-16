@@ -38,3 +38,17 @@
 
 - More earth flying at full gas: crumbs 220 → 480/s, 4.5–9 → 5–11 cm, back 3–7.5 → 4–10 m/s,
   up 2–5.5 → 3–7.5 m/s, sideways fan −0.4…1.6 → −1…3 m/s; clods 14 → 32/s.
+
+## Running gear cleans itself on dry ground (VoxelTrackRuts, VoxelBody.Wash)
+
+- Off the mud (fewer than half the wheels in it), the voxel wheels, idlers and sprockets fling
+  their mud off as they turn: a share of what is left goes per metre, so 95% is gone after
+  `_gearCleanDistance` (12 m).
+- Loose clumps on them (`Deposit`) fly off as clods (`ShakeOff`), out from the part's hub at up to
+  `_gearFling` (3.5 m/s) plus the part's own motion.
+- Stains (`Paint`) wash off too: a moving body remembers what each stained voxel was
+  (`VoxelBody._beneath`) and `Wash` puts it back; half the washed voxels flake off as crumbs.
+  A stained voxel shot away or since filled with loose mud is forgotten. The ground keeps no
+  record (static bodies are never washed).
+- The track belts lose their mud colour over 12 m instead of 30.
+- The rest of the hull still sheds only 2% of its loose mud per metre, as before.
