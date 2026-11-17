@@ -94,6 +94,9 @@ namespace Game
 
         private void Awake()
         {
+            // The crosshair is drawn with GUI.DrawTexture only: no layout pass, no garbage for it.
+            useGUILayout = false;
+
             // The follow starts moving the rig on the first frame; the scene's spot is taken before.
             Camera main = Camera.main;
             if (main == null)
