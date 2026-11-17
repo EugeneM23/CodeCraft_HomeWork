@@ -121,6 +121,7 @@ namespace Game
             if (Input.GetKeyDown(_toggleKey))
             {
                 _on = !_on;
+                if (_on) GameSignals.RaiseAirStrikeCalled();
                 // Back on: the next bomb a moment later, not at once and not a whole interval on.
                 if (_on)
                     _next = Time.time + _resumeDelay;
@@ -147,6 +148,7 @@ namespace Game
             Vector3 velocity = (aim - start).normalized * _startSpeed;
 
             _bombs.Add(new Bomb { Transform = BuildBomb(start).transform, Velocity = velocity });
+            GameSignals.RaiseAirBombDropped(_bombs[_bombs.Count - 1].Transform);
         }
 
         private void Fall(float dt)

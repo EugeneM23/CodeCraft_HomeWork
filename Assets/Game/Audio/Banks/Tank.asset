@@ -1,0 +1,59 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 71c59311ed514f81aa536eb0ff91b011, type: 3}
+  m_Name: Tank
+  m_EditorClassIdentifier: AudioEngine::AudioEngine.AudioBank
+  identifier: tank
+  codeGenPath: Assets/Game/Audio/Banks
+  eventParameters:
+  - identifier: engine_start
+    value: {fileID: 11400000, guid: 773a800a8a739ac44b466ba13fe19813, type: 2}
+  - identifier: engine_loop
+    value: {fileID: 11400000, guid: 5c5f1b217ef262a4686a7573facf22d2, type: 2}
+  - identifier: engine_stop
+    value: {fileID: 11400000, guid: d5b092e85a6507840b46ea8ab2abdea3, type: 2}
+  - identifier: boost
+    value: {fileID: 11400000, guid: 4ab62bf74f2dfb244b48f8a432161b93, type: 2}
+  - identifier: tracks_loop
+    value: {fileID: 11400000, guid: 088c88d0071c4304ab95baf73424e071, type: 2}
+  - identifier: tracks_mud_loop
+    value: {fileID: 11400000, guid: c84eec72a881dc7469dd5cfec551d1db, type: 2}
+  - identifier: wheel_spin_loop
+    value: {fileID: 11400000, guid: 9353f30130d53784cae8a31ee5900e2b, type: 2}
+  - identifier: turret_loop
+    value: {fileID: 11400000, guid: 9097c768a0ed79d47a098e11c6b4f0a0, type: 2}
+  - identifier: ram
+    value: {fileID: 11400000, guid: 71c19096a60f1a149b7e091d9376c0aa, type: 2}
+  - identifier: landing
+    value: {fileID: 11400000, guid: 51e143692474b9b45bb9792bb8d4e612, type: 2}
+  - identifier: hit
+    value: {fileID: 11400000, guid: a580e4efd2f34874daf6cbbe4fccfb92, type: 2}
+  - identifier: low_health
+    value: {fileID: 11400000, guid: c16413f514874824fbf9d1cde6fbdfee, type: 2}
+  - identifier: destroyed
+    value: {fileID: 11400000, guid: 5afb1477ac5f16c43a9a982f6e2c7816, type: 2}
+  boolParameters: []
+  intParameters: []
+  floatParameters:
+  - identifier: rpm
+    value: 0
+  - identifier: throttle
+    value: 0
+  - identifier: speed
+    value: 0
+  - identifier: mud
+    value: 0
+  - identifier: slip
+    value: 0
+  - identifier: turret
+    value: 0
+  callbacks: []

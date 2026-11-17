@@ -1,0 +1,21 @@
+{
+    "name": "Game.AudioEngine.Adapters",
+    "rootNamespace": "Game.AudioEngine.Adapters",
+    "references": [
+        "Game",
+        "Game.Voxels",
+        "AudioEngine",
+        "Atomic.Elements",
+        "Atomic.Entities",
+        "Unity.Mathematics"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
