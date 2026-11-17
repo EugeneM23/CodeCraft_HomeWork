@@ -1083,6 +1083,7 @@ namespace Game.Horde
         public void Execute(int startIndex, int count)
         {
             Marker.Begin();
+            var batch = new NativeList<HordeInstance>(count, Allocator.Temp);
             for (int i = startIndex; i < startIndex + count; i++)
             {
                 HordeState state = State[i];
@@ -1111,13 +1112,16 @@ namespace Game.Horde
                 HordeClip clip = state == HordeState.Attack ? Attack
                     : math.lengthsq(Velocity[i]) < IDLE_SPEED_SQ ? Idle : Run;
                 float3 frame = clip.Sample(AnimTime[i]);
-                Instances.AddNoResize(new HordeInstance
+                batch.AddNoResize(new HordeInstance
                 {
                     PositionHeading = new float4(p, Heading[i]),
                     Animation = new float4(frame, 0f)
                 });
             }
 
+            if (batch.Length > 0)
+                Instances.AddRangeNoResize(batch); // one reservation per batch, not one per monster
+            batch.Dispose();
             Marker.End();
         }
     }

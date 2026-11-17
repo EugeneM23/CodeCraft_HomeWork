@@ -27,7 +27,7 @@ namespace Game.Horde
         /// <summary>Spatial hash cell, metres.</summary>
         public const float HASH_CELL = 1f;
 
-        private const int BATCH = 64;
+        private const int BATCH = 128;
         private const int MAX_AREAS = 64;
 
         private static readonly ProfilerMarker SimulateMarker = new("Horde.Simulate");
@@ -72,6 +72,7 @@ namespace Game.Horde
         private int _alive;
         private float _stepDamage;
         private int _near;
+        private int _visibleCount;
         private HordeClip _runClip;
         private HordeClip _attackClip;
         private HordeClip _idleClip;
@@ -145,6 +146,9 @@ namespace Game.Horde
 
         /// <summary>Instances of the monsters the last completed step saw in the frustum (until the next <see cref="Schedule"/>).</summary>
         public NativeArray<HordeInstance> Visible => _visible.AsArray();
+
+        /// <summary>Length of <see cref="Visible"/> after the last completed step (readable while a step runs).</summary>
+        public int VisibleCount => _visibleCount;
 
         public void ClearDeaths() => _deaths.Clear();
 
@@ -231,6 +235,7 @@ namespace Game.Horde
             _freeCount = Capacity;
             _alive = 0;
             _visible.Clear();
+            _visibleCount = 0;
         }
 
         /// <summary>A blast for the next step: live monsters in the sphere take damage (full at the centre, half at the edge).</summary>
@@ -363,6 +368,7 @@ namespace Game.Horde
                 (_position, _nextPosition) = (_nextPosition, _position);
                 _stepDamage = _totals[0];
                 _near = (int)_totals[1];
+                _visibleCount = _visible.Length;
                 _areasRunning.Clear();
 
                 while (_deathQueue.TryDequeue(out HordeDeathEvent death))

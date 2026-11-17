@@ -64,10 +64,10 @@ namespace Game.Horde
         {
             Speed = 4.5f,
             SpeedJitter = 0.2f,
-            Radius = 0.45f,
-            SeparationRadius = 1.0f,
+            Radius = 0.6f,
+            SeparationRadius = 1.4f,
             SeparationStrength = 3f,
-            MaxNeighbours = 12,
+            MaxNeighbours = 10,
             TurnRate = 6f,
             Acceleration = 6f,
             SlowRadius = 3f,
