@@ -18,6 +18,7 @@ namespace Game.Voxels.Tests
     /// half its entry speed there, is out over the far rim within 2.5 s of entering and leaves it nose
     /// up. Its nose ploughs on the way (TankPloughEvents.Ploughed) and earth is dug out of the far
     /// slope, at least 0.3 m deep. That bar is for Punchy; Subtle and Cinema are driven too and logged.
+    /// The impact the event reports grows Subtle &lt; Punchy &lt; Cinema on the same entry.
     /// Every preset must give the ground layer and the springs back exactly after the dig.
     /// Screenshots (Punchy) go to Logs/CraterPlough.
     ///
@@ -46,6 +47,8 @@ namespace Game.Voxels.Tests
             public float EntrySpeed = -1f, MinFarSpeed = float.MaxValue, Took = float.PositiveInfinity;
             public float MaxNoseUp = float.MinValue, Apex = float.MinValue, Cut, BowDepth = float.MinValue;
             public int Ploughed, SolidBefore, SolidAfter;
+            // The hardest strength01 the Ploughed event gave in this run.
+            public float MaxStrength;
             public bool Restored;
             public string RestoreNote = "";
 
@@ -62,12 +65,23 @@ namespace Game.Voxels.Tests
                 // Punchy is the one held to the bar; Subtle and Cinema are driven too, each in a fresh
                 // sandbox, and only logged (and checked to give the ground and the springs back).
                 var punchy = new CraterRun("Punchy");
-                CraterRun[] runs = { punchy, new CraterRun("Subtle"), new CraterRun("Cinema") };
+                var subtle = new CraterRun("Subtle");
+                var cinema = new CraterRun("Cinema");
+                CraterRun[] runs = { punchy, subtle, cinema };
                 foreach (CraterRun run in runs)
                     yield return RunCrater(run, run == punchy);
 
+                Debug.Log($"[CraterPlough] impact strength (Ploughed, max per run): Subtle {subtle.MaxStrength:F2}, " +
+                          $"Punchy {punchy.MaxStrength:F2}, Cinema {cinema.MaxStrength:F2}");
+
                 foreach (CraterRun run in runs)
                     Assert.IsTrue(run.Restored, $"{run.Preset}: ground layer and springs back as they were ({run.RestoreNote})");
+
+                foreach (CraterRun run in runs)
+                    Assert.That(run.MaxStrength, Is.GreaterThan(0f), $"{run.Preset}: Ploughed came with an impact");
+                // The same entry hits harder the stronger the preset: the sound and the shake go by it.
+                Assert.That(subtle.MaxStrength, Is.LessThan(punchy.MaxStrength), "impact: Subtle below Punchy");
+                Assert.That(punchy.MaxStrength, Is.LessThan(cinema.MaxStrength), "impact: Punchy below Cinema");
 
                 Assert.That(punchy.EntrySpeed, Is.GreaterThan(6f), "the tank came in fast");
                 Assert.That(punchy.MinFarSpeed, Is.GreaterThanOrEqualTo(punchy.EntrySpeed * 0.5f), "kept half its speed on the far slope");
@@ -117,7 +131,12 @@ namespace Game.Voxels.Tests
             float stiffnessBefore = suspension.Stiffness;
             float dampingBefore = suspension.Damping;
 
-            void OnPloughed(Vector3 point, float strength) => run.Ploughed++;
+            void OnPloughed(Vector3 point, float strength)
+            {
+                run.Ploughed++;
+                run.MaxStrength = Mathf.Max(run.MaxStrength, strength);
+            }
+
             TankPloughEvents.Ploughed += OnPloughed;
             try
             {

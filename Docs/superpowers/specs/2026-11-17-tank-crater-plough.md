@@ -38,6 +38,8 @@ Atomic-поведение танка (`IEntityInit`, `IEntityFixedTick`, `IEntit
 
 Сила удара `s = clamp01((c - MinClosing) / (FullClosing - MinClosing))`, где `c = -v · ramp`, `FullClosing` = 8 м/с. При `s` = 0 удара нет совсем: ни укуса, ни отклика, ни тряски, ни события.
 
+`s` — сила **отклика**: размер укуса, потеря скорости, подъём. Она меряется против выемки, которую режет пресет (`MaxRamp` у пресетов разный), поэтому не говорит, насколько сильным был удар. Для звука и тряски есть отдельная **сила удара** `i = TankPloughMath.ImpactStrength(c₀, ImpactScale) = clamp01(clamp01((c₀ - 2) / (16 - 2)) · ImpactScale)`, где `c₀ = -v · n` — сближение с **настоящей** гранью. Шкала общая для всех пресетов (`IMPACT_MIN_CLOSING` = 2, `IMPACT_FULL_CLOSING` = 16 м/с в `TankPloughMath`): удар в ступень воронки на 13 м/с не упирается в 1. Пресет задаёт только множитель `ImpactScale`. Поэтому один и тот же въезд звучит Subtle < Punchy < Cinema. При `i` = 0 (сближение ровно 2 м/с) отклик есть, но нет ни тряски, ни события. `IMPACT_MIN_CLOSING` равен `MinClosing` пресетов (2): если `MinClosing` пресета станет меньше, самые медленные удары будут без звука.
+
 **2. Укус.** Каждые `BiteInterval` (0.05 с): 3 укуса `IEarthThrow.Excavate` поперёк носа. Центр — на осевой линии корпуса (а не там, где коснулся угол бокса), сдвинут по `v̂` на 0.4 радиуса и на `BiteDepth` радиуса вглубь склона. Боковые — ±0.6 полуширины корпуса, радиус 0.85. Радиус `lerp(BiteRadiusMin, BiteRadiusMax, s)`. Грунт летит со скоростью `TankPloughMath.Throw`: вдоль склона и вверх (`ThrowLift`), `|v| · ThrowScale`. `BiteDebris` — потолок обломков на **каждый** из трёх укусов, умноженный на `ThrowVolume`.
 
 **3. Нос врезается (`PloughTime`).** Удар сразу стоит доли скорости: `|v'| = |v| · (1 - SpeedLoss · max(s, 0.5))`. Направление пока не меняется. Дальше `PloughTime` секунд:
@@ -67,7 +69,7 @@ Atomic-поведение танка (`IEntityInit`, `IEntityFixedTick`, `IEntit
 
 Исключение трогает только бит слоя 3. На нём в песочнице лежат `Terrain`, `<Ground>`, `Bedrock` и рампы (`<Ramps>`, `Ramp_House_*`). Регаксы и обломки на нём не лежат.
 
-**7. Эффект.** Тряска камеры игрока `CameraShakeUseCase.ShakePlayerCamera(new CameraShakeArgs(ShakeDuration, ShakeStrength · s))` — только когда танком управляет игрок, один раз на удар. Событие для звука `TankPloughEvents.Ploughed(Vector3 point, float strength)`. Пыли нет: `VoxelSmoke.Blast` не пыль, а рассеивание дыма, вызов убран. Пыль даст `ThrowEarth` (объём > 0.05 м³).
+**7. Эффект.** Тряска камеры игрока `CameraShakeUseCase.ShakePlayerCamera(new CameraShakeArgs(ShakeDuration, ShakeStrength · i))` — только когда танком управляет игрок, один раз на удар; `i` — сила удара, не отклика. Событие для звука `TankPloughEvents.Ploughed(Vector3 point, float strength)` несёт ту же силу удара `i`. Пыли нет: `VoxelSmoke.Blast` не пыль, а рассеивание дыма, вызов убран. Пыль даст `ThrowEarth` (объём > 0.05 м³).
 
 ### Выброс грунта: сейчас и потом
 
@@ -90,6 +92,7 @@ Atomic-поведение танка (`IEntityInit`, `IEntityFixedTick`, `IEntit
 | `Deflect` | 0 | 0 | 0.1 |
 | `Hop` (м/с) | 0 | 0 | 0 |
 | `PitchKick` (рад/с) / `RisePitch` (°) | 0.4 / 8 | 1.2 / 14 | 1.0 / 22 |
+| `ImpactScale` (сила удара для звука и тряски) | 0.6 | 0.8 | 1.0 |
 | `ShakeStrength` / `ShakeDuration` | 0.3 / 0.25 | 0.6 / 0.35 | 1.0 / 0.5 |
 
 `TankInstaller` держит массив пресетов (`_ploughPresets`, по умолчанию Punchy, номер 1) и `NextPloughPreset()`, который меняет `Config` у поведения. Песочница: действие `Sandbox/Plough` на клавише **M** (`GameControls.inputactions`) переключает пресет по кругу. Строка в HUD (`VoxelHudLines`): `M — tank plough preset (now Punchy)`, текст пересобирается только при смене пресета.
@@ -107,7 +110,7 @@ Atomic-поведение танка (`IEntityInit`, `IEntityFixedTick`, `IEntit
 ### Файлы
 
 - `Features/Controllables/Tank/Drive/TankPloughBehaviour.cs` — упреждение, укус, врезание, выход, страховка, закрытие окна.
-- `Features/Controllables/Tank/Drive/TankPloughMath.cs` — чистая математика: `Strength`, `IsNoseHit`, `SpeedAfter`, `Deflect`, `Ramp`, `NoseUpSpin`, `NoNoseUpSpin`, `Throw`. Её покрывают EditMode-тесты.
+- `Features/Controllables/Tank/Drive/TankPloughMath.cs` — чистая математика: `Strength`, `ImpactStrength`, `IsNoseHit`, `SpeedAfter`, `Deflect`, `Ramp`, `NoseUpSpin`, `NoNoseUpSpin`, `Throw`. Её покрывают EditMode-тесты.
 - `Features/Controllables/Tank/Drive/TankPloughConfig.cs`, `TankPloughEvents.cs`, `IEarthThrow.cs`, `DigEarthThrow.cs`.
 - `Features/Voxels/VoxelSandboxPloughSwitch.cs` — клавиша M и строка HUD.
 - `TankInstaller.cs` (`_hullCollider`, пресеты, `PloughPreset`, `NextPloughPreset()`, `Plough` для тестов), `Tank_01.prefab`, `GameControls.inputactions`, сцена `VoxelSandbox`.
@@ -118,6 +121,13 @@ Atomic-поведение танка (`IEntityInit`, `IEntityFixedTick`, `IEntit
 - Ноль GC в тике: `BoxCastNonAlloc` с заранее выделенным буфером, `CheckBox`, `Raycast`; без LINQ, без `GetComponent`, без строк. `new CameraShakeArgs` — один раз на удар (помечено `perf-ok`).
 - Вырез — существующие Burst-задачи `VoxelBody.Carve` через `Dig`. Нового обхода вокселей на главном потоке нет.
 - `ProfilerMarker` `TankPlough.Bite` на укус. Цель: укус ≤ 0.5 мс, кадр удара в бюджете худшего кадра (≤ 16 мс), GC в кадре удара ≤ 4 КБ.
+- **Прогрев при загрузке уровня.** Первый плуг сессии на первом физическом шаге, когда готово тело земли, делает один пустой `IEarthThrow.Excavate` на 10 м выше границ земли (`TankPloughBehaviour.WarmUp`, маркер `TankPlough.WarmUp`). Там нечего вынимать: мир не меняется, обломков нет. Зато задача `CarveSphereJob` в первый раз запускается здесь, а не в первом укусе: её reflection data, в редакторе — опции и компиляция Burst, JIT кода `Dig`. Пока тела земли нет, танк ищет его не чаще раза в 0.5 с игрового времени, без GC.
+- **ВНИМАНИЕ: прогрев превышает правило «≤ 2 мс в кадре» (Performance.md, «Пулы»).** В редакторе он стоит 2.3–3.3 мс и 78.6 КБ. Разбить нельзя: это один вызов, первый запуск одной задачи. Почти всё в нём — работа только редактора: поиск опций и компиляция Burst (`BurstLoader.TryGetOptionsFromMember`), reflection data задачи, JIT. Идёт один раз за сессию, в кадре загрузки уровня (кадр 0 Play, он и так выделяет ~6.9 МБ). В сборке не мерили.
+- **Первый укус: две базы.**
+  - perf-check (`Docs/Reports/2026-11-17-perf-claude-tank-crater-112bdb.md`): 11.6 КБ (7.5 КБ под `TankPlough.Bite` + 4.2 КБ `ExtractCompilerFlags`), 1.7–1.9 мс. Burst там уже частично прогрет предыдущими вырезами.
+  - Холодный замер этой правки: таймерный авиаудар выключен до первой бомбы, воронка — `AirBlast` из сценария perf-check. 79 КБ и 3.87 мс.
+  - После прогрева: 0.6–1.1 КБ и 0.49–0.58 мс.
+- **Что осталось в первом укусе — не наше.** 0.6–1.1 КБ даёт `VoxelBody.ThrowDebris`: статические `Clumps` (`Dictionary`) и `ClumpPool` (`new List<int>()`) растут, когда комков больше, чем было раньше. Убрать можно только в `VoxelBody` (стартовая ёмкость), это команда вокселей.
 - Без удара поведение стоит один BoxCast за физический шаг, и только на скорости ≥ 3 м/с.
 
 ## Риски
@@ -130,7 +140,7 @@ Atomic-поведение танка (`IEntityInit`, `IEntityFixedTick`, `IEntit
 
 ## Как проверяем
 
-- **EditMode, `TankPloughMathTests`:** сила 0 ниже `MinClosing` и 1 от `FullClosing`; при `s` = 1 и `SpeedLoss` 0.33 остаётся 2/3 скорости; лёгкий удар стоит половину потери; новое направление смотрит вверх по склону, при `Deflect` 0 — точно вдоль; ровная посадка на брюхо и удар позади середины — не удар носом; посадка носом вниз — удар; `Ramp` оставляет пологий склон и нижнюю сторону навеса, вертикальную грань наклоняет до `MaxRamp`; `NoseUpSpin` перебивает вращение носом вниз и оставляет более быстрое вверх; `NoNoseUpSpin` убирает вращение вверх; выброс летит вперёд и вверх.
+- **EditMode, `TankPloughMathTests`:** сила 0 ниже `MinClosing` и 1 от `FullClosing`; при `s` = 1 и `SpeedLoss` 0.33 остаётся 2/3 скорости; лёгкий удар стоит половину потери; новое направление смотрит вверх по склону, при `Deflect` 0 — точно вдоль; ровная посадка на брюхо и удар позади середины — не удар носом; посадка носом вниз — удар; `Ramp` оставляет пологий склон и нижнюю сторону навеса, вертикальную грань наклоняет до `MaxRamp`; `NoseUpSpin` перебивает вращение носом вниз и оставляет более быстрое вверх; `NoNoseUpSpin` убирает вращение вверх; выброс летит вперёд и вверх; сила удара 0 ниже 2 м/с, на 12.9 м/с меньше 1, растёт со сближением, умножается на `ImpactScale`, не выше 1, на одном ударе Subtle < Punchy < Cinema.
 - **PlayMode, `SandboxCraterPloughTest`** (`Game.Voxels.SceneTests`):
   - въезд в воронку (`VoxelDamage.AirBlast`, 4 м) с газом 1 и Shift — по разу на каждый пресет, каждый в свежей песочнице, одна строка `[CraterPlough]` на пресет. На Punchy проверяется:
     - скорость входа > 6 м/с;
@@ -139,6 +149,7 @@ Atomic-поведение танка (`IEntityInit`, `IEntityFixedTick`, `IEntit
     - нос вверх ≥ 8° над кромкой;
     - выемка в дальнем склоне ≥ 0.3 м, `SolidCount` уменьшился;
     - `Ploughed` пришло;
+  - наибольшая сила из `Ploughed` за въезд растёт Subtle < Punchy < Cinema на одном и том же въезде; три значения — строкой `[CraterPlough] impact strength`;
   - у **всех** пресетов после врезания `excludeLayers` тела и `Stiffness`/`Damping` подвески точно такие же, как до него;
   - ровная езда по той же полосе на полном газу (13 м/с): ни одного удара (`Impacts` == 0).
 - **Видео:** вид сбоку, все три пресета, кадры смотрятся глазами: нос глубоко в склоне, короткий подскок.

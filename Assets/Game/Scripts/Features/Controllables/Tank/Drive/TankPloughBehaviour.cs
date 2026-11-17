@@ -26,6 +26,9 @@ namespace Game
     /// when the window runs out, on a preset switch, when the tank is disabled (death) or disposed,
     /// when it goes kinematic, and at once if the hull, no wheel on anything, has sunk below the
     /// ground under it.
+    ///
+    /// The first plough of a session makes one empty dig above the ground at level load (WarmUp), so the
+    /// first bite does not pay for the carve job's first run mid-drive.
     /// </summary>
     public sealed class TankPloughBehaviour : IEntityInit, IEntityFixedTick, IEntityDisable, IEntityDispose
     {
@@ -45,8 +48,19 @@ namespace Game
         // Longest (s) the hull keeps going through the ground after it rose, while it is still in it.
         private const float MAX_PASS = 0.5f;
 
+        // How far (m) above the top of the ground's bounds the warm-up dig is made: nothing there to take.
+        private const float WARM_UP_ABOVE = 10f;
+        // Seconds of game time between looks for a ready terrain body to warm up on, while there is none.
+        private const float WARM_UP_RETRY = 0.5f;
+
         private static readonly ProfilerMarker BiteMarker = new("TankPlough.Bite");
+        private static readonly ProfilerMarker WarmUpMarker = new("TankPlough.WarmUp");
         private static readonly RaycastHit[] s_hits = new RaycastHit[8];
+        // The first plough of the session has made its warm-up dig (WarmUp).
+        private static bool s_warmedUp;
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetStatics() => s_warmedUp = false;
 
         private readonly BoxCollider _hull;
         private readonly IEarthThrow _earth;
@@ -54,6 +68,8 @@ namespace Game
         private IValue<IEntity> _driver;
 
         private float _time;
+        // When this tank next looks for a ready terrain body to warm up on, while none was.
+        private float _nextWarmUpTry;
         private float _nextBite;
         private float _nextResponse;
         private Vector3 _lastVelocity;
@@ -137,6 +153,11 @@ namespace Game
         public void FixedTick(IEntity entity, float deltaTime)
         {
             _time += deltaTime;
+            if (!s_warmedUp && _time >= _nextWarmUpTry)
+            {
+                _nextWarmUpTry = _time + WARM_UP_RETRY;
+                WarmUp();
+            }
             TankPloughConfig config = Config;
             if (config == null || _hull == null || _body.isKinematic)
             {
@@ -257,10 +278,17 @@ namespace Game
             _rising = true;
             Springs(Mathf.Min(_soft ? _springShare : 1f, config.DigSpring));
 
+            // How hard it felt (sound, shake): against the real face, on the scale all presets share. The
+            // response strength above is against the ramp the preset cuts, so it is no measure of the hit.
+            // A hit at exactly IMPACT_MIN_CLOSING (or a preset MinClosing below it) turns the hull but makes no impact:
+            // no sound, no shake.
+            float impact = TankPloughMath.ImpactStrength(closing, config.ImpactScale);
+            if (impact <= 0f)
+                return;
             if (_driver != null && _driver.Value != null && config.ShakeStrength > 0f)
                 // perf-ok: once per impact (at most one per PloughTime + ImpactCooldown), not per step
-                CameraShakeUseCase.ShakePlayerCamera(new CameraShakeArgs(config.ShakeDuration, config.ShakeStrength * strength));
-            TankPloughEvents.RaisePloughed(hit.point, strength);
+                CameraShakeUseCase.ShakePlayerCamera(new CameraShakeArgs(config.ShakeDuration, config.ShakeStrength * impact));
+            TankPloughEvents.RaisePloughed(hit.point, impact);
         }
 
         /// <summary>The nose has dug in: the hull comes up the ramp it cut, nose up.</summary>
@@ -402,6 +430,31 @@ namespace Game
                 _earth.Excavate(ground, centre, radius, thrown, spread, config.ThrowVolume, config.BiteDebris);
                 _earth.Excavate(ground, centre + across, radius * 0.85f, thrown, spread, config.ThrowVolume, config.BiteDebris);
                 _earth.Excavate(ground, centre - across, radius * 0.85f, thrown, spread, config.ThrowVolume, config.BiteDebris);
+            }
+        }
+
+        /// <summary>
+        /// Once a session, at the first physics step a terrain body is ready (level load): one dig through
+        /// IEarthThrow well above the ground, where there is nothing to take. It removes nothing, rebuilds
+        /// nothing and throws nothing, but the carve job runs for the first time here and not in the first
+        /// bite mid-drive: its first schedule (job reflection data and, in the editor, Burst's options and
+        /// compile) and the dig code's JIT.
+        /// </summary>
+        private void WarmUp()
+        {
+            var bodies = VoxelWorld.Bodies;
+            for (int i = 0; i < bodies.Count; i++)
+            {
+                VoxelBody body = bodies[i];
+                if (body == null || !body.IsTerrain || !body.IsCreated || body.SolidCount == 0)
+                    continue;
+
+                s_warmedUp = true;
+                Bounds bounds = body.WorldBounds;
+                var above = new Vector3(bounds.center.x, bounds.max.y + WARM_UP_ABOVE, bounds.center.z);
+                using (WarmUpMarker.Auto())
+                    _earth.Excavate(body, above, _config != null ? _config.BiteRadiusMax : 1f, Vector3.zero, 0f, 0f, 0);
+                return;
             }
         }
 

@@ -62,6 +62,8 @@ namespace Game
         public float ImpactCooldown = 0.3f;
 
         [Header("Feel")]
+        [Tooltip("How hard the same hit feels in this preset (sound event, camera shake): the impact on the scale all presets share, times this. Not the bite or the hull's response.")]
+        public float ImpactScale = 0.8f;
         public float ShakeStrength = 0.6f;
         public float ShakeDuration = 0.35f;
     }
