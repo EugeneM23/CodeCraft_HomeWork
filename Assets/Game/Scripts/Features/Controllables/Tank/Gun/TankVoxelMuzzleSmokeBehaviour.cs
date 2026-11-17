@@ -34,6 +34,8 @@ namespace Game
         private readonly Vector3[] _start = new Vector3[MAX];
         private readonly Vector3[] _offset = new Vector3[MAX];
         private readonly float[] _extend = new float[MAX];
+        // 0...1: how much this cube bursts (weak at the muzzle, full at the far end).
+        private readonly float[] _burst = new float[MAX];
         private readonly Matrix4x4[] _matrices = new Matrix4x4[MAX];
         private readonly Vector4[] _colors = new Vector4[MAX];
         private readonly Matrix4x4[] _batchMatrices = new Matrix4x4[BATCH];
@@ -85,12 +87,22 @@ namespace Game
             {
                 float along; // 0 at the muzzle, 1 at the far end.
                 Vector3 local;
+                Vector3 outward; // Where it bursts to.
                 if (Random.value < s.TipShare)
                 {
-                    // The blob: a ball round the far end, its centre a little short of it.
+                    // The mushroom's cap: a ball round the far end, flattened along the barrel, its
+                    // centre a little short of the end. It bursts out across the axis, the brim
+                    // rolling back towards the muzzle.
                     Vector3 ball = Random.insideUnitSphere * tipRadius;
-                    local = forward * (length - tipRadius * 0.4f) + ball;
+                    float axial = Vector3.Dot(ball, forward);
+                    Vector3 across = ball - forward * axial;
+                    local = forward * (length - tipRadius * 0.3f + axial * s.CapFlatten) + across;
                     along = 1f;
+                    Vector3 side = across.sqrMagnitude > 1e-6f ? across.normalized
+                        : (right * Random.Range(-1f, 1f) + up * Random.Range(-1f, 1f)).normalized;
+                    // Out at the rim most (the cap's edge rolls), less in the middle.
+                    float rim = Mathf.Clamp01(across.magnitude / tipRadius);
+                    outward = (side * (1f - s.CapCurl * rim) - forward * (s.CapCurl * rim)).normalized;
                 }
                 else
                 {
@@ -99,6 +111,8 @@ namespace Game
                     float radius = Mathf.Lerp(s.RadiusMuzzle, tipRadius, Mathf.Pow(along, Mathf.Max(0.1f, s.Taper)));
                     Vector2 disc = Random.insideUnitCircle * radius;
                     local = forward * (length * along) + right * disc.x + up * disc.y;
+                    Vector3 off = right * disc.x + up * disc.y;
+                    outward = off.sqrMagnitude > 1e-6f ? off.normalized : Random.onUnitSphere;
                 }
 
                 float size = Mathf.Lerp(s.SizeMuzzle, s.SizeEnd, along) * Random.Range(0.75f, 1.25f);
@@ -108,10 +122,16 @@ namespace Game
                 Vector3 radial = local - forward * Vector3.Dot(local, forward);
                 Vector3 residual = (forward + radial.normalized * 0.6f).normalized * (s.ResidualSpeed * Random.Range(0.5f, 1.5f));
 
+                // The burst: out from the axis (from the blob's centre at the end) and up, strongest at the end.
+                float burst = Mathf.Lerp(s.BurstAtMuzzle, 1f, Mathf.Pow(along, Mathf.Max(0f, s.BurstGrowth)));
+                Vector3 burstDir = (outward * (1f - s.BurstUp) + Vector3.up * s.BurstUp).normalized;
+                residual += burstDir * (s.Burst * burst * Random.Range(0.5f, 1.3f));
+
                 int c = Spawn(origin, residual, s.Lifetime * Random.Range(0.6f, 1f), size);
                 _start[c] = origin;
                 _offset[c] = local;
                 _extend[c] = extend;
+                _burst[c] = burst;
             }
 
             _wispLeft = s.WispTime;
@@ -133,6 +153,7 @@ namespace Game
             _life[i] = Mathf.Max(0.05f, life);
             _size[i] = size;
             _extend[i] = 0f;
+            _burst[i] = 0f;
             return i;
         }
 
@@ -177,6 +198,7 @@ namespace Game
                     _start[i] = _start[_count];
                     _offset[i] = _offset[_count];
                     _extend[i] = _extend[_count];
+                    _burst[i] = _burst[_count];
                     i--;
                     continue;
                 }
@@ -203,7 +225,7 @@ namespace Game
                     float flat = Mathf.Sqrt(v.x * v.x + v.z * v.z);
                     if (flat > 1e-4f)
                     {
-                        float push = s.Creep * deltaTime / flat;
+                        float push = s.Creep * (1f + (s.BurstCreep - 1f) * _burst[i]) * deltaTime / flat;
                         v.x += v.x * push;
                         v.z += v.z * push;
                     }
@@ -215,7 +237,9 @@ namespace Game
                 // Swells from 40 % to its full edge, holds, then shrinks by half as it thins.
                 float grow = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(t / 0.25f));
                 float shrink = 1f - 0.5f * Mathf.SmoothStep(0f, 1f, Mathf.Clamp01((t - 0.6f) / 0.4f));
-                float edge = Mathf.Lerp(0.4f, 1f, grow) * shrink * _size[i];
+                // Bursting smoke keeps swelling over its life.
+                float swell = 1f + (s.BurstSwell - 1f) * _burst[i] * Mathf.Clamp01(t * 1.5f);
+                float edge = Mathf.Lerp(0.4f, 1f, grow) * shrink * swell * _size[i];
                 float alpha = s.Opacity * (1f - Mathf.SmoothStep(0f, 1f,
                     Mathf.Clamp01((t - s.FadeStart) / Mathf.Max(0.01f, 1f - s.FadeStart))));
 

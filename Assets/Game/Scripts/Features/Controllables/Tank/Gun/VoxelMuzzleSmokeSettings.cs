@@ -20,15 +20,15 @@ namespace Game
 
         [Header("Jet")]
         [Tooltip("Cubes thrown out on a shot.")]
-        [Range(0, 3000)] public int Cubes = 640;
+        [Range(0, 3000)] public int Cubes = 675;
         [Tooltip("Seconds a cube lives; each gets 60...100 % of it.")]
-        public float Lifetime = 3.9f;
+        public float Lifetime = 5.1f;
         [Tooltip("How far (m) along the barrel the jet reaches; its fattest blob sits at the end.")]
-        public float JetLength = 6f;
+        public float JetLength = 5.4f;
         [Tooltip("Radius (m) of the jet at the muzzle.")]
-        public float RadiusMuzzle = 0.12f;
+        public float RadiusMuzzle = 0.15f;
         [Tooltip("Radius (m) of the blob at the far end.")]
-        public float RadiusEnd = 1.1f;
+        public float RadiusEnd = 0.84f;
         [Tooltip("How late along the jet it fattens: 1 a straight cone, higher stays thin longer and swells at the end.")]
         public float Taper = 2f;
         [Tooltip("How the cubes spread along the jet: 0 even, higher packs more of them towards the far end.")]
@@ -36,14 +36,34 @@ namespace Game
         [Tooltip("Share of the cubes in the round blob at the end of the jet.")]
         [Range(0f, 1f)] public float TipShare = 0.4f;
         [Tooltip("Edge (m) of a cube at the muzzle and in the blob at the end.")]
-        public float SizeMuzzle = 0.1f;
-        public float SizeEnd = 0.45f;
+        public float SizeMuzzle = 0.12f;
+        public float SizeEnd = 0.375f;
         [Tooltip("Seconds the jet takes to stretch out to its full length.")]
         public float ExtendTime = 0.3f;
         [Tooltip("How sharply the jet is spat out: 1 even speed all the way, higher shoots out fast and brakes hard at the end.")]
         public float EjectSharpness = 3f;
         [Tooltip("Speed (m/s) a cube keeps once the jet has stretched out; the slow drift starts from it.")]
         public float ResidualSpeed = 0.5f;
+
+        [Header("Mushroom cap")]
+        [Tooltip("How flat the blob at the end is along the barrel: 1 a ball, smaller a flatter cap.")]
+        [Range(0.1f, 1f)] public float CapFlatten = 0.45f;
+        [Tooltip("How much the cap's burst rolls back towards the muzzle, like a mushroom's brim: 0 straight out sideways.")]
+        [Range(0f, 1f)] public float CapCurl = 0.45f;
+
+        [Header("Burst")]
+        [Tooltip("How hard (m/s) the smoke at the far end bursts out sideways and up once the jet has stretched out.")]
+        public float Burst = 6.2f;
+        [Tooltip("How much stronger the burst gets towards the far end: 0 the same all along, 1 growing evenly, higher only right at the end.")]
+        public float BurstGrowth = 3f;
+        [Tooltip("Share of the burst at the muzzle (the far end has all of it).")]
+        [Range(0f, 1f)] public float BurstAtMuzzle = 0.1f;
+        [Tooltip("Share of the burst that goes up.")]
+        [Range(0f, 1f)] public float BurstUp = 0.15f;
+        [Tooltip("How many times more a bursting cube swells over its life, at full burst.")]
+        public float BurstSwell = 2f;
+        [Tooltip("How many times faster bursting smoke creeps apart afterwards, at full burst.")]
+        public float BurstCreep = 2f;
 
         [Header("Drift")]
         [Tooltip("How fast the cubes lose speed in the air (1/s).")]
