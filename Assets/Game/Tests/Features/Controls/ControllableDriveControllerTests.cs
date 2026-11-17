@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Game.Tests
 {
     /// <summary>
-    /// The hand-over between characters. LateTick polls the keyboard itself and is not driven here.
+    /// The hand-over of control between vehicles. LateTick polls the keyboard itself and is not driven here.
     /// </summary>
     public sealed class ControllableDriveControllerTests
     {
@@ -35,12 +35,12 @@ namespace Game.Tests
         }
 
         [Test]
-        public void GettingOut_LeavesTheVehicleWithNoThrottleAndNoBoost()
+        public void HandingControlAway_LeavesTheVehicleWithNoThrottleAndNoBoost()
         {
             IEntity vehicle = Vehicle();
             IPlayerContext context = Context(vehicle, out _);
 
-            context.GetCharacter().Value = new Entity(); // the driver, on foot
+            context.GetCharacter().Value = new Entity(); // control handed to something else
 
             Assert.That(vehicle.GetDriveInput().Value, Is.EqualTo(Vector2.zero));
             Assert.That(vehicle.GetDriveBoost().Value, Is.False);
