@@ -63,6 +63,10 @@ namespace Game.Voxels.EditorTools
                         VoxelizerStraighten.Open(grid, 2);
                 }
 
+                foreach (var (part, _) in rules)
+                    if (!grids.Exists(g => g.Root == part) && !result.KeptRoots.Contains(part))
+                        result.KeptRoots.Add(part);
+
                 result.Palette = VoxelizerPalette.Build(grids, k, out Color32[] centres);
                 foreach (VoxelizerPartGrid grid in grids)
                 {

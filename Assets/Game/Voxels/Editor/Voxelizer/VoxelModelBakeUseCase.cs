@@ -1,6 +1,8 @@
 using System.IO;
 using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Game.Voxels.EditorTools
 {
@@ -37,8 +39,15 @@ namespace Game.Voxels.EditorTools
         public static GameObject Bake(VoxelizerConfig config, string folder)
         {
             string name = config.model.name;
-            GameObject instance = (GameObject)PrefabUtility.InstantiatePrefab(config.model);
-            if (instance == null) instance = Object.Instantiate(config.model);
+            // An isolated scene: the open scene is never touched, so it never turns dirty.
+            Scene scene = EditorSceneManager.NewPreviewScene();
+            GameObject instance = (GameObject)PrefabUtility.InstantiatePrefab(config.model, scene);
+            if (instance == null)
+            {
+                instance = Object.Instantiate(config.model);
+                SceneManager.MoveGameObjectToScene(instance, scene);
+            }
+
             try
             {
                 using VoxelizerResult result = VoxelizeUseCase.Run(config, instance);
@@ -53,7 +62,7 @@ namespace Game.Voxels.EditorTools
                 foreach (VoxelizerResultPart part in result.Parts)
                     foreach (Renderer r in part.Root.GetComponentsInChildren<Renderer>(true))
                     {
-                        if (Owner(r.transform, result) != part.Root) continue;
+                        if (Owner(r.transform, instance.transform, result) != part.Root) continue;
                         if (r.TryGetComponent(out MeshFilter filter)) Object.DestroyImmediate(filter);
                         Object.DestroyImmediate(r);
                     }
@@ -70,14 +79,20 @@ namespace Game.Voxels.EditorTools
             finally
             {
                 Object.DestroyImmediate(instance);
+                EditorSceneManager.ClosePreviewScene(scene);
             }
         }
 
-        private static Transform Owner(Transform from, VoxelizerResult result)
+        /// <summary>The nearest rule root at or above a transform (a part, or a kept one, as Run saw it), or null.</summary>
+        private static Transform Owner(Transform from, Transform root, VoxelizerResult result)
         {
-            for (Transform t = from; t != null; t = t.parent)
+            for (Transform t = from; t != null; t = t == root ? null : t.parent)
+            {
                 foreach (VoxelizerResultPart part in result.Parts)
                     if (part.Root == t) return t;
+                if (result.KeptRoots.Contains(t)) return t;
+            }
+
             return null;
         }
     }

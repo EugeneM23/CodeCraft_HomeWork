@@ -65,6 +65,8 @@ namespace Game.Voxels.EditorTools
     public sealed class VoxelizerResult : IDisposable
     {
         public readonly System.Collections.Generic.List<VoxelizerResultPart> Parts = new();
+        /// <summary>Rule roots that gave no part (Skip, or no triangles): their renderers stay as they are.</summary>
+        public readonly System.Collections.Generic.List<Transform> KeptRoots = new();
         public Color32[] Palette;
         public float VoxelSize; // model units: the class voxel / Scale
         public float Scale = 1f;
