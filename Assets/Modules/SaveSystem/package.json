@@ -1,0 +1,21 @@
+{
+  "name": "com.eugenem23.save-system",
+  "version": "0.7.0",
+  "displayName": "Save System",
+  "description": "Drop-in saves: a SaveSystem prefab, Saveable with per-component modes (Auto, All Fields, Selected members), slot values and whole objects from plain code, slots with names, copy, export and import, a ready slot menu, storages for files, PlayerPrefs, any key-value database and servers, optional compression and encryption, versioned sections with migrations. Needs Newtonsoft JSON; the slot menu needs uGUI and TextMesh Pro.",
+  "unity": "6000.0",
+  "dependencies": {
+    "com.unity.nuget.newtonsoft-json": "3.2.2",
+    "com.unity.ugui": "2.0.0"
+  },
+  "keywords": [
+    "save",
+    "load",
+    "slots",
+    "serialization",
+    "cloud"
+  ],
+  "author": {
+    "name": "EugeneM23"
+  }
+}

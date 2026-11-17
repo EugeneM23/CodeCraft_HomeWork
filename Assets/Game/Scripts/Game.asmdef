@@ -10,7 +10,12 @@
         "DOTweenModules",
         "UnityEngine.UI",
         "Unity.Postprocessing.Runtime",
-        "Game.Voxels"
+        "Game.Voxels",
+        "Loading",
+        "SaveSystem",
+        "GameLoop",
+        "Unity.InputSystem",
+        "Game.GameLoop.Adapters"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

@@ -1,0 +1,10 @@
+{
+  "name": "com.eugenem23.game-loop",
+  "version": "1.0.0",
+  "displayName": "Game Loop",
+  "description": "A game loop with an honest pause: game code subscribes to the loop instead of writing Update, pause stops the ticks while freezers stop what Unity moves on its own (physics, Animator, legacy Animation, particles); Time.timeScale is left alone. Pause holders, per-listener profiler markers. No dependencies.",
+  "unity": "6000.0",
+  "author": {
+    "name": "EugeneM23"
+  }
+}
