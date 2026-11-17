@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 04892a9a7ce295e4a9c48dd43a6d4ef3, type: 3}
+  m_Name: TankPloughSubtleConfig
+  m_EditorClassIdentifier: Game::Game.TankPloughConfig
+  DisplayName: Subtle
+  MinSpeed: 3
+  MinClosing: 2
+  FullClosing: 8
+  LookAhead: 0.1
+  BiteRadiusMin: 0.45
+  BiteRadiusMax: 0.8
+  BiteInterval: 0.05
+  ThrowScale: 0.6
+  ThrowLift: 0.8
+  ThrowVolume: 0.5
+  SpreadMin: 0.1
+  SpreadMax: 0.4
+  BiteDebris: 80
+  BiteDepth: 0.5
+  PloughTime: 0.15
+  DigSpring: 0.3
+  SpeedLoss: 0.4
+  MaxRamp: 10
+  Deflect: 0
+  Hop: 0
+  PitchKick: 0.4
+  RisePitch: 8
+  ImpactCooldown: 0.3
+  ShakeStrength: 0.3
+  ShakeDuration: 0.25

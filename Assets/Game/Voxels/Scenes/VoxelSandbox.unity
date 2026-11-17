@@ -2769,6 +2769,7 @@ GameObject:
   - component: {fileID: 1313511855}
   - component: {fileID: 1313511854}
   - component: {fileID: 1313511857}
+  - component: {fileID: 1313511858}
   m_Layer: 0
   m_Name: <SandboxStart>
   m_TagString: Untagged
@@ -2869,6 +2870,19 @@ MonoBehaviour:
   _shakeReach: 60
   _shove: 2.5
   _shoveReach: 20
+--- !u!114 &1313511858
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1313511853}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a8db11e00dac924ca78674cb781463d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game::Game.VoxelSandboxPloughSwitch
+  _tank: {fileID: 1500469011}
 --- !u!1001 &1374294803
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3153,6 +3167,17 @@ MonoBehaviour:
   _roostUp: {x: 3, y: 7.5}
   _roostClodsPerSecond: 32
   _spinDigsPerSecond: 10
+--- !u!114 &1500469011 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 921101997765551036, guid: 9aa26aeb48dd5dd4f906bfe34d5f0ba9, type: 3}
+  m_PrefabInstance: {fileID: 1500469006}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1500469008}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a55f6799473e4b4ca6a824929dd89ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &1500469013 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2738307501937713252, guid: 9aa26aeb48dd5dd4f906bfe34d5f0ba9, type: 3}

@@ -71,12 +71,14 @@
             "actions": [
                 { "name": "AirStrike", "type": "Button", "id": "6a1d0000-0000-4000-8000-000000000301", "expectedControlType": "Button", "processors": "", "interactions": "", "initialStateCheck": false },
                 { "name": "Smoke", "type": "Button", "id": "6a1d0000-0000-4000-8000-000000000302", "expectedControlType": "Button", "processors": "", "interactions": "", "initialStateCheck": false },
-                { "name": "Rain", "type": "Button", "id": "6a1d0000-0000-4000-8000-000000000303", "expectedControlType": "Button", "processors": "", "interactions": "", "initialStateCheck": false }
+                { "name": "Rain", "type": "Button", "id": "6a1d0000-0000-4000-8000-000000000303", "expectedControlType": "Button", "processors": "", "interactions": "", "initialStateCheck": false },
+                { "name": "Plough", "type": "Button", "id": "6a1d0000-0000-4000-8000-000000000304", "expectedControlType": "Button", "processors": "", "interactions": "", "initialStateCheck": false }
             ],
             "bindings": [
                 { "name": "", "id": "6a1d0000-0000-4000-8000-000000003001", "path": "<Keyboard>/x", "interactions": "", "processors": "", "groups": "", "action": "AirStrike", "isComposite": false, "isPartOfComposite": false },
                 { "name": "", "id": "6a1d0000-0000-4000-8000-000000003002", "path": "<Keyboard>/b", "interactions": "", "processors": "", "groups": "", "action": "Smoke", "isComposite": false, "isPartOfComposite": false },
-                { "name": "", "id": "6a1d0000-0000-4000-8000-000000003003", "path": "<Keyboard>/n", "interactions": "", "processors": "", "groups": "", "action": "Rain", "isComposite": false, "isPartOfComposite": false }
+                { "name": "", "id": "6a1d0000-0000-4000-8000-000000003003", "path": "<Keyboard>/n", "interactions": "", "processors": "", "groups": "", "action": "Rain", "isComposite": false, "isPartOfComposite": false },
+                { "name": "", "id": "6a1d0000-0000-4000-8000-000000003004", "path": "<Keyboard>/m", "interactions": "", "processors": "", "groups": "", "action": "Plough", "isComposite": false, "isPartOfComposite": false }
             ]
         }
     ],
