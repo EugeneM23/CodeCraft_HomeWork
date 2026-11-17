@@ -18,12 +18,15 @@ namespace Game
         private readonly GameContext _gameContext;
         private readonly MonoEntity _burstPrefab;
         private readonly ParticleSystem _wisp;
+        private readonly VoxelMuzzleSmokeSettings _switches;
 
         private Transform _firePoint;
         private IEvent _fireEvent;
 
-        public TankMuzzleSmokeBehaviour(GameContext gameContext, MonoEntity burstPrefab, ParticleSystem wisp)
+        public TankMuzzleSmokeBehaviour(GameContext gameContext, MonoEntity burstPrefab, ParticleSystem wisp,
+            VoxelMuzzleSmokeSettings switches = null)
         {
+            _switches = switches;
             _gameContext = gameContext;
             _burstPrefab = burstPrefab;
             _wisp = wisp;
@@ -48,13 +51,13 @@ namespace Game
 
         private void OnFire()
         {
-            if (_firePoint != null && _burstPrefab != null)
+            if (_firePoint != null && _burstPrefab != null && (_switches == null || _switches.ParticleBurst))
             {
                 IEntity burst = _gameContext.GetGameFactory().Create(_burstPrefab);
                 burst.GetTransform().SetPositionAndRotation(_firePoint.position, _firePoint.rotation);
             }
 
-            if (_wisp != null)
+            if (_wisp != null && (_switches == null || _switches.ParticleWisp))
             {
                 // Stopping only the emission keeps the wisp already in the air; Play then starts
                 // the thinning-out again from the top.
