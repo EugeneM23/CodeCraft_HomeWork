@@ -1,0 +1,253 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 420df486b89a3d74d8406dd4a0fb7b36, type: 3}
+  m_Name: SaveSystemSettings
+  m_EditorClassIdentifier: SaveSystem.Objects::Saving.Objects.SaveSystemSettings
+  _createSystemWhenMissing: 1
+  _prefabs:
+  - Id: e8ef70e48e8296542bd08bd1c1156bc3
+    Prefab: {fileID: 5174509093075772146, guid: e8ef70e48e8296542bd08bd1c1156bc3, type: 3}
+  _scenes:
+  - Guid: 5fb2d356d1160c84598f58425e2ee303
+    Path: Assets/3rdParty/EffectCore/packs/StylizedProjectilePack1/scenes/stylizedProjectilePack
+      1.unity
+  - Guid: bab63d766ecc3134b8f03a9b6f5234fd
+    Path: Assets/3rdParty/FXIFIED/Stylized VFX Free Pack/Scenes/Layout_VFX_assets.unity
+  - Guid: 048acef81075dd34ea2783c291518198
+    Path: Assets/3rdParty/FXIFIED/Stylized VFX Free Pack/Scenes/PowerUps.unity
+  - Guid: b18a9c16bcd174b1683d370384a8cab7
+    Path: Assets/3rdParty/HighlightPlus/Demo/Demo1_HighlightExample.unity
+  - Guid: 96cd4e40d2f234b9e95987f9f953d17c
+    Path: Assets/3rdParty/HighlightPlus/Demo/Demo2_SelectionExample.unity
+  - Guid: 1c609762d2aa646c7a9fe426b06d8eee
+    Path: Assets/3rdParty/HighlightPlus/Demo/Demo3_HitFXExample.unity
+  - Guid: 823335f4062bf47c0ab883215d722cde
+    Path: Assets/3rdParty/HighlightPlus/Demo/Demo4_TargetClickExample.unity
+  - Guid: b92d00826bcb94d20bb89b73364a07a1
+    Path: Assets/3rdParty/HighlightPlus/Demo/Demo5_Effects.unity
+  - Guid: 0342621fbcb1a4e1faef4d99e0c31738
+    Path: Assets/3rdParty/HighlightPlus/Demo/Demo6_TwoManagers.unity
+  - Guid: 9c0675b901a65c6438ea05eacbac48f6
+    Path: Assets/3rdParty/Kevin Iglesias/Human Animations/Unity Demo Scenes/Human
+      Soldier Animations/Human Soldier Animations - Unity Demo Scene.unity
+  - Guid: af2fd283eb1be1744a19931679a3d654
+    Path: Assets/3rdParty/KriptoFX/VolumetricBloodFX/Demo(simple decals for standard
+      rendering only).unity
+  - Guid: d9c1b96e5fe3afe4b85bb47679e1f8c9
+    Path: Assets/3rdParty/KriptoFX/VolumetricBloodFX/Demo.unity
+  - Guid: 7829b1c5b8fec4fe391446047eb3bfcd
+    Path: Assets/3rdParty/OmniShade/Samples/Basic URP/Basic URP.unity
+  - Guid: cdf87062dfa6d46fdb069d619ac59762
+    Path: Assets/3rdParty/OmniShade/Samples/Basic/Basic.unity
+  - Guid: 8ef3b8d66d74d6249930aac9fe3783c8
+    Path: Assets/3rdParty/OmniShade/Samples/Dropship Baked/Dropship.unity
+  - Guid: 416d0b4e481e3ab4da0daa6e1aef4658
+    Path: Assets/3rdParty/OmniShade/Samples/Ellen/Ellen.unity
+  - Guid: b7729223057ed524ca85fed0098f7743
+    Path: Assets/3rdParty/OmniShade/Samples/Plants Sway/Plants.unity
+  - Guid: 1df1a3f33ec80e9458547a699d9df46c
+    Path: Assets/3rdParty/OmniShade/Samples/Unity-chan Cel/Unity-chan.unity
+  - Guid: 1a6b05d256dc8534b8ccac65746b73bb
+    Path: Assets/3rdParty/OmniShade/Samples/Vertex Paint Ground/Vertex Paint Ground.unity
+  - Guid: 9b6cfa636b9616548a0c54576abee848
+    Path: Assets/3rdParty/PixPlays/ElementalAOE/DemoAOEScene_BuiltIn.unity
+  - Guid: b9b39ec1d5f458248bee7088d6d30290
+    Path: Assets/3rdParty/PixPlays/ElementalAuras/DemoAurasScene_BuiltIn.unity
+  - Guid: 0223382ba445736468b62dad80aca45d
+    Path: Assets/3rdParty/PixPlays/ElementalBeams/DemoBeamsScene_BuiltIn.unity
+  - Guid: 2a433ce48ce83224e87228a0becceab8
+    Path: Assets/3rdParty/PixPlays/ElementalBlastVFX/DemoBlastsScene_BuiltIn.unity
+  - Guid: 51a52f5dfd962c144b03bb113b9ea7d5
+    Path: Assets/3rdParty/PixPlays/ElementalProjectiles/DemoProjectilesScene_BuiltIn.unity
+  - Guid: ee042e54c34c04142a53bebcc371b0de
+    Path: Assets/3rdParty/PixPlays/ElementalShields/DemoShieldsScene_BuiltIn.unity
+  - Guid: fdaf9b66f466711499c3c473369ade5c
+    Path: Assets/3rdParty/RifleAnimsetPro/Scenes/RAP_AnimationList.unity
+  - Guid: fd17b823525fdee4f933e311740501ba
+    Path: Assets/3rdParty/RifleAnimsetPro/Scenes/RifleAnimsetProOverview.unity
+  - Guid: 06351c13f99fda84fa24c08b4814bfae
+    Path: Assets/Game/Scenes/Boot.unity
+  - Guid: a0b7b33a2792a4b8e86796551fc19bc3
+    Path: Assets/Game/Scenes/GameScene.unity
+  - Guid: 50e38164fa7c416428828e75bfe11994
+    Path: Assets/Game/Scenes/Levels/VoxelSandbox/VoxelSandbox_Level.unity
+  - Guid: 97c007a8b0541764e97409beda87a99a
+    Path: Assets/Game/Scenes/MainMenu.unity
+  - Guid: 1c9cfa538c2d4a24f87b6b6de0b1a48c
+    Path: Assets/Game/Scenes/Playground.unity
+  - Guid: 5cac6aa35d2268742b1e2e949d4e77f6
+    Path: Assets/Game/Tests/App/PlayMode/Scenes/CoreTestLevel_A.unity
+  - Guid: d5aeecaa3ea27b24487da66e38235733
+    Path: Assets/Game/Tests/App/PlayMode/Scenes/CoreTestLevel_B.unity
+  - Guid: a9dedd8f770466d41bc9e357bd6957ac
+    Path: Assets/Game/Voxels/Scenes/VoxelSandbox.unity
+  - Guid: 03f550e08dc84c7484c14691297b2cf1
+    Path: Assets/Modules/Loading/Tests/Runtime/LoadingOutsideBuildScene.unity
+  - Guid: 82719bb466b938d4fb7bead0030ad44f
+    Path: Assets/Modules/Loading/Tests/Runtime/LoadingTestScene.unity
+  - Guid: 9ceb858c1aee96d41b0cb101af37d959
+    Path: Assets/Modules/SaveSystem/Demo/SaveSystemDemo.unity
+  - Guid: 55e6bf61a09248c49a70c2d0d57de3dd
+    Path: Assets/Modules/SaveSystem/Demo/SaveSystemMinimal.unity
+  - Guid: e6da2fc79a311f240b2928ae7d306f6e
+    Path: Assets/Modules/SaveSystem/Tests/Runtime/Scenes/SaveTestScene.unity
+  - Guid: 5189bb18521e6044e85704e4e730ee85
+    Path: Assets/Modules/SaveSystem/Tests/Runtime/Scenes/SaveTestWholeScene.unity
+  - Guid: de5bb8af994f81a40ae7853385804edf
+    Path: Assets/RayFire/Tutorial/Scenes/1 Shatter/1 Shatter. Types. Voronoi.unity
+  - Guid: e44580c7f0db96146908962634475106
+    Path: Assets/RayFire/Tutorial/Scenes/1 Shatter/10 Shatter. Types. Bricks.unity
+  - Guid: 41774344b044f9149b5f2e93bc5f30d7
+    Path: Assets/RayFire/Tutorial/Scenes/1 Shatter/2 Shatter. Types. Splinters.unity
+  - Guid: 55bee203d29565a49a96912a56d54317
+    Path: Assets/RayFire/Tutorial/Scenes/1 Shatter/3 Shatter. Types. Slabs.unity
+  - Guid: 837b0f0b63994524291ed658477f11f1
+    Path: Assets/RayFire/Tutorial/Scenes/1 Shatter/4 Shatter. Types. Radial.unity
+  - Guid: d6f7c001d7dba724ca0cf78b9c871796
+    Path: Assets/RayFire/Tutorial/Scenes/1 Shatter/5 Shatter. Types. Custom.unity
+  - Guid: 7abbc52cf181dac41a1ef7155108b9b0
+    Path: Assets/RayFire/Tutorial/Scenes/1 Shatter/6 Shatter. Types. Slices.unity
+  - Guid: 769ed5f9107354a4c9c273d3cf2162c2
+    Path: Assets/RayFire/Tutorial/Scenes/1 Shatter/7 Shatter. Types. Tets.unity
+  - Guid: 074936205a6145243992516a145a984f
+    Path: Assets/RayFire/Tutorial/Scenes/1 Shatter/8 Shatter. Types. Decompose.unity
+  - Guid: 9aa0af86f9521e14c81ecda22518a68b
+    Path: Assets/RayFire/Tutorial/Scenes/1 Shatter/9 Shatter. Clusters.unity
+  - Guid: d53bc68dc00ebbb46bc18bcb5c276f80
+    Path: Assets/RayFire/Tutorial/Scenes/10 Bomb/1 Bomb. Basics.unity
+  - Guid: 2725ae4a7ed4ef1458d9cdda106c98ee
+    Path: Assets/RayFire/Tutorial/Scenes/2 Rigid/1 Rigid. Simulation Types.unity
+  - Guid: ba27746e678846d4389c2edd09ca2fec
+    Path: Assets/RayFire/Tutorial/Scenes/2 Rigid/10 Rigid. Nested Cluster demolition.unity
+  - Guid: b7816cf177b965e43afeb36ef23b8d16
+    Path: Assets/RayFire/Tutorial/Scenes/2 Rigid/11 Rigid. Connected cluster demolition.unity
+  - Guid: 5cd43e459dc7ac44e841d4e30324f2f6
+    Path: Assets/RayFire/Tutorial/Scenes/2 Rigid/12 Rigid. Reference demolition.unity
+  - Guid: 569f9d0d9e396844a80ee74158a12429
+    Path: Assets/RayFire/Tutorial/Scenes/2 Rigid/13 Rigid. Material.unity
+  - Guid: 9e2a6136c1190ca4a9ebbf4bf22c5998
+    Path: Assets/RayFire/Tutorial/Scenes/2 Rigid/14 Rigid. Damage.unity
+  - Guid: bea3646119c210c429c21d5fc745faa9
+    Path: Assets/RayFire/Tutorial/Scenes/2 Rigid/15 Rigid. Fading.unity
+  - Guid: 2191d4075c14b0041afd4a9900ca4bd1
+    Path: Assets/RayFire/Tutorial/Scenes/2 Rigid/16 Rigid. Reset.unity
+  - Guid: 1f7014d41bd7cc748966c0e675ef67d2
+    Path: Assets/RayFire/Tutorial/Scenes/2 Rigid/2 Rigid. Object Types.unity
+  - Guid: 5c2dc9388cf024a47b240f3c8e7f04f0
+    Path: Assets/RayFire/Tutorial/Scenes/2 Rigid/3 Rigid. Mesh Demolition Types.unity
+  - Guid: 5ea52a5ee01b9f645a75aecc32bfa031
+    Path: Assets/RayFire/Tutorial/Scenes/2 Rigid/4 Rigid. Physics.unity
+  - Guid: ddf8bcb480da2fc42b6e0c70a22ba646
+    Path: Assets/RayFire/Tutorial/Scenes/2 Rigid/5 Rigid. Activation.unity
+  - Guid: 75e3a6bb18c0d3547891986d1a8e708b
+    Path: Assets/RayFire/Tutorial/Scenes/2 Rigid/7 Rigid. Limitations.unity
+  - Guid: 85bfba699af6c2f4bbdbeb7a6e8d6a71
+    Path: Assets/RayFire/Tutorial/Scenes/2 Rigid/8 Rigid. Mesh Demolition. Fragments.unity
+  - Guid: e8891b7c6f008354997dfe70053534ce
+    Path: Assets/RayFire/Tutorial/Scenes/2 Rigid/9 Rigid. Mesh Demolition. Runtime
+      Caching.unity
+  - Guid: ef2cedcf2d46a144cb8da6823b1fd8ba
+    Path: Assets/RayFire/Tutorial/Scenes/3 Debris/1 Debris. Types.unity
+  - Guid: d9d5538c3d15fcc48aab9c5ce2b586b2
+    Path: Assets/RayFire/Tutorial/Scenes/3 Debris/2 Debris. Main.unity
+  - Guid: d05acf2eafb2c7c4fae049540d9cd24c
+    Path: Assets/RayFire/Tutorial/Scenes/3 Debris/3 Debris. Emission.unity
+  - Guid: 60f4bef8d11a287419d83fd563c30514
+    Path: Assets/RayFire/Tutorial/Scenes/3 Debris/4 Debris. Dynamic.unity
+  - Guid: 8a8accdc14d959e40ac29afbce506cd0
+    Path: Assets/RayFire/Tutorial/Scenes/3 Debris/5 Debris. Noise.unity
+  - Guid: 8cb82d36a75bed542a89caf21516c047
+    Path: Assets/RayFire/Tutorial/Scenes/3 Debris/6 Debris. Collision.unity
+  - Guid: 464783b106ab26e4fbc02937d628f0b2
+    Path: Assets/RayFire/Tutorial/Scenes/3 Debris/7 Debris. Limitations.unity
+  - Guid: b55ef5536eec49a48994d48abbc7636e
+    Path: Assets/RayFire/Tutorial/Scenes/3 Debris/8 Debris. Rendering.unity
+  - Guid: 69cc999c56ea03b4f83d291541da5749
+    Path: Assets/RayFire/Tutorial/Scenes/3 Debris/9 Debris. Pool.unity
+  - Guid: e201c6a75da9fd3459619c97a792510b
+    Path: Assets/RayFire/Tutorial/Scenes/4 Dust/1 Dust. Types.unity
+  - Guid: cb67e64b629fc0d4aa4939777d3f57a8
+    Path: Assets/RayFire/Tutorial/Scenes/5 Blade/1 Blade. Basics.unity
+  - Guid: d2e69e4cff2beb7429d0ae03a88322bb
+    Path: Assets/RayFire/Tutorial/Scenes/6 Connectivity/1 Connectivity. Basic.unity
+  - Guid: 6b6a55c0304048a4c9c2f6b301e789ae
+    Path: Assets/RayFire/Tutorial/Scenes/6 Connectivity/2 Connectivity. Activator.unity
+  - Guid: a86864bd30a00384aa403df2f62e6e71
+    Path: Assets/RayFire/Tutorial/Scenes/6 Connectivity/3 Connectivity. Gun.unity
+  - Guid: 776fd52fc34810f40bf67fcc9e6fe9db
+    Path: Assets/RayFire/Tutorial/Scenes/6 Connectivity/4 Connectivity. Collapse.unity
+  - Guid: e204adea24443aa4f8f58fcf7d5f3cae
+    Path: Assets/RayFire/Tutorial/Scenes/6 Connectivity/5 Connectivity. Stress.unity
+  - Guid: 288e819af23847649b2950311b69677e
+    Path: Assets/RayFire/Tutorial/Scenes/6 Connectivity/6 Connectivity. Event.unity
+  - Guid: b6fa130ffca189d49bc673360318ab4a
+    Path: Assets/RayFire/Tutorial/Scenes/7 Restriction/1 Restriction. Basics.unity
+  - Guid: 83f5ce91ecfcb814aabed3a9a22923c1
+    Path: Assets/RayFire/Tutorial/Scenes/8 Activator/1. Activator. Gizmo.unity
+  - Guid: 7762da131a48a434792ad926d282ea86
+    Path: Assets/RayFire/Tutorial/Scenes/8 Activator/2. Activator. Activation.unity
+  - Guid: da31cabd6d9fc6f4c85b23bf9f1f685a
+    Path: Assets/RayFire/Tutorial/Scenes/8 Activator/3. Activator. Animation.unity
+  - Guid: cd04590cfc68bbb4d8004bc6d3235072
+    Path: Assets/RayFire/Tutorial/Scenes/9 RigidRoot/1 RigidRoot..unity
+  _assetFolders: []
+  _assets: []
+  _thirdPartyAssemblies:
+  - Assembly-CSharp-Editor-firstpass
+  - Atomic.Elements
+  - Atomic.Elements.Tests.EditMode
+  - Atomic.Elements.Tests.Performance
+  - Atomic.Elements.Tests.PlayMode
+  - Atomic.Elements.Tests.Substitutions
+  - Atomic.Entites.Tests.Performance
+  - Atomic.Entities
+  - Atomic.Entities.EditModeTests
+  - Atomic.Entities.PlayModeTests
+  - Atomic.Entities.Substitutions
+  - Atomic.Events
+  - Atomic.Events.Tests
+  - DOTween
+  - DOTweenEditor
+  - DOTweenModules
+  - JetBrains.Rider.PathLocator
+  - Mono.Cecil
+  - Mono.Cecil.Mdb
+  - Mono.Cecil.Pdb
+  - Mono.Cecil.Rocks
+  - OnigwrapPlastic
+  - PsdPlugin
+  - RFLib_DotNet_2018
+  - RFUtilsNet
+  - ScriptablePacker
+  - Sirenix.OdinInspector.Attributes
+  - Sirenix.OdinInspector.Editor
+  - Sirenix.OdinInspector.Modules.UnityMathematics
+  - Sirenix.Reflection.Editor
+  - Sirenix.Serialization
+  - Sirenix.Serialization.Config
+  - Sirenix.Utilities
+  - Sirenix.Utilities.Editor
+  - TextMateSharpPlastic
+  - TextMateSharpPlastic.Grammars
+  - UniTask
+  - UniTask.Addressables
+  - UniTask.DOTween
+  - UniTask.Editor
+  - UniTask.Linq
+  - UniTask.TextMeshPro
+  - UnityPipeline.Microsoft.CodeAnalysis
+  - UnityPipeline.Microsoft.CodeAnalysis.CSharp
+  - UnityPipeline.System.Collections.Immutable
+  - UnityPipeline.System.Reflection.Metadata
+  - UnityPipeline.System.Runtime.CompilerServices.Unsafe
+  - log4netPlastic
+  - unityplastic
