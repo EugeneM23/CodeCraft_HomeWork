@@ -7,9 +7,10 @@ namespace Game
 {
     /// <summary>
     /// Experiment: the cannon's smoke drawn as see-through voxel cubes (Game/VoxelPuff, instanced). A shot
-    /// throws a blast of cubes along the barrel and a ring round the muzzle; they slow down, swell,
-    /// drift up and shrink away. A thin wisp of small cubes then keeps leaking from the barrel.
-    /// Cubes stay where they were thrown in world space; the wisp's source follows the barrel.
+    /// spits a jet along the barrel: thin at the muzzle, fattening towards the far end, where the
+    /// biggest, densest blob sits. Every cube flies from the muzzle to its place in that shape over
+    /// ExtendTime, then drifts: settling, creeping apart, thinning away. A thin wisp of small cubes
+    /// then keeps leaking from the barrel. Cubes stay in world space; the wisp follows the barrel.
     /// </summary>
     public sealed class TankVoxelMuzzleSmokeBehaviour : IEntityInit, IEntityLateTick, IEntityDispose
     {
@@ -28,6 +29,11 @@ namespace Game
         private readonly float[] _age = new float[MAX];
         private readonly float[] _life = new float[MAX];
         private readonly float[] _size = new float[MAX];
+        // Jet phase: from the muzzle (_start) to its place (_start + _offset) over _extend seconds;
+        // _extend is 0 once the cube drifts freely.
+        private readonly Vector3[] _start = new Vector3[MAX];
+        private readonly Vector3[] _offset = new Vector3[MAX];
+        private readonly float[] _extend = new float[MAX];
         private readonly Matrix4x4[] _matrices = new Matrix4x4[MAX];
         private readonly Vector4[] _colors = new Vector4[MAX];
         private readonly Matrix4x4[] _batchMatrices = new Matrix4x4[BATCH];
@@ -73,34 +79,47 @@ namespace Game
             Vector3 up = _firePoint.up;
             VoxelMuzzleSmokeSettings s = _settings;
 
+            float length = Mathf.Max(0.1f, s.JetLength);
+            float tipRadius = Mathf.Max(0.01f, s.RadiusEnd);
             for (int i = 0; i < s.Cubes; i++)
             {
-                Vector3 velocity;
-                if (Random.value < s.SideShare)
+                float along; // 0 at the muzzle, 1 at the far end.
+                Vector3 local;
+                if (Random.value < s.TipShare)
                 {
-                    // The muzzle brake's ring: out to the sides, a little forward.
-                    float angle = Random.value * Mathf.PI * 2f;
-                    Vector3 side = right * Mathf.Cos(angle) + up * Mathf.Sin(angle);
-                    velocity = (side + forward * Random.Range(0.1f, 0.5f)).normalized * (s.Speed * Random.Range(0.2f, 0.45f));
+                    // The blob: a ball round the far end, its centre a little short of it.
+                    Vector3 ball = Random.insideUnitSphere * tipRadius;
+                    local = forward * (length - tipRadius * 0.4f) + ball;
+                    along = 1f;
                 }
                 else
                 {
-                    Vector2 cone = Random.insideUnitCircle * s.Spread;
-                    Vector3 dir = (forward + right * cone.x + up * cone.y).normalized;
-                    // Most of the smoke is slow; a few cubes shoot far down the line of fire.
-                    float speed = s.Speed * Mathf.Lerp(0.15f, 1f, Random.value * Random.value);
-                    velocity = dir * speed;
+                    // The spindle: more cubes further out, its radius swelling late.
+                    along = Mathf.Pow(Random.value, 1f / (1f + Mathf.Max(0f, s.DensityToEnd)));
+                    float radius = Mathf.Lerp(s.RadiusMuzzle, tipRadius, Mathf.Pow(along, Mathf.Max(0.1f, s.Taper)));
+                    Vector2 disc = Random.insideUnitCircle * radius;
+                    local = forward * (length * along) + right * disc.x + up * disc.y;
                 }
 
-                Spawn(origin + forward * Random.Range(0f, 0.3f), velocity,
-                    s.Lifetime * Random.Range(0.6f, 1f), Random.Range(0.7f, 1.2f));
+                float size = Mathf.Lerp(s.SizeMuzzle, s.SizeEnd, along) * Random.Range(0.75f, 1.25f);
+                // The far end arrives last: the jet stretches out.
+                float extend = Mathf.Max(0.02f, s.ExtendTime * Mathf.Lerp(0.25f, 1f, along) * Random.Range(0.85f, 1.15f));
+                // What it keeps afterwards: on along the jet, out from its axis.
+                Vector3 radial = local - forward * Vector3.Dot(local, forward);
+                Vector3 residual = (forward + radial.normalized * 0.6f).normalized * (s.ResidualSpeed * Random.Range(0.5f, 1.5f));
+
+                int c = Spawn(origin, residual, s.Lifetime * Random.Range(0.6f, 1f), size);
+                _start[c] = origin;
+                _offset[c] = local;
+                _extend[c] = extend;
             }
 
             _wispLeft = s.WispTime;
             _wispCarry = 0f;
         }
 
-        private void Spawn(Vector3 position, Vector3 velocity, float life, float size)
+        /// <summary>A cube drifting freely from the start (the jet sets its own phase after); its slot.</summary>
+        private int Spawn(Vector3 position, Vector3 velocity, float life, float size)
         {
             int i;
             if (_count < MAX)
@@ -113,6 +132,8 @@ namespace Game
             _age[i] = 0f;
             _life[i] = Mathf.Max(0.05f, life);
             _size[i] = size;
+            _extend[i] = 0f;
+            return i;
         }
 
         public void LateTick(IEntity entity, float deltaTime)
@@ -129,7 +150,7 @@ namespace Game
                     Vector3 v = _firePoint.forward * Random.Range(0.3f, 0.9f) + Vector3.up * Random.Range(0.2f, 0.6f)
                         + Random.insideUnitSphere * 0.15f;
                     Spawn(_firePoint.position, v, s.Lifetime * Random.Range(0.4f, 0.7f),
-                        s.WispSize / Mathf.Max(0.01f, s.Size.y) * Random.Range(0.7f, 1.3f));
+                        s.WispSize * Random.Range(0.7f, 1.3f));
                 }
                 _wispLeft -= deltaTime;
             }
@@ -153,27 +174,48 @@ namespace Game
                     _age[i] = _age[_count];
                     _life[i] = _life[_count];
                     _size[i] = _size[_count];
+                    _start[i] = _start[_count];
+                    _offset[i] = _offset[_count];
+                    _extend[i] = _extend[_count];
                     i--;
                     continue;
                 }
 
-                Vector3 v = _velocity[i];
-                // Keep a slowed cube creeping sideways, along where it was already heading: the cloud spreads.
-                float flat = Mathf.Sqrt(v.x * v.x + v.z * v.z);
-                if (flat > 1e-4f)
+                if (_extend[i] > 0f)
                 {
-                    float push = s.Creep * deltaTime / flat;
-                    v.x += v.x * push;
-                    v.z += v.z * push;
+                    // Jet phase: spat out fast, braking into its place in the jet.
+                    float x = _age[i] / _extend[i];
+                    if (x < 1f)
+                    {
+                        float ease = 1f - Mathf.Pow(1f - x, Mathf.Max(1f, s.EjectSharpness));
+                        _position[i] = _start[i] + _offset[i] * ease;
+                    }
+                    else
+                    {
+                        _position[i] = _start[i] + _offset[i];
+                        _extend[i] = 0f;
+                    }
                 }
-                _velocity[i] = v * damp + rise;
-                _position[i] += _velocity[i] * deltaTime;
+                else
+                {
+                    Vector3 v = _velocity[i];
+                    // Keep a slowed cube creeping sideways, along where it was already heading: the cloud spreads.
+                    float flat = Mathf.Sqrt(v.x * v.x + v.z * v.z);
+                    if (flat > 1e-4f)
+                    {
+                        float push = s.Creep * deltaTime / flat;
+                        v.x += v.x * push;
+                        v.z += v.z * push;
+                    }
+                    _velocity[i] = v * damp + rise;
+                    _position[i] += _velocity[i] * deltaTime;
+                }
 
                 float t = _age[i] / _life[i];
-                // Swells fast, holds, then shrinks to nothing: an opaque cube's way of fading.
+                // Swells from 40 % to its full edge, holds, then shrinks by half as it thins.
                 float grow = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(t / 0.25f));
                 float shrink = 1f - 0.5f * Mathf.SmoothStep(0f, 1f, Mathf.Clamp01((t - 0.6f) / 0.4f));
-                float edge = Mathf.Lerp(s.Size.x, s.Size.y, grow) * shrink * _size[i];
+                float edge = Mathf.Lerp(0.4f, 1f, grow) * shrink * _size[i];
                 float alpha = s.Opacity * (1f - Mathf.SmoothStep(0f, 1f,
                     Mathf.Clamp01((t - s.FadeStart) / Mathf.Max(0.01f, 1f - s.FadeStart))));
 

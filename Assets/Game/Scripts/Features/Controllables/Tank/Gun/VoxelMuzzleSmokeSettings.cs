@@ -18,25 +18,40 @@ namespace Game
         [Tooltip("The old particle wisp still leaking from the barrel after a shot.")]
         public bool ParticleWisp;
 
-        [Header("Blast")]
+        [Header("Jet")]
         [Tooltip("Cubes thrown out on a shot.")]
         [Range(0, 3000)] public int Cubes = 640;
         [Tooltip("Seconds a cube lives; each gets 60...100 % of it.")]
         public float Lifetime = 3.9f;
-        [Tooltip("Speed (m/s) along the barrel of the fastest cubes.")]
-        public float Speed = 14f;
-        [Tooltip("How wide the blast opens: 0 a straight jet, 1 a half sphere.")]
-        [Range(0f, 1f)] public float Spread = 0.45f;
-        [Tooltip("Share of the cubes thrown sideways round the muzzle: the ring of a muzzle brake.")]
-        [Range(0f, 1f)] public float SideShare = 0.3f;
+        [Tooltip("How far (m) along the barrel the jet reaches; its fattest blob sits at the end.")]
+        public float JetLength = 6f;
+        [Tooltip("Radius (m) of the jet at the muzzle.")]
+        public float RadiusMuzzle = 0.12f;
+        [Tooltip("Radius (m) of the blob at the far end.")]
+        public float RadiusEnd = 1.1f;
+        [Tooltip("How late along the jet it fattens: 1 a straight cone, higher stays thin longer and swells at the end.")]
+        public float Taper = 2f;
+        [Tooltip("How the cubes spread along the jet: 0 even, higher packs more of them towards the far end.")]
+        public float DensityToEnd = 1.2f;
+        [Tooltip("Share of the cubes in the round blob at the end of the jet.")]
+        [Range(0f, 1f)] public float TipShare = 0.4f;
+        [Tooltip("Edge (m) of a cube at the muzzle and in the blob at the end.")]
+        public float SizeMuzzle = 0.1f;
+        public float SizeEnd = 0.45f;
+        [Tooltip("Seconds the jet takes to stretch out to its full length.")]
+        public float ExtendTime = 0.3f;
+        [Tooltip("How sharply the jet is spat out: 1 even speed all the way, higher shoots out fast and brakes hard at the end.")]
+        public float EjectSharpness = 3f;
+        [Tooltip("Speed (m/s) a cube keeps once the jet has stretched out; the slow drift starts from it.")]
+        public float ResidualSpeed = 0.5f;
+
+        [Header("Drift")]
         [Tooltip("How fast the cubes lose speed in the air (1/s).")]
         public float Drag = 3.2f;
         [Tooltip("Upward drift (m/s²) of the smoke; below 0 it slowly settles. Steady speed is Rise / Drag.")]
         public float Rise = -0.25f;
         [Tooltip("Sideways push (m/s²) that keeps a slowed cube creeping away from the muzzle, so the cloud spreads. Steady speed is Creep / Drag.")]
         public float Creep = 0.6f;
-        [Tooltip("Edge (m) of a cube at birth and at its fullest.")]
-        public Vector2 Size = new(0.1f, 0.38f);
         [Tooltip("Cubes snap to a grid of this step (m); 0 moves them freely.")]
         public float Grid = 0.08f;
 
