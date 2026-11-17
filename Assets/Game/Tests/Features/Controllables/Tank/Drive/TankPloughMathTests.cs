@@ -98,6 +98,31 @@ namespace Game.Tests
         }
 
         [Test]
+        public void Ramp_LeavesAnOverhangsUndersideAsItIs()
+        {
+            var underside = new Vector3(0f, -0.3f, -1f).normalized;
+            Assert.That(TankPloughMath.Ramp(underside, 30f), Is.EqualTo(underside).Using(Vector3EqualityComparer.Instance));
+        }
+
+        [Test]
+        public void NoseUpSpin_OverridesANoseDownSpin()
+        {
+            var angular = new Vector3(0.5f, 0.2f, 0f); // +right: nose going down
+            Vector3 after = TankPloughMath.NoseUpSpin(angular, Vector3.right, 0.8f);
+            Assert.That(after, Is.EqualTo(new Vector3(-0.8f, 0.2f, 0f)).Using(Vector3EqualityComparer.Instance));
+            Vector3 nose = Quaternion.AngleAxis(after.x * Mathf.Rad2Deg * 0.1f, Vector3.right) * Vector3.forward;
+            Assert.That(nose.y, Is.GreaterThan(0f), "the nose goes up");
+        }
+
+        [Test]
+        public void NoseUpSpin_KeepsAFasterNoseUpSpin()
+        {
+            var angular = new Vector3(-1.5f, 0f, 0.1f);
+            Assert.That(TankPloughMath.NoseUpSpin(angular, Vector3.right, 0.8f),
+                Is.EqualTo(angular).Using(Vector3EqualityComparer.Instance));
+        }
+
+        [Test]
         public void Throw_GoesForwardAndUp_ScaledBySpeed()
         {
             var v = new Vector3(0f, 0f, 8f);

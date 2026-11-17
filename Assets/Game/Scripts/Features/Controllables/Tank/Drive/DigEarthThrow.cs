@@ -9,12 +9,8 @@ namespace Game
     /// </summary>
     public sealed class DigEarthThrow : IEarthThrow
     {
-        private readonly int _debris;
-
-        public DigEarthThrow(int debrisPerBite) => _debris = debrisPerBite;
-
         public int Excavate(VoxelBody ground, Vector3 point, float radius, Vector3 velocity, float spread,
-            float volumeShare) =>
-            ground.Dig(point, radius, velocity, Mathf.RoundToInt(_debris * volumeShare));
+            float volumeShare, int debrisBudget) =>
+            ground.Dig(point, radius, velocity, Mathf.RoundToInt(debrisBudget * volumeShare));
     }
 }

@@ -27,9 +27,9 @@ MonoBehaviour:
   SpreadMax: 0.7
   BiteDebris: 160
   SpeedLoss: 0.33
-  Deflect: 0.1
-  Hop: 1.2
-  PitchKick: 0.8
+  Deflect: 0
+  Hop: 0.15
+  PitchKick: 0.5
   ImpactCooldown: 0.3
   ShakeStrength: 0.6
   ShakeDuration: 0.35

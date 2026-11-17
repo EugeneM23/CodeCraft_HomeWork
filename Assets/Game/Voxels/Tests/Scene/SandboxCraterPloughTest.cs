@@ -12,11 +12,14 @@ using UnityEngine.TestTools;
 namespace Game.Voxels.Tests
 {
     /// <summary>
-    /// VoxelSandbox: an air bomb's crater on open ground ahead of the tank, and the tank driven into
-    /// it on full gas with Shift. It must not stop dead against the far slope: it keeps at least half
-    /// its entry speed there and is out over the far rim within 2.5 s of entering. Its nose ploughs
-    /// on the way (TankPloughEvents.Ploughed) and earth is dug out of the far slope.
-    /// Screenshots go to Logs/CraterPlough.
+    /// VoxelSandbox, the tank on full gas with Shift along a straight runway.
+    ///
+    /// With an air bomb's crater ahead it must not stop dead against the far slope: it keeps at least
+    /// half its entry speed there, is out over the far rim within 2.5 s of entering and leaves it nose
+    /// up. Its nose ploughs on the way (TankPloughEvents.Ploughed) and earth is dug out of the far
+    /// slope. Screenshots go to Logs/CraterPlough.
+    ///
+    /// Without a crater the plough never answers: ordinary driving is no hit.
     /// </summary>
     public sealed class SandboxCraterPloughTest
     {
@@ -25,6 +28,12 @@ namespace Game.Voxels.Tests
         private const float RIM = 4f;
         private const float RUN_UP = 14f;
         private const int GROUND = 1 << 3;
+        // Past the far rim: how far on the nose-up pitch is looked at.
+        private const float PAST_RIM = 3f;
+
+        private GameObject _tankObject;
+        private IEntity _tank;
+        private Rigidbody _body;
 
         [UnityTest]
         [Timeout(120000)]
@@ -33,18 +42,7 @@ namespace Game.Voxels.Tests
             LogAssert.ignoreFailingMessages = true;
             try
             {
-                yield return EditorSceneManager.LoadSceneAsyncInPlayMode(SCENE, new LoadSceneParameters(LoadSceneMode.Single));
-                for (int i = 0; i < 90; i++)
-                    yield return new WaitForFixedUpdate();
-
-                // No bombs but ours.
-                FieldInfo on = typeof(VoxelAirStrike).GetField("_on", BindingFlags.NonPublic | BindingFlags.Instance);
-                foreach (VoxelAirStrike strike in Object.FindObjectsByType<VoxelAirStrike>(FindObjectsSortMode.None))
-                    on.SetValue(strike, false);
-
-                GameObject tankObject = GameObject.Find("Tank_01");
-                IEntity tank = tankObject.GetComponent<MonoEntity>();
-                Rigidbody body = tankObject.GetComponent<Rigidbody>();
+                yield return LoadSandbox();
 
                 Assert.IsTrue(TryFindRunway(out Vector3 start, out Vector3 forward), "open ground for a run-up and a crater");
                 Vector3 crater = start + forward * (RUN_UP + RIM);
@@ -52,17 +50,12 @@ namespace Game.Voxels.Tests
                 for (int i = 0; i < 10; i++)
                     yield return null; // the crater's collider is rebuilt a frame or two later
 
-                body.linearVelocity = Vector3.zero;
-                body.angularVelocity = Vector3.zero;
-                body.position = start + Vector3.up * 0.4f;
-                body.rotation = Quaternion.LookRotation(forward);
-                tankObject.transform.SetPositionAndRotation(body.position, body.rotation);
-                for (int i = 0; i < 40; i++)
-                    yield return new WaitForFixedUpdate();
+                yield return PlaceTank(start, forward);
+                float restY = _body.position.y;
 
                 Assert.IsTrue(Physics.Raycast(crater + forward * (RIM * 0.7f) + Vector3.up * 5f, Vector3.down,
                     out RaycastHit farHit, 10f, GROUND), "the far slope");
-                VoxelBody farGround = FindGround(farHit.point);
+                VoxelBody farGround = TankPloughBehaviour.FindGround(farHit.point);
                 Assert.IsNotNull(farGround, "the ground body under the far slope");
                 int before = farGround.SolidCount;
                 int ploughed = 0;
@@ -71,14 +64,17 @@ namespace Game.Voxels.Tests
                 try
                 {
                     Directory.CreateDirectory(OUT);
-                    IReactiveVariable<Vector2> drive = tank.GetDriveInput();
-                    tank.TryGetDriveBoost(out IReactiveVariable<bool> boost);
+                    IReactiveVariable<Vector2> drive = _tank.GetDriveInput();
+                    _tank.TryGetDriveBoost(out IReactiveVariable<bool> boost);
 
                     float entrySpeed = -1f, entryTime = -1f, exitTime = -1f;
                     float minFarSpeed = float.MaxValue;
+                    float maxNoseUp = float.MinValue;
+                    float apex = float.MinValue;
                     float until = Time.time + 8f;
                     int shot = 0;
-                    while (Time.time < until && exitTime < 0f)
+                    bool past = false;
+                    while (Time.time < until && !past)
                     {
                         drive.Value = new Vector2(0f, 1f);
                         if (boost != null)
@@ -86,29 +82,39 @@ namespace Game.Voxels.Tests
                         yield return new WaitForEndOfFrame();
 
                         // Distance along the run from the crater's centre: -RIM at the near rim, +RIM at the far one.
-                        float along = Vector3.Dot(body.position - crater, forward);
-                        float speed = Vector3.Dot(body.linearVelocity, forward);
+                        float along = Vector3.Dot(_body.position - crater, forward);
+                        float speed = Vector3.Dot(_body.linearVelocity, forward);
                         if (entryTime < 0f && along >= -RIM)
                         {
                             entryTime = Time.time;
                             entrySpeed = speed;
                         }
 
-                        if (entryTime >= 0f && along > 0f)
+                        if (entryTime < 0f)
+                            continue;
+                        if (along > 0f && exitTime < 0f)
                             minFarSpeed = Mathf.Min(minFarSpeed, speed);
-                        if (entryTime >= 0f && along > RIM + 1.4f)
+                        if (along > RIM + 1.4f && exitTime < 0f)
                             exitTime = Time.time;
-                        if (entryTime >= 0f && shot < 12 && Time.frameCount % 4 == 0)
+                        if (along > 0f)
+                            apex = Mathf.Max(apex, _body.position.y - restY);
+                        if (along >= RIM && along <= RIM + PAST_RIM)
+                            maxNoseUp = Mathf.Max(maxNoseUp, Mathf.Asin(Mathf.Clamp(_tankObject.transform.forward.y, -1f, 1f)) * Mathf.Rad2Deg);
+                        past = along > RIM + PAST_RIM;
+                        if (shot < 12 && Time.frameCount % 4 == 0)
                             Capture($"{shot++:00}_crater");
                     }
 
                     float took = exitTime >= 0f ? exitTime - entryTime : float.PositiveInfinity;
-                    Debug.Log($"[CraterPlough] entry {entrySpeed:F2} m/s, min on far slope {minFarSpeed:F2} m/s " +
-                              $"({minFarSpeed / Mathf.Max(0.01f, entrySpeed):P0}), out in {took:F2} s");
+                    TankPloughConfig preset = _tankObject.GetComponent<TankInstaller>().PloughPreset;
+                    Debug.Log($"[CraterPlough] {(preset != null ? preset.DisplayName : "-")}: entry {entrySpeed:F2} m/s, " +
+                              $"min on far slope {minFarSpeed:F2} m/s ({minFarSpeed / Mathf.Max(0.01f, entrySpeed):P0}), " +
+                              $"out in {took:F2} s, nose up over the far rim {maxNoseUp:F1}°, apex {apex:F2} m above the rim");
 
                     Assert.That(entrySpeed, Is.GreaterThan(6f), "the tank came in fast");
                     Assert.That(minFarSpeed, Is.GreaterThanOrEqualTo(entrySpeed * 0.5f), "kept half its speed on the far slope");
                     Assert.That(took, Is.LessThan(2.5f), "out over the far rim within 2.5 s");
+                    Assert.That(maxNoseUp, Is.GreaterThanOrEqualTo(12f), "nose up over the far rim");
                     Assert.That(ploughed, Is.GreaterThan(0), "the nose ploughed");
                     Assert.That(farGround.SolidCount, Is.LessThan(before), "earth dug out of the far slope");
                 }
@@ -116,6 +122,44 @@ namespace Game.Voxels.Tests
                 {
                     TankPloughEvents.Ploughed -= OnPloughed;
                 }
+            }
+            finally
+            {
+                LogAssert.ignoreFailingMessages = false;
+            }
+        }
+
+        [UnityTest]
+        [Timeout(120000)]
+        public IEnumerator Sandbox_TankDrivesFlatGroundAtSpeed_NeverPloughs()
+        {
+            LogAssert.ignoreFailingMessages = true;
+            try
+            {
+                yield return LoadSandbox();
+                Assert.IsTrue(TryFindRunway(out Vector3 start, out Vector3 forward), "open ground for a run");
+                yield return PlaceTank(start, forward);
+
+                TankPloughBehaviour plough = _tankObject.GetComponent<TankInstaller>().Plough;
+                Assert.IsNotNull(plough, "the tank has a plough");
+                IReactiveVariable<Vector2> drive = _tank.GetDriveInput();
+                _tank.TryGetDriveBoost(out IReactiveVariable<bool> boost);
+
+                // The engine cranks first (TankEngine); then the whole runway, flat out.
+                float topSpeed = 0f;
+                float until = Time.time + 8f;
+                while (Time.time < until && Vector3.Dot(_body.position - start, forward) < 26f)
+                {
+                    drive.Value = new Vector2(0f, 1f);
+                    if (boost != null)
+                        boost.Value = true;
+                    yield return new WaitForEndOfFrame(); // after the player's controller has written the stick
+                    topSpeed = Mathf.Max(topSpeed, Vector3.Dot(_body.linearVelocity, forward));
+                }
+
+                Debug.Log($"[FlatDrive] top speed {topSpeed:F2} m/s, plough impacts {plough.Impacts}");
+                Assert.That(topSpeed, Is.GreaterThan(6f), "the tank got going");
+                Assert.That(plough.Impacts, Is.EqualTo(0), "no plough on flat ground");
             }
             finally
             {
@@ -133,18 +177,31 @@ namespace Game.Voxels.Tests
             yield return SceneManager.UnloadSceneAsync(sandbox);
         }
 
-        /// <summary>The terrain body whose bounds hold <paramref name="point"/>, as TankPloughBehaviour finds it.</summary>
-        private static VoxelBody FindGround(Vector3 point)
+        private IEnumerator LoadSandbox()
         {
-            var bodies = VoxelWorld.Bodies;
-            for (int i = 0; i < bodies.Count; i++)
-            {
-                VoxelBody body = bodies[i];
-                if (body != null && body.IsTerrain && body.IsCreated && body.WorldBounds.SqrDistance(point) < 0.01f)
-                    return body;
-            }
+            yield return EditorSceneManager.LoadSceneAsyncInPlayMode(SCENE, new LoadSceneParameters(LoadSceneMode.Single));
+            for (int i = 0; i < 90; i++)
+                yield return new WaitForFixedUpdate();
 
-            return null;
+            // No bombs but ours.
+            FieldInfo on = typeof(VoxelAirStrike).GetField("_on", BindingFlags.NonPublic | BindingFlags.Instance);
+            foreach (VoxelAirStrike strike in Object.FindObjectsByType<VoxelAirStrike>(FindObjectsSortMode.None))
+                on.SetValue(strike, false);
+
+            _tankObject = GameObject.Find("Tank_01");
+            _tank = _tankObject.GetComponent<MonoEntity>();
+            _body = _tankObject.GetComponent<Rigidbody>();
+        }
+
+        private IEnumerator PlaceTank(Vector3 start, Vector3 forward)
+        {
+            _body.linearVelocity = Vector3.zero;
+            _body.angularVelocity = Vector3.zero;
+            _body.position = start + Vector3.up * 0.4f;
+            _body.rotation = Quaternion.LookRotation(forward);
+            _tankObject.transform.SetPositionAndRotation(_body.position, _body.rotation);
+            for (int i = 0; i < 40; i++)
+                yield return new WaitForFixedUpdate();
         }
 
         /// <summary>

@@ -121,6 +121,9 @@ namespace Game
         public TankPloughConfig PloughPreset =>
             _ploughPresets != null && _ploughPresets.Length > 0 ? _ploughPresets[_ploughPreset % _ploughPresets.Length] : null;
 
+        /// <summary>The nose's ploughing, or null without a hull collider or a preset. For tests.</summary>
+        public TankPloughBehaviour Plough => _plough;
+
         /// <summary>The next plough preset, round and round. For the sandbox.</summary>
         public void NextPloughPreset()
         {
@@ -199,7 +202,7 @@ namespace Game
             // after the hit is set here, over the drive's push.
             if (_hullCollider != null && PloughPreset != null)
             {
-                _plough = new TankPloughBehaviour(_hullCollider, PloughPreset, new DigEarthThrow(PloughPreset.BiteDebris));
+                _plough = new TankPloughBehaviour(_hullCollider, PloughPreset, new DigEarthThrow());
                 entity.AddBehaviour(_plough);
             }
             if (_contacts != null)

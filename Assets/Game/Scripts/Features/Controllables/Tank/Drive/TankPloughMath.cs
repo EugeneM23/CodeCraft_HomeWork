@@ -53,13 +53,25 @@ namespace Game
         /// ground it describes is no steeper than <paramref name="maxDegrees"/>. A voxel step's vertical face is
         /// no wall to the nose that digs it out: the hull rides up the ramp the bite cuts, not up the face.
         /// </summary>
+        /// <remarks>An overhang's underside (normal pointing down) is left as it is: there is no ramp to cut up it.</remarks>
         public static Vector3 Ramp(Vector3 normal, float maxDegrees)
         {
             Vector3 flat = new Vector3(normal.x, 0f, normal.z);
-            if (flat.sqrMagnitude < 1e-8f || Vector3.Angle(normal, Vector3.up) <= maxDegrees)
+            if (normal.y < 0f || flat.sqrMagnitude < 1e-8f || Vector3.Angle(normal, Vector3.up) <= maxDegrees)
                 return normal;
             float rad = maxDegrees * Mathf.Deg2Rad;
             return flat.normalized * Mathf.Sin(rad) + Vector3.up * Mathf.Cos(rad);
+        }
+
+        /// <summary>
+        /// <paramref name="angular"/> with its nose-up spin (about -<paramref name="right"/>) at least
+        /// <paramref name="minRate"/> rad/s: a nose-down spin is overridden, a faster nose-up one kept.
+        /// The other axes are left as they are.
+        /// </summary>
+        public static Vector3 NoseUpSpin(Vector3 angular, Vector3 right, float minRate)
+        {
+            float noseUp = -Vector3.Dot(angular, right);
+            return noseUp >= minRate ? angular : angular - right * (minRate - noseUp);
         }
 
         /// <summary>Mean velocity of the earth the nose throws: forward along the slope and up off it.</summary>

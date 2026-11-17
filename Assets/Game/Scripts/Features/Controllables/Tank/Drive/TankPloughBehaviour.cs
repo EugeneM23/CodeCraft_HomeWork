@@ -12,8 +12,9 @@ namespace Game
     /// Every physics step it sweeps the hull's box a moment ahead along its flight. Ground the
     /// nose is about to hit hard enough (TankPloughMath.IsNoseHit) is dug out before it gets there
     /// — three bites across the nose, thrown forward and up — and the hull is given the velocity it
-    /// leaves the hit with: a share of its speed gone, turned up along the slope, nose up. Out of a
-    /// crater it comes over the far rim in a short jump rather than crawling out.
+    /// leaves the hit with: a share of its speed gone, turned up along the slope, the nose spinning
+    /// up and the bow kicked up. Out of a crater it comes over the far rim nose-up in a short jump
+    /// rather than crawling out.
     ///
     /// A hit the sweep missed (the collider was rebuilt late, a thin ledge) shows as a step that
     /// lost much of the speed: it is answered after the fact, from the speed before it.
@@ -42,7 +43,6 @@ namespace Game
         private float _nextResponse;
         private Vector3 _lastVelocity;
         private bool _hasLast;
-        private CameraShakeArgs _shake;
 
         public TankPloughConfig Config { get; set; }
 
@@ -141,9 +141,12 @@ namespace Game
 
             _nextResponse = _time + config.ImpactCooldown;
             Impacts++;
-            _body.linearVelocity = TankPloughMath.Deflect(velocity, ramp, strength, config.SpeedLoss, config.Deflect,
-                config.Hop);
-            _body.angularVelocity += -hull.right * (config.PitchKick * strength); // negative about right = nose up
+            _body.linearVelocity = TankPloughMath.Deflect(velocity, ramp, strength, config.SpeedLoss, config.Deflect, 0f);
+            // The nose comes up off the hit: at least this pitch rate, whatever the hull was spinning before.
+            _body.angularVelocity = TankPloughMath.NoseUpSpin(_body.angularVelocity, hull.right, config.PitchKick * strength);
+            // The hop lifts the bow, not the middle: Hop · strength m/s up, and the nose comes up with it.
+            Vector3 bow = hull.TransformPoint(_hull.center + new Vector3(0f, -_hull.size.y * 0.5f, _hull.size.z * 0.5f));
+            _body.AddForceAtPosition(Vector3.up * (config.Hop * strength * _body.mass), bow, ForceMode.Impulse);
 
             if (config.DustRadius > 0f)
                 VoxelSmoke.Blast(hit.point, config.DustRadius * strength, 0.6f);
@@ -164,13 +167,14 @@ namespace Game
                 Vector3 thrown = TankPloughMath.Throw(velocity, normal, config.ThrowLift, config.ThrowScale);
                 float spread = Mathf.Lerp(config.SpreadMin, config.SpreadMax, strength);
 
-                _earth.Excavate(ground, centre, radius, thrown, spread, config.ThrowVolume);
-                _earth.Excavate(ground, centre + across, radius * 0.85f, thrown, spread, config.ThrowVolume);
-                _earth.Excavate(ground, centre - across, radius * 0.85f, thrown, spread, config.ThrowVolume);
+                _earth.Excavate(ground, centre, radius, thrown, spread, config.ThrowVolume, config.BiteDebris);
+                _earth.Excavate(ground, centre + across, radius * 0.85f, thrown, spread, config.ThrowVolume, config.BiteDebris);
+                _earth.Excavate(ground, centre - across, radius * 0.85f, thrown, spread, config.ThrowVolume, config.BiteDebris);
             }
         }
 
-        private static VoxelBody FindGround(Vector3 point)
+        /// <summary>The terrain body whose bounds hold <paramref name="point"/>, or null.</summary>
+        public static VoxelBody FindGround(Vector3 point)
         {
             var bodies = VoxelWorld.Bodies;
             for (int i = 0; i < bodies.Count; i++)

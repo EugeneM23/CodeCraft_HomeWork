@@ -28,8 +28,8 @@ MonoBehaviour:
   BiteDebris: 300
   SpeedLoss: 0.25
   Deflect: 0.3
-  Hop: 2.2
-  PitchKick: 1.3
+  Hop: 0.6
+  PitchKick: 0.9
   ImpactCooldown: 0.3
   ShakeStrength: 1
   ShakeDuration: 0.5
