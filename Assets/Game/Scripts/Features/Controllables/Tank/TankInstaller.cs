@@ -61,6 +61,8 @@ namespace Game
         [SerializeField] private MonoEntity _muzzleSmoke;
         [Tooltip("Smoke still trickling out of the barrel after a shot; restarted on every shot.")]
         [SerializeField] private ParticleSystem _muzzleWisp;
+        [Tooltip("Experiment: voxel cubes as the cannon's smoke; switches for the old particle smoke.")]
+        [SerializeField] private VoxelMuzzleSmokeSettings _voxelMuzzleSmoke = new();
 
         [Header("Body")]
         [SerializeField] private Rigidbody _rigidbody;
@@ -217,7 +219,8 @@ namespace Game
             if (_gunVisual != null)
                 entity.AddBehaviour(new GunRecoilBehaviour(_gunVisual, _gunRecoilDistance, _gunKickTime, _gunHoldTime,
                     _gunReturnTime));
-            entity.AddBehaviour(new TankMuzzleSmokeBehaviour(gameContext, _muzzleSmoke, _muzzleWisp));
+            entity.AddBehaviour(new TankMuzzleSmokeBehaviour(gameContext, _muzzleSmoke, _muzzleWisp, _voxelMuzzleSmoke));
+            entity.AddBehaviour(new TankVoxelMuzzleSmokeBehaviour(_voxelMuzzleSmoke));
             // Shift on the gas: the tracks spin and throw earth back; full gas rams harder.
             TankWheelSpinBehaviour wheelSpin = new(engine, _boostMultiplier);
             entity.AddBehaviour(wheelSpin);
