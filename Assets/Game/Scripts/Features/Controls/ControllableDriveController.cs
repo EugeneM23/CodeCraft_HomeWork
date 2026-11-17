@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Game
 {
     /// <summary>
-    /// Drive input for a vehicle the player sits in: the same keys as walking, read the tank way.
+    /// Drive input for a vehicle the player sits in, from the Tank map of the game's input actions (Drive, Boost).
     /// Vertical is the throttle along the hull, horizontal turns the hull on the spot.
     ///
     /// Idle while Character has no DriveInput (on foot, PlayerMoveController has the keys).
@@ -57,10 +57,12 @@ namespace Game
             if (_driveInput == null)
                 return;
 
-            _driveInput.Value = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
+            // The Tank map is off while a menu covers the battle: both read as released and the tank stops.
+            GameControls.TankActions tank = AppServices.Input.Controls.Tank;
+            _driveInput.Value = tank.Drive.ReadValue<Vector2>();
 
             if (_driveBoost != null)
-                _driveBoost.Value = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
+                _driveBoost.Value = tank.Boost.IsPressed();
         }
     }
 }

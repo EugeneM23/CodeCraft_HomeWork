@@ -5,17 +5,14 @@ using UnityEngine;
 namespace Game
 {
     /// <summary>
-    /// Fire input in a vehicle: the left mouse button fires the main gun, the right one the
-    /// secondary gun, each for as long as it is held and the gun is ready. On foot the space bar
-    /// fires (PlayerCharacterFireController); in a vehicle only the mouse does.
+    /// Fire input in a vehicle, from the Tank map of the game's input actions: FireMain (left mouse
+    /// button by default) fires the main gun, FireSecondary (right) the secondary gun, each for as
+    /// long as it is held and the gun is ready. The map is off while a menu covers the battle.
     ///
     /// Input is checked before anything else, so an idle frame costs two button queries.
     /// </summary>
     public sealed class ControllableFireController : IPlayerContextInit, IPlayerContextDispose, IPlayerContextLateTick
     {
-        private const int MAIN_BUTTON = 0;
-        private const int SECONDARY_BUTTON = 1;
-
         private Subscription<IEntity> _characterSubscription;
 
         private IExpression<bool> _mainCondition;
@@ -48,10 +45,11 @@ namespace Game
 
         public void LateTick(IPlayerContext context, float deltaTime)
         {
-            if (Input.GetMouseButton(MAIN_BUTTON))
+            GameControls.TankActions tank = AppServices.Input.Controls.Tank;
+            if (tank.FireMain.IsPressed())
                 Fire(_mainCondition, _mainAction);
 
-            if (Input.GetMouseButton(SECONDARY_BUTTON))
+            if (tank.FireSecondary.IsPressed())
                 Fire(_secondaryCondition, _secondaryAction);
         }
 

@@ -1,5 +1,6 @@
 using Atomic.Entities;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace Game
 {
@@ -17,7 +18,7 @@ namespace Game
         /// </summary>
         public static Vector3 ScreenPoint => Cursor.lockState == CursorLockMode.Locked
             ? new Vector3(Screen.width * 0.5f, Screen.height * 0.5f, 0f)
-            : Input.mousePosition;
+            : Mouse.current != null ? (Vector3)Mouse.current.position.ReadValue() : Vector3.zero;
 
         /// <summary>
         /// The point where the ray under the cursor meets the horizontal plane at

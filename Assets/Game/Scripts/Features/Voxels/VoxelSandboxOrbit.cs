@@ -42,6 +42,12 @@ namespace Game
     /// </summary>
     public sealed class VoxelSandboxOrbit : MonoBehaviour
     {
+        // The old Input Manager's "Mouse X/Y" sensitivity: keeps _turnSpeed meaning what it meant.
+        private const float LEGACY_AXIS_SCALE = 0.1f;
+
+        /// <summary>The battle HUD draws its own crosshair while it is on; this one then stays off.</summary>
+        public static bool CrosshairByHud { get; set; }
+
         [Tooltip("Degrees the camera turns per pixel of mouse movement.")]
         [SerializeField] private float _turnSpeed = 0.45f;
         [Tooltip("How far (degrees) mouse up, towards where the view looks, tilts the camera towards the horizon.")]
@@ -89,7 +95,6 @@ namespace Game
         private float _shownPitch;
         // 0..1: how much the camera looks ahead; eases in while the cursor is held, out when it is let go.
         private float _ahead;
-        private float _lastClick = -1f;
         private bool _holding;
 
         private void Awake()
@@ -158,28 +163,31 @@ namespace Game
             if (_offset == null)
                 return;
 
-            if (Input.GetMouseButtonDown(2))
-            {
-                if (Time.unscaledTime - _lastClick < 0.3f)
-                    _yaw = _pitch = 0f;
-                _lastClick = Time.unscaledTime;
-            }
+            // The Tank map of the game's input actions; it is off while a menu covers the battle, so
+            // a click on a pause button neither fires nor takes the cursor back.
+            IGameInput input = AppServices.Input;
+            GameControls.TankActions tank = input.Controls.Tank;
 
-            if (Input.GetKeyDown(KeyCode.Escape))
+            if (tank.ResetCamera.WasPerformedThisFrame())
+                _yaw = _pitch = 0f;
+
+            if (tank.Pause.WasPressedThisFrame())
                 Release();
             else if (Cursor.lockState != CursorLockMode.Locked && Application.isFocused
-                     && (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1)))
+                     && (tank.FireMain.WasPressedThisFrame() || tank.FireSecondary.WasPressedThisFrame()))
                 Hold();
 
             // Only a held cursor turns the camera: a free one is aiming, or off in another window.
             bool held = Cursor.lockState == CursorLockMode.Locked;
             if (held)
             {
-                _yaw += Input.GetAxisRaw("Mouse X") * _turnSpeed * 10f;
+                // Mouse delta in pixels, scaled like the old "Mouse X/Y" axes, times the player's sensitivity.
+                Vector2 look = tank.Look.ReadValue<Vector2>() * (LEGACY_AXIS_SCALE * input.LookSensitivity);
+                _yaw += look.x * _turnSpeed * 10f;
                 // Mouse up tilts the camera towards the horizon; mouse down, up over the tank. With the
                 // view not turning, up has nothing to do past the start.
                 float lowest = _turnView ? -_tiltAhead : 0f;
-                _pitch = Mathf.Clamp(_pitch - Input.GetAxisRaw("Mouse Y") * _turnSpeed * 10f, lowest, _maxPitch);
+                _pitch = Mathf.Clamp(_pitch - look.y * _turnSpeed * 10f, lowest, _maxPitch);
             }
 
             float blend = 1f - Mathf.Exp(-_ease * Time.unscaledDeltaTime);
@@ -241,7 +249,7 @@ namespace Game
 
         private void OnGUI()
         {
-            if (_offset == null || Cursor.lockState != CursorLockMode.Locked
+            if (_offset == null || CrosshairByHud || Cursor.lockState != CursorLockMode.Locked
                 || UnityEngine.Event.current.type != EventType.Repaint)
                 return;
 

@@ -189,7 +189,7 @@ namespace Game
                 {
                     ""name"": ""WASD"",
                     ""id"": ""6a1d0000-0000-4000-8000-000000001001"",
-                    ""path"": ""2DVector"",
+                    ""path"": ""2DVector(mode=1)"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -244,7 +244,7 @@ namespace Game
                 {
                     ""name"": ""Arrows"",
                     ""id"": ""6a1d0000-0000-4000-8000-000000001006"",
-                    ""path"": ""2DVector"",
+                    ""path"": ""2DVector(mode=1)"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -300,6 +300,17 @@ namespace Game
                     ""name"": """",
                     ""id"": ""6a1d0000-0000-4000-8000-000000001011"",
                     ""path"": ""<Keyboard>/leftShift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Boost"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""6a1d0000-0000-4000-8000-000000001019"",
+                    ""path"": ""<Keyboard>/rightShift"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",

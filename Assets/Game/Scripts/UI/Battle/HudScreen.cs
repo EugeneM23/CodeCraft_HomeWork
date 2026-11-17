@@ -110,6 +110,7 @@ namespace Game
         // The stack shows the HUD when the battle starts (the object is off until then): fresh hints.
         private void OnEnable()
         {
+            VoxelSandboxOrbit.CrosshairByHud = true;
             Controls.Tank.ToggleHints.performed += _onToggleHints;
             Controls.Tank.ToggleDebug.performed += _onToggleDebug;
             _nextRefresh = 0f;
@@ -119,6 +120,7 @@ namespace Game
 
         private void OnDisable()
         {
+            VoxelSandboxOrbit.CrosshairByHud = false;
             Controls.Tank.ToggleHints.performed -= _onToggleHints;
             Controls.Tank.ToggleDebug.performed -= _onToggleDebug;
         }
