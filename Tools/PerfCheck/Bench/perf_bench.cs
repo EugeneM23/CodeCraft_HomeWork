@@ -222,9 +222,17 @@ string CounterStats(ProfilerRecorder r, bool time)
 
 // ---------- Drive and events ----------
 var drive = new float[2]; // steer, throttle; 0,0 = leave the input alone
+// A blast is queued from EditorApplication.update and set off here, inside the player loop, so its
+// main-thread cost lands in PlayerLoop like a real bomb's (from EditorApplication.update it did not).
+var pendingBlast = new List<Vector3>();
 UnityEngine.Events.UnityAction onRender = () =>
 {
     if (drive[0] != 0 || drive[1] != 0) driveInput.Value = new Vector2(drive[0], drive[1]);
+    if (pendingBlast.Count > 0 && explode != null && strikes.Length > 0 && strikes[0] != null)
+    {
+        foreach (var p in pendingBlast) explode.Invoke(strikes[0], new object[] { p });
+        pendingBlast.Clear();
+    }
 };
 Application.onBeforeRender += onRender;
 
@@ -356,7 +364,7 @@ onUpdate = () =>
             {
                 float a = blasts * 60f * Mathf.Deg2Rad;
                 Vector3 p = Ground(tank.position + new Vector3(Mathf.Cos(a), 0, Mathf.Sin(a)) * (12f + (blasts % 3) * 2f));
-                explode.Invoke(strikes[0], new object[] { p });
+                pendingBlast.Add(p);
                 blasts++;
             }
             if (name == "crush" && regax != null) regaxMin = Mathf.Min(regaxMin, Vector3.Distance(regax.transform.position, tank.position));
