@@ -138,7 +138,7 @@ Assets/Game/Audio/
 
 Это чужие файлы, вопрос 1.
 
-**Как `GameAudio` появляется.** Пока ядро не собирает уровень из сцен, `RuntimeInitializeOnLoadMethod(AfterSceneLoad)` создаёт префаб `GameAudio`, если на сцене есть `GameContext`. Префаб `AppAudio` — один на игру, `DontDestroyOnLoad`. Сцену VoxelSandbox не правлю. Когда появится AppContext, `AppAudio` и оба интерфейса станут его значениями, а `GameAudio` переедет в сцену уровня.
+**Как `GameAudio` появляется.** Пока ядро не собирает уровень из сцен, `RuntimeInitializeOnLoadMethod(AfterSceneLoad)` создаёт префаб `GameAudio`, если на сцене есть `GameContext`. Префаб `AppAudio` (`Assets/Game/Audio/Prefabs`) — один на игру, `DontDestroyOnLoad`; его поднимает `AppAudioInstaller` на префабе App (2026-11-17: свой bootstrap убран — он запускал музыку в любом Play, включая тестовые сцены без AudioListener, и ронял тест Atomic). Без приложения `AppAudio` нет. Сцену VoxelSandbox не правлю. Когда появится AppContext, `AppAudio` и оба интерфейса станут его значениями, а `GameAudio` переедет в сцену уровня.
 
 ### 3.7. Банки и ключи
 

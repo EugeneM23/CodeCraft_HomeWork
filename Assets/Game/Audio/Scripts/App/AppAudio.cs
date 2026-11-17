@@ -8,8 +8,8 @@ namespace Game.AudioEngine.Adapters
 {
     /// <summary>
     /// Audio that lives for the whole game and ignores the battle pause: interface sounds, music, channel volumes.
-    /// One per game, DontDestroyOnLoad. Made by <see cref="Bootstrap"/> from Resources/AppAudio before the first
-    /// scene loads; once AppContext exists, it hands <see cref="Volumes"/> and <see cref="UiSounds"/> out instead.
+    /// One per game, DontDestroyOnLoad. Made by <see cref="AppAudioInstaller"/> on the App prefab, so it lives exactly
+    /// as long as the app: a Play without the app (tests, a bare scene) has no AppAudio and no music.
     ///
     /// Music: the menu catalog loops in order, the battle catalog plays in random order; switching fades the
     /// current track out and the next one in. Tracks are advanced here, not by MusicPlaylist: MusicPlayer
@@ -18,14 +18,10 @@ namespace Game.AudioEngine.Adapters
     [DisallowMultipleComponent]
     public sealed class AppAudio : MonoBehaviour
     {
-        private const string RESOURCE = "AppAudio";
-
         /// <summary>Seconds a track must have played before a silent source counts as finished, not still starting.</summary>
         private const float TRACK_START_GRACE = 0.5f;
 
         private enum MusicFade { None, Out, In }
-
-        private static bool s_missingPrefabWarned;
 
         [SerializeField] private AudioMixer _mixer;
 
@@ -243,28 +239,6 @@ namespace Game.AudioEngine.Adapters
         }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void ResetStatics()
-        {
-            Instance = null;
-            s_missingPrefabWarned = false;
-        }
-
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-        private static void Bootstrap()
-        {
-            if (Instance != null)
-                return;
-
-            AppAudio prefab = Resources.Load<AppAudio>(RESOURCE);
-            if (prefab == null)
-            {
-                if (!s_missingPrefabWarned)
-                    Debug.LogWarning($"[Audio] No Resources/{RESOURCE} prefab: no menu sounds, music or volume control.");
-                s_missingPrefabWarned = true;
-                return;
-            }
-
-            Instantiate(prefab).name = RESOURCE;
-        }
+        private static void ResetStatics() => Instance = null;
     }
 }
