@@ -7,7 +7,7 @@ namespace Game
     /// Hands the vehicle in the player's Character slot to the player: its Driver becomes the player
     /// context and it gets the Player tag, so its engine runs, its guns fire and enemies go for it.
     /// The vehicle that leaves the slot loses both. The player is always in the tank: the slot
-    /// holds it from the start, and nothing gets in or out.
+    /// holds it from the start.
     /// </summary>
     public sealed class PlayerVehicleController : IPlayerContextInit, IPlayerContextDispose
     {

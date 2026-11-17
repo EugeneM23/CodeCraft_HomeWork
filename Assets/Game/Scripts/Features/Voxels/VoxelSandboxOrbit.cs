@@ -24,8 +24,7 @@ namespace Game
     /// straight out of the barrel.
     ///
     /// The camera starts as the scene shows it. The offset is taken from where [CameraRoot] stands
-    /// to the camera point of the tank it follows, not to [Character], which waits 4 m behind the
-    /// tank. The rig's angle and the camera's own turn and shift under the rig are kept as well
+    /// to the camera point of the tank it follows. The rig's angle and the camera's own turn and shift under the rig are kept as well
     /// (the follow keeps the camera's turn). The swing turns all of it round the vertical and tilts
     /// it; a vehicle's CameraDistance does not push the camera further out here.
     ///
@@ -34,7 +33,8 @@ namespace Game
     /// and turns its view <see cref="_lookTilt"/> up towards the horizon. More ground ahead shows,
     /// and the tank sits lower on the screen.
     ///
-    /// Esc lets the cursor go: the camera stays where it is and the cursor aims as it did before. A
+    /// The keys and the mouse come from the player context's IPlayerInput. Esc lets the cursor go:
+    /// the camera stays where it is and the cursor aims as it did before. A
     /// click in the game takes the cursor back. Double-click the middle button to put the camera back.
     ///
     /// The game's follow is left to do the following: this only turns its offset (the player
@@ -73,6 +73,7 @@ namespace Game
 
         private IVariable<Vector3> _offset;
         private IReactiveVariable<IEntity> _character;
+        private IPlayerInput _input;
         private Transform _rig;
         private Vector3 _baseOffset;
         private Quaternion _baseRotation;
@@ -118,16 +119,16 @@ namespace Game
             _offset = player.GetCameraOffset() as IVariable<Vector3>;
             _rig = player.GetCameraRoot();
             _character = player.GetCharacter();
-            if (_offset == null || _rig == null)
+            player.TryGetPlayerInput(out _input);
+            if (_offset == null || _rig == null || _input == null)
             {
-                Debug.LogWarning("[VoxelSandboxOrbit] The camera offset is not a variable: no orbit.");
+                Debug.LogWarning("[VoxelSandboxOrbit] No camera offset variable, rig or player input: no orbit.");
                 enabled = false;
                 yield break;
             }
 
             // As the scene shows it: from the tank's camera point, which the follow keeps the rig
-            // round, to where the rig stood. The installer's offset is from [Character], 4 m behind
-            // the tank, and put the camera that much closer. It stays the fallback.
+            // round, to where the rig stood. The installer's offset stays the fallback.
             _baseOffset = _offset.Value;
             VoxelSandboxStart start = GetComponent<VoxelSandboxStart>();
             if (_sceneRig == _rig && start != null && start.Vehicle != null
@@ -161,28 +162,29 @@ namespace Game
             if (_offset == null)
                 return;
 
-            if (Input.GetMouseButtonDown(2))
+            if (_input.ResetLookPressed)
             {
                 if (Time.unscaledTime - _lastClick < 0.3f)
                     _yaw = _pitch = 0f;
                 _lastClick = Time.unscaledTime;
             }
 
-            if (Input.GetKeyDown(KeyCode.Escape))
+            if (_input.FreeCursorPressed)
                 Release();
             else if (Cursor.lockState != CursorLockMode.Locked && Application.isFocused
-                     && (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1)))
+                     && _input.HoldCursorPressed)
                 Hold();
 
             // Only a held cursor turns the camera: a free one is aiming, or off in another window.
             bool held = Cursor.lockState == CursorLockMode.Locked;
             if (held)
             {
-                _yaw += Input.GetAxisRaw("Mouse X") * _turnSpeed * 10f;
+                Vector2 look = _input.Look;
+                _yaw += look.x * _turnSpeed * 10f;
                 // Mouse up tilts the camera towards the horizon; mouse down, up over the tank. With the
                 // view not turning, up has nothing to do past the start.
                 float lowest = _turnView ? -_tiltAhead : 0f;
-                _pitch = Mathf.Clamp(_pitch - Input.GetAxisRaw("Mouse Y") * _turnSpeed * 10f, lowest, _maxPitch);
+                _pitch = Mathf.Clamp(_pitch - look.y * _turnSpeed * 10f, lowest, _maxPitch);
             }
 
             float blend = 1f - Mathf.Exp(-_ease * Time.unscaledDeltaTime);
