@@ -46,10 +46,10 @@ namespace Game.Voxels
         private const float SUPPORT_ABOVE = 0.3f;
 
         /// <summary>A fallen piece's hit counts as its impulse spread over this long (s).</summary>
-        public const float IMPACT_TIME = 0.3f;
+        public const float IMPACT_TIME = 0.5f;
 
         /// <summary>Hits lighter than this (kg of load) are not worth a solve.</summary>
-        public const float MIN_IMPACT_LOAD = 300f;
+        public const float MIN_IMPACT_LOAD = 1000f;
 
         /// <summary>Whether this body works out its load (it has a strength table).</summary>
         public bool HasStrength => _strength.IsCreated;
@@ -123,7 +123,7 @@ namespace Game.Voxels
             float3 p = ((float3)transform.InverseTransformPoint(worldPoint) - Origin) / VoxelSize;
             if (_impactCount < MAX_IMPACTS)
                 _impacts[_impactCount++] = new Vector4(p.x, p.y, p.z, kg);
-            MarkStructureDirtyAt(p, new float3(IMPACT_REACH / VoxelSize));
+            MarkStructureDirtyAt(p, new float3(IMPACT_REACH / (VoxelSize * Mathf.Abs(transform.lossyScale.x))));
         }
 
         /// <summary>
@@ -151,7 +151,9 @@ namespace Game.Voxels
             if (!HasStrength || !IsStatic || !_voxels.IsCreated || SolidCount == 0)
                 return;
 
-            bool unsettled = RunLoad(false, impacts);
+            bool unsettled;
+            using (SolveMarker.Auto())
+                unsettled = RunLoad(false, impacts);
 
             if (SolidCount <= 0)
             {
@@ -173,6 +175,10 @@ namespace Game.Voxels
             long t0 = System.Diagnostics.Stopwatch.GetTimestamp();
             int3 blocks = VoxelLoad.Blocks(Size);
             int count = blocks.x * blocks.y * blocks.z;
+            // The load job packs a block index in 20 bits (its row order key): no building is that big.
+            if (count >= 1 << 20)
+                return false;
+            BlocksMarker.Begin();
             int columns = blocks.x * blocks.z;
             float edge = VoxelSize * Mathf.Abs(transform.lossyScale.x);
 
@@ -189,6 +195,7 @@ namespace Game.Voxels
 
             var support = new NativeArray<byte>(columns, Allocator.TempJob);
             FindSupport(blocks, bottom, support);
+            BlocksMarker.End();
             long t1 = System.Diagnostics.Stopwatch.GetTimestamp();
 
             var extra = new NativeArray<float>(count, Allocator.TempJob);
@@ -196,7 +203,9 @@ namespace Game.Voxels
             {
                 Vector4 hit = _impacts[i];
                 int3 b = math.clamp((int3)math.floor(new float3(hit.x, hit.y, hit.z) / VoxelLoad.BLOCK), 0, blocks - 1);
-                extra[b.x + blocks.x * (b.y + blocks.y * b.z)] += hit.w;
+                int at = SolidNear(b, blocks, mass);
+                if (at >= 0)
+                    extra[at] += hit.w;
             }
 
             if (!_cracks.IsCreated)
@@ -211,8 +220,11 @@ namespace Game.Voxels
                 _designed = true;
             }
 
+            // Run here, not scheduled: the islands it finds are cut out of the grid this frame, before
+            // the rebuild meshes it (VoxelWorld), so the pieces get their colliders in the same pass.
             var island = new NativeArray<int>(count, Allocator.TempJob);
             var result = new NativeArray<int>(5, Allocator.TempJob);
+            LoadMarker.Begin();
             new StructuralLoadJob
             {
                 Blocks = blocks, Mass = mass, BondX = bondX, BondY = bondY, BondZ = bondZ, Support = support, Extra = extra,
@@ -221,6 +233,7 @@ namespace Game.Voxels
                 ZoneHi = design || !_hasZone ? blocks : _zoneHi / VoxelLoad.BLOCK + VoxelLoad.ZONE_MARGIN,
                 Result = result
             }.Run();
+            LoadMarker.End();
             long t2 = System.Diagnostics.Stopwatch.GetTimestamp();
             double tick = 1000.0 / System.Diagnostics.Stopwatch.Frequency;
             LastBlocksMs = (float)((t1 - t0) * tick);
@@ -239,11 +252,12 @@ namespace Game.Voxels
                     int face = slot / 3;
                     int3 fb = new int3(face % blocks.x, face / blocks.x % blocks.y, face / (blocks.x * blocks.y));
                     Debug.Log($"[Solve] {name}: blocks {count} reached {LastSolveReached} worst {LastSolveWorst:F2} at block {fb} " +
-                              $"axis {slot % 3} {BlockMaterials(fb)} islands {islands} unsettled {unsettled} impacts {impacts}");
+                              $"axis {slot % 3} {BlockMaterials(fb)} islands {islands} unsettled {unsettled} impacts {impacts}"); // perf-ok: tuning log, only with LogStructure (tests)
                 }
 
-                if (islands > 0)
-                    DropIslands(blocks, island);
+                // Pieces the frame had no room for go next frame: the islands are found again, the same.
+                if (islands > 0 && DropIslands(blocks, island))
+                    unsettled = true;
             }
 
             mass.Dispose();
@@ -324,9 +338,15 @@ namespace Game.Voxels
             }
         }
 
-        /// <summary>Takes every island out as a piece (or clods, when small), cut along its blocks.</summary>
-        private void DropIslands(int3 blocks, NativeArray<int> island)
+        /// <summary>
+        /// Takes the islands out as pieces (clods when small, crushed ones as clods where they stood),
+        /// cut along their blocks, and whatever the islands alone held to the rest. At most
+        /// <see cref="DROP_BUDGET"/> voxels a frame (always one island): a falling house makes its
+        /// pieces and their colliders over a few frames, not in one. True when some were left for later.
+        /// </summary>
+        private bool DropIslands(int3 blocks, NativeArray<int> island)
         {
+            using var marker = DropMarker.Auto();
             int count = _voxels.Length;
             var cells = new NativeArray<int>(count, Allocator.TempJob, NativeArrayOptions.UninitializedMemory);
             new BlockCellsJob { Size = Size, Blocks = blocks, BlockCell = island, Cells = cells }.Run();
@@ -340,11 +360,21 @@ namespace Game.Voxels
                 UseCells = true
             }.Run();
 
+            int dropped = 0;
+            bool deferred = false;
             for (int i = 0; i < components.Length; i++)
             {
                 VoxelComponent piece = components[i];
-                if (piece.Cell == 0)
+                // What stays is what still touches the bottom; a scrap held only by an island goes too.
+                if (piece.Cell == 0 && piece.Grounded)
                     continue;
+                if (dropped > 0 && dropped + piece.Count > DROP_BUDGET)
+                {
+                    deferred = true;
+                    continue;
+                }
+
+                dropped += piece.Count;
 
                 Vector3 middle = transform.TransformPoint(Origin + ((float3)(piece.Min + piece.Max) * 0.5f + 0.5f) * VoxelSize);
                 if (piece.Cell < 0)
@@ -360,6 +390,39 @@ namespace Game.Voxels
             labels.Dispose();
             queue.Dispose();
             components.Dispose();
+            return deferred;
+        }
+
+        /// <summary>Most voxels a solve takes out of a building in one frame (about 36 t of brick).</summary>
+        private const int DROP_BUDGET = 20000;
+
+        private static readonly Unity.Profiling.ProfilerMarker SolveMarker = new("Voxels.Structure.Solve");
+        private static readonly Unity.Profiling.ProfilerMarker BlocksMarker = new("Voxels.Structure.Blocks");
+        private static readonly Unity.Profiling.ProfilerMarker LoadMarker = new("Voxels.Structure.Load");
+        private static readonly Unity.Profiling.ProfilerMarker DropMarker = new("Voxels.Structure.DropIslands");
+
+        /// <summary>
+        /// The block a hit at block b presses on: b, or the nearest one with mass under or beside it
+        /// (a contact on top of a floor lies in the empty block over it). −1 when none is near.
+        /// </summary>
+        private static int SolidNear(int3 b, int3 blocks, NativeArray<float> mass)
+        {
+            for (int k = 0; k < 9; k++)
+            {
+                int3 c = b + (k switch
+                {
+                    0 => int3.zero, 1 => new int3(0, -1, 0), 2 => new int3(0, -2, 0),
+                    3 => new int3(1, 0, 0), 4 => new int3(-1, 0, 0), 5 => new int3(0, 0, 1), 6 => new int3(0, 0, -1),
+                    7 => new int3(0, 1, 0), _ => new int3(0, -3, 0)
+                });
+                if (math.any(c < 0) || math.any(c >= blocks))
+                    continue;
+                int index = c.x + blocks.x * (c.y + blocks.y * c.z);
+                if (mass[index] > 0f)
+                    return index;
+            }
+
+            return -1;
         }
 
         /// <summary>Most clods one crushed piece goes to; the rest is dust.</summary>
@@ -462,6 +525,7 @@ namespace Game.Voxels
             _structureDirty = false;
             _hasZone = false;
             _impactCount = 0;
+            _designed = false;
         }
 
         /// <summary>A copy of the strength table for a piece breaking off, or none.</summary>

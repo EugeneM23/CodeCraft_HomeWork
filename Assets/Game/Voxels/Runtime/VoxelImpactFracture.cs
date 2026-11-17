@@ -116,7 +116,9 @@ namespace Game.Voxels
         /// </summary>
         private static void PressOnto(Collision collision)
         {
-            if (collision.contactCount == 0 || collision.collider == null)
+            // A standing building has no Rigidbody: anything that has one (another piece, the tank)
+            // is not looked up at all.
+            if (collision.contactCount == 0 || collision.collider == null || collision.rigidbody != null)
                 return;
 
             VoxelBody target = collision.collider.GetComponentInParent<VoxelBody>();

@@ -126,6 +126,7 @@ namespace Game.Voxels
             s_instance = null;
             s_bodies.Clear();
             s_structures.Clear();
+            s_queuedFrames.Clear();
             s_bakeMeshes.Clear();
             s_bakeChunks.Clear();
             s_quitting = false;
@@ -308,22 +309,36 @@ namespace Game.Voxels
 
         /// <summary>Buildings waiting for a load solve this frame (see VoxelBody.SolveStructure).</summary>
         private static readonly List<VoxelBody> s_structures = new(64);
-        private readonly List<VoxelBody> _solving = new(64);
 
         /// <summary>How far past a crater's radius (m) a building is looked at again: the ground under it may be gone.</summary>
         private const float STRUCTURE_REACH = 1.5f;
 
         internal static void QueueStructure(VoxelBody body)
         {
-            if (!s_structures.Contains(body))
-                s_structures.Add(body);
+            if (s_structures.Contains(body))
+                return;
+            s_structures.Add(body);
+            s_queuedFrames.Add(Time.frameCount);
         }
 
-        internal static void UnqueueStructure(VoxelBody body) => s_structures.Remove(body);
+        /// <summary>The frame each queued building was queued in (parallel to s_structures).</summary>
+        private static readonly List<int> s_queuedFrames = new(64);
+
+        internal static void UnqueueStructure(VoxelBody body)
+        {
+            int i = s_structures.IndexOf(body);
+            if (i < 0)
+                return;
+            s_structures.RemoveAt(i);
+            s_queuedFrames.RemoveAt(i);
+        }
 
         /// <summary>A crater near a building may have taken the ground from under it.</summary>
         private static void OnGroundCarved(Vector3 point, float radius, int voxels)
         {
+            // A bullet that chipped nothing (a miss, a hit on the tank) moves no ground.
+            if (voxels <= 0)
+                return;
             float reach = radius + STRUCTURE_REACH;
             for (int i = 0; i < s_bodies.Count; i++)
             {
@@ -347,18 +362,39 @@ namespace Game.Voxels
             if (s_structures.Count == 0)
                 return;
 
-            long start = System.Diagnostics.Stopwatch.GetTimestamp();
-            _solving.Clear();
-            _solving.AddRange(s_structures);
-            s_structures.Clear();
-            foreach (VoxelBody body in _solving)
-                if (body != null)
-                    body.SolveStructure();
+            // One building a frame, and never in the frame it was hit: the blast (carve, debris,
+            // rebuild) has its frame, the collapse the next, a second building the one after.
+            int frame = Time.frameCount;
+            int pick = -1;
+            for (int i = 0; i < s_structures.Count; i++)
+            {
+                if (s_structures[i] == null)
+                {
+                    s_structures.RemoveAt(i);
+                    s_queuedFrames.RemoveAt(i);
+                    i--;
+                    continue;
+                }
 
-            LastStructureBodies = _solving.Count;
+                if (s_queuedFrames[i] < frame)
+                {
+                    pick = i;
+                    break;
+                }
+            }
+
+            if (pick < 0)
+                return;
+
+            long start = System.Diagnostics.Stopwatch.GetTimestamp();
+            VoxelBody body = s_structures[pick];
+            s_structures.RemoveAt(pick);
+            s_queuedFrames.RemoveAt(pick);
+            body.SolveStructure();
+
+            LastStructureBodies = 1;
             LastStructureMs = (System.Diagnostics.Stopwatch.GetTimestamp() - start) * 1000f /
                               System.Diagnostics.Stopwatch.Frequency;
-            _solving.Clear();
         }
 
         private void LateUpdate() // perf-ok: ticks itself without the game loop; draws (dt 0) while the loop is paused

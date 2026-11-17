@@ -291,11 +291,17 @@ namespace Game.Voxels
             _ => new float3(600f, 20f, 3f)
         };
 
+        /// <summary>
+        /// Every building is this much stronger than its materials' table: at 1 a shell into one wall
+        /// or one ram brought a whole house down (user, 2026-11-17: "two or three times stronger").
+        /// </summary>
+        private const float TOUGHER = 2.5f;
+
         /// <summary>The strength of every palette entry: each material's shades, and plaster for slots painted later (mud).</summary>
         private static NativeArray<float3> BuildStrength(int materials)
         {
             var strength = new NativeArray<float3>(256, Allocator.Persistent);
-            float3 plaster = new float3(600f, 20f, 3f);
+            float3 plaster = new float3(600f * TOUGHER, 20f * TOUGHER, 3f);
             for (int i = 0; i < 256; i++)
                 strength[i] = plaster;
             for (int m = 0; m < materials; m++)
@@ -303,7 +309,7 @@ namespace Game.Voxels
             {
                 int index = 1 + m * MeshVoxelizer.VARIANTS + v;
                 if (index < 256)
-                    strength[index] = Strength((Material)m);
+                    strength[index] = Strength((Material)m) * new float3(TOUGHER, TOUGHER, 1f);
             }
 
             return strength;

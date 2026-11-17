@@ -46,8 +46,8 @@ namespace Game.Voxels
         /// <summary>Rows of a wall (its own and those over it) that bend together over a gap: a deep beam, not a whole storey.</summary>
         public const int DEEP_ROWS = 3;
 
-        /// <summary>Blocks round the damage (1.6 m) where joints may break; further off damage spreads only by what falls.</summary>
-        public const int ZONE_MARGIN = 4;
+        /// <summary>Blocks round the damage (1.2 m) where joints may break; further off damage spreads only by what falls.</summary>
+        public const int ZONE_MARGIN = 3;
 
 
         /// <summary>Most break-and-resolve rounds in one pass; the rest goes on next frame.</summary>
@@ -196,7 +196,7 @@ namespace Game.Voxels
         /// <summary>Per block face: the last ratio there was a block pressing down (not one hanging).</summary>
         [NativeDisableContainerSafetyRestriction] private NativeArray<byte> _pressed;
 
-        private int WorstSlot;
+        private int _worstSlot;
         private int _firstWorstSlot;
 
         public void Execute()
@@ -242,7 +242,7 @@ namespace Game.Voxels
                 if (round == 0)
                 {
                     firstWorst = worst;
-                    _firstWorstSlot = WorstSlot;
+                    _firstWorstSlot = _worstSlot;
                 }
                 if (!broke)
                     break;
@@ -250,7 +250,7 @@ namespace Game.Voxels
 
             Result[0] = Islands(dist, order);
             Result[1] = unsettled ? 1 : 0;
-            Result[2] = (int)math.min(firstWorst * 1000f, int.MaxValue);
+            Result[2] = (int)math.min(firstWorst * 1000f, 2e9f);
             Result[4] = _firstWorstSlot;
         }
 
@@ -363,11 +363,17 @@ namespace Game.Voxels
                 if (axis == 1)
                     continue;
                 int3 b = Coord(slot / 3);
-                for (int dy = -(VoxelLoad.DEEP_ROWS - 1); dy < VoxelLoad.DEEP_ROWS; dy++)
+                // The rows over it that bent with it (see Deep): up to the first gap or crack.
+                for (int dy = 1; dy < VoxelLoad.DEEP_ROWS; dy++)
                 {
                     int3 n = b + new int3(0, dy, 0);
-                    if (dy != 0 && Inside(n))
-                        Broken[Index(n) * 3 + axis] = 1;
+                    if (!Inside(n))
+                        break;
+                    int above = Index(n) * 3 + axis;
+                    float bend = axis == 0 ? BondX[Index(n)].y : BondZ[Index(n)].y;
+                    if (Broken[above] != 0 || bend <= 0f)
+                        break;
+                    Broken[above] = 1;
                 }
             }
 
@@ -492,7 +498,7 @@ namespace Game.Voxels
             if (r > worst)
             {
                 worst = r;
-                WorstSlot = slot;
+                _worstSlot = slot;
             }
         }
 
@@ -675,8 +681,9 @@ namespace Game.Voxels
             for (int s = 0; s < Seeds.Length; s++)
             {
                 int3 b = math.clamp((int3)math.floor(Seeds[s] / VoxelLoad.BLOCK), 0, Blocks - 1);
-                int block = b.x + Blocks.x * (b.y + Blocks.y * b.z);
-                if (Mass[block] <= 0f || dist[block] == 0f)
+                // A seed in the air (a fallen storey is mostly rooms) moves to the nearest solid block.
+                int block = NearestSolid(b);
+                if (block < 0 || dist[block] == 0f)
                     continue;
                 dist[block] = 0f;
                 BlockCell[block] = s + 1;
@@ -720,6 +727,31 @@ namespace Game.Voxels
                 }
             }
         }
+
+        /// <summary>The block with mass nearest to b (by Chebyshev rings up to SEED_REACH), or −1.</summary>
+        private int NearestSolid(int3 b)
+        {
+            for (int r = 0; r <= SEED_REACH; r++)
+            {
+                int3 lo = math.max(b - r, 0);
+                int3 hi = math.min(b + r, Blocks - 1);
+                for (int z = lo.z; z <= hi.z; z++)
+                for (int y = lo.y; y <= hi.y; y++)
+                for (int x = lo.x; x <= hi.x; x++)
+                {
+                    int3 c = new int3(x, y, z);
+                    if (math.cmax(math.abs(c - b)) != r)
+                        continue;
+                    int block = x + Blocks.x * (y + Blocks.y * z);
+                    if (Mass[block] > 0f)
+                        return block;
+                }
+            }
+
+            return -1;
+        }
+
+        private const int SEED_REACH = 4;
 
         private static void Push(NativeList<float2> heap, float key, int value)
         {
