@@ -52,7 +52,7 @@ Steps:
    - you may open it only when `play: free`, the editor is not playing, and the open scene is not dirty;
    - otherwise skip the benchmark.
 3. If not playing and `play: free`: `unity cmd --port <N> editor.playmode start`.
-4. Arm the bench, one call: `unity cmd --port <N> script eval --file <repo>/Tools/PerfCheck/Bench/perf_bench.cs`. It waits until 8 s after scene start (Burst warm-up), then runs idle, drive, airstrike and crush, about 40 s in all.
+4. Arm the bench, one call: `unity cmd --port <N> script eval --file <repo>/Tools/PerfCheck/Bench/perf_bench.cs`. It waits until 10 s after scene start (Burst warm-up), then runs idle, drive, airstrike and crush, about 40 s in all.
 5. Poll every 15 s with `perf_bench_read.cs` until it returns JSON (no `STATUS running`). Wait between polls with a background `sleep 15`. If it says `aborted` (someone left Play), report that and stop.
 6. If any budget is broken or a metric grew >10 % against history, run the scenario again: set `AppDomain.CurrentDomain.SetData("perfbench_only", "<scenario>")` in an eval, then arm again. Keep the better run and give the spread.
 7. Leave Play only if you entered it (`play: free`).
@@ -67,10 +67,24 @@ For each scenario and metric, compare with:
 2. the previous history line of the same branch;
 3. for a team branch, the last `game/develop` line.
 
+Performance.md section 2 «Что считается нарушением» is the rule. In short:
+- Blocking budgets: PlayerLoop avg, p95, max; GPU avg; game GC in idle and drive; GC in event frames.
+- Subsystem times and render counters are guides only.
+- A blocking metric that `game/develop` already breaks is **perf debt**.
+
 Verdict per item:
-- **БЛОК** — over budget, or new GC allocations in idle or drive;
-- **ВНИМАНИЕ** — growth >10 % within budget;
+- **БЛОК**:
+  - a blocking metric that was within budget on `game/develop` is over budget on the branch;
+  - a perf-debt metric got worse than `game/develop` by more than 10 %;
+  - game GC allocations in idle or drive that `game/develop` did not have.
+  Before calling БЛОК on p95 or max, rerun the scenario (they are noisy).
+- **ВНИМАНИЕ** — growth >10 % within budget, or a guide exceeded;
+- **ДОЛГ** — over budget, but no worse than `game/develop`;
 - **ОК**.
+
+When checking `game/develop` itself, compare with its previous line. The perf-debt list in the report then gets updated: items fixed, items new.
+
+Use the hot paths in `worst` to name the cause of every spike over 16 ms and the team that owns it.
 
 Static: any confirmed NEW is БЛОК. Debt growth is ВНИМАНИЕ.
 

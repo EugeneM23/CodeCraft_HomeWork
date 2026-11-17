@@ -82,14 +82,43 @@ var counterNames = new (ProfilerCategory cat, string name, string key)[]
 var recorders = new List<ProfilerRecorder>();
 
 // Per-frame CPU data, from the profiler hierarchy (frames the bench itself spent time in are skipped).
+// Columns: 0 main, 1 playerLoop, 2 gc (game), 3 voxels, 4 physics, 5 scripts, 6 render, 7 gc editor-only (Burst JIT), 8 gc debug HUD (IMGUI).
 var skipFrames = new HashSet<int>();
-var rows = new List<double[]>(); // main, playerLoop, gcBytes, voxels, physics, scripts, render
+var rows = new List<double[]>();
 var worst = new List<(double ms, int frame, string top)>();
 int readUpTo = -1;
 var children = new List<int>();
-var stack = new Stack<(int id, int depth)>();
+var stack = new Stack<(int id, int depth, bool inVox)>();
 
 bool IsVoxel(string n) => n.Contains("Voxel") && !n.Contains("VoxelAirStrike") && !n.Contains("VoxelSandbox") && !n.Contains("VoxelDemo");
+bool IsEditorOnly(string n) => n.Contains("Burst.Compiler") || n.Contains("JitCompilerService");
+bool IsDebugHud(string n) => n == "GUI.Repaint" || n.Contains("VoxelDemoHud") || n.Contains("VoxelSandboxOrbit.OnGUI");
+bool IsRender(string n) => n == "Camera.Render" || (n.StartsWith("PostLateUpdate.") && n.Contains("Render"));
+bool IsScripts(string n) => n.EndsWith("ScriptRunBehaviourUpdate") || n.EndsWith("ScriptRunBehaviourLateUpdate") || n.EndsWith("ScriptRunBehaviourFixedUpdate") || n.EndsWith("ScriptRunDelayedDynamicFrameRate");
+string Short(string n)
+{
+    int k = n.LastIndexOf("::", StringComparison.Ordinal);
+    if (k >= 0) n = n.Substring(k + 2);
+    return n.Replace(" [Invoke]", "").Replace("\"", "'");
+}
+
+string HotPath(HierarchyFrameDataView view, int id)
+{
+    var parts = new List<string>();
+    double parentT = view.GetItemColumnDataAsDouble(id, HierarchyFrameDataView.columnTotalTime);
+    var kids = new List<int>();
+    for (int depth = 0; depth < 12; depth++)
+    {
+        kids.Clear();
+        view.GetItemChildren(id, kids);
+        int best = -1; double bestT = 0;
+        foreach (int c in kids) { double t = view.GetItemColumnDataAsDouble(c, HierarchyFrameDataView.columnTotalTime); if (t > bestT) { bestT = t; best = c; } }
+        if (best < 0 || bestT < 0.4 * parentT || bestT < 0.3) break;
+        parts.Add(Short(view.GetItemName(best)) + " " + bestT.ToString("F1", System.Globalization.CultureInfo.InvariantCulture));
+        id = best; parentT = bestT;
+    }
+    return string.Join(" > ", parts);
+}
 
 void ReadFrames(int upTo)
 {
@@ -99,53 +128,56 @@ void ReadFrames(int upTo)
         if (skipFrames.Contains(f)) continue;
         using var view = ProfilerDriver.GetHierarchyFrameDataView(f, 0, HierarchyFrameDataView.ViewModes.MergeSamplesWithTheSameName, HierarchyFrameDataView.columnTotalTime, false);
         if (view == null || !view.valid) continue;
-        double pl = 0, gc = 0, vox = 0, phys = 0, scripts = 0, scriptVox = 0, render = 0;
         int plId = -1;
         children.Clear();
         view.GetItemChildren(view.GetRootItemID(), children);
         foreach (int c in children) if (view.GetItemName(c) == "PlayerLoop") { plId = c; break; }
         if (plId < 0) continue;
-        pl = view.GetItemColumnDataAsDouble(plId, HierarchyFrameDataView.columnTotalTime);
-        gc = view.GetItemColumnDataAsDouble(plId, HierarchyFrameDataView.columnGcMemory);
+        double pl = view.GetItemColumnDataAsDouble(plId, HierarchyFrameDataView.columnTotalTime);
+        double gc = view.GetItemColumnDataAsDouble(plId, HierarchyFrameDataView.columnGcMemory);
+        double vox = 0, phys = 0, scripts = 0, scriptVox = 0, render = 0, gcEditor = 0, gcHud = 0;
         stack.Clear();
-        stack.Push((plId, 0));
-        string topName = ""; double topMs = 0;
+        stack.Push((plId, 0, false));
         while (stack.Count > 0)
         {
-            var (id, d) = stack.Pop();
+            var (id, d, inVox) = stack.Pop();
             children.Clear();
             view.GetItemChildren(id, children);
             foreach (int c in children)
             {
                 string n = view.GetItemName(c);
+                if (IsEditorOnly(n)) { gcEditor += view.GetItemColumnDataAsDouble(c, HierarchyFrameDataView.columnGcMemory); continue; }
+                if (IsDebugHud(n)) { gcHud += view.GetItemColumnDataAsDouble(c, HierarchyFrameDataView.columnGcMemory); continue; }
                 double t = view.GetItemColumnDataAsDouble(c, HierarchyFrameDataView.columnTotalTime);
                 if (d == 0)
                 {
                     if (n == "FixedUpdate.PhysicsFixedUpdate") phys += t;
-                    else if (n == "PostLateUpdate.FinishFrameRendering") render += t;
-                    else if (n.EndsWith("ScriptRunBehaviourUpdate") || n.EndsWith("ScriptRunBehaviourLateUpdate") || n.EndsWith("ScriptRunBehaviourFixedUpdate") || n.EndsWith("ScriptRunDelayedDynamicFrameRate")) scripts += t;
+                    else if (IsRender(n)) render += t;
+                    else if (IsScripts(n)) scripts += t;
                 }
-                if (IsVoxel(n))
+                bool vx = inVox;
+                if (!inVox && IsVoxel(n))
                 {
                     vox += t;
-                    // Voxel work that sits inside the script phases is taken out of "scripts" below.
-                    scriptVox += d >= 1 ? t : 0;
-                    if (t > topMs) { topMs = t; topName = n; }
-                    continue;
+                    // Voxel work inside the script phases is taken out of "scripts".
+                    if (d >= 1) scriptVox += t;
+                    vx = true;
                 }
-                if (d <= 4 && t > topMs && d >= 1) { topMs = t; topName = n; }
-                stack.Push((c, d + 1));
+                stack.Push((c, d + 1, vx));
             }
         }
-        double main = view.frameTimeMs;
-        rows.Add(new[] { main, pl, gc, vox, phys, Math.Max(0, scripts - scriptVox), render });
-        worst.Add((pl, f, topName + " " + topMs.ToString("F2")));
-        if (worst.Count > 3) { worst.Sort((a, b) => b.ms.CompareTo(a.ms)); worst.RemoveAt(3); }
+        rows.Add(new[] { view.frameTimeMs, pl, Math.Max(0, gc - gcEditor - gcHud), vox, phys, Math.Max(0, scripts - scriptVox), render, gcEditor, gcHud });
+        if (worst.Count < 3 || pl > worst[worst.Count - 1].ms)
+        {
+            worst.Add((pl, f, HotPath(view, plId)));
+            worst.Sort((a, b) => b.ms.CompareTo(a.ms));
+            if (worst.Count > 3) worst.RemoveAt(3);
+        }
     }
     readUpTo = Math.Max(readUpTo, upTo);
 }
 
-string Stats(int col, double scale = 1, string fmt = "F2")
+string Stats(int col, double scale = 1, string fmt = "F2", bool frames = true)
 {
     if (rows.Count == 0) return "\"n\":0";
     var v = new double[rows.Count];
@@ -154,7 +186,10 @@ string Stats(int col, double scale = 1, string fmt = "F2")
     double sum = 0; foreach (var x in v) sum += x;
     int over = 0; foreach (var x in v) if (x > 16.6) over++;
     string F(double x) => x.ToString(fmt, System.Globalization.CultureInfo.InvariantCulture);
-    return $"\"avg\":{F(sum / v.Length)},\"p50\":{F(v[v.Length / 2])},\"p95\":{F(v[(int)(v.Length * 0.95)])},\"max\":{F(v[v.Length - 1])},\"over16\":{over}";
+    string s = $"\"avg\":{F(sum / v.Length)},\"p50\":{F(v[v.Length / 2])},\"p95\":{F(v[(int)(v.Length * 0.95)])},\"max\":{F(v[v.Length - 1])}";
+    if (frames) s += $",\"over16\":{over}";
+    else { int nz = 0; foreach (var x in v) if (x > 0) nz++; s += $",\"framesWithAlloc\":{nz}"; }
+    return s;
 }
 
 string CounterStats(ProfilerRecorder r, bool time)
@@ -188,6 +223,7 @@ Vector3 regaxStart = default;
 int phase = -1;
 string sub = "warmup";
 float phaseStart = 0;
+float runStart = 0;
 int phaseFirstFrame = 0;
 int blasts = 0;
 var results = new List<string>();
@@ -224,6 +260,7 @@ void BeginScenario()
     foreach (var c in counterNames) recorders.Add(ProfilerRecorder.StartNew(c.cat, c.name, 8000));
     readUpTo = ProfilerDriver.lastFrameIndex;
     phaseStart = Time.time;
+    runStart = Time.time;
     phaseFirstFrame = Time.frameCount;
     blasts = 0;
     drive[0] = drive[1] = 0;
@@ -269,8 +306,8 @@ void EndScenario()
     if (name == "crush" && regax != null) extra = $",\"regaxMinDistance\":{regaxMin.ToString("F2", inv)},\"regaxAlive\":{(regax != null && regax.activeInHierarchy ? "true" : "false")}";
     if (name == "airstrike") extra = $",\"blasts\":{blasts}";
     if (name == "drive" || name == "crush") extra += $",\"tankMoved\":{Vector3.Distance(tank.position, tankStart).ToString("F1", inv)}";
-    results.Add($"\"{name}\":{{\"frames\":{rows.Count},\"seconds\":{(Time.time - phaseStart).ToString("F1", inv)}," +
-                $"\"main\":{{{Stats(0)}}},\"playerLoop\":{{{Stats(1)}}},\"gcBytes\":{{{Stats(2, 1, "F0")}}}," +
+    results.Add($"\"{name}\":{{\"frames\":{rows.Count},\"seconds\":{(Time.time - runStart).ToString("F1", inv)}," +
+                $"\"main\":{{{Stats(0)}}},\"playerLoop\":{{{Stats(1)}}},\"gcBytes\":{{{Stats(2, 1, "F0", false)}}},\"gcEditorOnly\":{{{Stats(7, 1, "F0", false)}}},\"gcDebugHud\":{{{Stats(8, 1, "F0", false)}}}," +
                 $"\"voxels\":{{{Stats(3)}}},\"physics\":{{{Stats(4)}}},\"scripts\":{{{Stats(5)}}},\"render\":{{{Stats(6)}}}," +
                 $"{string.Join(",", counters)},\"worst\":[{string.Join(",", w)}]{extra}}}");
     tankStart = tank.position;
@@ -284,8 +321,8 @@ onUpdate = () =>
         if (EditorApplication.isPaused) return;
         if (phase < 0)
         {
-            // Burst warm-up: at least 8 s into the scene.
-            if (Time.timeSinceLevelLoad < 8f) { domain.SetData("perfbench_status", "running: warm-up " + Time.timeSinceLevelLoad.ToString("F1", inv)); return; }
+            // Burst warm-up: at least 10 s into the scene.
+            if (Time.timeSinceLevelLoad < 10f) { domain.SetData("perfbench_status", "running: warm-up " + Time.timeSinceLevelLoad.ToString("F1", inv)); return; }
             phase = 0; sub = "settle"; phaseStart = Time.time;
         }
         if (phase >= plan.Count) { Finish("done"); return; }
@@ -333,6 +370,6 @@ domain.SetData("perfbench_update", onUpdate);
 domain.SetData("perfbench_render", onRender);
 domain.SetData("perfbench_status", "running: armed");
 domain.SetData("perfbench_result", null);
-float total = 8f;
+float total = 10f;
 foreach (var p in plan) total += p.seconds + 0.6f;
 return $"armed: {string.Join(",", plan.ConvertAll(p => p.name))}, ~{total:F0} s from scene start; strikes={strikes.Length} profilerFrames={frameCountNote}; read with perf_bench_read.cs";
