@@ -92,6 +92,21 @@ namespace Game.Voxels
 
         public static IReadOnlyList<VoxelBody> Bodies => s_bodies;
 
+        /// <summary>
+        /// A chunk got new colliders (a crater, a rut, a wall knocked down), with the chunk's world
+        /// bounds. Navigation listens to re-read the ground there. Raised on the main thread: for a
+        /// standing body's box colliders after they are set and when its chunk is emptied; for mesh
+        /// colliders (smooth and terrain ground) when the cooked mesh lands in <see cref="FinishBakes"/>,
+        /// whichever body it is. Loose pieces with box colliders do not raise it. Cleared when Play starts.
+        /// </summary>
+        public static event System.Action<Bounds> ChunkCollidersChanged;
+
+        internal static void RaiseChunkCollidersChanged(Bounds worldBounds) => ChunkCollidersChanged?.Invoke(worldBounds);
+
+        /// <summary>Listeners of the last Play session are dropped (with domain reload off they would survive).</summary>
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetChunkCollidersChanged() => ChunkCollidersChanged = null;
+
         public static VoxelWorld Instance
         {
             get
@@ -236,6 +251,8 @@ namespace Game.Voxels
                     chunk.Cooking = false;
                     if (chunk.Collider != null && batch.Meshes[i] != null)
                         chunk.Collider.sharedMesh = batch.Meshes[i];
+                    if (chunk.Collider != null && batch.Meshes[i] != null)
+                        RaiseChunkCollidersChanged(chunk.Renderer.bounds);
                 }
 
                 _bakes.RemoveAt(b);

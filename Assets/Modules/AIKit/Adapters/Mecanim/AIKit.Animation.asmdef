@@ -1,0 +1,16 @@
+{
+    "name": "AIKit.Animation",
+    "rootNamespace": "AIKit.Mecanim",
+    "references": [
+        "AIKit"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -33,6 +33,7 @@ namespace Game
             GameSignals.RaiseExploded(point, radius);
 
             DamageInRadius(projectile, point, radius);
+            ExplosionEvents.Raise(point, radius);
 
             // A crater in anything made of voxels: walls, buildings, the tank's skin.
             VoxelDamage.Blast(point, radius * VOXEL_CRATER_SHARE, VOXEL_BLAST_SPEED);

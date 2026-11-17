@@ -230,6 +230,7 @@ namespace Game
 
             Shake(point);
             ShoveTarget(point);
+            ExplosionEvents.Raise(point, _blastRadius);
         }
 
         private void SpawnFireballs(Vector3 point)
