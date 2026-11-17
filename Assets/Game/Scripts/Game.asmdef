@@ -4,7 +4,6 @@
     "references": [
         "Atomic.Elements",
         "Atomic.Entities",
-        "HighlightPlus",
         "Unity.TextMeshPro",
         "Unity.Mathematics",
         "DOTweenModules",

@@ -6,7 +6,6 @@
         "Atomic.Elements",
         "Atomic.Entities",
         "UnityEngine.UI",
-        "HighlightPlus",
         "Game.Voxels"
     ],
     "includePlatforms": [
