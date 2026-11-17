@@ -2,20 +2,16 @@ using UnityEngine;
 
 namespace Game
 {
-    /// <summary>Puts saved settings into effect: screen, quality, volumes, keys.</summary>
+    /// <summary>
+    /// Puts settings into effect. Graphics is applied by the settings store on Save (the core team's
+    /// contract); volumes and keys are applied by the UI side when the store reports a change.
+    /// </summary>
     public static class SettingsApplyUseCase
     {
-        public static void ApplyAll(GameSettings settings, IAudioVolumes volumes, IGameInput input)
-        {
-            ApplyGraphics(settings.graphics);
-            ApplyAudio(settings.audio, volumes);
-            ApplyControls(settings.controls, input);
-        }
-
-        public static void ApplyGraphics(GameSettings.Graphics graphics)
+        public static void ApplyGraphics(GraphicsSettingsData graphics)
         {
             int qualityCount = QualitySettings.names.Length;
-            if (qualityCount > 0)
+            if (graphics.qualityLevel >= 0 && qualityCount > 0)
                 QualitySettings.SetQualityLevel(Mathf.Clamp(graphics.qualityLevel, 0, qualityCount - 1), true);
 
             // After the quality level: a quality level carries its own vSync count.
@@ -27,7 +23,7 @@ namespace Game
                 Screen.SetResolution(graphics.width, graphics.height, graphics.windowMode, ToRatio(graphics.refreshRateHz));
         }
 
-        public static void ApplyAudio(GameSettings.Audio audio, IAudioVolumes volumes)
+        public static void ApplyAudio(AudioSettingsData audio, IAudioVolumes volumes)
         {
             if (volumes == null)
                 return;
@@ -39,7 +35,7 @@ namespace Game
             volumes.SetVolume(AudioChannel.Ambient, audio.ambient);
         }
 
-        public static void ApplyControls(GameSettings.Controls controls, IGameInput input)
+        public static void ApplyControls(ControlsSettingsData controls, IGameInput input)
         {
             if (input == null)
                 return;

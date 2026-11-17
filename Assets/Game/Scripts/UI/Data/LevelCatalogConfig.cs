@@ -24,7 +24,7 @@ namespace Game
             return index >= 0 && index + 1 < levels.Count ? levels[index + 1] : null;
         }
 
-        public static bool IsUnlocked(LevelConfig level, PlayerProgressData progress) =>
-            level.requiredLevel == null || progress.completedLevels.Contains(level.requiredLevel.id);
+        public static bool IsUnlocked(LevelConfig level, IPlayerProgress progress) =>
+            level.requiredLevel == null || progress.IsLevelUnlocked(level.id) || progress.IsLevelCompleted(level.requiredLevel.id);
     }
 }

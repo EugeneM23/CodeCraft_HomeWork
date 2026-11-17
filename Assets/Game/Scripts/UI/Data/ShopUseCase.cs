@@ -1,77 +1,96 @@
 namespace Game
 {
-    /// <summary>Buying, upgrading and installing tank modules on the progress data. Callers save afterwards.</summary>
+    /// <summary>Buying, upgrading and installing tank modules, and the reward of a won level, on the player's progress.</summary>
     public static class ShopUseCase
     {
-        /// <summary>Gives a new player the start credits and modules, once.</summary>
-        public static void EnsureStarted(PlayerProgressData data, ShopCatalogConfig catalog)
+        /// <summary>
+        /// Gives a new player the start credits and modules and opens the levels that need nothing, once:
+        /// a player who owns none of the start modules is new.
+        /// </summary>
+        public static bool EnsureStarted(IPlayerProgress progress, ShopCatalogConfig catalog, LevelCatalogConfig levels = null)
         {
-            if (data.initialized)
-                return;
+            if (levels != null)
+            {
+                foreach (LevelConfig level in levels.levels)
+                    if (level != null && level.requiredLevel == null && !progress.IsLevelUnlocked(level.id))
+                        progress.UnlockLevel(level.id);
+            }
 
-            data.initialized = true;
-            data.credits = catalog.startCredits;
+            foreach (TankModuleConfig module in catalog.startModules)
+                if (module != null && progress.OwnsModule(module.id))
+                    return false;
+
+            progress.AddCredits(catalog.startCredits);
             foreach (TankModuleConfig module in catalog.startModules)
             {
                 if (module == null)
                     continue;
-                data.SetModuleLevel(module.id, 1);
-                data.Install(module.slot, module.id);
+                progress.SetModuleLevel(module.id, 1);
+                progress.InstallModule(module.slot.ToString(), module.id);
             }
-        }
-
-        public static bool IsOwned(PlayerProgressData data, TankModuleConfig module) => data.ModuleLevel(module.id) > 0;
-
-        public static bool IsInstalled(PlayerProgressData data, TankModuleConfig module) =>
-            data.Installed(module.slot) == module.id;
-
-        public static bool CanBuy(PlayerProgressData data, TankModuleConfig module) =>
-            !IsOwned(data, module) && data.credits >= module.price;
-
-        public static bool TryBuy(PlayerProgressData data, TankModuleConfig module)
-        {
-            if (!CanBuy(data, module))
-                return false;
-
-            data.credits -= module.price;
-            data.SetModuleLevel(module.id, 1);
-            if (data.Installed(module.slot) == null)
-                data.Install(module.slot, module.id);
             return true;
         }
 
-        public static bool CanUpgrade(PlayerProgressData data, TankModuleConfig module)
-        {
-            int price = module.UpgradePrice(data.ModuleLevel(module.id));
-            return price >= 0 && data.credits >= price;
-        }
+        public static bool IsOwned(IPlayerProgress progress, TankModuleConfig module) => progress.OwnsModule(module.id);
 
-        public static bool TryUpgrade(PlayerProgressData data, TankModuleConfig module)
+        public static bool IsInstalled(IPlayerProgress progress, TankModuleConfig module) =>
+            progress.GetInstalledModule(module.slot.ToString()) == module.id;
+
+        public static bool CanBuy(IPlayerProgress progress, TankModuleConfig module) =>
+            !IsOwned(progress, module) && progress.Credits >= module.price;
+
+        public static bool TryBuy(IPlayerProgress progress, TankModuleConfig module)
         {
-            if (!CanUpgrade(data, module))
+            if (IsOwned(progress, module) || !progress.TrySpendCredits(module.price))
                 return false;
 
-            int level = data.ModuleLevel(module.id);
-            data.credits -= module.UpgradePrice(level);
-            data.SetModuleLevel(module.id, level + 1);
+            progress.SetModuleLevel(module.id, 1);
+            if (progress.GetInstalledModule(module.slot.ToString()) == null)
+                progress.InstallModule(module.slot.ToString(), module.id);
             return true;
         }
 
-        public static bool TryInstall(PlayerProgressData data, TankModuleConfig module)
+        /// <summary>Price of the next level, -1 when not owned or at the top.</summary>
+        public static int UpgradePrice(IPlayerProgress progress, TankModuleConfig module) =>
+            module.UpgradePrice(progress.GetModuleLevel(module.id));
+
+        public static bool CanUpgrade(IPlayerProgress progress, TankModuleConfig module)
         {
-            if (!IsOwned(data, module))
+            int price = UpgradePrice(progress, module);
+            return price >= 0 && progress.Credits >= price;
+        }
+
+        public static bool TryUpgrade(IPlayerProgress progress, TankModuleConfig module)
+        {
+            int price = UpgradePrice(progress, module);
+            if (price < 0 || !progress.TrySpendCredits(price))
                 return false;
 
-            data.Install(module.slot, module.id);
+            progress.SetModuleLevel(module.id, progress.GetModuleLevel(module.id) + 1);
             return true;
         }
 
-        /// <summary>Marks the level won and pays its reward.</summary>
-        public static void CompleteLevel(PlayerProgressData data, string levelId, int reward)
+        public static bool TryInstall(IPlayerProgress progress, TankModuleConfig module)
         {
-            data.credits += reward;
-            if (!data.completedLevels.Contains(levelId))
-                data.completedLevels.Add(levelId);
+            if (!IsOwned(progress, module))
+                return false;
+
+            progress.InstallModule(module.slot.ToString(), module.id);
+            return true;
+        }
+
+        /// <summary>A won level: pays its reward, marks it completed and opens the levels that waited for it.</summary>
+        public static void CompleteLevel(IPlayerProgress progress, LevelCatalogConfig levels, LevelConfig level)
+        {
+            progress.AddCredits(level.reward);
+            progress.MarkLevelCompleted(level.id);
+
+            if (levels == null)
+                return;
+
+            foreach (LevelConfig other in levels.levels)
+                if (other != null && other.requiredLevel == level && !progress.IsLevelUnlocked(other.id))
+                    progress.UnlockLevel(other.id);
         }
     }
 }

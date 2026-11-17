@@ -104,7 +104,11 @@ namespace Game.EditorTools
             return group;
         }
 
-        /// <summary>Preferred size for a layout group parent; negative leaves it free. flexibleWidth 1 fills the row.</summary>
+        /// <summary>
+        /// Preferred size for a layout group parent; negative leaves it free. flexibleWidth 1 fills the row.
+        /// A fixed height or width is not flexible unless asked: a row's own layout group would otherwise
+        /// report flexible 1 (child force expand) and the row would swallow the parent's spare space.
+        /// </summary>
         public static LayoutElement Size(Component component, float height = -1, float width = -1, float flexibleWidth = -1,
             float flexibleHeight = -1)
         {
@@ -114,8 +118,8 @@ namespace Game.EditorTools
             element.preferredHeight = height;
             element.minHeight = height;
             element.preferredWidth = width;
-            element.flexibleWidth = flexibleWidth;
-            element.flexibleHeight = flexibleHeight;
+            element.flexibleWidth = flexibleWidth >= 0 ? flexibleWidth : width >= 0 ? 0 : -1;
+            element.flexibleHeight = flexibleHeight >= 0 ? flexibleHeight : height >= 0 ? 0 : -1;
             return element;
         }
 
@@ -254,6 +258,15 @@ namespace Game.EditorTools
             }
             Recolor(go.transform.Find("Template"), UiStyle.PanelLight);
             Recolor(go.transform.Find("Template/Viewport/Content/Item/Item Background"), UiStyle.Button);
+            // Without sprites the arrow is a white square: a small muted diamond instead.
+            if (go.transform.Find("Arrow") is RectTransform arrow)
+            {
+                arrow.sizeDelta = new Vector2(12, 12);
+                arrow.anchoredPosition = new Vector2(-20, 0);
+                arrow.localRotation = Quaternion.Euler(0, 0, 45);
+                Recolor(arrow, UiStyle.TextMuted);
+            }
+
             Transform template = go.transform.Find("Template");
             ((RectTransform)template).sizeDelta = new Vector2(0, 300);
             go.AddComponent<SelectOnPointerEnter>();

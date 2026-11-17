@@ -15,7 +15,7 @@ namespace Game
         {
             InputSystemUIInputModule module = GetComponent<InputSystemUIInputModule>();
             GameControls controls = AppServices.Input.Controls;
-            _ = AppServices.Settings; // loads and applies the saved settings and keys before the first frame
+            AppServices.EnsureSettingsApplied(); // saved volumes and keys before the first frame
 
             module.actionsAsset = controls.asset;
             module.point = InputActionReference.Create(controls.UI.Point);

@@ -1,37 +1,62 @@
+using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace Game
 {
     /// <summary>
-    /// STUB of the core team's game flow: loads scenes by name, nothing in between (no Boot, no
-    /// loading screen). Resumes a paused game before leaving the level.
+    /// STUB of the core team's game flow: loads scenes by name at once (no Boot, no loading screen).
+    /// Level ids map to scenes through the level catalog the menus register (AppServices.RegisterLevels).
     /// </summary>
     public sealed class SceneGameFlow : IGameFlow
     {
         public const string MENU_SCENE = "MainMenu";
 
-        public LevelConfig CurrentLevel { get; private set; }
-        public MenuEntry PendingMenuEntry { get; private set; }
+        public event Action<GameState> StateChanged;
 
-        public void StartLevel(LevelConfig level)
+        public LevelCatalogConfig Levels { get; set; }
+
+        public GameState State { get; private set; } = GameState.Starting;
+        public bool IsBusy => false;
+        public string CurrentLevelId { get; private set; }
+        public string RequestedMenuScreen { get; private set; }
+
+        public SceneGameFlow()
         {
-            CurrentLevel = level;
-            Load(level.sceneName);
+            // Started straight from a level scene in the editor: the flow still knows where it is.
+            if (SceneManager.GetActiveScene().name == MENU_SCENE)
+                Enter(GameState.MainMenu);
         }
 
-        public void RestartLevel()
+        public bool StartLevel(string levelId)
         {
-            if (CurrentLevel != null)
-                Load(CurrentLevel.sceneName);
-            else
-                Load(SceneManager.GetActiveScene().name);
+            LevelConfig level = Levels != null ? Levels.Find(levelId) : null;
+            if (level == null)
+            {
+                Debug.LogWarning($"SceneGameFlow: no level '{levelId}' in the registered catalog.");
+                return false;
+            }
+
+            CurrentLevelId = levelId;
+            Load(level.sceneName, GameState.Level);
+            return true;
         }
 
-        public void ReturnToMenu(MenuEntry entry)
+        public bool RestartLevel()
         {
-            PendingMenuEntry = entry;
-            Load(MENU_SCENE);
+            if (State == GameState.MainMenu)
+                return false;
+
+            Load(SceneManager.GetActiveScene().name, GameState.Level);
+            return true;
+        }
+
+        public bool ReturnToMenu(string screen = null)
+        {
+            RequestedMenuScreen = screen;
+            CurrentLevelId = null;
+            Load(MENU_SCENE, GameState.MainMenu);
+            return true;
         }
 
         public void Quit()
@@ -43,10 +68,17 @@ namespace Game
 #endif
         }
 
-        private static void Load(string scene)
+        private void Load(string scene, GameState state)
         {
             AppServices.Pause.Resume();
             SceneManager.LoadScene(scene);
+            Enter(state);
+        }
+
+        private void Enter(GameState state)
+        {
+            State = state;
+            StateChanged?.Invoke(state);
         }
     }
 }
