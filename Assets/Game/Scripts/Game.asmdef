@@ -9,10 +9,14 @@
         "Unity.Mathematics",
         "DOTweenModules",
         "UnityEngine.UI",
-        "RayFireAssembly",
         "Unity.RenderPipelines.Core.Runtime",
         "Unity.RenderPipelines.Universal.Runtime",
-        "Game.Voxels"
+        "Game.Voxels",
+        "Loading",
+        "SaveSystem",
+        "GameLoop",
+        "Unity.InputSystem",
+        "Game.GameLoop.Adapters"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

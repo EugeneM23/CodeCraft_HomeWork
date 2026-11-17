@@ -1,0 +1,26 @@
+{
+    "name": "SaveSystem.Objects",
+    "rootNamespace": "Saving.Objects",
+    "references": [
+        "SaveSystem"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "SAVE_SYSTEM_JSON"
+    ],
+    "versionDefines": [
+        { "name": "com.unity.nuget.newtonsoft-json", "expression": "", "define": "SAVE_SYSTEM_JSON" },
+        { "name": "com.unity.modules.physics", "expression": "", "define": "SAVE_PHYSICS" },
+        { "name": "com.unity.modules.physics2d", "expression": "", "define": "SAVE_PHYSICS_2D" },
+        { "name": "com.unity.modules.animation", "expression": "", "define": "SAVE_ANIMATION" },
+        { "name": "com.unity.modules.particlesystem", "expression": "", "define": "SAVE_PARTICLES" },
+        { "name": "com.unity.modules.audio", "expression": "", "define": "SAVE_AUDIO" },
+        { "name": "com.unity.modules.ai", "expression": "", "define": "SAVE_AI" }
+    ],
+    "noEngineReferences": false
+}

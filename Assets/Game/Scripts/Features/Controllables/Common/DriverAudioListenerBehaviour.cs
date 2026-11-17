@@ -5,13 +5,9 @@ using UnityEngine;
 namespace Game
 {
     /// <summary>
-    /// Hears for the player while they sit in this vehicle. The scene's AudioListener is on the
-    /// character, and getting in switches the character's GameObject off
-    /// (ControllableUseCase.Enter): with nobody listening, every sound went silent from the moment
-    /// the player got in — the helicopter's gun among them.
-    ///
-    /// The vehicle's own listener — found on its root, or added there — is on only while somebody is
-    /// inside, so on foot the character's is the one listener in the scene.
+    /// Hears for the player from the vehicle they drive. The vehicle's own listener — found on its
+    /// root, or added there — is on only while it has a Driver, so of several vehicles in a scene
+    /// only the player's listens.
     /// </summary>
     public sealed class DriverAudioListenerBehaviour : IEntityInit, IEntityTick
     {

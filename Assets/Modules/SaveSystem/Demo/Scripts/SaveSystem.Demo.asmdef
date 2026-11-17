@@ -1,0 +1,26 @@
+{
+    "name": "SaveSystem.Demo",
+    "rootNamespace": "Saving.Demo",
+    "references": [
+        "SaveSystem",
+        "SaveSystem.Objects",
+        "SaveSystem.UI",
+        "UnityEngine.UI",
+        "Unity.TextMeshPro"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "SAVE_SYSTEM_JSON",
+        "SAVE_SYSTEM_UGUI"
+    ],
+    "versionDefines": [
+        { "name": "com.unity.nuget.newtonsoft-json", "expression": "", "define": "SAVE_SYSTEM_JSON" },
+        { "name": "com.unity.ugui", "expression": "", "define": "SAVE_SYSTEM_UGUI" }
+    ],
+    "noEngineReferences": false
+}

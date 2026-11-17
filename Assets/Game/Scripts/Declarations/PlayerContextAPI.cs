@@ -18,16 +18,5 @@ namespace Game
         public static readonly ValueKey<IPlayerContext, IVariable<Vector3>> CameraLook = new(nameof(CameraLook));
         public static readonly ValueKey<IPlayerContext, Game.CameraLookSettings> CameraLookSettings = new(nameof(CameraLookSettings));
         public static readonly ValueKey<IPlayerContext, Game.CameraCollisionSettings> CameraCollisionSettings = new(nameof(CameraCollisionSettings));
-        public static readonly ValueKey<IPlayerContext, IValue<int>> MaxMana = new(nameof(MaxMana));
-        public static readonly ValueKey<IPlayerContext, IReactiveVariable<int>> CurrentMana = new(nameof(CurrentMana));
-
-        // MoveJoystick / RotateJoystick removed with the on-screen sticks.
-
-        #region Ability
-
-        public static readonly ValueKey<IPlayerContext, IReactiveDictionary<string, Ability>> Abilities =
-            new(nameof(Abilities));
-
-        #endregion
     }
 }

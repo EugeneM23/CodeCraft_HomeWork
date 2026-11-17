@@ -22,7 +22,7 @@ namespace Game.Voxels
     /// then fills back from its neighbours, so a hole closes from its edges inward in about a second.
     /// After <see cref="Lifetime"/> seconds the cloud thins away, its edges first.
     /// </summary>
-    public sealed class VoxelSmoke : MonoBehaviour
+    public sealed class VoxelSmoke : MonoBehaviour, IVoxelLateUpdate
     {
         /// <summary>Edge (m) of a smoke cell.</summary>
         public const float CELL = 0.3f;
@@ -167,9 +167,14 @@ namespace Game.Voxels
         {
             if (!s_active.Contains(this))
                 s_active.Add(this);
+            VoxelTicks.Add(this);
         }
 
-        private void OnDisable() => s_active.Remove(this);
+        private void OnDisable()
+        {
+            s_active.Remove(this);
+            VoxelTicks.Remove(this);
+        }
 
         private void OnDestroy()
         {
@@ -236,12 +241,20 @@ namespace Game.Voxels
             Push(0f, start);
         }
 
-        private void LateUpdate()
+        private void LateUpdate() // perf-ok: ticks itself without the game loop; draws (dt 0) while the loop is paused
+        {
+            if (!VoxelTicks.Driven)
+                VoxelLateUpdate(Time.deltaTime);
+            else if (VoxelTicks.Paused)
+                VoxelLateUpdate(0f);
+        }
+
+        public void VoxelLateUpdate(float deltaTime)
         {
             if (!_created)
                 return;
 
-            float dt = math.min(Time.deltaTime, 1f / 20f);
+            float dt = math.min(deltaTime, 1f / 20f);
             _age += dt;
             if (_age >= _lifetime)
             {
@@ -249,7 +262,9 @@ namespace Game.Voxels
                 return;
             }
 
-            Grow();
+            // dt 0: the game loop is paused, the cloud is only drawn
+            if (dt > 0f)
+                Grow();
 
             float fade = 1f;
             float fadeStart = _lifetime - _fadeTime;
@@ -276,7 +291,7 @@ namespace Game.Voxels
                 Colors = _colors,
                 Count = _count,
                 Origin = _origin,
-                Time = Time.time,
+                Time = VoxelTicks.Time,
                 Tint = new float4(_tint.r, _tint.g, _tint.b, 1f)
             }.Schedule(handle);
             handle.Complete();

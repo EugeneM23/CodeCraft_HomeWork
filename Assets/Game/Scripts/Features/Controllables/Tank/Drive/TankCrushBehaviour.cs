@@ -208,6 +208,7 @@ namespace Game
             DamageUseCase.TakeDamage(victim, new TakeDamageArgs(_crusher));
             if (IsAlive(victim))
                 return;
+            GameSignals.RaiseCrushed(point, speed);
 
             Vector3 under = Under(point);
             Spray(under, speed);
@@ -292,19 +293,8 @@ namespace Game
                     if (!part.TryGetSurfacePoint(2f, out Vector3 at, out Vector3 normal))
                         continue;
 
-                    Vector3 toBurst = burst - at;
-                    float distance = toBurst.magnitude;
-                    if (distance >= reach)
+                    if (!TryGetStainChance(at, normal, burst, groundY, reach, _config.thickBelow, out float keep))
                         continue;
-                    // A face turned away from the burst stays clean; a part one voxel thin (no
-                    // normal) and a spot at the burst itself take it from any side.
-                    float facing = normal == Vector3.zero || distance < 0.2f
-                        ? 1f
-                        : Vector3.Dot(normal, toBurst / distance);
-                    // Falling off steeply: a face looking straight at the burst from the far side
-                    // of the nose must not outdo the near side, which meets it at a slant.
-                    float near = 1f - distance / reach;
-                    float keep = near * near * facing * Thin(at.y - groundY, _config.thickBelow);
                     if (Random.value > keep)
                         continue;
 
@@ -319,6 +309,32 @@ namespace Game
 
             Parts.Clear();
             Sizes.Clear();
+        }
+
+        /// <summary>
+        /// The chance (at most 1; zero or less means never) that a splash of the burst at
+        /// <paramref name="burst"/> sticks to a spot of skin at <paramref name="at"/> facing
+        /// <paramref name="normal"/>. False, with no chance at all, past <paramref name="reach"/>.
+        /// </summary>
+        public static bool TryGetStainChance(Vector3 at, Vector3 normal, Vector3 burst, float groundY, float reach,
+            float thickBelow, out float chance)
+        {
+            chance = 0f;
+            Vector3 toBurst = burst - at;
+            float distance = toBurst.magnitude;
+            if (distance >= reach)
+                return false;
+
+            // A face turned away from the burst stays clean; a part one voxel thin (no normal) and a
+            // spot at the burst itself take it from any side.
+            float facing = normal == Vector3.zero || distance < 0.2f
+                ? 1f
+                : Vector3.Dot(normal, toBurst / distance);
+            // Falling off steeply: a face looking straight at the burst from the far side of the nose
+            // must not outdo the near side, which meets it at a slant.
+            float near = 1f - distance / reach;
+            chance = near * near * facing * Thin(at.y - groundY, thickBelow);
+            return true;
         }
 
         /// <summary>The part whose stretch of the running sum of sizes holds <paramref name="value"/>.</summary>

@@ -1,0 +1,21 @@
+{
+    "name": "SaveSystem",
+    "rootNamespace": "Saving",
+    "references": [
+        "Unity.InputSystem"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "SAVE_SYSTEM_JSON"
+    ],
+    "versionDefines": [
+        { "name": "com.unity.nuget.newtonsoft-json", "expression": "", "define": "SAVE_SYSTEM_JSON" },
+        { "name": "com.unity.inputsystem", "expression": "", "define": "SAVE_INPUT_SYSTEM" }
+    ],
+    "noEngineReferences": false
+}
