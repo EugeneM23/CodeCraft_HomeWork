@@ -11,7 +11,9 @@
         "UnityEngine.UI",
         "RayFireAssembly",
         "Unity.Postprocessing.Runtime",
-        "Game.Voxels"
+        "Game.Voxels",
+        "Unity.InputSystem",
+        "ScreenStack"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

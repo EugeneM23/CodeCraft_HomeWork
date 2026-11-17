@@ -8,7 +8,10 @@
         "RayFireAssembly",
         "UnityEngine.UI",
         "HighlightPlus",
-        "Game.Voxels"
+        "Game.Voxels",
+        "Unity.TextMeshPro",
+        "Unity.InputSystem",
+        "ScreenStack"
     ],
     "includePlatforms": [
         "Editor"

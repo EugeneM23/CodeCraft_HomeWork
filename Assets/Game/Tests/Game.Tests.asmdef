@@ -12,7 +12,9 @@
         "UnityEngine.UI",
         "HighlightPlus",
         "DOTweenModules",
-        "RayFireAssembly"
+        "RayFireAssembly",
+        "Unity.InputSystem",
+        "ScreenStack"
     ],
     "includePlatforms": [
         "Editor"
