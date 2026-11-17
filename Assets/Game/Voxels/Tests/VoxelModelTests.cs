@@ -17,7 +17,7 @@ namespace Game.Voxels.Tests
             data.palette[1] = new Color32(200, 200, 200, 255);
             var voxels = new NativeArray<byte>(4 * 4 * 4, Allocator.Temp);
             for (int i = 0; i < voxels.Length; i++) voxels[i] = 1;
-            data.parts = new[] { new VoxelModelAsset.Part { path = "", size = new Vector3Int(4, 4, 4), runs = VoxelModelAsset.Encode(voxels) } };
+            data.parts = new[] { new VoxelModelAsset.Part { path = "", voxelSize = 0.1f, size = new Vector3Int(4, 4, 4), runs = VoxelModelAsset.Encode(voxels) } };
             voxels.Dispose();
 
             var go = new GameObject("Model");

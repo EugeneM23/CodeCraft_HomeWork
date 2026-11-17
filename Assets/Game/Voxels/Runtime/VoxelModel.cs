@@ -42,7 +42,7 @@ namespace Game.Voxels
                 var go = new GameObject("Voxels") { layer = root.gameObject.layer };
                 go.transform.SetParent(root, false);
                 VoxelBody body = go.AddComponent<VoxelBody>();
-                body.Init(size, voxels, palette, _data.Settings(part.origin, root.gameObject.layer));
+                body.Init(size, voxels, palette, _data.Settings(part, root.gameObject.layer));
                 _bodies.Add(body);
             }
         }

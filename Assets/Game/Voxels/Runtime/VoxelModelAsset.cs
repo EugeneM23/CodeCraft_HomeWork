@@ -22,6 +22,8 @@ namespace Game.Voxels
             public Vector3Int size;
             [Tooltip("Part space position of the min corner of voxel (0, 0, 0), m.")]
             public Vector3 origin;
+            [Tooltip("Voxel edge in the part's own space, m; the part's world scale in the prefab makes it the class voxel.")]
+            public float voxelSize;
             [Tooltip("The grid, x fastest, as (count, value) byte pairs.")]
             public byte[] runs = Array.Empty<byte>();
         }
@@ -29,6 +31,7 @@ namespace Game.Voxels
         public Part[] parts = Array.Empty<Part>();
         [Tooltip("256 colours; index 0 is empty. Alpha is dryness (255 — dry).")]
         public Color32[] palette = new Color32[256];
+        [Tooltip("The class voxel in real metres, for display; each part's grid uses its own Part.voxelSize.")]
         public float voxelSize = 0.03f;
         [Range(0.1f, 1f)] public float toughness = 1f;
         public float density = 1800f;
@@ -37,10 +40,11 @@ namespace Game.Voxels
         [Tooltip("Edge of a collision cell in voxels; 0 or 1 — every voxel.")]
         public int colliderCell;
 
-        public VoxelBodySettings Settings(Vector3 origin, int layer)
+        /// <summary>A part's body settings: its own voxel size and origin (part space), the model's class settings.</summary>
+        public VoxelBodySettings Settings(Part part, int layer)
         {
-            VoxelBodySettings settings = VoxelBodySettings.Default(voxelSize);
-            settings.Origin = (float3)origin;
+            VoxelBodySettings settings = VoxelBodySettings.Default(part.voxelSize);
+            settings.Origin = (float3)part.origin;
             settings.Anchor = anchor;
             settings.Colliders = colliders;
             settings.ColliderCell = colliderCell;

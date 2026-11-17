@@ -58,6 +58,88 @@ namespace Game.Voxels.Tests
             Object.DestroyImmediate(config);
         }
 
+        /// <summary>The car as a prefab in FOLDER (meshes and materials saved as assets), and a building config for it.</summary>
+        private static VoxelizerConfig CarConfig(GameObject car)
+        {
+            AssetDatabase.DeleteAsset(FOLDER);
+            AssetDatabase.CreateFolder("Assets", "__VoxelizerBakeTest");
+            int n = 0;
+            foreach (MeshRenderer r in car.GetComponentsInChildren<MeshRenderer>(true))
+            {
+                AssetDatabase.CreateAsset(r.GetComponent<MeshFilter>().sharedMesh, $"{FOLDER}/Mesh{n}.asset");
+                AssetDatabase.CreateAsset(r.sharedMaterial, $"{FOLDER}/Material{n}.mat");
+                n++;
+            }
+
+            GameObject model = PrefabUtility.SaveAsPrefabAsset(car, FOLDER + "/Car.prefab");
+            Object.DestroyImmediate(car);
+            var config = ScriptableObject.CreateInstance<VoxelizerConfig>();
+            config.model = model;
+            config.kind = VoxelizerConfig.ModelKind.Building;
+            return config;
+        }
+
+        private static GameObject Car()
+        {
+            var car = new GameObject("Car");
+            TestMeshes.Add(car.transform, "Body", TestMeshes.Box(Vector3.one * 0.001f, new Vector3(1.999f, 0.6f, 0.999f)), Color.gray);
+            return car;
+        }
+
+        [Test]
+        public void Bake_AModelWithParticles_LeavesTheParticleRendererAlone()
+        {
+            GameObject car = Car();
+            var smoke = new GameObject("Smoke", typeof(ParticleSystem));
+            smoke.transform.SetParent(car.transform, false);
+            VoxelizerConfig config = CarConfig(car);
+
+            GameObject prefab = VoxelModelBakeUseCase.Bake(config, FOLDER);
+
+            Assert.IsNotNull(prefab.transform.Find("Smoke").GetComponent<ParticleSystemRenderer>());
+            Assert.IsNull(prefab.transform.Find("Body").GetComponent<MeshRenderer>());
+            Object.DestroyImmediate(config);
+        }
+
+        [Test]
+        public void Rebake_KeepsTheDataAssetsGuid_AndThePrefabStillPointsAtIt()
+        {
+            VoxelizerConfig config = CarConfig(Car());
+            string path = FOLDER + "/VX_Car_Data.asset";
+
+            VoxelModelBakeUseCase.Bake(config, FOLDER);
+            string guid = AssetDatabase.AssetPathToGUID(path);
+            config.colours = 6;
+            GameObject prefab = VoxelModelBakeUseCase.Bake(config, FOLDER);
+
+            Assert.AreEqual(guid, AssetDatabase.AssetPathToGUID(path));
+            var data = AssetDatabase.LoadAssetAtPath<VoxelModelAsset>(path);
+            Assert.AreEqual(data, new SerializedObject(prefab.GetComponent<VoxelModel>()).FindProperty("_data").objectReferenceValue);
+            Assert.AreEqual(1, data.parts.Length);
+            Object.DestroyImmediate(config);
+        }
+
+        [Test]
+        public void Bake_AScaledRootAndPart_GiveTheClassVoxelInTheWorld()
+        {
+            var car = new GameObject("Car");
+            car.transform.localScale = Vector3.one * 2f;
+            var hull = new GameObject("Hull");
+            hull.transform.SetParent(car.transform, false);
+            hull.transform.localScale = Vector3.one * 2f;
+            TestMeshes.Add(hull.transform, "Body", TestMeshes.Box(Vector3.one * 0.001f, new Vector3(0.999f, 0.249f, 0.249f)), Color.gray);
+            VoxelizerConfig config = CarConfig(car);
+            config.length = 7.984f; // twice its 3.992 m
+            config.parts = new[] { new VoxelizerConfig.PartRule { path = "Hull", mark = VoxelizerConfig.PartMark.AsIs } };
+
+            GameObject prefab = VoxelModelBakeUseCase.Bake(config, FOLDER);
+
+            var data = AssetDatabase.LoadAssetAtPath<VoxelModelAsset>(FOLDER + "/VX_Car_Data.asset");
+            Assert.AreEqual(0.1f, data.voxelSize, 1e-6f);
+            Assert.AreEqual(0.1f, data.parts[0].voxelSize * prefab.transform.Find("Hull").lossyScale.x, 1e-5f);
+            Object.DestroyImmediate(config);
+        }
+
         [Test]
         public void ToAsset_KeepsEveryPartAndTheClassSettings()
         {

@@ -40,10 +40,12 @@ namespace Game.Voxels.Tests
             asset.density = 7800f;
             asset.anchor = VoxelAnchor.Largest;
             asset.colliders = false;
+            // A part scaled twice in the prefab: its voxel in its own space is half the class voxel.
+            var part = new VoxelModelAsset.Part { origin = new Vector3(1f, 2f, 3f), voxelSize = 0.015f };
 
-            VoxelBodySettings s = asset.Settings(new Vector3(1f, 2f, 3f), 5);
+            VoxelBodySettings s = asset.Settings(part, 5);
 
-            Assert.AreEqual(0.03f, s.VoxelSize);
+            Assert.AreEqual(0.015f, s.VoxelSize);
             Assert.AreEqual(0.45f, s.Toughness);
             Assert.AreEqual(7800f, s.Density);
             Assert.AreEqual(VoxelAnchor.Largest, s.Anchor);

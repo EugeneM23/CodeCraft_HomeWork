@@ -56,6 +56,19 @@ namespace Game.Voxels.EditorTools
                 _material = new Material(shader) { hideFlags = HideFlags.HideAndDontSave };
             }
 
+            try
+            {
+                Show(config);
+            }
+            catch
+            {
+                Clear(); // no half-built panels or a stale summary: the window shows the error instead
+                throw;
+            }
+        }
+
+        private void Show(VoxelizerConfig config)
+        {
             _source = NewUtility();
             _voxels = NewUtility();
             GameObject model = _source.InstantiatePrefabInScene(config.model);
@@ -67,7 +80,7 @@ namespace Game.Voxels.EditorTools
             watch.Stop();
 
             // The voxels take the place of the renderers their parts own, as in the baked prefab.
-            foreach (Renderer r in instance.GetComponentsInChildren<Renderer>(true))
+            foreach (Renderer r in VoxelizerSource.Voxelizable(instance))
                 if (Owner(r.transform, instance.transform, result) is { } owner && result.Parts.Exists(p => p.Root == owner))
                     r.enabled = false;
 
@@ -75,7 +88,7 @@ namespace Game.Voxels.EditorTools
             int total = 0, chunks = 0;
             foreach (VoxelizerResultPart part in result.Parts)
             {
-                Mesh mesh = BuildMesh(part.Size, part.Voxels, result.Palette, result.VoxelSize, part.Origin);
+                Mesh mesh = BuildMesh(part.Size, part.Voxels, result.Palette, part.VoxelSize, part.Origin);
                 mesh.hideFlags = HideFlags.HideAndDontSave;
                 _meshes.Add(mesh);
                 GameObject go = EditorUtility.CreateGameObjectWithHideFlags("Voxels", HideFlags.HideAndDontSave, typeof(MeshFilter), typeof(MeshRenderer));
@@ -90,8 +103,9 @@ namespace Game.Voxels.EditorTools
                 counts.AppendLine($"{(part.Path == "" ? "(root)" : part.Path)}: {solid:N0}  ({part.Size.x}×{part.Size.y}×{part.Size.z})");
             }
 
-            float voxelM = result.VoxelSize * result.Scale;
-            Summary = $"{result.Parts.Count} parts, {total:N0} voxels, {chunks} chunks 16³, voxel {voxelM * 100f:0.#} cm, "
+            // The real class voxel: what every part's voxel measures in the world once baked (the panel shows the
+            // model unscaled, each part's voxel being the class voxel / Scale there).
+            Summary = $"{result.Parts.Count} parts, {total:N0} voxels, {chunks} chunks 16³, voxel {result.ClassVoxel * 100f:0.#} cm, "
                       + $"voxelized in {watch.ElapsedMilliseconds} ms";
             PartCounts = counts.ToString();
         }
@@ -205,12 +219,9 @@ namespace Game.Voxels.EditorTools
             return null;
         }
 
-        private static Bounds BoundsOf(GameObject instance)
-        {
-            var bounds = new Bounds(instance.transform.position, Vector3.zero);
-            foreach (Renderer r in instance.GetComponentsInChildren<Renderer>(true)) bounds.Encapsulate(r.bounds);
-            return bounds;
-        }
+        /// <summary>What the camera frames: the voxelizable renderers (as the voxelizer measures the model), or the pivot.</summary>
+        private static Bounds BoundsOf(GameObject instance) =>
+            VoxelizerSource.TryBounds(instance, out Bounds bounds) ? bounds : new Bounds(instance.transform.position, Vector3.zero);
 
         private static PreviewRenderUtility NewUtility()
         {

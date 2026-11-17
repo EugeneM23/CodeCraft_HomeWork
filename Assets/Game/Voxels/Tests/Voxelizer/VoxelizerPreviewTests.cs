@@ -2,12 +2,52 @@ using Game.Voxels.EditorTools;
 using NUnit.Framework;
 using Unity.Collections;
 using Unity.Mathematics;
+using UnityEditor;
 using UnityEngine;
 
 namespace Game.Voxels.Tests
 {
     public sealed class VoxelizerPreviewTests
     {
+        private const string FOLDER = "Assets/__VoxelizerPreviewTest";
+
+        [Test]
+        public void AFailedRecompute_LeavesNoPanelsOrSummary()
+        {
+            AssetDatabase.DeleteAsset(FOLDER);
+            AssetDatabase.CreateFolder("Assets", "__VoxelizerPreviewTest");
+            var preview = new VoxelizerPreview();
+            var config = ScriptableObject.CreateInstance<VoxelizerConfig>();
+            try
+            {
+                var box = new GameObject("Box");
+                MeshRenderer r = TestMeshes.Add(box.transform, "Body", TestMeshes.Box(Vector3.one * 0.001f, Vector3.one * 0.999f), Color.gray);
+                AssetDatabase.CreateAsset(r.GetComponent<MeshFilter>().sharedMesh, FOLDER + "/Box.asset");
+                AssetDatabase.CreateAsset(r.sharedMaterial, FOLDER + "/Box.mat");
+                GameObject small = PrefabUtility.SaveAsPrefabAsset(box, FOLDER + "/Small.prefab");
+                box.transform.localScale = Vector3.one * 100f; // 100 m: over 512 cells, Run throws
+                GameObject huge = PrefabUtility.SaveAsPrefabAsset(box, FOLDER + "/Huge.prefab");
+                Object.DestroyImmediate(box);
+                config.kind = VoxelizerConfig.ModelKind.Vehicle;
+
+                config.model = small;
+                preview.Recompute(config);
+                Assert.IsTrue(preview.HasModel);
+                config.model = huge;
+                Assert.Catch(() => preview.Recompute(config));
+
+                Assert.IsFalse(preview.HasModel, "no stale panels");
+                Assert.AreEqual("", preview.Summary);
+                Assert.AreEqual("", preview.PartCounts);
+            }
+            finally
+            {
+                preview.Dispose();
+                Object.DestroyImmediate(config);
+                AssetDatabase.DeleteAsset(FOLDER);
+            }
+        }
+
         [Test]
         public void ACubeOfThree_HasOnlyItsOuterFaces()
         {

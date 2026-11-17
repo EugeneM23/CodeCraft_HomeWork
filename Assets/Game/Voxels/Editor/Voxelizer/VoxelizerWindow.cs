@@ -208,6 +208,12 @@ namespace Game.Voxels.EditorTools
 
         private void Bake()
         {
+            // A dialog opened from a button: the GUI exits after it either way (as after the file panels).
+            if (BakedAsset() != null && !EditorUtility.DisplayDialog("Re-bake",
+                    $"VX_{_config.model.name}_Data.asset already exists. Re-baking replaces hand edits imported from .vox.",
+                    "Re-bake", "Cancel"))
+                GUIUtility.ExitGUI();
+
             try
             {
                 GameObject prefab = VoxelModelBakeUseCase.Bake(_config, Folder());
