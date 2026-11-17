@@ -273,8 +273,11 @@ namespace Game
             Parts.Clear();
             Sizes.Clear();
             float total = 0f;
-            foreach (VoxelBody part in _skin.Bodies)
+            // By index: foreach over an IReadOnlyList boxes its enumerator
+            IReadOnlyList<VoxelBody> bodies = _skin.Bodies;
+            for (int b = 0; b < bodies.Count; b++)
             {
+                VoxelBody part = bodies[b];
                 if (part == null || !part.IsCreated || part.SolidCount == 0 ||
                     part.WorldBounds.SqrDistance(burst) > reach * reach)
                     continue;
