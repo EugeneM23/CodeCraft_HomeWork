@@ -244,4 +244,55 @@ namespace Game.Voxels.EditorTools
             keep.Dispose();
         }
     }
+
+    /// <summary>
+    /// A surface voxel whose colour repeats in at most one of its 26 neighbours takes the most common
+    /// surface colour around it. Inside and empty voxels are left alone. Each pass reads a copy.
+    /// </summary>
+    [BurstCompile]
+    public struct MajorityJob : IJob
+    {
+        public NativeArray<byte> Voxels;
+        public int3 Size;
+        public int LastSurface;
+        public int Passes;
+
+        public void Execute()
+        {
+            var read = new NativeArray<byte>(Voxels.Length, Allocator.Temp);
+            var count = new NativeArray<int>(256, Allocator.Temp);
+            for (int pass = 0; pass < Passes; pass++)
+            {
+                read.CopyFrom(Voxels);
+                for (int z = 0; z < Size.z; z++)
+                for (int y = 0; y < Size.y; y++)
+                for (int x = 0; x < Size.x; x++)
+                {
+                    int i = x + Size.x * (y + Size.y * z);
+                    byte v = read[i];
+                    if (v == 0 || v > LastSurface) continue;
+                    for (int c = 0; c < 256; c++) count[c] = 0;
+                    int same = 0;
+                    for (int dz = -1; dz <= 1; dz++)
+                    for (int dy = -1; dy <= 1; dy++)
+                    for (int dx = -1; dx <= 1; dx++)
+                    {
+                        if (dx == 0 && dy == 0 && dz == 0) continue;
+                        int3 q = new int3(x + dx, y + dy, z + dz);
+                        if (math.any(q < 0) || math.any(q >= Size)) continue;
+                        byte w = read[q.x + Size.x * (q.y + Size.y * q.z)];
+                        if (w == 0 || w > LastSurface) continue;
+                        count[w]++;
+                        if (w == v) same++;
+                    }
+
+                    if (same > 1) continue;
+                    int best = v, bestCount = 0;
+                    for (int c = 1; c <= LastSurface; c++)
+                        if (count[c] > bestCount) { bestCount = count[c]; best = c; }
+                    Voxels[i] = (byte)best;
+                }
+            }
+        }
+    }
 }
