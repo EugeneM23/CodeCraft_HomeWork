@@ -117,6 +117,30 @@
 Запросы `Crush`, `Blow`, `Loosen` копятся в списке и выполняются в шаге следующего кадра, на рабочих
 потоках, — главный поток не перебирает сотню тысяч кубиков.
 
+## 4а. Публичный вход «выбросить грунт» (для команды «танк и воронка»)
+
+Танк на скорости носом вырывает грунт из склона воронки; разлёт берёт отсюда.
+
+```csharp
+public struct EarthThrow
+{
+    public Vector3 Point;     // where the earth leaves the ground, world space
+    public Vector3 Velocity;  // mean velocity of the throw, m/s (impulse / mass is the caller's business)
+    public float Volume;      // m³ of earth thrown; ~0.008 m³ per 20 cm cube
+    public float Spread;      // 0 — one tight clump, 1 — a wide fan of small clumps and crumbs
+    public Color32 Top;       // turf / surface colour (top cubes)
+    public Color32 Body;      // earth under it (dry or wet mud)
+}
+
+// VoxelDebris: throws the earth as a few clumps + crumbs + a puff of dust.
+// Returns how many cubes went out (0 when the pool is full). Main thread, no allocations.
+public int ThrowEarth(in EarthThrow earth);
+```
+
+Объём делится на 1–4 кома (меньше при малом `Spread`) и 18 % крошки; скорость каждого — `Velocity`
+с разбросом по `Spread`; пыль — если объём > 0.05 м³. Комья дальше живут по правилам разделов 1–4:
+рассыпаются, ложатся, давятся, подбрасываются.
+
 ## 5. Производительность
 
 Правила — `Docs/Rules/Performance.md`: PlayerLoop ≤ 5 мс, GC в кадре ≈ 0, без пиков в кадре взрыва.
