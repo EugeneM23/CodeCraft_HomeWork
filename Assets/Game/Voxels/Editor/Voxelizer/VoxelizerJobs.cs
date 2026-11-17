@@ -210,4 +210,111 @@ namespace Game.Voxels.EditorTools
             queue.Enqueue(j);
         }
     }
+
+    /// <summary>
+    /// Flattens every triangle whose normal lies within MaxAngle of an axis onto the voxel boundary
+    /// nearest its mean, a quarter voxel into the body, so a nearly flat face samples as one even layer.
+    /// </summary>
+    [BurstCompile]
+    public struct SnapPlanesJob : IJob
+    {
+        public NativeArray<float3> Corners;
+        public float VoxelSize;
+        public float CosMaxAngle;
+
+        public void Execute()
+        {
+            for (int t = 0; t < Corners.Length / 3; t++)
+            {
+                float3 a = Corners[t * 3], b = Corners[t * 3 + 1], c = Corners[t * 3 + 2];
+                float3 n = math.cross(b - a, c - a);
+                float length = math.length(n);
+                if (length < 1e-12f)
+                    continue;
+                n /= length;
+                float3 an = math.abs(n);
+                int axis = an.x >= an.y && an.x >= an.z ? 0 : an.y >= an.z ? 1 : 2;
+                if (an[axis] < CosMaxAngle)
+                    continue;
+
+                float mean = (a[axis] + b[axis] + c[axis]) / 3f;
+                float plane = math.round(mean / VoxelSize) * VoxelSize - 0.25f * VoxelSize * math.sign(n[axis]);
+                a[axis] = plane; b[axis] = plane; c[axis] = plane;
+                Corners[t * 3] = a; Corners[t * 3 + 1] = b; Corners[t * 3 + 2] = c;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Morphological opening with a 3×3×3 cube, Passes times each way: erosion keeps a cell only if all
+    /// 26 neighbours are solid, dilation gives back cells that were solid before, with their own colour.
+    /// One pass removes every part that holds no full 3×3×3 cube, so anything up to 2 voxels thick.
+    /// </summary>
+    [BurstCompile]
+    public struct OpenJob : IJob
+    {
+        public NativeArray<Color32> Cells;
+        public int3 Size;
+        public int Passes;
+
+        public void Execute()
+        {
+            var original = new NativeArray<Color32>(Cells, Allocator.Temp);
+            var mask = new NativeArray<bool>(Cells.Length, Allocator.Temp);
+            var next = new NativeArray<bool>(Cells.Length, Allocator.Temp);
+            for (int i = 0; i < Cells.Length; i++)
+                mask[i] = Cells[i].a != 0;
+
+            for (int p = 0; p < Passes; p++)
+            {
+                for (int i = 0; i < mask.Length; i++)
+                    next[i] = mask[i] && AllNeighbours(mask, i);
+                (mask, next) = (next, mask);
+            }
+
+            for (int p = 0; p < Passes; p++)
+            {
+                for (int i = 0; i < mask.Length; i++)
+                    next[i] = mask[i] || (original[i].a != 0 && AnyNeighbour(mask, i));
+                (mask, next) = (next, mask);
+            }
+
+            for (int i = 0; i < Cells.Length; i++)
+                Cells[i] = mask[i] ? original[i] : default;
+
+            original.Dispose();
+            mask.Dispose();
+            next.Dispose();
+        }
+
+        /// <summary>All 26 neighbours solid; a cell on the grid's edge never is.</summary>
+        private bool AllNeighbours(NativeArray<bool> m, int i)
+        {
+            int3 p = new int3(i % Size.x, (i / Size.x) % Size.y, i / (Size.x * Size.y));
+            if (math.any(p == 0) || math.any(p == Size - 1))
+                return false;
+            for (int dz = -1; dz <= 1; dz++)
+            for (int dy = -1; dy <= 1; dy++)
+            for (int dx = -1; dx <= 1; dx++)
+                if (!m[(p.x + dx) + Size.x * ((p.y + dy) + Size.y * (p.z + dz))])
+                    return false;
+            return true;
+        }
+
+        /// <summary>Any of the 26 neighbours solid.</summary>
+        private bool AnyNeighbour(NativeArray<bool> m, int i)
+        {
+            int3 p = new int3(i % Size.x, (i / Size.x) % Size.y, i / (Size.x * Size.y));
+            for (int dz = -1; dz <= 1; dz++)
+            for (int dy = -1; dy <= 1; dy++)
+            for (int dx = -1; dx <= 1; dx++)
+            {
+                int3 q = p + new int3(dx, dy, dz);
+                if (math.all(q >= 0) && math.all(q < Size) && m[q.x + Size.x * (q.y + Size.y * q.z)])
+                    return true;
+            }
+
+            return false;
+        }
+    }
 }
