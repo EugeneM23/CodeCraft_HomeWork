@@ -119,12 +119,12 @@ namespace Game.EditorTools
 
             if (material == null)
             {
-                material = new Material(Shader.Find("Standard"));
+                material = new Material(Shader.Find("Universal Render Pipeline/Lit"));
                 AssetDatabase.CreateAsset(material, path);
             }
 
             material.color = colour;
-            material.SetFloat("_Glossiness", 0.35f);
+            material.SetFloat("_Smoothness", 0.35f);
             material.SetFloat("_Metallic", 0.2f);
             EditorUtility.SetDirty(material);
             return material;

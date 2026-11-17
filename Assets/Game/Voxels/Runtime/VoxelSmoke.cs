@@ -477,7 +477,7 @@ namespace Game.Voxels
             if (material == null)
             {
                 Shader shader = Shader.Find("Game/Voxel");
-                material = new Material(shader != null ? shader : Shader.Find("Standard"));
+                material = new Material(shader != null ? shader : Shader.Find("Universal Render Pipeline/Lit"));
                 material.SetFloat("_Glossiness", 0f);
             }
 

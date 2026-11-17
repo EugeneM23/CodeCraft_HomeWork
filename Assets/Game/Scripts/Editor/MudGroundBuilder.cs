@@ -315,19 +315,21 @@ namespace Game.EditorTools
             Material material = AssetDatabase.LoadAssetAtPath<Material>(CLUMP_MATERIAL_PATH);
             if (material == null)
             {
-                material = new Material(Shader.Find("Particles/Standard Surface")) { name = "MT_MudClump" };
+                material = new Material(Shader.Find("Universal Render Pipeline/Particles/Lit")) { name = "MT_MudClump" };
                 AssetDatabase.CreateAsset(material, CLUMP_MATERIAL_PATH);
             }
 
             // Opaque and untextured: the mesh's shape and the particle colour make the chunk.
-            material.SetTexture("_MainTex", null);
-            material.SetFloat("_Mode", 0f);
+            material.SetTexture("_BaseMap", null);
+            material.SetFloat("_Surface", 0f);
             // The ground's own sheen, wet mud between its wet and dry: glossier read as chocolate.
-            material.SetFloat("_Glossiness", 0.3f);
+            material.SetFloat("_Smoothness", 0.3f);
             material.SetFloat("_Metallic", 0f);
-            material.SetInt("_SrcBlend", (int)BlendMode.One);
-            material.SetInt("_DstBlend", (int)BlendMode.Zero);
-            material.SetInt("_ZWrite", 1);
+            material.SetFloat("_SrcBlend", (float)BlendMode.One);
+            material.SetFloat("_DstBlend", (float)BlendMode.Zero);
+            material.SetFloat("_ZWrite", 1f);
+            material.SetOverrideTag("RenderType", "Opaque");
+            material.DisableKeyword("_SURFACE_TYPE_TRANSPARENT");
             material.DisableKeyword("_ALPHATEST_ON");
             material.renderQueue = (int)RenderQueue.Geometry;
             EditorUtility.SetDirty(material);

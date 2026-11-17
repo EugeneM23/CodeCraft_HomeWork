@@ -228,11 +228,12 @@ namespace Game
 
             _flashTime += dt / 0.35f;
             float fade = 1f - Mathf.Clamp01(_flashTime);
-            _flash.intensity = _flashIntensity * fade * fade;
+            float intensity = _flashIntensity * fade * fade;
+            _flash.intensity = LightIntensity.FromBuiltIn(intensity);
             _flash.enabled = _flashTime < 1f;
 
             if (_flash.enabled)
-                VoxelFlash.Set(_flash.transform.position, _flash.range, _flash.color, _flash.intensity);
+                VoxelFlash.Set(_flash.transform.position, _flash.range, _flash.color, intensity);
             else
                 VoxelFlash.Clear();
         }
@@ -303,8 +304,8 @@ namespace Game
             if (s_bombMaterial != null)
                 return s_bombMaterial;
 
-            s_bombMaterial = new Material(Shader.Find("Standard")) { color = new Color(0.22f, 0.25f, 0.17f) };
-            s_bombMaterial.SetFloat("_Glossiness", 0.35f);
+            s_bombMaterial = new Material(Shader.Find("Universal Render Pipeline/Lit")) { color = new Color(0.22f, 0.25f, 0.17f) };
+            s_bombMaterial.SetFloat("_Smoothness", 0.35f);
             return s_bombMaterial;
         }
     }

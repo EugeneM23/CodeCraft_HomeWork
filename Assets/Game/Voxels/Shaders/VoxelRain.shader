@@ -1,6 +1,6 @@
 // Rain drops and their splashes: unlit, see-through, one colour per instance (_InstColor,
 // alpha included) times _Color. A touch of the scene's ambient light keeps them from glowing
-// in the dark.
+// in the dark. Drawn only with DrawMeshInstanced (VoxelRain).
 Shader "Game/VoxelRain"
 {
     Properties
@@ -12,60 +12,74 @@ Shader "Game/VoxelRain"
 
     SubShader
     {
-        Tags { "Queue" = "Transparent" "RenderType" = "Transparent" "IgnoreProjector" = "True" }
+        Tags { "Queue" = "Transparent" "RenderType" = "Transparent" "IgnoreProjector" = "True" "RenderPipeline" = "UniversalPipeline" }
         Blend SrcAlpha OneMinusSrcAlpha
         ZWrite Off
         Cull Back
 
         Pass
         {
-            CGPROGRAM
-            #pragma vertex vert
-            #pragma fragment frag
+            Name "Unlit"
+            Tags { "LightMode" = "UniversalForward" }
+
+            HLSLPROGRAM
+            #pragma vertex Vert
+            #pragma fragment Frag
             #pragma multi_compile_instancing
             #pragma multi_compile_fog
-            #include "UnityCG.cginc"
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
 
-            struct appdata
-            {
-                float4 vertex : POSITION;
-                UNITY_VERTEX_INPUT_INSTANCE_ID
-            };
+            CBUFFER_START(UnityPerMaterial)
+                half4 _Color;
+                #if !defined(UNITY_INSTANCING_ENABLED)
+                float4 _InstColor;
+                #endif
+                half _Ambient;
+            CBUFFER_END
 
-            struct v2f
-            {
-                float4 pos : SV_POSITION;
-                UNITY_FOG_COORDS(0)
-                UNITY_VERTEX_INPUT_INSTANCE_ID
-            };
-
-            fixed4 _Color;
-            half _Ambient;
-
-            UNITY_INSTANCING_BUFFER_START(Props)
+            #if defined(UNITY_INSTANCING_ENABLED)
+            UNITY_INSTANCING_BUFFER_START(RainProps)
                 UNITY_DEFINE_INSTANCED_PROP(float4, _InstColor)
-            UNITY_INSTANCING_BUFFER_END(Props)
+            UNITY_INSTANCING_BUFFER_END(RainProps)
+            #define RAIN_INSTANCE_COLOR UNITY_ACCESS_INSTANCED_PROP(RainProps, _InstColor)
+            #else
+            #define RAIN_INSTANCE_COLOR _InstColor
+            #endif
 
-            v2f vert (appdata v)
+            struct Attributes
             {
-                v2f o;
-                UNITY_SETUP_INSTANCE_ID(v);
-                UNITY_TRANSFER_INSTANCE_ID(v, o);
-                o.pos = UnityObjectToClipPos(v.vertex);
-                UNITY_TRANSFER_FOG(o, o.pos);
+                float4 positionOS : POSITION;
+                UNITY_VERTEX_INPUT_INSTANCE_ID
+            };
+
+            struct Varyings
+            {
+                float4 positionCS : SV_POSITION;
+                half fogFactor : TEXCOORD0;
+                UNITY_VERTEX_INPUT_INSTANCE_ID
+            };
+
+            Varyings Vert(Attributes input)
+            {
+                Varyings o;
+                UNITY_SETUP_INSTANCE_ID(input);
+                UNITY_TRANSFER_INSTANCE_ID(input, o);
+                o.positionCS = TransformObjectToHClip(input.positionOS.xyz);
+                o.fogFactor = ComputeFogFactor(o.positionCS.z);
                 return o;
             }
 
-            fixed4 frag (v2f i) : SV_Target
+            half4 Frag(Varyings input) : SV_Target
             {
-                UNITY_SETUP_INSTANCE_ID(i);
-                float4 c = UNITY_ACCESS_INSTANCED_PROP(Props, _InstColor) * _Color;
-                float3 light = lerp(1.0, saturate(ShadeSH9(float4(0, 1, 0, 1)) * 1.6), _Ambient);
+                UNITY_SETUP_INSTANCE_ID(input);
+                half4 c = RAIN_INSTANCE_COLOR * _Color;
+                half3 light = lerp(1.0, saturate(SampleSH(half3(0, 1, 0)) * 1.6), _Ambient);
                 c.rgb *= light;
-                UNITY_APPLY_FOG(unity_FogColor, c);
+                c.rgb = MixFog(c.rgb, input.fogFactor);
                 return c;
             }
-            ENDCG
+            ENDHLSL
         }
     }
 }
