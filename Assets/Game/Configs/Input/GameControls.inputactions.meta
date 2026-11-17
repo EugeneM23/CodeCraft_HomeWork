@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: de38404fdc8241f595c9aff970a169c3
+ScriptedImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 2
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+  script: {fileID: 11500000, guid: 8404be70184654265930450def6a9037, type: 3}
+  generateWrapperCode: 1
+  wrapperCodePath: Assets/Game/Scripts/Shared/Input/GameControls.cs
+  wrapperClassName: GameControls
+  wrapperCodeNamespace: Game
