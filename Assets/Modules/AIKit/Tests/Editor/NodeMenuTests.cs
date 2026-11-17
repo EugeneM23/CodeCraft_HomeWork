@@ -172,7 +172,8 @@ namespace AIKit.Tests
         [Test]
         public void Everything_FoldersInTheOrderOfTheSpec_NodesByTheirOrder()
         {
-            List<string> paths = NodeMenu.Everything(_document).Select(item => item.Path).ToList();
+            List<string> paths = NodeMenu.Everything(_document).Select(item => item.Path)
+                .Where(path => !path.StartsWith("Game/")).ToList(); // PORTING: the game's own nodes have their own root
             string[] tops = paths.Select(path => path.Split('/')[0]).Distinct().ToArray();
             string[] groups = paths.Select(path => path.Substring(0, path.LastIndexOf('/'))).Distinct().ToArray();
 

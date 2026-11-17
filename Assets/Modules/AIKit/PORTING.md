@@ -19,6 +19,7 @@
 | `Editor/ValidateAll.cs`, `Editor/Objects/SceneObjectsMigration.cs`, `Editor/Graph/NodeOptions.cs`, `Editor/Graph/GraphDocument.cs`, тесты `ArcFlightTests`, `WeaponShotTests`, `Coverage/*` | `FindObjectsByType<T>(FindObjectsInactive.Include)` → `(FindObjectsInactive.Include, FindObjectsSortMode.None)` | то же |
 | `Tests/Editor/Coverage/SensesDetectionTests.cs` | тег `Blue` → `Respawn` в `Sensor_AlsoTagUntaggedOrTheSameAsTag_IsNoSecondKind` | тега `Blue` нет в нашем TagManager; `Respawn` есть в любом проекте |
 | `Tests/Editor/PerfSmokeTests.cs` | `Crowd_StepCost_StaysNearTheBaseline` стал `[Explicit]` | порог снят на машине лаборатории в 6000.5. У нас в 6000.3 при шести открытых редакторах — 3.15–3.53 мкс на агента против порога 2.75 |
+| `Tests/Editor/EveryNodeTests.cs` (`EveryNode_HasAPlainName_AndAStableIdOfItsOwn`), `Tests/Editor/NodeMenuTests.cs` (`Everything_FoldersInTheOrderOfTheSpec_NodesByTheirOrder`) | проверяют только узлы самого модуля: пропускают типы не из сборок `AIKit*` и пункты меню из корня `Game/` | у игры свои узлы графа (`Features/AI/EliteRegax/Nodes`, id `game.*`, меню `Game/…`); в лаборатории узлов игры не было |
 
 ## Тесты
 

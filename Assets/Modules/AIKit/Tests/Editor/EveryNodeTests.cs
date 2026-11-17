@@ -110,6 +110,8 @@ namespace AIKit.Tests
             {
                 if (entry.Info.Category == AIKitNodeAttribute.CODE || !entry.Info.Simple && entry.Info.Category != "Sensor")
                     continue;                       // the canvas shows the simple nodes and the sensors only
+                if (!entry.Type.Assembly.GetName().Name.StartsWith("AIKit"))
+                    continue;                       // PORTING: the game's own nodes (game.*) are not the module's
 
                 Assert.IsTrue(ids.Add(entry.Info.Id), $"Two nodes are saved under {entry.Info.Id}");
                 StringAssert.StartsWith("aikit.", entry.Info.Id);
