@@ -86,6 +86,11 @@ namespace Game.Voxels
         private NativeReference<LyingState> _lyingState;
         /// <summary>One block per batch of lying cubes, its colours set only when the batch is dirty.</summary>
         private readonly MaterialPropertyBlock[] _lyingBlocks;
+        /// <summary>
+        /// How lying cubes are drawn: lit like the flying ones (DrawMeshInstanced's defaults - layer 0,
+        /// light and reflection probes blended), but no shadows. Only matProps changes, per batch.
+        /// </summary>
+        private RenderParams _lyingParams;
         /// <summary>Debris time (s): the sum of the steps; when a cube lay down.</summary>
         private float _time;
         private uint _seed = 1;
@@ -240,6 +245,15 @@ namespace Game.Voxels
             _lyingState = new NativeReference<LyingState>(Allocator.Persistent);
 
             // The first SetVectorArray fixes the array's length for good: set it full length once.
+            _lyingParams = new RenderParams(material)
+            {
+                layer = 0,
+                shadowCastingMode = ShadowCastingMode.Off,
+                receiveShadows = true,
+                lightProbeUsage = LightProbeUsage.BlendProbes,
+                reflectionProbeUsage = ReflectionProbeUsage.BlendProbes
+            };
+
             _lyingBlocks = new MaterialPropertyBlock[batches];
             for (int i = 0; i < batches; i++)
             {
@@ -415,7 +429,6 @@ namespace Game.Voxels
         {
             int count = _lyingState.Value.Count;
             NativeArray<Matrix4x4> matrices = _lyingMatrices.Reinterpret<Matrix4x4>();
-            var rp = new RenderParams(_material) { shadowCastingMode = ShadowCastingMode.Off, receiveShadows = true };
             for (int start = 0, batch = 0; start < count; start += BATCH, batch++)
             {
                 int n = Mathf.Min(BATCH, count - start);
@@ -425,8 +438,8 @@ namespace Game.Voxels
                     _lyingBlocks[batch].SetVectorArray(InstanceColorId, _batchColors);
                     _dirtyBatches[batch] = 0;
                 }
-                rp.matProps = _lyingBlocks[batch];
-                Graphics.RenderMeshInstanced(rp, _mesh, 0, matrices, n, start);
+                _lyingParams.matProps = _lyingBlocks[batch];
+                Graphics.RenderMeshInstanced(_lyingParams, _mesh, 0, matrices, n, start);
             }
         }
 
