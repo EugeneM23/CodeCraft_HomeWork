@@ -7,7 +7,7 @@ namespace Game.Voxels
     /// A piece just torn off bleeds as it flies: for a short while it drops blood from its torn
     /// faces, so a trail of drops marks its arc on the ground.
     /// </summary>
-    public sealed class VoxelDrip : MonoBehaviour
+    public sealed class VoxelDrip : MonoBehaviour, IVoxelUpdate
     {
         private Vector3[] _points;
         private Color32[] _colors;
@@ -31,14 +31,24 @@ namespace Game.Voxels
                 _points[i] = transform.InverseTransformPoint(worldPoints[i]);
             _colors = colors;
             _size = size;
-            _until = Time.time + duration;
+            _until = VoxelTicks.Time + duration;
             _interval = 1f / Mathf.Max(0.01f, rate);
-            _next = Time.time;
+            _next = VoxelTicks.Time;
         }
 
-        private void Update()
+        private void OnEnable() => VoxelTicks.Add(this);
+
+        private void OnDisable() => VoxelTicks.Remove(this);
+
+        private void Update() // perf-ok: ticks itself without the game loop (tests, demo scenes); one flag check when driven
         {
-            if (_points == null || Time.time >= _until)
+            if (!VoxelTicks.Driven)
+                VoxelUpdate(Time.deltaTime);
+        }
+
+        public void VoxelUpdate(float deltaTime)
+        {
+            if (_points == null || VoxelTicks.Time >= _until)
             {
                 Destroy(this);
                 return;
@@ -51,7 +61,7 @@ namespace Game.Voxels
             if (_body == null)
                 TryGetComponent(out _body);
 
-            while (_next <= Time.time)
+            while (_next <= VoxelTicks.Time)
             {
                 _next += _interval;
                 Vector3 point = transform.TransformPoint(_points[Random.Range(0, _points.Length)]);

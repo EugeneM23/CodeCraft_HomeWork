@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Atomic.Entities;
 using Game.Voxels;
+using Ticking;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -16,7 +17,7 @@ namespace Game
     /// <see cref="_toggleKey"/> (X) stops the bombs and starts them again; bombs already falling
     /// still land. The sandbox HUD lists the key and whether the bombs are on.
     /// </summary>
-    public sealed class VoxelAirStrike : MonoBehaviour
+    public sealed class VoxelAirStrike : MonoBehaviour, IUpdateListener
     {
         [Tooltip("What the bombs fall round: the tank.")]
         [SerializeField] private Transform _target;
@@ -77,6 +78,7 @@ namespace Game
         private readonly List<Bomb> _bombs = new();
         private float _next;
         private bool _on = true;
+        private bool _looped;
         private Light _flash;
         private float _flashTime = 1f;
         private System.Func<string> _hudLine;
@@ -92,7 +94,7 @@ namespace Game
 
         private void Start()
         {
-            _next = Time.time + _firstDelay;
+            _next = GameTicks.Time + _firstDelay;
 
             var flash = new GameObject("AirStrikeFlash");
             flash.transform.SetParent(transform, false);
@@ -110,13 +112,20 @@ namespace Game
         {
             _hudLine ??= () => $"{_toggleKey} — air strikes on / off (now {(_on ? "on" : "off")})";
             VoxelHudLines.Add(_hudLine);
+            _looped = GameTicks.TryAdd(this);
         }
 
-        private void OnDisable() => VoxelHudLines.Remove(_hudLine);
+        private void OnDisable()
+        {
+            VoxelHudLines.Remove(_hudLine);
+            if (_looped)
+                GameTicks.Remove(this);
+            _looped = false;
+        }
 
         private void OnDestroy() => VoxelFlash.Clear();
 
-        private void Update()
+        private void Update() // perf-ok: the toggle key reads input every frame; the strikes tick from the game loop with the app
         {
             if (Input.GetKeyDown(_toggleKey))
             {
@@ -124,17 +133,24 @@ namespace Game
                 if (_on) GameSignals.RaiseAirStrikeCalled();
                 // Back on: the next bomb a moment later, not at once and not a whole interval on.
                 if (_on)
-                    _next = Time.time + _resumeDelay;
+                    _next = GameTicks.Time + _resumeDelay;
             }
 
-            if (_on && _target != null && Time.time >= _next)
+            if (!_looped)
+                OnUpdate(Time.deltaTime);
+        }
+
+        // On the game loop with the app: no bombs fall and none move while the game is paused
+        public void OnUpdate(float deltaTime)
+        {
+            if (_on && _target != null && GameTicks.Time >= _next)
             {
-                _next = Time.time + _interval;
+                _next = GameTicks.Time + _interval;
                 Drop();
             }
 
-            Fall(Time.deltaTime);
-            Fade(Time.deltaTime);
+            Fall(deltaTime);
+            Fade(deltaTime);
         }
 
         private void Drop()
