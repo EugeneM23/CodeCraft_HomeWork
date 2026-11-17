@@ -64,7 +64,7 @@ namespace Game.Voxels
 
         private sealed class BakeBatch
         {
-            public NativeArray<int> Ids;
+            public NativeArray<EntityId> Ids;
             public Mesh[] Meshes;
             public VoxelBody.Chunk[] Chunks;
             public JobHandle Handle;
@@ -192,12 +192,12 @@ namespace Game.Voxels
 
             var batch = new BakeBatch
             {
-                Ids = new NativeArray<int>(s_bakeMeshes.Count, Allocator.Persistent),
+                Ids = new NativeArray<EntityId>(s_bakeMeshes.Count, Allocator.Persistent),
                 Meshes = s_bakeMeshes.ToArray(),
                 Chunks = s_bakeChunks.ToArray()
             };
             for (int i = 0; i < batch.Ids.Length; i++)
-                batch.Ids[i] = batch.Meshes[i].GetInstanceID();
+                batch.Ids[i] = batch.Meshes[i].GetEntityId();
             batch.Handle = new BakeMeshesJob { MeshIds = batch.Ids }.Schedule(batch.Ids.Length, 1);
             JobHandle.ScheduleBatchedJobs();
 

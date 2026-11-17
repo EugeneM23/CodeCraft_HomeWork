@@ -264,7 +264,7 @@ namespace Game.Voxels
                 int index = _rays[i];
                 Drop drop = _dropsData[index];
                 RaycastHit hit = hits[i];
-                drop.LandY = hit.colliderInstanceID != 0 ? hit.point.y : _centre.y - 40f;
+                drop.LandY = hit.colliderEntityId != EntityId.None ? hit.point.y : _centre.y - 40f;
                 drop.NeedsRay = 0;
                 _dropsData[index] = drop;
             }
