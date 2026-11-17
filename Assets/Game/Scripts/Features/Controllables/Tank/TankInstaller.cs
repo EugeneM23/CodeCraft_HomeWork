@@ -223,6 +223,8 @@ namespace Game
                     _gunReturnTime));
             entity.AddBehaviour(new TankMuzzleSmokeBehaviour(gameContext, _muzzleSmoke, _muzzleWisp, _voxelMuzzleSmoke));
             entity.AddBehaviour(new TankVoxelMuzzleSmokeBehaviour(_voxelMuzzleSmoke));
+            if (_hullCollider != null)
+                entity.AddBehaviour(new TankSmokeHullBehaviour(_hullCollider, _rigidbody));
             // Shift on the gas: the tracks spin and throw earth back; full gas rams harder.
             TankWheelSpinBehaviour wheelSpin = new(engine, _boostMultiplier);
             entity.AddBehaviour(wheelSpin);

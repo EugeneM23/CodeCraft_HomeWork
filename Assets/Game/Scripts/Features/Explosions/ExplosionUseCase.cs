@@ -39,6 +39,7 @@ namespace Game
 
             // The blast blows voxel smoke away round it, the way an HE grenade clears a CS2 smoke.
             VoxelSmoke.Blast(point, radius * VOXEL_SMOKE_SHARE);
+            VoxelPuffField.Blast(point, radius * VOXEL_SMOKE_SHARE);
 
             if (projectile.TryGetExplosionVfxPrefab(out MonoEntity vfxPrefab) && vfxPrefab != null)
             {
