@@ -479,29 +479,10 @@ namespace Game.Voxels.EditorTools
                 var regax = (GameObject)PrefabUtility.InstantiatePrefab(prefab, scene);
                 regax.name = $"Regax_{i + 1:00}";
                 regax.transform.SetPositionAndRotation(at, Quaternion.LookRotation(look.sqrMagnitude > 0.01f ? look : Vector3.forward));
-                StandStill(regax);
             }
 
+            // A plain Regax has no AI (the elite's is AIKit, Regax_Elite): they stand like targets on a shooting range.
             Debug.Log($"{LOG} {REGAXES} Regaxes in a row from {bestStart} every {REGAX_SPACING} m along {bestStep.normalized}, {bestMud} on mud; standing still.");
-        }
-
-        /// <summary>
-        /// The Regax stands where it is placed — no patrol, chase or attack — like the targets on
-        /// a shooting range: the enemy installer's own switch, set as an override on this instance. The
-        /// installer lives in the game's assembly, which this one does not reference: found by name.
-        /// </summary>
-        private static void StandStill(GameObject regax)
-        {
-            Component core = regax.GetComponent("EnemyCharacterCoreInstaller");
-            SerializedProperty flag = core != null ? new SerializedObject(core).FindProperty("_standStill") : null;
-            if (flag == null)
-            {
-                Debug.LogWarning($"{LOG} {regax.name}: no EnemyCharacterCoreInstaller._standStill, it will roam.");
-                return;
-            }
-
-            flag.boolValue = true;
-            flag.serializedObject.ApplyModifiedPropertiesWithoutUndo();
         }
 
         /// <summary>Puts the jump ramps into VoxelSandbox as it is, without rebuilding it.</summary>

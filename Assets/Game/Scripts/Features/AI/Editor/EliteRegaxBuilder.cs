@@ -14,7 +14,7 @@ namespace Game.AI.EditorTools
     /// <item><c>Configs/AI/Regax_Elite_Senses</c> — what it sees with (far: it hunts a tank);</item>
     /// <item><c>Configs/AI/Regax_Elite_Brain</c> — the graph (<see cref="EliteBrain"/>), written into the asset so the
     /// AIKit graph window opens it; a rebuild keeps the layout of the nodes it already has;</item>
-    /// <item><c>Prefabs/Characters/Regax_Elite</c> — a prefab variant of Regax: the old AI off (<c>_standStill</c>),
+    /// <item><c>Prefabs/Characters/Regax_Elite</c> — a prefab variant of Regax:
     /// <see cref="HEALTH"/> health, a kinematic body, an AI Character (Manual, <see cref="EliteRegaxBody"/>, the graph),
     /// <see cref="EliteRegaxInstaller"/> listed after the Regax's installers, and <see cref="AtomicHitReceiver"/>.</item>
     /// </list>
@@ -166,7 +166,6 @@ namespace Game.AI.EditorTools
                 }
 
                 var coreSettings = new SerializedObject(core);
-                coreSettings.FindProperty("_standStill").boolValue = true;
                 coreSettings.FindProperty("_health").intValue = HEALTH;
                 coreSettings.ApplyModifiedPropertiesWithoutUndo();
 

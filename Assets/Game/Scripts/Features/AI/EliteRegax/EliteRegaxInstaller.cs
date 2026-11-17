@@ -7,7 +7,7 @@ namespace Game.AI
     /// <summary>
     /// Makes a Regax the AIKit elite: its <see cref="AICharacter"/> (graph <c>Regax_Elite_Brain</c>, body
     /// <see cref="EliteRegaxBody"/>) is driven by <see cref="EliteRegaxBehaviour"/>. Listed after the Regax's core
-    /// installer (its walking values, health and weapon come first; the old AI is off: <c>_standStill</c>).
+    /// installer (its walking values, health and weapon come first).
     /// </summary>
     public sealed class EliteRegaxInstaller : MonoEntityInstaller
     {
