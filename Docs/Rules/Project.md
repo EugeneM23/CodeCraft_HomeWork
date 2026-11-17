@@ -77,6 +77,7 @@ Tools/<Инструмент>/          скрипты вне Unity (Maya, PerfCh
 | `Game.AudioEngine.Adapters.Editor` | `Game/Audio/Scripts/Editor` | `Game.AudioEngine.Adapters.EditorTools` | Editor |
 | `Game.AudioEngine.Adapters.Tests` | `Game/Audio/Tests` | `Game.AudioEngine.Adapters.Tests` | Editor (EditMode) |
 | `Game.GameLoop.Adapters` (и другие модули ядра) | `Game/Scripts/Adapters/<Модуль>` | `Game.<Модуль>.Adapters` | все |
+| `Game.UI.Adapters` | `Game/Scripts/UI/Adapters` | `Game.UI.Adapters` | все (мост меню к звуку: `Game` не видит `Game.AudioEngine.Adapters`, который ссылается на него) |
 | `Game.App.SceneTests` | `Game/Tests/App/PlayMode` | `Game.Tests` | все (PlayMode-тесты потока игры) |
 
 - **Новая сборка** называется `Game.<Подсистема>`, её части — `Game.<Подсистема>.Editor`, `.Tests`, `.Adapters`. Пример — `Game.Horde`. `rootNamespace` равен имени сборки, а у редакторских — `….EditorTools`, чтобы не спорить с `UnityEditor`.
