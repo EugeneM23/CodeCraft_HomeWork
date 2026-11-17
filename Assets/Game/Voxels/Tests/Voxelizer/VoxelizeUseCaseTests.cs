@@ -72,5 +72,51 @@ namespace Game.Voxels.Tests
         {
             Assert.AreEqual(0, RunPlate(true));
         }
+
+        [Test]
+        public void VoxelSizeFor_Vehicle_IsThreeCmUpToSixMetres_SixCmBeyond_BuildingTenCm()
+        {
+            var config = ScriptableObject.CreateInstance<VoxelizerConfig>();
+            config.kind = VoxelizerConfig.ModelKind.Vehicle;
+            Assert.AreEqual(0.03f, config.VoxelSizeFor(5f), 1e-6f);
+            Assert.AreEqual(0.03f, config.VoxelSizeFor(6f), 1e-6f);
+            Assert.AreEqual(0.06f, config.VoxelSizeFor(7f), 1e-6f);
+            config.kind = VoxelizerConfig.ModelKind.Building;
+            Assert.AreEqual(0.1f, config.VoxelSizeFor(5f), 1e-6f);
+            Assert.AreEqual(0.1f, config.VoxelSizeFor(50f), 1e-6f);
+            Object.DestroyImmediate(config);
+        }
+
+        [Test]
+        public void Run_ALongVehicle_UsesSixCm_OverTheScale()
+        {
+            var root = new GameObject("Truck");
+            TestMeshes.Add(root.transform, "Body", TestMeshes.Box(Vector3.one * 0.001f, new Vector3(0.999f, 0.3f, 0.3f)), Color.gray);
+            var config = ScriptableObject.CreateInstance<VoxelizerConfig>();
+            config.kind = VoxelizerConfig.ModelKind.Vehicle;
+            config.length = 8f; // a 1 m model stands for 8 m: scale 8
+
+            using VoxelizerResult result = VoxelizeUseCase.Run(config, root);
+
+            Assert.AreEqual(8f / 0.999f, result.Scale, 1e-3f); // the box is 0.999 m long
+            Assert.AreEqual(0.06f / result.Scale, result.VoxelSize, 1e-6f);
+            Object.DestroyImmediate(root);
+            Object.DestroyImmediate(config);
+        }
+
+        [Test]
+        public void Run_AVehicleWithNoLength_TakesTheModelsLongestSideAsTheRealLength()
+        {
+            var root = new GameObject("Truck");
+            TestMeshes.Add(root.transform, "Body", TestMeshes.Box(Vector3.one * 0.001f, new Vector3(7.999f, 0.3f, 0.3f)), Color.gray);
+            var config = ScriptableObject.CreateInstance<VoxelizerConfig>();
+            config.kind = VoxelizerConfig.ModelKind.Vehicle;
+
+            using VoxelizerResult result = VoxelizeUseCase.Run(config, root);
+
+            Assert.AreEqual(0.06f, result.VoxelSize, 1e-6f);
+            Object.DestroyImmediate(root);
+            Object.DestroyImmediate(config);
+        }
     }
 }

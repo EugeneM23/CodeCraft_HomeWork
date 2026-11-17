@@ -15,8 +15,9 @@ namespace Game.Voxels.EditorTools
         public static VoxelizerResult Run(VoxelizerConfig config, GameObject instance)
         {
             Transform root = instance.transform;
-            float scale = Scale(config, instance);
-            float voxel = config.VoxelSize / scale;
+            float longest = LongestSide(instance);
+            float scale = config.length > 0f && longest > 1e-4f ? config.length / longest : 1f;
+            float voxel = config.VoxelSizeFor(config.length > 0f ? config.length : longest) / scale;
             int k = math.clamp(config.colours, 4, 32);
 
             var rules = new List<(Transform part, VoxelizerConfig.PartRule rule)>();
@@ -152,13 +153,12 @@ namespace Game.Voxels.EditorTools
         }
 
         /// <summary>Model metres to real metres: the config's length over the model's longest side.</summary>
-        private static float Scale(VoxelizerConfig config, GameObject instance)
+        /// <summary>The model's longest bounds side, in the model's own units.</summary>
+        private static float LongestSide(GameObject instance)
         {
-            if (config.length <= 0f) return 1f;
             var bounds = new Bounds(instance.transform.position, Vector3.zero);
             foreach (Renderer r in instance.GetComponentsInChildren<Renderer>(true)) bounds.Encapsulate(r.bounds);
-            float longest = math.cmax((float3)bounds.size);
-            return longest > 1e-4f ? config.length / longest : 1f;
+            return math.cmax((float3)bounds.size);
         }
 
         private static string PathOf(Transform root, Transform t)

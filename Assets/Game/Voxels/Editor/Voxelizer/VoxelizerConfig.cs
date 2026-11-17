@@ -23,6 +23,8 @@ namespace Game.Voxels.EditorTools
 
         public const float VEHICLE_VOXEL = 0.03f;
         public const float BUILDING_VOXEL = 0.1f;
+        public const float LARGE_VEHICLE_LENGTH = 6f;
+        public const float LARGE_VEHICLE_VOXEL = 0.06f;
 
         public GameObject model;
         public ModelKind kind;
@@ -37,6 +39,11 @@ namespace Game.Voxels.EditorTools
         [Tooltip("Pixel pictures on a part's side; Part is the part rule's path, as resolved (no wildcards).")]
         public VoxelizedModel.Decal[] decals = Array.Empty<VoxelizedModel.Decal>();
 
-        public float VoxelSize => kind == ModelKind.Vehicle ? VEHICLE_VOXEL : BUILDING_VOXEL;
+        /// <summary>The voxel edge in real metres: a building 10 cm, a vehicle 3 cm, 6 cm when it is longer than 6 m.</summary>
+        public float VoxelSizeFor(float realLength)
+        {
+            if (kind != ModelKind.Vehicle) return BUILDING_VOXEL;
+            return realLength > LARGE_VEHICLE_LENGTH ? LARGE_VEHICLE_VOXEL : VEHICLE_VOXEL;
+        }
     }
 }
