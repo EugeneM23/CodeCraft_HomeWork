@@ -18700,6 +18700,7 @@ MonoBehaviour:
   _muzzleSmoke: {fileID: 3955101175473679286, guid: 857ee7fe9fa9c5346999cde6f2c57896, type: 3}
   _muzzleWisp: {fileID: 899977559652608855}
   _rigidbody: {fileID: 3225291040301079110}
+  _hullCollider: {fileID: 5125407660994136156}
   _hullVisual: {fileID: 2354297767741589746}
   _cameraPoint: {fileID: 6945236683599942311}
   _cameraDistance: 1.1
@@ -18774,6 +18775,11 @@ MonoBehaviour:
     - {fileID: 1706426625133605221}
     - {fileID: 6036304062047387658}
     - {fileID: 1348812354634326509}
+  _ploughPresets:
+  - {fileID: 11400000, guid: f09a8605e3f553f4ab505e5b9c0626a1, type: 2}
+  - {fileID: 11400000, guid: 4b8e2fcc35418a449aeea43592594fbd, type: 2}
+  - {fileID: 11400000, guid: 4f70b364b9c9ad140ab56248bcc10830, type: 2}
+  _ploughPreset: 1
   _contacts: {fileID: 5138230387146587091}
   _ramRadius: 1.1
   _ramMinSpeed: 1

@@ -48,6 +48,20 @@ namespace Game
             return heading * SpeedAfter(velocity.magnitude, strength, speedLoss) + Vector3.up * (hop * strength);
         }
 
+        /// <summary>
+        /// The slope the hull leaves a hit along: <paramref name="normal"/>, but tipped back toward up so the
+        /// ground it describes is no steeper than <paramref name="maxDegrees"/>. A voxel step's vertical face is
+        /// no wall to the nose that digs it out: the hull rides up the ramp the bite cuts, not up the face.
+        /// </summary>
+        public static Vector3 Ramp(Vector3 normal, float maxDegrees)
+        {
+            Vector3 flat = new Vector3(normal.x, 0f, normal.z);
+            if (flat.sqrMagnitude < 1e-8f || Vector3.Angle(normal, Vector3.up) <= maxDegrees)
+                return normal;
+            float rad = maxDegrees * Mathf.Deg2Rad;
+            return flat.normalized * Mathf.Sin(rad) + Vector3.up * Mathf.Cos(rad);
+        }
+
         /// <summary>Mean velocity of the earth the nose throws: forward along the slope and up off it.</summary>
         public static Vector3 Throw(Vector3 velocity, Vector3 normal, float lift, float scale)
         {

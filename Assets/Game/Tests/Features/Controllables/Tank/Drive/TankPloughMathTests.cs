@@ -82,6 +82,22 @@ namespace Game.Tests
         }
 
         [Test]
+        public void Ramp_LeavesAGentleSlopeAsItIs()
+        {
+            Assert.That(TankPloughMath.Ramp(Slope32, 35f), Is.EqualTo(Slope32).Using(Vector3EqualityComparer.Instance));
+        }
+
+        [Test]
+        public void Ramp_TipsAVerticalStepFaceBackToTheMaxSlope()
+        {
+            var face = new Vector3(0f, 0.07f, -1f).normalized;
+            Vector3 ramp = TankPloughMath.Ramp(face, 30f);
+            Assert.That(Vector3.Angle(ramp, Vector3.up), Is.EqualTo(30f).Within(1e-3f));
+            Assert.That(ramp.z, Is.LessThan(0f), "still faces the nose");
+            Assert.That(ramp.magnitude, Is.EqualTo(1f).Within(1e-5f));
+        }
+
+        [Test]
         public void Throw_GoesForwardAndUp_ScaledBySpeed()
         {
             var v = new Vector3(0f, 0f, 8f);

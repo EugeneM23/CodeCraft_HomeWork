@@ -14,7 +14,8 @@ namespace Game.Voxels.Tests
     /// <summary>
     /// VoxelSandbox: an air bomb's crater on open ground ahead of the tank, and the tank driven into
     /// it on full gas with Shift. It must not stop dead against the far slope: it keeps at least half
-    /// its entry speed there and is out over the far rim within 2.5 s of entering.
+    /// its entry speed there and is out over the far rim within 2.5 s of entering. Its nose ploughs
+    /// on the way (TankPloughEvents.Ploughed) and earth is dug out of the far slope.
     /// Screenshots go to Logs/CraterPlough.
     /// </summary>
     public sealed class SandboxCraterPloughTest
@@ -59,45 +60,62 @@ namespace Game.Voxels.Tests
                 for (int i = 0; i < 40; i++)
                     yield return new WaitForFixedUpdate();
 
-                Directory.CreateDirectory(OUT);
-                IReactiveVariable<Vector2> drive = tank.GetDriveInput();
-                tank.TryGetDriveBoost(out IReactiveVariable<bool> boost);
-
-                float entrySpeed = -1f, entryTime = -1f, exitTime = -1f;
-                float minFarSpeed = float.MaxValue;
-                float until = Time.time + 8f;
-                int shot = 0;
-                while (Time.time < until && exitTime < 0f)
+                Assert.IsTrue(Physics.Raycast(crater + forward * (RIM * 0.7f) + Vector3.up * 5f, Vector3.down,
+                    out RaycastHit farHit, 10f, GROUND), "the far slope");
+                VoxelBody farGround = FindGround(farHit.point);
+                Assert.IsNotNull(farGround, "the ground body under the far slope");
+                int before = farGround.SolidCount;
+                int ploughed = 0;
+                void OnPloughed(Vector3 point, float strength) => ploughed++;
+                TankPloughEvents.Ploughed += OnPloughed;
+                try
                 {
-                    drive.Value = new Vector2(0f, 1f);
-                    if (boost != null)
-                        boost.Value = true;
-                    yield return new WaitForEndOfFrame();
+                    Directory.CreateDirectory(OUT);
+                    IReactiveVariable<Vector2> drive = tank.GetDriveInput();
+                    tank.TryGetDriveBoost(out IReactiveVariable<bool> boost);
 
-                    // Distance along the run from the crater's centre: -RIM at the near rim, +RIM at the far one.
-                    float along = Vector3.Dot(body.position - crater, forward);
-                    float speed = Vector3.Dot(body.linearVelocity, forward);
-                    if (entryTime < 0f && along >= -RIM)
+                    float entrySpeed = -1f, entryTime = -1f, exitTime = -1f;
+                    float minFarSpeed = float.MaxValue;
+                    float until = Time.time + 8f;
+                    int shot = 0;
+                    while (Time.time < until && exitTime < 0f)
                     {
-                        entryTime = Time.time;
-                        entrySpeed = speed;
+                        drive.Value = new Vector2(0f, 1f);
+                        if (boost != null)
+                            boost.Value = true;
+                        yield return new WaitForEndOfFrame();
+
+                        // Distance along the run from the crater's centre: -RIM at the near rim, +RIM at the far one.
+                        float along = Vector3.Dot(body.position - crater, forward);
+                        float speed = Vector3.Dot(body.linearVelocity, forward);
+                        if (entryTime < 0f && along >= -RIM)
+                        {
+                            entryTime = Time.time;
+                            entrySpeed = speed;
+                        }
+
+                        if (entryTime >= 0f && along > 0f)
+                            minFarSpeed = Mathf.Min(minFarSpeed, speed);
+                        if (entryTime >= 0f && along > RIM + 1.4f)
+                            exitTime = Time.time;
+                        if (entryTime >= 0f && shot < 12 && Time.frameCount % 4 == 0)
+                            Capture($"{shot++:00}_crater");
                     }
 
-                    if (entryTime >= 0f && along > 0f)
-                        minFarSpeed = Mathf.Min(minFarSpeed, speed);
-                    if (entryTime >= 0f && along > RIM + 1.4f)
-                        exitTime = Time.time;
-                    if (entryTime >= 0f && shot < 12 && Time.frameCount % 4 == 0)
-                        Capture($"{shot++:00}_crater");
+                    float took = exitTime >= 0f ? exitTime - entryTime : float.PositiveInfinity;
+                    Debug.Log($"[CraterPlough] entry {entrySpeed:F2} m/s, min on far slope {minFarSpeed:F2} m/s " +
+                              $"({minFarSpeed / Mathf.Max(0.01f, entrySpeed):P0}), out in {took:F2} s");
+
+                    Assert.That(entrySpeed, Is.GreaterThan(6f), "the tank came in fast");
+                    Assert.That(minFarSpeed, Is.GreaterThanOrEqualTo(entrySpeed * 0.5f), "kept half its speed on the far slope");
+                    Assert.That(took, Is.LessThan(2.5f), "out over the far rim within 2.5 s");
+                    Assert.That(ploughed, Is.GreaterThan(0), "the nose ploughed");
+                    Assert.That(farGround.SolidCount, Is.LessThan(before), "earth dug out of the far slope");
                 }
-
-                float took = exitTime >= 0f ? exitTime - entryTime : float.PositiveInfinity;
-                Debug.Log($"[CraterPlough] entry {entrySpeed:F2} m/s, min on far slope {minFarSpeed:F2} m/s " +
-                          $"({minFarSpeed / Mathf.Max(0.01f, entrySpeed):P0}), out in {took:F2} s");
-
-                Assert.That(entrySpeed, Is.GreaterThan(6f), "the tank came in fast");
-                Assert.That(minFarSpeed, Is.GreaterThanOrEqualTo(entrySpeed * 0.5f), "kept half its speed on the far slope");
-                Assert.That(took, Is.LessThan(2.5f), "out over the far rim within 2.5 s");
+                finally
+                {
+                    TankPloughEvents.Ploughed -= OnPloughed;
+                }
             }
             finally
             {
@@ -113,6 +131,20 @@ namespace Game.Voxels.Tests
                 yield break;
             SceneManager.SetActiveScene(SceneManager.CreateScene("AfterCraterPlough"));
             yield return SceneManager.UnloadSceneAsync(sandbox);
+        }
+
+        /// <summary>The terrain body whose bounds hold <paramref name="point"/>, as TankPloughBehaviour finds it.</summary>
+        private static VoxelBody FindGround(Vector3 point)
+        {
+            var bodies = VoxelWorld.Bodies;
+            for (int i = 0; i < bodies.Count; i++)
+            {
+                VoxelBody body = bodies[i];
+                if (body != null && body.IsTerrain && body.IsCreated && body.WorldBounds.SqrDistance(point) < 0.01f)
+                    return body;
+            }
+
+            return null;
         }
 
         /// <summary>

@@ -64,6 +64,8 @@ namespace Game
 
         [Header("Body")]
         [SerializeField] private Rigidbody _rigidbody;
+        [Tooltip("The hull's box (not the turret's): swept ahead for ground the nose is about to plough into.")]
+        [SerializeField] private BoxCollider _hullCollider;
         [SerializeField] private Transform _hullVisual;
         [SerializeField] private Transform _cameraPoint;
         [Tooltip("Camera offset multiplier while driving: 1.1 sits the camera a tenth further out.")]
@@ -89,6 +91,13 @@ namespace Game
         [SerializeField] private TankTrackRig _leftTrack;
         [SerializeField] private TankTrackRig _rightTrack;
 
+        [Header("Plough")]
+        [Tooltip("How hard the nose ploughs into ground it hits at speed; the sandbox switches between them (M).")]
+        [SerializeField] private TankPloughConfig[] _ploughPresets;
+        [SerializeField, Min(0)] private int _ploughPreset = 1;
+
+        private TankPloughBehaviour _plough;
+
         [Header("Crushing")]
         [Tooltip("Reports the hull's contacts, lasting ones included. Without it the tank crushes nothing it drives into.")]
         [SerializeField] private CollisionContactReceiver _contacts;
@@ -107,6 +116,20 @@ namespace Game
 
         /// <summary>Pooled blast the tank goes up in. For CombatPoolPrewarm.</summary>
         public MonoEntity ExplosionVfx => _explosionVfx;
+
+        /// <summary>The plough preset in use, or null without one.</summary>
+        public TankPloughConfig PloughPreset =>
+            _ploughPresets != null && _ploughPresets.Length > 0 ? _ploughPresets[_ploughPreset % _ploughPresets.Length] : null;
+
+        /// <summary>The next plough preset, round and round. For the sandbox.</summary>
+        public void NextPloughPreset()
+        {
+            if (_ploughPresets == null || _ploughPresets.Length == 0)
+                return;
+            _ploughPreset = (_ploughPreset + 1) % _ploughPresets.Length;
+            if (_plough != null)
+                _plough.Config = PloughPreset;
+        }
 
         public override void Install(IEntity entity)
         {
@@ -172,6 +195,13 @@ namespace Game
             entity.AddBehaviour<TankSuspensionBehaviour>();
             entity.AddBehaviour(new TankDriveBehaviour(_acceleration, _braking, _turnAcceleration, _pitchLean,
                 _boostMultiplier, engine, _driftSpeed, _sideGrip));
+            // After the drive: the nose ploughs into ground it is about to hit, and the hull's speed
+            // after the hit is set here, over the drive's push.
+            if (_hullCollider != null && PloughPreset != null)
+            {
+                _plough = new TankPloughBehaviour(_hullCollider, PloughPreset, new DigEarthThrow(PloughPreset.BiteDebris));
+                entity.AddBehaviour(_plough);
+            }
             if (_contacts != null)
             {
                 // Enemies it runs into fast enough die under it, in blood (TankCrushBehaviour).

@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 04892a9a7ce295e4a9c48dd43a6d4ef3, type: 3}
+  m_Name: TankPloughCinemaConfig
+  m_EditorClassIdentifier: Game::Game.TankPloughConfig
+  DisplayName: Cinema
+  MinSpeed: 3
+  MinClosing: 2
+  FullClosing: 8
+  LookAhead: 0.1
+  BiteRadiusMin: 0.8
+  BiteRadiusMax: 1.4
+  BiteInterval: 0.05
+  ThrowScale: 1.3
+  ThrowLift: 0.8
+  ThrowVolume: 1
+  SpreadMin: 0.3
+  SpreadMax: 1
+  BiteDebris: 300
+  SpeedLoss: 0.25
+  Deflect: 0.3
+  Hop: 2.2
+  PitchKick: 1.3
+  ImpactCooldown: 0.3
+  ShakeStrength: 1
+  ShakeDuration: 0.5
+  DustRadius: 2.5
