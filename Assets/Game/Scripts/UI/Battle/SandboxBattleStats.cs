@@ -17,8 +17,10 @@ namespace Game
     {
         public event Action<BattleResult> Finished;
 
-        [Tooltip("Finds the level being played (its kill target and reward) by IGameFlow.CurrentLevelId")]
-        [SerializeField] private LevelCatalogConfig _levelCatalog;
+        [Tooltip("Finds the level being played by IGameFlow.CurrentLevelId")]
+        [SerializeField] private LevelCatalog _levelCatalog;
+        [Tooltip("Kill target and reward of the level by its id")]
+        [SerializeField] private LevelDesignConfig _levelDesign;
         [Tooltip("Kills to win when the scene runs without a level (started straight from the editor)")]
         [SerializeField, Min(0)] private int _defaultKillTarget = 10;
 
@@ -56,7 +58,7 @@ namespace Game
             _startTime = Time.time;
             string levelId = AppServices.GameFlow.CurrentLevelId;
             _level = _levelCatalog != null && !string.IsNullOrEmpty(levelId) ? _levelCatalog.Find(levelId) : null;
-            KillTarget = _level != null ? _level.killTarget : _defaultKillTarget;
+            KillTarget = _level != null && _levelDesign != null ? _levelDesign.KillTarget(_level) : _defaultKillTarget;
 
             if (!GameContext.TryGetInstance(out GameContext context))
             {
@@ -175,7 +177,8 @@ namespace Game
 
             _finished = true;
             _endTime = Time.time;
-            int reward = BattleOutcomeUseCase.Reward(outcome, _level != null ? _level.reward : 0);
+            int levelReward = _level != null && _levelDesign != null ? _levelDesign.Reward(_level) : LevelDesignConfig.DEFAULT_REWARD;
+            int reward = BattleOutcomeUseCase.Reward(outcome, levelReward);
             Finished?.Invoke(new BattleResult(outcome == BattleOutcome.Victory, Kills, ElapsedTime, reward));
         }
     }

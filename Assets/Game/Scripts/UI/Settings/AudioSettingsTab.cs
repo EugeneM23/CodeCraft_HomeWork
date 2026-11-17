@@ -7,7 +7,7 @@ using UnityEngine.UI;
 namespace Game
 {
     /// <summary>
-    /// The «Звук» tab: a 0–100 % slider per AudioChannel. Edits the bound AudioSettingsData and plays the
+    /// The Audio tab: a 0–100 % slider per AudioChannel. Edits the bound AudioSettingsData and plays the
     /// volume live through IAudioVolumes as a preview; the settings screen restores it on revert.
     /// </summary>
     public sealed class AudioSettingsTab : MonoBehaviour

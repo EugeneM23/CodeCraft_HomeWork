@@ -15,6 +15,7 @@ namespace Game.EditorTools
             MenuUiBuilder.Build();
             MenuUiBuilder.BuildScene();
             BattleUiBuilder.Build();
+            UiDataBuilder.AddBattleUiToLevelLayer();
             AssetDatabase.SaveAssets();
         }
     }

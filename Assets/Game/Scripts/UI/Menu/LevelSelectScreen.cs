@@ -21,7 +21,7 @@ namespace Game
         public const string CARD_REWARD = "Reward";
         public const string CARD_LOCK = "Lock";
 
-        private static readonly string[] Stars = { "Сложность 1/3", "Сложность 2/3", "Сложность 3/3" };
+        private const int MAX_DIFFICULTY = 3;
 
         public event Action<LevelConfig> StartClicked;
         public event Action HangarClicked;
@@ -40,18 +40,40 @@ namespace Game
         [SerializeField] private Button _back;
 
         private readonly List<Card> _cards = new();
-        private LevelCatalogConfig _catalog;
+        private LevelCatalog _catalog;
+        private LevelDesignConfig _design;
         private IPlayerProgress _progress;
         private int _selected = -1;
 
+        // Texts from UiStrings, fetched once in Awake
+        private string _difficultyFormat;
+        private string _cardRewardFormat;
+        private string _goalKillFormat;
+        private string _goalSurvive;
+        private string _rewardFormat;
+        private string _unlockAfterFormat;
+        private string _locked;
+
         /// <summary>Called by MenuFlow before the screen is first shown.</summary>
-        public void Init(LevelCatalogConfig catalog)
+        public void Init(LevelCatalog catalog, LevelDesignConfig design)
         {
             _catalog = catalog;
+            _design = design;
             _progress = AppServices.Progress;
         }
 
         public LevelConfig SelectedLevel => _selected >= 0 && _selected < _cards.Count ? _cards[_selected].Level : null;
+
+        private void Awake()
+        {
+            _difficultyFormat = UiStrings.Get("level.difficulty_format");
+            _cardRewardFormat = UiStrings.Get("level.card_reward_format");
+            _goalKillFormat = UiStrings.Get("goal.kill_format");
+            _goalSurvive = UiStrings.Get("goal.survive");
+            _rewardFormat = UiStrings.Get("level.reward_format");
+            _unlockAfterFormat = UiStrings.Get("level.unlock_after_format");
+            _locked = UiStrings.Get("level.locked");
+        }
 
         private void OnEnable()
         {
@@ -80,14 +102,14 @@ namespace Game
 
             _cardTemplate.gameObject.SetActive(false);
             Transform parent = _cardTemplate.transform.parent;
-            for (int i = 0; i < _catalog.levels.Count; i++)
+            for (int i = 0; i < _catalog.Levels.Count; i++)
             {
-                LevelConfig level = _catalog.levels[i];
+                LevelConfig level = _catalog.Levels[i];
                 if (level == null)
                     continue;
 
                 Button button = Instantiate(_cardTemplate, parent);
-                button.name = "Card_" + level.id;
+                button.name = "Card_" + level.Id;
                 button.gameObject.SetActive(true);
                 Transform root = button.transform;
                 Card card = new()
@@ -102,9 +124,10 @@ namespace Game
                 };
                 int index = _cards.Count;
                 button.onClick.AddListener(() => Select(index)); // once per card, at creation
-                card.Name.text = level.displayName;
-                card.Difficulty.text = Stars[Mathf.Clamp(level.difficulty, 1, Stars.Length) - 1];
-                card.Reward.SetText("Награда: {0}", level.reward);
+                card.Name.text = level.DisplayName;
+                card.Difficulty.text = string.Format(_difficultyFormat, Mathf.Clamp(Difficulty(level), 1, MAX_DIFFICULTY),
+                    MAX_DIFFICULTY);
+                card.Reward.SetText(_cardRewardFormat, Reward(level));
                 _cards.Add(card);
             }
         }
@@ -114,7 +137,7 @@ namespace Game
             for (int i = 0; i < _cards.Count; i++)
             {
                 Card card = _cards[i];
-                bool unlocked = LevelCatalogConfig.IsUnlocked(card.Level, _progress);
+                bool unlocked = LevelUnlockUseCase.IsUnlocked(card.Level, _progress);
                 card.Lock.gameObject.SetActive(!unlocked);
                 card.Name.color = unlocked ? UiStyle.Text : UiStyle.TextMuted;
             }
@@ -123,7 +146,7 @@ namespace Game
         private int FirstUnlocked()
         {
             for (int i = 0; i < _cards.Count; i++)
-                if (LevelCatalogConfig.IsUnlocked(_cards[i].Level, _progress))
+                if (LevelUnlockUseCase.IsUnlocked(_cards[i].Level, _progress))
                     return i;
             return _cards.Count > 0 ? 0 : -1;
         }
@@ -146,28 +169,39 @@ namespace Game
                 return;
             }
 
-            bool unlocked = LevelCatalogConfig.IsUnlocked(level, _progress);
-            _detailName.text = level.displayName;
-            _detailDescription.text = level.description;
-            if (level.killTarget > 0)
-                _detailGoal.SetText("Цель: уничтожить {0} Regax", level.killTarget);
+            bool unlocked = LevelUnlockUseCase.IsUnlocked(level, _progress);
+            _detailName.text = level.DisplayName;
+            _detailDescription.text = level.Description ?? string.Empty;
+            int killTarget = KillTarget(level);
+            if (killTarget > 0)
+                _detailGoal.SetText(_goalKillFormat, killTarget);
             else
-                _detailGoal.text = "Цель: выжить";
-            _detailReward.SetText("Награда: {0} кредитов", level.reward);
+                _detailGoal.text = _goalSurvive;
+            _detailReward.SetText(_rewardFormat, Reward(level));
             _detailLock.gameObject.SetActive(!unlocked);
             if (!unlocked)
-                _detailLock.text = level.requiredLevel != null
-                    ? "Откроется после победы на уровне «" + level.requiredLevel.displayName + "»"
-                    : "Уровень закрыт";
+                _detailLock.text = level.RequiredLevel != null
+                    ? string.Format(_unlockAfterFormat, level.RequiredLevel.DisplayName)
+                    : _locked;
             _start.interactable = unlocked;
         }
 
         private void HandleStart()
         {
             LevelConfig level = SelectedLevel;
-            if (level != null && LevelCatalogConfig.IsUnlocked(level, _progress))
+            if (level != null && LevelUnlockUseCase.IsUnlocked(level, _progress))
                 StartClicked?.Invoke(level);
         }
+
+        // Design fields by level id; defaults when the level has no entry
+        private int Difficulty(LevelConfig level) =>
+            _design != null ? _design.Difficulty(level) : LevelDesignConfig.DEFAULT_DIFFICULTY;
+
+        private int KillTarget(LevelConfig level) =>
+            _design != null ? _design.KillTarget(level) : LevelDesignConfig.DEFAULT_KILL_TARGET;
+
+        private int Reward(LevelConfig level) =>
+            _design != null ? _design.Reward(level) : LevelDesignConfig.DEFAULT_REWARD;
 
         private void HandleHangar() => HangarClicked?.Invoke();
         private void HandleBack() => BackClicked?.Invoke();

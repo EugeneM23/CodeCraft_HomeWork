@@ -26,17 +26,29 @@ namespace Game.EditorTools
         private const float HANGAR_BOTTOM_HEIGHT = 240f;
         private const float MARKER = 6f;
 
-        private static readonly string[] TabNames = { "Пушки", "Пулемёты", "Корпуса", "Двигатели", "Гусеницы", "Броня" };
+        // Shop tab labels by (int)TankSlot
+        private static readonly string[] TabKeys =
+        {
+            "shop.tab_gun", "shop.tab_machine_gun", "shop.tab_hull", "shop.tab_engine", "shop.tab_tracks", "shop.tab_armor"
+        };
+
+        // Hangar stat labels by TankStats index
+        private static readonly string[] StatLabelKeys =
+        {
+            "stat.health", "stat.armor", "stat.speed", "stat.damage", "stat.reload_seconds", "stat.fire_rate_per_second"
+        };
 
         [MenuItem("Tools/UI/Build Menu UI")]
         public static GameObject Build()
         {
-            LevelCatalogConfig levels = UiDataBuilder.LoadLevelCatalog();
+            LevelCatalog levels = UiDataBuilder.LoadLevelCatalog();
+            LevelDesignConfig design = UiDataBuilder.LoadLevelDesign();
             ShopCatalogConfig shop = UiDataBuilder.LoadShopCatalog();
-            if (levels == null || shop == null)
+            if (levels == null || design == null || shop == null)
             {
                 UiDataBuilder.Build();
                 levels = UiDataBuilder.LoadLevelCatalog();
+                design = UiDataBuilder.LoadLevelDesign();
                 shop = UiDataBuilder.LoadShopCatalog();
             }
 
@@ -63,6 +75,7 @@ namespace Game.EditorTools
             UiFactory.SetField(flow, "_settings", settings);
             UiFactory.SetField(flow, "_dialog", dialog);
             UiFactory.SetField(flow, "_levelCatalog", levels);
+            UiFactory.SetField(flow, "_levelDesign", design);
             UiFactory.SetField(flow, "_shopCatalog", shop);
 
             GameObject prefab = UiFactory.SavePrefab(canvas.gameObject, PREFAB_NAME);
@@ -120,7 +133,7 @@ namespace Game.EditorTools
         private static MainMenuScreen CreateMainMenu(Transform parent)
         {
             MainMenuScreen screen = UiFactory.Screen<MainMenuScreen>("MainMenuScreen", parent, canGoBack: false);
-            Bar(screen.transform, "ГЛАВНОЕ МЕНЮ");
+            Bar(screen.transform, "main.title");
 
             Image column = UiFactory.Panel("Buttons", screen.transform, UiStyle.Panel);
             float height = 5 * UiStyle.BUTTON_HEIGHT + 4 * UiStyle.SPACING + 2 * UiStyle.PADDING;
@@ -128,17 +141,18 @@ namespace Game.EditorTools
                 new Vector2(420f, height));
             UiFactory.Vertical(column.rectTransform, UiStyle.SPACING, (int)UiStyle.PADDING);
 
-            Button play = UiFactory.Button("Play", column.transform, "ИГРАТЬ", accent: true);
-            Button hangar = UiFactory.Button("Hangar", column.transform, "Ангар");
-            Button shop = UiFactory.Button("Shop", column.transform, "Магазин");
-            Button settings = UiFactory.Button("Settings", column.transform, "Настройки");
-            Button quit = UiFactory.Button("Quit", column.transform, "Выход");
+            Button play = UiFactory.LocalizedButton("Play", column.transform, "main.play", accent: true);
+            Button hangar = UiFactory.LocalizedButton("Hangar", column.transform, "main.hangar");
+            Button shop = UiFactory.LocalizedButton("Shop", column.transform, "main.shop");
+            Button settings = UiFactory.LocalizedButton("Settings", column.transform, "main.settings");
+            Button quit = UiFactory.LocalizedButton("Quit", column.transform, "main.quit");
 
-            TextMeshProUGUI title = UiFactory.Text("GameTitle", screen.transform, PlayerSettings.productName.ToUpperInvariant(),
+            TextMeshProUGUI title = UiFactory.LocalizedText("GameTitle", screen.transform, "game.title",
                 UiStyle.FONT_TITLE * 2f, TextAlignmentOptions.Center, bold: true);
             UiFactory.Span(title.rectTransform, new Vector2(0.3f, 0.3f), new Vector2(1f, 0.8f), UiStyle.PADDING, UiStyle.PADDING);
 
-            TextMeshProUGUI version = UiFactory.Text("Version", screen.transform, "Версия", UiStyle.FONT_SMALL,
+            // MainMenuScreen writes the version
+            TextMeshProUGUI version = UiFactory.Text("Version", screen.transform, "-", UiStyle.FONT_SMALL,
                 TextAlignmentOptions.BottomRight, color: UiStyle.TextMuted);
             UiFactory.Place(version.rectTransform, new Vector2(1f, 0f), new Vector2(-UiStyle.PADDING, UiStyle.PADDING),
                 new Vector2(400f, 30f));
@@ -158,7 +172,7 @@ namespace Game.EditorTools
         private static LevelSelectScreen CreateLevelSelect(Transform parent)
         {
             LevelSelectScreen screen = UiFactory.Screen<LevelSelectScreen>("LevelSelectScreen", parent);
-            Bar(screen.transform, "ВЫБОР УРОВНЯ");
+            Bar(screen.transform, "level.title");
             RectTransform content = Content(screen.transform);
             Button back = BackButton(screen.transform);
 
@@ -167,41 +181,46 @@ namespace Game.EditorTools
             RectTransform list = UiFactory.ScrollList("List", listPanel.transform, out ScrollRect scroll);
             UiFactory.Stretch((RectTransform)scroll.transform, UiStyle.SPACING, UiStyle.SPACING, UiStyle.SPACING, UiStyle.SPACING);
 
+            // Name, difficulty and reward are written per card; the lock label is static.
             Button card = UiFactory.Button("CardTemplate", list, string.Empty);
             Object.DestroyImmediate(card.transform.Find("Label").gameObject);
             UiFactory.Size(card, 88f);
             Marker(card.transform, LevelSelectScreen.CARD_MARKER);
-            ItemText(card.transform, LevelSelectScreen.CARD_NAME, "Уровень", UiStyle.FONT_BODY, true, UiStyle.Text,
+            ItemText(card.transform, LevelSelectScreen.CARD_NAME, "-", UiStyle.FONT_BODY, true, UiStyle.Text,
                 new Vector2(0f, 0.5f), new Vector2(0.65f, 1f), TextAlignmentOptions.BottomLeft);
-            ItemText(card.transform, LevelSelectScreen.CARD_DIFFICULTY, "Сложность 1/3", UiStyle.FONT_BODY, false, UiStyle.Accent,
+            ItemText(card.transform, LevelSelectScreen.CARD_DIFFICULTY, "-", UiStyle.FONT_BODY, false, UiStyle.Accent,
                 new Vector2(0.65f, 0.5f), Vector2.one, TextAlignmentOptions.BottomRight);
-            ItemText(card.transform, LevelSelectScreen.CARD_REWARD, "Награда", UiStyle.FONT_SMALL, false, UiStyle.TextMuted,
+            ItemText(card.transform, LevelSelectScreen.CARD_REWARD, "-", UiStyle.FONT_SMALL, false, UiStyle.TextMuted,
                 Vector2.zero, new Vector2(0.65f, 0.5f), TextAlignmentOptions.TopLeft);
-            ItemText(card.transform, LevelSelectScreen.CARD_LOCK, "ЗАКРЫТ", UiStyle.FONT_SMALL, true, UiStyle.Bad,
-                new Vector2(0.65f, 0f), new Vector2(1f, 0.5f), TextAlignmentOptions.TopRight);
+            TMP_Text cardLock = ItemText(card.transform, LevelSelectScreen.CARD_LOCK, UiStrings.Get("level.card_locked"),
+                UiStyle.FONT_SMALL, true, UiStyle.Bad, new Vector2(0.65f, 0f), new Vector2(1f, 0.5f), TextAlignmentOptions.TopRight);
+            UiFactory.Localize(cardLock, "level.card_locked");
             card.gameObject.SetActive(false);
 
+            // The screen writes all detail texts. The description sits right under the title, top-aligned; the
+            // spacer, not the description, takes the spare height, so the buttons stay at the bottom.
             Image details = UiFactory.Panel("Details", content, UiStyle.Panel);
             UiFactory.Span(details.rectTransform, new Vector2(0.38f, 0f), Vector2.one, UiStyle.SPACING / 2);
             UiFactory.Vertical(details.rectTransform, UiStyle.SPACING, (int)UiStyle.PADDING);
-            TextMeshProUGUI name = UiFactory.Text("Name", details.transform, "Уровень", UiStyle.FONT_HEADER, bold: true);
+            TextMeshProUGUI name = UiFactory.Text("Name", details.transform, "-", UiStyle.FONT_HEADER, bold: true);
             UiFactory.Size(name, 44f);
-            TextMeshProUGUI description = UiFactory.Text("Description", details.transform, "Описание", UiStyle.FONT_BODY,
-                color: UiStyle.TextMuted);
-            UiFactory.Size(description, 120f, -1, -1, 1);
-            TextMeshProUGUI goal = UiFactory.Text("Goal", details.transform, "Цель", UiStyle.FONT_BODY);
+            TextMeshProUGUI description = UiFactory.Text("Description", details.transform, "-", UiStyle.FONT_BODY,
+                TextAlignmentOptions.TopLeft, color: UiStyle.TextMuted);
+            TextMeshProUGUI goal = UiFactory.Text("Goal", details.transform, "-", UiStyle.FONT_BODY);
             UiFactory.Size(goal, 32f);
-            TextMeshProUGUI reward = UiFactory.Text("Reward", details.transform, "Награда", UiStyle.FONT_BODY);
+            TextMeshProUGUI reward = UiFactory.Text("Reward", details.transform, "-", UiStyle.FONT_BODY);
             UiFactory.Size(reward, 32f);
-            TextMeshProUGUI locked = UiFactory.Text("Lock", details.transform, "Закрыт", UiStyle.FONT_BODY, color: UiStyle.Bad);
+            TextMeshProUGUI locked = UiFactory.Text("Lock", details.transform, "-", UiStyle.FONT_BODY, color: UiStyle.Bad);
             UiFactory.Size(locked, 32f);
+            RectTransform detailsSpacer = UiFactory.Rect("Spacer", details.transform);
+            UiFactory.Size(detailsSpacer, -1, -1, -1, 1);
 
             RectTransform row = UiFactory.Rect("Buttons", details.transform);
             UiFactory.Horizontal(row, UiStyle.SPACING, 0, TextAnchor.MiddleRight);
             UiFactory.Size(row, UiStyle.BUTTON_HEIGHT);
-            Button toHangar = UiFactory.Button("ToHangar", row, "В ангар");
+            Button toHangar = UiFactory.LocalizedButton("ToHangar", row, "level.to_hangar");
             UiFactory.Size(toHangar, UiStyle.BUTTON_HEIGHT, 240f);
-            Button start = UiFactory.Button("Start", row, "НАЧАТЬ", accent: true);
+            Button start = UiFactory.LocalizedButton("Start", row, "level.start", accent: true);
             UiFactory.Size(start, UiStyle.BUTTON_HEIGHT, 280f);
 
             UiFactory.SetField(screen, "_cardTemplate", card);
@@ -222,11 +241,11 @@ namespace Game.EditorTools
         private static HangarScreen CreateHangar(Transform parent)
         {
             HangarScreen screen = UiFactory.Screen<HangarScreen>("HangarScreen", parent);
-            CurrencyBar bar = Bar(screen.transform, "АНГАР");
+            CurrencyBar bar = Bar(screen.transform, "hangar.title");
             RectTransform content = Content(screen.transform);
             Button back = BackButton(screen.transform);
 
-            Button shop = UiFactory.Button("Shop", bar.transform, "Магазин");
+            Button shop = UiFactory.LocalizedButton("Shop", bar.transform, "hangar.shop");
             UiFactory.Place((RectTransform)shop.transform, new Vector2(1f, 0.5f), new Vector2(-UiStyle.PADDING, 0f),
                 new Vector2(220f, UiStyle.BUTTON_HEIGHT));
 
@@ -236,14 +255,15 @@ namespace Game.EditorTools
             Image slots = UiFactory.Panel("Slots", top, UiStyle.Panel);
             UiFactory.Span(slots.rectTransform, Vector2.zero, new Vector2(0.24f, 1f), 0, UiStyle.SPACING / 2);
             UiFactory.Vertical(slots.rectTransform, UiStyle.SPACING / 2, (int)UiStyle.SPACING);
-            Header(slots.transform, "СЛОТЫ");
+            Header(slots.transform, "hangar.slots");
+            // Slot rows and module items: HangarScreen writes their texts
             Button slot = UiFactory.Button("SlotTemplate", slots.transform, string.Empty);
             Object.DestroyImmediate(slot.transform.Find("Label").gameObject);
             UiFactory.Size(slot, 64f);
             Marker(slot.transform, HangarScreen.ITEM_MARKER);
-            ItemText(slot.transform, HangarScreen.ITEM_NAME, "Слот", UiStyle.FONT_BODY, true, UiStyle.Text,
+            ItemText(slot.transform, HangarScreen.ITEM_NAME, "-", UiStyle.FONT_BODY, true, UiStyle.Text,
                 new Vector2(0f, 0.5f), Vector2.one, TextAlignmentOptions.BottomLeft);
-            ItemText(slot.transform, HangarScreen.ITEM_VALUE, "Модуль", UiStyle.FONT_SMALL, false, UiStyle.TextMuted,
+            ItemText(slot.transform, HangarScreen.ITEM_VALUE, "-", UiStyle.FONT_SMALL, false, UiStyle.TextMuted,
                 Vector2.zero, new Vector2(1f, 0.5f), TextAlignmentOptions.TopLeft);
             slot.gameObject.SetActive(false);
 
@@ -251,7 +271,7 @@ namespace Game.EditorTools
             Image view = UiFactory.Panel("TankView", top, UiStyle.Panel);
             UiFactory.Span(view.rectTransform, new Vector2(0.24f, 0f), new Vector2(0.74f, 1f), UiStyle.SPACING / 2,
                 UiStyle.SPACING / 2);
-            TextMeshProUGUI placeholder = UiFactory.Text("Placeholder", view.transform, "3D-танк — сцена ангара на URP позже",
+            TextMeshProUGUI placeholder = UiFactory.LocalizedText("Placeholder", view.transform, "hangar.tank_placeholder",
                 UiStyle.FONT_HEADER, TextAlignmentOptions.Center, color: UiStyle.TextMuted);
             UiFactory.Stretch(placeholder.rectTransform, UiStyle.PADDING, UiStyle.PADDING, UiStyle.PADDING, UiStyle.PADDING);
 
@@ -259,8 +279,7 @@ namespace Game.EditorTools
             Image stats = UiFactory.Panel("Stats", top, UiStyle.Panel);
             UiFactory.Span(stats.rectTransform, new Vector2(0.74f, 0f), Vector2.one, UiStyle.SPACING / 2);
             UiFactory.Vertical(stats.rectTransform, UiStyle.SPACING / 2, (int)UiStyle.PADDING);
-            Header(stats.transform, "ХАРАКТЕРИСТИКИ");
-            string[] statLabels = { "Прочность", "Броня", "Скорость", "Урон", "Перезарядка (с)", "Темп МГ (/с)" };
+            Header(stats.transform, "hangar.stats");
             TMP_Text[] values = new TMP_Text[TankStats.COUNT];
             TMP_Text[] deltas = new TMP_Text[TankStats.COUNT];
             for (int i = 0; i < TankStats.COUNT; i++)
@@ -268,7 +287,8 @@ namespace Game.EditorTools
                 RectTransform row = UiFactory.Rect("Stat_" + i, stats.transform);
                 UiFactory.Horizontal(row, UiStyle.SPACING / 2);
                 UiFactory.Size(row, 40f);
-                TextMeshProUGUI label = UiFactory.Text("Label", row, statLabels[i], UiStyle.FONT_BODY, color: UiStyle.TextMuted);
+                TextMeshProUGUI label = UiFactory.LocalizedText("Label", row, StatLabelKeys[i], UiStyle.FONT_BODY,
+                    color: UiStyle.TextMuted);
                 UiFactory.Size(label, 40f, -1, 1);
                 values[i] = UiFactory.Text("Value", row, "0", UiStyle.FONT_BODY, TextAlignmentOptions.Right, bold: true);
                 UiFactory.Size(values[i], 40f, 80f);
@@ -281,8 +301,8 @@ namespace Game.EditorTools
             Image bottom = UiFactory.Panel("Modules", content, UiStyle.Panel);
             BottomStrip(bottom.rectTransform, HANGAR_BOTTOM_HEIGHT);
 
-            TextMeshProUGUI modulesTitle = UiFactory.Text("Title", bottom.transform, "МОДУЛИ СЛОТА", UiStyle.FONT_BODY,
-                bold: true, color: UiStyle.TextMuted);
+            TextMeshProUGUI modulesTitle = UiFactory.Text("Title", bottom.transform, "-", UiStyle.FONT_BODY,
+                bold: true, color: UiStyle.TextMuted); // HangarScreen writes it with the slot's name
             UiFactory.Span(modulesTitle.rectTransform, new Vector2(0f, 1f), new Vector2(0.6f, 1f), UiStyle.PADDING, 0,
                 UiStyle.SPACING, -UiStyle.SPACING - 36f);
 
@@ -294,9 +314,9 @@ namespace Game.EditorTools
             Object.DestroyImmediate(module.transform.Find("Label").gameObject);
             UiFactory.Size(module, 96f, 260f);
             Marker(module.transform, HangarScreen.ITEM_MARKER);
-            ItemText(module.transform, HangarScreen.ITEM_NAME, "Модуль", UiStyle.FONT_BODY, true, UiStyle.Text,
+            ItemText(module.transform, HangarScreen.ITEM_NAME, "-", UiStyle.FONT_BODY, true, UiStyle.Text,
                 new Vector2(0f, 0.5f), Vector2.one, TextAlignmentOptions.BottomLeft);
-            ItemText(module.transform, HangarScreen.ITEM_VALUE, "состояние", UiStyle.FONT_SMALL, false, UiStyle.TextMuted,
+            ItemText(module.transform, HangarScreen.ITEM_VALUE, "-", UiStyle.FONT_SMALL, false, UiStyle.TextMuted,
                 Vector2.zero, new Vector2(1f, 0.5f), TextAlignmentOptions.TopLeft);
             module.gameObject.SetActive(false);
 
@@ -304,24 +324,25 @@ namespace Game.EditorTools
             UiFactory.Span(details.rectTransform, new Vector2(0.6f, 0f), Vector2.one, 0, UiStyle.SPACING, UiStyle.SPACING,
                 UiStyle.SPACING);
             UiFactory.Vertical(details.rectTransform, UiStyle.SPACING / 2, (int)UiStyle.SPACING);
-            TextMeshProUGUI moduleName = UiFactory.Text("Name", details.transform, "Модуль", UiStyle.FONT_BODY, bold: true);
+            // HangarScreen writes the module's texts and the Install / Upgrade labels; To shop is static.
+            TextMeshProUGUI moduleName = UiFactory.Text("Name", details.transform, "-", UiStyle.FONT_BODY, bold: true);
             UiFactory.Size(moduleName, 30f);
-            TextMeshProUGUI moduleLevel = UiFactory.Text("Level", details.transform, "ур. 1/3", UiStyle.FONT_SMALL,
+            TextMeshProUGUI moduleLevel = UiFactory.Text("Level", details.transform, "-", UiStyle.FONT_SMALL,
                 color: UiStyle.Accent);
             UiFactory.Size(moduleLevel, 24f);
-            TextMeshProUGUI moduleDescription = UiFactory.Text("Description", details.transform, "Описание",
+            TextMeshProUGUI moduleDescription = UiFactory.Text("Description", details.transform, "-",
                 UiStyle.FONT_SMALL, color: UiStyle.TextMuted);
             UiFactory.Size(moduleDescription, 40f, -1, -1, 1);
             RectTransform buttons = UiFactory.Rect("Buttons", details.transform);
             UiFactory.Horizontal(buttons, UiStyle.SPACING, 0, TextAnchor.MiddleRight);
             UiFactory.Size(buttons, UiStyle.BUTTON_HEIGHT);
-            Button buyInShop = UiFactory.Button("BuyInShop", buttons, "В МАГАЗИН");
+            Button buyInShop = UiFactory.LocalizedButton("BuyInShop", buttons, "hangar.to_shop");
             UiFactory.Size(buyInShop, UiStyle.BUTTON_HEIGHT, 200f);
-            Button install = UiFactory.Button("Install", buttons, "УСТАНОВИТЬ", accent: true);
+            Button install = UiFactory.Button("Install", buttons, UiStrings.Get("hangar.install"), accent: true);
             UiFactory.Size(install, UiStyle.BUTTON_HEIGHT, 200f);
-            Button upgrade = UiFactory.Button("Upgrade", buttons, "УЛУЧШИТЬ — 0");
+            Button upgrade = UiFactory.Button("Upgrade", buttons, "-");
             UiFactory.Size(upgrade, UiStyle.BUTTON_HEIGHT, 240f);
-            upgrade.GetComponent<UiButtonSounds>().Click = UiSound.Purchase;
+            // Plain Click: HangarScreen plays Purchase or Error by the result of the upgrade
 
             UiFactory.SetField(screen, "_slotTemplate", slot);
             UiFactory.SetArray(screen, "_statValues", values);
@@ -347,18 +368,18 @@ namespace Game.EditorTools
         private static ShopScreen CreateShop(Transform parent)
         {
             ShopScreen screen = UiFactory.Screen<ShopScreen>("ShopScreen", parent);
-            Bar(screen.transform, "МАГАЗИН");
+            Bar(screen.transform, "shop.title");
             RectTransform content = Content(screen.transform);
             Button back = BackButton(screen.transform);
 
             RectTransform tabRow = UiFactory.Rect("Tabs", content);
             TopStrip(tabRow, UiStyle.BUTTON_HEIGHT);
             UiFactory.Horizontal(tabRow, UiStyle.SPACING / 2);
-            Button[] tabs = new Button[TabNames.Length];
-            GameObject[] markers = new GameObject[TabNames.Length];
-            for (int i = 0; i < TabNames.Length; i++)
+            Button[] tabs = new Button[TabKeys.Length];
+            GameObject[] markers = new GameObject[TabKeys.Length];
+            for (int i = 0; i < TabKeys.Length; i++)
             {
-                tabs[i] = UiFactory.Button("Tab_" + (TankSlot)i, tabRow, TabNames[i]);
+                tabs[i] = UiFactory.LocalizedButton("Tab_" + (TankSlot)i, tabRow, TabKeys[i]);
                 UiFactory.Size(tabs[i], UiStyle.BUTTON_HEIGHT, -1, 1);
                 Image marker = UiFactory.Panel("Marker", tabs[i].transform, UiStyle.Accent);
                 RectTransform rect = marker.rectTransform;
@@ -378,38 +399,39 @@ namespace Game.EditorTools
             UiFactory.Stretch(grid, UiStyle.PADDING, UiStyle.PADDING, UiStyle.PADDING, UiStyle.PADDING);
             UiFactory.Grid(grid, new Vector2(320f, 230f));
 
+            // ShopScreen writes every card text and both buy labels. The buy buttons click plainly: they only open
+            // the question, and MenuFlow plays Purchase or Error once the purchase is done.
             Button card = UiFactory.Button("CardTemplate", grid, string.Empty);
             Object.DestroyImmediate(card.transform.Find("Label").gameObject);
             Marker(card.transform, ShopScreen.CARD_MARKER);
-            TextMeshProUGUI cardName = UiFactory.Text(ShopScreen.CARD_NAME, card.transform, "Модуль", UiStyle.FONT_BODY,
+            TextMeshProUGUI cardName = UiFactory.Text(ShopScreen.CARD_NAME, card.transform, "-", UiStyle.FONT_BODY,
                 TextAlignmentOptions.TopLeft, bold: true);
             UiFactory.Span(cardName.rectTransform, new Vector2(0f, 1f), Vector2.one, 20f, 12f, 12f, -48f);
-            TextMeshProUGUI cardStats = UiFactory.Text(ShopScreen.CARD_STATS, card.transform, "Характеристики",
+            TextMeshProUGUI cardStats = UiFactory.Text(ShopScreen.CARD_STATS, card.transform, "-",
                 UiStyle.FONT_SMALL, TextAlignmentOptions.TopLeft, color: UiStyle.TextMuted);
             UiFactory.Stretch(cardStats.rectTransform, 20f, 12f, 52f, 64f);
-            TextMeshProUGUI cardPrice = UiFactory.Text(ShopScreen.CARD_PRICE, card.transform, "0 кр.", UiStyle.FONT_BODY,
+            TextMeshProUGUI cardPrice = UiFactory.Text(ShopScreen.CARD_PRICE, card.transform, "-", UiStyle.FONT_BODY,
                 TextAlignmentOptions.Left, bold: true);
             UiFactory.Place(cardPrice.rectTransform, Vector2.zero, new Vector2(20f, 12f), new Vector2(140f, 44f));
-            Button cardBuy = UiFactory.Button(ShopScreen.CARD_BUY, card.transform, "Купить", fontSize: UiStyle.FONT_SMALL);
+            Button cardBuy = UiFactory.Button(ShopScreen.CARD_BUY, card.transform, UiStrings.Get("shop.card_buy"),
+                fontSize: UiStyle.FONT_SMALL);
             UiFactory.Place((RectTransform)cardBuy.transform, new Vector2(1f, 0f), new Vector2(-12f, 12f),
                 new Vector2(140f, 44f));
-            cardBuy.GetComponent<UiButtonSounds>().Click = UiSound.Purchase;
             card.gameObject.SetActive(false);
 
             Image details = UiFactory.Panel("Details", content, UiStyle.Panel);
             UiFactory.Span(details.rectTransform, new Vector2(0.66f, 0f), Vector2.one, UiStyle.SPACING / 2, 0, below);
             UiFactory.Vertical(details.rectTransform, UiStyle.SPACING, (int)UiStyle.PADDING);
-            TextMeshProUGUI name = UiFactory.Text("Name", details.transform, "Модуль", UiStyle.FONT_HEADER, bold: true);
+            TextMeshProUGUI name = UiFactory.Text("Name", details.transform, "-", UiStyle.FONT_HEADER, bold: true);
             UiFactory.Size(name, 44f);
-            TextMeshProUGUI description = UiFactory.Text("Description", details.transform, "Описание", UiStyle.FONT_BODY,
+            TextMeshProUGUI description = UiFactory.Text("Description", details.transform, "-", UiStyle.FONT_BODY,
                 color: UiStyle.TextMuted);
             UiFactory.Size(description, 80f);
-            TextMeshProUGUI stats = UiFactory.Text("Stats", details.transform, "Характеристики", UiStyle.FONT_BODY);
+            TextMeshProUGUI stats = UiFactory.Text("Stats", details.transform, "-", UiStyle.FONT_BODY);
             UiFactory.Size(stats, 120f, -1, -1, 1);
-            TextMeshProUGUI price = UiFactory.Text("Price", details.transform, "Цена", UiStyle.FONT_BODY, bold: true);
+            TextMeshProUGUI price = UiFactory.Text("Price", details.transform, "-", UiStyle.FONT_BODY, bold: true);
             UiFactory.Size(price, 32f);
-            Button buy = UiFactory.Button("Buy", details.transform, "КУПИТЬ", accent: true);
-            buy.GetComponent<UiButtonSounds>().Click = UiSound.Purchase;
+            Button buy = UiFactory.Button("Buy", details.transform, UiStrings.Get("shop.buy"), accent: true);
 
             UiFactory.SetArray(screen, "_tabs", tabs);
             UiFactory.SetArray(screen, "_tabMarkers", markers);
@@ -435,16 +457,16 @@ namespace Game.EditorTools
 
         // ---------- Common parts ----------
 
-        /// <summary>The top strip: credits on the left, the screen title in the middle.</summary>
-        private static CurrencyBar Bar(Transform screen, string title)
+        /// <summary>The top strip: credits on the left (CurrencyBar writes them), the screen title by key in the middle.</summary>
+        private static CurrencyBar Bar(Transform screen, string titleKey)
         {
             Image panel = UiFactory.Panel("CurrencyBar", screen, UiStyle.Panel);
             TopStrip(panel.rectTransform, BAR_HEIGHT);
 
-            TextMeshProUGUI credits = UiFactory.Text("Credits", panel.transform, "Кредиты 0", UiStyle.FONT_BODY,
+            TextMeshProUGUI credits = UiFactory.Text("Credits", panel.transform, "-", UiStyle.FONT_BODY,
                 TextAlignmentOptions.Left, bold: true, color: UiStyle.Accent);
             UiFactory.Span(credits.rectTransform, Vector2.zero, new Vector2(0.3f, 1f), UiStyle.PADDING);
-            TextMeshProUGUI titleText = UiFactory.Text("Title", panel.transform, title, UiStyle.FONT_HEADER,
+            TextMeshProUGUI titleText = UiFactory.LocalizedText("Title", panel.transform, titleKey, UiStyle.FONT_HEADER,
                 TextAlignmentOptions.Center, bold: true);
             UiFactory.Span(titleText.rectTransform, new Vector2(0.3f, 0f), new Vector2(0.7f, 1f));
 
@@ -464,16 +486,16 @@ namespace Game.EditorTools
 
         private static Button BackButton(Transform screen)
         {
-            Button back = UiFactory.Button("Back", screen, "Назад");
+            Button back = UiFactory.LocalizedButton("Back", screen, "common.back");
             UiFactory.Place((RectTransform)back.transform, Vector2.zero, new Vector2(UiStyle.PADDING, UiStyle.PADDING),
                 new Vector2(BACK_WIDTH, UiStyle.BUTTON_HEIGHT));
             back.GetComponent<UiButtonSounds>().Click = UiSound.Back;
             return back;
         }
 
-        private static void Header(Transform parent, string text)
+        private static void Header(Transform parent, string key)
         {
-            TextMeshProUGUI header = UiFactory.Text("Header", parent, text, UiStyle.FONT_BODY, bold: true,
+            TextMeshProUGUI header = UiFactory.LocalizedText("Header", parent, key, UiStyle.FONT_BODY, bold: true,
                 color: UiStyle.TextMuted);
             UiFactory.Size(header, 36f);
         }
@@ -492,12 +514,13 @@ namespace Game.EditorTools
             marker.gameObject.SetActive(false);
         }
 
-        private static void ItemText(Transform item, string name, string text, float size, bool bold, Color color,
+        private static TMP_Text ItemText(Transform item, string name, string text, float size, bool bold, Color color,
             Vector2 anchorMin, Vector2 anchorMax, TextAlignmentOptions align)
         {
             TextMeshProUGUI label = UiFactory.Text(name, item, text, size, align, bold, color);
             label.textWrappingMode = TextWrappingModes.NoWrap;
             UiFactory.Span(label.rectTransform, anchorMin, anchorMax, 20f, 16f, 4f, 4f);
+            return label;
         }
 
         private static void TopStrip(RectTransform rect, float height)

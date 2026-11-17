@@ -119,22 +119,20 @@ namespace Game.Tests
         {
             IPlayerProgress data = Started();
             LevelConfig sandbox = Create<LevelConfig>();
-            sandbox.id = "sandbox";
-            sandbox.reward = 300;
+            sandbox.Configure("sandbox", "Sandbox", 0);
             LevelConfig quarry = Create<LevelConfig>();
-            quarry.id = "quarry";
-            quarry.requiredLevel = sandbox;
-            LevelCatalogConfig levels = Create<LevelCatalogConfig>();
-            levels.levels.Add(sandbox);
-            levels.levels.Add(quarry);
-            Assert.IsFalse(LevelCatalogConfig.IsUnlocked(quarry, data));
+            quarry.Configure("quarry", "Quarry", 0);
+            quarry.Configure(-1, sandbox);
+            LevelCatalog levels = Create<LevelCatalog>();
+            levels.Configure(string.Empty, sandbox, quarry);
+            Assert.IsFalse(LevelUnlockUseCase.IsUnlocked(quarry, data));
 
-            ShopUseCase.CompleteLevel(data, levels, sandbox);
+            ShopUseCase.CompleteLevel(data, levels, sandbox, 300);
 
             Assert.AreEqual(900, data.Credits);
             Assert.IsTrue(data.IsLevelCompleted("sandbox"));
             Assert.IsTrue(data.IsLevelUnlocked("quarry"));
-            Assert.IsTrue(LevelCatalogConfig.IsUnlocked(quarry, data));
+            Assert.IsTrue(LevelUnlockUseCase.IsUnlocked(quarry, data));
         }
 
         [Test]

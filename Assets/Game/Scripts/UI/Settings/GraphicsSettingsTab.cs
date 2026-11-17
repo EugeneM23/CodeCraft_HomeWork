@@ -7,16 +7,16 @@ using UnityEngine.UI;
 namespace Game
 {
     /// <summary>
-    /// The «Графика» tab: resolution, window mode, quality, vSync, FPS limit. Edits the GraphicsSettingsData it
-    /// is bound to (the settings screen's copy); nothing takes effect before «Применить».
+    /// The Graphics tab: resolution, window mode, quality, vSync, FPS limit. Edits the GraphicsSettingsData it
+    /// is bound to (the settings screen's copy); nothing takes effect before Apply.
     /// </summary>
     public sealed class GraphicsSettingsTab : MonoBehaviour
     {
         private static readonly FullScreenMode[] WindowModes =
             { FullScreenMode.ExclusiveFullScreen, FullScreenMode.FullScreenWindow, FullScreenMode.Windowed };
-        private static readonly string[] WindowModeNames = { "Полный экран", "Окно без рамки", "Окно" };
+        private static readonly string[] WindowModeKeys =
+            { "settings.window_fullscreen", "settings.window_borderless", "settings.window_windowed" };
         private static readonly int[] FrameLimits = { 0, 60, 120, 144 };
-        private static readonly string[] FrameLimitNames = { "Нет", "60", "120", "144" };
 
         public event Action Changed;
 
@@ -28,6 +28,8 @@ namespace Game
 
         private readonly List<Resolution> _resolutions = new();
         private readonly List<string> _options = new();
+        private string[] _windowModeNames;
+        private string[] _frameLimitNames;
         private GraphicsSettingsData _graphics;
 
         /// <summary>Shows these settings and edits them from now on; option lists are rebuilt here, once per open.</summary>
@@ -40,7 +42,8 @@ namespace Game
             _resolution.SetValueWithoutNotify(FindResolution());
             _resolution.RefreshShownValue();
 
-            Fill(_windowMode, WindowModeNames);
+            EnsureNames();
+            Fill(_windowMode, _windowModeNames);
             _windowMode.SetValueWithoutNotify(WindowModeIndex(graphics.windowMode));
             _windowMode.RefreshShownValue();
 
@@ -51,9 +54,24 @@ namespace Game
 
             _vSync.SetIsOnWithoutNotify(graphics.vSync);
 
-            Fill(_frameLimit, FrameLimitNames);
+            Fill(_frameLimit, _frameLimitNames);
             _frameLimit.SetValueWithoutNotify(FrameLimitIndex(graphics.frameRateLimit));
             _frameLimit.RefreshShownValue();
+        }
+
+        // Option names from UiStrings, once (Bind may come before this tab's Awake: the tab starts switched off)
+        private void EnsureNames()
+        {
+            if (_windowModeNames != null)
+                return;
+
+            _windowModeNames = new string[WindowModeKeys.Length];
+            for (int i = 0; i < WindowModeKeys.Length; i++)
+                _windowModeNames[i] = UiStrings.Get(WindowModeKeys[i]);
+
+            _frameLimitNames = new string[FrameLimits.Length];
+            for (int i = 0; i < FrameLimits.Length; i++)
+                _frameLimitNames[i] = FrameLimits[i] > 0 ? FrameLimits[i].ToString() : UiStrings.Get("settings.frame_limit_none");
         }
 
         private void OnEnable()

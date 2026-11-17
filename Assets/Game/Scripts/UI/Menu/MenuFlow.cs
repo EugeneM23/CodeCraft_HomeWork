@@ -21,7 +21,8 @@ namespace Game
         [SerializeField] private ConfirmDialog _dialog;
 
         [Header("Data")]
-        [SerializeField] private LevelCatalogConfig _levelCatalog;
+        [SerializeField] private LevelCatalog _levelCatalog;
+        [SerializeField] private LevelDesignConfig _levelDesign;
         [SerializeField] private ShopCatalogConfig _shopCatalog;
 
         private ScreenFlow _flow;
@@ -42,7 +43,7 @@ namespace Game
             AppServices.RegisterLevels(_levelCatalog);
             ShopUseCase.EnsureStarted(_progress, _shopCatalog, _levelCatalog);
 
-            _levelSelect.Init(_levelCatalog);
+            _levelSelect.Init(_levelCatalog, _levelDesign);
             _hangar.Init(_shopCatalog);
             _shop.Init(_shopCatalog);
 
@@ -114,7 +115,7 @@ namespace Game
                 return;
             }
 
-            while (stack.Top != screen)
+            while (!ReferenceEquals(stack.Top, screen))
                 stack.Pop();
         }
 
@@ -144,16 +145,17 @@ namespace Game
 
         private void HandleStart(LevelConfig level)
         {
-            if (Busy || level == null || !LevelCatalogConfig.IsUnlocked(level, _progress))
+            if (Busy || level == null || !LevelUnlockUseCase.IsUnlocked(level, _progress))
                 return;
 
-            _gameFlow.StartLevel(level.id);
+            _gameFlow.StartLevel(level.Id);
         }
 
         private void HandleQuit()
         {
             if (!Busy)
-                _flow.Ask("Выход", "Выйти из игры?", "Выйти", "Отмена", _quitAnswer);
+                _flow.Ask(UiStrings.Get("main.quit_title"), UiStrings.Get("main.quit_text"), UiStrings.Get("main.quit_yes"),
+                    UiStrings.Get("common.cancel"), _quitAnswer);
         }
 
         private void HandleQuitAnswer(bool yes)
@@ -169,11 +171,13 @@ namespace Game
 
             _pendingBuy = module;
             int credits = _progress.Credits;
-            string text = "Купить «" + module.displayName + "» за " + module.price + "?\nОстанется " +
-                          (credits - module.price) + " кредитов.";
-            _flow.Ask("Покупка", text, "Купить", "Отмена", _buyAnswer);
+            string text = string.Format(UiStrings.Get("shop.buy_text_format"), module.displayName, module.price,
+                credits - module.price);
+            _flow.Ask(UiStrings.Get("shop.buy_title"), text, UiStrings.Get("shop.buy_yes"), UiStrings.Get("common.cancel"),
+                _buyAnswer);
         }
 
+        // The one purchase sound: the buy buttons click plainly and only open the question.
         private void HandleBuyAnswer(bool yes)
         {
             TankModuleConfig module = _pendingBuy;

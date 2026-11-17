@@ -68,8 +68,15 @@ namespace Game
         private Action<int> _onHealthChanged;
         private Action _onAmmoChanged;
 
+        // From UiStrings, fetched once in Awake
+        private string _readyText;
+        private string _reloadFormat;
+
         private void Awake()
         {
+            _readyText = UiStrings.Get("hud.ready");
+            _reloadFormat = UiStrings.Get("hud.reload_seconds_format");
+
             _onCharacterChanged = HandleCharacterChanged;
             _onWeaponChanged = HandleWeaponChanged;
             _onSecondaryChanged = HandleSecondaryChanged;
@@ -125,8 +132,8 @@ namespace Game
                 _crosshair[i].color = tint;
         }
 
-        // Bar fills as the weapon reloads; the text shows seconds left to a tenth, or "ГОТОВО".
-        private static void TickCooldownBar(CooldownTimer cooldown, Image fill, TMP_Text text, ref int shownTenths)
+        // Bar fills as the weapon reloads; the text shows seconds left to a tenth, or "ready".
+        private void TickCooldownBar(CooldownTimer cooldown, Image fill, TMP_Text text, ref int shownTenths)
         {
             float remaining = Remaining(cooldown);
             SetFill(fill, 1f - remaining);
@@ -138,9 +145,9 @@ namespace Game
 
             shownTenths = tenths;
             if (tenths <= 0)
-                text.SetText("ГОТОВО");
+                text.SetText(_readyText);
             else
-                text.SetText("{0:1} с", tenths / 10f);
+                text.SetText(_reloadFormat, tenths / 10f);
         }
 
         private static float Remaining(CooldownTimer cooldown) =>

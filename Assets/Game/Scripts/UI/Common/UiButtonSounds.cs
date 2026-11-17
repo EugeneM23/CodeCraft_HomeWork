@@ -10,7 +10,7 @@ namespace Game
     /// </summary>
     public sealed class UiButtonSounds : MonoBehaviour, IPointerEnterHandler, IPointerClickHandler
     {
-        [Tooltip("Sound of a click on this control (Back for back buttons, Purchase for buy buttons)")]
+        [Tooltip("Sound of a click on this control (Back for back buttons; buy buttons keep Click, the purchase result plays Purchase)")]
         [SerializeField] private UiSound _click = UiSound.Click;
 
         private Selectable _selectable;

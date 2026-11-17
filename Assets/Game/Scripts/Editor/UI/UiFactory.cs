@@ -175,6 +175,45 @@ namespace Game.EditorTools
             return button;
         }
 
+        // ---------- Localized (static labels from UiStringTable) ----------
+
+        /// <summary>A static label: text from the table by key, kept in the current language by UiLocalizedText.</summary>
+        public static TextMeshProUGUI LocalizedText(string name, Transform parent, string key, float size = UiStyle.FONT_BODY,
+            TextAlignmentOptions align = TextAlignmentOptions.Left, bool bold = false, Color? color = null)
+        {
+            TextMeshProUGUI label = Text(name, parent, UiStrings.Get(key), size, align, bold, color);
+            Localize(label, key);
+            return label;
+        }
+
+        /// <summary>A button whose label is a static text by key (not for labels the screen rewrites).</summary>
+        public static Button LocalizedButton(string name, Transform parent, string key, bool accent = false,
+            float fontSize = UiStyle.FONT_BODY)
+        {
+            Button button = Button(name, parent, UiStrings.Get(key), accent, fontSize);
+            Localize(button.GetComponentInChildren<TMP_Text>(true), key);
+            return button;
+        }
+
+        /// <summary>A toggle whose label is a static text by key.</summary>
+        public static Toggle LocalizedToggle(string name, Transform parent, string key)
+        {
+            Toggle toggle = Toggle(name, parent, UiStrings.Get(key));
+            Localize(toggle.GetComponentInChildren<TMP_Text>(true), key);
+            return toggle;
+        }
+
+        /// <summary>Attaches UiLocalizedText with the key to an existing text.</summary>
+        public static UiLocalizedText Localize(TMP_Text text, string key)
+        {
+            if (!UiStrings.Has(key))
+                Debug.LogWarning($"{nameof(UiFactory)}: no text for key '{key}' ({text.name})", text);
+
+            UiLocalizedText localized = text.gameObject.AddComponent<UiLocalizedText>();
+            SetString(localized, "_key", key);
+            return localized;
+        }
+
         public static ColorBlock Colors(bool accent)
         {
             ColorBlock colors = ColorBlock.defaultColorBlock;
@@ -351,6 +390,17 @@ namespace Game.EditorTools
             if (property == null)
                 throw new System.ArgumentException($"{target.GetType().Name} has no serialized field {field}");
             property.objectReferenceValue = value;
+            so.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        /// <summary>Sets a serialized string field (private [SerializeField] too) by name.</summary>
+        public static void SetString(Object target, string field, string value)
+        {
+            SerializedObject so = new(target);
+            SerializedProperty property = so.FindProperty(field);
+            if (property == null || property.propertyType != SerializedPropertyType.String)
+                throw new System.ArgumentException($"{target.GetType().Name} has no serialized string {field}");
+            property.stringValue = value;
             so.ApplyModifiedPropertiesWithoutUndo();
         }
 

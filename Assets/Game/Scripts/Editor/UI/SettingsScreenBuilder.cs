@@ -26,7 +26,7 @@ namespace Game.EditorTools
             UiFactory.Place(panel.rectTransform, new Vector2(0.5f, 0.5f), Vector2.zero, PanelSize);
             UiFactory.Vertical(panel.rectTransform, UiStyle.SPACING, (int)UiStyle.PADDING);
 
-            TextMeshProUGUI title = UiFactory.Text("Title", panel.transform, "НАСТРОЙКИ", UiStyle.FONT_TITLE,
+            TextMeshProUGUI title = UiFactory.LocalizedText("Title", panel.transform, "settings.title", UiStyle.FONT_TITLE,
                 TextAlignmentOptions.Center, bold: true);
             UiFactory.Size(title, 56);
 
@@ -34,9 +34,9 @@ namespace Game.EditorTools
             RectTransform tabs = UiFactory.Rect("Tabs", panel.transform);
             UiFactory.Horizontal(tabs, UiStyle.SPACING, 0, TextAnchor.MiddleCenter);
             UiFactory.Size(tabs, UiStyle.BUTTON_HEIGHT);
-            Button graphicsTab = TabButton(tabs, "GraphicsTab", "Графика");
-            Button audioTab = TabButton(tabs, "AudioTab", "Звук");
-            Button controlsTab = TabButton(tabs, "ControlsTab", "Управление");
+            Button graphicsTab = TabButton(tabs, "GraphicsTab", "settings.tab_graphics");
+            Button audioTab = TabButton(tabs, "AudioTab", "settings.tab_audio");
+            Button controlsTab = TabButton(tabs, "ControlsTab", "settings.tab_controls");
 
             RectTransform content = UiFactory.Rect("Content", panel.transform);
             UiFactory.Size(content, -1, -1, 1, 1);
@@ -49,14 +49,14 @@ namespace Game.EditorTools
             RectTransform bottom = UiFactory.Rect("Buttons", panel.transform);
             UiFactory.Horizontal(bottom, UiStyle.SPACING);
             UiFactory.Size(bottom, UiStyle.BUTTON_HEIGHT);
-            Button defaults = UiFactory.Button("Defaults", bottom, "По умолчанию");
+            Button defaults = UiFactory.LocalizedButton("Defaults", bottom, "settings.defaults");
             UiFactory.Size(defaults, UiStyle.BUTTON_HEIGHT, 260);
             RectTransform spacer = UiFactory.Rect("Spacer", bottom);
             UiFactory.Size(spacer, -1, 0, 1);
-            Button back = UiFactory.Button("Back", bottom, "Назад");
+            Button back = UiFactory.LocalizedButton("Back", bottom, "common.back");
             UiFactory.Size(back, UiStyle.BUTTON_HEIGHT, 200);
             back.GetComponent<UiButtonSounds>().Click = UiSound.Back;
-            Button apply = UiFactory.Button("Apply", bottom, "Применить", accent: true);
+            Button apply = UiFactory.LocalizedButton("Apply", bottom, "settings.apply", accent: true);
             UiFactory.Size(apply, UiStyle.BUTTON_HEIGHT, 240);
 
             UiFactory.SetArray(screen, "_tabButtons", graphicsTab, audioTab, controlsTab);
@@ -80,15 +80,15 @@ namespace Game.EditorTools
             RectTransform root = TabPanel(content, "Graphics");
             GraphicsSettingsTab tab = root.gameObject.AddComponent<GraphicsSettingsTab>();
 
-            TMP_Dropdown resolution = DropdownRow(root, "Разрешение");
-            TMP_Dropdown windowMode = DropdownRow(root, "Режим окна");
-            TMP_Dropdown quality = DropdownRow(root, "Качество");
+            TMP_Dropdown resolution = DropdownRow(root, "settings.resolution");
+            TMP_Dropdown windowMode = DropdownRow(root, "settings.window_mode");
+            TMP_Dropdown quality = DropdownRow(root, "settings.quality");
 
-            RectTransform vSyncRow = Row(root, "Вертикальная синхронизация");
-            Toggle vSync = UiFactory.Toggle("VSync", vSyncRow, "Вкл.");
+            RectTransform vSyncRow = Row(root, "settings.vsync");
+            Toggle vSync = UiFactory.LocalizedToggle("VSync", vSyncRow, "settings.vsync_on");
             UiFactory.Size(vSync, TOGGLE_HEIGHT, 0, CONTROL_SHARE);
 
-            TMP_Dropdown frameLimit = DropdownRow(root, "Ограничение FPS");
+            TMP_Dropdown frameLimit = DropdownRow(root, "settings.frame_limit");
 
             UiFactory.SetField(tab, "_resolution", resolution);
             UiFactory.SetField(tab, "_windowMode", windowMode);
@@ -104,12 +104,16 @@ namespace Game.EditorTools
             AudioSettingsTab tab = root.gameObject.AddComponent<AudioSettingsTab>();
 
             // AudioChannel order: Master, Music, Effects, Ui, Ambient
-            string[] names = { "Общая", "Музыка", "Эффекты", "Интерфейс", "Окружение" };
-            Object[] sliders = new Object[names.Length];
-            Object[] values = new Object[names.Length];
-            for (int i = 0; i < names.Length; i++)
+            string[] keys =
             {
-                Slider slider = SliderRow(root, names[i], out TextMeshProUGUI value);
+                "settings.volume_master", "settings.volume_music", "settings.volume_effects", "settings.volume_ui",
+                "settings.volume_ambient"
+            };
+            Object[] sliders = new Object[keys.Length];
+            Object[] values = new Object[keys.Length];
+            for (int i = 0; i < keys.Length; i++)
+            {
+                Slider slider = SliderRow(root, keys[i], out TextMeshProUGUI value);
                 slider.minValue = 0f;
                 slider.maxValue = 100f;
                 slider.wholeNumbers = true;
@@ -129,7 +133,7 @@ namespace Game.EditorTools
             RectTransform root = TabPanel(content, "Controls");
             ControlsSettingsTab tab = root.gameObject.AddComponent<ControlsSettingsTab>();
 
-            Slider sensitivity = SliderRow(root, "Чувствительность мыши", out TextMeshProUGUI sensitivityValue);
+            Slider sensitivity = SliderRow(root, "settings.mouse_sensitivity", out TextMeshProUGUI sensitivityValue);
             sensitivity.minValue = 0.2f;
             sensitivity.maxValue = 3f;
             sensitivity.wholeNumbers = false;
@@ -143,13 +147,13 @@ namespace Game.EditorTools
             RectTransform resetRow = UiFactory.Rect("ResetRow", root);
             UiFactory.Horizontal(resetRow, UiStyle.SPACING, 0, TextAnchor.MiddleRight);
             UiFactory.Size(resetRow, UiStyle.BUTTON_HEIGHT);
-            Button resetAll = UiFactory.Button("ResetAll", resetRow, "Сбросить всё");
+            Button resetAll = UiFactory.LocalizedButton("ResetAll", resetRow, "settings.reset_all");
             UiFactory.Size(resetAll, UiStyle.BUTTON_HEIGHT, 260);
 
-            // Over the whole screen, last child: covers the panel while a key is awaited.
+            // Over the whole screen, last child: covers the panel while a key is awaited (the tab writes the text).
             Image overlay = UiFactory.Panel("RebindOverlay", screen, UiStyle.Dim);
             UiFactory.Stretch(overlay.rectTransform);
-            TextMeshProUGUI overlayText = UiFactory.Text("Text", overlay.transform, "Нажмите клавишу…\nEsc — отмена",
+            TextMeshProUGUI overlayText = UiFactory.Text("Text", overlay.transform, "-",
                 UiStyle.FONT_HEADER, TextAlignmentOptions.Center, bold: true);
             UiFactory.Stretch(overlayText.rectTransform);
             overlay.gameObject.SetActive(false);
@@ -170,11 +174,12 @@ namespace Game.EditorTools
             UiFactory.Size(row, UiStyle.BUTTON_HEIGHT + 8);
             RebindRow rebind = row.gameObject.AddComponent<RebindRow>();
 
-            TextMeshProUGUI label = UiFactory.Text("Label", row.transform, "Действие");
+            // Label and key are written by RebindRow; the reset label is static.
+            TextMeshProUGUI label = UiFactory.Text("Label", row.transform, "-");
             UiFactory.Size(label, UiStyle.BUTTON_HEIGHT, 0, 1);
-            Button key = UiFactory.Button("Key", row.transform, "Клавиша");
+            Button key = UiFactory.Button("Key", row.transform, "-");
             UiFactory.Size(key, UiStyle.BUTTON_HEIGHT, 280);
-            Button reset = UiFactory.Button("Reset", row.transform, "Сброс");
+            Button reset = UiFactory.LocalizedButton("Reset", row.transform, "settings.reset_key");
             UiFactory.Size(reset, UiStyle.BUTTON_HEIGHT, 110);
 
             UiFactory.SetField(rebind, "_background", row);
@@ -188,9 +193,9 @@ namespace Game.EditorTools
 
         // ---------- Pieces ----------
 
-        private static Button TabButton(RectTransform row, string name, string label)
+        private static Button TabButton(RectTransform row, string name, string key)
         {
-            Button button = UiFactory.Button(name, row, label);
+            Button button = UiFactory.LocalizedButton(name, row, key);
             UiFactory.Size(button, UiStyle.BUTTON_HEIGHT, TAB_WIDTH);
             Label(button).color = UiStyle.TextMuted;
             return button;
@@ -203,27 +208,27 @@ namespace Game.EditorTools
             return root;
         }
 
-        /// <summary>A line with the label on the left 40 %; the control goes into the rest.</summary>
-        private static RectTransform Row(RectTransform parent, string label)
+        /// <summary>A line with the label (by key; the row is named after the key) on the left 40 %; the control goes into the rest.</summary>
+        private static RectTransform Row(RectTransform parent, string key)
         {
-            RectTransform row = UiFactory.Rect(label, parent);
+            RectTransform row = UiFactory.Rect(key, parent);
             UiFactory.Horizontal(row, UiStyle.SPACING, 0, TextAnchor.MiddleLeft, expandHeight: false);
             UiFactory.Size(row, UiStyle.BUTTON_HEIGHT);
-            TextMeshProUGUI text = UiFactory.Text("Label", row, label);
+            TextMeshProUGUI text = UiFactory.LocalizedText("Label", row, key);
             UiFactory.Size(text, UiStyle.BUTTON_HEIGHT, 0, LABEL_SHARE);
             return row;
         }
 
-        private static TMP_Dropdown DropdownRow(RectTransform parent, string label)
+        private static TMP_Dropdown DropdownRow(RectTransform parent, string key)
         {
-            TMP_Dropdown dropdown = UiFactory.Dropdown("Dropdown", Row(parent, label));
+            TMP_Dropdown dropdown = UiFactory.Dropdown("Dropdown", Row(parent, key));
             UiFactory.Size(dropdown, UiStyle.BUTTON_HEIGHT, 0, CONTROL_SHARE);
             return dropdown;
         }
 
-        private static Slider SliderRow(RectTransform parent, string label, out TextMeshProUGUI value)
+        private static Slider SliderRow(RectTransform parent, string key, out TextMeshProUGUI value)
         {
-            RectTransform row = Row(parent, label);
+            RectTransform row = Row(parent, key);
             RectTransform holder = UiFactory.Rect("Control", row);
             UiFactory.Horizontal(holder, UiStyle.SPACING, 0, TextAnchor.MiddleLeft, expandHeight: false);
             UiFactory.Size(holder, UiStyle.BUTTON_HEIGHT, 0, CONTROL_SHARE);

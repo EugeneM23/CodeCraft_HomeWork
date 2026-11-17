@@ -23,7 +23,7 @@ namespace Game
         [Tooltip("Shows the build version (Application.version)")]
         [SerializeField] private TMP_Text _version;
 
-        private void Awake() => _version.text = "Версия " + Application.version;
+        private void Awake() => _version.text = string.Format(UiStrings.Get("main.version_format"), Application.version);
 
         private void OnEnable()
         {

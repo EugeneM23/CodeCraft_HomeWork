@@ -7,13 +7,16 @@ namespace Game
         /// Gives a new player the start credits and modules and opens the levels that need nothing, once:
         /// a player who owns none of the start modules is new.
         /// </summary>
-        public static bool EnsureStarted(IPlayerProgress progress, ShopCatalogConfig catalog, LevelCatalogConfig levels = null)
+        public static bool EnsureStarted(IPlayerProgress progress, ShopCatalogConfig catalog, LevelCatalog levels = null)
         {
             if (levels != null)
             {
-                foreach (LevelConfig level in levels.levels)
-                    if (level != null && level.requiredLevel == null && !progress.IsLevelUnlocked(level.id))
-                        progress.UnlockLevel(level.id);
+                for (int i = 0; i < levels.Levels.Count; i++)
+                {
+                    LevelConfig level = levels.Levels[i];
+                    if (level != null && level.RequiredLevel == null && !progress.IsLevelUnlocked(level.Id))
+                        progress.UnlockLevel(level.Id);
+                }
             }
 
             foreach (TankModuleConfig module in catalog.startModules)
@@ -79,18 +82,24 @@ namespace Game
             return true;
         }
 
-        /// <summary>A won level: pays its reward, marks it completed and opens the levels that waited for it.</summary>
-        public static void CompleteLevel(IPlayerProgress progress, LevelCatalogConfig levels, LevelConfig level)
+        /// <summary>
+        /// A won level: pays the reward (LevelDesignConfig's), marks it completed and opens the levels that waited for it.
+        /// </summary>
+        public static void CompleteLevel(IPlayerProgress progress, LevelCatalog levels, LevelConfig level, int reward)
         {
-            progress.AddCredits(level.reward);
-            progress.MarkLevelCompleted(level.id);
+            if (reward > 0)
+                progress.AddCredits(reward);
+            progress.MarkLevelCompleted(level.Id);
 
             if (levels == null)
                 return;
 
-            foreach (LevelConfig other in levels.levels)
-                if (other != null && other.requiredLevel == level && !progress.IsLevelUnlocked(other.id))
-                    progress.UnlockLevel(other.id);
+            for (int i = 0; i < levels.Levels.Count; i++)
+            {
+                LevelConfig other = levels.Levels[i];
+                if (other != null && other.RequiredLevel == level && !progress.IsLevelUnlocked(other.Id))
+                    progress.UnlockLevel(other.Id);
+            }
         }
     }
 }

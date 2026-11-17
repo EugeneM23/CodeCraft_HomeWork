@@ -8,7 +8,7 @@ using UnityEngine.UI;
 namespace Game
 {
     /// <summary>
-    /// The «Управление» tab: mouse sensitivity and the key table. Keys are edited right on the game's one
+    /// The Controls tab: mouse sensitivity and the key table. Keys are edited right on the game's one
     /// GameControls (the settings screen restores the old overrides on revert); sensitivity goes into the bound
     /// ControlsSettingsData. A key taken by another row of the same map is swapped, and both rows flash.
     /// Not rebindable: Look, Pause, ResetCamera, ToggleDebug and the UI map.
@@ -16,7 +16,6 @@ namespace Game
     public sealed class ControlsSettingsTab : MonoBehaviour
     {
         private const string WASD = "WASD";
-        private const string SANDBOX = " (песочница)";
 
         public event Action Changed;
 
@@ -25,7 +24,7 @@ namespace Game
         [Tooltip("A switched-off row inside the scroll list's content; the rows are copies of it")]
         [SerializeField] private RebindRow _rowTemplate;
         [SerializeField] private Button _resetAll;
-        [Tooltip("«Нажмите клавишу…» over the screen while a key is awaited")]
+        [Tooltip("\"Press a key\" over the screen while a key is awaited")]
         [SerializeField] private GameObject _overlay;
         [SerializeField] private TMP_Text _overlayText;
 
@@ -91,19 +90,21 @@ namespace Game
         private void CreateRows()
         {
             GameControls controls = AppServices.Input.Controls;
-            AddPart(controls.Tank.Drive, "up", "Вперёд");
-            AddPart(controls.Tank.Drive, "down", "Назад");
-            AddPart(controls.Tank.Drive, "left", "Влево");
-            AddPart(controls.Tank.Drive, "right", "Вправо");
-            AddPlain(controls.Tank.Boost, "Форсаж");
-            AddPlain(controls.Tank.FireMain, "Пушка");
-            AddPlain(controls.Tank.FireSecondary, "Пулемёт");
-            AddPlain(controls.Tank.ToggleHints, "Подсказки");
-            AddPlain(controls.Sandbox.AirStrike, "Авиаудар" + SANDBOX);
-            AddPlain(controls.Sandbox.Smoke, "Дым" + SANDBOX);
-            AddPlain(controls.Sandbox.Rain, "Дождь" + SANDBOX);
+            AddPart(controls.Tank.Drive, "up", UiStrings.Get("settings.action_forward"));
+            AddPart(controls.Tank.Drive, "down", UiStrings.Get("settings.action_back"));
+            AddPart(controls.Tank.Drive, "left", UiStrings.Get("settings.action_left"));
+            AddPart(controls.Tank.Drive, "right", UiStrings.Get("settings.action_right"));
+            AddPlain(controls.Tank.Boost, UiStrings.Get("settings.action_boost"));
+            AddPlain(controls.Tank.FireMain, UiStrings.Get("settings.action_fire_main"));
+            AddPlain(controls.Tank.FireSecondary, UiStrings.Get("settings.action_fire_secondary"));
+            AddPlain(controls.Tank.ToggleHints, UiStrings.Get("settings.action_hints"));
+            AddPlain(controls.Sandbox.AirStrike, Sandbox("settings.action_air_strike"));
+            AddPlain(controls.Sandbox.Smoke, Sandbox("settings.action_smoke"));
+            AddPlain(controls.Sandbox.Rain, Sandbox("settings.action_rain"));
             _rowTemplate.gameObject.SetActive(false);
         }
+
+        private static string Sandbox(string key) => string.Format(UiStrings.Get("settings.sandbox_format"), UiStrings.Get(key));
 
         private void AddPart(InputAction action, string part, string label) =>
             AddRow(action, KeyRebindUseCase.FindCompositePart(action, WASD, part), label);
@@ -139,7 +140,7 @@ namespace Game
             if (_overlay == null)
                 return;
 
-            _overlayText.text = $"Нажмите клавишу для «{row.Label}»…\nEsc — отмена";
+            _overlayText.text = string.Format(UiStrings.Get("settings.rebind_wait_format"), row.Label);
             _overlay.SetActive(true);
         }
 

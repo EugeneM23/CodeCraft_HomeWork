@@ -24,10 +24,12 @@ namespace Game
 
         private const int CARD_STAT_LINES = 3;
 
-        /// <summary>Stat names, by TankStats index.</summary>
-        public static readonly string[] StatNames = { "Прочность", "Броня", "Скорость", "Урон", "Перезарядка", "Темп МГ" };
+        /// <summary>UiStrings keys of the stat names, by TankStats index.</summary>
+        public static readonly string[] StatNameKeys =
+            { "stat.health", "stat.armor", "stat.speed", "stat.damage", "stat.reload", "stat.fire_rate" };
 
-        private static readonly string[] StatUnits = { "", "", "", "", " с", "/с" };
+        // UiStrings keys of the stat units, by TankStats index; null: no unit
+        private static readonly string[] StatUnitKeys = { null, null, null, null, "stat.unit_seconds", "stat.unit_per_second" };
 
         public event Action<TankModuleConfig> BuyClicked;
         public event Action BackClicked;
@@ -56,6 +58,19 @@ namespace Game
         private TankSlot _slot;
         private int _selected;
 
+        // Texts from UiStrings, fetched once in Awake
+        private readonly string[] _statNames = new string[TankStats.COUNT];
+        private readonly string[] _statUnits = new string[TankStats.COUNT];
+        private string _cardPriceFormat;
+        private string _cardBuy;
+        private string _cardBought;
+        private string _empty;
+        private string _levelHeaderFormat;
+        private string _noBonuses;
+        private string _priceFormat;
+        private string _buy;
+        private string _bought;
+
         /// <summary>Called by MenuFlow before the screen is first shown.</summary>
         public void Init(ShopCatalogConfig catalog)
         {
@@ -77,6 +92,21 @@ namespace Game
 
         private void Awake()
         {
+            for (int i = 0; i < TankStats.COUNT; i++)
+            {
+                _statNames[i] = UiStrings.Get(StatNameKeys[i]);
+                _statUnits[i] = StatUnitKeys[i] != null ? UiStrings.Get(StatUnitKeys[i]) : string.Empty;
+            }
+            _cardPriceFormat = UiStrings.Get("shop.card_price_format");
+            _cardBuy = UiStrings.Get("shop.card_buy");
+            _cardBought = UiStrings.Get("shop.card_bought");
+            _empty = UiStrings.Get("shop.empty");
+            _levelHeaderFormat = UiStrings.Get("shop.level_header_format");
+            _noBonuses = UiStrings.Get("shop.no_bonuses");
+            _priceFormat = UiStrings.Get("shop.price_format");
+            _buy = UiStrings.Get("shop.buy");
+            _bought = UiStrings.Get("shop.bought");
+
             _tabHandlers = new UnityEngine.Events.UnityAction[_tabs.Length];
             for (int i = 0; i < _tabs.Length; i++)
             {
@@ -150,10 +180,10 @@ namespace Game
                 bool owned = ShopUseCase.IsOwned(_progress, module);
                 bool canBuy = ShopUseCase.CanBuy(_progress, module);
                 card.Marker.SetActive(i == _selected);
-                card.Price.SetText("{0} кр.", module.price);
+                card.Price.SetText(_cardPriceFormat, module.price);
                 card.Price.color = owned || canBuy ? UiStyle.Text : UiStyle.Bad;
                 card.Buy.interactable = canBuy;
-                card.BuyLabel.text = owned ? "Куплено" : "Купить";
+                card.BuyLabel.text = owned ? _cardBought : _cardBuy;
             }
 
             RefreshDetails();
@@ -165,7 +195,7 @@ namespace Game
             _detailBuy.gameObject.SetActive(any);
             if (!any)
             {
-                _detailName.text = "Нет товаров";
+                _detailName.text = _empty;
                 _detailDescription.text = string.Empty;
                 _detailStats.text = string.Empty;
                 _detailPrice.text = string.Empty;
@@ -178,15 +208,15 @@ namespace Game
             _detailName.text = module.displayName;
             _detailDescription.text = module.description;
             _text.Clear();
-            _text.Append("Уровень 1:\n").Append(StatsText(module.StatsAt(1), TankStats.COUNT));
+            _text.AppendFormat(_levelHeaderFormat, 1).Append('\n').Append(StatsText(module.StatsAt(1), TankStats.COUNT));
             if (module.MaxLevel > 1)
-                _text.Append("\n\nУровень ").Append(module.MaxLevel).Append(":\n")
+                _text.Append("\n\n").AppendFormat(_levelHeaderFormat, module.MaxLevel).Append('\n')
                     .Append(StatsText(module.StatsAt(module.MaxLevel), TankStats.COUNT));
             _detailStats.text = _text.ToString();
-            _detailPrice.SetText("Цена: {0} кредитов", module.price);
+            _detailPrice.SetText(_priceFormat, module.price);
             _detailPrice.color = owned || canBuy ? UiStyle.Text : UiStyle.Bad;
             _detailBuy.interactable = canBuy;
-            _detailBuyLabel.text = owned ? "КУПЛЕНО" : "КУПИТЬ";
+            _detailBuyLabel.text = owned ? _bought : _buy;
         }
 
         private Card CreateCard(int index)
@@ -239,7 +269,7 @@ namespace Game
         private void HandleBack() => BackClicked?.Invoke();
 
         // Nonzero stats, one per line, at most maxLines (built on a tab switch or a click, not per frame)
-        private static string StatsText(TankStats stats, int maxLines)
+        private string StatsText(TankStats stats, int maxLines)
         {
             StringBuilder text = new();
             int lines = 0;
@@ -251,10 +281,10 @@ namespace Game
 
                 if (lines > 0)
                     text.Append('\n');
-                text.Append(StatNames[i]).Append(' ').Append(value.ToString("+0.#;-0.#")).Append(StatUnits[i]);
+                text.Append(_statNames[i]).Append(' ').Append(value.ToString("+0.#;-0.#")).Append(_statUnits[i]);
                 lines++;
             }
-            return lines > 0 ? text.ToString() : "Без прибавок";
+            return lines > 0 ? text.ToString() : _noBonuses;
         }
 
         private sealed class Card

@@ -5,18 +5,32 @@ using UnityEngine;
 namespace Game.EditorTools
 {
     /// <summary>
-    /// Creates or updates the placeholder data of the menus in Assets/Game/Configs/UI: two levels, their catalog,
-    /// tank modules (2–3 per slot, 3 levels each) and the shop catalog. Idempotent: existing assets keep their
-    /// GUIDs and get the values below. Game design replaces the numbers later.
+    /// Creates or updates the placeholder data of the menus: in Assets/Game/Configs/UI the design fields of the
+    /// levels (LevelDesignConfig), tank modules (2–3 per slot, 3 levels each) and the shop catalog; in the core's
+    /// Assets/Game/Configs/Levels a placeholder second level (quarry) added to the core catalog. Idempotent:
+    /// existing assets keep their GUIDs and get the values below. Game design replaces the numbers later.
     /// </summary>
     public static class UiDataBuilder
     {
         public const string FOLDER = "Assets/Game/Configs/UI";
         public const string MODULE_FOLDER = FOLDER + "/Modules";
-        public const string LEVEL_CATALOG_PATH = FOLDER + "/LevelCatalogConfig.asset";
+        public const string LEVEL_DESIGN_PATH = FOLDER + "/LevelDesignConfig.asset";
         public const string SHOP_CATALOG_PATH = FOLDER + "/ShopCatalogConfig.asset";
+        public const string LEVEL_FOLDER = "Assets/Game/Configs/Levels";
+        public const string LEVEL_CATALOG_PATH = LEVEL_FOLDER + "/LevelCatalogConfig.asset";
 
-        private const string SANDBOX_SCENE = "VoxelSandbox";
+        private const string SANDBOX_LEVEL_PATH = LEVEL_FOLDER + "/VoxelSandboxLevelConfig.asset";
+        private const string QUARRY_LEVEL_PATH = LEVEL_FOLDER + "/QuarryLevelConfig.asset";
+        private const string SANDBOX_LEVEL_ID = "voxel_sandbox";
+        private const string QUARRY_LEVEL_ID = "quarry";
+        private const string BATTLE_UI_PATH = UiFactory.PREFAB_FOLDER + "/BattleUi.prefab";
+
+        private static readonly string[] OldLevelAssets =
+        {
+            FOLDER + "/SandboxLevelConfig.asset",
+            FOLDER + "/QuarryLevelConfig.asset",
+            FOLDER + "/LevelCatalogConfig.asset"
+        };
 
         [MenuItem("Tools/UI/Build Placeholder Data")]
         public static void Build()
@@ -31,39 +45,118 @@ namespace Game.EditorTools
             Debug.Log($"UI placeholder data built in {FOLDER}");
         }
 
-        public static LevelCatalogConfig LoadLevelCatalog() => AssetDatabase.LoadAssetAtPath<LevelCatalogConfig>(LEVEL_CATALOG_PATH);
+        public static LevelCatalog LoadLevelCatalog() => AssetDatabase.LoadAssetAtPath<LevelCatalog>(LEVEL_CATALOG_PATH);
+        public static LevelDesignConfig LoadLevelDesign() => AssetDatabase.LoadAssetAtPath<LevelDesignConfig>(LEVEL_DESIGN_PATH);
         public static ShopCatalogConfig LoadShopCatalog() => AssetDatabase.LoadAssetAtPath<ShopCatalogConfig>(SHOP_CATALOG_PATH);
+
+        /// <summary>
+        /// Puts the BattleUi prefab into the core catalog's level layer when it is not there yet. Called after
+        /// BattleUiBuilder.Build (UiAllBuilder), since the prefab may not exist when the data is built.
+        /// </summary>
+        public static void AddBattleUiToLevelLayer()
+        {
+            GameObject battleUi = AssetDatabase.LoadAssetAtPath<GameObject>(BATTLE_UI_PATH);
+            LevelCatalog catalog = LoadLevelCatalog();
+            if (battleUi == null || catalog == null)
+                return;
+
+            SerializedObject so = new(catalog);
+            SerializedProperty layer = so.FindProperty("_levelLayer");
+            if (Contains(layer, battleUi))
+                return;
+
+            layer.InsertArrayElementAtIndex(layer.arraySize);
+            layer.GetArrayElementAtIndex(layer.arraySize - 1).objectReferenceValue = battleUi;
+            so.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(catalog);
+            AssetDatabase.SaveAssets();
+        }
 
         // ---------- Levels ----------
 
         private static void BuildLevels()
         {
-            LevelConfig sandbox = Level("SandboxLevelConfig", "sandbox", "Песочница",
-                "Разрушаемый городок, Regax прячутся в домах. Разнесите укрытия и зачистите улицы.",
-                difficulty: 1, kills: 10, reward: 300, required: null);
-            LevelConfig quarry = Level("QuarryLevelConfig", "quarry", "Карьер",
-                "Тот же городок, но Regax вдвое больше. Пока использует сцену песочницы.",
-                difficulty: 2, kills: 20, reward: 600, required: sandbox);
+            // The level assets of the menus before the core owned the level types
+            foreach (string oldAsset in OldLevelAssets)
+                if (!string.IsNullOrEmpty(AssetDatabase.AssetPathToGUID(oldAsset, AssetPathToGUIDOptions.OnlyExistingAssets)))
+                    AssetDatabase.DeleteAsset(oldAsset);
 
-            LevelCatalogConfig catalog = LoadOrCreate<LevelCatalogConfig>(LEVEL_CATALOG_PATH);
-            catalog.levels = new List<LevelConfig> { sandbox, quarry };
+            LevelDesignConfig design = LoadOrCreate<LevelDesignConfig>(LEVEL_DESIGN_PATH);
+            design.levels = new List<LevelDesignData>
+            {
+                new() { levelId = SANDBOX_LEVEL_ID, difficulty = 1, killTarget = 10, reward = 300 },
+                new() { levelId = QUARRY_LEVEL_ID, difficulty = 2, killTarget = 20, reward = 600 }
+            };
+            EditorUtility.SetDirty(design);
+
+            LevelCatalog catalog = LoadLevelCatalog();
+            LevelConfig sandbox = AssetDatabase.LoadAssetAtPath<LevelConfig>(SANDBOX_LEVEL_PATH);
+            if (catalog == null || sandbox == null)
+            {
+                Debug.LogWarning($"{nameof(UiDataBuilder)}: no core {LEVEL_CATALOG_PATH} or {SANDBOX_LEVEL_PATH}; " +
+                                 "the placeholder level is not built.");
+                return;
+            }
+
+            LevelConfig quarry = BuildQuarry(sandbox);
+            AddLevelAfter(catalog, sandbox, quarry);
+        }
+
+        // A copy of the sandbox's scene set under another id, opened by the sandbox.
+        private static LevelConfig BuildQuarry(LevelConfig sandbox)
+        {
+            LevelConfig quarry = LoadOrCreate<LevelConfig>(QUARRY_LEVEL_PATH);
+            SerializedObject source = new(sandbox);
+            SerializedObject so = new(quarry);
+
+            so.FindProperty("_id").stringValue = QUARRY_LEVEL_ID;
+            so.FindProperty("_displayName").stringValue = "Карьер";
+            so.FindProperty("_description").stringValue =
+                "Тот же городок, но Regax вдвое больше. Пока использует сцены песочницы.";
+
+            SerializedProperty fromScenes = source.FindProperty("_scenes");
+            SerializedProperty scenes = so.FindProperty("_scenes");
+            scenes.arraySize = fromScenes.arraySize;
+            for (int i = 0; i < fromScenes.arraySize; i++)
+            {
+                SerializedProperty from = fromScenes.GetArrayElementAtIndex(i);
+                SerializedProperty to = scenes.GetArrayElementAtIndex(i);
+                to.FindPropertyRelative("_asset").objectReferenceValue = from.FindPropertyRelative("_asset").objectReferenceValue;
+                to.FindPropertyRelative("_path").stringValue = from.FindPropertyRelative("_path").stringValue;
+            }
+
+            so.FindProperty("_activeSceneIndex").intValue = source.FindProperty("_activeSceneIndex").intValue;
+            so.FindProperty("_gameplaySceneIndex").intValue = source.FindProperty("_gameplaySceneIndex").intValue;
+            so.FindProperty("_requiredLevel").objectReferenceValue = sandbox;
+            so.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(quarry);
+            return quarry;
+        }
+
+        private static void AddLevelAfter(LevelCatalog catalog, LevelConfig previous, LevelConfig level)
+        {
+            SerializedObject so = new(catalog);
+            SerializedProperty levels = so.FindProperty("_levels");
+            if (Contains(levels, level))
+                return;
+
+            int index = levels.arraySize;
+            for (int i = 0; i < levels.arraySize; i++)
+                if (levels.GetArrayElementAtIndex(i).objectReferenceValue == previous)
+                    index = i + 1;
+
+            levels.InsertArrayElementAtIndex(index);
+            levels.GetArrayElementAtIndex(index).objectReferenceValue = level;
+            so.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(catalog);
         }
 
-        private static LevelConfig Level(string asset, string id, string name, string description, int difficulty,
-            int kills, int reward, LevelConfig required)
+        private static bool Contains(SerializedProperty array, Object item)
         {
-            LevelConfig level = LoadOrCreate<LevelConfig>($"{FOLDER}/{asset}.asset");
-            level.id = id;
-            level.displayName = name;
-            level.description = description;
-            level.sceneName = SANDBOX_SCENE;
-            level.difficulty = difficulty;
-            level.killTarget = kills;
-            level.reward = reward;
-            level.requiredLevel = required;
-            EditorUtility.SetDirty(level);
-            return level;
+            for (int i = 0; i < array.arraySize; i++)
+                if (array.GetArrayElementAtIndex(i).objectReferenceValue == item)
+                    return true;
+            return false;
         }
 
         // ---------- Shop ----------

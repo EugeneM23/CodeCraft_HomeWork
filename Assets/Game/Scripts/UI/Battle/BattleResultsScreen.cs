@@ -25,19 +25,29 @@ namespace Game
         [SerializeField] private Button _hangar;
         [SerializeField] private Button _next;
 
-        /// <summary>Fills the screen before it is shown. level may be null (the scene was started without one).</summary>
+        /// <summary>
+        /// Fills the screen before it is shown (once per battle; the screen may not have woken yet, so texts are
+        /// fetched here). level may be null (the scene was started without one).
+        /// </summary>
         public void Setup(BattleResult result, LevelConfig level, int killTarget, bool hasNextLevel)
         {
-            _title.text = result.Victory ? "ПОБЕДА" : "ПОРАЖЕНИЕ";
+            _title.text = UiStrings.Get(result.Victory ? "results.victory" : "results.defeat");
             _title.color = result.Victory ? UiStyle.Good : UiStyle.Bad;
 
-            _goal.text = killTarget > 0 ? $"Цель: уничтожить {killTarget} Regax" : "Цель: выжить";
-            if (level != null)
-                _goal.text = $"{level.displayName}. {_goal.text}";
+            string goal = killTarget > 0
+                ? string.Format(UiStrings.Get("goal.kill_format"), killTarget)
+                : UiStrings.Get("goal.survive");
+            _goal.text = level != null
+                ? string.Format(UiStrings.Get("results.goal_with_level_format"), level.DisplayName, goal)
+                : goal;
 
-            _time.text = "Время: " + ClockTextUseCase.Format(result.Time);
-            _kills.text = killTarget > 0 ? $"Уничтожено Regax: {result.Kills}/{killTarget}" : $"Уничтожено Regax: {result.Kills}";
-            _reward.text = result.Reward > 0 ? $"+{result.Reward} кредитов" : "Награды нет";
+            _time.text = string.Format(UiStrings.Get("results.time_format"), ClockTextUseCase.Format(result.Time));
+            _kills.text = killTarget > 0
+                ? string.Format(UiStrings.Get("results.kills_target_format"), result.Kills, killTarget)
+                : string.Format(UiStrings.Get("results.kills_format"), result.Kills);
+            _reward.text = result.Reward > 0
+                ? string.Format(UiStrings.Get("results.reward_format"), result.Reward)
+                : UiStrings.Get("results.no_reward");
             _reward.color = result.Reward > 0 ? UiStyle.Accent : UiStyle.TextMuted;
 
             _next.gameObject.SetActive(hasNextLevel);

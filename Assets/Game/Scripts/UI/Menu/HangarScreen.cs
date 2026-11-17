@@ -21,8 +21,9 @@ namespace Game
         public const string ITEM_NAME = "Name";
         public const string ITEM_VALUE = "Value";
 
-        /// <summary>Slot names in the hangar, by (int)TankSlot.</summary>
-        public static readonly string[] SlotNames = { "Пушка", "Пулемёт", "Корпус", "Двигатель", "Гусеницы", "Броня" };
+        /// <summary>UiStrings keys of the slot names, by (int)TankSlot.</summary>
+        public static readonly string[] SlotNameKeys =
+            { "slot.gun", "slot.machine_gun", "slot.hull", "slot.engine", "slot.tracks", "slot.armor" };
 
         // IPlayerProgress keys of the slots (TankSlot.ToString()), by (int)TankSlot
         private static readonly string[] SlotKeys = Enum.GetNames(typeof(TankSlot));
@@ -75,11 +76,42 @@ namespace Game
         private TankModuleConfig _previewModule;
         private bool _statsShown;
 
+        // Texts from UiStrings, fetched once in Awake
+        private readonly string[] _slotNames = new string[SlotNameKeys.Length];
+        private string _slotModulesFormat;
+        private string _slotValueFormat;
+        private string _moduleInstalled;
+        private string _moduleOwnedFormat;
+        private string _moduleInShopFormat;
+        private string _noModules;
+        private string _levelFormat;
+        private string _notOwned;
+        private string _installText;
+        private string _installedText;
+        private string _upgradeFormat;
+
         /// <summary>Called by MenuFlow before the screen is first shown.</summary>
         public void Init(ShopCatalogConfig catalog)
         {
             _catalog = catalog;
             _progress = AppServices.Progress;
+        }
+
+        private void Awake()
+        {
+            for (int i = 0; i < SlotNameKeys.Length; i++)
+                _slotNames[i] = UiStrings.Get(SlotNameKeys[i]);
+            _slotModulesFormat = UiStrings.Get("hangar.slot_modules_format");
+            _slotValueFormat = UiStrings.Get("hangar.slot_value_format");
+            _moduleInstalled = UiStrings.Get("hangar.module_installed");
+            _moduleOwnedFormat = UiStrings.Get("hangar.module_owned_format");
+            _moduleInShopFormat = UiStrings.Get("hangar.module_in_shop_format");
+            _noModules = UiStrings.Get("hangar.no_modules");
+            _levelFormat = UiStrings.Get("hangar.level_format");
+            _notOwned = UiStrings.Get("hangar.not_owned");
+            _installText = UiStrings.Get("hangar.install");
+            _installedText = UiStrings.Get("hangar.installed");
+            _upgradeFormat = UiStrings.Get("hangar.upgrade_format");
         }
 
         private void OnEnable()
@@ -141,7 +173,7 @@ namespace Game
         {
             _slot = slot;
             _selectedModule = _catalog.Find(_progress.GetInstalledModule(SlotKeys[(int)slot]));
-            _modulesTitle.text = "МОДУЛИ СЛОТА «" + SlotNames[(int)slot].ToUpperInvariant() + "»";
+            _modulesTitle.text = string.Format(_slotModulesFormat, _slotNames[(int)slot].ToUpperInvariant());
             CollectSlotModules();
             if (_selectedModule == null && _slotModules.Count > 0)
                 _selectedModule = _slotModules[0];
@@ -168,12 +200,12 @@ namespace Game
             if (_slots.Count > 0)
                 return;
 
-            for (int i = 0; i < SlotNames.Length; i++)
+            for (int i = 0; i < _slotNames.Length; i++)
             {
                 Item item = Clone(_slotTemplate, "Slot_" + SlotKeys[i]);
                 TankSlot slot = (TankSlot)i;
                 item.Button.onClick.AddListener(() => SelectSlot(slot)); // once per row, at creation
-                item.Name.text = SlotNames[i];
+                item.Name.text = _slotNames[i];
                 _slots.Add(item);
             }
         }
@@ -186,7 +218,7 @@ namespace Game
                 item.Marker.SetActive(i == (int)_slot);
                 TankModuleConfig module = _catalog.Find(_progress.GetInstalledModule(SlotKeys[i]));
                 item.Value.text = module != null
-                    ? module.displayName + "  ур. " + _progress.GetModuleLevel(module.id)
+                    ? string.Format(_slotValueFormat, module.displayName, _progress.GetModuleLevel(module.id))
                     : "—";
             }
         }
@@ -227,17 +259,17 @@ namespace Game
                 item.Marker.SetActive(module == _selectedModule);
                 if (ShopUseCase.IsInstalled(_progress, module))
                 {
-                    item.Value.text = "установлен";
+                    item.Value.text = _moduleInstalled;
                     item.Value.color = UiStyle.Accent;
                 }
                 else if (ShopUseCase.IsOwned(_progress, module))
                 {
-                    item.Value.SetText("куплен, ур. {0}", _progress.GetModuleLevel(module.id));
+                    item.Value.SetText(_moduleOwnedFormat, _progress.GetModuleLevel(module.id));
                     item.Value.color = UiStyle.Good;
                 }
                 else
                 {
-                    item.Value.SetText("в магазине — {0}", module.price);
+                    item.Value.SetText(_moduleInShopFormat, module.price);
                     item.Value.color = UiStyle.TextMuted;
                 }
             }
@@ -248,7 +280,7 @@ namespace Game
             TankModuleConfig module = _selectedModule;
             if (module == null)
             {
-                _moduleName.text = "Нет модулей";
+                _moduleName.text = _noModules;
                 _moduleLevel.text = string.Empty;
                 _moduleDescription.text = string.Empty;
                 _install.gameObject.SetActive(false);
@@ -262,9 +294,9 @@ namespace Game
             _moduleName.text = module.displayName;
             _moduleDescription.text = module.description;
             if (owned)
-                _moduleLevel.SetText("ур. {0}/{1}", level, module.MaxLevel);
+                _moduleLevel.SetText(_levelFormat, level, module.MaxLevel);
             else
-                _moduleLevel.text = "не куплен";
+                _moduleLevel.text = _notOwned;
 
             _buyInShop.gameObject.SetActive(!owned);
             _install.gameObject.SetActive(owned);
@@ -272,7 +304,7 @@ namespace Game
             {
                 bool installed = ShopUseCase.IsInstalled(_progress, module);
                 _install.interactable = !installed;
-                _installLabel.text = installed ? "УСТАНОВЛЕН" : "УСТАНОВИТЬ";
+                _installLabel.text = installed ? _installedText : _installText;
             }
 
             int price = owned ? module.UpgradePrice(level) : -1;
@@ -281,7 +313,7 @@ namespace Game
             {
                 bool canUpgrade = ShopUseCase.CanUpgrade(_progress, module);
                 _upgrade.interactable = canUpgrade;
-                _upgradeLabel.SetText("УЛУЧШИТЬ — {0}", price);
+                _upgradeLabel.SetText(_upgradeFormat, price);
                 _upgradeLabel.color = canUpgrade ? UiStyle.Text : UiStyle.Bad;
             }
         }
@@ -338,8 +370,12 @@ namespace Game
 
         private void HandleUpgrade()
         {
-            if (_selectedModule != null && !ShopUseCase.TryUpgrade(_progress, _selectedModule))
-                AppServices.UiSounds.Play(UiSound.Error);
+            if (_selectedModule == null)
+                return;
+
+            // The button clicks plainly; the result decides the one sound
+            bool upgraded = ShopUseCase.TryUpgrade(_progress, _selectedModule);
+            AppServices.UiSounds.Play(upgraded ? UiSound.Purchase : UiSound.Error);
         }
 
         private void HandleShop() => ShopClicked?.Invoke(_slot);

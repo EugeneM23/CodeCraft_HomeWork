@@ -61,7 +61,7 @@ namespace Game
             if (_action == null || _bindingIndex < 0)
                 return;
 
-            _keyText.text = _action.GetBindingDisplayString(_bindingIndex);
+            _keyText.text = KeyNameUseCase.OfBinding(_action, _bindingIndex); // the physical key, not the layout's letter
         }
 
         /// <summary>Lights the row up for a moment: its key was taken by another row and swapped.</summary>

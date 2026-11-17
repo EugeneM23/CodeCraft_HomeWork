@@ -21,7 +21,9 @@ namespace Game
         [SerializeField] private BattleResultsScreen _results;
         [SerializeField] private ConfirmDialog _confirmDialog;
         [SerializeField] private SettingsScreen _settings;
-        [SerializeField] private LevelCatalogConfig _levelCatalog;
+        [SerializeField] private LevelCatalog _levelCatalog;
+        [Tooltip("Reward of a won level by its id")]
+        [SerializeField] private LevelDesignConfig _levelDesign;
         [Tooltip("Implements IBattleStats and IBattleResultSource (SandboxBattleStats in VoxelSandbox)")]
         [SerializeField] private MonoBehaviour _battleStats;
 
@@ -111,7 +113,7 @@ namespace Game
 
         private void HandlePauseKey(InputAction.CallbackContext _)
         {
-            if (_finished || _flow.Stack.Top != _hud)
+            if (_finished || !ReferenceEquals(_flow.Stack.Top, _hud))
                 return;
 
             _pauseOpenedFrame = Time.frameCount;
@@ -121,7 +123,7 @@ namespace Game
 
         private void HandleCancel(InputAction.CallbackContext _)
         {
-            if (_flow.Stack.Top == _hud || Time.frameCount == _pauseOpenedFrame)
+            if (ReferenceEquals(_flow.Stack.Top, _hud) || Time.frameCount == _pauseOpenedFrame)
                 return;
 
             _flow.Back();
@@ -129,7 +131,7 @@ namespace Game
 
         private void HandleStackChanged()
         {
-            if (!_finished && _flow.Stack.Count == 1 && _flow.Stack.Top == _hud && _gameStopped)
+            if (!_finished && _flow.Stack.Count == 1 && ReferenceEquals(_flow.Stack.Top, _hud) && _gameStopped)
             {
                 _hud.RefreshHints(); // the keys may have been rebound in the settings
                 ResumeGame();
@@ -166,7 +168,8 @@ namespace Game
             if (AppServices.GameFlow.IsBusy)
                 return;
 
-            _flow.Ask("Начать заново?", "Прогресс этого боя будет потерян.", "Заново", "Отмена", yes =>
+            _flow.Ask(UiStrings.Get("pause.restart_title"), UiStrings.Get("pause.progress_lost"),
+                UiStrings.Get("pause.restart_yes"), UiStrings.Get("common.cancel"), yes =>
             {
                 if (yes)
                     AppServices.GameFlow.RestartLevel();
@@ -178,7 +181,8 @@ namespace Game
             if (AppServices.GameFlow.IsBusy)
                 return;
 
-            _flow.Ask("Выйти в меню?", "Прогресс этого боя будет потерян.", "В меню", "Отмена", yes =>
+            _flow.Ask(UiStrings.Get("pause.menu_title"), UiStrings.Get("pause.progress_lost"),
+                UiStrings.Get("pause.menu_yes"), UiStrings.Get("common.cancel"), yes =>
             {
                 if (yes)
                     AppServices.GameFlow.ReturnToMenu(HANGAR_SCREEN);
@@ -190,7 +194,8 @@ namespace Game
             if (AppServices.GameFlow.IsBusy)
                 return;
 
-            _flow.Ask("Выйти из игры?", "Прогресс этого боя будет потерян.", "Выйти", "Отмена", yes =>
+            _flow.Ask(UiStrings.Get("pause.quit_title"), UiStrings.Get("pause.progress_lost"),
+                UiStrings.Get("pause.quit_yes"), UiStrings.Get("common.cancel"), yes =>
             {
                 if (yes)
                     AppServices.GameFlow.Quit();
@@ -210,10 +215,10 @@ namespace Game
             LevelConfig level = _levelCatalog != null && !string.IsNullOrEmpty(levelId) ? _levelCatalog.Find(levelId) : null;
 
             if (result.Victory && level != null)
-                ShopUseCase.CompleteLevel(progress, _levelCatalog, level);
+                ShopUseCase.CompleteLevel(progress, _levelCatalog, level, LevelReward(level));
 
-            _nextLevel = level != null ? _levelCatalog.Next(level) : null;
-            bool hasNext = _nextLevel != null && LevelCatalogConfig.IsUnlocked(_nextLevel, progress);
+            _nextLevel = LevelUnlockUseCase.Next(_levelCatalog, level);
+            bool hasNext = _nextLevel != null && LevelUnlockUseCase.IsUnlocked(_nextLevel, progress);
             int killTarget = _battleStats is IBattleStats stats ? stats.KillTarget : 0;
             _results.Setup(result, level, killTarget, hasNext);
 
@@ -222,6 +227,9 @@ namespace Game
                 _flow.Stack.Pop();
             _flow.Stack.Replace(_results);
         }
+
+        private int LevelReward(LevelConfig level) =>
+            _levelDesign != null ? _levelDesign.Reward(level) : LevelDesignConfig.DEFAULT_REWARD;
 
         private void HandleAgain()
         {
@@ -238,7 +246,7 @@ namespace Game
         private void HandleNext()
         {
             if (_nextLevel != null && !AppServices.GameFlow.IsBusy)
-                AppServices.GameFlow.StartLevel(_nextLevel.id);
+                AppServices.GameFlow.StartLevel(_nextLevel.Id);
         }
     }
 }

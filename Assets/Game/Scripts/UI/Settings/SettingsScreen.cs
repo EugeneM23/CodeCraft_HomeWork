@@ -7,14 +7,14 @@ using UnityEngine.UI;
 namespace Game
 {
     /// <summary>
-    /// «Настройки»: tabs «Графика», «Звук», «Управление» over a copy of the settings in effect. «Применить» saves
-    /// the copy through ISettingsStore; leaving with unapplied changes asks «Применить изменения?». Volumes and
-    /// keys change live while editing (preview), so a revert puts the saved ones back.
+    /// Settings: tabs Graphics, Audio, Controls over a copy of the settings in effect. Apply saves the copy
+    /// through ISettingsStore; leaving with unapplied changes asks whether to apply them. Volumes and keys
+    /// change live while editing (preview), so a revert puts the saved ones back.
     /// </summary>
     public sealed class SettingsScreen : UIScreen, IBackHandler
     {
         [Header("Tabs")]
-        [Tooltip("Графика, Звук, Управление — same order as the panels")]
+        [Tooltip("Graphics, Audio, Controls - same order as the panels")]
         [SerializeField] private Button[] _tabButtons;
         [SerializeField] private TMP_Text[] _tabLabels;
         [SerializeField] private GameObject[] _tabPanels;
@@ -52,8 +52,8 @@ namespace Game
             if (!_dirty)
                 return false;
 
-            _flow.Ask("Применить изменения?", "Изменения настроек ещё не применены.", "Применить", "Отменить",
-                HandleLeaveAnswer);
+            _flow.Ask(UiStrings.Get("settings.leave_title"), UiStrings.Get("settings.leave_text"),
+                UiStrings.Get("settings.leave_yes"), UiStrings.Get("settings.leave_no"), HandleLeaveAnswer);
             return true;
         }
 
@@ -176,8 +176,8 @@ namespace Game
         private void AskDefaults()
         {
             _controls.CancelRebind();
-            _flow.Ask("Сбросить настройки?", "Графика, звук и клавиши вернутся к исходным. Потом нажмите «Применить».",
-                "Сбросить", "Отмена", HandleDefaultsAnswer);
+            _flow.Ask(UiStrings.Get("settings.defaults_title"), UiStrings.Get("settings.defaults_text"),
+                UiStrings.Get("settings.defaults_yes"), UiStrings.Get("common.cancel"), HandleDefaultsAnswer);
         }
 
         private void HandleDefaultsAnswer(bool yes)

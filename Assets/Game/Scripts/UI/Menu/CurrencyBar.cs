@@ -9,21 +9,21 @@ namespace Game
     /// </summary>
     public sealed class CurrencyBar : MonoBehaviour
     {
-        private const string CREDITS_FORMAT = "Кредиты {0}";
-
         [SerializeField] private TMP_Text _title;
         [SerializeField] private TMP_Text _credits;
 
         private IPlayerProgress _progress;
+        private string _creditsFormat;
         private int _shownCredits = int.MinValue;
 
-        public string Title
-        {
-            get => _title.text;
-            set => _title.text = value;
-        }
+        /// <summary>The screen title: a static label (UiLocalizedText), its key set by the prefab builder.</summary>
+        public TMP_Text TitleText => _title;
 
-        private void Awake() => _progress = AppServices.Progress;
+        private void Awake()
+        {
+            _progress = AppServices.Progress;
+            _creditsFormat = UiStrings.Get("common.credits_format");
+        }
 
         private void OnEnable()
         {
@@ -40,7 +40,7 @@ namespace Game
                 return;
 
             _shownCredits = credits;
-            _credits.SetText(CREDITS_FORMAT, credits);
+            _credits.SetText(_creditsFormat, credits);
         }
     }
 }

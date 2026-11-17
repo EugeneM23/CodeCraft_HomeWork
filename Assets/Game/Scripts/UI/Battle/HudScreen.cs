@@ -52,6 +52,17 @@ namespace Game
         private bool _hintsPinned;
         private float _hintsShownAt;
 
+        // Formats from UiStrings, fetched once in Awake (TMP SetText formats: {0:1} = one decimal)
+        private string _hintsFormat;
+        private string _killsTargetFormat;
+        private string _killsFormat;
+        private string _timeFormat;
+        private string _fpsFormat;
+        private string _voxelsFormat;
+        private string _debrisFormat;
+        private string _remeshFormat;
+        private string _smokeFormat;
+
         /// <summary>The battle counters shown top-left; null hides them.</summary>
         public void SetStats(IBattleStats stats)
         {
@@ -63,24 +74,34 @@ namespace Game
 
         /// <summary>
         /// Rebuilds the hint lines from the current bindings (they may have been changed in the settings) and
-        /// shows them for a while. Not in a tick: builds a string.
+        /// shows them for a while. Key names by physical key (KeyNameUseCase). Not in a tick: builds a string.
         /// </summary>
         public void RefreshHints()
         {
             GameControls.TankActions tank = Controls.Tank;
-            _hintsText.text =
-                tank.FireMain.GetBindingDisplayString() + " — Пушка\n" +
-                tank.FireSecondary.GetBindingDisplayString() + " — Пулемёт\n" +
-                tank.Boost.GetBindingDisplayString() + " — Форсаж\n" +
-                tank.Drive.GetBindingDisplayString(0) + " — Езда\n" +
-                tank.Pause.GetBindingDisplayString() + " — Пауза\n" +
-                tank.ToggleHints.GetBindingDisplayString() + " — скрыть";
+            _hintsText.text = string.Format(_hintsFormat,
+                KeyNameUseCase.OfAction(tank.FireMain),
+                KeyNameUseCase.OfAction(tank.FireSecondary),
+                KeyNameUseCase.OfAction(tank.Boost),
+                KeyNameUseCase.OfBinding(tank.Drive, 0),
+                KeyNameUseCase.OfAction(tank.Pause),
+                KeyNameUseCase.OfAction(tank.ToggleHints));
         }
 
         private GameControls Controls => _controls ??= AppServices.Input.Controls;
 
         private void Awake()
         {
+            _hintsFormat = UiStrings.Get("hud.hints_format");
+            _killsTargetFormat = UiStrings.Get("hud.kills_target_format");
+            _killsFormat = UiStrings.Get("hud.kills_format");
+            _timeFormat = UiStrings.Get("hud.time_format");
+            _fpsFormat = UiStrings.Get("hud.debug_fps_format");
+            _voxelsFormat = UiStrings.Get("hud.debug_voxels_format");
+            _debrisFormat = UiStrings.Get("hud.debug_debris_format");
+            _remeshFormat = UiStrings.Get("hud.debug_remesh_format");
+            _smokeFormat = UiStrings.Get("hud.debug_smoke_format");
+
             _onToggleHints = HandleToggleHints;
             _onToggleDebug = HandleToggleDebug;
             _debug.SetActive(false);
@@ -134,9 +155,9 @@ namespace Game
                 _shownKills = kills;
                 _shownTarget = target;
                 if (target > 0)
-                    _killsText.SetText("Regax: {0:0}/{1:0}", kills, target);
+                    _killsText.SetText(_killsTargetFormat, kills, target);
                 else
-                    _killsText.SetText("Regax: {0:0}", kills);
+                    _killsText.SetText(_killsFormat, kills);
             }
 
             int seconds = ClockTextUseCase.ShownSeconds(_stats.ElapsedTime);
@@ -144,7 +165,7 @@ namespace Game
             {
                 _shownSeconds = seconds;
                 ClockTextUseCase.Split(seconds, out int minutes, out int rest);
-                _timeText.SetText("Время {0:00}:{1:00}", minutes, rest);
+                _timeText.SetText(_timeFormat, minutes, rest);
             }
         }
 
@@ -201,13 +222,12 @@ namespace Game
 
         private void RefreshDebug()
         {
-            _fpsText.SetText("FPS {0:0}   кадр {1:1} мс", 1000f / Mathf.Max(0.1f, _frameMs), _frameMs);
+            _fpsText.SetText(_fpsFormat, 1000f / Mathf.Max(0.1f, _frameMs), _frameMs);
             VoxelDebugStatsUseCase.Read(out VoxelDebugStats stats);
-            _voxelsText.SetText("Воксели: {0:0} в {1:0} телах ({2:0} кусков)", stats.Voxels, stats.Bodies, stats.LoosePieces);
-            _debrisText.SetText("Обломки: {0:0}", stats.Debris);
-            _remeshText.SetText("Перестройка: {0:0} чанков за {1:1} мс ({2:0} в работе)",
-                stats.RemeshChunks, stats.RemeshMs, stats.AsyncInFlight);
-            _smokeText.SetText("Дым: {0:0} облаков, {1:0} кубов", stats.SmokeClouds, stats.SmokeCubes);
+            _voxelsText.SetText(_voxelsFormat, stats.Voxels, stats.Bodies, stats.LoosePieces);
+            _debrisText.SetText(_debrisFormat, stats.Debris);
+            _remeshText.SetText(_remeshFormat, stats.RemeshChunks, stats.RemeshMs, stats.AsyncInFlight);
+            _smokeText.SetText(_smokeFormat, stats.SmokeClouds, stats.SmokeCubes);
         }
     }
 }

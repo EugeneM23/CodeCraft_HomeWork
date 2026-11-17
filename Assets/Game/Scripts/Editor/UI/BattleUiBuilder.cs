@@ -35,13 +35,16 @@ namespace Game.EditorTools
             SettingsScreen settings = SettingsScreenBuilder.Create(root);
             ConfirmDialog dialog = ConfirmDialogBuilder.Create(root);
 
-            LevelCatalogConfig catalog = UiDataBuilder.LoadLevelCatalog();
-            if (catalog == null)
-                Debug.LogWarning($"{nameof(BattleUiBuilder)}: no {UiDataBuilder.LEVEL_CATALOG_PATH} yet (Build UI data first); " +
-                                 "BattleUi is saved without it and plays the scene as a level-less sandbox.");
+            LevelCatalog catalog = UiDataBuilder.LoadLevelCatalog();
+            LevelDesignConfig design = UiDataBuilder.LoadLevelDesign();
+            if (catalog == null || design == null)
+                Debug.LogWarning($"{nameof(BattleUiBuilder)}: no {UiDataBuilder.LEVEL_CATALOG_PATH} or " +
+                                 $"{UiDataBuilder.LEVEL_DESIGN_PATH} yet (Build UI data first); " +
+                                 "BattleUi is saved without them and plays the scene as a level-less sandbox.");
 
             SandboxBattleStats stats = canvas.gameObject.AddComponent<SandboxBattleStats>();
             UiFactory.SetField(stats, "_levelCatalog", catalog);
+            UiFactory.SetField(stats, "_levelDesign", design);
 
             CreateEventSystem(root);
 
@@ -52,6 +55,7 @@ namespace Game.EditorTools
             UiFactory.SetField(flow, "_confirmDialog", dialog);
             UiFactory.SetField(flow, "_settings", settings);
             UiFactory.SetField(flow, "_levelCatalog", catalog);
+            UiFactory.SetField(flow, "_levelDesign", design);
             UiFactory.SetField(flow, "_battleStats", stats);
 
             GameObject prefab = UiFactory.SavePrefab(canvas.gameObject, PREFAB_NAME);
@@ -113,7 +117,7 @@ namespace Game.EditorTools
             group.blocksRaycasts = false;
             group.interactable = false;
 
-            text = UiFactory.Text("Text", panel.transform, "ЛКМ — Пушка", UiStyle.FONT_SMALL, color: UiStyle.TextMuted);
+            text = UiFactory.Text("Text", panel.transform, "-", UiStyle.FONT_SMALL, color: UiStyle.TextMuted); // HudScreen writes it
             text.textWrappingMode = TextWrappingModes.NoWrap;
             UiFactory.Stretch(text.rectTransform, 14, 14, 10, 10);
             return group;
@@ -126,8 +130,8 @@ namespace Game.EditorTools
                 new Vector2(LABEL_WIDTH + BAR_WIDTH + VALUE_WIDTH + 2 * UiStyle.SPACING, 2 * ROW_HEIGHT + 6));
             UiFactory.Vertical(group, 6);
 
-            Row(group, "Health", "ПРОЧНОСТЬ", UiStyle.Health, out Image healthFill, out TMP_Text healthText);
-            Row(group, "Armor", "БРОНЯ", UiStyle.Armor, out Image armorFill, out TMP_Text armorText);
+            Row(group, "Health", "hud.health", UiStyle.Health, out Image healthFill, out TMP_Text healthText);
+            Row(group, "Armor", "hud.armor", UiStyle.Armor, out Image armorFill, out TMP_Text armorText);
 
             UiFactory.SetField(tank, "_healthFill", healthFill);
             UiFactory.SetField(tank, "_healthText", healthText);
@@ -142,13 +146,13 @@ namespace Game.EditorTools
                 new Vector2(LABEL_WIDTH + BAR_WIDTH + VALUE_WIDTH + 2 * UiStyle.SPACING, 3 * ROW_HEIGHT + 12));
             UiFactory.Vertical(group, 6, 0, TextAnchor.LowerRight);
 
-            RectTransform gun = Row(group, "Gun", "ПУШКА", UiStyle.Accent, out Image gunFill, out TMP_Text gunText);
-            RectTransform mg = Row(group, "MachineGun", "МГ", UiStyle.Text, out Image mgFill, out TMP_Text mgText);
+            RectTransform gun = Row(group, "Gun", "hud.gun", UiStyle.Accent, out Image gunFill, out TMP_Text gunText);
+            RectTransform mg = Row(group, "MachineGun", "hud.machine_gun", UiStyle.Text, out Image mgFill, out TMP_Text mgText);
 
             RectTransform boost = UiFactory.Rect("Boost", group);
             UiFactory.Horizontal(boost, UiStyle.SPACING, 0, TextAnchor.MiddleLeft, expandHeight: false);
             UiFactory.Size(boost, ROW_HEIGHT);
-            TextMeshProUGUI boostLabel = UiFactory.Text("Label", boost, "ФОРСАЖ", UiStyle.FONT_SMALL, bold: true,
+            TextMeshProUGUI boostLabel = UiFactory.LocalizedText("Label", boost, "hud.boost", UiStyle.FONT_SMALL, bold: true,
                 color: UiStyle.TextMuted);
             UiFactory.Size(boostLabel, ROW_HEIGHT, LABEL_WIDTH);
             Image lamp = UiFactory.Panel("Lamp", boost, UiStyle.Disabled);
@@ -165,15 +169,16 @@ namespace Game.EditorTools
             UiFactory.SetField(tank, "_boostLamp", lamp);
         }
 
-        /// <summary>A HUD row: label, bar, value. Returns the row.</summary>
-        private static RectTransform Row(Transform parent, string name, string label, Color color, out Image fill,
+        /// <summary>A HUD row: label (by key), bar, value. Returns the row.</summary>
+        private static RectTransform Row(Transform parent, string name, string labelKey, Color color, out Image fill,
             out TMP_Text value)
         {
             RectTransform row = UiFactory.Rect(name, parent);
             UiFactory.Horizontal(row, UiStyle.SPACING, 0, TextAnchor.MiddleLeft, expandHeight: false);
             UiFactory.Size(row, ROW_HEIGHT);
 
-            TextMeshProUGUI title = UiFactory.Text("Label", row, label, UiStyle.FONT_SMALL, bold: true, color: UiStyle.TextMuted);
+            TextMeshProUGUI title = UiFactory.LocalizedText("Label", row, labelKey, UiStyle.FONT_SMALL, bold: true,
+                color: UiStyle.TextMuted);
             UiFactory.Size(title, ROW_HEIGHT, LABEL_WIDTH);
 
             fill = UiFactory.Bar("Bar", row, color, new Vector2(BAR_WIDTH, BAR_HEIGHT));
@@ -232,10 +237,11 @@ namespace Game.EditorTools
             UiFactory.Place(row, new Vector2(0, 1), new Vector2(UiStyle.PADDING, -UiStyle.PADDING), new Vector2(560, 40));
             UiFactory.Horizontal(row, UiStyle.PADDING, 0, TextAnchor.MiddleLeft);
 
-            TextMeshProUGUI killsText = UiFactory.Text("Kills", row, "Regax: 0/10", UiStyle.FONT_HEADER, bold: true);
+            // HudScreen writes both
+            TextMeshProUGUI killsText = UiFactory.Text("Kills", row, "-", UiStyle.FONT_HEADER, bold: true);
             killsText.textWrappingMode = TextWrappingModes.NoWrap;
             UiFactory.Size(killsText, 40, 220);
-            TextMeshProUGUI timeText = UiFactory.Text("Time", row, "Время 00:00", UiStyle.FONT_HEADER);
+            TextMeshProUGUI timeText = UiFactory.Text("Time", row, "-", UiStyle.FONT_HEADER);
             timeText.textWrappingMode = TextWrappingModes.NoWrap;
             UiFactory.Size(timeText, 40, 240);
             kills = killsText;
@@ -272,15 +278,15 @@ namespace Game.EditorTools
             UiFactory.Place(box.rectTransform, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(440, 460));
             UiFactory.Vertical(box.rectTransform, UiStyle.SPACING, (int)UiStyle.PADDING);
 
-            TextMeshProUGUI title = UiFactory.Text("Title", box.transform, "ПАУЗА", UiStyle.FONT_TITLE,
+            TextMeshProUGUI title = UiFactory.LocalizedText("Title", box.transform, "pause.title", UiStyle.FONT_TITLE,
                 TextAlignmentOptions.Center, bold: true);
             UiFactory.Size(title, 64);
 
-            Button resume = UiFactory.Button("Resume", box.transform, "Продолжить", accent: true);
-            Button settings = UiFactory.Button("Settings", box.transform, "Настройки");
-            Button restart = UiFactory.Button("Restart", box.transform, "Заново");
-            Button menu = UiFactory.Button("Menu", box.transform, "В меню");
-            Button quit = UiFactory.Button("Quit", box.transform, "Выйти из игры");
+            Button resume = UiFactory.LocalizedButton("Resume", box.transform, "pause.resume", accent: true);
+            Button settings = UiFactory.LocalizedButton("Settings", box.transform, "pause.settings");
+            Button restart = UiFactory.LocalizedButton("Restart", box.transform, "pause.restart");
+            Button menu = UiFactory.LocalizedButton("Menu", box.transform, "pause.menu");
+            Button quit = UiFactory.LocalizedButton("Quit", box.transform, "pause.quit");
             resume.GetComponent<UiButtonSounds>().Click = UiSound.Back;
 
             UiFactory.SetField(pause, "_resume", resume);
@@ -303,30 +309,31 @@ namespace Game.EditorTools
             UiFactory.Place(box.rectTransform, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(760, 520));
             UiFactory.Vertical(box.rectTransform, UiStyle.SPACING, (int)UiStyle.PADDING);
 
-            TextMeshProUGUI title = UiFactory.Text("Title", box.transform, "ПОБЕДА", UiStyle.FONT_TITLE + 12,
+            // BattleResultsScreen.Setup writes the texts; the buttons are static.
+            TextMeshProUGUI title = UiFactory.Text("Title", box.transform, "-", UiStyle.FONT_TITLE + 12,
                 TextAlignmentOptions.Center, bold: true);
             UiFactory.Size(title, 80);
-            TextMeshProUGUI goal = UiFactory.Text("Goal", box.transform, "Цель", UiStyle.FONT_BODY,
+            TextMeshProUGUI goal = UiFactory.Text("Goal", box.transform, "-", UiStyle.FONT_BODY,
                 TextAlignmentOptions.Center, color: UiStyle.TextMuted);
             UiFactory.Size(goal, 60);
-            TextMeshProUGUI time = UiFactory.Text("Time", box.transform, "Время: 00:00", UiStyle.FONT_BODY,
+            TextMeshProUGUI time = UiFactory.Text("Time", box.transform, "-", UiStyle.FONT_BODY,
                 TextAlignmentOptions.Center);
             UiFactory.Size(time, 32);
-            TextMeshProUGUI kills = UiFactory.Text("Kills", box.transform, "Уничтожено Regax: 0", UiStyle.FONT_BODY,
+            TextMeshProUGUI kills = UiFactory.Text("Kills", box.transform, "-", UiStyle.FONT_BODY,
                 TextAlignmentOptions.Center);
             UiFactory.Size(kills, 32);
-            TextMeshProUGUI reward = UiFactory.Text("Reward", box.transform, "+0 кредитов", UiStyle.FONT_HEADER,
+            TextMeshProUGUI reward = UiFactory.Text("Reward", box.transform, "-", UiStyle.FONT_HEADER,
                 TextAlignmentOptions.Center, bold: true, color: UiStyle.Accent);
             UiFactory.Size(reward, 48, -1, -1, 1);
 
             RectTransform row = UiFactory.Rect("Buttons", box.transform);
             UiFactory.Horizontal(row, UiStyle.SPACING, 0, TextAnchor.MiddleCenter);
             UiFactory.Size(row, UiStyle.BUTTON_HEIGHT);
-            Button again = UiFactory.Button("Again", row, "Ещё раз");
+            Button again = UiFactory.LocalizedButton("Again", row, "results.again");
             UiFactory.Size(again, UiStyle.BUTTON_HEIGHT, 210);
-            Button hangar = UiFactory.Button("Hangar", row, "В ангар");
+            Button hangar = UiFactory.LocalizedButton("Hangar", row, "results.to_hangar");
             UiFactory.Size(hangar, UiStyle.BUTTON_HEIGHT, 210);
-            Button next = UiFactory.Button("Next", row, "Следующий уровень", accent: true);
+            Button next = UiFactory.LocalizedButton("Next", row, "results.next", accent: true);
             UiFactory.Size(next, UiStyle.BUTTON_HEIGHT, 260);
 
             UiFactory.SetField(results, "_title", title);

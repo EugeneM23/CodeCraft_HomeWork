@@ -50,8 +50,8 @@ namespace Game
             ApplyAudioAndControls(SettingsStore.Current);
         }
 
-        /// <summary>The stub flow maps level ids to scenes with the catalog of the menu or the battle UI.</summary>
-        public static void RegisterLevels(LevelCatalogConfig levels)
+        /// <summary>The stub flow maps level ids to scenes with the core catalog of the menu or the battle UI.</summary>
+        public static void RegisterLevels(LevelCatalog levels)
         {
             if (GameFlow is SceneGameFlow flow && levels != null)
                 flow.Levels = levels;

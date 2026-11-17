@@ -43,7 +43,7 @@ namespace Game
             if (Stack.IsEmpty)
                 return false;
 
-            if (Stack.Top == _dialog)
+            if (ReferenceEquals(Stack.Top, _dialog))
             {
                 Answer(false);
                 return true;
@@ -60,7 +60,7 @@ namespace Game
 
         private void Answer(bool yes)
         {
-            if (Stack.Top != _dialog)
+            if (!ReferenceEquals(Stack.Top, _dialog))
                 return;
 
             Stack.Pop();
