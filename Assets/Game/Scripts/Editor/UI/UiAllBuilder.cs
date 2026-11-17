@@ -16,6 +16,7 @@ namespace Game.EditorTools
             MenuUiBuilder.BuildScene();
             BattleUiBuilder.Build();
             UiDataBuilder.AddBattleUiToLevelLayer();
+            AppPrefabUiBuilder.Build();
 
             // The fonts are dynamic: glyphs are added when text is drawn. Saved empty, they don't put
             // megabytes of atlas into every commit.

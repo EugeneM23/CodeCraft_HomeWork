@@ -224,6 +224,7 @@ GameObject:
   - component: {fileID: 6591172579230066781}
   - component: {fileID: 4541725104221138598}
   - component: {fileID: 5697305190831272477}
+  - component: {fileID: 7535636842190319915}
   m_Layer: 0
   m_Name: App
   m_TagString: Untagged
@@ -352,6 +353,7 @@ MonoBehaviour:
   - {fileID: 6610537545832581133}
   - {fileID: 6591172579230066781}
   - {fileID: 4541725104221138598}
+  - {fileID: 7535636842190319915}
   onlySelectedGizmos: 0
   onlyEditModeGizmos: 0
   autoCompile: 0
@@ -359,6 +361,18 @@ MonoBehaviour:
   initialValueCapacity: 1
   initialBehaviourCapacity: 0
   dontDestroyOnLoad: 1
+--- !u!114 &7535636842190319915
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6583453422252469877}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64f79312062576e4b8435333df0db8d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game::Game.GameInputInstaller
 --- !u!1 &8705544613752321856
 GameObject:
   m_ObjectHideFlags: 0

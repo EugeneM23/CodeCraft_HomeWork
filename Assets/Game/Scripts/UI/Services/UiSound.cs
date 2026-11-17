@@ -8,6 +8,8 @@ namespace Game
         Back,
         Open,
         Purchase,
-        Error
+        Error,
+        Victory,
+        Defeat
     }
 }

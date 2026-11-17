@@ -43,6 +43,8 @@ namespace Game
         private void Awake()
         {
             AppServices.RegisterLevels(_levelCatalog);
+            // The core's stand-in Esc pause gives Esc over to this pause screen while the battle UI lives.
+            PauseHotkey.Enabled = false;
             _input = AppServices.Input;
             _flow = new ScreenFlow(_confirmDialog);
             _settings.Bind(_flow);
@@ -112,6 +114,7 @@ namespace Game
         // Leaving the level: the game-wide input and the player's pause must not stay switched off.
         private void OnDestroy()
         {
+            PauseHotkey.Enabled = true;
             if (_gameStopped)
                 AppServices.Pause.Resume();
             _input.SetGameplayEnabled(true);
@@ -256,6 +259,7 @@ namespace Game
             while (_flow.Stack.Count > 1)
                 _flow.Stack.Pop();
             _flow.Stack.Replace(_results);
+            AppServices.UiSounds.Play(result.Victory ? UiSound.Victory : UiSound.Defeat);
         }
 
         private void HandleAgain()
