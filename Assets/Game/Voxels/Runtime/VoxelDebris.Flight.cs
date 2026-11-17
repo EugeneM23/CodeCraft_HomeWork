@@ -24,6 +24,11 @@ namespace Game.Voxels
             public float Still;
             /// <summary>How long a kept clump has been simulated, s: past MAX_KEPT_FLIGHT it lies where it is.</summary>
             public float Flight;
+            /// <summary>Speed (m/s) along the normal of the landing that marked it to break.</summary>
+            public float Impact;
+            /// <summary>Where that landing touched, and the surface normal there.</summary>
+            public float3 HitPoint;
+            public float3 HitNormal;
         }
 
         private struct Cube
@@ -83,6 +88,8 @@ namespace Game.Voxels
             {
                 Cluster cluster = Clusters[i];
                 cluster.Life -= DeltaTime;
+                bool dust = (cluster.Flags & DUST) != 0;
+                float3 gravity = dust ? Gravity * DUST_GRAVITY : Gravity;
 
                 if (cluster.Position.y < FELL_OUT_Y)
                 {
@@ -132,6 +139,17 @@ namespace Game.Voxels
                     return;
                 }
 
+                if (touched && dust)
+                {
+                    // Dust settles where it touches: no bounce, no break, it just shrinks away.
+                    cluster.Position = (float3)hit.point + normal * math.max(0.03f, cluster.Radius * 0.6f);
+                    cluster.Velocity = float3.zero;
+                    cluster.Spin = float3.zero;
+                    cluster.Resting = 1;
+                    Clusters[i] = cluster;
+                    return;
+                }
+
                 if (touched)
                 {
                     float vn = math.dot(cluster.Velocity, normal);
@@ -141,7 +159,12 @@ namespace Game.Voxels
 
                     // Small clumps hold together better: three cubes or fewer need a much harder hit.
                     if (cluster.Count > 1 && -vn > SHATTER_SPEED * (cluster.Count <= 3 ? 1.8f : 1f))
+                    {
                         cluster.Shatter = 1;
+                        cluster.Impact = -vn;
+                        cluster.HitPoint = hit.point;
+                        cluster.HitNormal = normal;
+                    }
 
                     cluster.Velocity = tangent * 0.25f - normal * (vn * 0.08f);
                     cluster.Spin *= 0.2f;
@@ -160,7 +183,7 @@ namespace Game.Voxels
 
                 if (cluster.Resting == 0)
                 {
-                    cluster.Velocity += Gravity * DeltaTime;
+                    cluster.Velocity += gravity * DeltaTime;
                     cluster.Rotation = math.normalize(math.mul(cluster.Rotation, quaternion.Euler(cluster.Spin * DeltaTime)));
                 }
 
@@ -222,7 +245,9 @@ namespace Game.Voxels
                 for (int i = 0; i < count; i++)
                 {
                     Cluster cluster = Clusters[i];
-                    if ((cluster.Flags & KEEP) != 0 && cluster.Resting != 0 && cluster.Still >= SETTLE_TIME && cluster.Count > 0)
+                    // Dust never lies: it shrinks away in flight (task 3 widens who lies; dust stays out).
+                    if ((cluster.Flags & KEEP) != 0 && (cluster.Flags & DUST) == 0 &&
+                        cluster.Resting != 0 && cluster.Still >= SETTLE_TIME && cluster.Count > 0)
                     {
                         settled[i] = cluster;
                         remap[i] = SETTLED;

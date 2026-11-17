@@ -58,6 +58,8 @@ namespace Game.Voxels
         private const int SPLAT = 2;
         /// <summary>A drop that has landed: drawn as a tile.</summary>
         private const int LAID = 4;
+        /// <summary>A puff of dust: drifts down slowly, stops where it touches, never lies; shrinks and goes.</summary>
+        private const int DUST = 8;
 
         /// <summary>Marks a clump in the compact pass whose cubes move to the lying store.</summary>
         private const int SETTLED = -2;
@@ -117,6 +119,22 @@ namespace Game.Voxels
                 return;
             for (int i = 0; i < _clusters.Length; i++)
                 sizes.Add(_clusters[i].Count);
+        }
+
+        /// <summary>Single flying cubes of about this colour (±0.02 per channel): for tests.</summary>
+        public int CountCrumbsOfColour(Color color)
+        {
+            Complete();
+            int n = 0;
+            var c = new float4(color.r, color.g, color.b, color.a);
+            for (int i = 0; i < _cubes.Length; i++)
+            {
+                Cube cube = _cubes[i];
+                if (_clusters[cube.Cluster].Count == 1 && (_clusters[cube.Cluster].Flags & DUST) == 0 &&
+                    math.all(math.abs(cube.Color - c) < 0.02f))
+                    n++;
+            }
+            return n;
         }
 
         /// <summary>Cubes lying for good (kept clumps that came to rest, landed drops).</summary>
