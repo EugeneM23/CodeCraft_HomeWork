@@ -60,5 +60,22 @@ namespace Game.Tests
         {
             Assert.DoesNotThrow(() => CameraShakeUseCase.ShakePlayerCamera(null, new CameraShakeArgs()));
         }
+
+        // An air bomb, a shell or a wreck shakes "the player's camera": a game context without a
+        // PlayerContext (its script missing, say) used to throw and cut the blast short.
+        [Test]
+        public void GameContextWithoutPlayer_IsLeftAlone()
+        {
+            var game = new UnityEngine.GameObject("GameContextWithoutPlayer").AddComponent<GameContext>();
+            try
+            {
+                Assert.IsTrue(GameContext.TryGetInstance(out GameContext _));
+                Assert.DoesNotThrow(() => CameraShakeUseCase.ShakePlayerCamera(new CameraShakeArgs()));
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(game.gameObject);
+            }
+        }
     }
 }

@@ -53,7 +53,7 @@ namespace Game
 
         private void OnDestroyed()
         {
-            IPlayerContext player = _gameContext.GetPlayerContext();
+            IPlayerContext player = _gameContext.TryGetPlayerContext(out PlayerContext found) ? found : null;
 
             _entity.DelDamageableTag();
 

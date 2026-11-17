@@ -21,7 +21,15 @@ namespace Game
         public override void Install(GameContext context)
         {
             context.AddEntityWorld(_entityWorld);
-            context.AddPlayerContext(_playerContext);
+
+            // A null here used to throw and leave out the factory, the prewarm and the enemy filter
+            // too, so every blast broke halfway. It is usually the PlayerContext's script showing as
+            // "missing" in an editor whose Library was copied from another branch.
+            if (_playerContext != null)
+                context.AddPlayerContext(_playerContext);
+            else
+                Debug.LogError("[GameContextInstaller] No PlayerContext: the camera, the HUD and the controls get no player. " +
+                               "If the scene has one, its script is missing: reimport the scripts.", this);
             context.AddGameFactory(new GameFactory(_poolsParent));
 
             // Without it the first shot, hit and blast of each kind instantiates its object mid-fight.
