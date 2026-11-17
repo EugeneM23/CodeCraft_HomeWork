@@ -28,6 +28,9 @@ namespace Game.Voxels.EditorTools
                     continue;
 
                 Matrix4x4 m = toPart * meshToWorld;
+                // A mirroring transform flips the winding: swap two corners so cross(b − a, c − a) still
+                // points out of the body (the voxelizer reads the inside of boundary faces from it).
+                int second = m.determinant < 0f ? 2 : 1, third = 3 - second;
                 Vector3[] vertices = mesh.vertices;
                 Vector2[] meshUvs = mesh.uv;
                 bool hasUv = meshUvs.Length == vertices.Length;
@@ -50,9 +53,10 @@ namespace Game.Voxels.EditorTools
                     {
                         for (int k = 0; k < 3; k++)
                         {
-                            float3 p = m.MultiplyPoint3x4(vertices[indices[i + k]]);
+                            int vertex = indices[i + (k == 0 ? 0 : k == 1 ? second : third)];
+                            float3 p = m.MultiplyPoint3x4(vertices[vertex]);
                             corners.Add(p);
-                            uvs.Add(hasUv ? (float2)meshUvs[indices[i + k]] : float2.zero);
+                            uvs.Add(hasUv ? (float2)meshUvs[vertex] : float2.zero);
                             min = math.min(min, p);
                             max = math.max(max, p);
                         }

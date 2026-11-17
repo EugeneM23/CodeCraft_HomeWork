@@ -14,6 +14,9 @@ namespace Game.Voxels.EditorTools
         /// <summary>
         /// In voxels: how far a point on a cell boundary is nudged into the body before it is floored, so a face
         /// lying on a boundary (float noise either side of it) always lands in the cell inside, never outside.
+        /// "Inside" is read from the triangle's winding, so Collect keeps it outward under mirroring transforms.
+        /// Known limitation: double-sided geometry (a sheet with faces both ways) lying exactly on a boundary
+        /// comes out two layers thick, each side nudged into the cell behind it.
         /// </summary>
         public const float BOUNDARY_NUDGE = 1e-3f;
 

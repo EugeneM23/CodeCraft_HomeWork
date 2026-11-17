@@ -45,6 +45,33 @@ namespace Game.Voxels.Tests
             AssertBlock(grid, new int3(20, 10, 10), checkShell: false);
         }
 
+        [TestCase(false)]
+        [TestCase(true)]
+        public void ABoxUnderAMirroringParent_IsStillATenCube(bool snap)
+        {
+            // Scale −1 flips the winding in part space: the faces still face out of the body.
+            var mirror = new GameObject("Mirror");
+            mirror.transform.SetParent(_root.transform, false);
+            mirror.transform.localScale = new Vector3(-1f, 1f, 1f);
+            MeshRenderer r = TestMeshes.Add(mirror.transform, "Box", TestMeshes.Box(Vector3.zero, Vector3.one), Color.gray);
+            using VoxelizerTriangles triangles = VoxelizerSource.Collect(_root.transform, new List<Renderer> { r });
+            if (snap)
+                VoxelizerStraighten.SnapPlanes(triangles, 0.1f);
+            using VoxelizerPartGrid grid = VoxelizerSurface.Sample(triangles, 0.1f);
+            VoxelizerSurface.Fill(grid);
+
+            AssertBlock(grid, new int3(10, 10, 10));
+        }
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public void APlateOneVoxelThick_OnTheBoundaries_IsExactlyOneLayer(bool snap)
+        {
+            using VoxelizerPartGrid grid = Voxelize(snap, TestMeshes.Box(new Vector3(0f, 0.5f, 0f), new Vector3(1f, 0.6f, 1f)));
+
+            AssertBlock(grid, new int3(10, 1, 10));
+        }
+
         [Test]
         public void AModelOfBoxesOnAThreeCentimetreGrid_ThroughTheUseCase_HasNoBumps()
         {
@@ -115,7 +142,7 @@ namespace Game.Voxels.Tests
 
             Assert.AreEqual(size, hi - lo + 1, "bounds");
             Assert.AreEqual(size.x * size.y * size.z, solid, "solid");
-            if (!checkShell) return;
+            if (!checkShell || math.cmin(size) < 3) return;
             int3 inner = size - 2;
             Assert.AreEqual(size.x * size.y * size.z - inner.x * inner.y * inner.z, surface, "surface shell");
         }
