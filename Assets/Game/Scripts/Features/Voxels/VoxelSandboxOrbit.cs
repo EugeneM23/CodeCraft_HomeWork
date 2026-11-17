@@ -18,7 +18,7 @@ namespace Game
     ///
     /// For now the view does not turn up and down at all (<see cref="_turnView"/> off): mouse down
     /// only moves the camera back and up, mouse up only brings it back, and the view keeps the
-    /// scene's angle. Left and right still swing it round the tank. A crosshair in the middle of the
+    /// scene's angle. Left and right still swing it round the tank. The battle HUD's crosshair in the middle of the
     /// screen aims: while the cursor is locked, the
     /// turret turns to the screen centre (<see cref="CursorUseCase.ScreenPoint"/>); the shells fly
     /// straight out of the barrel.
@@ -44,9 +44,6 @@ namespace Game
     {
         // The old Input Manager's "Mouse X/Y" sensitivity: keeps _turnSpeed meaning what it meant.
         private const float LEGACY_AXIS_SCALE = 0.1f;
-
-        /// <summary>The battle HUD draws its own crosshair while it is on; this one then stays off.</summary>
-        public static bool CrosshairByHud { get; set; }
 
         [Tooltip("Degrees the camera turns per pixel of mouse movement.")]
         [SerializeField] private float _turnSpeed = 0.45f;
@@ -245,31 +242,6 @@ namespace Game
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
             _holding = false;
-        }
-
-        private void OnGUI()
-        {
-            if (_offset == null || CrosshairByHud || Cursor.lockState != CursorLockMode.Locked
-                || UnityEngine.Event.current.type != EventType.Repaint)
-                return;
-
-            // A cross with a gap in the middle, white on a dark outline: it shows on sky and on snow.
-            Vector2 centre = new(Screen.width * 0.5f, Screen.height * 0.5f);
-            Cross(centre, 6f, 9f, 4f, new Color(0f, 0f, 0f, 0.55f));
-            Cross(centre, 7f, 7f, 2f, new Color(1f, 1f, 1f, 0.9f));
-        }
-
-        private static void Cross(Vector2 centre, float gap, float length, float thickness, Color color)
-        {
-            Color was = GUI.color;
-            GUI.color = color;
-            float half = thickness * 0.5f;
-            Texture texture = Texture2D.whiteTexture;
-            GUI.DrawTexture(new Rect(centre.x - gap - length, centre.y - half, length, thickness), texture);
-            GUI.DrawTexture(new Rect(centre.x + gap, centre.y - half, length, thickness), texture);
-            GUI.DrawTexture(new Rect(centre.x - half, centre.y - gap - length, thickness, length), texture);
-            GUI.DrawTexture(new Rect(centre.x - half, centre.y + gap, thickness, length), texture);
-            GUI.color = was;
         }
     }
 }
