@@ -14,5 +14,9 @@ namespace Game
         public static event Action<Vector3, float> Exploded;
 
         public static void Raise(Vector3 point, float radius) => Exploded?.Invoke(point, radius);
+
+        /// <summary>Listeners of the last Play session are dropped (with domain reload off they would survive).</summary>
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetStatics() => Exploded = null;
     }
 }
