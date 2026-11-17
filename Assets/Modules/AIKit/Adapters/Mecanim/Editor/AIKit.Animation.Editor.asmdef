@@ -1,0 +1,20 @@
+{
+    "name": "AIKit.Animation.Editor",
+    "rootNamespace": "AIKit.Mecanim.Editor",
+    "references": [
+        "AIKit",
+        "AIKit.Animation",
+        "AIKit.Editor"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

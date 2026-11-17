@@ -6,7 +6,10 @@
         "Atomic.Elements",
         "Atomic.Entities",
         "UnityEngine.UI",
-        "Game.Voxels"
+        "Game.Voxels",
+        "Unity.TextMeshPro",
+        "Unity.InputSystem",
+        "ScreenStack"
     ],
     "includePlatforms": [
         "Editor"

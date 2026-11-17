@@ -22,7 +22,7 @@ namespace Game.AudioEngine.Adapters.EditorTools
         public const string FALLBACK_MUSIC = MUSIC + "/Music.wav";
         public const string RESOURCES = ROOT + "/Resources";
         public const string GAME_AUDIO_PREFAB = RESOURCES + "/GameAudio.prefab";
-        public const string APP_AUDIO_PREFAB = RESOURCES + "/AppAudio.prefab";
+        public const string APP_AUDIO_PREFAB = ROOT + "/Prefabs/AppAudio.prefab";
 
         public const string UI_CLIPS = CLIPS + "/ui";
         public const string MENU_MUSIC_CLIPS = CLIPS + "/music/menu";

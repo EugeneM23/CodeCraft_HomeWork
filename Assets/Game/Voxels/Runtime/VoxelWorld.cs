@@ -47,17 +47,24 @@ namespace Game.Voxels
         private const string DEBRIS_MATERIAL = "Voxels/VoxelDebris";
 
         private static VoxelWorld s_instance;
-        private static readonly List<VoxelBody> s_bodies = new();
+
+        // Capacities up front: a list growing mid-fight (a blast dirties a hundred chunks at once) is a spike of
+        // garbage in that frame — 11.6 KB was measured in idle. A list that outgrows these still grows as before.
+        private const int BODIES_CAPACITY = 1024;
+        private const int JOBS_CAPACITY = 256;
+        private const int BAKES_CAPACITY = 256;
+
+        private static readonly List<VoxelBody> s_bodies = new(BODIES_CAPACITY);
         private static bool s_quitting;
 
-        private readonly List<VoxelBody.ChunkJob> _jobs = new();
-        private readonly List<VoxelBody.ChunkJob> _asyncJobs = new();
-        private readonly List<VoxelBody> _snapshot = new();
+        private readonly List<VoxelBody.ChunkJob> _jobs = new(JOBS_CAPACITY);
+        private readonly List<VoxelBody.ChunkJob> _asyncJobs = new(JOBS_CAPACITY);
+        private readonly List<VoxelBody> _snapshot = new(BODIES_CAPACITY);
         private int _bodyCursor;
 
         /// <summary>Collision meshes written this frame, to be cooked.</summary>
-        private static readonly List<Mesh> s_bakeMeshes = new();
-        private static readonly List<VoxelBody.Chunk> s_bakeChunks = new();
+        private static readonly List<Mesh> s_bakeMeshes = new(BAKES_CAPACITY);
+        private static readonly List<VoxelBody.Chunk> s_bakeChunks = new(BAKES_CAPACITY);
 
         /// <summary>Cooks in flight.</summary>
         private readonly List<BakeBatch> _bakes = new();
@@ -84,6 +91,21 @@ namespace Game.Voxels
         public VoxelDebris Debris { get; private set; }
 
         public static IReadOnlyList<VoxelBody> Bodies => s_bodies;
+
+        /// <summary>
+        /// A chunk got new colliders (a crater, a rut, a wall knocked down), with the chunk's world
+        /// bounds. Navigation listens to re-read the ground there. Raised on the main thread: for a
+        /// standing body's box colliders after they are set and when its chunk is emptied; for mesh
+        /// colliders (smooth and terrain ground) when the cooked mesh lands in <see cref="FinishBakes"/>,
+        /// whichever body it is. Loose pieces with box colliders do not raise it. Cleared when Play starts.
+        /// </summary>
+        public static event System.Action<Bounds> ChunkCollidersChanged;
+
+        internal static void RaiseChunkCollidersChanged(Bounds worldBounds) => ChunkCollidersChanged?.Invoke(worldBounds);
+
+        /// <summary>Listeners of the last Play session are dropped (with domain reload off they would survive).</summary>
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetChunkCollidersChanged() => ChunkCollidersChanged = null;
 
         public static VoxelWorld Instance
         {
@@ -229,6 +251,8 @@ namespace Game.Voxels
                     chunk.Cooking = false;
                     if (chunk.Collider != null && batch.Meshes[i] != null)
                         chunk.Collider.sharedMesh = batch.Meshes[i];
+                    if (chunk.Collider != null && batch.Meshes[i] != null)
+                        RaiseChunkCollidersChanged(chunk.Renderer.bounds);
                 }
 
                 _bakes.RemoveAt(b);

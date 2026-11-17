@@ -1,0 +1,20 @@
+{
+  "name": "com.eugenem23.screen-stack",
+  "version": "1.0.0",
+  "displayName": "Screen Stack",
+  "description": "Menu navigation for Unity UI: a stack of screens where only the top one gets input, overlays keep the screens below visible and Back pops. The stack is plain C# behind the IScreen contract; UIScreen implements it for uGUI with focus for keyboard and gamepad. No third-party dependencies.",
+  "unity": "2021.3",
+  "dependencies": {
+    "com.unity.ugui": "1.0.0"
+  },
+  "keywords": [
+    "ui",
+    "menu",
+    "screen stack",
+    "navigation",
+    "ugui"
+  ],
+  "author": {
+    "name": "EugeneM23"
+  }
+}

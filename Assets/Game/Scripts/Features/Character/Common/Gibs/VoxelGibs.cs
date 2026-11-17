@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Game.Voxels;
+using Unity.Profiling;
 using UnityEngine;
 
 namespace Game
@@ -18,6 +19,12 @@ namespace Game
     {
         public const string NAME = "Flesh";
 
+        // Steps of the kill frame, to find where its ~20 ms go (perf debt, Docs/Reports/2026-11-17-perf-baseline.md).
+        private static readonly ProfilerMarker VoxelizeMarker = new("Death.Voxelize");
+        private static readonly ProfilerMarker CarcassMarker = new("Death.Carcass");
+        private static readonly ProfilerMarker LaunchMarker = new("Death.Launch");
+        private static readonly ProfilerMarker BloodMarker = new("Death.Blood");
+
         public static List<VoxelCarcass.Piece> Burst(VoxelGibsRig rig, VoxelGibsConfig config, in KillingHit hit)
         {
             Bounds body = rig.Skin.bounds; // before the skin is hidden
@@ -32,8 +39,11 @@ namespace Game
                 BloodShare = config.bloodShare
             };
 
-            if (!SkinnedVoxelizer.Voxelize(rig.Skin, rig.Parts, rig.MidPlane(), config.voxelSize, palette,
-                    (uint)Random.Range(1, int.MaxValue), out SkinnedVoxelizer.Result grid))
+            VoxelizeMarker.Begin();
+            bool voxelized = SkinnedVoxelizer.Voxelize(rig.Skin, rig.Parts, rig.MidPlane(), config.voxelSize, palette,
+                (uint)Random.Range(1, int.MaxValue), out SkinnedVoxelizer.Result grid);
+            VoxelizeMarker.End();
+            if (!voxelized)
             {
                 // Nothing would take the body's place: better a corpse that stays than one that vanishes.
                 Debug.LogWarning($"[VOXEL GIBS] {rig.Skin.name}: the pose could not be voxelized; the body stays as it is.");
@@ -65,6 +75,7 @@ namespace Game
             settings.FractureSpeed = config.fractureSpeed;
 
             List<VoxelCarcass.Piece> pieces;
+            CarcassMarker.Begin();
             try
             {
                 pieces = VoxelCarcass.Build(grid, cluster, settings, $"{rig.Skin.name}_{NAME}");
@@ -72,7 +83,10 @@ namespace Game
             finally
             {
                 grid.Dispose();
+                CarcassMarker.End();
             }
+
+            LaunchMarker.Begin();
 
             GibRules.Throw(config.speeds, hit, out float speed, out float lift, out float spin);
             Color32[] blood = config.blood.ToVoxels();
@@ -109,10 +123,14 @@ namespace Game
                 }
             }
 
+            LaunchMarker.End();
+
+            BloodMarker.Begin();
             Vector3 wound = body.ClosestPoint(hit.Origin);
             Vector3 away = wound - hit.Origin;
             away = away.sqrMagnitude > 1e-4f ? away.normalized : Vector3.up;
             VoxelSpray.Burst(wound, away + Vector3.up * 0.5f, config.hitDrops, 2f, 5f, 0.35f, blood, config.blood.dropSize);
+            BloodMarker.End();
 
             return pieces;
         }

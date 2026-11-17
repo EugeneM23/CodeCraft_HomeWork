@@ -221,7 +221,10 @@ namespace Game
 
         private IEnumerator Cleanup()
         {
-            yield return new WaitForSeconds(_lifetime);
+            // Game time: the pieces lie still and do not sink while the game is paused
+            float until = GameTicks.Time + _lifetime;
+            while (GameTicks.Time < until)
+                yield return null;
 
             // Frozen where they lie, with nothing to bump into, and lowered through the floor.
             foreach (Piece piece in _pieces)
@@ -233,7 +236,8 @@ namespace Game
             }
 
             Vector3 start = transform.position;
-            for (float t = 0f; t < _sinkTime; t += Time.deltaTime)
+            float sinkStart = GameTicks.Time;
+            for (float t = 0f; t < _sinkTime; t = GameTicks.Time - sinkStart)
             {
                 transform.position = start + Vector3.down * (_sinkDepth * t / _sinkTime);
                 yield return null;

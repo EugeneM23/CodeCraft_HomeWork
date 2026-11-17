@@ -9,7 +9,7 @@ namespace Game.AudioEngine.Adapters.EditorTools
 {
     /// <summary>
     /// Tools/Audio/Build Prefabs: Resources/GameAudio (AudioSystem with the six banks + GameAudio) and
-    /// Resources/AppAudio (AppAudio with its UI sound player, music player and stinger source). Idempotent: an
+    /// Prefabs/AppAudio (AppAudio with its UI sound player, music player and stinger source). Idempotent: an
     /// existing prefab is opened, completed and rewired, never recreated, so its file ids stay put.
     /// </summary>
     public static class AudioPrefabBuilder

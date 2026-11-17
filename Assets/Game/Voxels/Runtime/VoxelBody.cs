@@ -1568,6 +1568,9 @@ namespace Game.Voxels
 
             if (indexCount == 0)
             {
+                // Emptied (a wall knocked down to the last voxel): its colliders go with it, navigation reads the ground again.
+                if (chunk != null && IsStatic && chunk.GameObject.activeSelf)
+                    VoxelWorld.RaiseChunkCollidersChanged(chunk.Renderer.bounds);
                 if (chunk != null)
                     chunk.GameObject.SetActive(false);
                 return;
@@ -1690,6 +1693,9 @@ namespace Game.Voxels
 
             for (int i = boxes.Length; i < chunk.Boxes.Count; i++)
                 chunk.Boxes[i].enabled = false;
+
+            if (IsStatic)
+                VoxelWorld.RaiseChunkCollidersChanged(chunk.Renderer.bounds);
         }
 
         /// <summary>

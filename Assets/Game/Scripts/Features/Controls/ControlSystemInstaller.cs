@@ -18,8 +18,8 @@ namespace Game
         {
             context.AddCharacter(new ReactiveVariable<IEntity>(_character));
 
-            // The one place the controls are read. The Input System replaces this line.
-            context.AddPlayerInput(new LegacyPlayerInput());
+            // The one place the controls are read: the Input System actions (rebindable in the settings).
+            context.AddPlayerInput(new InputSystemPlayerInput());
 
             // First: the vehicle in the slot gets the player as its driver and the Player tag.
             context.AddBehaviour<PlayerVehicleController>();

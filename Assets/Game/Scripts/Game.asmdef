@@ -15,7 +15,8 @@
         "SaveSystem",
         "GameLoop",
         "Unity.InputSystem",
-        "Game.GameLoop.Adapters"
+        "Game.GameLoop.Adapters",
+        "ScreenStack"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

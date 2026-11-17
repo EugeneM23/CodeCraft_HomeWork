@@ -1,0 +1,10 @@
+{
+  "name": "com.eugenem23.ai-kit",
+  "version": "0.1.0",
+  "displayName": "AI Kit",
+  "description": "Game AI toolkit (prototype): behaviour as a graph of states, tasks and transitions with behaviour-tree composites inside and utility choice of abilities, a blackboard with scopes, a shared AI world with a decision budget per step, and a virtual gamepad for the body (IAgentActuator). The core has no dependencies; the NavMesh adapter uses the built-in AI module.",
+  "unity": "6000.0",
+  "author": {
+    "name": "EugeneM23"
+  }
+}

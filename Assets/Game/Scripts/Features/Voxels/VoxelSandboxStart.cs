@@ -89,9 +89,9 @@ namespace Game
                 return;
 
             // A row is shots no more than the gap apart; once it has shaken the tank clean, the next starts a new one.
-            if (Time.time - _lastShot > _shotSeriesGap || _shotsInRow >= _shotsToClean)
+            if (GameTicks.Time - _lastShot > _shotSeriesGap || _shotsInRow >= _shotsToClean)
                 _shotsInRow = 0;
-            _lastShot = Time.time;
+            _lastShot = GameTicks.Time;
             _shotsInRow++;
 
             float share = ShotShare(_shotsInRow, _shotsToClean);

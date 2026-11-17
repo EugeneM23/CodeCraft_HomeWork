@@ -30,9 +30,9 @@ namespace Game
         public static void Explode(IEntity projectile, Vector3 point, Collider hit, GameFactory factory)
         {
             float radius = projectile.GetExplosionRadius();
-            GameSignals.RaiseExploded(point, radius);
 
             DamageInRadius(projectile, point, radius);
+            ExplosionEvents.Raise(point, radius);
 
             // A crater in anything made of voxels: walls, buildings, the tank's skin.
             VoxelDamage.Blast(point, radius * VOXEL_CRATER_SHARE, VOXEL_BLAST_SPEED);
