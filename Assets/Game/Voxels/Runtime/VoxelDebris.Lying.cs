@@ -11,11 +11,11 @@ namespace Game.Voxels
     {
         /// <summary>
         /// Lying cubes kept by default: past this, new ones overwrite the slots in turn. Measured
-        /// 2026-11-17 in the editor: ~0.045 ms of PlayerLoop per thousand lying cubes (the instanced
-        /// draw), so 30 000 keeps a driving tank within the 5 ms budget. Raise it once lying cubes are
-        /// drawn from a GPU buffer.
+        /// 2026-11-17 (/perf-check A/B): a full store of 30 000 instanced cubes cost the air strike
+        /// +0.8...1.5 ms of PlayerLoop and +2 ms of GPU, past the 5 ms budget; frustum culling barely
+        /// helps, as bombs fall in view. 12 000 until lying cubes are baked into per-cell meshes.
         /// </summary>
-        public const int LYING_DEFAULT = 30000;
+        public const int LYING_DEFAULT = 12000;
 
         /// <summary>How long (s) a lying cube takes to sink into the ground and go.</summary>
         private const float SINK_TIME = 1.5f;
