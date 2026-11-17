@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 71c59311ed514f81aa536eb0ff91b011, type: 3}
+  m_Name: Weapons
+  m_EditorClassIdentifier: AudioEngine::AudioEngine.AudioBank
+  identifier: weapons
+  codeGenPath: Assets/Game/Audio/Banks
+  eventParameters:
+  - identifier: cannon_shot
+    value: {fileID: 11400000, guid: 332cbddf3fa2ea849ada25c83b80d8ab, type: 2}
+  - identifier: cannon_reload
+    value: {fileID: 11400000, guid: 5a31b3d198a0db94db94d4a2056f0470, type: 2}
+  - identifier: mg_shot
+    value: {fileID: 11400000, guid: e4e5b1372e7244b4693ff1284774c1d9, type: 2}
+  - identifier: impact_ground
+    value: {fileID: 11400000, guid: 409c793db4b983049a521375dda33493, type: 2}
+  - identifier: impact_voxel
+    value: {fileID: 11400000, guid: 0593d1a2a2d6112418d6de97e0c28c42, type: 2}
+  - identifier: impact_flesh
+    value: {fileID: 11400000, guid: 4955a1b3bed0c9a4b99f2170fca0c2a2, type: 2}
+  - identifier: airstrike_call
+    value: {fileID: 11400000, guid: dc9ea0cb3a040bc4a83996797c25e896, type: 2}
+  - identifier: airstrike_whistle
+    value: {fileID: 11400000, guid: a73dfc77c80329841b667e7b3dca5660, type: 2}
+  boolParameters: []
+  intParameters: []
+  floatParameters: []
+  callbacks: []

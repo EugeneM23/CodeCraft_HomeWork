@@ -52,6 +52,7 @@ namespace Game.Voxels
                 if (body != null)
                     total += body.CarveSphere(point, radius, force, budget);
 
+            VoxelSignals.RaiseCarved(point, radius, total);
             Hit.Clear();
             return total;
         }
@@ -120,6 +121,7 @@ namespace Game.Voxels
                 if (body != null && !body.IsTerrain && body.IsCreated)
                     total += body.CarveSphere(point, radius * 0.5f, force, BLAST_DEBRIS / Mathf.Max(1, Hit.Count));
 
+            VoxelSignals.RaiseAirBlasted(point, radius, total);
             Hit.Clear();
             return total;
         }

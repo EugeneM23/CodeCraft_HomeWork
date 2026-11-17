@@ -81,6 +81,7 @@ namespace Game.Voxels
 
             // One break per hit: the pieces get their own chance on their next hit.
             _armedAt = Time.time + _armDelay;
+            VoxelSignals.RaiseFractured(collision.GetContact(0).point, speed);
             if (_body.Fracture(collision.GetContact(0).point, pieces, Mathf.Min(3f, speed * 0.25f)) && _body == null)
                 _broken = true;
         }
