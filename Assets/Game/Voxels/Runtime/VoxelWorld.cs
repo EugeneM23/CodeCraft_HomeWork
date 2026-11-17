@@ -340,7 +340,8 @@ namespace Game.Voxels
             RebuildDirty();
             if (Debris != null)
             {
-                // Eviction counts distance from the viewer; look for the camera again once a second if there is none.
+                // Eviction counts distance from the viewer and lying cubes are culled by its frustum;
+                // look for the camera again once a second if there is none.
                 if (_viewCamera == null && Time.unscaledTime >= _nextCameraLook)
                 {
                     _viewCamera = Camera.main;
@@ -348,6 +349,7 @@ namespace Game.Voxels
                 }
                 if (_viewCamera != null)
                     Debris.ViewPoint = _viewCamera.transform.position;
+                Debris.ViewCamera = _viewCamera;
             }
             Debris?.Tick(deltaTime);
         }

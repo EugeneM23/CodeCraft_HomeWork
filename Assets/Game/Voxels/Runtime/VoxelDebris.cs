@@ -2,6 +2,7 @@ using System;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Jobs;
+using Unity.Jobs.LowLevel.Unsafe;
 using Unity.Mathematics;
 using Unity.Profiling;
 using UnityEngine;
@@ -34,6 +35,7 @@ namespace Game.Voxels
         private static readonly ProfilerMarker s_drawFlyingMarker = new("VoxelDebris.DrawFlying");
         private static readonly ProfilerMarker s_completeMarker = new("VoxelDebris.Complete");
         private static readonly ProfilerMarker s_scheduleMarker = new("VoxelDebris.Schedule");
+        private static readonly ProfilerMarker s_cullLyingMarker = new("VoxelDebris.CullLying");
 
         /// <summary>
         /// Most lying batches whose colours are re-sent in one frame. A round of eviction finishes in
@@ -42,8 +44,12 @@ namespace Game.Voxels
         /// </summary>
         private const int MAX_COLOR_REFRESHES = 8;
 
-        /// <summary>One fixed world box every lying batch is culled by, so Unity does not work out bounds from all the instances on each call.</summary>
-        private static readonly Bounds s_lyingBounds = new(Vector3.zero, Vector3.one * 4000f);
+        /// <summary>
+        /// Lying batches whose nearest point is farther than this (m) from the view camera are not
+        /// drawn: crumbs and tiles a few centimetres across are a pixel or less out there, and a full
+        /// store drawn whole cost +1.1 ms PlayerLoop and +1.4 ms GPU in the airstrike benchmark.
+        /// </summary>
+        public const float LYING_DRAW_DISTANCE = 120f;
 
         /// <summary>Debris falls this many times faster than g: heavy clods, low arcs, a thud.</summary>
         public const float GRAVITY_SCALE = 2.2f;
@@ -99,14 +105,23 @@ namespace Game.Voxels
         private NativeArray<float4> _lyingColors;
         /// <summary>Per batch of BATCH lying slots: 1 when its colours changed and its block must be set again.</summary>
         private NativeArray<byte> _dirtyBatches;
+        /// <summary>Per batch of BATCH lying slots: its world box (min, max), worked out by LyingBoundsJob.</summary>
+        private NativeArray<float3x2> _lyingBounds;
+        /// <summary>Per batch: 1 when a slot in it was written or moved into, and its box must be worked out again.</summary>
+        private NativeArray<byte> _boundsDirty;
+        /// <summary>LyingQueryJob's hits, per worker thread: LyingJob sums them and does nothing when a step's queries hit nothing.</summary>
+        private NativeArray<int> _queryHits;
+        /// <summary>Per batch, this frame: inside the view camera's frustum and draw distance.</summary>
+        private readonly bool[] _lyingVisible;
+        private readonly Plane[] _frustum = new Plane[6];
         private NativeReference<LyingState> _lyingState;
         /// <summary>One block per batch of lying cubes, its colours set only when the batch is dirty.</summary>
         private readonly MaterialPropertyBlock[] _lyingBlocks;
         /// <summary>The batch the colour refresh starts from next frame: the batches go in turn, so none waits for ever.</summary>
         private int _refreshFrom;
         /// <summary>
-        /// How lying cubes are drawn: layer 0 like the flying ones, no shadows, one fixed world box as
-        /// bounds. No light or reflection probes: sampling them per instance cost ~1.25 ms per 50k
+        /// How lying cubes are drawn: layer 0 like the flying ones, no shadows, each batch's own box as
+        /// bounds (set per call). No light or reflection probes: sampling them per instance cost ~1.25 ms per 50k
         /// cubes, and the scenes have no baked probes, so the ambient is the same. Only matProps
         /// changes, per batch.
         /// </summary>
@@ -122,6 +137,16 @@ namespace Game.Voxels
         /// <summary>The frame's step, still running on workers (see <see cref="Complete"/>).</summary>
         private JobHandle _step;
         private bool _stepping;
+
+        /// <summary>
+        /// The camera the game is seen through (VoxelWorld sets it each frame): lying batches outside
+        /// its frustum or past LYING_DRAW_DISTANCE are not drawn. Null - every batch is drawn. The
+        /// Scene view then shows only the lying cubes the game camera sees.
+        /// </summary>
+        public Camera ViewCamera { get; set; }
+
+        /// <summary>Lying batches drawn last frame (after culling): for tests and debugging.</summary>
+        public int LyingBatchesDrawn { get; private set; }
 
         /// <summary>What debris lands on: everything but bullets, debris and Ignore Raycast.</summary>
         public int CollisionMask { get; set; } = ~((1 << 2) | (1 << 12) | (1 << 15));
@@ -267,6 +292,10 @@ namespace Game.Voxels
             _lyingMatrices = new NativeArray<float4x4>(lying, Allocator.Persistent);
             _lyingColors = new NativeArray<float4>(lying, Allocator.Persistent);
             _dirtyBatches = new NativeArray<byte>(batches, Allocator.Persistent);
+            _lyingBounds = new NativeArray<float3x2>(batches, Allocator.Persistent);
+            _boundsDirty = new NativeArray<byte>(batches, Allocator.Persistent);
+            _queryHits = new NativeArray<int>(JobsUtility.ThreadIndexCount, Allocator.Persistent);
+            _lyingVisible = new bool[batches];
             _lyingState = new NativeReference<LyingState>(Allocator.Persistent);
             _queries = new NativeList<LyingQuery>(MAX_QUERIES, Allocator.Persistent);
             _queriesInFlight = new NativeList<LyingQuery>(MAX_QUERIES, Allocator.Persistent);
@@ -278,8 +307,7 @@ namespace Game.Voxels
                 shadowCastingMode = ShadowCastingMode.Off,
                 receiveShadows = true,
                 lightProbeUsage = LightProbeUsage.Off,
-                reflectionProbeUsage = ReflectionProbeUsage.Off,
-                worldBounds = s_lyingBounds
+                reflectionProbeUsage = ReflectionProbeUsage.Off
             };
 
             _lyingBlocks = new MaterialPropertyBlock[batches];
@@ -445,6 +473,7 @@ namespace Game.Voxels
                 LyingMatrices = _lyingMatrices,
                 LyingColors = _lyingColors,
                 DirtyBatches = _dirtyBatches,
+                BoundsDirty = _boundsDirty,
                 State = _lyingState,
                 Time = _time
             }.Schedule(handle);
@@ -458,14 +487,17 @@ namespace Game.Voxels
         {
             NativeArray<LyingQuery> queries = _queriesInFlight.AsArray();
             JobHandle handle = dependsOn;
-            if (queries.Length > 0)
+            // Over the cubes lying when the frame began ("seen", read after Complete()): those the
+            // compact pass lays down in this step meet the queries from the next step on.
+            if (queries.Length > 0 && seen.Count > 0)
             {
                 handle = new LyingQueryJob
                 {
                     Lying = _lyingCubes,
                     Queries = queries,
-                    State = _lyingState
-                }.Schedule(_lyingCubes.Length, 256, handle);
+                    State = _lyingState,
+                    Hits = _queryHits
+                }.Schedule(math.min(seen.Count, _lyingCubes.Length), 256, handle);
             }
 
             handle = new LyingJob
@@ -479,8 +511,18 @@ namespace Game.Voxels
                 Cubes = _cubes,
                 Capacity = _capacity,
                 Queries = queries,
+                QueryHits = _queryHits,
+                BoundsDirty = _boundsDirty,
                 Seed = _seed ^ math.asuint(_time),
                 DeltaTime = dt
+            }.Schedule(handle);
+
+            handle = new LyingBoundsJob
+            {
+                Lying = _lyingCubes,
+                Bounds = _lyingBounds,
+                BoundsDirty = _boundsDirty,
+                State = _lyingState
             }.Schedule(handle);
 
             // "seen" was read on the main thread right after Complete(), before any job of this step was scheduled.
@@ -498,19 +540,24 @@ namespace Game.Voxels
         }
 
         /// <summary>
-        /// Lying cubes, drawn straight from the native matrices, a batch at a time; a batch's colours
-        /// are copied into its own block only when they changed, at most MAX_COLOR_REFRESHES batches a
-        /// frame, the batches in turn. No shadows: tens of thousands of tiles and crumbs flat on the ground.
+        /// Lying cubes, drawn straight from the native matrices, a batch at a time: only the batches
+        /// in the view camera's frustum and within LYING_DRAW_DISTANCE, each with its own box as
+        /// bounds. A visible batch's colours are copied into its own block only when they changed, at
+        /// most MAX_COLOR_REFRESHES batches a frame, the batches in turn; a culled one stays dirty
+        /// until it is seen. No shadows: tens of thousands of tiles and crumbs flat on the ground.
         /// </summary>
         private void DrawLying()
         {
             int count = _lyingState.Value.Count;
             int batches = (count + BATCH - 1) / BATCH;
+            using (s_cullLyingMarker.Auto())
+                CullLying(batches);
+
             NativeArray<Vector4> colors = _lyingColors.Reinterpret<Vector4>();
             for (int k = 0, refreshed = 0; k < batches && refreshed < MAX_COLOR_REFRESHES; k++)
             {
                 int batch = (_refreshFrom + k) % batches;
-                if (_dirtyBatches[batch] == 0)
+                if (_dirtyBatches[batch] == 0 || !_lyingVisible[batch])
                     continue;
                 int start = batch * BATCH;
                 NativeArray<Vector4>.Copy(colors, start, _batchColors, 0, Mathf.Min(BATCH, count - start));
@@ -520,14 +567,47 @@ namespace Game.Voxels
                 refreshed++;
             }
 
+            int drawn = 0;
             NativeArray<Matrix4x4> matrices = _lyingMatrices.Reinterpret<Matrix4x4>();
             for (int start = 0, batch = 0; start < count; start += BATCH, batch++)
             {
+                if (!_lyingVisible[batch])
+                    continue;
                 int n = Mathf.Min(BATCH, count - start);
+                _lyingParams.worldBounds = ToBounds(_lyingBounds[batch]);
                 _lyingParams.matProps = _lyingBlocks[batch];
                 Graphics.RenderMeshInstanced(_lyingParams, _mesh, 0, matrices, n, start);
+                drawn++;
+            }
+            LyingBatchesDrawn = drawn;
+        }
+
+        /// <summary>
+        /// Marks which of the first <paramref name="batches"/> lying batches the view camera sees:
+        /// in its frustum, nearest point within LYING_DRAW_DISTANCE. All of them with no camera.
+        /// </summary>
+        private void CullLying(int batches)
+        {
+            Camera camera = ViewCamera;
+            if (camera == null)
+            {
+                for (int b = 0; b < batches; b++)
+                    _lyingVisible[b] = true;
+                return;
+            }
+
+            GeometryUtility.CalculateFrustumPlanes(camera, _frustum);
+            float3 eye = camera.transform.position;
+            const float FAR_SQ = LYING_DRAW_DISTANCE * LYING_DRAW_DISTANCE;
+            for (int b = 0; b < batches; b++)
+            {
+                float3x2 box = _lyingBounds[b];
+                float3 gap = math.max(0f, math.max(box.c0 - eye, eye - box.c1));
+                _lyingVisible[b] = math.lengthsq(gap) <= FAR_SQ && GeometryUtility.TestPlanesAABB(_frustum, ToBounds(box));
             }
         }
+
+        private static Bounds ToBounds(in float3x2 box) => new((box.c0 + box.c1) * 0.5f, box.c1 - box.c0);
 
         private void Draw(NativeArray<float4x4> source, NativeArray<float4> sourceColors, int count, ShadowCastingMode shadows)
         {
@@ -558,6 +638,9 @@ namespace Game.Voxels
             if (_lyingMatrices.IsCreated) _lyingMatrices.Dispose();
             if (_lyingColors.IsCreated) _lyingColors.Dispose();
             if (_dirtyBatches.IsCreated) _dirtyBatches.Dispose();
+            if (_lyingBounds.IsCreated) _lyingBounds.Dispose();
+            if (_boundsDirty.IsCreated) _boundsDirty.Dispose();
+            if (_queryHits.IsCreated) _queryHits.Dispose();
             if (_lyingState.IsCreated) _lyingState.Dispose();
             if (_queries.IsCreated) _queries.Dispose();
             if (_queriesInFlight.IsCreated) _queriesInFlight.Dispose();

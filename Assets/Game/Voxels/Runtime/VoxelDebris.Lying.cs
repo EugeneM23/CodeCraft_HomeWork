@@ -1,5 +1,6 @@
 using Unity.Burst;
 using Unity.Collections;
+using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
 using Unity.Mathematics;
 using UnityEngine;
@@ -235,7 +236,8 @@ namespace Game.Voxels
         /// <summary>
         /// Marks the lying cubes the step's queries touch: each slot, unless it is sinking already or
         /// is blood, takes the first query whose sphere holds it (HIT, Query = index + 1). Scheduled
-        /// over the whole store, only in steps that have queries; slots past the count are skipped.
+        /// over the cubes lying when the frame began, only in steps that have queries; slots past the
+        /// count are skipped. Counts its hits per worker thread, so LyingJob can tell a step with none.
         /// </summary>
         [BurstCompile]
         private struct LyingQueryJob : IJobParallelFor
@@ -243,6 +245,9 @@ namespace Game.Voxels
             public NativeArray<LyingCube> Lying;
             [ReadOnly] public NativeArray<LyingQuery> Queries;
             [ReadOnly] public NativeReference<LyingState> State;
+            /// <summary>Hits per thread index: each thread adds only to its own.</summary>
+            [NativeDisableParallelForRestriction] public NativeArray<int> Hits;
+            [NativeSetThreadIndex] private int _threadIndex;
 
             public void Execute(int i)
             {
@@ -263,6 +268,7 @@ namespace Game.Voxels
                     cube.Flags |= HIT;
                     cube.Query = q + 1;
                     Lying[i] = cube;
+                    Hits[_threadIndex]++;
                     return;
                 }
             }
@@ -284,6 +290,10 @@ namespace Game.Voxels
             public NativeArray<float4x4> Matrices;
             public NativeArray<float4> Colors;
             public NativeArray<byte> DirtyBatches;
+            /// <summary>Per batch: set when a cube is moved into one of its slots.</summary>
+            public NativeArray<byte> BoundsDirty;
+            /// <summary>LyingQueryJob's hits per thread: summed and cleared here.</summary>
+            public NativeArray<int> QueryHits;
             public NativeReference<LyingState> State;
             public NativeList<Cluster> Clusters;
             public NativeList<Cube> Cubes;
@@ -296,11 +306,19 @@ namespace Game.Voxels
             public void Execute()
             {
                 LyingState state = State.Value;
-                // Nothing sinks and no query this step: the cubes just lie.
-                if (state.Sinking == 0 && Queries.Length == 0)
+                int hits = 0;
+                if (Queries.Length > 0)
+                    for (int t = 0; t < QueryHits.Length; t++)
+                    {
+                        hits += QueryHits[t];
+                        QueryHits[t] = 0;
+                    }
+
+                // Nothing sinks and no query hit anything this step: the cubes just lie.
+                if (state.Sinking == 0 && hits == 0)
                     return;
 
-                bool queried = Queries.Length > 0;
+                bool queried = hits > 0;
                 int firstCluster = Clusters.Length;
                 int firstCube = Cubes.Length;
                 var random = new Unity.Mathematics.Random(math.hash(new uint2(Seed, 0x5bd1e995u)) | 1u);
@@ -369,6 +387,8 @@ namespace Game.Voxels
                 count = last;
                 DirtyBatches[i / BATCH] = 1;
                 DirtyBatches[last / BATCH] = 1;
+                // The last batch only loses a slot: its box stays conservative.
+                BoundsDirty[i / BATCH] = 1;
             }
 
             /// <summary>A crushed cube flies back from under the track as a crumb (true), or stays to sink (false).</summary>
@@ -484,6 +504,45 @@ namespace Game.Voxels
                 }
 
                 centres.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Works out the world box of each lying batch a slot was written or moved into this step
+        /// (BoundsDirty). Each cube counts as a sphere of half its scale's diagonal, plus its size
+        /// below: a sinking cube goes down by up to its size and shrinks, so a box worked out when
+        /// it lay down holds it till it is gone.
+        /// </summary>
+        [BurstCompile]
+        private struct LyingBoundsJob : IJob
+        {
+            [ReadOnly] public NativeArray<LyingCube> Lying;
+            public NativeArray<float3x2> Bounds;
+            public NativeArray<byte> BoundsDirty;
+            [ReadOnly] public NativeReference<LyingState> State;
+
+            public void Execute()
+            {
+                int count = State.Value.Count;
+                int batches = (count + BATCH - 1) / BATCH;
+                for (int b = 0; b < batches; b++)
+                {
+                    if (BoundsDirty[b] == 0)
+                        continue;
+                    BoundsDirty[b] = 0;
+
+                    var min = new float3(float.MaxValue);
+                    var max = new float3(float.MinValue);
+                    int end = math.min(count, (b + 1) * BATCH);
+                    for (int i = b * BATCH; i < end; i++)
+                    {
+                        LyingCube cube = Lying[i];
+                        float reach = math.length(cube.Scale) * 0.5f;
+                        min = math.min(min, cube.Position - new float3(reach, reach + cube.Size, reach));
+                        max = math.max(max, cube.Position + reach);
+                    }
+                    Bounds[b] = new float3x2(min, max);
+                }
             }
         }
     }

@@ -239,6 +239,7 @@ namespace Game.Voxels
             [WriteOnly] public NativeArray<float4x4> LyingMatrices;
             [WriteOnly] public NativeArray<float4> LyingColors;
             public NativeArray<byte> DirtyBatches;
+            public NativeArray<byte> BoundsDirty;
             public NativeReference<LyingState> State;
             public float Time;
 
@@ -337,6 +338,7 @@ namespace Game.Voxels
                 LyingMatrices[slot] = float4x4.TRS(lying.Position, lying.Rotation, lying.Scale);
                 LyingColors[slot] = lying.Color;
                 DirtyBatches[slot / BATCH] = 1;
+                BoundsDirty[slot / BATCH] = 1;
             }
 
             private static float4x4 Matrix(in Cluster cluster, in Cube cube, float shrink)

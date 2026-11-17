@@ -194,6 +194,40 @@ namespace Game.Voxels.Tests
             Assert.AreEqual(12, _debris.CountLyingNear(Vector3.zero, 1.5f), "fell back where it was");
         }
 
+        [Test]
+        public void LyingBatch_OutOfTheViewCamera_IsNotDrawn()
+        {
+            LayRow(_debris, new Vector3(0f, 0.2f, 0f), 100);
+            Run(2f);
+            Assert.AreEqual(100, _debris.LyingCount);
+
+            var camera = new GameObject("ViewCamera").AddComponent<Camera>();
+            try
+            {
+                _debris.ViewCamera = camera;
+                var row = new Vector3(5f, 0.2f, 0f);
+
+                camera.transform.position = new Vector3(5f, 3f, -10f);
+                camera.transform.LookAt(row);
+                _debris.Tick(0f);
+                Assert.That(_debris.LyingBatchesDrawn, Is.GreaterThanOrEqualTo(1), "looking at the row");
+
+                camera.transform.rotation = Quaternion.LookRotation(Vector3.back);
+                _debris.Tick(0f);
+                Assert.AreEqual(0, _debris.LyingBatchesDrawn, "looking away from the row");
+
+                camera.transform.position = new Vector3(5f, 3f, -VoxelDebris.LYING_DRAW_DISTANCE - 50f);
+                camera.transform.LookAt(row);
+                _debris.Tick(0f);
+                Assert.AreEqual(0, _debris.LyingBatchesDrawn, "looking at the row from past the draw distance");
+
+                _debris.ViewCamera = null;
+                _debris.Tick(0f);
+                Assert.AreEqual(1, _debris.LyingBatchesDrawn, "no camera: every batch is drawn");
+            }
+            finally { Object.Destroy(camera.gameObject); }
+        }
+
         /// <summary>A piece of <paramref name="cubes"/> cubes of 0.1 m in a row along X, centred at <paramref name="at"/>, at rest.</summary>
         private static void LayPiece(VoxelDebris store, Vector3 at, int cubes, Color color)
         {
