@@ -87,10 +87,10 @@ report() { # $1 = id, $2 = title, $3 = examples of debt to show
 
 # Runtime game code: no editor tools, tests or demos.
 RUNTIME=(':(glob)Assets/Game/**/*.cs' ':(exclude,glob)Assets/Game/**/Editor/**' ':(exclude,glob)Assets/Game/**/Tests/**'
-  ':(exclude,glob)Assets/Game/Tests/**' ':(exclude,glob)Assets/Game/Voxels/Demo/**')
+  ':(exclude,glob)Assets/Game/Tests/**' ':(exclude,glob)Assets/Game/Voxels/Demo/**' ':(exclude,glob)Assets/**/*~/**')
 
-code_rule() { # $1 = id, $2 = title, $3 = extended regex
-  git grep --untracked -n -I -E "$3" -- "${RUNTIME[@]}" 2>/dev/null | grep -v 'perf-ok:' > "$TMP/hits"
+code_rule() { # $1 = id, $2 = title, $3 = extended regex, $4 = optional regex of hits to drop
+  git grep --untracked -n -I -E "$3" -- "${RUNTIME[@]}" 2>/dev/null | grep -v 'perf-ok:' | grep -v -E "${4:-^$^}" > "$TMP/hits"
   # Skip comment-only lines.
   awk -F: '{ t = $0; sub(/^[^:]*:[^:]*:[ \t]*/, "", t); if (t !~ /^(\/\/|\*|\/\*)/) print }' "$TMP/hits" > "$TMP/hits2"
   split_hits "$TMP/hits2"
@@ -106,7 +106,7 @@ echo
 
 echo "### Код (Performance.md, раздел 5)"
 code_rule linq          "LINQ в рантайме"                         '^\s*using System\.Linq'
-code_rule unity-update  "Update/LateUpdate/FixedUpdate у MonoBehaviour" '\bvoid\s+(Update|LateUpdate|FixedUpdate)\s*\('
+code_rule unity-update  "Update/LateUpdate/FixedUpdate у MonoBehaviour" '\bvoid\s+(Update|LateUpdate|FixedUpdate)\s*\(' '\bstatic\b'
 code_rule find          "Find*/FindObject* в рантайме"            '\b(GameObject\.Find|FindObjectOfType|FindObjectsOfType|FindFirstObjectByType|FindAnyObjectByType|FindObjectsByType|FindWithTag|FindGameObjectsWithTag)\b'
 code_rule camera-main   "Camera.main"                             '\bCamera\.main\b'
 code_rule instantiate   "Instantiate (в бою — только пулы)"       '(^|[^_.A-Za-z]|\bObject\.)Instantiate\s*[<(]'
@@ -150,7 +150,7 @@ split_hits "$TMP/hits"; report banned-suffix "суффиксы Manager/Helper/Ut
 echo
 
 echo "### Ассеты (Project.md, раздел 3)"
-git ls-files --cached --others --exclude-standard -- Assets/Game Assets/Modules | grep -v '\.meta$' > "$TMP/assets"
+git ls-files --cached --others --exclude-standard -- Assets/Game Assets/Modules | grep -v -E '\.meta$|~/' > "$TMP/assets"
 
 grep -E '[ ()]' "$TMP/assets" > "$TMP/hits"
 split_files "$TMP/hits"; report asset-chars "пробелы или скобки в имени" 5
@@ -180,7 +180,7 @@ git ls-files -- . | grep -E '^(mono_crash\.[^/]*|\.idea/.*)$' > "$TMP/hits"
 split_files "$TMP/hits"; report repo-root "мусор в корне репозитория (mono_crash, .idea)" 3
 
 # .meta without asset, asset without .meta (Assets/Game and Assets/Modules).
-git ls-files --cached --others --exclude-standard -- Assets/Game Assets/Modules > "$TMP/all"
+git ls-files --cached --others --exclude-standard -- Assets/Game Assets/Modules | grep -v '~/' > "$TMP/all"
 awk '/\.meta$/ { m[substr($0, 1, length($0) - 5)] = 1; next } { a[$0] = 1; d = $0
        while (sub(/\/[^\/]*$/, "", d)) if (d ~ /\//) dir[d] = 1 }
      END { for (k in m) if (!(k in a) && !(k in dir)) print k ".meta (нет ассета)"
