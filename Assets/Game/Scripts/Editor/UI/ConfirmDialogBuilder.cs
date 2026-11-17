@@ -1,0 +1,44 @@
+using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
+
+namespace Game.EditorTools
+{
+    /// <summary>Builds the Yes/No dialog inside a canvas; MenuUiBuilder and BattleUiBuilder call it.</summary>
+    public static class ConfirmDialogBuilder
+    {
+        public static ConfirmDialog Create(Transform parent)
+        {
+            ConfirmDialog dialog = UiFactory.Screen<ConfirmDialog>("ConfirmDialog", parent, overlay: true, dim: true);
+
+            Image box = UiFactory.Panel("Box", dialog.transform, UiStyle.PanelLight);
+            UiFactory.Place(box.rectTransform, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(640, 300));
+            UiFactory.Vertical(box.rectTransform, UiStyle.SPACING, (int)UiStyle.PADDING);
+
+            TextMeshProUGUI title = UiFactory.Text("Title", box.transform, "Вопрос", UiStyle.FONT_HEADER,
+                TextAlignmentOptions.Center, bold: true);
+            UiFactory.Size(title, 40);
+            TextMeshProUGUI text = UiFactory.Text("Text", box.transform, "Текст", UiStyle.FONT_BODY,
+                TextAlignmentOptions.Center, color: UiStyle.TextMuted);
+            UiFactory.Size(text, 120, -1, -1, 1);
+
+            RectTransform row = UiFactory.Rect("Buttons", box.transform);
+            UiFactory.Horizontal(row, UiStyle.SPACING, 0, TextAnchor.MiddleCenter);
+            UiFactory.Size(row, UiStyle.BUTTON_HEIGHT);
+            Button no = UiFactory.Button("No", row, "Нет");
+            UiFactory.Size(no, UiStyle.BUTTON_HEIGHT, 220);
+            no.GetComponent<UiButtonSounds>().Click = UiSound.Back;
+            Button yes = UiFactory.Button("Yes", row, "Да", accent: true);
+            UiFactory.Size(yes, UiStyle.BUTTON_HEIGHT, 220);
+
+            UiFactory.SetField(dialog, "_title", title);
+            UiFactory.SetField(dialog, "_text", text);
+            UiFactory.SetField(dialog, "_yes", yes);
+            UiFactory.SetField(dialog, "_no", no);
+            UiFactory.SetField(dialog, "_yesLabel", yes.GetComponentInChildren<TMP_Text>());
+            UiFactory.SetField(dialog, "_noLabel", no.GetComponentInChildren<TMP_Text>());
+            UiFactory.SetField(dialog, "_firstSelected", no);
+            return dialog;
+        }
+    }
+}
