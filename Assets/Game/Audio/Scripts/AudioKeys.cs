@@ -21,6 +21,7 @@ namespace Game.AudioEngine.Adapters
             public const string TURRET_LOOP = "tank.turret_loop";
             public const string RAM = "tank.ram";
             public const string LANDING = "tank.landing";
+            public const string PLOUGH = "tank.plough";
             public const string HIT = "tank.hit";
             public const string LOW_HEALTH = "tank.low_health";
             public const string DESTROYED = "tank.destroyed";
@@ -32,6 +33,8 @@ namespace Game.AudioEngine.Adapters
             public const string MUD = "tank.mud";
             public const string SLIP = "tank.slip";
             public const string TURRET = "tank.turret";
+            /// <summary>How hard the nose dug in, set just before each plough sound.</summary>
+            public const string PLOUGH_STRENGTH = "tank.plough_strength";
         }
 
         public static class Weapons
