@@ -12,6 +12,7 @@ namespace Game
     public sealed class ExplosionFlash : MonoBehaviour, IUpdateListener
     {
         [SerializeField] private float _duration = 0.12f;
+        [Tooltip("As tuned under the Built-in pipeline; converted for URP (LightIntensity).")]
         [SerializeField] private float _intensity = 6f;
 
         private Light _light;
@@ -30,7 +31,7 @@ namespace Game
         {
             _looped = GameTicks.TryAdd(this);
             _time = 0f;
-            _light.intensity = _intensity;
+            _light.intensity = LightIntensity.FromBuiltIn(_intensity);
             _light.enabled = true;
         }
 
@@ -63,7 +64,7 @@ namespace Game
             }
 
             float fade = 1f - t;
-            _light.intensity = _intensity * fade * fade;
+            _light.intensity = LightIntensity.FromBuiltIn(_intensity * fade * fade);
         }
     }
 }

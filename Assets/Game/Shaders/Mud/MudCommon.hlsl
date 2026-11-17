@@ -1,25 +1,38 @@
 // Shared by everything that needs to know the shape of the mud: Game/MudGround draws it, later
 // effects (splashes) can ask where the puddles are. All heights are metres above the floor
 // collider's top; the deepest rut reaches 0, where the tank's tracks stand.
+// URP: the mud's material properties live in UnityPerMaterial (SRP Batcher). A shader that adds
+// properties of its own lists them in MUD_EXTRA_MATERIAL_PROPERTIES before including this file.
 #ifndef GAME_MUD_COMMON_INCLUDED
 #define GAME_MUD_COMMON_INCLUDED
 
-sampler2D _MudTracks;      // R: rut, G: berm, B: tread (0 none, 0.5 ridge, 1 groove; MudSurface).
-                           // Black when no tank has been here.
+#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 
-// How deep a tread's ridge sits, as a share of the rut it is in: the grooves go the full depth.
-#define MUD_TREAD_RIDGE 0.7
+#ifndef MUD_EXTRA_MATERIAL_PROPERTIES
+#define MUD_EXTRA_MATERIAL_PROPERTIES
+#endif
+
+// R: rut, G: berm, B: tread (0 none, 0.5 ridge, 1 groove; MudSurface). Black when no tank has been
+// here. Set per renderer with the rect and texel below (MudSurface's property block).
+TEXTURE2D(_MudTracks);
+SAMPLER(sampler_MudTracks);
 float4 _MudTracksRect;     // xMin, zMin, 1/sizeX, 1/sizeZ
 float4 _MudTexel;          // world size of one texel (x, z)
 
-float _MudThickness;       // mud surface above the collider, rut-free and on flat relief
-float _ReliefDepth;        // relief swings this much up and down
-float _ReliefScale;        // relief noise frequency (1/m)
-float _ReliefContrast;     // >1 widens the relief so more of it reaches the puddle level
-float _BermHeight;
-float _PuddleLevel;        // relief below this is a puddle (m, negative)
-float _RutWater;           // rut depth (0..1) past which a rut holds water
-float _Seed;
+// How deep a tread's ridge sits, as a share of the rut it is in: the grooves go the full depth.
+#define MUD_TREAD_RIDGE 0.7
+
+CBUFFER_START(UnityPerMaterial)
+    float _MudThickness;       // mud surface above the collider, rut-free and on flat relief
+    float _ReliefDepth;        // relief swings this much up and down
+    float _ReliefScale;        // relief noise frequency (1/m)
+    float _ReliefContrast;     // >1 widens the relief so more of it reaches the puddle level
+    float _BermHeight;
+    float _PuddleLevel;        // relief below this is a puddle (m, negative)
+    float _RutWater;           // rut depth (0..1) past which a rut holds water
+    float _Seed;
+    MUD_EXTRA_MATERIAL_PROPERTIES
+CBUFFER_END
 
 float MudHash(float2 p)
 {
@@ -66,7 +79,7 @@ float MudRelief(float2 xz)
 float2 MudTracks(float2 xz)
 {
     float2 uv = (xz - _MudTracksRect.xy) * _MudTracksRect.zw;
-    float3 map = tex2Dlod(_MudTracks, float4(uv, 0, 0)).rgb;
+    float3 map = SAMPLE_TEXTURE2D_LOD(_MudTracks, sampler_MudTracks, uv, 0).rgb;
     float rut = saturate(map.r);
     float tread = saturate(map.b * 4.0 - 1.0);              // 0 off a track, 1 on its tread
     float groove = saturate((map.b - 0.5) * 2.0);           // 0 ridge, 1 groove
