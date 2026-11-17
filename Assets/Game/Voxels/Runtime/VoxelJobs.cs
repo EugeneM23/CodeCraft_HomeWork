@@ -526,7 +526,7 @@ namespace Game.Voxels
 
                 int label = Components.Length + 1;
                 _cell = UseCells ? Cells[start] : 0;
-                var info = new VoxelComponent { Min = new int3(int.MaxValue), Max = new int3(int.MinValue) };
+                var info = new VoxelComponent { Min = new int3(int.MaxValue), Max = new int3(int.MinValue), Cell = _cell };
 
                 int head = 0;
                 int tail = 0;

@@ -17,7 +17,7 @@ namespace Game.Voxels
     /// into debris cubes, bigger ones become voxel bodies of their own with a Rigidbody.
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class VoxelBody : MonoBehaviour
+    public sealed partial class VoxelBody : MonoBehaviour
     {
         public const int CHUNK = 16;
 
@@ -862,6 +862,10 @@ namespace Game.Voxels
             else if (SolidCount <= 0)
                 Destroy(gameObject);
 
+            // A building that lost voxels works out its load again at the end of the frame.
+            if (taken > 0 && split && SolidCount > 0)
+                MarkStructureDirtyAt(center, reach);
+
             return taken;
         }
 
@@ -1059,6 +1063,8 @@ namespace Game.Voxels
 
             VoxelBody body = go.AddComponent<VoxelBody>();
             body.Init(size, grid, new NativeArray<Color32>(_palette, Allocator.Persistent), settings);
+            if (HasStrength)
+                body.SetStrength(CopyStrength());
             body.Generation = Generation + 1;
 
             // The piece goes on at the speed its own middle had, not the blast's point: a spinning
@@ -1095,11 +1101,21 @@ namespace Game.Voxels
             }
 
             int count = _voxels.Length;
-            var cellOf = new NativeArray<int>(count, Allocator.TempJob, NativeArrayOptions.UninitializedMemory);
-            new VoronoiCellsJob
+            NativeArray<int> cellOf;
+            // A building's piece parts along its weak joints (floor from wall, pane from frame);
+            // anything else along jagged Voronoi borders.
+            if (HasStrength)
             {
-                Voxels = _voxels, Seeds = seeds, Size = Size, Jitter = 1.6f, Seed = _seed++, Cells = cellOf
-            }.Run();
+                cellOf = SeamCells(seeds);
+            }
+            else
+            {
+                cellOf = new NativeArray<int>(count, Allocator.TempJob, NativeArrayOptions.UninitializedMemory);
+                new VoronoiCellsJob
+                {
+                    Voxels = _voxels, Seeds = seeds, Size = Size, Jitter = 1.6f, Seed = _seed++, Cells = cellOf
+                }.Run();
+            }
 
             var labels = new NativeArray<int>(count, Allocator.TempJob);
             var queue = new NativeArray<int>(count, Allocator.TempJob, NativeArrayOptions.UninitializedMemory);
@@ -1821,6 +1837,7 @@ namespace Game.Voxels
 
         private void Release()
         {
+            ReleaseStructure();
             if (_voxels.IsCreated)
                 _voxels.Dispose();
             if (_palette.IsCreated)

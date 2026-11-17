@@ -125,6 +125,7 @@ namespace Game.Voxels
         {
             s_instance = null;
             s_bodies.Clear();
+            s_structures.Clear();
             s_bakeMeshes.Clear();
             s_bakeChunks.Clear();
             s_quitting = false;
@@ -291,9 +292,74 @@ namespace Game.Voxels
             return material;
         }
 
-        private void OnEnable() => VoxelTicks.Add(this);
+        private void OnEnable()
+        {
+            VoxelTicks.Add(this);
+            VoxelSignals.Carved += OnGroundCarved;
+            VoxelSignals.AirBlasted += OnGroundCarved;
+        }
 
-        private void OnDisable() => VoxelTicks.Remove(this);
+        private void OnDisable()
+        {
+            VoxelTicks.Remove(this);
+            VoxelSignals.Carved -= OnGroundCarved;
+            VoxelSignals.AirBlasted -= OnGroundCarved;
+        }
+
+        /// <summary>Buildings waiting for a load solve this frame (see VoxelBody.SolveStructure).</summary>
+        private static readonly List<VoxelBody> s_structures = new(64);
+        private readonly List<VoxelBody> _solving = new(64);
+
+        /// <summary>How far past a crater's radius (m) a building is looked at again: the ground under it may be gone.</summary>
+        private const float STRUCTURE_REACH = 1.5f;
+
+        internal static void QueueStructure(VoxelBody body)
+        {
+            if (!s_structures.Contains(body))
+                s_structures.Add(body);
+        }
+
+        internal static void UnqueueStructure(VoxelBody body) => s_structures.Remove(body);
+
+        /// <summary>A crater near a building may have taken the ground from under it.</summary>
+        private static void OnGroundCarved(Vector3 point, float radius, int voxels)
+        {
+            float reach = radius + STRUCTURE_REACH;
+            for (int i = 0; i < s_bodies.Count; i++)
+            {
+                VoxelBody body = s_bodies[i];
+                if (body != null && body.HasStrength && body.IsStatic && body.WorldBounds.SqrDistance(point) <= reach * reach)
+                    body.MarkStructureDirty(point, reach);
+            }
+        }
+
+        /// <summary>Last frame's load solves: main-thread ms and how many bodies.</summary>
+        public float LastStructureMs { get; private set; }
+        public int LastStructureBodies { get; private set; }
+
+        /// <summary>
+        /// Works out the load of every marked building once, before the rebuild: pieces it lets
+        /// fall get their colliders in this frame's rebuild. A body that is still settling marks
+        /// itself again and is solved next frame.
+        /// </summary>
+        private void SolveStructures()
+        {
+            if (s_structures.Count == 0)
+                return;
+
+            long start = System.Diagnostics.Stopwatch.GetTimestamp();
+            _solving.Clear();
+            _solving.AddRange(s_structures);
+            s_structures.Clear();
+            foreach (VoxelBody body in _solving)
+                if (body != null)
+                    body.SolveStructure();
+
+            LastStructureBodies = _solving.Count;
+            LastStructureMs = (System.Diagnostics.Stopwatch.GetTimestamp() - start) * 1000f /
+                              System.Diagnostics.Stopwatch.Frequency;
+            _solving.Clear();
+        }
 
         private void LateUpdate() // perf-ok: ticks itself without the game loop; draws (dt 0) while the loop is paused
         {
@@ -305,6 +371,7 @@ namespace Game.Voxels
 
         public void VoxelLateUpdate(float deltaTime)
         {
+            SolveStructures();
             RebuildDirty();
             Debris?.Tick(deltaTime);
         }

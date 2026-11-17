@@ -69,6 +69,9 @@ namespace Game.Voxels
 
         private void OnCollisionEnter(Collision collision)
         {
+            if (_body != null && !_broken && _body.IsLoose)
+                PressOnto(collision);
+
             if (_broken || VoxelTicks.Time < _armedAt || _body == null)
                 return;
 
@@ -94,6 +97,25 @@ namespace Game.Voxels
             VoxelSignals.RaiseFractured(collision.GetContact(0).point, speed);
             if (_body.Fracture(collision.GetContact(0).point, pieces, Mathf.Min(3f, speed * 0.25f)) && _body == null)
                 _broken = true;
+        }
+
+        /// <summary>
+        /// A piece that lands on a standing building presses on it with its hit (the impulse
+        /// spread over VoxelBody.IMPACT_TIME), once: a floor that falls on the one below can bring
+        /// it down too.
+        /// </summary>
+        private static void PressOnto(Collision collision)
+        {
+            if (collision.contactCount == 0 || collision.collider == null)
+                return;
+
+            VoxelBody target = collision.collider.GetComponentInParent<VoxelBody>();
+            if (target == null || !target.HasStrength || !target.IsStatic)
+                return;
+
+            // Only what lands on it presses on it: a piece glancing off a wall does not load it.
+            float kg = Mathf.Abs(collision.impulse.y) / (Physics.gravity.magnitude * VoxelBody.IMPACT_TIME);
+            target.AddImpactLoad(collision.GetContact(0).point, kg);
         }
     }
 }

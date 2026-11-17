@@ -263,6 +263,50 @@ namespace Game.Voxels
 
             _body = go.AddComponent<VoxelBody>();
             _body.Init(size, voxels, palette, settings);
+            // Buildings bear their own weight (VoxelBody.SolveStructure): the ground and trees do not.
+            if (_shape is Shape.Wall or Shape.House or Shape.Tower or Shape.Victorian)
+            {
+                _body.SetStrength(BuildStrength(colors.Length));
+                _body.DesignStructure();
+            }
+        }
+
+        /// <summary>
+        /// Press (kg) and bend (kg·m) a pair of voxels of each material bears across a face, and the
+        /// material's group (pairs of two groups are a seam): see <see cref="VoxelLoad"/>.
+        /// </summary>
+        private static float3 Strength(Material material) => material switch
+        {
+            Material.Concrete => new float3(2000f, 80f, 0f),
+            Material.Stone or Material.Rock or Material.Kerb or Material.Flagstone => new float3(1500f, 30f, 1f),
+            Material.Brick or Material.BrickRed or Material.BrickYellow or Material.Mortar => new float3(1000f, 15f, 2f),
+            Material.Stucco or Material.Trim or Material.Wallpaper1 or Material.Wallpaper2 or Material.Wallpaper3
+                or Material.Panel => new float3(600f, 20f, 3f),
+            Material.Wood or Material.FloorWood or Material.Frame or Material.Door or Material.Carpet => new float3(600f, 400f, 4f),
+            // Slates lie on light rafters: a roof spans its own gable (the design pass sees to that), not a corner over nothing.
+            Material.Roof or Material.Slate => new float3(300f, 60f, 5f),
+            Material.Pot => new float3(300f, 5f, 5f),
+            Material.Furniture or Material.Fabric or Material.Linen or Material.Iron => new float3(200f, 50f, 6f),
+            Material.Glass => new float3(20f, 0.5f, 7f),
+            _ => new float3(600f, 20f, 3f)
+        };
+
+        /// <summary>The strength of every palette entry: each material's shades, and plaster for slots painted later (mud).</summary>
+        private static NativeArray<float3> BuildStrength(int materials)
+        {
+            var strength = new NativeArray<float3>(256, Allocator.Persistent);
+            float3 plaster = new float3(600f, 20f, 3f);
+            for (int i = 0; i < 256; i++)
+                strength[i] = plaster;
+            for (int m = 0; m < materials; m++)
+            for (int v = 0; v < MeshVoxelizer.VARIANTS; v++)
+            {
+                int index = 1 + m * MeshVoxelizer.VARIANTS + v;
+                if (index < 256)
+                    strength[index] = Strength((Material)m);
+            }
+
+            return strength;
         }
 
         private void OnDrawGizmosSelected()
