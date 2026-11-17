@@ -30,6 +30,20 @@ namespace Game.Voxels
         private const float DUST_GRAVITY = 0.3f / GRAVITY_SCALE;
         /// <summary>Most dust cubes one break knocks out.</summary>
         private const int MAX_DUST = 12;
+        /// <summary>Fewest dust cubes a puff has.</summary>
+        private const int MIN_DUST = 6;
+        /// <summary>Dust is lightened this far towards white (shared by the break and ThrowEarth).</summary>
+        private const float DUST_LIGHTEN = 0.2f;
+        private const float DUST_SIZE_MIN = 0.04f;
+        private const float DUST_SIZE_MAX = 0.06f;
+        private const float DUST_LIFE_MIN = 0.8f;
+        private const float DUST_LIFE_MAX = 1.4f;
+        private const float DUST_SPEED_MIN = 1f;
+        private const float DUST_SPEED_MAX = 2.5f;
+        private const float DUST_SPIN_MIN = 2f;
+        private const float DUST_SPIN_MAX = 6f;
+        /// <summary>How far above the surface a puff starts.</summary>
+        private const float DUST_LIFT = 0.05f;
 
         /// <summary>
         /// Breaks after which a piece no longer breaks: a thrown clump (0) breaks into pieces, a big
@@ -379,8 +393,8 @@ namespace Game.Voxels
                 if (colorCount == 0)
                     return;
 
-                int count = random.NextInt(6, MAX_DUST + 1);
-                float3 at = parent.HitPoint + parent.HitNormal * 0.05f;
+                int count = random.NextInt(MIN_DUST, MAX_DUST + 1);
+                float3 at = parent.HitPoint + parent.HitNormal * DUST_LIFT;
                 for (int j = 0; j < count; j++)
                 {
                     if (Clusters.Length >= Capacity || Cubes.Length >= Capacity)
@@ -391,21 +405,21 @@ namespace Game.Voxels
                     Clusters.Add(new Cluster
                     {
                         Position = at,
-                        Velocity = direction * random.NextFloat(1f, 2.5f),
+                        Velocity = direction * random.NextFloat(DUST_SPEED_MIN, DUST_SPEED_MAX),
                         Rotation = random.NextQuaternionRotation(),
-                        Spin = random.NextFloat3Direction() * random.NextFloat(2f, 6f),
-                        Life = random.NextFloat(0.8f, 1.4f),
+                        Spin = random.NextFloat3Direction() * random.NextFloat(DUST_SPIN_MIN, DUST_SPIN_MAX),
+                        Life = random.NextFloat(DUST_LIFE_MIN, DUST_LIFE_MAX),
                         Count = 1,
                         Flags = DUST
                     });
 
                     float4 color = colors[p * MAX_DUST + random.NextInt(0, colorCount)];
-                    color.xyz = math.lerp(color.xyz, new float3(1f), 0.2f);
+                    color.xyz = math.lerp(color.xyz, new float3(1f), DUST_LIGHTEN);
                     Cubes.Add(new Cube
                     {
                         Cluster = Clusters.Length - 1,
                         Offset = at,
-                        Size = random.NextFloat(0.04f, 0.06f),
+                        Size = random.NextFloat(DUST_SIZE_MIN, DUST_SIZE_MAX),
                         Color = color
                     });
                 }
