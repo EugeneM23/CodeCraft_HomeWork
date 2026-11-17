@@ -391,7 +391,7 @@ namespace Game.Voxels
     // Not Burst: Physics.BakeMesh is a managed entry point (thread-safe, so still parallel).
     public struct BakeMeshesJob : IJobParallelFor
     {
-        [ReadOnly] public NativeArray<int> MeshIds;
+        [ReadOnly] public NativeArray<EntityId> MeshIds;
 
         public void Execute(int index) => Physics.BakeMesh(MeshIds[index], false);
     }
