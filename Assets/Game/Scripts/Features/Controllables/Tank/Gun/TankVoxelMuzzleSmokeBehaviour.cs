@@ -157,7 +157,16 @@ namespace Game
                     continue;
                 }
 
-                _velocity[i] = _velocity[i] * damp + rise;
+                Vector3 v = _velocity[i];
+                // Keep a slowed cube creeping sideways, along where it was already heading: the cloud spreads.
+                float flat = Mathf.Sqrt(v.x * v.x + v.z * v.z);
+                if (flat > 1e-4f)
+                {
+                    float push = s.Creep * deltaTime / flat;
+                    v.x += v.x * push;
+                    v.z += v.z * push;
+                }
+                _velocity[i] = v * damp + rise;
                 _position[i] += _velocity[i] * deltaTime;
 
                 float t = _age[i] / _life[i];

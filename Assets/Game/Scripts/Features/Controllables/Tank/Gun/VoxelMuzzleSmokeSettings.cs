@@ -22,7 +22,7 @@ namespace Game
         [Tooltip("Cubes thrown out on a shot.")]
         [Range(0, 3000)] public int Cubes = 640;
         [Tooltip("Seconds a cube lives; each gets 60...100 % of it.")]
-        public float Lifetime = 2.6f;
+        public float Lifetime = 3.9f;
         [Tooltip("Speed (m/s) along the barrel of the fastest cubes.")]
         public float Speed = 14f;
         [Tooltip("How wide the blast opens: 0 a straight jet, 1 a half sphere.")]
@@ -31,8 +31,10 @@ namespace Game
         [Range(0f, 1f)] public float SideShare = 0.3f;
         [Tooltip("How fast the cubes lose speed in the air (1/s).")]
         public float Drag = 3.2f;
-        [Tooltip("Upward drift (m/s²) of the warm smoke.")]
-        public float Rise = 0.7f;
+        [Tooltip("Upward drift (m/s²) of the smoke; below 0 it slowly settles. Steady speed is Rise / Drag.")]
+        public float Rise = -0.25f;
+        [Tooltip("Sideways push (m/s²) that keeps a slowed cube creeping away from the muzzle, so the cloud spreads. Steady speed is Creep / Drag.")]
+        public float Creep = 0.6f;
         [Tooltip("Edge (m) of a cube at birth and at its fullest.")]
         public Vector2 Size = new(0.1f, 0.38f);
         [Tooltip("Cubes snap to a grid of this step (m); 0 moves them freely.")]
@@ -48,9 +50,9 @@ namespace Game
         [Tooltip("Brightness of the fire-coloured cubes: above 1 they bloom.")]
         public float HotGlow = 4f;
         [Tooltip("How opaque a cube of smoke is at its thickest.")]
-        [Range(0f, 1f)] public float Opacity = 0.25f;
+        [Range(0f, 1f)] public float Opacity = 0.175f;
         [Tooltip("Share of its life a cube keeps its full opacity before thinning out.")]
-        [Range(0f, 1f)] public float FadeStart = 0.2f;
+        [Range(0f, 1f)] public float FadeStart = 0.3f;
 
         [Header("Wisp")]
         [Tooltip("Seconds smoke still leaks out of the barrel after a shot; 0 for none.")]
