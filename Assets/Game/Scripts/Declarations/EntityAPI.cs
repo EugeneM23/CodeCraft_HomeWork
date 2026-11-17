@@ -116,7 +116,6 @@ namespace Game
 
         #region AI
 
-        public static readonly ValueKey<IEntity, UnityEngine.Transform[]> PatrolPoints = new(nameof(PatrolPoints));
         public static readonly ValueKey<IEntity, IReactiveVariable<IEntity>> Target = new(nameof(Target));
 
         #endregion
