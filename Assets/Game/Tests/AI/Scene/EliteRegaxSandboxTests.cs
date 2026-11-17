@@ -36,6 +36,11 @@ namespace Game.AIKit.Adapters.Tests
             foreach (VoxelAirStrike strike in Object.FindObjectsByType<VoxelAirStrike>(FindObjectsSortMode.None))
                 on?.SetValue(strike, false);
 
+            // The sandbox's own elites (Tools/AI/Add Elite Regax To Sandbox) would bite the tank too: only the test's elite fights.
+            foreach (GameObject placed in Object.FindObjectsByType<GameObject>(FindObjectsSortMode.None))
+                if (placed.name.StartsWith("Regax_Elite_"))
+                    placed.SetActive(false);
+
             _tank = GameObject.Find("Tank_01").transform;
             Assert.IsTrue(_tank.GetComponent<MonoEntity>().TryGetHealth(out _tankHealth), "the tank has health");
             _elitePrefab = AssetDatabase.LoadAssetAtPath<GameObject>(ELITE);
