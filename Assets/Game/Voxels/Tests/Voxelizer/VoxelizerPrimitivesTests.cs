@@ -71,5 +71,36 @@ namespace Game.Voxels.Tests
                 Assert.AreEqual(a, c);
             }
         }
+
+        [Test]
+        public void Cylinder_KeepsBothColoursOfATwoColourDisc()
+        {
+            // A wheel-like part: a red lower half and a blue upper half, each its own renderer.
+            var red = new Color(0.9f, 0.1f, 0.1f);
+            var blue = new Color(0.1f, 0.1f, 0.9f);
+            MeshRenderer a = TestMeshes.Add(_root.transform, "Low", TestMeshes.Box(Vector3.one * 0.001f, new Vector3(0.999f, 0.499f, 0.999f)), red);
+            MeshRenderer b = TestMeshes.Add(_root.transform, "High", TestMeshes.Box(new Vector3(0.001f, 0.501f, 0.001f), Vector3.one * 0.999f), blue);
+            using VoxelizerTriangles t = VoxelizerSource.Collect(_root.transform, new List<Renderer> { a, b });
+            using VoxelizerPartGrid g = VoxelizerSurface.Sample(t, 0.1f);
+            VoxelizerPrimitives.Cylinder(g, 0);
+
+            int3 lo = g.Size;
+            for (int i = 0; i < g.Cells.Length; i++)
+                if (g.Cells[i].a != 0)
+                    lo = math.min(lo, new int3(i % g.Size.x, (i / g.Size.x) % g.Size.y, i / (g.Size.x * g.Size.y)));
+
+            int redCells = 0, blueCells = 0;
+            for (int z = 0; z < g.Size.z; z++)
+            for (int y = 0; y < g.Size.y; y++)
+            {
+                Color32 c = g.Cells[lo.x + g.Size.x * (y + g.Size.y * z)];
+                if (c.a != VoxelizerPartGrid.SURFACE) continue;
+                if (c.r > c.b) redCells++;
+                else if (c.b > c.r) blueCells++;
+            }
+
+            Assert.Greater(redCells, 0, "the end face lost the red colour");
+            Assert.Greater(blueCells, 0, "the end face lost the blue colour");
+        }
     }
 }
