@@ -629,9 +629,12 @@ namespace Game.Voxels
 
             Vector3 centre = transform.position + transform.up * 0.6f;
             int removed = 0;
-            foreach (VoxelBody body in _skin.Bodies)
-                if (body != null)
-                    removed += body.ShakeOff(share, centre, 1.2f, 600);
+            IReadOnlyList<VoxelBody> bodies = _skin.Bodies;
+            for (int i = 0; i < bodies.Count; i++)
+            {
+                if (bodies[i] != null)
+                    removed += bodies[i].ShakeOff(share, centre, 1.2f, 600);
+            }
             return removed;
         }
 
@@ -650,8 +653,10 @@ namespace Game.Voxels
             Vector3 centre = transform.position + transform.up * 0.6f;
             float twist = _shudderTwist * Mathf.Sign(spin == 0f ? 1f : spin);
             int removed = 0;
-            foreach (VoxelBody body in _skin.Bodies)
+            IReadOnlyList<VoxelBody> bodies = _skin.Bodies;
+            for (int i = 0; i < bodies.Count; i++)
             {
+                VoxelBody body = bodies[i];
                 if (body == null)
                     continue;
                 // Stains first: one over mud stuck on turns back to that mud, which the shake then takes.
@@ -760,16 +765,22 @@ namespace Game.Voxels
         /// <summary>A part of the skin, picked with a chance in proportion to its voxels.</summary>
         private VoxelBody PickPart()
         {
+            // By index: foreach over an IReadOnlyList boxes its enumerator, 40 B a call
+            IReadOnlyList<VoxelBody> bodies = _skin.Bodies;
             int total = 0;
-            foreach (VoxelBody body in _skin.Bodies)
-                if (body != null)
-                    total += body.SolidCount;
+            for (int i = 0; i < bodies.Count; i++)
+            {
+                if (bodies[i] != null)
+                    total += bodies[i].SolidCount;
+            }
+
             if (total == 0)
                 return null;
 
             int pick = Random.Range(0, total);
-            foreach (VoxelBody body in _skin.Bodies)
+            for (int i = 0; i < bodies.Count; i++)
             {
+                VoxelBody body = bodies[i];
                 if (body == null)
                     continue;
                 pick -= body.SolidCount;

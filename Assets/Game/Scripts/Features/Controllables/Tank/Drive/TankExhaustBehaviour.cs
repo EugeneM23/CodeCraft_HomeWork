@@ -140,7 +140,7 @@ namespace Game
                     float p = _engine.StartProgress;
                     // Grows faster towards the end; flickers as the cylinders catch one by one.
                     float grow = p * p * (3f - 2f * p);
-                    float flicker = 0.7f + 0.3f * Mathf.PerlinNoise(Time.time * 9f, 0.37f);
+                    float flicker = 0.7f + 0.3f * Mathf.PerlinNoise(GameTicks.Time * 9f, 0.37f);
                     rate = Mathf.Lerp(CRANK_RATE_FROM, CRANK_RATE_TO, grow) * flicker;
                     jet = Mathf.Lerp(CRANK_SPEED_FROM, CRANK_SPEED_TO, grow) * flicker;
                     size = Mathf.Lerp(CRANK_SIZE_FROM, CRANK_SIZE_TO, grow);

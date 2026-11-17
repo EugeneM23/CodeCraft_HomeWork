@@ -1,0 +1,27 @@
+{
+    "name": "Game.AIKit.Adapters",
+    "rootNamespace": "Game.AIKit.Adapters",
+    "references": [
+        "Game",
+        "Game.Voxels",
+        "Game.AudioEngine.Adapters",
+        "GameLoop",
+        "Game.Horde",
+        "AIKit",
+        "AIKit.NavMesh",
+        "Atomic.Elements",
+        "Atomic.Entities",
+        "Unity.Mathematics",
+        "Unity.Burst",
+        "Unity.Collections"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

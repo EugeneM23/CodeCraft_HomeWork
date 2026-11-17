@@ -3,6 +3,7 @@ using Atomic.Entities;
 using Game.Voxels;
 using Ticking;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
 
 namespace Game
@@ -14,19 +15,19 @@ namespace Game
     /// they land, break up and are gone in about 12 s), a fountain of clods, a cluster of fireballs, a flash, a camera shake that fades with distance
     /// and a shove for the tank when it is close.
     ///
-    /// <see cref="_toggleKey"/> (X) stops the bombs and starts them again; bombs already falling
+    /// The Sandbox/AirStrike input action (X) stops the bombs and starts them again; bombs already falling
     /// still land. The sandbox HUD lists the key and whether the bombs are on.
     /// </summary>
     public sealed class VoxelAirStrike : MonoBehaviour, IUpdateListener
     {
+        private const float HUD_REFRESH = 0.25f;
+
         [Tooltip("What the bombs fall round: the tank.")]
         [SerializeField] private Transform _target;
 
         [SerializeField] private float _interval = 5f;
         [SerializeField] private float _firstDelay = 3f;
 
-        [Tooltip("Turns the bombs off and on again.")]
-        [SerializeField] private KeyCode _toggleKey = KeyCode.X;
         [Tooltip("Seconds from turning the bombs back on to the next one.")]
         [SerializeField] private float _resumeDelay = 1f;
 
@@ -82,8 +83,11 @@ namespace Game
         private Light _flash;
         private float _flashTime = 1f;
         private System.Func<string> _hudLine;
+        private string _hudText;
+        private bool _hudOn;
+        private float _hudRefreshTime;
 
-        /// <summary>Whether new bombs fall; <see cref="_toggleKey"/> flips it.</summary>
+        /// <summary>Whether new bombs fall; the Sandbox/AirStrike input action flips it.</summary>
         public bool On => _on;
 
         private sealed class Bomb
@@ -110,9 +114,24 @@ namespace Game
 
         private void OnEnable()
         {
-            _hudLine ??= () => $"{_toggleKey} — air strikes on / off (now {(_on ? "on" : "off")})";
+            _hudLine ??= HudLine;
             VoxelHudLines.Add(_hudLine);
             _looped = GameTicks.TryAdd(this);
+        }
+
+        // The HUD asks every frame: the line is rebuilt only when the bombs are switched or, for a rebound key,
+        // at most every HUD_REFRESH seconds (unscaled: keys are rebound under the pause); otherwise no allocation.
+        private string HudLine()
+        {
+            float now = Time.unscaledTime;
+            if (_hudText != null && _hudOn == _on && now < _hudRefreshTime)
+                return _hudText;
+
+            _hudOn = _on;
+            _hudRefreshTime = now + HUD_REFRESH;
+            string key = AppServices.Input.Controls.Sandbox.AirStrike.GetBindingDisplayString();
+            _hudText = $"{key} — air strikes on / off (now {(_on ? "on" : "off")})";
+            return _hudText;
         }
 
         private void OnDisable()
@@ -127,7 +146,7 @@ namespace Game
 
         private void Update() // perf-ok: the toggle key reads input every frame; the strikes tick from the game loop with the app
         {
-            if (Input.GetKeyDown(_toggleKey))
+            if (AppServices.Input.Controls.Sandbox.AirStrike.WasPressedThisFrame())
             {
                 _on = !_on;
                 if (_on) GameSignals.RaiseAirStrikeCalled();
@@ -211,6 +230,7 @@ namespace Game
 
             Shake(point);
             ShoveTarget(point);
+            ExplosionEvents.Raise(point, _blastRadius);
         }
 
         private void SpawnFireballs(Vector3 point)

@@ -1,0 +1,28 @@
+{
+    "name": "AIKit.Tests",
+    "rootNamespace": "AIKit.Tests",
+    "references": [
+        "AIKit",
+        "AIKit.Editor",
+        "AIKit.NavMesh",
+        "AIKit.Animation",
+        "AIKit.Animation.Editor",
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

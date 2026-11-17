@@ -25,6 +25,10 @@ namespace Game
     /// </summary>
     public sealed class TankCrushBehaviour : IEntityInit, IEntityDispose, IEntityFixedTick
     {
+        // The kill (damage, death, voxel gibs) and the tank's spray and stain, apart (perf debt of the crush frame).
+        private static readonly Unity.Profiling.ProfilerMarker KillMarker = new("Crush.Kill");
+        private static readonly Unity.Profiling.ProfilerMarker SprayMarker = new("Crush.SprayAndStain");
+
         /// <summary>
         /// How far (m) past this step's travel the hull looks ahead, and how far below its collider:
         /// enough that the enemy dies a step before the hull would reach it.
@@ -205,14 +209,18 @@ namespace Game
 
         private void Crush(IEntity victim, Vector3 point, float speed)
         {
+            KillMarker.Begin();
             DamageUseCase.TakeDamage(victim, new TakeDamageArgs(_crusher));
+            KillMarker.End();
             if (IsAlive(victim))
                 return;
             GameSignals.RaiseCrushed(point, speed);
 
+            SprayMarker.Begin();
             Vector3 under = Under(point);
             Spray(under, speed);
             Stain(point, under.y);
+            SprayMarker.End();
         }
 
         /// <summary>Just above the ground under the contact, where the fans start; the contact itself if no ground is found.</summary>

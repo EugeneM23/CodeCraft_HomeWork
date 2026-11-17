@@ -1,0 +1,49 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 700d3c16d1444c22b1e3f9f75a901473, type: 3}
+  m_Name: Regax_Elite_Bite
+  m_EditorClassIdentifier: AIKit::AIKit.AbilityAsset
+  Name: Bite
+  Conditions:
+  - rid: 4166356712623964280
+  Queue:
+    AtOnce: 0
+    Pool: 
+    Weight: 1
+    RepeatPenalty: 0.5
+  Timing:
+    WindUp: 0.8
+    Recovery: 0.6
+  Delivery:
+    rid: 4166356712623964281
+  Effects: []
+  Cues: []
+  _oldMaxRange: -1
+  _oldMinRange: 0
+  _oldCooldown: 0
+  _oldNeedsSight: 0
+  _oldWindUp: 0
+  _oldRecovery: 0
+  _oldDamage: 0
+  _oldWeight: 1
+  _oldAtOnce: 0
+  _neededMyPlace: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: 4166356712623964280
+      type: {class: CooldownCondition, ns: AIKit, asm: AIKit}
+      data:
+        Seconds: 1.2
+    - rid: 4166356712623964281
+      type: {class: CodeRunnerDelivery, ns: AIKit, asm: AIKit}
+      data: 

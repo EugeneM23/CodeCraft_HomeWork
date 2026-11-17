@@ -13,17 +13,12 @@ namespace Game
         private float _moveSpeed = 1;
 
         [SerializeField] private float _rotationSpeed = 15f;
-        [SerializeField] private Transform[] _patrolPoints;
 
         [Header("Health Settings")] [SerializeField]
         private int _health = 100;
 
         [Header("Core Components")] [SerializeField]
         private Transform _characterRoot;
-
-        [Header("AI")]
-        [Tooltip("Stands where it is placed: no patrol, no chase, no attack. For targets to shoot at.")]
-        [SerializeField] private bool _standStill;
 
         private GameContext _gameContext;
 
@@ -43,7 +38,6 @@ namespace Game
             // Core
             entity.AddGameObject(transform.gameObject);
             entity.AddTransform(_characterRoot);
-            entity.AddPatrolPoints(_patrolPoints);
             entity.AddTarget(new ReactiveVariable<IEntity>());
 
             // Health
@@ -61,13 +55,8 @@ namespace Game
             // Attack
             CharacterAttackUseCase.AddHeldWeapon(entity, _weapon);
 
-            // AI
-            if (!_standStill)
-            {
-                entity.AddBehaviour<EnemyCharacterPatrolBehaviour>();
-                entity.AddBehaviour<EnemyCharacterChaseBehaviour>();
-                entity.AddBehaviour<EnemyCharacterAttackBehaviour>();
-            }
+            // No AI here: a plain enemy stands where it is placed. The elite's brain is AIKit
+            // (Features/AI/EliteRegax, EliteRegaxInstaller), the horde's is Game.Horde.
         }
     }
 }

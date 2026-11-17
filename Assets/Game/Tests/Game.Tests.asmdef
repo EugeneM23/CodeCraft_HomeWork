@@ -13,7 +13,9 @@
         "DOTweenModules",
         "SaveSystem",
         "Loading",
-        "GameLoop"
+        "GameLoop",
+        "Unity.InputSystem",
+        "ScreenStack"
     ],
     "includePlatforms": [
         "Editor"
