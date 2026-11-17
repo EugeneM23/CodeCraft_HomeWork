@@ -347,7 +347,9 @@ namespace Game.Voxels
                     continue;
 
                 Vector3 middle = transform.TransformPoint(Origin + ((float3)(piece.Min + piece.Max) * 0.5f + 0.5f) * VoxelSize);
-                if (piece.Count <= CRUMBLE_MAX)
+                if (piece.Cell < 0)
+                    Crush(labels, i + 1, piece);
+                else if (piece.Count <= CRUMBLE_MAX)
                     Crumble(labels, i + 1, piece, middle, 0f);
                 else
                     Detach(labels, i + 1, piece, middle, 0f);
@@ -358,6 +360,36 @@ namespace Game.Voxels
             labels.Dispose();
             queue.Dispose();
             components.Dispose();
+        }
+
+        /// <summary>Most clods one crushed piece goes to; the rest is dust.</summary>
+        private const int CRUSH_DEBRIS = 600;
+
+        /// <summary>Speed (m/s) a crushed piece's clods burst out with.</summary>
+        private const float CRUSH_SPEED = 2f;
+
+        /// <summary>
+        /// A piece crushed under a load (a post, a pier) goes to clods where it stood: no body is
+        /// left standing there to hold up what it bore.
+        /// </summary>
+        private void Crush(NativeArray<int> labels, int label, VoxelComponent piece)
+        {
+            var removed = new NativeList<RemovedVoxel>(piece.Count, Allocator.TempJob);
+            for (int z = piece.Min.z; z <= piece.Max.z; z++)
+            for (int y = piece.Min.y; y <= piece.Max.y; y++)
+            for (int x = piece.Min.x; x <= piece.Max.x; x++)
+            {
+                int index = VoxelMath.Index(new int3(x, y, z), Size);
+                if (labels[index] != label)
+                    continue;
+                removed.Add(new RemovedVoxel { Position = new int3(x, y, z), Material = _voxels[index] });
+                _voxels[index] = 0;
+            }
+
+            SolidCount -= removed.Length;
+            Vector3 middle = transform.TransformPoint(Origin + ((float3)(piece.Min + piece.Max) * 0.5f + 0.5f) * VoxelSize);
+            ThrowDebris(removed, middle, CRUSH_SPEED, Vector3.zero, CRUSH_DEBRIS);
+            removed.Dispose();
         }
 
         /// <summary>

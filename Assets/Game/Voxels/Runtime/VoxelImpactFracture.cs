@@ -26,6 +26,12 @@ namespace Game.Voxels
 
         [SerializeField] private int _maxPieces = 8;
 
+        /// <summary>A building's piece breaks into one piece per this many voxels (3.6 t of brick)...</summary>
+        private const int STRUCTURE_PIECE_VOXELS = 2000;
+
+        /// <summary>...and at most this many.</summary>
+        private const int MAX_STRUCTURE_PIECES = 12;
+
         [Tooltip("Pieces this many breaks from a standing body no longer break on impact: they lie as rubble.")]
         [SerializeField] private int _maxGeneration = 2;
 
@@ -91,6 +97,10 @@ namespace Game.Voxels
             int pieces = Mathf.Clamp(2 + Mathf.RoundToInt((speed - threshold) * _piecesPerSpeed), 2, _maxPieces);
             // Bigger pieces split into more.
             pieces = Mathf.Min(_maxPieces, pieces + _body.SolidCount / 400);
+            // A storey or a roof that lands breaks into rooms and slopes, not into a few: one piece
+            // per STRUCTURE_PIECE_VOXELS, along its weak joints (VoxelBody.Fracture).
+            if (_body.HasStrength)
+                pieces = Mathf.Max(pieces, Mathf.Min(MAX_STRUCTURE_PIECES, _body.SolidCount / STRUCTURE_PIECE_VOXELS));
 
             // One break per hit: the pieces get their own chance on their next hit.
             _armedAt = VoxelTicks.Time + _armDelay;

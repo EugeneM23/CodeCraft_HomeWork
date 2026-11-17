@@ -179,7 +179,7 @@ namespace Game.Voxels
         public int3 ZoneLo;
         public int3 ZoneHi;
 
-        /// <summary>Per block: 0 — holds; otherwise the 1-based island it falls with.</summary>
+        /// <summary>Per block: 0 — holds; otherwise the 1-based island it falls with, negative when crushed (it crumbles).</summary>
         public NativeArray<int> Island;
 
         /// <summary>[0] islands, [1] 1 when joints were still overloaded after the last round, [2] the worst overload of the first round × 1000, [3] blocks the supports reach.</summary>
@@ -189,6 +189,12 @@ namespace Game.Voxels
         /// Made inside Execute (Temp), so not checked when the job is scheduled.
         [NativeDisableContainerSafetyRestriction] private NativeArray<float> _deepX;
         [NativeDisableContainerSafetyRestriction] private NativeArray<float> _deepZ;
+
+        /// <summary>Per block: crushed under a load it could not bear (see Breaks); it holds nothing up any more.</summary>
+        [NativeDisableContainerSafetyRestriction] private NativeArray<byte> _crushed;
+
+        /// <summary>Per block face: the last ratio there was a block pressing down (not one hanging).</summary>
+        [NativeDisableContainerSafetyRestriction] private NativeArray<byte> _pressed;
 
         private int WorstSlot;
         private int _firstWorstSlot;
@@ -204,6 +210,8 @@ namespace Game.Voxels
             var ratio = new NativeArray<float>(count * 3, Allocator.Temp);
             _deepX = new NativeArray<float>(count, Allocator.Temp);
             _deepZ = new NativeArray<float>(count, Allocator.Temp);
+            _crushed = new NativeArray<byte>(count, Allocator.Temp);
+            _pressed = new NativeArray<byte>(count * 3, Allocator.Temp);
 
             if (Design)
             {
@@ -283,7 +291,7 @@ namespace Game.Voxels
             {
                 int column = x + Blocks.x * z;
                 int block = Index(new int3(x, 0, z));
-                if (Support[column] == 0 || Mass[block] <= 0f)
+                if (Support[column] == 0 || Mass[block] <= 0f || _crushed[block] != 0)
                     continue;
                 dist[block] = 0;
                 Push(heap, 0, block);
@@ -305,7 +313,7 @@ namespace Game.Voxels
                     if (!Inside(n))
                         continue;
                     int v = Index(n);
-                    if (Mass[v] <= 0f || Joint(b, k, out _, out _).x <= 0f)
+                    if (Mass[v] <= 0f || _crushed[v] != 0 || Joint(b, k, out _, out _).x <= 0f)
                         continue;
                     // Up from the ground is cheap, sideways dearer, down (hanging) dearest: a block
                     // standing on a supported one is always nearer the ground than it.
@@ -332,6 +340,21 @@ namespace Game.Voxels
                 if (ratio[slot] < limit)
                     continue;
                 Broken[slot] = 1;
+
+                // Pressed harder than it bears: what is under the joint is crushed down to the ground,
+                // or the load would lie on the stump, held there by the colliders.
+                if (_pressed[slot] != 0)
+                {
+                    for (int3 c = Coord(slot / 3); c.y >= 0; c.y--)
+                    {
+                        int block = Index(c);
+                        if (Mass[block] <= 0f)
+                            break;
+                        _crushed[block] = 1;
+                    }
+
+                    continue;
+                }
 
                 // A wall bent over a gap cracks through its whole depth at once (the rows that bent
                 // with it, see Deep): what hangs comes off there as one piece, rather than the
@@ -365,7 +388,10 @@ namespace Game.Voxels
             }
 
             for (int i = 0; i < ratio.Length; i++)
+            {
                 ratio[i] = 0f;
+                _pressed[i] = 0;
+            }
 
             Deep();
 
@@ -460,6 +486,8 @@ namespace Game.Voxels
 
             int slot = face * 3 + axis;
             r /= Scale[slot];
+            if (r >= ratio[slot])
+                _pressed[slot] = (byte)(k == 3 ? 1 : 0);
             ratio[slot] = math.max(ratio[slot], r);
             if (r > worst)
             {
@@ -516,9 +544,12 @@ namespace Game.Voxels
                     continue;
 
                 islands++;
+                // A crushed island is numbered below zero: it crumbles rather than falls whole.
+                byte crushed = _crushed[start];
+                int id = crushed != 0 ? -islands : islands;
                 queue.Clear();
                 queue.Add(start);
-                Island[start] = islands;
+                Island[start] = id;
                 for (int head = 0; head < queue.Length; head++)
                 {
                     int u = queue[head];
@@ -529,9 +560,10 @@ namespace Game.Voxels
                         if (!Inside(n))
                             continue;
                         int v = Index(n);
-                        if (Island[v] != 0 || dist[v] != int.MaxValue || Mass[v] <= 0f || Joint(b, k, out _, out _).x <= 0f)
+                        if (Island[v] != 0 || dist[v] != int.MaxValue || Mass[v] <= 0f || _crushed[v] != crushed ||
+                            Joint(b, k, out _, out _).x <= 0f)
                             continue;
-                        Island[v] = islands;
+                        Island[v] = id;
                         queue.Add(v);
                     }
                 }

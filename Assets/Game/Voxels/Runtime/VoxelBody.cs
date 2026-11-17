@@ -1094,8 +1094,10 @@ namespace Game.Voxels
             float near = math.max(2f, math.cmax((float3)Size) * 0.25f);
             for (int i = 0; i < cells; i++)
             {
-                // Two seeds in three round the impact, the rest anywhere in the body.
-                seeds[i] = i % 3 != 2
+                // Two seeds in three round the impact, the rest anywhere in the body; a building's
+                // piece, one in two: it breaks all through, along its seams, not only where it hit.
+                bool round = HasStrength ? i % 2 == 0 : i % 3 != 2;
+                seeds[i] = round
                     ? math.clamp(impact + (float3)(Random.insideUnitSphere * near), 0f, (float3)Size)
                     : new float3(Random.value * Size.x, Random.value * Size.y, Random.value * Size.z);
             }

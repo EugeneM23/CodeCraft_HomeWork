@@ -110,7 +110,7 @@ namespace Game.Voxels.Tests
                                         Mathf.Abs(r.worldCenterOfMass.z - b.min.z) < 3.5f),
                 "a cluster over the corner broke off");
             Assert.IsNotNull(house, "the house stands");
-            Assert.That(house.SolidCount, Is.GreaterThan(before * 0.6f), "most of the house stands");
+            Assert.That(house.SolidCount, Is.GreaterThan(before * 0.5f), "most of the house stands");
         }
 
         [UnityTest]
@@ -139,6 +139,10 @@ namespace Game.Voxels.Tests
             Debug.Log($"[Structure] folds: pieces {most} left {(house != null ? house.SolidCount : 0)}/{before}");
             Assert.That(most, Is.GreaterThanOrEqualTo(3), "the house came down in pieces");
             Assert.That(house == null || house.SolidCount < before * 0.4f, "little of it stands");
+            // And it came down a storey: nothing heavy is left up on the stumps of the corners, held
+            // by their colliders (the ridge stood at about b.max.y).
+            foreach (VoxelBody piece in Pieces().Where(r => r.mass > 2000f).Select(r => r.GetComponent<VoxelBody>()))
+                Assert.That(piece.WorldBounds.max.y, Is.LessThan(b.max.y - 2f), $"a {piece.SolidCount}-voxel piece still stands up high");
         }
 
         /// <summary>A brick wall 6 × 3 m: a 1 m doorway leaves the wall over it standing (so does a 3.2 m one, under its concrete cap), a 5 m gap does not.</summary>

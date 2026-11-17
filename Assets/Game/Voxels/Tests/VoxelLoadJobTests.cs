@@ -83,7 +83,7 @@ namespace Game.Voxels.Tests
         }
 
         [Test]
-        public void Column_ThinNeck_Breaks_AndTheTopFallsWhole()
+        public void Column_ThinNeck_IsCrushed_AndTheTopFallsWhole()
         {
             using var g = new Graph(new int3(1, 3, 1));
             for (int y = 0; y < 3; y++)
@@ -94,10 +94,12 @@ namespace Game.Voxels.Tests
             g.Support[0] = 1;
 
             int[] island = g.Solve(out int islands);
-            Assert.AreEqual(1, islands);
-            Assert.AreEqual(0, island[g.At(0, 0)]);
-            Assert.AreEqual(1, island[g.At(0, 1)]);
-            Assert.AreEqual(1, island[g.At(0, 2)]);
+            // The neck gave way pressed: the block under it is crushed (falls on its own), the top falls whole.
+            Assert.AreEqual(2, islands);
+            Assert.AreNotEqual(0, island[g.At(0, 0)]);
+            Assert.AreNotEqual(0, island[g.At(0, 1)]);
+            Assert.AreEqual(island[g.At(0, 1)], island[g.At(0, 2)]);
+            Assert.AreNotEqual(island[g.At(0, 0)], island[g.At(0, 1)]);
         }
 
         [Test]
