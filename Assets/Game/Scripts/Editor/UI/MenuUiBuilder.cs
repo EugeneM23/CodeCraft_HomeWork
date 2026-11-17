@@ -19,7 +19,6 @@ namespace Game.EditorTools
     {
         public const string PREFAB_NAME = "MenuUi";
         public const string SCENE_PATH = "Assets/Game/Scenes/MainMenu.unity";
-        public const string SANDBOX_SCENE_PATH = "Assets/Game/Voxels/Scenes/VoxelSandbox.unity";
 
         private const float BAR_HEIGHT = 72f;
         private const float BACK_WIDTH = 220f;
@@ -104,28 +103,10 @@ namespace Game.EditorTools
             PrefabUtility.InstantiatePrefab(prefab, scene);
 
             UiFactory.EnsureFolder(System.IO.Path.GetDirectoryName(SCENE_PATH)!.Replace('\\', '/'));
+            // Saved over the core's MainMenu scene: same file, same GUID (the level catalog refers to it).
+            // Build Settings belong to the core team (ProjectSettings): not touched here.
             EditorSceneManager.SaveScene(scene, SCENE_PATH);
-            AddToBuildSettings();
             Debug.Log($"Main menu scene built: {SCENE_PATH}");
-        }
-
-        // MainMenu first, the others kept in their order, VoxelSandbox present
-        private static void AddToBuildSettings()
-        {
-            List<EditorBuildSettingsScene> scenes = new() { new EditorBuildSettingsScene(SCENE_PATH, true) };
-            bool hasSandbox = false;
-            foreach (EditorBuildSettingsScene entry in EditorBuildSettings.scenes)
-            {
-                if (entry.path == SCENE_PATH)
-                    continue;
-                hasSandbox |= entry.path == SANDBOX_SCENE_PATH;
-                scenes.Add(entry);
-            }
-
-            if (!hasSandbox)
-                scenes.Add(new EditorBuildSettingsScene(SANDBOX_SCENE_PATH, true));
-
-            EditorBuildSettings.scenes = scenes.ToArray();
         }
 
         // ---------- Main menu ----------
