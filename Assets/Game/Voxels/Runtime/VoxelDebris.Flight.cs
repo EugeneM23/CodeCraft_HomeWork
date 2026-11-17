@@ -238,8 +238,10 @@ namespace Game.Voxels
             public NativeArray<LyingCube> Lying;
             [WriteOnly] public NativeArray<float4x4> LyingMatrices;
             [WriteOnly] public NativeArray<float4> LyingColors;
-            public NativeArray<byte> DirtyBatches;
-            public NativeArray<byte> BoundsDirty;
+            /// <summary>Cell slots: a new cube's cell and an overwritten cube's cell are marked dirty.</summary>
+            public NativeArray<LyingCell> Cells;
+            /// <summary>Cell coordinate to its slot.</summary>
+            public NativeParallelHashMap<int2, int> CellIndex;
             public NativeReference<LyingState> State;
             public float Time;
 
@@ -249,6 +251,9 @@ namespace Game.Voxels
                 var remap = new NativeArray<int>(count, Allocator.Temp);
                 var settled = new NativeArray<Cluster>(count, Allocator.Temp);
                 var groups = new NativeArray<int>(count, Allocator.Temp);
+                // Per settled clump: its first cube's world position, which the grid of its cubes goes through.
+                var anchors = new NativeArray<float3>(count, Allocator.Temp);
+                var anchored = new NativeArray<bool>(count, Allocator.Temp);
                 LyingState state = State.Value;
                 int clusters = 0;
                 for (int i = 0; i < count; i++)
@@ -278,7 +283,13 @@ namespace Game.Voxels
                     int owner = remap[cube.Cluster];
                     if (owner == SETTLED)
                     {
-                        Lie(settled[cube.Cluster], cube, groups[cube.Cluster], capacity, ref state);
+                        Cluster from = settled[cube.Cluster];
+                        if (!anchored[cube.Cluster])
+                        {
+                            anchored[cube.Cluster] = true;
+                            anchors[cube.Cluster] = from.Position + math.mul(from.Rotation, cube.Offset);
+                        }
+                        Lie(from, cube, groups[cube.Cluster], anchors[cube.Cluster], capacity, ref state);
                         continue;
                     }
 
@@ -300,8 +311,11 @@ namespace Game.Voxels
                 Alive.Value = cubes;
             }
 
-            /// <summary>One cube of a settled clump into the store: a free slot, or when full the next to overwrite.</summary>
-            private void Lie(in Cluster settledCluster, in Cube cube, int group, int capacity, ref LyingState state)
+            /// <summary>
+            /// One cube of a settled clump into the store: a free slot, or when full the next to overwrite.
+            /// It joins its cell (marked dirty) and is drawn instanced (PENDING) until the cell is rebuilt.
+            /// </summary>
+            private void Lie(in Cluster settledCluster, in Cube cube, int group, float3 anchor, int capacity, ref LyingState state)
             {
                 int slot;
                 if (state.Count < capacity)
@@ -319,12 +333,17 @@ namespace Game.Voxels
                         if ((old.Flags & EVICTED) != 0)
                             state.Evicting = math.max(0, state.Evicting - 1);
                     }
+                    if ((old.Flags & PENDING) != 0)
+                        state.Unbaked = math.max(0, state.Unbaked - 1);
+                    LeaveCell(Cells, old.Cell, old.Sinking <= 0f);
                 }
 
+                float3 position = settledCluster.Position + math.mul(settledCluster.Rotation, cube.Offset);
+                int cell = TakeCell(position, ref state);
                 float3 scale = (settledCluster.Flags & LAID) != 0 ? new float3(SPLAT_WIDTH, SPLAT_HEIGHT, SPLAT_WIDTH) : new float3(1f);
                 var lying = new LyingCube
                 {
-                    Position = settledCluster.Position + math.mul(settledCluster.Rotation, cube.Offset),
+                    Position = position,
                     Rotation = settledCluster.Rotation,
                     Scale = scale * cube.Size,
                     Size = cube.Size,
@@ -332,13 +351,34 @@ namespace Game.Voxels
                     Group = group,
                     Born = Time,
                     SinkTime = SINK_TIME,
-                    Flags = settledCluster.Flags & LAID
+                    Flags = (settledCluster.Flags & LAID) | PENDING,
+                    Anchor = anchor,
+                    Cell = cell
                 };
                 Lying[slot] = lying;
                 LyingMatrices[slot] = float4x4.TRS(lying.Position, lying.Rotation, lying.Scale);
                 LyingColors[slot] = lying.Color;
-                DirtyBatches[slot / BATCH] = 1;
-                BoundsDirty[slot / BATCH] = 1;
+                state.Unbaked++;
+            }
+
+            /// <summary>The slot of the cell under <paramref name="position"/>, taken now if new; -1 when all MAX_CELLS are taken.</summary>
+            private int TakeCell(float3 position, ref LyingState state)
+            {
+                int2 coord = CellOf(position);
+                if (!CellIndex.TryGetValue(coord, out int cell))
+                {
+                    if (state.Cells >= Cells.Length)
+                        return -1;
+                    cell = state.Cells++;
+                    CellIndex.TryAdd(coord, cell);
+                    Cells[cell] = new LyingCell { Coord = coord };
+                }
+
+                LyingCell c = Cells[cell];
+                c.Cubes++;
+                c.Dirty = 1;
+                Cells[cell] = c;
+                return cell;
             }
 
             private static float4x4 Matrix(in Cluster cluster, in Cube cube, float shrink)

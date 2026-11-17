@@ -195,7 +195,7 @@ namespace Game.Voxels.Tests
         }
 
         [Test]
-        public void LyingBatch_OutOfTheViewCamera_IsNotDrawn()
+        public void LyingCell_OutOfTheViewCamera_IsNotDrawn()
         {
             LayRow(_debris, new Vector3(0f, 0.2f, 0f), 100);
             Run(2f);
@@ -210,20 +210,20 @@ namespace Game.Voxels.Tests
                 camera.transform.position = new Vector3(5f, 3f, -10f);
                 camera.transform.LookAt(row);
                 _debris.Tick(0f);
-                Assert.That(_debris.LyingBatchesDrawn, Is.GreaterThanOrEqualTo(1), "looking at the row");
+                Assert.That(_debris.LyingCellsDrawn, Is.GreaterThanOrEqualTo(1), "looking at the row");
 
                 camera.transform.rotation = Quaternion.LookRotation(Vector3.back);
                 _debris.Tick(0f);
-                Assert.AreEqual(0, _debris.LyingBatchesDrawn, "looking away from the row");
+                Assert.AreEqual(0, _debris.LyingCellsDrawn, "looking away from the row");
 
                 camera.transform.position = new Vector3(5f, 3f, -VoxelDebris.LYING_DRAW_DISTANCE - 50f);
                 camera.transform.LookAt(row);
                 _debris.Tick(0f);
-                Assert.AreEqual(0, _debris.LyingBatchesDrawn, "looking at the row from past the draw distance");
+                Assert.AreEqual(0, _debris.LyingCellsDrawn, "looking at the row from past the draw distance");
 
                 _debris.ViewCamera = null;
                 _debris.Tick(0f);
-                Assert.AreEqual(1, _debris.LyingBatchesDrawn, "no camera: every batch is drawn");
+                Assert.AreEqual(2, _debris.LyingCellsDrawn, "no camera: every cell is drawn (the row spans two 8 m cells)");
             }
             finally { Object.Destroy(camera.gameObject); }
         }

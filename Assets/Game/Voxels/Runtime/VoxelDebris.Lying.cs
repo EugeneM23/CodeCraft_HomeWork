@@ -10,12 +10,11 @@ namespace Game.Voxels
     public sealed partial class VoxelDebris
     {
         /// <summary>
-        /// Lying cubes kept by default: past this, new ones overwrite the slots in turn. Measured
-        /// 2026-11-17 (/perf-check A/B): a full store of 30 000 instanced cubes cost the air strike
-        /// +0.8...1.5 ms of PlayerLoop and +2 ms of GPU, past the 5 ms budget; frustum culling barely
-        /// helps, as bombs fall in view. 12 000 until lying cubes are baked into per-cell meshes.
+        /// Lying cubes kept by default: past this, new ones overwrite the slots in turn. 30 000
+        /// instanced cubes put the air strike past the 5 ms budget (/perf-check, 2026-11-17); baked
+        /// into per-cell meshes (VoxelDebris.Cells.cs) they take a few hundred draw calls at most.
         /// </summary>
-        public const int LYING_DEFAULT = 12000;
+        public const int LYING_DEFAULT = 30000;
 
         /// <summary>How long (s) a lying cube takes to sink into the ground and go.</summary>
         private const float SINK_TIME = 1.5f;
@@ -24,6 +23,11 @@ namespace Game.Voxels
         private const int HIT = 16;
         /// <summary>A lying cube sinking because a round of eviction chose it (not a crush or a blow with no room).</summary>
         private const int EVICTED = 32;
+        /// <summary>
+        /// A lying cube not yet baked into its cell's mesh (or with no cell at all): drawn instanced
+        /// until a build of its cell clears the flag.
+        /// </summary>
+        private const int PENDING = 64;
 
         /// <summary>How long (s) a crushed cube takes to sink.</summary>
         private const float CRUSH_SINK_TIME = 0.4f;
@@ -71,10 +75,17 @@ namespace Game.Voxels
             /// <summary>0 — lying; > 0 — sinking for this many seconds of SinkTime.</summary>
             public float Sinking;
             public float SinkTime;
-            /// <summary>LAID (blood tile), HIT (marked by a query this step), EVICTED (sinking by eviction).</summary>
+            /// <summary>LAID (blood tile), HIT (marked by a query this step), EVICTED (sinking by eviction), PENDING (not baked).</summary>
             public int Flags;
             /// <summary>Which query hit it (index + 1), 0 — none.</summary>
             public int Query;
+            /// <summary>
+            /// The first cube of its group, where it lay: the group's cubes sit on a grid of their size
+            /// around it, turned by Rotation (faces between neighbours on that grid are not baked).
+            /// </summary>
+            public float3 Anchor;
+            /// <summary>Its cell slot (see VoxelDebris.Cells.cs); -1 — no slot was free, drawn instanced.</summary>
+            public int Cell;
         }
 
         private struct LyingState
@@ -87,6 +98,10 @@ namespace Game.Voxels
             public int Evicting;
             /// <summary>Cubes sinking for any reason: LyingJob has nothing to do while this is 0.</summary>
             public int Sinking;
+            /// <summary>Cell slots taken (they are never given back).</summary>
+            public int Cells;
+            /// <summary>Cubes flagged PENDING: LyingInstancesJob has nothing to gather while this and Sinking are 0.</summary>
+            public int Unbaked;
         }
 
         /// <summary>The store is nearly full past this share of its capacity: the old and far cubes start to sink.</summary>
@@ -161,6 +176,7 @@ namespace Game.Voxels
         private struct EvictJob : IJob
         {
             public NativeArray<LyingCube> Lying;
+            public NativeArray<LyingCell> Cells;
             public NativeReference<LyingState> State;
             public float Time;
             public float3 ViewPoint;
@@ -201,6 +217,7 @@ namespace Game.Voxels
                     cube.SinkTime = SINK_TIME * (0.6f + 0.8f * ((h & 0xffffu) / 65535f));
                     cube.Flags |= EVICTED;
                     Lying[i] = cube;
+                    MarkDirty(Cells, cube.Cell);
                     marked++;
                 }
 
@@ -289,9 +306,8 @@ namespace Game.Voxels
             public NativeArray<LyingCube> Lying;
             public NativeArray<float4x4> Matrices;
             public NativeArray<float4> Colors;
-            public NativeArray<byte> DirtyBatches;
-            /// <summary>Per batch: set when a cube is moved into one of its slots.</summary>
-            public NativeArray<byte> BoundsDirty;
+            /// <summary>A cell is marked dirty when one of its cubes starts sinking or goes.</summary>
+            public NativeArray<LyingCell> Cells;
             /// <summary>LyingQueryJob's hits per thread: summed and cleared here.</summary>
             public NativeArray<int> QueryHits;
             public NativeReference<LyingState> State;
@@ -344,14 +360,16 @@ namespace Game.Voxels
                             : Wake(cube, query, ref groupCluster, ref random);
                         if (gone)
                         {
-                            Remove(i, ref count);
+                            Remove(i, ref count, ref state);
                             continue;
                         }
 
-                        // A crushed cube that stays, or a woken one with no room to fly: it sinks.
+                        // A crushed cube that stays, or a woken one with no room to fly: it sinks,
+                        // drawn instanced, out of its cell's mesh.
                         cube.Sinking = 1e-4f;
                         cube.SinkTime = query.Kind == QUERY_CRUSH ? CRUSH_SINK_TIME : SINK_TIME;
                         state.Sinking++;
+                        MarkDirty(Cells, cube.Cell);
                     }
 
                     cube.Sinking += DeltaTime;
@@ -361,7 +379,7 @@ namespace Game.Voxels
                         state.Sinking = math.max(0, state.Sinking - 1);
                         if ((cube.Flags & EVICTED) != 0)
                             state.Evicting = math.max(0, state.Evicting - 1);
-                        Remove(i, ref count);
+                        Remove(i, ref count, ref state);
                         continue;
                     }
 
@@ -377,18 +395,23 @@ namespace Game.Voxels
                 State.Value = state;
             }
 
-            /// <summary>Closes slot <paramref name="i"/> by moving the last cube into it.</summary>
-            private void Remove(int i, ref int count)
+            /// <summary>
+            /// Closes slot <paramref name="i"/> by moving the last cube into it. The moved cube keeps its
+            /// cell (a build gathers a cell's cubes by scanning the slots); the gone one's cell loses it.
+            /// </summary>
+            private void Remove(int i, ref int count, ref LyingState state)
             {
+                LyingCube gone = Lying[i];
+                // A sinking cube left its cell's mesh when it started to sink: no rebuild for it now.
+                LeaveCell(Cells, gone.Cell, gone.Sinking <= 0f);
+                if ((gone.Flags & PENDING) != 0)
+                    state.Unbaked = math.max(0, state.Unbaked - 1);
+
                 int last = count - 1;
                 Lying[i] = Lying[last];
                 Matrices[i] = Matrices[last];
                 Colors[i] = Colors[last];
                 count = last;
-                DirtyBatches[i / BATCH] = 1;
-                DirtyBatches[last / BATCH] = 1;
-                // The last batch only loses a slot: its box stays conservative.
-                BoundsDirty[i / BATCH] = 1;
             }
 
             /// <summary>A crushed cube flies back from under the track as a crumb (true), or stays to sink (false).</summary>
@@ -504,45 +527,6 @@ namespace Game.Voxels
                 }
 
                 centres.Dispose();
-            }
-        }
-
-        /// <summary>
-        /// Works out the world box of each lying batch a slot was written or moved into this step
-        /// (BoundsDirty). Each cube counts as a sphere of half its scale's diagonal, plus its size
-        /// below: a sinking cube goes down by up to its size and shrinks, so a box worked out when
-        /// it lay down holds it till it is gone.
-        /// </summary>
-        [BurstCompile]
-        private struct LyingBoundsJob : IJob
-        {
-            [ReadOnly] public NativeArray<LyingCube> Lying;
-            public NativeArray<float3x2> Bounds;
-            public NativeArray<byte> BoundsDirty;
-            [ReadOnly] public NativeReference<LyingState> State;
-
-            public void Execute()
-            {
-                int count = State.Value.Count;
-                int batches = (count + BATCH - 1) / BATCH;
-                for (int b = 0; b < batches; b++)
-                {
-                    if (BoundsDirty[b] == 0)
-                        continue;
-                    BoundsDirty[b] = 0;
-
-                    var min = new float3(float.MaxValue);
-                    var max = new float3(float.MinValue);
-                    int end = math.min(count, (b + 1) * BATCH);
-                    for (int i = b * BATCH; i < end; i++)
-                    {
-                        LyingCube cube = Lying[i];
-                        float reach = math.length(cube.Scale) * 0.5f;
-                        min = math.min(min, cube.Position - new float3(reach, reach + cube.Size, reach));
-                        max = math.max(max, cube.Position + reach);
-                    }
-                    Bounds[b] = new float3x2(min, max);
-                }
             }
         }
     }
