@@ -24,6 +24,9 @@ namespace Game.AI
         /// <summary>Farther than this from the ground (a spawn, a teleport) the body is put on it at once.</summary>
         private const float SNAP_HEIGHT = 3f;
 
+        /// <summary>A move longer than this in one tick was a placement (a spawn, a teleport), not a walk, m.</summary>
+        private const float TELEPORT = 3f;
+
         /// <summary>Top of the leap's arc over the straight line, m.</summary>
         private const float LEAP_HEIGHT = 1.2f;
 
@@ -148,14 +151,13 @@ namespace Game.AI
             HordeNavGrid grid = Grid;
             if (_hasLast && grid != null)
             {
-                int2 from = grid.ClampCell(_last);
-                if (!Steppable(grid, from, grid.ClampCell(p)))
+                if (!Steppable(grid, _last, p))
                 {
                     var alongX = new Vector3(p.x, p.y, _last.z);
                     var alongZ = new Vector3(_last.x, p.y, p.z);
-                    if (Steppable(grid, from, grid.ClampCell(alongX)))
+                    if (Steppable(grid, _last, alongX))
                         p = alongX;
-                    else if (Steppable(grid, from, grid.ClampCell(alongZ)))
+                    else if (Steppable(grid, _last, alongZ))
                         p = alongZ;
                     else
                         p = new Vector3(_last.x, p.y, _last.z);
@@ -243,14 +245,34 @@ namespace Game.AI
             return true;
         }
 
-        private static bool Steppable(HordeNavGrid grid, int2 from, int2 to)
+        // Every cell the move crosses, half a cell at a time (as the navigator's PathBroken walks a path): a big step
+        // (a long frame) must not carry the body through a wall it could not step over
+        private static bool Steppable(HordeNavGrid grid, Vector3 from, Vector3 to)
         {
-            int2 d = to - from;
-            if (math.all(d == 0) || math.any(math.abs(d) > 1))
-                return true;                 // the same cell, or a jump of more than a cell (placed from outside)
-            if (!grid.HasGround(from))
+            int2 previous = grid.ClampCell(from);
+            if (math.all(grid.ClampCell(to) == previous))
+                return true;                 // the same cell
+            if (!grid.HasGround(previous))
                 return true;                 // standing nowhere the grid knows: no wall holds it
-            return grid.CanStep(from, to);
+
+            Vector3 delta = to - from;
+            delta.y = 0f;
+            float length = delta.magnitude;
+            if (length > TELEPORT)
+                return true;                 // placed from outside, not walked
+
+            int samples = Mathf.Max(1, Mathf.CeilToInt(length / (grid.CellSize * 0.5f)));
+            for (int s = 1; s <= samples; s++)
+            {
+                int2 cell = grid.ClampCell(from + delta * ((float)s / samples));
+                if (math.all(cell == previous))
+                    continue;
+                if (math.any(math.abs(cell - previous) > 1) || !grid.CanStep(previous, cell))
+                    return false;
+                previous = cell;
+            }
+
+            return true;
         }
 
         private void Set(Vector3 position, float dt)
