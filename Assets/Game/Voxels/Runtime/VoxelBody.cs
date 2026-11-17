@@ -1690,6 +1690,9 @@ namespace Game.Voxels
 
             for (int i = boxes.Length; i < chunk.Boxes.Count; i++)
                 chunk.Boxes[i].enabled = false;
+
+            if (IsStatic)
+                VoxelWorld.RaiseChunkCollidersChanged(chunk.Renderer.bounds);
         }
 
         /// <summary>

@@ -85,6 +85,15 @@ namespace Game.Voxels
 
         public static IReadOnlyList<VoxelBody> Bodies => s_bodies;
 
+        /// <summary>
+        /// A standing body's chunk got new colliders (a crater, a rut, a wall knocked down), with the
+        /// chunk's world bounds. Navigation listens to re-read the ground there. Raised on the main
+        /// thread, after the collider is in place. Loose pieces in flight do not raise it.
+        /// </summary>
+        public static event System.Action<Bounds> ChunkCollidersChanged;
+
+        internal static void RaiseChunkCollidersChanged(Bounds worldBounds) => ChunkCollidersChanged?.Invoke(worldBounds);
+
         public static VoxelWorld Instance
         {
             get
@@ -229,6 +238,8 @@ namespace Game.Voxels
                     chunk.Cooking = false;
                     if (chunk.Collider != null && batch.Meshes[i] != null)
                         chunk.Collider.sharedMesh = batch.Meshes[i];
+                    if (chunk.Collider != null && batch.Meshes[i] != null)
+                        RaiseChunkCollidersChanged(chunk.Renderer.bounds);
                 }
 
                 _bakes.RemoveAt(b);
