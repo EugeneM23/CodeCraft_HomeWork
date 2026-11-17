@@ -337,6 +337,9 @@ namespace Game.Voxels
             if (!_clusters.IsCreated)
                 return;
 
+            // The lying state is read only here, with no job running: the numbers deciding whether to evict.
+            LyingState seen = _lyingState.Value;
+
             Draw(_matrices, _colors, _alive.Value, ShadowCastingMode.On);
             DrawLying();
 
@@ -354,7 +357,7 @@ namespace Game.Voxels
             {
                 // Nothing flies, but lying cubes may still be sinking.
                 _alive.Value = 0;
-                _step = ScheduleLying(dt, default);
+                _step = ScheduleLying(dt, default, seen);
                 _stepping = true;
                 JobHandle.ScheduleBatchedJobs();
                 return;
@@ -404,13 +407,14 @@ namespace Game.Voxels
                 Time = _time
             }.Schedule(handle);
 
-            _step = ScheduleLying(dt, handle);
+            _step = ScheduleLying(dt, handle, seen);
             _stepping = true;
             JobHandle.ScheduleBatchedJobs();
         }
 
-        private JobHandle ScheduleLying(float dt, JobHandle dependsOn) =>
-            new LyingJob
+        private JobHandle ScheduleLying(float dt, JobHandle dependsOn, in LyingState seen)
+        {
+            JobHandle handle = new LyingJob
             {
                 Lying = _lyingCubes,
                 Matrices = _lyingMatrices,
@@ -419,6 +423,20 @@ namespace Game.Voxels
                 State = _lyingState,
                 DeltaTime = dt
             }.Schedule(dependsOn);
+
+            // "seen" was read on the main thread right after Complete(), before any job of this step was scheduled.
+            if (seen.Count > EVICT_FROM * _lyingCubes.Length && seen.Evicting == 0)
+            {
+                handle = new EvictJob
+                {
+                    Lying = _lyingCubes,
+                    State = _lyingState,
+                    Time = _time,
+                    ViewPoint = ViewPoint
+                }.Schedule(handle);
+            }
+            return handle;
+        }
 
         /// <summary>
         /// Lying cubes, drawn straight from the native matrices, a batch at a time; a batch's colours

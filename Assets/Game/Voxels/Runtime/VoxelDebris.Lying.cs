@@ -2,6 +2,7 @@ using Unity.Burst;
 using Unity.Collections;
 using Unity.Jobs;
 using Unity.Mathematics;
+using UnityEngine;
 
 namespace Game.Voxels
 {
@@ -44,8 +45,99 @@ namespace Game.Voxels
             public int NextGroup;
             /// <summary>Where a cube goes when the store is full: walks round, overwriting.</summary>
             public int Overwrite;
-            /// <summary>Cubes sinking because of eviction (Task 4).</summary>
+            /// <summary>Cubes sinking because of eviction (SinkTime == SINK_TIME): no new round starts while any sink.</summary>
             public int Evicting;
+            /// <summary>Cubes sinking for any reason: LyingJob has nothing to do while this is 0.</summary>
+            public int Sinking;
+        }
+
+        /// <summary>The store is nearly full past this share of its capacity: the old and far cubes start to sink.</summary>
+        private const float EVICT_FROM = 0.95f;
+
+        /// <summary>How much of the capacity one round of eviction sinks.</summary>
+        private const float EVICT_SHARE = 0.02f;
+
+        /// <summary>Age (s) that weighs as much as EVICT_DISTANCE metres when choosing what goes first.</summary>
+        private const float EVICT_AGE = 120f;
+
+        /// <summary>Distance (m) from the viewer that weighs as much as EVICT_AGE seconds.</summary>
+        private const float EVICT_DISTANCE = 60f;
+
+        /// <summary>Where the viewer is: eviction sinks the cubes farthest from it first (VoxelWorld sets it each frame).</summary>
+        public Vector3 ViewPoint { get; set; }
+
+        /// <summary>Lying cubes within <paramref name="radius"/> of a point (sinking ones too): for tests and debugging.</summary>
+        public int CountLyingNear(Vector3 point, float radius)
+        {
+            Complete();
+            if (!_lyingState.IsCreated)
+                return 0;
+
+            int n = 0;
+            int count = _lyingState.Value.Count;
+            float3 p = point;
+            for (int i = 0; i < count; i++)
+                if (math.distance(_lyingCubes[i].Position, p) <= radius)
+                    n++;
+            return n;
+        }
+
+        /// <summary>
+        /// A round of eviction: marks the highest scoring cubes (oldest and farthest from the viewer)
+        /// to sink, about EVICT_SHARE of the capacity. A 64-bin histogram of scores finds the cut-off
+        /// in two passes without sorting. Runs only when the store is nearly full and no round is sinking.
+        /// </summary>
+        [BurstCompile]
+        private struct EvictJob : IJob
+        {
+            public NativeArray<LyingCube> Lying;
+            public NativeReference<LyingState> State;
+            public float Time;
+            public float3 ViewPoint;
+
+            public void Execute()
+            {
+                LyingState state = State.Value;
+                int count = state.Count;
+                const int BINS = 64;
+
+                float max = 0f;
+                for (int i = 0; i < count; i++)
+                    if (Lying[i].Sinking == 0f)
+                        max = math.max(max, Score(Lying[i]));
+                if (max <= 0f)
+                    return;
+
+                var bins = new NativeArray<int>(BINS, Allocator.Temp);
+                for (int i = 0; i < count; i++)
+                    if (Lying[i].Sinking == 0f)
+                        bins[math.min(BINS - 1, (int)(Score(Lying[i]) / max * BINS))]++;
+
+                int want = math.max(1, (int)(Lying.Length * EVICT_SHARE));
+                int threshold = BINS;
+                for (int sum = 0; threshold > 0 && sum < want;)
+                    sum += bins[--threshold];
+
+                int marked = 0;
+                for (int i = 0; i < count && marked < want; i++)
+                {
+                    LyingCube cube = Lying[i];
+                    if (cube.Sinking != 0f || math.min(BINS - 1, (int)(Score(cube) / max * BINS)) < threshold)
+                        continue;
+                    cube.Sinking = 1e-4f;
+                    cube.SinkTime = SINK_TIME;
+                    Lying[i] = cube;
+                    marked++;
+                }
+
+                bins.Dispose();
+                state.Evicting = marked;
+                state.Sinking += marked;
+                State.Value = state;
+            }
+
+            private float Score(in LyingCube cube) =>
+                (Time - cube.Born) / EVICT_AGE + math.distance(cube.Position, ViewPoint) / EVICT_DISTANCE;
         }
 
         /// <summary>Cube counts of the lying pieces (cubes that lay down together): for tests and debugging.</summary>
@@ -85,6 +177,10 @@ namespace Game.Voxels
             public void Execute()
             {
                 LyingState state = State.Value;
+                // Nothing sinks (and no query has marked anything): the cubes just lie.
+                if (state.Sinking == 0)
+                    return;
+
                 int count = state.Count;
                 for (int i = count - 1; i >= 0; i--)
                 {
@@ -99,6 +195,10 @@ namespace Game.Voxels
                         float t = cube.Sinking / math.max(cube.SinkTime, 1e-4f);
                         if (t >= 1f)
                         {
+                            state.Sinking = math.max(0, state.Sinking - 1);
+                            if (cube.SinkTime == SINK_TIME)
+                                state.Evicting = math.max(0, state.Evicting - 1);
+
                             int last = count - 1;
                             Lying[i] = Lying[last];
                             Matrices[i] = Matrices[last];

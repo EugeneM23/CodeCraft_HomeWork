@@ -235,7 +235,7 @@ namespace Game.Voxels
             [WriteOnly] public NativeArray<float4x4> Matrices;
             [WriteOnly] public NativeArray<float4> Colors;
             public NativeReference<int> Alive;
-            [WriteOnly] public NativeArray<LyingCube> Lying;
+            public NativeArray<LyingCube> Lying;
             [WriteOnly] public NativeArray<float4x4> LyingMatrices;
             [WriteOnly] public NativeArray<float4> LyingColors;
             public NativeArray<byte> DirtyBatches;
@@ -309,6 +309,15 @@ namespace Game.Voxels
                 {
                     slot = state.Overwrite;
                     state.Overwrite = (state.Overwrite + 1) % capacity;
+
+                    // The cube overwritten may have been sinking: it is not any more, and no longer counts.
+                    LyingCube old = Lying[slot];
+                    if (old.Sinking > 0f)
+                    {
+                        state.Sinking = math.max(0, state.Sinking - 1);
+                        if (old.SinkTime == SINK_TIME)
+                            state.Evicting = math.max(0, state.Evicting - 1);
+                    }
                 }
 
                 float3 scale = (settledCluster.Flags & LAID) != 0 ? new float3(SPLAT_WIDTH, SPLAT_HEIGHT, SPLAT_WIDTH) : new float3(1f);

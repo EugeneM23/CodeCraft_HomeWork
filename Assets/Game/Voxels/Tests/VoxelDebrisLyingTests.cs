@@ -16,7 +16,7 @@ namespace Game.Voxels.Tests
         public void SetUp()
         {
             _floor = GameObject.CreatePrimitive(PrimitiveType.Plane);
-            _floor.transform.localScale = Vector3.one * 5f;
+            _floor.transform.localScale = Vector3.one * 50f;
             Physics.SyncTransforms();
             _material = new Material(Shader.Find("Universal Render Pipeline/Lit")) { enableInstancing = true };
             _debris = new VoxelDebris(_material, 4096, 2048);
@@ -79,11 +79,84 @@ namespace Game.Voxels.Tests
                     for (int i = 0; i < 8; i++)
                         small.AddCube(clump, new Vector3(c + i * 0.1f, 0.3f, 0f), 0.1f, Color.gray);
                 }
-                for (float t = 0f; t < 3f; t += 0.02f) small.Tick(0.02f);
+                for (float t = 0f; t < 1.6f; t += 0.02f) small.Tick(0.02f); // the full store starts to evict, but nothing has sunk away yet
                 small.Complete();
                 Assert.AreEqual(16, small.LyingCount);
             }
             finally { small.Dispose(); }
+        }
+
+        [Test]
+        public void NearlyFullStore_SinksTheOldAndFarFirst_Smoothly()
+        {
+            var store = new VoxelDebris(_material, 8192, 1000);
+            try
+            {
+                store.ViewPoint = Vector3.zero;
+                // 980 cubes: 490 near the viewer, 490 far away. All the same age.
+                LayRow(store, new Vector3(0f, 0.2f, 0f), 490);
+                LayRow(store, new Vector3(0f, 0.2f, 200f), 490);
+                Settle(store, 2f);
+                Assert.AreEqual(980, store.LyingCount);
+
+                int before = store.LyingCount;
+                int lowest = before;
+                for (float t = 0f; t < 4f; t += 0.02f)
+                {
+                    store.Tick(0.02f);
+                    store.Complete();
+                    Assert.That(before - store.LyingCount, Is.LessThanOrEqualTo(30), "no cliff: a few at a time");
+                    before = store.LyingCount;
+                    lowest = Mathf.Min(lowest, before);
+                }
+                Assert.That(lowest, Is.LessThan(980), "something went");
+                Assert.AreEqual(490, store.CountLyingNear(Vector3.zero, 50f), "the near ones all stayed");
+            }
+            finally { store.Dispose(); }
+        }
+
+        [Test]
+        public void SinkingCube_IsRemovedAfterSinkTime_AndTheRestKeepTheirShapeAndColour()
+        {
+            var store = new VoxelDebris(_material, 8192, 1000);
+            try
+            {
+                store.ViewPoint = Vector3.zero;
+                // 960 cubes (past 95 %), two colours; the second row lies far away, so it is the one that sinks.
+                LayRow(store, new Vector3(0f, 0.2f, 0f), 480, Color.red);
+                LayRow(store, new Vector3(0f, 0.2f, 200f), 480, Color.blue);
+                Settle(store, 12f);
+
+                // One round sinks EVICT_SHARE of the capacity (20), which brings the store under 95 %: it stops there.
+                int count = store.LyingCount;
+                Assert.That(count, Is.InRange(938, 942), "about EVICT_SHARE * capacity went");
+                for (int i = 0; i < count; i++)
+                {
+                    Assert.IsTrue(store.TryGetLying(i, out Matrix4x4 m, out Color c), "every slot below LyingCount is a cube");
+                    Assert.AreEqual(0.1f, m.lossyScale.x, 0.002f, "none left half sunk");
+                    Assert.IsTrue(c == Color.red || c == Color.blue, "colours moved with their cubes");
+                }
+                Assert.AreEqual(480, store.CountLyingNear(Vector3.zero, 50f), "the near row is whole");
+            }
+            finally { store.Dispose(); }
+        }
+
+        /// <summary>Clusters of 10 cubes of 0.1 m in a row along X, side by side, <paramref name="cubes"/> in all.</summary>
+        private static void LayRow(VoxelDebris store, Vector3 start, int cubes, Color? color = null)
+        {
+            for (int c = 0; c < cubes / 10; c++)
+            {
+                int cluster = store.BeginCluster(start + new Vector3(c * 1f + 0.45f, 0f, 0f), Vector3.zero, 0f);
+                for (int i = 0; i < 10; i++)
+                    store.AddCube(cluster, start + new Vector3(c * 1f + i * 0.1f + 0.05f, 0f, 0f), 0.1f, color ?? Color.gray);
+            }
+        }
+
+        private static void Settle(VoxelDebris store, float seconds)
+        {
+            for (float t = 0f; t < seconds; t += STEP)
+                store.Tick(STEP);
+            store.Complete();
         }
 
         /// <summary>A side^3 block of 0.2 m cubes centred at <paramref name="center"/>.</summary>

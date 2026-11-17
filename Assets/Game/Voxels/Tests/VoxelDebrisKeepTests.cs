@@ -116,7 +116,7 @@ namespace Game.Voxels.Tests
         {
             for (int i = 0; i < 6; i++)
                 _debris.Drop(new Vector3(i, 1f, 0f), Vector3.zero, Color.green, 0.025f);
-            Run(2f);
+            Run(1f); // shorter than SINK_TIME: a full store starts to evict, but nothing has sunk away yet
 
             Assert.AreEqual(4, _debris.LyingCount);
             var xs = new System.Collections.Generic.HashSet<int>();

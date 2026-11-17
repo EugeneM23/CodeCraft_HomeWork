@@ -61,6 +61,8 @@ namespace Game.Voxels
         private readonly List<VoxelBody.ChunkJob> _asyncJobs = new(JOBS_CAPACITY);
         private readonly List<VoxelBody> _snapshot = new(BODIES_CAPACITY);
         private int _bodyCursor;
+        private Camera _viewCamera;
+        private float _nextCameraLook;
 
         /// <summary>Collision meshes written this frame, to be cooked.</summary>
         private static readonly List<Mesh> s_bakeMeshes = new(BAKES_CAPACITY);
@@ -306,6 +308,17 @@ namespace Game.Voxels
         public void VoxelLateUpdate(float deltaTime)
         {
             RebuildDirty();
+            if (Debris != null)
+            {
+                // Eviction counts distance from the viewer; look for the camera again once a second if there is none.
+                if (_viewCamera == null && Time.unscaledTime >= _nextCameraLook)
+                {
+                    _viewCamera = Camera.main;
+                    _nextCameraLook = Time.unscaledTime + 1f;
+                }
+                if (_viewCamera != null)
+                    Debris.ViewPoint = _viewCamera.transform.position;
+            }
             Debris?.Tick(deltaTime);
         }
 
