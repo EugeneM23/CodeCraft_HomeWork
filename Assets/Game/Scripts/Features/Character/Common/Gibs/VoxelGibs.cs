@@ -1,7 +1,10 @@
+using System;
 using System.Collections.Generic;
 using Game.Voxels;
 using Unity.Profiling;
 using UnityEngine;
+using Object = UnityEngine.Object;
+using Random = UnityEngine.Random;
 
 namespace Game
 {
@@ -24,8 +27,57 @@ namespace Game
         private static readonly ProfilerMarker CarcassMarker = new("Death.Carcass");
         private static readonly ProfilerMarker LaunchMarker = new("Death.Launch");
         private static readonly ProfilerMarker BloodMarker = new("Death.Blood");
+        private static readonly ProfilerMarker WarmUpMarker = new("Death.WarmUp");
 
-        public static List<VoxelCarcass.Piece> Burst(VoxelGibsRig rig, VoxelGibsConfig config, in KillingHit hit)
+        // Reused by every death, so the kill frame allocates little beyond what the voxel bodies themselves need.
+        private static readonly List<SeamLink> Links = new();
+        private static readonly List<int> Held = new();
+        private static readonly List<Vector3> TornPoints = new();
+        private static readonly Func<float> Roll = () => Random.value;
+
+        /// <summary>The blood palette of each config as voxel colours, made once (the drips keep it and never change it).</summary>
+        private static readonly Dictionary<VoxelGibsConfig, Color32[]> BloodByConfig = new();
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetStatics()
+        {
+            Links.Clear();
+            Held.Clear();
+            TornPoints.Clear();
+            BloodByConfig.Clear();
+        }
+
+        public static List<VoxelCarcass.Piece> Burst(VoxelGibsRig rig, VoxelGibsConfig config, in KillingHit hit) =>
+            Burst(rig, config, hit, false);
+
+        /// <summary>
+        /// One death played through and thrown away at once, so the first death of a fight does not pay for compiling
+        /// its code. The loading's WarmUpCodeOperation compiles the game's own assemblies, but not the engine's managed
+        /// code on the way (meshes, bodies, components), nor the Burst jobs' first schedule (their reflection data and,
+        /// in the editor, the Burst compile). The body is voxelized in the pose it stands in; the pieces are built,
+        /// launched, split and given their drips; then every voxel body made on the way is destroyed before the frame
+        /// ends. The skin stays shown and no blood flies. Meant for level load: about the cost of one death.
+        /// </summary>
+        public static void WarmUp(VoxelGibsRig rig, VoxelGibsConfig config)
+        {
+            if (rig == null || rig.Skin == null || config == null)
+                return;
+
+            using (WarmUpMarker.Auto())
+            {
+                IReadOnlyList<VoxelBody> bodies = VoxelWorld.Bodies;
+                int before = bodies.Count;
+                Transform root = rig.Skin.transform;
+                Burst(rig, config, new KillingHit(root.position - root.forward, 0f, false, 0f), true);
+
+                // Everything made since: the pieces and what split off them (registered at the end of the list).
+                for (int i = bodies.Count - 1; i >= before; i--)
+                    if (bodies[i] != null)
+                        Object.DestroyImmediate(bodies[i].gameObject);
+            }
+        }
+
+        private static List<VoxelCarcass.Piece> Burst(VoxelGibsRig rig, VoxelGibsConfig config, in KillingHit hit, bool warmUp)
         {
             Bounds body = rig.Skin.bounds; // before the skin is hidden
             var palette = new FleshPalette
@@ -46,19 +98,21 @@ namespace Game
             if (!voxelized)
             {
                 // Nothing would take the body's place: better a corpse that stays than one that vanishes.
-                Debug.LogWarning($"[VOXEL GIBS] {rig.Skin.name}: the pose could not be voxelized; the body stays as it is.");
+                if (!warmUp)
+                    Debug.LogWarning($"[VOXEL GIBS] {rig.Skin.name}: the pose could not be voxelized; the body stays as it is.");
                 return new List<VoxelCarcass.Piece>();
             }
 
             // Hidden only now the flesh is sure to come: still this frame, so it looks the same.
-            foreach (Renderer renderer in rig.Hide)
-                if (renderer != null)
-                    renderer.enabled = false;
+            if (!warmUp)
+                foreach (Renderer renderer in rig.Hide)
+                    if (renderer != null)
+                        renderer.enabled = false;
 
-            var links = new SeamLink[config.seams.Length];
-            for (int i = 0; i < links.Length; i++)
-                links[i] = new SeamLink(config.seams[i].a, config.seams[i].b, config.seams[i].hold);
-            int[] cluster = GibRules.RollClusters(config.parts.Length, links, () => Random.value, new List<int>());
+            Links.Clear();
+            for (int i = 0; i < config.seams.Length; i++)
+                Links.Add(new SeamLink(config.seams[i].a, config.seams[i].b, config.seams[i].hold));
+            int[] cluster = GibRules.RollClusters(config.parts.Length, Links, Roll, Held);
 
             VoxelBodySettings settings = VoxelBodySettings.Default(config.voxelSize);
             settings.Anchor = VoxelAnchor.Largest;
@@ -89,18 +143,19 @@ namespace Game
             LaunchMarker.Begin();
 
             GibRules.Throw(config.speeds, hit, out float speed, out float lift, out float spin);
-            Color32[] blood = config.blood.ToVoxels();
+            Color32[] blood = BloodOf(config);
 
             int broken = 0;
-            foreach (SeamLink seam in links)
-                if (cluster[seam.A] != cluster[seam.B])
+            for (int i = 0; i < Links.Count; i++)
+                if (cluster[Links[i].A] != cluster[Links[i].B])
                     broken++;
             int torn = 0;
-            foreach (VoxelCarcass.Piece piece in pieces)
-                torn += piece.Torn.Length;
+            for (int p = 0; p < pieces.Count; p++)
+                torn += pieces[p].Torn.Length;
 
-            foreach (VoxelCarcass.Piece piece in pieces)
+            for (int p = 0; p < pieces.Count; p++)
             {
+                VoxelCarcass.Piece piece = pieces[p];
                 Vector3 velocity = GibRules.ClusterVelocity(piece.Body.WorldBounds.center, hit.Origin, speed, lift, config.speeds);
                 piece.Body.Launch(velocity, GibRules.ClusterSpin(spin, piece.Parts));
                 piece.Body.SplitLoose();
@@ -108,11 +163,15 @@ namespace Game
                 if (piece.Torn.Length == 0)
                     continue;
 
-                var points = new Vector3[piece.Torn.Length];
-                for (int i = 0; i < points.Length; i++)
-                    points[i] = piece.Torn[i].Point;
+                // The drip copies the points into its own frame: one list serves every piece.
+                TornPoints.Clear();
+                for (int i = 0; i < piece.Torn.Length; i++)
+                    TornPoints.Add(piece.Torn[i].Point);
                 piece.Body.gameObject.AddComponent<VoxelDrip>()
-                    .Begin(points, blood, config.blood.dropSize, config.dripTime, config.dripRate);
+                    .Begin(TornPoints, blood, config.blood.dropSize, config.dripTime, config.dripRate);
+
+                if (warmUp)
+                    continue;
 
                 // The seams' drops are shared out by how much of the cut each piece carries.
                 int drops = Mathf.RoundToInt(config.seamDrops * broken * piece.Torn.Length / (float)torn);
@@ -125,6 +184,9 @@ namespace Game
 
             LaunchMarker.End();
 
+            if (warmUp)
+                return pieces;
+
             BloodMarker.Begin();
             Vector3 wound = body.ClosestPoint(hit.Origin);
             Vector3 away = wound - hit.Origin;
@@ -133,6 +195,17 @@ namespace Game
             BloodMarker.End();
 
             return pieces;
+        }
+
+        private static Color32[] BloodOf(VoxelGibsConfig config)
+        {
+            if (!BloodByConfig.TryGetValue(config, out Color32[] blood))
+            {
+                blood = config.blood.ToVoxels();
+                BloodByConfig.Add(config, blood);
+            }
+
+            return blood;
         }
     }
 }
