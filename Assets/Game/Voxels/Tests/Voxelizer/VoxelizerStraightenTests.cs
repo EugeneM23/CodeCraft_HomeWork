@@ -49,15 +49,15 @@ namespace Game.Voxels.Tests
         [Test]
         public void ARodOneVoxelThick_IsCutAway_TheBoxStays()
         {
-            // The grid starts at −0.1: x and z 0.42..0.48 lie in cell 5 only, y 1.001..1.5 in cells 11..16.
+            // The grid starts at −0.1: x and z 0.42..0.48 lie in cell 5 only, y 1.001..1.5 in cells 11..15 (its top lies on a boundary and stays in the cell below it).
             Assert.AreEqual(1000, SolidAfterOpen(new Vector3(0.42f, 1.001f, 0.42f), new Vector3(0.48f, 1.5f, 0.48f)));
         }
 
         [Test]
         public void ARodTwoVoxelsThick_Stays()
         {
-            // x and z 0.42..0.58: cells 5 and 6; y cells 11..16: 2 × 2 × 6 = 24 on top of the box.
-            Assert.AreEqual(1024, SolidAfterOpen(new Vector3(0.42f, 1.001f, 0.42f), new Vector3(0.58f, 1.5f, 0.58f)));
+            // x and z 0.42..0.58: cells 5 and 6; y cells 11..15: 2 × 2 × 5 = 20 on top of the box.
+            Assert.AreEqual(1020, SolidAfterOpen(new Vector3(0.42f, 1.001f, 0.42f), new Vector3(0.58f, 1.5f, 0.58f)));
         }
 
         [Test]

@@ -33,12 +33,21 @@ namespace Game.Voxels.EditorTools
                 float3 a = Corners[t * 3], b = Corners[t * 3 + 1], c = Corners[t * 3 + 2];
                 float edge = math.max(math.distance(a, b), math.max(math.distance(b, c), math.distance(c, a)));
                 int n = math.clamp((int)math.ceil(edge / step), 1, 4096);
+                // A point on a cell boundary belongs to the cell inside the body: nudge it (in voxels) against the
+                // outward normal and, along the axes the triangle spans, towards its centre, so an edge lying on a
+                // boundary falls on the triangle's side of it too.
+                const float nudge = VoxelizerSurface.BOUNDARY_NUDGE;
+                float3 inward = -math.normalizesafe(math.cross(b - a, c - a)) * nudge;
+                float3 centre = ((a + b + c) / 3f - Origin) / VoxelSize;
                 for (int i = 0; i <= n; i++)
                 for (int j = 0; j <= n - i; j++)
                 {
                     float u = i / (float)n, v = j / (float)n, w = 1f - u - v;
                     float3 p = a * w + b * u + c * v;
-                    int3 cell = (int3)math.floor((p - Origin) / VoxelSize);
+                    float3 q = (p - Origin) / VoxelSize;
+                    float3 toCentre = centre - q;
+                    q += inward + math.select(float3.zero, math.sign(toCentre) * nudge, math.abs(toCentre) > nudge);
+                    int3 cell = (int3)math.floor(q);
                     if (math.any(cell < 0) || math.any(cell >= Size))
                         continue;
                     float2 uv = Uvs[t * 3] * w + Uvs[t * 3 + 1] * u + Uvs[t * 3 + 2] * v;

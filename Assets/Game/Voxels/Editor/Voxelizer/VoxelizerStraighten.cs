@@ -14,7 +14,8 @@ namespace Game.Voxels.EditorTools
         /// <summary>
         /// Before Sample. Triangles whose normal lies within maxAngleDeg of the same signed axis and that share
         /// edges form one face; the face moves along that axis onto the centre of the voxel layer holding its
-        /// area-weighted mean, so it samples as one even layer, the layer it really lies in. A face with any
+        /// area-weighted mean, so it samples as one even layer, the layer it really lies in (a mean on a layer
+        /// boundary picks the layer inside the body, behind the face). A face with any
         /// corner outside that layer and the two next to it is left alone (a slope, not a flat face): its
         /// unmoved neighbours end at those corners, and a gap of a whole layer would let the outside fill in.
         /// Min/Max are updated.
@@ -90,8 +91,11 @@ namespace Game.Voxels.EditorTools
                     int axis = axisOf[t] / 2;
                     var s = sum[Find(parent, t)];
                     float mean = s.area > 0 ? (float)(s.weighted / s.area) : 0f;
-                    float layer = math.floor(mean / voxelSize);
-                    if (s.area > 0 && math.floor(s.min / voxelSize) >= layer - 1f && math.floor(s.max / voxelSize) <= layer + 1f)
+                    // A face on a layer boundary (within float noise) belongs to the layer inside the body:
+                    // below the boundary for a +axis face, above it for a −axis face.
+                    float inward = (axisOf[t] & 1) == 0 ? -VoxelizerSurface.BOUNDARY_NUDGE : VoxelizerSurface.BOUNDARY_NUDGE;
+                    float layer = math.floor(mean / voxelSize + inward);
+                    if (s.area > 0 && math.floor(s.min / voxelSize + inward) >= layer - 1f && math.floor(s.max / voxelSize + inward) <= layer + 1f)
                     {
                         float plane = (layer + 0.5f) * voxelSize;
                         for (int k = 0; k < 3; k++)

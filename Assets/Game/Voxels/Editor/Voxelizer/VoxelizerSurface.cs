@@ -11,6 +11,12 @@ namespace Game.Voxels.EditorTools
         public const int MAX_SIZE = 512;
         public const float INSIDE_SHADE = 0.85f;
 
+        /// <summary>
+        /// In voxels: how far a point on a cell boundary is nudged into the body before it is floored, so a face
+        /// lying on a boundary (float noise either side of it) always lands in the cell inside, never outside.
+        /// </summary>
+        public const float BOUNDARY_NUDGE = 1e-3f;
+
         public static VoxelizerPartGrid Sample(VoxelizerTriangles triangles, float voxelSize)
         {
             float3 origin = math.floor(triangles.Min / voxelSize) * voxelSize - voxelSize;
