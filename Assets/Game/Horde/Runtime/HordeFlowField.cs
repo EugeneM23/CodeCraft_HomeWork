@@ -18,6 +18,12 @@ namespace Game.Horde
     /// </summary>
     public sealed class HordeFlowField : IDisposable
     {
+        /// <summary>
+        /// When nothing walkable is under the target (a hole, a rubble top), the nearest walkable cell within this many
+        /// metres becomes the target instead.
+        /// </summary>
+        public const float FALLBACK_RADIUS = 3f;
+
         private static readonly ProfilerMarker FlowFieldMarker = new("Horde.FlowField");
 
         private readonly HordeNavGrid _grid;
@@ -73,10 +79,12 @@ namespace Game.Horde
         internal NativeArray<float2> Directions => _direction;
 
         /// <summary>
-        /// Starts a field toward <paramref name="target"/> (clamped into the grid). While one is still
-        /// running this does nothing and returns its handle.
+        /// Starts a field toward <paramref name="target"/> (clamped into the grid). Every walkable cell within
+        /// <paramref name="seedRadius"/> metres of it is a target too (the ground under the tank's hull); if none is,
+        /// the nearest walkable cell within <see cref="FALLBACK_RADIUS"/> is. While one is still running this does
+        /// nothing and returns its handle.
         /// </summary>
-        public JobHandle Schedule(float3 target, JobHandle dependsOn = default)
+        public JobHandle Schedule(float3 target, float seedRadius = 0f, JobHandle dependsOn = default)
         {
             if (_running)
                 return _handle;
@@ -108,7 +116,9 @@ namespace Game.Horde
                     Next = _next,
                     Prev = _prev,
                     Size = size,
-                    Target = _targetBack
+                    Target = _targetBack,
+                    SeedRadius = math.max(0, (int)(seedRadius / _grid.CellSize)),
+                    FallbackRadius = (int)math.ceil(FALLBACK_RADIUS / _grid.CellSize)
                 }.Schedule(handle);
 
                 handle = new HordeFlowDirectionJob

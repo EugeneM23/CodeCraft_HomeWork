@@ -66,6 +66,7 @@ namespace Game.AI
         private float _audioTimer;
         private int _drawnCount;
         private float _groundHeight;
+        private int _queuedWave;
 
         public HordeBehaviour(HordeArtConfig art, HordeOptions options)
         {
@@ -159,10 +160,6 @@ namespace Game.AI
         }
 
         /// <summary>
-        /// Start of the frame: the jobs of the last frame are taken in (step, flow field). The level's grid takes in its
-        /// rays after this (<see cref="LevelAIEarlyUpdate"/>): the step reads the heights on a worker.
-        /// </summary>
-        /// <summary>
         /// The game is paused: the loop does not tick the horde, so nothing would draw it. Draws the crowd as it stood
         /// (the instance buffer keeps the last upload) and the corpses, without moving anything.
         /// </summary>
@@ -174,6 +171,10 @@ namespace Game.AI
             _renderer.Draw(_drawnCount, _worldBounds);
         }
 
+        /// <summary>
+        /// Start of the frame: the jobs of the last frame are taken in (step, flow field). The level's grid takes in its
+        /// rays after this (<see cref="LevelAIEarlyUpdate"/>): the step reads the heights on a worker.
+        /// </summary>
         public void CompleteFrame()
         {
             if (_simulation == null)
@@ -193,6 +194,13 @@ namespace Game.AI
                 bool hasTank = ReadTank(out HordeTank tank);
                 HandleDeaths();
                 DamageTank();
+                if (_queuedWave > 0)
+                {
+                    int wave = _queuedWave;
+                    _queuedWave = 0;
+                    SpawnWave(wave);
+                }
+
                 KeepPopulation(tank);
 
                 if (_alive.Value != _simulation.AliveCount)
@@ -219,7 +227,8 @@ namespace Game.AI
                     int2 cell = _grid.ClampCell(tank.Center);
                     if (!_flow.HasField || !math.all(cell == _flowCell) || _flow.GridVersion != _grid.Version)
                     {
-                        _flow.Schedule(tank.Center);
+                        // Seeded from the ground under the hull: the centre cell alone may be a hole or a rubble top.
+                        _flow.Schedule(tank.Center, math.cmin(tank.HalfExtents.xz));
                         _flowCell = cell;
                         _flowTimer = 0f;
                     }
@@ -244,12 +253,19 @@ namespace Game.AI
         /// <summary>
         /// Releases <paramref name="count"/> monsters on walkable ground at least
         /// <see cref="HordeOptions.spawnDistance"/> from the tank (as a wave: the audio hears it).
-        /// Returns how many found room.
+        /// Returns how many found room. While the step runs on the workers the wave is queued for the next tick (and 0
+        /// is returned).
         /// </summary>
         public int SpawnWave(int count)
         {
-            if (_simulation == null || _simulation.IsRunning)
+            if (_simulation == null || count <= 0)
                 return 0;
+            if (_simulation.IsRunning)
+            {
+                _queuedWave += count;
+                return 0;
+            }
+
             ReadTank(out HordeTank tank);
             int spawned = SpawnFar(count, tank);
             if (spawned > 0)

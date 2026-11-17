@@ -122,5 +122,64 @@ namespace Game.Horde.Tests
             Assert.AreEqual(grid.Version, field.GridVersion, "snapshot picked up the new wall");
             Assert.IsTrue(field.IsUnreachable(new int2(2, 3)));
         }
+
+        /// <summary>Follows the field from <paramref name="start"/> until it stops; returns where.</summary>
+        private static int2 FollowToTheEnd(HordeNavGrid grid, HordeFlowField field, int2 start, int maxSteps)
+        {
+            int2 cell = start;
+            for (int step = 0; step < maxSteps; step++)
+            {
+                float2 dir = field.DirectionOf(cell);
+                if (math.lengthsq(dir) < 0.5f)
+                    break;
+                int2 next = cell + (int2)math.round(dir);
+                Assert.IsTrue(grid.CanStep(cell, next), "field points through a blocked step at " + cell);
+                cell = next;
+            }
+
+            return cell;
+        }
+
+        [Test]
+        public void TargetOverAHole_LeadsToTheNearestWalkableCell()
+        {
+            using HordeNavGrid grid = HordeTestGrids.Flat(12, 12);
+            grid.SetHeight(new int2(6, 6), HordeNavGrid.NO_GROUND);
+            using var field = new HordeFlowField(grid);
+            Compute(field, new int2(6, 6));
+
+            Assert.IsFalse(field.IsUnreachable(new int2(0, 0)), "the ground round the hole still leads somewhere");
+            int2 end = FollowToTheEnd(grid, field, new int2(0, 0), 40);
+            Assert.LessOrEqual(math.cmax(math.abs(end - new int2(6, 6))), 1, "ends next to the target, at " + end);
+        }
+
+        [Test]
+        public void TargetOnARubbleTop_SeedsFromTheGroundUnderTheHull()
+        {
+            using HordeNavGrid grid = HordeTestGrids.Flat(12, 12);
+            grid.SetHeight(new int2(6, 6), 3f); // the tank's centre over a block no one climbs
+            using var field = new HordeFlowField(grid);
+            field.Schedule(HordeTestGrids.Center(new int2(6, 6)), 2f);
+            field.Complete();
+
+            Assert.IsFalse(field.IsUnreachable(new int2(0, 0)));
+            Assert.IsFalse(field.IsUnreachable(new int2(11, 11)));
+            Assert.AreEqual(0f, field.DistanceOf(new int2(6, 8)), "the ground under the hull is the target");
+            int2 end = FollowToTheEnd(grid, field, new int2(0, 0), 40);
+            Assert.LessOrEqual(math.cmax(math.abs(end - new int2(6, 6))), 2, "ends under the hull, at " + end);
+        }
+
+        [Test]
+        public void NoWalkableGroundNearTheTarget_IsUnreachable()
+        {
+            using HordeNavGrid grid = HordeTestGrids.Flat(20, 20);
+            for (int z = 5; z <= 15; z++)
+            for (int x = 5; x <= 15; x++)
+                grid.SetHeight(new int2(x, z), HordeNavGrid.NO_GROUND);
+            using var field = new HordeFlowField(grid);
+            Compute(field, new int2(10, 10));
+
+            Assert.IsTrue(field.IsUnreachable(new int2(0, 0)), "the fallback looks only " + HordeFlowField.FALLBACK_RADIUS + " m round");
+        }
     }
 }

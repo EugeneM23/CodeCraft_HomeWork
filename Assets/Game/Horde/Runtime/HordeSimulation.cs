@@ -24,8 +24,8 @@ namespace Game.Horde
     {
         /// <summary>A step never integrates more than this (a hitch must not teleport the crowd through walls).</summary>
         public const float MAX_DELTA_TIME = 0.05f;
-        /// <summary>Spatial hash cell, metres.</summary>
-        public const float HASH_CELL = 1f;
+        /// <summary>Spatial hash cell, metres: not below <see cref="HordeSettings.SeparationRadius"/>, so one ring of cells holds every neighbour (a bigger radius scans more rings).</summary>
+        public const float HASH_CELL = 1.5f;
 
         private const int BATCH = 128;
         private const int MAX_AREAS = 64;
@@ -283,6 +283,7 @@ namespace Game.Horde
                     Sorted = _sorted,
                     HashSize = _hashSize,
                     HashOrigin = _hashOrigin,
+                    HashCell = HASH_CELL,
                     Marker = HashMarker
                 }.Schedule(dependsOn);
 
@@ -300,6 +301,7 @@ namespace Game.Horde
                     Grid = grid,
                     HashSize = _hashSize,
                     HashOrigin = _hashOrigin,
+                    HashCell = HASH_CELL,
                     Settings = settings,
                     Tank = tank,
                     DeltaTime = dt,
@@ -315,6 +317,7 @@ namespace Game.Horde
                     Heading = _heading,
                     Areas = _areasRunning.AsArray(),
                     Deaths = _deathQueue.AsParallelWriter(),
+                    Grid = grid,
                     Settings = settings,
                     Tank = tank,
                     DeltaTime = dt,

@@ -105,6 +105,113 @@ namespace Game.Horde.Tests
             Assert.AreEqual(2, sim.AliveCount);
         }
 
+        /// <summary>Drives a hull box along +Z at <paramref name="speed"/> for <paramref name="steps"/> steps of 1/60 s.</summary>
+        private static void Drive(HordeSimulation sim, ref float3 center, float3 half, float speed, int steps)
+        {
+            const float dt = 1f / 60f;
+            for (int i = 0; i < steps; i++)
+            {
+                sim.Schedule(dt, Tank(center, half, new float3(0f, 0f, speed)));
+                sim.Complete();
+                center.z += speed * dt;
+            }
+        }
+
+        [Test]
+        public void Crush_ATankAtNormalSpeed_CrushesWhatStandsInItsPath_AtAHighFrameRate()
+        {
+            using HordeNavGrid grid = HordeTestGrids.Flat(20, 30);
+            using var field = new HordeFlowField(grid);
+            HordeSettings settings = HordeSettings.Default;
+            settings.Speed = 0f; // it stands: only the hull moves
+            using var sim = new HordeSimulation(8, grid, field, settings);
+            var center = new float3(10f, 0.8f, 6f);
+            var half = new float3(1.5f, 0.8f, 3f);
+            int victim = sim.Spawn(new float3(10.3f, 0f, 13f), 0f); // 4 m ahead of the front face
+
+            Drive(sim, ref center, half, 6f, 60);
+
+            Assert.AreEqual(HordeState.Free, sim.GetState(victim), "crushed, not shoved ahead of the hull");
+            Assert.AreEqual(1, sim.Deaths.Length);
+            Assert.AreEqual(HordeDeathCause.Crushed, sim.Deaths[0].Cause);
+        }
+
+        [Test]
+        public void Crush_ASlowTank_PushesWhatStandsInItsPath()
+        {
+            using HordeNavGrid grid = HordeTestGrids.Flat(20, 30);
+            using var field = new HordeFlowField(grid);
+            HordeSettings settings = HordeSettings.Default;
+            settings.Speed = 0f;
+            using var sim = new HordeSimulation(8, grid, field, settings);
+            var center = new float3(10f, 0.8f, 6f);
+            var half = new float3(1.5f, 0.8f, 3f);
+            int victim = sim.Spawn(new float3(10.3f, 0f, 9.5f), 0f); // 0.5 m ahead of the front face
+
+            Drive(sim, ref center, half, 1f, 120);
+
+            Assert.AreEqual(0, sim.Deaths.Length, "below the crush speed nobody dies");
+            Assert.AreEqual(HordeState.Attack, sim.GetState(victim), "it claws the hull");
+            float3 p = sim.GetPosition(victim);
+            Assert.Greater(p.z, center.z + half.z, "pushed ahead of the front face, not run over");
+        }
+
+        [Test]
+        public void Crush_TheHullDoesNotCrushBackwards()
+        {
+            using HordeNavGrid grid = HordeTestGrids.Flat(20, 30);
+            using var field = new HordeFlowField(grid);
+            HordeSettings settings = HordeSettings.Default;
+            settings.Speed = 0f;
+            using var sim = new HordeSimulation(8, grid, field, settings);
+            var center = new float3(10f, 0.8f, 15f);
+            var half = new float3(1.5f, 0.8f, 3f);
+            int behind = sim.Spawn(new float3(10f, 0f, 11.5f), 0f); // 0.5 m behind the rear face
+
+            Drive(sim, ref center, half, 6f, 10);
+
+            Assert.AreEqual(0, sim.Deaths.Length);
+            Assert.AreNotEqual(HordeState.Free, sim.GetState(behind));
+        }
+
+        [Test]
+        public void PushOut_DoesNotPutAMonsterOnARoof()
+        {
+            using HordeNavGrid grid = HordeTestGrids.Flat(20, 20);
+            // A house right of the hull: the shallow way out (along X) leads onto it.
+            HordeTestGrids.Block(grid, new int2(12, 0), new int2(19, 19), 3f);
+            using var field = new HordeFlowField(grid);
+            HordeSettings settings = HordeSettings.Default;
+            settings.Speed = 0f;
+            using var sim = new HordeSimulation(8, grid, field, settings);
+            var center = new float3(10.5f, 0.8f, 10f);
+            var half = new float3(1.2f, 0.8f, 3f);
+            int m = sim.Spawn(new float3(11.5f, 0f, 11f), 0f); // under the hull, near its right side
+
+            Step(sim, Tank(center, half, float3.zero));
+
+            float3 p = sim.GetPosition(m);
+            Assert.IsTrue(grid.TryCell(p, out int2 cell));
+            Assert.AreEqual(0f, grid.HeightOf(cell), "stays on the street (" + p + ")");
+            Assert.AreEqual(HordeState.Attack, sim.GetState(m));
+        }
+
+        [Test]
+        public void Separation_ReachesANeighbourTwoMetreCellsAway()
+        {
+            using HordeNavGrid grid = HordeTestGrids.Flat(20, 20);
+            using var field = new HordeFlowField(grid);
+            using var sim = new HordeSimulation(8, grid, field, HordeSettings.Default);
+            // 1.31 m apart (inside the 1.4 m separation radius), on either side of a whole 1 m cell.
+            int a = sim.Spawn(new float3(8.99f, 0f, 10f), 0f);
+            int b = sim.Spawn(new float3(10.3f, 0f, 10f), 0f);
+
+            Step(sim, default);
+
+            Assert.Less(sim.GetPosition(a).x, 8.99f, "pushed away from b");
+            Assert.Greater(sim.GetPosition(b).x, 10.3f, "pushed away from a");
+        }
+
         [Test]
         public void AreaDamage_KillsInsideTheRadius_Only()
         {

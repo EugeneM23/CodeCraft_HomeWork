@@ -271,7 +271,7 @@ namespace Game.Horde
     }
 
     /// <summary>
-    /// Dijkstra from the target cell: cost of every cell to the target. Edge costs are only 10 and 14,
+    /// Dijkstra from the target cell (and the walkable ground round it): cost of every cell to the target. Edge costs are only 10 and 14,
     /// so the queue is Dial's: 15 buckets in a ring, each an intrusive doubly linked list through
     /// <c>Next</c>/<c>Prev</c> (a cell whose cost drops is moved to its new bucket), O(1) per step.
     /// </summary>
@@ -288,6 +288,10 @@ namespace Game.Horde
         public NativeArray<int> Prev;
         public int2 Size;
         public int2 Target;
+        /// <summary>Walkable cells within this many cells of the target are targets too (the ground under the hull).</summary>
+        public int SeedRadius;
+        /// <summary>Nothing walkable was seeded: the nearest walkable cell within this many cells is the target instead.</summary>
+        public int FallbackRadius;
 
         public void Execute()
         {
@@ -305,6 +309,48 @@ namespace Game.Horde
             Distance[target] = 0;
             Link(ref heads, target, 0);
             int queued = 1;
+            bool seeded = Edges[target] != 0;
+
+            // The target cell may be a hole or a rubble top no one can step onto: seed from the walkable ground round it.
+            int radiusSq = SeedRadius * SeedRadius;
+            for (int dz = -SeedRadius; dz <= SeedRadius; dz++)
+            for (int dx = -SeedRadius; dx <= SeedRadius; dx++)
+            {
+                if (dx * dx + dz * dz > radiusSq)
+                    continue;
+                int index = Seedable(Target + new int2(dx, dz));
+                if (index < 0)
+                    continue;
+                Distance[index] = 0;
+                Link(ref heads, index, 0);
+                queued++;
+                seeded = true;
+            }
+
+            if (!seeded)
+            {
+                int best = -1;
+                int bestSq = int.MaxValue;
+                for (int dz = -FallbackRadius; dz <= FallbackRadius; dz++)
+                for (int dx = -FallbackRadius; dx <= FallbackRadius; dx++)
+                {
+                    int sq = dx * dx + dz * dz;
+                    if (sq >= bestSq || sq > FallbackRadius * FallbackRadius)
+                        continue;
+                    int index = Seedable(Target + new int2(dx, dz));
+                    if (index < 0)
+                        continue;
+                    best = index;
+                    bestSq = sq;
+                }
+
+                if (best >= 0)
+                {
+                    Distance[best] = 0;
+                    Link(ref heads, best, 0);
+                    queued++;
+                }
+            }
 
             for (int cost = 0; queued > 0; cost++)
             {
@@ -343,6 +389,15 @@ namespace Game.Horde
             }
 
             heads.Dispose();
+        }
+
+        /// <summary>Index of a cell in the grid with a walkable way out that is not a target yet, else -1.</summary>
+        private int Seedable(int2 cell)
+        {
+            if (math.any(cell < 0) || math.any(cell >= Size))
+                return -1;
+            int index = cell.y * Size.x + cell.x;
+            return Edges[index] != 0 && Distance[index] != 0 ? index : -1;
         }
 
         private void Link(ref NativeArray<int> heads, int index, int bucket)
@@ -684,6 +739,25 @@ namespace Game.Horde
             return ht < hf - MaxStep && (d.x == 0 || d.y == 0);
         }
 
+        /// <summary>
+        /// A walker at <paramref name="from"/> may be put at <paramref name="to"/> (a short shove): every cell on the
+        /// way is entered by <see cref="CanEnter"/>, so a shove never lands on a roof or in a wall.
+        /// </summary>
+        public bool CanTravel(float2 from, float2 to)
+        {
+            int2 cell = CellOf(from);
+            int2 end = CellOf(to);
+            for (int guard = 0; guard < 8 && !math.all(cell == end); guard++)
+            {
+                int2 next = cell + math.clamp(end - cell, -1, 1);
+                if (!CanEnter(cell, next))
+                    return false;
+                cell = next;
+            }
+
+            return math.all(cell == end);
+        }
+
         private float Sample(int2 cell, float h0)
         {
             if (!InBounds(cell))
@@ -707,7 +781,7 @@ namespace Game.Horde
     }
 
     /// <summary>
-    /// Counting sort of the live monsters into 1 m cells: <c>CellStart[c]..CellStart[c+1]</c> are
+    /// Counting sort of the live monsters into <see cref="HordeSimulation.HASH_CELL"/> cells: <c>CellStart[c]..CellStart[c+1]</c> are
     /// the slots of <c>Sorted</c> holding the monsters of cell c. Monsters off the hash area go to its border.
     /// </summary>
     [BurstCompile(CompileSynchronously = true)]
@@ -721,6 +795,7 @@ namespace Game.Horde
         public NativeArray<int> Sorted;
         public int2 HashSize;
         public float2 HashOrigin;
+        public float HashCell;
         public ProfilerMarker Marker;
 
         public void Execute()
@@ -738,7 +813,7 @@ namespace Game.Horde
                     continue;
                 }
 
-                int2 cell = math.clamp((int2)math.floor(Position[i].xz - HashOrigin), 0, HashSize - 1);
+                int2 cell = math.clamp((int2)math.floor((Position[i].xz - HashOrigin) / HashCell), 0, HashSize - 1);
                 int index = cell.y * HashSize.x + cell.x;
                 CellIndex[i] = index;
                 CellStart[index + 1]++;
@@ -765,7 +840,7 @@ namespace Game.Horde
 
     /// <summary>
     /// Per monster: the wish (flow field toward the tank, straight at it when close, slower near the
-    /// hull) plus separation from neighbours in the 3x3 hash cells; velocity eases toward it, the
+    /// hull) plus separation from neighbours in the hash cells within the separation radius; velocity eases toward it, the
     /// heading turns at a bounded rate. The move obeys the grid step rule (sliding along a blocked
     /// axis), and the feet go to the surface height. Writes <c>NextPosition</c>.
     /// </summary>
@@ -788,6 +863,7 @@ namespace Game.Horde
         public HordeGridView Grid;
         public int2 HashSize;
         public float2 HashOrigin;
+        public float HashCell;
         public HordeSettings Settings;
         public HordeTank Tank;
         public float DeltaTime;
@@ -799,6 +875,8 @@ namespace Game.Horde
             quaternion inverse = math.inverse(Tank.Rotation);
             float radius = Settings.SeparationRadius;
             float radiusSq = radius * radius;
+            // Hash cells round the own one that a neighbour within the radius can be in (1 with the default settings).
+            int rings = math.max(1, (int)math.ceil(radius / HashCell));
             float blend = 1f - math.exp(-Settings.Acceleration * DeltaTime);
             float maxTurn = Settings.TurnRate * DeltaTime;
 
@@ -835,9 +913,9 @@ namespace Game.Horde
                 // Separation.
                 float2 push = float2.zero;
                 int seen = 0;
-                int2 hashCell = math.clamp((int2)math.floor(xz - HashOrigin), 0, HashSize - 1);
-                for (int dz = -1; dz <= 1 && seen < Settings.MaxNeighbours; dz++)
-                for (int dx = -1; dx <= 1 && seen < Settings.MaxNeighbours; dx++)
+                int2 hashCell = math.clamp((int2)math.floor((xz - HashOrigin) / HashCell), 0, HashSize - 1);
+                for (int dz = -rings; dz <= rings && seen < Settings.MaxNeighbours; dz++)
+                for (int dx = -rings; dx <= rings && seen < Settings.MaxNeighbours; dx++)
                 {
                     int2 c = hashCell + new int2(dx, dz);
                     if (math.any(c < 0) || math.any(c >= HashSize))
@@ -924,9 +1002,10 @@ namespace Game.Horde
     }
 
     /// <summary>
-    /// Per monster after the move: blasts of this step (area damage), then the tank. Inside the hull
-    /// box while the tank goes faster than the crush speed: crushed. Touching the hull: pushed out of
-    /// it and attacking (damage of this step into <c>AttackDamage</c>). Deaths go to the queue.
+    /// Per monster after the move: blasts of this step (area damage), then the tank. Under the hull of
+    /// a tank faster than the crush speed (the box swept along this step's move, leading side only):
+    /// crushed. Touching the hull: pushed out of it where the grid lets it go, and attacking (damage of
+    /// this step into <c>AttackDamage</c>). Deaths go to the queue.
     /// </summary>
     [BurstCompile(CompileSynchronously = true)]
     internal struct HordeContactJob : IJobParallelForBatch
@@ -943,6 +1022,7 @@ namespace Game.Horde
         [ReadOnly] public NativeArray<float> Heading;
         [ReadOnly] public NativeArray<HordeAreaDamage> Areas;
         public NativeQueue<HordeDeathEvent>.ParallelWriter Deaths;
+        public HordeGridView Grid;
         public HordeSettings Settings;
         public HordeTank Tank;
         public float DeltaTime;
@@ -952,7 +1032,10 @@ namespace Game.Horde
         {
             Marker.Begin();
             quaternion inverse = math.inverse(Tank.Rotation);
-            bool crushing = math.length(Tank.Velocity) > Settings.CrushSpeed;
+            float2 flatVelocity = Tank.Velocity.xz;
+            bool crushing = math.length(flatVelocity) > Settings.CrushSpeed;
+            float2 localVelocity = math.rotate(inverse, new float3(flatVelocity.x, 0f, flatVelocity.y)).xz;
+            float2 sweep = localVelocity * DeltaTime;
             float r = Settings.Radius;
 
             for (int i = startIndex; i < startIndex + count; i++)
@@ -985,7 +1068,7 @@ namespace Game.Horde
                     float3 local = HordeHull.ToLocal(Tank, inverse, p);
                     float2 q = math.abs(local.xz) - Tank.HalfExtents.xz;
                     bool level = local.y < Tank.HalfExtents.y && local.y > -Tank.HalfExtents.y - BELOW_HULL;
-                    if (level && crushing && q.x < r * 0.5f && q.y < r * 0.5f)
+                    if (level && crushing && InCrushZone(local.xz, q, sweep, localVelocity, r, Tank.HalfExtents.xz))
                     {
                         Die(i, p, HordeDeathCause.Crushed);
                         continue;
@@ -993,15 +1076,25 @@ namespace Game.Horde
 
                     if (level && q.x < r && q.y < r)
                     {
-                        // Overlaps the hull: out along the shallower side.
+                        // Overlaps the hull: out along the shallower side, else the other one, if the grid lets it
+                        // go there (not up on a roof, not into a wall); else it stays where it is.
                         float penX = r - q.x;
                         float penZ = r - q.y;
-                        if (penX < penZ)
-                            local.x += math.select(-penX, penX, local.x >= 0f);
-                        else
-                            local.z += math.select(-penZ, penZ, local.z >= 0f);
-                        float3 world = math.rotate(Tank.Rotation, local) + Tank.Center;
-                        Position[i] = new float3(world.x, p.y, world.z);
+                        float3 alongX = local;
+                        alongX.x += math.select(-penX, penX, local.x >= 0f);
+                        float3 alongZ = local;
+                        alongZ.z += math.select(-penZ, penZ, local.z >= 0f);
+                        float3 first = penX < penZ ? alongX : alongZ;
+                        float3 second = penX < penZ ? alongZ : alongX;
+                        float2 to = (math.rotate(Tank.Rotation, first) + Tank.Center).xz;
+                        if (!Grid.CanTravel(p.xz, to))
+                            to = (math.rotate(Tank.Rotation, second) + Tank.Center).xz;
+                        if (Grid.CanTravel(p.xz, to))
+                        {
+                            float y = Grid.HeightAt(to);
+                            Position[i] = new float3(to.x, math.isnan(y) ? p.y : y, to.y);
+                        }
+
                         state = HordeState.Attack;
                     }
                     else if (level && math.length(math.max(q, 0f)) < r + Settings.AttackReach)
@@ -1016,6 +1109,27 @@ namespace Game.Horde
             }
 
             Marker.End();
+        }
+
+        /// <summary>
+        /// A monster at <paramref name="local"/> (hull space, <paramref name="q"/> its per-axis gap to the hull box) is
+        /// under the hull of a fast tank: inside the box padded by half a body, or in front of a leading face within a
+        /// body's radius plus the way the hull goes this step (<paramref name="sweep"/>). The push-out keeps a monster a
+        /// body's radius off the hull, so the sweep alone would have to outrun it; with the body's radius in the reach
+        /// the crush does not depend on the frame rate. Only the leading side: the hull does not crush backwards.
+        /// </summary>
+        private static bool InCrushZone(float2 local, float2 q, float2 sweep, float2 velocity, float r, float2 half)
+        {
+            float pad = r * 0.5f;
+            if (q.x < pad && q.y < pad)
+                return true;
+            if (math.dot(local, velocity) <= 0f)
+                return false;
+
+            float2 lead = math.abs(sweep) + pad;
+            float2 hi = half + pad + math.select(float2.zero, lead, sweep > 1e-5f);
+            float2 lo = -half - pad - math.select(float2.zero, lead, sweep < -1e-5f);
+            return math.all(local > lo) && math.all(local < hi);
         }
 
         private void Die(int i, float3 p, HordeDeathCause cause)
