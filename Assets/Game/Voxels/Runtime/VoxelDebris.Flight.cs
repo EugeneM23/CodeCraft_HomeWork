@@ -315,7 +315,7 @@ namespace Game.Voxels
                     if (old.Sinking > 0f)
                     {
                         state.Sinking = math.max(0, state.Sinking - 1);
-                        if (old.SinkTime == SINK_TIME)
+                        if ((old.Flags & EVICTED) != 0)
                             state.Evicting = math.max(0, state.Evicting - 1);
                     }
                 }

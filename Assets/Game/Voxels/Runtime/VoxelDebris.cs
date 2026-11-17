@@ -91,6 +91,10 @@ namespace Game.Voxels
         /// light and reflection probes blended), but no shadows. Only matProps changes, per batch.
         /// </summary>
         private RenderParams _lyingParams;
+        /// <summary>Crush / Blow / Loosen asked for this frame (main thread writes it).</summary>
+        private NativeList<LyingQuery> _queries;
+        /// <summary>The queries the running step reads; swapped with <see cref="_queries"/> when a step is scheduled.</summary>
+        private NativeList<LyingQuery> _queriesInFlight;
         /// <summary>Debris time (s): the sum of the steps; when a cube lay down.</summary>
         private float _time;
         private uint _seed = 1;
@@ -243,6 +247,8 @@ namespace Game.Voxels
             _lyingColors = new NativeArray<float4>(lying, Allocator.Persistent);
             _dirtyBatches = new NativeArray<byte>(batches, Allocator.Persistent);
             _lyingState = new NativeReference<LyingState>(Allocator.Persistent);
+            _queries = new NativeList<LyingQuery>(MAX_QUERIES, Allocator.Persistent);
+            _queriesInFlight = new NativeList<LyingQuery>(MAX_QUERIES, Allocator.Persistent);
 
             // The first SetVectorArray fixes the array's length for good: set it full length once.
             _lyingParams = new RenderParams(material)
@@ -352,6 +358,11 @@ namespace Game.Voxels
             float dt = math.min(deltaTime, 1f / 20f);
             _time += dt;
 
+            // The step done (Complete above), the queries it read are spent: the frame's new ones go
+            // to this step, and the main thread writes the next frame's into the emptied list.
+            (_queries, _queriesInFlight) = (_queriesInFlight, _queries);
+            _queries.Clear();
+
             int clusters = _clusters.Length;
             if (clusters == 0)
             {
@@ -414,15 +425,32 @@ namespace Game.Voxels
 
         private JobHandle ScheduleLying(float dt, JobHandle dependsOn, in LyingState seen)
         {
-            JobHandle handle = new LyingJob
+            NativeArray<LyingQuery> queries = _queriesInFlight.AsArray();
+            JobHandle handle = dependsOn;
+            if (queries.Length > 0)
+            {
+                handle = new LyingQueryJob
+                {
+                    Lying = _lyingCubes,
+                    Queries = queries,
+                    State = _lyingState
+                }.Schedule(_lyingCubes.Length, 256, handle);
+            }
+
+            handle = new LyingJob
             {
                 Lying = _lyingCubes,
                 Matrices = _lyingMatrices,
                 Colors = _lyingColors,
                 DirtyBatches = _dirtyBatches,
                 State = _lyingState,
+                Clusters = _clusters,
+                Cubes = _cubes,
+                Capacity = _capacity,
+                Queries = queries,
+                Seed = _seed ^ math.asuint(_time),
                 DeltaTime = dt
-            }.Schedule(dependsOn);
+            }.Schedule(handle);
 
             // "seen" was read on the main thread right after Complete(), before any job of this step was scheduled.
             if (seen.Count > EVICT_FROM * _lyingCubes.Length && seen.Evicting == 0)
@@ -491,6 +519,8 @@ namespace Game.Voxels
             if (_lyingColors.IsCreated) _lyingColors.Dispose();
             if (_dirtyBatches.IsCreated) _dirtyBatches.Dispose();
             if (_lyingState.IsCreated) _lyingState.Dispose();
+            if (_queries.IsCreated) _queries.Dispose();
+            if (_queriesInFlight.IsCreated) _queriesInFlight.Dispose();
             if (_mesh != null) UnityEngine.Object.Destroy(_mesh);
         }
 

@@ -92,6 +92,10 @@ namespace Game.Voxels
 
         public VoxelDebris Debris { get; private set; }
 
+        /// <summary>Cached once in Awake: subscribing them allocates nothing per frame.</summary>
+        private System.Action<Vector3, float, int> _onCarved;
+        private System.Action<Vector3, float, int> _onAirBlasted;
+
         public static IReadOnlyList<VoxelBody> Bodies => s_bodies;
 
         /// <summary>
@@ -264,6 +268,8 @@ namespace Game.Voxels
 
         private void Awake()
         {
+            _onCarved = OnCarved;
+            _onAirBlasted = OnAirBlasted;
             if (s_instance != null && s_instance != this)
             {
                 Destroy(gameObject);
@@ -293,9 +299,33 @@ namespace Game.Voxels
             return material;
         }
 
-        private void OnEnable() => VoxelTicks.Add(this);
+        private void OnEnable()
+        {
+            VoxelTicks.Add(this);
+            VoxelSignals.Carved += _onCarved;
+            VoxelSignals.AirBlasted += _onAirBlasted;
+        }
 
-        private void OnDisable() => VoxelTicks.Remove(this);
+        private void OnDisable()
+        {
+            VoxelTicks.Remove(this);
+            VoxelSignals.Carved -= _onCarved;
+            VoxelSignals.AirBlasted -= _onAirBlasted;
+        }
+
+        /// <summary>A shell or a blast dug the ground: what lay there flies, what lay round the hole falls in.</summary>
+        private void OnCarved(Vector3 point, float radius, int voxels)
+        {
+            Debris?.Blow(point, radius * 1.5f, 4f + radius * 3f);
+            Debris?.Loosen(point, radius + 0.3f);
+        }
+
+        /// <summary>An air bomb: everything lying within twice the crater flies.</summary>
+        private void OnAirBlasted(Vector3 point, float radius, int voxels)
+        {
+            Debris?.Blow(point, radius * 2f, 14f);
+            Debris?.Loosen(point, radius + 0.3f);
+        }
 
         private void LateUpdate() // perf-ok: ticks itself without the game loop; draws (dt 0) while the loop is paused
         {

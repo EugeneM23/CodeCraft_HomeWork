@@ -14,8 +14,35 @@ namespace Game.Voxels
         /// <summary>How long (s) a lying cube takes to sink into the ground and go.</summary>
         private const float SINK_TIME = 1.5f;
 
-        /// <summary>A lying cube marked by a query this step (Task 5 acts on it; cleared each step).</summary>
+        /// <summary>A lying cube marked by a query this step: LyingJob acts on it in the same step.</summary>
         private const int HIT = 16;
+        /// <summary>A lying cube sinking because a round of eviction chose it (not a crush or a blow with no room).</summary>
+        private const int EVICTED = 32;
+
+        /// <summary>How long (s) a crushed cube takes to sink.</summary>
+        private const float CRUSH_SINK_TIME = 0.4f;
+
+        private const int QUERY_CRUSH = 1, QUERY_BLOW = 2, QUERY_LOOSEN = 3;
+        /// <summary>Queries per frame; past it the rest are dropped.</summary>
+        private const int MAX_QUERIES = 32;
+        /// <summary>Most crumbs one crushed piece throws in a step.</summary>
+        private const int MAX_CRUSH_CRUMBS = 6;
+        /// <summary>Share of a crushed piece that flies back as crumbs.</summary>
+        private const float CRUSH_CRUMB_SHARE = 1f / 3f;
+        private const float CRUMB_LIFE = 10f;
+        private const float WOKEN_LIFE = 20f;
+
+        /// <summary>A sphere that crushes, blows or loosens what lies in it, queued for the next step.</summary>
+        private struct LyingQuery
+        {
+            public float3 Center;
+            public float Radius;
+            /// <summary>Crush: the wheel's velocity (crumbs fly back against it).</summary>
+            public float3 Velocity;
+            /// <summary>Blow: speed (m/s) at the centre, falling to 0 at the radius.</summary>
+            public float Speed;
+            public int Kind;
+        }
 
         /// <summary>A cube lying for good: only drawn.</summary>
         private struct LyingCube
@@ -33,7 +60,7 @@ namespace Game.Voxels
             /// <summary>0 — lying; > 0 — sinking for this many seconds of SinkTime.</summary>
             public float Sinking;
             public float SinkTime;
-            /// <summary>LAID (blood tile), HIT (marked by a query this step).</summary>
+            /// <summary>LAID (blood tile), HIT (marked by a query this step), EVICTED (sinking by eviction).</summary>
             public int Flags;
             /// <summary>Which query hit it (index + 1), 0 — none.</summary>
             public int Query;
@@ -45,7 +72,7 @@ namespace Game.Voxels
             public int NextGroup;
             /// <summary>Where a cube goes when the store is full: walks round, overwriting.</summary>
             public int Overwrite;
-            /// <summary>Cubes sinking because of eviction (SinkTime == SINK_TIME): no new round starts while any sink.</summary>
+            /// <summary>Cubes sinking because of eviction (flag EVICTED): no new round starts while any sink.</summary>
             public int Evicting;
             /// <summary>Cubes sinking for any reason: LyingJob has nothing to do while this is 0.</summary>
             public int Sinking;
@@ -65,6 +92,28 @@ namespace Game.Voxels
 
         /// <summary>Where the viewer is: eviction sinks the cubes farthest from it first (VoxelWorld sets it each frame).</summary>
         public Vector3 ViewPoint { get; set; }
+
+        /// <summary>Lying cubes in the sphere under a road wheel break: a third fly back as crumbs, the rest sink.</summary>
+        public void Crush(Vector3 center, float radius, Vector3 velocity) =>
+            Query(new LyingQuery { Center = center, Radius = radius, Velocity = velocity, Kind = QUERY_CRUSH });
+
+        /// <summary>Lying cubes in the sphere wake and fly away from the centre, harder nearer it; blood stays.</summary>
+        public void Blow(Vector3 center, float radius, float speed) =>
+            Query(new LyingQuery { Center = center, Radius = radius, Speed = speed, Kind = QUERY_BLOW });
+
+        /// <summary>Lying cubes in the sphere wake and fall: the ground under them was dug away.</summary>
+        public void Loosen(Vector3 center, float radius) =>
+            Query(new LyingQuery { Center = center, Radius = radius, Kind = QUERY_LOOSEN });
+
+        /// <summary>Queued for the next step; past MAX_QUERIES in a frame the rest are dropped.</summary>
+        private void Query(in LyingQuery query)
+        {
+            Complete();
+            if (!_queries.IsCreated || query.Radius <= 0f)
+                return;
+            if (_queries.Length < MAX_QUERIES)
+                _queries.Add(query);
+        }
 
         /// <summary>Lying cubes within <paramref name="radius"/> of a point (sinking ones too): for tests and debugging.</summary>
         public int CountLyingNear(Vector3 point, float radius)
@@ -126,6 +175,7 @@ namespace Game.Voxels
                         continue;
                     cube.Sinking = 1e-4f;
                     cube.SinkTime = SINK_TIME;
+                    cube.Flags |= EVICTED;
                     Lying[i] = cube;
                     marked++;
                 }
@@ -160,9 +210,48 @@ namespace Game.Voxels
         }
 
         /// <summary>
-        /// The lying store's step, after the compact pass: sinking cubes go down and shrink, and
-        /// once sunk their slot is closed by moving the last one into it (walking from the end, so
-        /// the moved cube has had its step already). Query marks are cleared here (Task 5 acts on them).
+        /// Marks the lying cubes the step's queries touch: each slot, unless it is sinking already or
+        /// is blood, takes the first query whose sphere holds it (HIT, Query = index + 1). Scheduled
+        /// over the whole store, only in steps that have queries; slots past the count are skipped.
+        /// </summary>
+        [BurstCompile]
+        private struct LyingQueryJob : IJobParallelFor
+        {
+            public NativeArray<LyingCube> Lying;
+            [ReadOnly] public NativeArray<LyingQuery> Queries;
+            [ReadOnly] public NativeReference<LyingState> State;
+
+            public void Execute(int i)
+            {
+                if (i >= State.Value.Count)
+                    return;
+
+                LyingCube cube = Lying[i];
+                if (cube.Sinking > 0f || (cube.Flags & LAID) != 0)
+                    return;
+
+                for (int q = 0; q < Queries.Length; q++)
+                {
+                    LyingQuery query = Queries[q];
+                    if (math.distancesq(cube.Position, query.Center) > query.Radius * query.Radius)
+                        continue;
+
+                    cube.Flags |= HIT;
+                    cube.Query = q + 1;
+                    Lying[i] = cube;
+                    return;
+                }
+            }
+        }
+
+        /// <summary>
+        /// The lying store's step, after the compact pass. Cubes a query hit go first: crushed ones
+        /// throw a third (at most MAX_CRUSH_CRUMBS a piece) back as crumbs and sink the rest in
+        /// CRUSH_SINK_TIME; blown or loosened ones fly again, the cubes of one group as one clump
+        /// (sinking instead when the flying lists are full). Then sinking cubes go down and shrink,
+        /// and once sunk - like a cube that flew off - their slot is closed by moving the last one
+        /// into it (walking from the end, so the moved cube has had its step already). New clumps
+        /// go to the end of the flying lists and fly from the next step.
         /// </summary>
         [BurstCompile]
         private struct LyingJob : IJob
@@ -172,54 +261,205 @@ namespace Game.Voxels
             public NativeArray<float4> Colors;
             public NativeArray<byte> DirtyBatches;
             public NativeReference<LyingState> State;
+            public NativeList<Cluster> Clusters;
+            public NativeList<Cube> Cubes;
+            /// <summary>Flying capacity: clusters and cubes each.</summary>
+            public int Capacity;
+            [ReadOnly] public NativeArray<LyingQuery> Queries;
+            public uint Seed;
             public float DeltaTime;
 
             public void Execute()
             {
                 LyingState state = State.Value;
-                // Nothing sinks (and no query has marked anything): the cubes just lie.
-                if (state.Sinking == 0)
+                // Nothing sinks and no query this step: the cubes just lie.
+                if (state.Sinking == 0 && Queries.Length == 0)
                     return;
+
+                bool queried = Queries.Length > 0;
+                int firstCluster = Clusters.Length;
+                int firstCube = Cubes.Length;
+                var random = new Unity.Mathematics.Random(math.hash(new uint2(Seed, 0x5bd1e995u)) | 1u);
+                var groupCluster = new NativeParallelHashMap<int, int>(queried ? 256 : 1, Allocator.Temp);
+                var groupCrumbs = new NativeParallelHashMap<int, int>(queried ? 256 : 1, Allocator.Temp);
 
                 int count = state.Count;
                 for (int i = count - 1; i >= 0; i--)
                 {
                     LyingCube cube = Lying[i];
                     // Most cubes just lie: nothing to write back.
-                    if (cube.Sinking <= 0f && (cube.Flags & HIT) == 0 && cube.Query == 0)
+                    if (cube.Sinking <= 0f && (cube.Flags & HIT) == 0)
                         continue;
 
-                    if (cube.Sinking > 0f)
+                    if ((cube.Flags & HIT) != 0)
                     {
-                        cube.Sinking += DeltaTime;
-                        float t = cube.Sinking / math.max(cube.SinkTime, 1e-4f);
-                        if (t >= 1f)
-                        {
-                            state.Sinking = math.max(0, state.Sinking - 1);
-                            if (cube.SinkTime == SINK_TIME)
-                                state.Evicting = math.max(0, state.Evicting - 1);
+                        LyingQuery query = Queries[cube.Query - 1];
+                        cube.Flags &= ~HIT;
+                        cube.Query = 0;
 
-                            int last = count - 1;
-                            Lying[i] = Lying[last];
-                            Matrices[i] = Matrices[last];
-                            Colors[i] = Colors[last];
-                            count = last;
-                            DirtyBatches[i / BATCH] = 1;
-                            DirtyBatches[last / BATCH] = 1;
+                        bool gone = query.Kind == QUERY_CRUSH
+                            ? Crumble(cube, query, ref groupCrumbs, ref random)
+                            : Wake(cube, query, ref groupCluster, ref random);
+                        if (gone)
+                        {
+                            Remove(i, ref count);
                             continue;
                         }
 
-                        Matrices[i] = float4x4.TRS(cube.Position - new float3(0f, 1f, 0f) * cube.Size * t, cube.Rotation, cube.Scale * (1f - t));
+                        // A crushed cube that stays, or a woken one with no room to fly: it sinks.
+                        cube.Sinking = 1e-4f;
+                        cube.SinkTime = query.Kind == QUERY_CRUSH ? CRUSH_SINK_TIME : SINK_TIME;
+                        state.Sinking++;
                     }
 
-                    // HIT is acted on in Task 5; here the mark only lives one step.
-                    cube.Flags &= ~HIT;
-                    cube.Query = 0;
+                    cube.Sinking += DeltaTime;
+                    float t = cube.Sinking / math.max(cube.SinkTime, 1e-4f);
+                    if (t >= 1f)
+                    {
+                        state.Sinking = math.max(0, state.Sinking - 1);
+                        if ((cube.Flags & EVICTED) != 0)
+                            state.Evicting = math.max(0, state.Evicting - 1);
+                        Remove(i, ref count);
+                        continue;
+                    }
+
+                    Matrices[i] = float4x4.TRS(cube.Position - new float3(0f, 1f, 0f) * cube.Size * t, cube.Rotation, cube.Scale * (1f - t));
                     Lying[i] = cube;
                 }
 
+                Recentre(firstCluster, firstCube);
+                groupCluster.Dispose();
+                groupCrumbs.Dispose();
+
                 state.Count = count;
                 State.Value = state;
+            }
+
+            /// <summary>Closes slot <paramref name="i"/> by moving the last cube into it.</summary>
+            private void Remove(int i, ref int count)
+            {
+                int last = count - 1;
+                Lying[i] = Lying[last];
+                Matrices[i] = Matrices[last];
+                Colors[i] = Colors[last];
+                count = last;
+                DirtyBatches[i / BATCH] = 1;
+                DirtyBatches[last / BATCH] = 1;
+            }
+
+            /// <summary>A crushed cube flies back from under the track as a crumb (true), or stays to sink (false).</summary>
+            private bool Crumble(in LyingCube cube, in LyingQuery query, ref NativeParallelHashMap<int, int> groupCrumbs,
+                ref Unity.Mathematics.Random random)
+            {
+                if (random.NextFloat() >= CRUSH_CRUMB_SHARE)
+                    return false;
+                groupCrumbs.TryGetValue(cube.Group, out int crumbs);
+                if (crumbs >= MAX_CRUSH_CRUMBS || Clusters.Length >= Capacity || Cubes.Length >= Capacity)
+                    return false;
+                groupCrumbs[cube.Group] = crumbs + 1;
+
+                float size = cube.Size * 0.8f;
+                Clusters.Add(new Cluster
+                {
+                    Position = cube.Position,
+                    Velocity = -query.Velocity * random.NextFloat(0.3f, 0.6f) + new float3(0f, random.NextFloat(1f, 3f), 0f),
+                    Rotation = cube.Rotation,
+                    Spin = random.NextFloat3Direction() * random.NextFloat(6f, 12f),
+                    Radius = size * 0.5f,
+                    Life = CRUMB_LIFE,
+                    Count = 1
+                });
+                Cubes.Add(new Cube { Cluster = Clusters.Length - 1, Size = size, Color = cube.Color });
+                return true;
+            }
+
+            /// <summary>
+            /// A blown or loosened cube joins its group's clump, begun at the first cube of the group
+            /// met (true); false when the flying lists are full.
+            /// </summary>
+            private bool Wake(in LyingCube cube, in LyingQuery query, ref NativeParallelHashMap<int, int> groupCluster,
+                ref Unity.Mathematics.Random random)
+            {
+                if (Cubes.Length >= Capacity)
+                    return false;
+
+                if (!groupCluster.TryGetValue(cube.Group, out int index))
+                {
+                    if (Clusters.Length >= Capacity)
+                        return false;
+
+                    float3 velocity = float3.zero;
+                    float3 spin = float3.zero;
+                    if (query.Kind == QUERY_BLOW)
+                    {
+                        float3 away = cube.Position - query.Center;
+                        float d = math.length(away);
+                        float3 dir = d > 1e-4f ? away / d : new float3(0f, 1f, 0f);
+                        dir.y = math.max(dir.y, 0.5f);
+                        dir = math.normalize(dir);
+                        velocity = dir * (query.Speed * math.saturate(1f - d / query.Radius));
+                        spin = random.NextFloat3Direction() * random.NextFloat(2f, 6f);
+                    }
+
+                    Clusters.Add(new Cluster
+                    {
+                        Position = cube.Position,
+                        Velocity = velocity,
+                        Rotation = cube.Rotation,
+                        Spin = spin,
+                        Life = WOKEN_LIFE,
+                        // A piece of a break: it may break once more where it lands, but not into a storm of crumbs.
+                        Generation = 1
+                    });
+                    index = Clusters.Length - 1;
+                    groupCluster.TryAdd(cube.Group, index);
+                }
+
+                Cluster cluster = Clusters[index];
+                float3 offset = math.mul(math.inverse(cluster.Rotation), cube.Position - cluster.Position);
+                cluster.Count++;
+                cluster.Radius = math.max(cluster.Radius, math.length(offset) + cube.Size * 0.5f);
+                Clusters[index] = cluster;
+                Cubes.Add(new Cube { Cluster = index, Offset = offset, Size = cube.Size, Color = cube.Color });
+                return true;
+            }
+
+            /// <summary>
+            /// Moves each new clump's origin to the middle of its cubes: begun at its first cube, a long
+            /// piece would reach far past that end and land (and lie) a reach too high.
+            /// </summary>
+            private void Recentre(int firstCluster, int firstCube)
+            {
+                int added = Clusters.Length - firstCluster;
+                if (added <= 0)
+                    return;
+
+                var centres = new NativeArray<float3>(added, Allocator.Temp);
+                for (int c = firstCube; c < Cubes.Length; c++)
+                    centres[Cubes[c].Cluster - firstCluster] += Cubes[c].Offset;
+
+                for (int j = 0; j < added; j++)
+                {
+                    Cluster cluster = Clusters[firstCluster + j];
+                    centres[j] /= math.max(1, cluster.Count);
+                    cluster.Position += math.mul(cluster.Rotation, centres[j]);
+                    cluster.Radius = 0f;
+                    Clusters[firstCluster + j] = cluster;
+                }
+
+                for (int c = firstCube; c < Cubes.Length; c++)
+                {
+                    Cube cube = Cubes[c];
+                    int j = cube.Cluster - firstCluster;
+                    cube.Offset -= centres[j];
+                    Cubes[c] = cube;
+
+                    Cluster cluster = Clusters[cube.Cluster];
+                    cluster.Radius = math.max(cluster.Radius, math.length(cube.Offset) + cube.Size * 0.5f);
+                    Clusters[cube.Cluster] = cluster;
+                }
+
+                centres.Dispose();
             }
         }
     }

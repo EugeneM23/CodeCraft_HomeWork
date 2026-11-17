@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
 
@@ -139,6 +140,64 @@ namespace Game.Voxels.Tests
                 Assert.AreEqual(480, store.CountLyingNear(Vector3.zero, 50f), "the near row is whole");
             }
             finally { store.Dispose(); }
+        }
+
+        [Test]
+        public void Crush_BreaksWhatLiesUnderTheWheel()
+        {
+            LayPiece(_debris, new Vector3(0f, 0.2f, 0f), 12, Color.gray);
+            LayPiece(_debris, new Vector3(5f, 0.2f, 0f), 12, Color.gray);
+            Run(2f);
+            Assert.AreEqual(24, _debris.LyingCount);
+
+            _debris.Crush(new Vector3(0f, 0.2f, 0f), 0.6f, new Vector3(0f, 0f, 3f));
+            Run(1f);
+            Assert.AreEqual(12, _debris.CountLyingNear(new Vector3(5f, 0.2f, 0f), 1f), "the far piece is untouched");
+            Assert.That(_debris.CountLyingNear(Vector3.zero, 0.6f), Is.LessThanOrEqualTo(4 + 0), "crushed: crumbs flew, the rest sank");
+            Assert.That(_debris.LyingCount + _debris.Count, Is.LessThanOrEqualTo(12 + 6), "no cube doubled: the far piece and at most 6 crumbs");
+        }
+
+        [Test]
+        public void Crush_LeavesBlood()
+        {
+            _debris.Drop(new Vector3(0f, 0.5f, 0f), Vector3.zero, Color.red, 0.05f);
+            Run(1f);
+            _debris.Crush(Vector3.zero, 0.6f, Vector3.forward);
+            Run(1f);
+            Assert.AreEqual(1, _debris.LyingCount);
+        }
+
+        [Test]
+        public void Blow_ThrowsAPieceUpAsOneClump()
+        {
+            LayPiece(_debris, new Vector3(1f, 0.2f, 0f), 12, Color.gray);
+            Run(2f);
+            _debris.Blow(Vector3.zero, 4f, 10f);
+            _debris.Tick(0.02f); _debris.Tick(0.02f); _debris.Complete();
+            var sizes = new List<int>();
+            _debris.GetClusterSizes(sizes);
+            CollectionAssert.Contains(sizes, 12, "the piece flies on whole");
+            Assert.AreEqual(0, _debris.LyingCount);
+        }
+
+        [Test]
+        public void Loosen_DropsWithoutAPush()
+        {
+            LayPiece(_debris, new Vector3(0f, 0.2f, 0f), 12, Color.gray);
+            Run(2f);
+            _debris.Loosen(Vector3.zero, 1f);
+            _debris.Tick(0.02f); _debris.Tick(0.02f); _debris.Complete();
+            Assert.AreEqual(1, _debris.ClusterCount);
+            Run(2f);
+            Assert.AreEqual(12, _debris.CountLyingNear(Vector3.zero, 1.5f), "fell back where it was");
+        }
+
+        /// <summary>A piece of <paramref name="cubes"/> cubes of 0.1 m in a row along X, centred at <paramref name="at"/>, at rest.</summary>
+        private static void LayPiece(VoxelDebris store, Vector3 at, int cubes, Color color)
+        {
+            int cluster = store.BeginCluster(at, Vector3.zero, 0f);
+            for (int i = 0; i < cubes; i++)
+                store.AddCube(cluster, at + new Vector3((i - (cubes - 1) * 0.5f) * 0.1f, 0f, 0f), 0.1f, color);
         }
 
         /// <summary>Clusters of 10 cubes of 0.1 m in a row along X, side by side, <paramref name="cubes"/> in all.</summary>
