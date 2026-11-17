@@ -1,10 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using Unity.Burst;
-using Unity.Collections;
-using Unity.Jobs;
-using Unity.Mathematics;
 using UnityEngine;
 
 namespace Game.Voxels
@@ -210,26 +206,8 @@ namespace Game.Voxels
             if (paint < 0)
                 return;
 
-            int patch = MeshVoxelizer.AddShades(grid.Palette, camo.Patch, _colorNoise);
-            int dark = MeshVoxelizer.AddShades(grid.Palette, camo.Dark, _colorNoise);
-            int light = MeshVoxelizer.AddShades(grid.Palette, camo.Light, _colorNoise);
-            if (patch < 0 || dark < 0 || light < 0)
-                return;
-
-            new CamouflageJob
-            {
-                Voxels = grid.Voxels,
-                Size = grid.Size,
-                Origin = grid.Origin,
-                VoxelSize = _voxelSize,
-                PartToModel = transform.worldToLocalMatrix * part.localToWorldMatrix,
-                Paint = paint,
-                Patch = patch,
-                Dark = dark,
-                Light = light,
-                Frequency = Mathf.Max(0.01f, camo.Frequency),
-                Threshold = camo.Threshold
-            }.Run();
+            VoxelPaint.Camouflage(grid.Voxels, grid.Size, grid.Origin, _voxelSize,
+                transform.worldToLocalMatrix * part.localToWorldMatrix, grid.Palette, paint, MeshVoxelizer.VARIANTS, camo, _colorNoise);
         }
 
         private void PaintDecals(Transform part, MeshVoxelizer.Result grid)
@@ -238,96 +216,8 @@ namespace Game.Voxels
                 return;
 
             foreach (Decal decal in _decals)
-            {
-                if (decal.Rows == null || decal.Rows.Length == 0 || string.IsNullOrEmpty(decal.Keys) ||
-                    decal.Colors == null || transform.Find(decal.Part) != part)
-                    continue;
-
-                // One run of shades per colour, nearly flat: a painted sign, not weathered steel.
-                var slots = new int[decal.Keys.Length];
-                for (int k = 0; k < slots.Length; k++)
-                    slots[k] = k < decal.Colors.Length ? MeshVoxelizer.AddShades(grid.Palette, decal.Colors[k], 0.02f) : -1;
-
-                int side = decal.Side >= 0 ? 1 : -1;
-                int height = decal.Rows.Length;
-
-                for (int row = 0; row < height; row++)
-                {
-                    string line = decal.Rows[row];
-                    for (int column = 0; column < line.Length; column++)
-                    {
-                        int key = decal.Keys.IndexOf(line[column]);
-                        if (key < 0 || slots[key] < 0)
-                            continue;
-
-                        // Pixel centres one voxel apart about the centre; left to right as seen from
-                        // the side: towards -Z on the -X side, towards +Z on the +X side.
-                        float z = decal.Center.x + side * (column - (line.Length - 1) * 0.5f) * _voxelSize;
-                        float y = decal.Center.y + ((height - 1) * 0.5f - row) * _voxelSize;
-                        int cz = (int)math.floor((z - grid.Origin.z) / _voxelSize);
-                        int cy = (int)math.floor((y - grid.Origin.y) / _voxelSize);
-                        if (cy < 0 || cz < 0 || cy >= grid.Size.y || cz >= grid.Size.z)
-                            continue;
-
-                        // In from that side to the first voxel: the paint lies on the surface.
-                        for (int step = 0; step < grid.Size.x; step++)
-                        {
-                            int cx = side > 0 ? grid.Size.x - 1 - step : step;
-                            int index = VoxelMath.Index(new int3(cx, cy, cz), grid.Size);
-                            int voxel = grid.Voxels[index];
-                            if (voxel == 0)
-                                continue;
-
-                            grid.Voxels[index] = (byte)(slots[key] + (voxel - 1) % MeshVoxelizer.VARIANTS);
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// Patch, dark heart or sun-bleached sand for each paint voxel, from simplex noise in the
-        /// model's space. The axes are sheared so patches run in slanting streaks, as brushed paint
-        /// does; each voxel keeps its own shade within the new colour.
-        /// </summary>
-        [BurstCompile]
-        private struct CamouflageJob : IJob
-        {
-            public NativeArray<byte> Voxels;
-            public int3 Size;
-            public float3 Origin;
-            public float VoxelSize;
-            public float4x4 PartToModel;
-            public int Paint;
-            public int Patch;
-            public int Dark;
-            public int Light;
-            public float Frequency;
-            public float Threshold;
-
-            public void Execute()
-            {
-                for (int i = 0; i < Voxels.Length; i++)
-                {
-                    int voxel = Voxels[i];
-                    if (voxel < Paint || voxel >= Paint + MeshVoxelizer.VARIANTS)
-                        continue;
-
-                    float3 local = Origin + ((float3)VoxelMath.Coord(i, Size) + 0.5f) * VoxelSize;
-                    float3 p = math.transform(PartToModel, local);
-                    float3 q = new float3(p.x + p.y * 0.8f, p.y * 1.6f + p.z * 0.5f, p.z * 1.2f + p.y * 1.1f);
-                    float streak = noise.snoise(q * Frequency) + 0.3f * noise.snoise(q * Frequency * 2.67f + 11.3f);
-
-                    int first = Paint;
-                    if (streak > Threshold)
-                        first = streak > Threshold + 0.65f ? Dark : Patch;
-                    else if (noise.snoise(p * Frequency * 1.13f + 37.1f) > 0.45f)
-                        first = Light;
-
-                    Voxels[i] = (byte)(first + (voxel - Paint));
-                }
-            }
+                if (transform.Find(decal.Part) == part)
+                    VoxelPaint.Decal(grid.Voxels, grid.Size, grid.Origin, _voxelSize, grid.Palette, MeshVoxelizer.VARIANTS, decal);
         }
 
         // ---------------------------------------------------------------- parts

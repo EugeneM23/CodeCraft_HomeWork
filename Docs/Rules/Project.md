@@ -78,6 +78,7 @@ Tools/<Инструмент>/          скрипты вне Unity (Maya, PerfCh
 | `Game.Voxels.Demo` | `Game/Voxels/Demo` | `Game.Voxels.Demo` | все |
 | `Game.Voxels.Tests` | `Game/Voxels/Tests` | `Game.Voxels.Tests` | все |
 | `Game.Voxels.SceneTests` | `Game/Voxels/Tests/Scene` | `Game.Voxels.Tests` | Editor (PlayMode-тесты сцены) |
+| `Game.Voxels.VoxelizerTests` | `Game/Voxels/Tests/Voxelizer` | `Game.Voxels.Tests` | Editor (EditMode-тесты вокселизатора) |
 | `Game.AudioEngine.Adapters` | `Game/Audio/Scripts` | `Game.AudioEngine.Adapters` | все |
 | `Game.AudioEngine.Adapters.Editor` | `Game/Audio/Scripts/Editor` | `Game.AudioEngine.Adapters.EditorTools` | Editor |
 | `Game.AudioEngine.Adapters.Tests` | `Game/Audio/Tests` | `Game.AudioEngine.Adapters.Tests` | Editor (EditMode) |

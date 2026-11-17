@@ -1,0 +1,307 @@
+using Unity.Burst;
+using Unity.Collections;
+using Unity.Jobs;
+using Unity.Mathematics;
+using UnityEngine;
+
+namespace Game.Voxels.EditorTools
+{
+    /// <summary>
+    /// Points every 0.35 voxel over each triangle, each with its colour (tint × texture), keyed so
+    /// that a sort brings each cell's points together, grouped by colour bin (4 bits a channel).
+    /// Key: cell (27 bits) | rgb (24 bits) | bin (12 bits).
+    /// </summary>
+    [BurstCompile]
+    public struct SampleSurfaceJob : IJob
+    {
+        [ReadOnly] public NativeArray<float3> Corners;
+        [ReadOnly] public NativeArray<float2> Uvs;
+        [ReadOnly] public NativeArray<int> Material;
+        [ReadOnly] public NativeArray<Color32> Tints;
+        [ReadOnly] public NativeArray<Color32> Pixels;
+        [ReadOnly] public NativeArray<int4> Textures;
+        public float3 Origin;
+        public float VoxelSize;
+        public int3 Size;
+        public NativeList<ulong> Keys;
+
+        public void Execute()
+        {
+            float step = VoxelSize * 0.35f;
+            for (int t = 0; t < Corners.Length / 3; t++)
+            {
+                float3 a = Corners[t * 3], b = Corners[t * 3 + 1], c = Corners[t * 3 + 2];
+                float edge = math.max(math.distance(a, b), math.max(math.distance(b, c), math.distance(c, a)));
+                int n = math.clamp((int)math.ceil(edge / step), 1, 4096);
+                // A point on a cell boundary belongs to the cell inside the body: nudge it (in voxels) against the
+                // outward normal and, along the axes the triangle spans, towards its centre, so an edge lying on a
+                // boundary falls on the triangle's side of it too.
+                const float nudge = VoxelizerSurface.BOUNDARY_NUDGE;
+                float3 inward = -math.normalizesafe(math.cross(b - a, c - a)) * nudge;
+                float3 centre = ((a + b + c) / 3f - Origin) / VoxelSize;
+                for (int i = 0; i <= n; i++)
+                for (int j = 0; j <= n - i; j++)
+                {
+                    float u = i / (float)n, v = j / (float)n, w = 1f - u - v;
+                    float3 p = a * w + b * u + c * v;
+                    float3 q = (p - Origin) / VoxelSize;
+                    float3 toCentre = centre - q;
+                    q += inward + math.select(float3.zero, math.sign(toCentre) * nudge, math.abs(toCentre) > nudge);
+                    int3 cell = (int3)math.floor(q);
+                    if (math.any(cell < 0) || math.any(cell >= Size))
+                        continue;
+                    float2 uv = Uvs[t * 3] * w + Uvs[t * 3 + 1] * u + Uvs[t * 3 + 2] * v;
+                    Color32 colour = Shade(Material[t], uv);
+                    ulong index = (ulong)(cell.x + Size.x * (cell.y + Size.y * cell.z));
+                    ulong rgb = ((ulong)colour.r << 16) | ((ulong)colour.g << 8) | colour.b;
+                    ulong bin = ((ulong)(uint)(colour.r >> 4) << 8) | ((ulong)(uint)(colour.g >> 4) << 4) | (uint)(colour.b >> 4);
+                    Keys.Add((index << 36) | (rgb << 12) | bin);
+                }
+            }
+        }
+
+        private Color32 Shade(int material, float2 uv)
+        {
+            Color32 tint = Tints[material];
+            int4 texture = Textures[material];
+            if (texture.w == 0)
+                return tint;
+            int x = (int)math.floor(math.frac(uv.x) * texture.y);
+            int y = (int)math.floor(math.frac(uv.y) * texture.z);
+            Color32 texel = Pixels[texture.x + math.clamp(y, 0, texture.z - 1) * texture.y + math.clamp(x, 0, texture.y - 1)];
+            return new Color32((byte)(tint.r * texel.r / 255), (byte)(tint.g * texel.g / 255), (byte)(tint.b * texel.b / 255), 255);
+        }
+    }
+
+    /// <summary>Each cell's colour: the colour bin most of its points fell in, its points averaged.</summary>
+    [BurstCompile]
+    public struct ResolveCellsJob : IJob
+    {
+        [ReadOnly] public NativeArray<ulong> Keys; // sorted
+        public NativeArray<Color32> Cells;
+
+        public void Execute()
+        {
+            var count = new NativeArray<int>(4096, Allocator.Temp);
+            var sum = new NativeArray<int3>(4096, Allocator.Temp);
+            var touched = new NativeList<int>(64, Allocator.Temp);
+            int i = 0;
+            while (i < Keys.Length)
+            {
+                ulong cell = Keys[i] >> 36;
+                int best = -1;
+                for (; i < Keys.Length && Keys[i] >> 36 == cell; i++)
+                {
+                    int bin = (int)(Keys[i] & 0xFFF);
+                    int rgb = (int)((Keys[i] >> 12) & 0xFFFFFF);
+                    if (count[bin] == 0)
+                        touched.Add(bin);
+                    count[bin]++;
+                    sum[bin] += new int3(rgb >> 16, (rgb >> 8) & 0xFF, rgb & 0xFF);
+                    if (best < 0 || count[bin] > count[best])
+                        best = bin;
+                }
+
+                int3 mean = sum[best] / count[best];
+                Cells[(int)cell] = new Color32((byte)mean.x, (byte)mean.y, (byte)mean.z, VoxelizerPartGrid.SURFACE);
+                for (int k = 0; k < touched.Length; k++)
+                {
+                    count[touched[k]] = 0;
+                    sum[touched[k]] = int3.zero;
+                }
+
+                touched.Clear();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Floods the empty space from the grid's border; every empty cell it never reaches is inside
+    /// (a = INSIDE). Unlike parity rays it does not care whether the mesh is closed or overlaps itself.
+    /// </summary>
+    [BurstCompile]
+    public struct FloodOutsideJob : IJob
+    {
+        public NativeArray<Color32> Cells;
+        public int3 Size;
+
+        public void Execute()
+        {
+            var outside = new NativeArray<bool>(Cells.Length, Allocator.Temp);
+            var queue = new NativeQueue<int>(Allocator.Temp);
+            for (int z = 0; z < Size.z; z++)
+            for (int y = 0; y < Size.y; y++)
+            for (int x = 0; x < Size.x; x++)
+            {
+                bool border = x == 0 || y == 0 || z == 0 || x == Size.x - 1 || y == Size.y - 1 || z == Size.z - 1;
+                int i = x + Size.x * (y + Size.y * z);
+                if (border && Cells[i].a == 0)
+                {
+                    outside[i] = true;
+                    queue.Enqueue(i);
+                }
+            }
+
+            int sy = Size.x, sz = Size.x * Size.y;
+            while (queue.TryDequeue(out int i))
+            {
+                int x = i % Size.x, y = (i / Size.x) % Size.y, z = i / sz;
+                if (x > 0) Visit(i - 1, ref outside, ref queue);
+                if (x < Size.x - 1) Visit(i + 1, ref outside, ref queue);
+                if (y > 0) Visit(i - sy, ref outside, ref queue);
+                if (y < Size.y - 1) Visit(i + sy, ref outside, ref queue);
+                if (z > 0) Visit(i - sz, ref outside, ref queue);
+                if (z < Size.z - 1) Visit(i + sz, ref outside, ref queue);
+            }
+
+            for (int i = 0; i < Cells.Length; i++)
+                if (Cells[i].a == 0 && !outside[i])
+                    Cells[i] = new Color32(0, 0, 0, VoxelizerPartGrid.INSIDE);
+
+            outside.Dispose();
+            queue.Dispose();
+        }
+
+        private void Visit(int j, ref NativeArray<bool> outside, ref NativeQueue<int> queue)
+        {
+            if (outside[j] || Cells[j].a != 0)
+                return;
+            outside[j] = true;
+            queue.Enqueue(j);
+        }
+    }
+
+    /// <summary>Inside cells take the colour of the nearest surface (breadth-first from it), × Darken.</summary>
+    [BurstCompile]
+    public struct ShadeInteriorJob : IJob
+    {
+        public NativeArray<Color32> Cells;
+        public int3 Size;
+        public float Darken;
+
+        public void Execute()
+        {
+            var done = new NativeArray<bool>(Cells.Length, Allocator.Temp);
+            var queue = new NativeQueue<int>(Allocator.Temp);
+            for (int i = 0; i < Cells.Length; i++)
+                if (Cells[i].a == VoxelizerPartGrid.SURFACE)
+                {
+                    done[i] = true;
+                    queue.Enqueue(i);
+                }
+
+            int sy = Size.x, sz = Size.x * Size.y;
+            while (queue.TryDequeue(out int i))
+            {
+                Color32 from = Cells[i];
+                int x = i % Size.x, y = (i / Size.x) % Size.y, z = i / sz;
+                if (x > 0) Spread(i - 1, from, ref done, ref queue);
+                if (x < Size.x - 1) Spread(i + 1, from, ref done, ref queue);
+                if (y > 0) Spread(i - sy, from, ref done, ref queue);
+                if (y < Size.y - 1) Spread(i + sy, from, ref done, ref queue);
+                if (z > 0) Spread(i - sz, from, ref done, ref queue);
+                if (z < Size.z - 1) Spread(i + sz, from, ref done, ref queue);
+            }
+
+            done.Dispose();
+            queue.Dispose();
+        }
+
+        private void Spread(int j, Color32 from, ref NativeArray<bool> done, ref NativeQueue<int> queue)
+        {
+            if (done[j] || Cells[j].a != VoxelizerPartGrid.INSIDE)
+                return;
+            done[j] = true;
+            bool fromSurface = from.a == VoxelizerPartGrid.SURFACE;
+            Cells[j] = fromSurface
+                ? new Color32((byte)(from.r * Darken), (byte)(from.g * Darken), (byte)(from.b * Darken), VoxelizerPartGrid.INSIDE)
+                : new Color32(from.r, from.g, from.b, VoxelizerPartGrid.INSIDE);
+            queue.Enqueue(j);
+        }
+    }
+
+    /// <summary>
+    /// Morphological opening with a 2×2×2 cube: a solid cell stays only if it belongs to at least one fully
+    /// solid 2×2×2 block (one of the 8 blocks that contain it), with its own colour. Removes exactly the
+    /// features one voxel thick; anything two voxels thick or more stays as it was.
+    /// </summary>
+    [BurstCompile]
+    public struct OpenJob : IJob
+    {
+        public NativeArray<Color32> Cells;
+        public int3 Size;
+
+        public void Execute()
+        {
+            var keep = new NativeArray<bool>(Cells.Length, Allocator.Temp);
+            int sy = Size.x, sz = Size.x * Size.y;
+            for (int z = 0; z < Size.z - 1; z++)
+            for (int y = 0; y < Size.y - 1; y++)
+            for (int x = 0; x < Size.x - 1; x++)
+            {
+                int i = x + sy * y + sz * z;
+                if (Cells[i].a == 0 || Cells[i + 1].a == 0 || Cells[i + sy].a == 0 || Cells[i + sy + 1].a == 0 ||
+                    Cells[i + sz].a == 0 || Cells[i + sz + 1].a == 0 || Cells[i + sz + sy].a == 0 || Cells[i + sz + sy + 1].a == 0)
+                    continue;
+                keep[i] = keep[i + 1] = keep[i + sy] = keep[i + sy + 1] = true;
+                keep[i + sz] = keep[i + sz + 1] = keep[i + sz + sy] = keep[i + sz + sy + 1] = true;
+            }
+
+            for (int i = 0; i < Cells.Length; i++)
+                if (!keep[i])
+                    Cells[i] = default;
+            keep.Dispose();
+        }
+    }
+
+    /// <summary>
+    /// A surface voxel whose colour repeats in at most one of its 26 neighbours takes the most common
+    /// surface colour around it. Inside and empty voxels are left alone. Each pass reads a copy.
+    /// </summary>
+    [BurstCompile]
+    public struct MajorityJob : IJob
+    {
+        public NativeArray<byte> Voxels;
+        public int3 Size;
+        public int LastSurface;
+        public int Passes;
+
+        public void Execute()
+        {
+            var read = new NativeArray<byte>(Voxels.Length, Allocator.Temp);
+            var count = new NativeArray<int>(256, Allocator.Temp);
+            for (int pass = 0; pass < Passes; pass++)
+            {
+                read.CopyFrom(Voxels);
+                for (int z = 0; z < Size.z; z++)
+                for (int y = 0; y < Size.y; y++)
+                for (int x = 0; x < Size.x; x++)
+                {
+                    int i = x + Size.x * (y + Size.y * z);
+                    byte v = read[i];
+                    if (v == 0 || v > LastSurface) continue;
+                    for (int c = 0; c < 256; c++) count[c] = 0;
+                    int same = 0;
+                    for (int dz = -1; dz <= 1; dz++)
+                    for (int dy = -1; dy <= 1; dy++)
+                    for (int dx = -1; dx <= 1; dx++)
+                    {
+                        if (dx == 0 && dy == 0 && dz == 0) continue;
+                        int3 q = new int3(x + dx, y + dy, z + dz);
+                        if (math.any(q < 0) || math.any(q >= Size)) continue;
+                        byte w = read[q.x + Size.x * (q.y + Size.y * q.z)];
+                        if (w == 0 || w > LastSurface) continue;
+                        count[w]++;
+                        if (w == v) same++;
+                    }
+
+                    if (same > 1) continue;
+                    int best = v, bestCount = 0;
+                    for (int c = 1; c <= LastSurface; c++)
+                        if (count[c] > bestCount) { bestCount = count[c]; best = c; }
+                    Voxels[i] = (byte)best;
+                }
+            }
+        }
+    }
+}
