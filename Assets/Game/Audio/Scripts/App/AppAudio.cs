@@ -52,6 +52,7 @@ namespace Game.AudioEngine.Adapters
         [SerializeField, Range(0f, 1f)] private float _musicVolume = 1f;
 
         private GameAudioVolumes _volumes;
+        private AudioSettingsBridge _settings;
         private GameUiSounds _uiSounds;
 
         private MusicCatalog _currentCatalog;
@@ -100,12 +101,29 @@ namespace Game.AudioEngine.Adapters
         }
 
         // AudioMixer.SetFloat is ignored in Awake.
-        private void Start() => _volumes?.ApplyAll();
+        private void Start()
+        {
+            _volumes?.ApplyAll();
+            TryBindSettings();
+        }
+
+        // The app (and its settings) may come up after AppAudio: try again on each scene load until bound.
+        private void TryBindSettings()
+        {
+            if (_settings != null || _volumes == null)
+                return;
+
+            if (AppContext.TryGet(out AppContext app) && app.TryGetSettings(out SettingsStore store) && store != null)
+                _settings = new AudioSettingsBridge(store, _volumes);
+        }
 
         private void OnDestroy()
         {
             if (Instance != this)
                 return;
+
+            _settings?.Dispose();
+            _settings = null;
 
             SceneManager.sceneLoaded -= OnSceneLoaded;
             Instance = null;
@@ -115,6 +133,7 @@ namespace Game.AudioEngine.Adapters
         // One lookup per scene load, not per frame.
         private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
+            TryBindSettings();
             if (!GameContext.TryGetInstance(out _))
                 PlayMenuMusic();
         }
