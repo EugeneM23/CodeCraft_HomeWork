@@ -80,7 +80,8 @@ namespace Game.Voxels.Tests
                     for (int i = 0; i < 8; i++)
                         small.AddCube(clump, new Vector3(c + i * 0.1f, 0.3f, 0f), 0.1f, Color.gray);
                 }
-                for (float t = 0f; t < 1.6f; t += 0.02f) small.Tick(0.02f); // the full store starts to evict, but nothing has sunk away yet
+                // The full store starts to evict, but nothing has sunk away yet (the quickest cube takes 0.6 x SINK_TIME).
+                for (float t = 0f; t < 1.2f; t += 0.02f) small.Tick(0.02f);
                 small.Complete();
                 Assert.AreEqual(16, small.LyingCount);
             }
@@ -97,7 +98,8 @@ namespace Game.Voxels.Tests
                 // 980 cubes: 490 near the viewer, 490 far away. All the same age.
                 LayRow(store, new Vector3(0f, 0.2f, 0f), 490);
                 LayRow(store, new Vector3(0f, 0.2f, 200f), 490);
-                Settle(store, 2f);
+                // Long enough to lie (~0.7 s), short of the quickest evicted cube sinking away (0.6 x SINK_TIME after that).
+                Settle(store, 1.2f);
                 Assert.AreEqual(980, store.LyingCount);
 
                 int before = store.LyingCount;

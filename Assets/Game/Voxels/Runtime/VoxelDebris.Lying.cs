@@ -25,6 +25,11 @@ namespace Game.Voxels
         private const int QUERY_CRUSH = 1, QUERY_BLOW = 2, QUERY_LOOSEN = 3;
         /// <summary>Queries per frame; past it the rest are dropped.</summary>
         private const int MAX_QUERIES = 32;
+        /// <summary>
+        /// Query slots a frame that crushes never take: one tank sends a sphere per road wheel (16),
+        /// so a few tanks would fill the list and a blast's Blow / Loosen would be dropped.
+        /// </summary>
+        private const int BLAST_RESERVE = 8;
         /// <summary>Most crumbs one crushed piece throws in a step.</summary>
         private const int MAX_CRUSH_CRUMBS = 6;
         /// <summary>Share of a crushed piece that flies back as crumbs.</summary>
@@ -93,7 +98,10 @@ namespace Game.Voxels
         /// <summary>Where the viewer is: eviction sinks the cubes farthest from it first (VoxelWorld sets it each frame).</summary>
         public Vector3 ViewPoint { get; set; }
 
-        /// <summary>Lying cubes in the sphere under a road wheel break: a third fly back as crumbs, the rest sink.</summary>
+        /// <summary>
+        /// Lying cubes in the sphere under a road wheel break: a third fly back as crumbs, the rest sink.
+        /// Crush takes at most MAX_QUERIES - BLAST_RESERVE slots a frame; the rest are kept for Blow / Loosen.
+        /// </summary>
         public void Crush(Vector3 center, float radius, Vector3 velocity) =>
             Query(new LyingQuery { Center = center, Radius = radius, Velocity = velocity, Kind = QUERY_CRUSH });
 
@@ -105,13 +113,20 @@ namespace Game.Voxels
         public void Loosen(Vector3 center, float radius) =>
             Query(new LyingQuery { Center = center, Radius = radius, Kind = QUERY_LOOSEN });
 
-        /// <summary>Queued for the next step; past MAX_QUERIES in a frame the rest are dropped.</summary>
+        /// <summary>
+        /// Queued for the next step; past MAX_QUERIES in a frame the rest are dropped (crushes past
+        /// MAX_QUERIES - BLAST_RESERVE). A sphere with a non-finite centre, radius, velocity or speed is ignored.
+        /// No Complete(): the running step reads the other list (<see cref="_queriesInFlight"/>);
+        /// this one is touched only by the main thread until Tick swaps them, after its own Complete().
+        /// </summary>
         private void Query(in LyingQuery query)
         {
-            Complete();
-            if (!_queries.IsCreated || query.Radius <= 0f)
+            if (!_queries.IsCreated || !(query.Radius > 0f) || !math.isfinite(query.Radius) ||
+                !math.all(math.isfinite(query.Center)) || !math.all(math.isfinite(query.Velocity)) ||
+                !math.isfinite(query.Speed))
                 return;
-            if (_queries.Length < MAX_QUERIES)
+            int limit = query.Kind == QUERY_CRUSH ? MAX_QUERIES - BLAST_RESERVE : MAX_QUERIES;
+            if (_queries.Length < limit)
                 _queries.Add(query);
         }
 
@@ -174,7 +189,10 @@ namespace Game.Voxels
                     if (cube.Sinking != 0f || math.min(BINS - 1, (int)(Score(cube) / max * BINS)) < threshold)
                         continue;
                     cube.Sinking = 1e-4f;
-                    cube.SinkTime = SINK_TIME;
+                    // Each cube its own time (0.6-1.4 x SINK_TIME, from its slot): the round does not
+                    // finish in one step, which would dirty nearly every colour batch in one frame.
+                    uint h = math.hash(new uint2((uint)i, 0x9e3779b9u));
+                    cube.SinkTime = SINK_TIME * (0.6f + 0.8f * ((h & 0xffffu) / 65535f));
                     cube.Flags |= EVICTED;
                     Lying[i] = cube;
                     marked++;
@@ -233,7 +251,8 @@ namespace Game.Voxels
                 for (int q = 0; q < Queries.Length; q++)
                 {
                     LyingQuery query = Queries[q];
-                    if (math.distancesq(cube.Position, query.Center) > query.Radius * query.Radius)
+                    // Written so that a NaN distance or radius never counts as inside.
+                    if (!(math.distancesq(cube.Position, query.Center) <= query.Radius * query.Radius))
                         continue;
 
                     cube.Flags |= HIT;

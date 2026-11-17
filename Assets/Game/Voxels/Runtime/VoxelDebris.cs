@@ -3,6 +3,7 @@ using Unity.Burst;
 using Unity.Collections;
 using Unity.Jobs;
 using Unity.Mathematics;
+using Unity.Profiling;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -28,6 +29,21 @@ namespace Game.Voxels
     {
         private const int BATCH = 1023;
         private static readonly int InstanceColorId = Shader.PropertyToID("_InstColor");
+
+        private static readonly ProfilerMarker s_drawLyingMarker = new("VoxelDebris.DrawLying");
+        private static readonly ProfilerMarker s_drawFlyingMarker = new("VoxelDebris.DrawFlying");
+        private static readonly ProfilerMarker s_completeMarker = new("VoxelDebris.Complete");
+        private static readonly ProfilerMarker s_scheduleMarker = new("VoxelDebris.Schedule");
+
+        /// <summary>
+        /// Most lying batches whose colours are re-sent in one frame. A round of eviction finishes in
+        /// one go and dirties nearly every batch; the rest stay dirty and go in the next frames, drawn
+        /// with a frame or two of stale colours meanwhile.
+        /// </summary>
+        private const int MAX_COLOR_REFRESHES = 8;
+
+        /// <summary>One fixed world box every lying batch is culled by, so Unity does not work out bounds from all the instances on each call.</summary>
+        private static readonly Bounds s_lyingBounds = new(Vector3.zero, Vector3.one * 4000f);
 
         /// <summary>Debris falls this many times faster than g: heavy clods, low arcs, a thud.</summary>
         public const float GRAVITY_SCALE = 2.2f;
@@ -86,9 +102,13 @@ namespace Game.Voxels
         private NativeReference<LyingState> _lyingState;
         /// <summary>One block per batch of lying cubes, its colours set only when the batch is dirty.</summary>
         private readonly MaterialPropertyBlock[] _lyingBlocks;
+        /// <summary>The batch the colour refresh starts from next frame: the batches go in turn, so none waits for ever.</summary>
+        private int _refreshFrom;
         /// <summary>
-        /// How lying cubes are drawn: lit like the flying ones (DrawMeshInstanced's defaults - layer 0,
-        /// light and reflection probes blended), but no shadows. Only matProps changes, per batch.
+        /// How lying cubes are drawn: layer 0 like the flying ones, no shadows, one fixed world box as
+        /// bounds. No light or reflection probes: sampling them per instance cost ~1.25 ms per 50k
+        /// cubes, and the scenes have no baked probes, so the ambient is the same. Only matProps
+        /// changes, per batch.
         /// </summary>
         private RenderParams _lyingParams;
         /// <summary>Crush / Blow / Loosen asked for this frame (main thread writes it).</summary>
@@ -223,7 +243,8 @@ namespace Game.Voxels
             if (!_stepping)
                 return;
             _stepping = false;
-            _step.Complete();
+            using (s_completeMarker.Auto())
+                _step.Complete();
         }
 
         public VoxelDebris(Material material, int capacity, int lyingCapacity = LYING_DEFAULT)
@@ -256,8 +277,9 @@ namespace Game.Voxels
                 layer = 0,
                 shadowCastingMode = ShadowCastingMode.Off,
                 receiveShadows = true,
-                lightProbeUsage = LightProbeUsage.BlendProbes,
-                reflectionProbeUsage = ReflectionProbeUsage.BlendProbes
+                lightProbeUsage = LightProbeUsage.Off,
+                reflectionProbeUsage = ReflectionProbeUsage.Off,
+                worldBounds = s_lyingBounds
             };
 
             _lyingBlocks = new MaterialPropertyBlock[batches];
@@ -346,8 +368,10 @@ namespace Game.Voxels
             // The lying state is read only here, with no job running: the numbers deciding whether to evict.
             LyingState seen = _lyingState.Value;
 
-            Draw(_matrices, _colors, _alive.Value, ShadowCastingMode.On);
-            DrawLying();
+            using (s_drawFlyingMarker.Auto())
+                Draw(_matrices, _colors, _alive.Value, ShadowCastingMode.On);
+            using (s_drawLyingMarker.Auto())
+                DrawLying();
 
             if (deltaTime <= 0f)
             {
@@ -358,6 +382,13 @@ namespace Game.Voxels
             float dt = math.min(deltaTime, 1f / 20f);
             _time += dt;
 
+            using (s_scheduleMarker.Auto())
+                Schedule(dt, seen);
+        }
+
+        /// <summary>Starts the frame's step on workers: the flying clusters' jobs, then the lying store's.</summary>
+        private void Schedule(float dt, in LyingState seen)
+        {
             // The step done (Complete above), the queries it read are spent: the frame's new ones go
             // to this step, and the main thread writes the next frame's into the emptied list.
             (_queries, _queriesInFlight) = (_queriesInFlight, _queries);
@@ -468,22 +499,31 @@ namespace Game.Voxels
 
         /// <summary>
         /// Lying cubes, drawn straight from the native matrices, a batch at a time; a batch's colours
-        /// are copied into its own block only when they changed. No shadows: tens of thousands of
-        /// tiles and crumbs flat on the ground.
+        /// are copied into its own block only when they changed, at most MAX_COLOR_REFRESHES batches a
+        /// frame, the batches in turn. No shadows: tens of thousands of tiles and crumbs flat on the ground.
         /// </summary>
         private void DrawLying()
         {
             int count = _lyingState.Value.Count;
+            int batches = (count + BATCH - 1) / BATCH;
+            NativeArray<Vector4> colors = _lyingColors.Reinterpret<Vector4>();
+            for (int k = 0, refreshed = 0; k < batches && refreshed < MAX_COLOR_REFRESHES; k++)
+            {
+                int batch = (_refreshFrom + k) % batches;
+                if (_dirtyBatches[batch] == 0)
+                    continue;
+                int start = batch * BATCH;
+                NativeArray<Vector4>.Copy(colors, start, _batchColors, 0, Mathf.Min(BATCH, count - start));
+                _lyingBlocks[batch].SetVectorArray(InstanceColorId, _batchColors);
+                _dirtyBatches[batch] = 0;
+                _refreshFrom = batch + 1;
+                refreshed++;
+            }
+
             NativeArray<Matrix4x4> matrices = _lyingMatrices.Reinterpret<Matrix4x4>();
             for (int start = 0, batch = 0; start < count; start += BATCH, batch++)
             {
                 int n = Mathf.Min(BATCH, count - start);
-                if (_dirtyBatches[batch] != 0)
-                {
-                    NativeArray<Vector4>.Copy(_lyingColors.Reinterpret<Vector4>(), start, _batchColors, 0, n);
-                    _lyingBlocks[batch].SetVectorArray(InstanceColorId, _batchColors);
-                    _dirtyBatches[batch] = 0;
-                }
                 _lyingParams.matProps = _lyingBlocks[batch];
                 Graphics.RenderMeshInstanced(_lyingParams, _mesh, 0, matrices, n, start);
             }
