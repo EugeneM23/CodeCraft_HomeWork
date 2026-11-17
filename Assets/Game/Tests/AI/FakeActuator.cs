@@ -1,7 +1,7 @@
 using AIKit;
 using UnityEngine;
 
-namespace Game.AI.Tests
+namespace Game.AIKit.Adapters.Tests
 {
     /// <summary>A gamepad that only remembers: where the body is (set by the test) and the last stick it was given.</summary>
     internal sealed class FakeActuator : IAgentActuator

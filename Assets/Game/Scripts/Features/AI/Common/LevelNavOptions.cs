@@ -3,7 +3,7 @@ using Game.Horde;
 using Unity.Mathematics;
 using UnityEngine;
 
-namespace Game.AI
+namespace Game.AIKit.Adapters
 {
     /// <summary>Where the level's navigation grid lies and how it reads the ground (the level AI installer's inspector).</summary>
     [Serializable]

@@ -2,7 +2,7 @@ using AIKit;
 using NUnit.Framework;
 using UnityEngine;
 
-namespace Game.AI.Tests
+namespace Game.AIKit.Adapters.Tests
 {
     /// <summary>
     /// The whole elite on a synthetic level (<see cref="AITestRig"/>): its graph, its body on the grid, the level's step.

@@ -2,7 +2,7 @@ using System;
 using AIKit;
 using NUnit.Framework;
 
-namespace Game.AI.Tests
+namespace Game.AIKit.Adapters.Tests
 {
     /// <summary>The level's agent list: an agent leaving during the step (it died) does not make the next one miss its step.</summary>
     public sealed class AIAgentListTests

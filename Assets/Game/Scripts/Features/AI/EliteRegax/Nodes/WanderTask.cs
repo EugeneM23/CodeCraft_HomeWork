@@ -2,7 +2,7 @@ using System;
 using AIKit;
 using UnityEngine;
 
-namespace Game.AI
+namespace Game.AIKit.Adapters
 {
     /// <summary>
     /// Wander: roams near the place it first started (its spawn) — a random point within <see cref="Radius"/>, walked to

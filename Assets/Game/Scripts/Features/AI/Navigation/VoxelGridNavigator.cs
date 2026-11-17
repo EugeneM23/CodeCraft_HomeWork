@@ -4,7 +4,7 @@ using Unity.Collections;
 using Unity.Mathematics;
 using UnityEngine;
 
-namespace Game.AI
+namespace Game.AIKit.Adapters
 {
     /// <summary>
     /// AIKit's navigator over the level's voxel height grid (<see cref="HordeNavGrid"/>): paths come from the level's A*

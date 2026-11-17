@@ -1,7 +1,7 @@
 using Atomic.Entities;
 using UnityEngine;
 
-namespace Game.AI
+namespace Game.AIKit.Adapters
 {
     /// <summary>
     /// The level's AI entity (<see cref="LevelAIInstaller"/>): the one the horde and the elites share. A level that has

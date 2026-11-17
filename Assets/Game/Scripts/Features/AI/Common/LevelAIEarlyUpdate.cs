@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.LowLevel;
 
-namespace Game.AI
+namespace Game.AIKit.Adapters
 {
     /// <summary>
     /// A step at the very start of each frame (first in <c>EarlyUpdate</c>, as <c>VoxelWorld</c> does) that completes

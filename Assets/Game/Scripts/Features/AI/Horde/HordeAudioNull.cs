@@ -1,4 +1,4 @@
-namespace Game.AI
+namespace Game.AIKit.Adapters
 {
     /// <summary>Silent <see cref="IHordeAudio"/> for tests; the game uses <see cref="GameHordeAudio"/>.</summary>
     public sealed class HordeAudioNull : IHordeAudio

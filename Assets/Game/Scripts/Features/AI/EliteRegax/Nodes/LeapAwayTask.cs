@@ -2,7 +2,7 @@ using System;
 using AIKit;
 using UnityEngine;
 
-namespace Game.AI
+namespace Game.AIKit.Adapters
 {
     /// <summary>
     /// Leap Away: jumps <see cref="MinDistance"/>..<see cref="MaxDistance"/> m away from the last blast (BlastPoint of

@@ -2,7 +2,7 @@ using System;
 using AIKit;
 using UnityEngine;
 
-namespace Game.AI
+namespace Game.AIKit.Adapters
 {
     /// <summary>
     /// Blast Nearby: a blast went off close to the agent (the game counts it in the agent's blackboard: BlastCount,

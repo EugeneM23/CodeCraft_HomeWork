@@ -9,7 +9,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 
-namespace Game.AI.Tests
+namespace Game.AIKit.Adapters.Tests
 {
     /// <summary>
     /// The elite Regax in VoxelSandbox with the game's own tank: it crosses a fresh crater, reaches the tank and bites

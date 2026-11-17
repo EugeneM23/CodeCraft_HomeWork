@@ -4,7 +4,7 @@ using Atomic.Entities;
 using NUnit.Framework;
 using UnityEngine;
 
-namespace Game.AI.Tests
+namespace Game.AIKit.Adapters.Tests
 {
     public sealed class RegaxBiteRunnerTests
     {

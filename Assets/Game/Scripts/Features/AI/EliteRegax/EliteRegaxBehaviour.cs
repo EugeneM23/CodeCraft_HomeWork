@@ -3,7 +3,7 @@ using Atomic.Elements;
 using Atomic.Entities;
 using UnityEngine;
 
-namespace Game.AI
+namespace Game.AIKit.Adapters
 {
     /// <summary>
     /// The elite Regax's side of AIKit, on its entity. At start it binds the character's body to the entity, the level's

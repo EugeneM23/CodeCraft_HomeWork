@@ -3,7 +3,7 @@ using Atomic.Entities;
 using NUnit.Framework;
 using UnityEngine;
 
-namespace Game.AI.Tests
+namespace Game.AIKit.Adapters.Tests
 {
     /// <summary>The player's vehicle as the elites see it: found by the scanner, its hull measured and kept out of.</summary>
     public sealed class PlayerTankScannerTests

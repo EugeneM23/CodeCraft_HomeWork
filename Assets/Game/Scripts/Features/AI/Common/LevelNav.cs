@@ -3,7 +3,7 @@ using Game.Horde;
 using Game.Voxels;
 using UnityEngine;
 
-namespace Game.AI
+namespace Game.AIKit.Adapters
 {
     /// <summary>
     /// The level's one navigation grid (<see cref="HordeNavGrid"/>) and the path service over it, shared by the horde's

@@ -4,7 +4,7 @@ using Unity.Collections;
 using Unity.Mathematics;
 using UnityEngine;
 
-namespace Game.AI.Tests
+namespace Game.AIKit.Adapters.Tests
 {
     /// <summary>The level grid's second read of a changed rect (a broken-off wall piece falls after the first read).</summary>
     public sealed class LevelNavTests

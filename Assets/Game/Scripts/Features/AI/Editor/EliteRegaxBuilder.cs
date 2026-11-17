@@ -5,7 +5,7 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace Game.AI.EditorTools
+namespace Game.AIKit.Adapters.EditorTools
 {
     /// <summary>
     /// Builds the elite Regax reproducibly (Tools/AI/Build Regax Elite):

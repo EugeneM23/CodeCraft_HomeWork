@@ -3,7 +3,7 @@ using Atomic.Entities;
 using Game.Horde;
 using UnityEngine;
 
-namespace Game.AI
+namespace Game.AIKit.Adapters
 {
     /// <summary>
     /// Makes a <see cref="MonoEntity"/> the level's horde: the horde keys of <see cref="AIAPI"/>,

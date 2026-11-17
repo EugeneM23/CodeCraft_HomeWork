@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using AIKit;
 using Unity.Profiling;
 
-namespace Game.AI
+namespace Game.AIKit.Adapters
 {
     /// <summary>
     /// The agents of a level's AIKit world, in the order they joined. <see cref="Step"/> opens the world's step (its

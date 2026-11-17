@@ -9,7 +9,7 @@ using Unity.Mathematics;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace Game.AI.Tests
+namespace Game.AIKit.Adapters.Tests
 {
     /// <summary>
     /// A level without a scene for the elite's tests: a flat synthetic grid (0.5 m cells over <see cref="HALF"/> m each
@@ -56,7 +56,6 @@ namespace Game.AI.Tests
             World.Scheduler.MaxDecisionsPerStep = LevelAIInstaller.MAX_DECISIONS_PER_STEP;
             Agents = new AIAgentList(World);
             Level.AddLevelNavigation(Nav);
-            Level.AddAgentWorld(World);
             Level.AddWorldAgents(Agents);
             Level.AddPlayerVehicle(Tank);
         }

@@ -2,7 +2,7 @@ using Atomic.Entities;
 using Game.Horde;
 using UnityEngine;
 
-namespace Game.AI
+namespace Game.AIKit.Adapters
 {
     /// <summary>Builds a horde entity from code (benchmarks, tests, levels without one in the scene).</summary>
     public static class HordeSpawn

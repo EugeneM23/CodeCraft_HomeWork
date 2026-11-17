@@ -3,7 +3,7 @@ using Atomic.Elements;
 using Atomic.Entities;
 using UnityEngine;
 
-namespace Game.AI
+namespace Game.AIKit.Adapters
 {
     /// <summary>
     /// A blow AIKit delivers (<c>DirectStriker</c>: an AIKit weapon or ability asset) reaches the game's health: the hit

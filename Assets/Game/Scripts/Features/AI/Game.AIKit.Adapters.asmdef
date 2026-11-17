@@ -1,6 +1,6 @@
 {
     "name": "Game.AIKit.Adapters",
-    "rootNamespace": "Game.AI",
+    "rootNamespace": "Game.AIKit.Adapters",
     "references": [
         "Game",
         "Game.Voxels",

@@ -4,7 +4,7 @@ using Atomic.Entities;
 using Game.Horde;
 using UnityEngine;
 
-namespace Game.AI
+namespace Game.AIKit.Adapters
 {
     /// <summary>
     /// AIKit's "virtual gamepad" on an Atomic walker (the values <c>WalkingUseCase</c> gives it): the presses of a step

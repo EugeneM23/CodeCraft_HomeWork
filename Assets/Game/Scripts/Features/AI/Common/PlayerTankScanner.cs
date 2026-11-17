@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using AIKit;
 using UnityEngine;
 
-namespace Game.AI
+namespace Game.AIKit.Adapters
 {
     /// <summary>
     /// "Who is around" for an elite's senses: the player's vehicle, when it is alive and its hull is within the radius.

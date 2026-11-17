@@ -57,15 +57,15 @@ var strikeWasOn = new bool[strikes.Length];
 for (int i = 0; i < strikes.Length; i++) { strikeWasOn[i] = (bool)onField.GetValue(strikes[i]); onField.SetValue(strikes[i], false); }
 
 // ---------- Horde ----------
-Game.AI.HordeBehaviour horde = null;
+Game.AIKit.Adapters.HordeBehaviour horde = null;
 GameObject hordeObject = null;
 var art = AssetDatabase.LoadAssetAtPath<Game.Horde.HordeArtConfig>("Assets/Game/Horde/Art/RegaxHordeArtConfig.asset");
 if (n > 0)
 {
     if (art == null) return "ERROR no Assets/Game/Horde/Art/RegaxHordeArtConfig.asset (Tools/Horde/Bake Regax VAT)";
-    foreach (var old in UnityEngine.Object.FindObjectsByType<Game.AI.HordeInstaller>(FindObjectsSortMode.None)) UnityEngine.Object.Destroy(old.gameObject);
-    var options = new Game.AI.HordeOptions { capacity = n, population = n, attackDps = 0f, castShadows = shadows };
-    var installer = Game.AI.HordeSpawn.CreateInScene(art, options);
+    foreach (var old in UnityEngine.Object.FindObjectsByType<Game.AIKit.Adapters.HordeInstaller>(FindObjectsSortMode.None)) UnityEngine.Object.Destroy(old.gameObject);
+    var options = new Game.AIKit.Adapters.HordeOptions { capacity = n, population = n, attackDps = 0f, castShadows = shadows };
+    var installer = Game.AIKit.Adapters.HordeSpawn.CreateInScene(art, options);
     horde = installer.Behaviour;
     hordeObject = installer.gameObject;
 }
@@ -228,7 +228,7 @@ float maxTankSpeed = 0;
 var notes = new List<string>();
 EditorApplication.CallbackFunction onUpdate = null;
 
-int Kills() => hordeObject != null && hordeObject.TryGetComponent<Atomic.Entities.MonoEntity>(out var me) ? Game.AI.AIAPI.GetHordeKills(me).Value : 0;
+int Kills() => hordeObject != null && hordeObject.TryGetComponent<Atomic.Entities.MonoEntity>(out var me) ? Game.AIKit.Adapters.AIAPI.GetHordeKills(me).Value : 0;
 
 void Finish(string status, string result)
 {

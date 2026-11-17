@@ -2,7 +2,7 @@ using System;
 using Game.Horde;
 using UnityEngine;
 
-namespace Game.AI
+namespace Game.AIKit.Adapters
 {
     /// <summary>Level-side settings of the horde (the installer's inspector).</summary>
     [Serializable]

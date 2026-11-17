@@ -1,6 +1,6 @@
 using NUnit.Framework.Constraints;
 
-namespace Game.AI.Tests
+namespace Game.AIKit.Adapters.Tests
 {
     /// <summary>
     /// "Allocates nothing", counted by Unity's own constraint (see Game.Horde.Tests.NoAllocation): kept here so a test

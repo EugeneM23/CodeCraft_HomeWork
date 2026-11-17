@@ -2,7 +2,7 @@ using System;
 using AIKit;
 using UnityEngine;
 
-namespace Game.AI
+namespace Game.AIKit.Adapters
 {
     /// <summary>
     /// Go To Last Seen: walks (by the navigator) to where the lost target was seen last. "There" — arrived;

@@ -4,7 +4,7 @@ using Unity.Collections;
 using Unity.Mathematics;
 using UnityEngine;
 
-namespace Game.AI.Tests
+namespace Game.AIKit.Adapters.Tests
 {
     /// <summary>The elite's body against the grid: a long frame's big step does not carry it through a thin wall.</summary>
     public sealed class EliteMotorTests

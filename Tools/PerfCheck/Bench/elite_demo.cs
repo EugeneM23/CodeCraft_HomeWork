@@ -64,8 +64,8 @@ for (int i = 0; i < n; i++)
     float angle = n == 1 ? 0f : -30f + 60f * i / (n - 1);
     float distance = 20f + 10f * (i % 3) / 2f;
     Vector3 direction = Quaternion.AngleAxis(angle, Vector3.up) * forward;
-    Vector3 at = Game.AI.EliteRegaxSpawn.GroundNear(tank.position, direction, distance);
-    GameObject elite = Game.AI.EliteRegaxSpawn.Spawn(prefab, at, -direction);
+    Vector3 at = Game.AIKit.Adapters.EliteRegaxSpawn.GroundNear(tank.position, direction, distance);
+    GameObject elite = Game.AIKit.Adapters.EliteRegaxSpawn.Spawn(prefab, at, -direction);
     elite.name = prefab.name + "_" + i;
     elites.Add(elite);
 }
@@ -86,7 +86,7 @@ onUpdate = () =>
         float t = Time.time - began;
         if (t < nextLine) return;
         nextLine = t + 0.5f;
-        var tankState = Game.AI.LevelAI.Current != null ? Game.AI.AIAPI.GetPlayerVehicle(Game.AI.LevelAI.Current) : null;
+        var tankState = Game.AIKit.Adapters.LevelAI.Current != null ? Game.AIKit.Adapters.AIAPI.GetPlayerVehicle(Game.AIKit.Adapters.LevelAI.Current) : null;
         log.Append($"t={t.ToString("F1", inv)} hp={(tankHealth != null ? tankHealth.GetCurrent() : -1)}");
         foreach (var e in elites)
         {

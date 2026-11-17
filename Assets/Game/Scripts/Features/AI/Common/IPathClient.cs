@@ -2,7 +2,7 @@ using Game.Horde;
 using Unity.Collections;
 using Unity.Mathematics;
 
-namespace Game.AI
+namespace Game.AIKit.Adapters
 {
     /// <summary>Who asked <see cref="LevelPathService"/> for a path: gets the result when its search is done.</summary>
     public interface IPathClient

@@ -5,7 +5,7 @@ using Unity.Mathematics;
 using NUnit.Framework;
 using UnityEngine;
 
-namespace Game.AI.Tests
+namespace Game.AIKit.Adapters.Tests
 {
     /// <summary>The navigator on a synthetic 20 × 20 m grid of 0.5 m cells, flat at 0, walls where a test raises them.</summary>
     public sealed class VoxelGridNavigatorTests

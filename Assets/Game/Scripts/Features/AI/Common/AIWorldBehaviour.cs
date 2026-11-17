@@ -1,7 +1,7 @@
 using Atomic.Entities;
 using Unity.Profiling;
 
-namespace Game.AI
+namespace Game.AIKit.Adapters
 {
     /// <summary>
     /// The level's AIKit tick: reads the player's vehicle once for every agent, then steps the world and its agents

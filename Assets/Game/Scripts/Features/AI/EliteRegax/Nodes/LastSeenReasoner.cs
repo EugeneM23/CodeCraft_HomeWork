@@ -2,7 +2,7 @@ using System;
 using AIKit;
 using UnityEngine;
 
-namespace Game.AI
+namespace Game.AIKit.Adapters
 {
     /// <summary>
     /// Search Last Seen: the target is lost (the senses are Searching: it was known and is out of sight, still

@@ -7,7 +7,7 @@ using Unity.Mathematics;
 using Unity.Profiling;
 using UnityEngine;
 
-namespace Game.AI
+namespace Game.AIKit.Adapters
 {
     /// <summary>
     /// The horde as one Atomic entity: owns the flow field to the tank, the crowd simulation, its

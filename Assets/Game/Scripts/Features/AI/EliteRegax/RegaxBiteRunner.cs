@@ -3,7 +3,7 @@ using Atomic.Elements;
 using Atomic.Entities;
 using UnityEngine;
 
-namespace Game.AI
+namespace Game.AIKit.Adapters
 {
     /// <summary>
     /// The elite's "Bite" (a Code Runner ability of its graph): starts when the tank's hull is within <see cref="REACH"/>

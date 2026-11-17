@@ -2,7 +2,7 @@ using Atomic.Entities;
 using Game.Horde;
 using UnityEngine;
 
-namespace Game.AI
+namespace Game.AIKit.Adapters
 {
     /// <summary>
     /// Puts elites into a running level from code (tests, the demo script, a level without them in its scene): the

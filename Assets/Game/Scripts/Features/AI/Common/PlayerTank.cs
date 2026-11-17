@@ -2,7 +2,7 @@ using Atomic.Elements;
 using Atomic.Entities;
 using UnityEngine;
 
-namespace Game.AI
+namespace Game.AIKit.Adapters
 {
     /// <summary>
     /// The player's vehicle as the level's AI sees it: the transform to chase, whether it is alive, and its hull — the

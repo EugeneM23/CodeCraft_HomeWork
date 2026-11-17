@@ -1,6 +1,6 @@
 using AIKit;
 
-namespace Game.AI
+namespace Game.AIKit.Adapters
 {
     /// <summary>
     /// The elite Regax's behavior, as a graph (the MeleeChaser preset grown by the blast reaction). The asset

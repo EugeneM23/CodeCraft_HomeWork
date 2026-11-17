@@ -1,6 +1,6 @@
 using Game.AudioEngine.Adapters;
 
-namespace Game.AI
+namespace Game.AIKit.Adapters
 {
     /// <summary>
     /// The horde's sound through the audio team's <see cref="GameAudio.Horde"/>: crowd density and wave starts.

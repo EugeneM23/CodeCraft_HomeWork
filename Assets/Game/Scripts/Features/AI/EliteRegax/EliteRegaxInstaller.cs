@@ -2,7 +2,7 @@ using AIKit;
 using Atomic.Entities;
 using UnityEngine;
 
-namespace Game.AI
+namespace Game.AIKit.Adapters
 {
     /// <summary>
     /// Makes a Regax the AIKit elite: its <see cref="AICharacter"/> (graph <c>Regax_Elite_Brain</c>, body

@@ -2,7 +2,7 @@ using AIKit;
 using Atomic.Entities;
 using UnityEngine;
 
-namespace Game.AI
+namespace Game.AIKit.Adapters
 {
     /// <summary>
     /// Makes a <see cref="MonoEntity"/> the level's AI: the shared navigation grid (<see cref="LevelNav"/>,
@@ -34,7 +34,6 @@ namespace Game.AI
             entity.AddLevelNavigation(new LevelNav(_navigation));
             var world = new AIWorld(_seed);
             world.Scheduler.MaxDecisionsPerStep = MAX_DECISIONS_PER_STEP;
-            entity.AddAgentWorld(world);
             entity.AddWorldAgents(new AIAgentList(world));
             entity.AddPlayerVehicle(new PlayerTank());
             entity.AddBehaviour(new LevelNavBehaviour());

@@ -5,7 +5,7 @@ using Atomic.Entities;
 using Game.Horde;
 using UnityEngine;
 
-namespace Game.AI
+namespace Game.AIKit.Adapters
 {
     /// <summary>
     /// The elite Regax's body for its <see cref="AICharacter"/> (picked in its Body section): the gamepad is the Atomic

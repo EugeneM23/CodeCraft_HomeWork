@@ -2,7 +2,7 @@ using Atomic.Elements;
 using Atomic.Entities;
 using UnityEngine;
 
-namespace Game.AI
+namespace Game.AIKit.Adapters
 {
     /// <summary>
     /// Entity keys of the AI team (Docs/Rules/Project.md, "Ключи сущностей"). The extensions
@@ -41,10 +41,11 @@ namespace Game.AI
         /// <summary>The level's navigation grid and its path service, shared by the horde and the elites.</summary>
         public static readonly ValueKey<IEntity, LevelNav> LevelNavigation = new(nameof(LevelNavigation));
 
-        /// <summary>The level's AIKit world: the decision budget, the roster and the global blackboard.</summary>
-        public static readonly ValueKey<IEntity, AIKit.IAIWorld> AgentWorld = new(nameof(AgentWorld));
-
-        /// <summary>The agents the level steps (Manual simulation), in a fixed order.</summary>
+        /// <summary>
+        /// The agents the level steps (Manual simulation), in a fixed order, and their AIKit world (<c>World</c>: the
+        /// decision budget, the roster and the global blackboard). The world has no key of its own: the generated
+        /// extensions name its type <c>AIKit.IAIWorld</c>, which inside <c>Game.AIKit.Adapters</c> means the wrong namespace.
+        /// </summary>
         public static readonly ValueKey<IEntity, AIAgentList> WorldAgents = new(nameof(WorldAgents));
 
         /// <summary>The player's vehicle as the AI sees it: its transform and its hull.</summary>

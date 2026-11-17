@@ -1,4 +1,4 @@
-namespace Game.AI
+namespace Game.AIKit.Adapters
 {
     /// <summary>
     /// Horde sound as events, not a thousand sources. The audio team implements it over

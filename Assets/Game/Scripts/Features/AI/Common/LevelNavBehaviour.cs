@@ -1,6 +1,6 @@
 using Atomic.Entities;
 
-namespace Game.AI
+namespace Game.AIKit.Adapters
 {
     /// <summary>
     /// Keeps the level's grid (<see cref="LevelNav"/>) going: builds it at the start if nobody asked yet, takes in the

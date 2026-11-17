@@ -3,7 +3,7 @@ using Game.Horde;
 using Unity.Mathematics;
 using UnityEngine;
 
-namespace Game.AI
+namespace Game.AIKit.Adapters
 {
     /// <summary>
     /// Where the elite's body really goes, after the entity's walk (<c>TransformMoveBehaviour</c>) has moved it: it does

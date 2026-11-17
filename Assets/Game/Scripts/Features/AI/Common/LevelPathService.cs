@@ -2,7 +2,7 @@ using System;
 using Game.Horde;
 using Unity.Mathematics;
 
-namespace Game.AI
+namespace Game.AIKit.Adapters
 {
     /// <summary>
     /// One A* (<see cref="HordePathfinder"/>) shared by every walker of the level that needs its own way: the search

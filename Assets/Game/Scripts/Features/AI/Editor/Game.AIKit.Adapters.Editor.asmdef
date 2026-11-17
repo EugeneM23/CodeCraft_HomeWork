@@ -1,6 +1,6 @@
 {
     "name": "Game.AIKit.Adapters.Editor",
-    "rootNamespace": "Game.AI.EditorTools",
+    "rootNamespace": "Game.AIKit.Adapters.EditorTools",
     "references": [
         "Game.AIKit.Adapters",
         "Game",

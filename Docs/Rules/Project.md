@@ -21,10 +21,15 @@ Assets/
       Declarations/          общий EntityAPI.cs и ключи прототипа (уже есть)
       UI/                    экраны и их логика
       Features/<Фича>/       игровые фичи: танк, камеры, здоровье, грязь...
-      Features/AI/           адаптеры AIKit, мозги монстров
+      Features/AI/           адаптеры AIKit, мозги монстров (своя сборка Game.AIKit.Adapters, в Editor/ — её редакторская)
       Shared/<Тема>/         общий код без своей фичи: Audio, Events, Physics, Spawning, Timers, Vfx
       Editor/                редакторский код игры (своя сборка)
-    Horde/                   подсистема орды: Runtime, Tests, своя сборка
+    Horde/                   подсистема орды (своя сборка):
+      Runtime/               симуляция, сетка навигации, поле потока, отрисовка
+      Editor/                запекание VAT-анимации (своя сборка)
+      Tests/                 тесты орды (своя сборка)
+      Art/                   меши монстра и трупа, материал, VAT-текстура, конфиг орды
+      Shaders/               VAT-шейдер толпы и трупов
     Voxels/                  воксельный модуль: Runtime, Editor (в нём Voxelizer), Demo, Tests, Shaders, Resources, Scenes
     Tests/                   тесты сборки Game; повторяет дерево Scripts/
     Audio/                   звук: Banks/, Events/, Clips/<банк>/<ключ>/, Resources/, микшер; Scripts/ — адаптер AudioEngine (своя сборка), Tests/
@@ -75,6 +80,13 @@ Tools/<Инструмент>/          скрипты вне Unity (Maya, PerfCh
 | `Game.AudioEngine.Adapters` | `Game/Audio/Scripts` | `Game.AudioEngine.Adapters` | все |
 | `Game.AudioEngine.Adapters.Editor` | `Game/Audio/Scripts/Editor` | `Game.AudioEngine.Adapters.EditorTools` | Editor |
 | `Game.AudioEngine.Adapters.Tests` | `Game/Audio/Tests` | `Game.AudioEngine.Adapters.Tests` | Editor (EditMode) |
+| `Game.Horde` | `Game/Horde/Runtime` | `Game.Horde` | все |
+| `Game.Horde.Editor` | `Game/Horde/Editor` | `Game.Horde.EditorTools` | Editor |
+| `Game.Horde.Tests` | `Game/Horde/Tests` | `Game.Horde.Tests` | Editor (EditMode) |
+| `Game.AIKit.Adapters` | `Game/Scripts/Features/AI` | `Game.AIKit.Adapters` | все |
+| `Game.AIKit.Adapters.Editor` | `Game/Scripts/Features/AI/Editor` | `Game.AIKit.Adapters.EditorTools` | Editor |
+| `Game.AIKit.Adapters.Tests` | `Game/Tests/AI` | `Game.AIKit.Adapters.Tests` | Editor (EditMode) |
+| `Game.AIKit.Adapters.SceneTests` | `Game/Tests/AI/Scene` | `Game.AIKit.Adapters.Tests` | Editor (PlayMode-тесты сцены) |
 
 - **Новая сборка** называется `Game.<Подсистема>`, её части — `Game.<Подсистема>.Editor`, `.Tests`, `.Adapters`. Пример — `Game.Horde`. `rootNamespace` равен имени сборки, а у редакторских — `….EditorTools`, чтобы не спорить с `UnityEditor`.
 - **Модуль** в `Assets/Modules/<Name>` сохраняет свои сборки как есть. Всё про нашу игру лежит в отдельной сборке-адаптере `Game.<Name>.Adapters` рядом с кодом игры, а не внутри модуля.

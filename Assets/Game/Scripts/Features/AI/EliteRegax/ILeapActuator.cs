@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Game.AI
+namespace Game.AIKit.Adapters
 {
     /// <summary>A body that can leap: the elite's jump away from a blast (<see cref="LeapAwayTask"/>).</summary>
     public interface ILeapActuator
