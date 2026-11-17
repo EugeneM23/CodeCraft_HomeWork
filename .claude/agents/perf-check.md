@@ -21,6 +21,9 @@ If something is missing, assume `measure: no`. Never ask the user yourself: you 
 1. `Docs/Rules/Performance.md` — budgets, scenarios, how to measure, code rules.
 2. `Docs/Rules/Project.md` — folders, naming, asmdef, tests, documents.
 3. The latest report in `Docs/Reports/` and the last lines of `Docs/Reports/perf-history.jsonl`, both in `repo` and on `game/develop` (`git -C <repo> show game/develop:Docs/Reports/perf-history.jsonl`).
+   - If `game/develop` has no history yet, its reference is the first line in `repo` with `"branch":"game/develop"`, the baseline.
+   - If there is no reference at all, compare with budgets only and say so.
+   - If the reference is the very measurement you report (same commit, no new run), every change is 0 %. Say that it is not a comparison.
 
 ## Step 1. Static check
 
@@ -84,7 +87,12 @@ Verdict per item:
 
 When checking `game/develop` itself, compare with its previous line. The perf-debt list in the report then gets updated: items fixed, items new.
 
+Guides that `game/develop` already exceeds: **ВНИМАНИЕ (старое)**. They become ВНИМАНИЕ (new) only if more than 10 % worse than `game/develop`.
+
 Use the hot paths in `worst` to name the cause of every spike over 16 ms and the team that owns it.
+- An empty hot path means no single child took ≥40 % of the frame: the time is spread out. Write «распределено, причина не выделена» and suggest a rerun with the Profiler window open on that scenario.
+
+The bench runs at whatever quality level the editor uses (`quality` in the result). The budgets are for High on the target PC, so Ultra is the stricter case. Write the quality level in the report header. Do not rescale numbers.
 
 Static: any confirmed NEW is БЛОК. Debt growth is ВНИМАНИЕ.
 
@@ -103,18 +111,18 @@ Static: any confirmed NEW is БЛОК. Debt growth is ВНИМАНИЕ.
    Новые нарушения (каждое — файл:строка, правило, что сделать). Ложные срабатывания. Долг по правилам: было → стало.
    ## Ручной обзор изменений
    ## Что сделать
-   Нумерованный список по убыванию важности, с владельцем (команда по Docs/superpowers/specs/2026-11-17-game-production-plan.md, раздел 4).
+   Нумерованный список по убыванию важности, с владельцем (команда по Docs/superpowers/specs/2026-11-17-game-production-plan.md: раздел 4 — кто владеет папкой, раздел 5 — команды и их ветки).
    ```
 
 2. Append to `<repo>/Docs/Reports/perf-history.jsonl` (create if missing), one JSON object per line:
-   - the bench result with `"kind":"bench","branch":…,"commit":…` added;
-   - the static summary with `"kind":"static","date":…` merged into the `STATIC_JSON` object.
+   - the bench result with `"kind":"bench","branch":…,"commit":…` added — only if a benchmark ran in this check. Never copy another line under this branch's name;
+   - the `STATIC_JSON` object as printed by the script. It already carries `kind` and `date`.
 
 3. Do not commit. Leave the files for the caller.
 
 ## Final message
 
-At most 15 lines:
+At most 15 lines, plus anything the caller asks for explicitly:
 - the verdict;
 - blocking items;
 - warnings;

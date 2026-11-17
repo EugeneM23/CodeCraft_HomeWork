@@ -219,4 +219,4 @@ echo "### Итог"
 echo "- Новых нарушений: **$TOTAL_NEW** (блокируют влитие)"
 echo "- Долг: $TOTAL_DEBT"
 echo
-echo "STATIC_JSON {\"branch\":\"$(git rev-parse --abbrev-ref HEAD)\",\"commit\":\"$(git rev-parse --short HEAD)\",\"new\":$TOTAL_NEW,\"debt\":$TOTAL_DEBT,\"rules\":{${JSON%,}}}"
+echo "STATIC_JSON {\"kind\":\"static\",\"date\":\"$(date '+%Y-%m-%d %H:%M')\",\"base\":\"$( [ -n "$BASE" ] && git rev-parse --short "$BASE" || echo none)\",\"branch\":\"$(git rev-parse --abbrev-ref HEAD)\",\"commit\":\"$(git rev-parse --short HEAD)\",\"new\":$TOTAL_NEW,\"debt\":$TOTAL_DEBT,\"rules\":{${JSON%,}}}"
