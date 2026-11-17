@@ -83,6 +83,12 @@ namespace Game
 
             float length = Mathf.Max(0.1f, s.JetLength);
             float tipRadius = Mathf.Max(0.01f, s.RadiusEnd);
+            if (s.ReactToWorld)
+            {
+                // A wall ahead: the jet ends short of it, the cap bursting against it.
+                float reach = VoxelPuffField.Reach(origin, forward, length + tipRadius * 0.6f);
+                length = Mathf.Max(0.3f, Mathf.Min(length, reach - tipRadius * 0.6f));
+            }
             for (int i = 0; i < s.Cubes; i++)
             {
                 float along; // 0 at the muzzle, 1 at the far end.
@@ -178,6 +184,9 @@ namespace Game
 
             if (_count == 0)
                 return;
+
+            if (s.ReactToWorld || s.ReactToTanks)
+                VoxelPuffField.Apply(_position, _velocity, _size, _count, deltaTime, s.ReactToWorld, s.ReactToTanks, _extend);
 
             float damp = Mathf.Exp(-s.Drag * deltaTime);
             Vector3 rise = Vector3.up * (s.Rise * deltaTime);

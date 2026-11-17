@@ -62,6 +62,8 @@ namespace Game
             // A bullet through voxel smoke leaves a tunnel behind it that closes in about a second.
             if (VoxelSmoke.Active.Count > 0)
                 VoxelSmoke.Cut(from, _transform.position, _smokeTunnel);
+            // Experiment: the small voxel clouds (muzzle smoke, exhaust) part round it too.
+            VoxelPuffField.Cut(from, _transform.position, _smokeTunnel);
         }
     }
 }

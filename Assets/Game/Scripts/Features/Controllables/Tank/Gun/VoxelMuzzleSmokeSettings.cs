@@ -22,7 +22,7 @@ namespace Game
         [Tooltip("Cubes thrown out on a shot.")]
         [Range(0, 3000)] public int Cubes = 675;
         [Tooltip("Seconds a cube lives; each gets 60...100 % of it.")]
-        public float Lifetime = 5.1f;
+        public float Lifetime = 10.2f;
         [Tooltip("How far (m) along the barrel the jet reaches; its fattest blob sits at the end.")]
         public float JetLength = 5.4f;
         [Tooltip("Radius (m) of the jet at the muzzle.")]
@@ -44,6 +44,12 @@ namespace Game
         public float EjectSharpness = 3f;
         [Tooltip("Speed (m/s) a cube keeps once the jet has stretched out; the slow drift starts from it.")]
         public float ResidualSpeed = 0.5f;
+
+        [Header("Reaction")]
+        [Tooltip("Walls, ground and rubble stop the smoke; it spreads over them. The jet ends at a wall.")]
+        public bool ReactToWorld = true;
+        [Tooltip("Tank hulls push the smoke out of themselves: driving through it leaves a wake. Shots and blasts part it.")]
+        public bool ReactToTanks = true;
 
         [Header("Mushroom cap")]
         [Tooltip("How flat the blob at the end is along the barrel: 1 a ball, smaller a flatter cap.")]
@@ -85,7 +91,7 @@ namespace Game
         [Tooltip("Brightness of the fire-coloured cubes: above 1 they bloom.")]
         public float HotGlow = 4f;
         [Tooltip("How opaque a cube of smoke is at its thickest.")]
-        [Range(0f, 1f)] public float Opacity = 0.175f;
+        [Range(0f, 1f)] public float Opacity = 0.12f;
         [Tooltip("Share of its life a cube keeps its full opacity before thinning out.")]
         [Range(0f, 1f)] public float FadeStart = 0.3f;
 

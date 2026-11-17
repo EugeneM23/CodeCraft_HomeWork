@@ -61,6 +61,9 @@ namespace Game
                 return;
 
             VoxelExhaustSettings s = _settings;
+            if (s.ReactToWorld || s.ReactToTanks)
+                VoxelPuffField.Apply(_position, _velocity, _size, _count, deltaTime, s.ReactToWorld, s.ReactToTanks);
+
             float damp = Mathf.Exp(-s.Drag * deltaTime);
             float rise = s.Rise * deltaTime;
             float noise = s.Noise * deltaTime;

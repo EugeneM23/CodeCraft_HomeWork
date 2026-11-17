@@ -37,6 +37,11 @@ namespace Game
         [Tooltip("Share of its life a cube keeps its full opacity before thinning out.")]
         [Range(0f, 1f)] public float FadeStart = 0.15f;
 
+        [Tooltip("Walls, ground and rubble stop the smoke; it spreads over them.")]
+        public bool ReactToWorld = true;
+        [Tooltip("Tank hulls push the smoke out of themselves: driving through it leaves a wake. Shots and blasts part it.")]
+        public bool ReactToTanks = true;
+
         public Color DarkColor = new(0.03f, 0.03f, 0.03f, 1f);
         public Color LightColor = new(0.065f, 0.062f, 0.06f, 1f);
     }
