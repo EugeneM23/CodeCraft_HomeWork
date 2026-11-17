@@ -11,6 +11,15 @@ namespace Game
         /// <summary>The slope faces the nose when its normal · the hull's forward is below this.</summary>
         public const float NOSE_FACING = -0.2f;
 
+        /// <summary>Speed (m/s) into the ground, against its real face, below which a hit makes no impact (sound, shake).</summary>
+        public const float IMPACT_MIN_CLOSING = 2f;
+
+        /// <summary>
+        /// …and at which the impact is as hard as it gets, for every preset alike. Above a flat-out tank's
+        /// speed (~13 m/s): straight into a crater's step it is still not the hardest hit there is.
+        /// </summary>
+        public const float IMPACT_FULL_CLOSING = 16f;
+
         /// <summary>0 below <paramref name="minClosing"/> m/s into the ground, 1 from <paramref name="fullClosing"/>.</summary>
         public static float Strength(float closing, float minClosing, float fullClosing)
         {
@@ -20,6 +29,15 @@ namespace Game
                 return 1f;
             return Mathf.Clamp01((closing - minClosing) / (fullClosing - minClosing));
         }
+
+        /// <summary>
+        /// How hard a hit felt, 0..1, for the sound and the camera: <paramref name="closing"/> m/s into the
+        /// ground's real face on the scale every preset shares (IMPACT_MIN_CLOSING..IMPACT_FULL_CLOSING),
+        /// times the preset's <paramref name="scale"/>. Not the response strength (Strength): that one is
+        /// against the ramp the preset cuts and drives the bite and the hull.
+        /// </summary>
+        public static float ImpactStrength(float closing, float scale) =>
+            Mathf.Clamp01(Strength(closing, IMPACT_MIN_CLOSING, IMPACT_FULL_CLOSING) * scale);
 
         /// <summary>
         /// The front half of the hull, below its middle, met ground that faces the nose, coming into it

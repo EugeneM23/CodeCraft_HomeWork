@@ -36,5 +36,6 @@ MonoBehaviour:
   PitchKick: 0.4
   RisePitch: 8
   ImpactCooldown: 0.3
+  ImpactScale: 0.6
   ShakeStrength: 0.3
   ShakeDuration: 0.25

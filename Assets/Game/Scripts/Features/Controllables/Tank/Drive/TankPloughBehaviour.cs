@@ -257,10 +257,13 @@ namespace Game
             _rising = true;
             Springs(Mathf.Min(_soft ? _springShare : 1f, config.DigSpring));
 
+            // How hard it felt (sound, shake): against the real face, on the scale all presets share. The
+            // response strength above is against the ramp the preset cuts, so it is no measure of the hit.
+            float impact = TankPloughMath.ImpactStrength(closing, config.ImpactScale);
             if (_driver != null && _driver.Value != null && config.ShakeStrength > 0f)
                 // perf-ok: once per impact (at most one per PloughTime + ImpactCooldown), not per step
-                CameraShakeUseCase.ShakePlayerCamera(new CameraShakeArgs(config.ShakeDuration, config.ShakeStrength * strength));
-            TankPloughEvents.RaisePloughed(hit.point, strength);
+                CameraShakeUseCase.ShakePlayerCamera(new CameraShakeArgs(config.ShakeDuration, config.ShakeStrength * impact));
+            TankPloughEvents.RaisePloughed(hit.point, impact);
         }
 
         /// <summary>The nose has dug in: the hull comes up the ramp it cut, nose up.</summary>

@@ -141,5 +141,45 @@ namespace Game.Tests
             Vector3 along = Vector3.ProjectOnPlane(v, Slope32).normalized;
             Assert.That(thrown, Is.EqualTo((along + Slope32 * 0.8f) * (8f * 0.9f)).Using(Vector3EqualityComparer.Instance));
         }
+
+        [Test]
+        public void ImpactStrength_IsZeroBelowTheCommonMinimum()
+        {
+            Assert.That(TankPloughMath.ImpactStrength(TankPloughMath.IMPACT_MIN_CLOSING - 0.1f, 1f), Is.EqualTo(0f));
+        }
+
+        [Test]
+        public void ImpactStrength_ACraterHitAt13MetresASecond_DoesNotSaturate()
+        {
+            float impact = TankPloughMath.ImpactStrength(12.9f, 1f);
+            Assert.That(impact, Is.GreaterThan(0.5f));
+            Assert.That(impact, Is.LessThan(1f));
+        }
+
+        [Test]
+        public void ImpactStrength_GrowsWithTheClosingSpeed()
+        {
+            Assert.That(TankPloughMath.ImpactStrength(8f, 1f), Is.LessThan(TankPloughMath.ImpactStrength(12f, 1f)));
+        }
+
+        [Test]
+        public void ImpactStrength_IsScaledByThePreset_AndNeverAboveOne()
+        {
+            float full = TankPloughMath.ImpactStrength(9f, 1f);
+            Assert.That(TankPloughMath.ImpactStrength(9f, 0.6f), Is.EqualTo(full * 0.6f).Within(1e-5f));
+            Assert.That(TankPloughMath.ImpactStrength(9f, 0.8f), Is.EqualTo(full * 0.8f).Within(1e-5f));
+            Assert.That(TankPloughMath.ImpactStrength(100f, 1.5f), Is.EqualTo(1f));
+        }
+
+        [Test]
+        public void ImpactStrength_SameHit_SubtleBelowPunchyBelowCinema()
+        {
+            const float closing = 11f;
+            float subtle = TankPloughMath.ImpactStrength(closing, 0.6f);
+            float punchy = TankPloughMath.ImpactStrength(closing, 0.8f);
+            float cinema = TankPloughMath.ImpactStrength(closing, 1f);
+            Assert.That(subtle, Is.LessThan(punchy));
+            Assert.That(punchy, Is.LessThan(cinema));
+        }
     }
 }
