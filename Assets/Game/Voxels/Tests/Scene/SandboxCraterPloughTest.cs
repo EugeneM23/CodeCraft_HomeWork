@@ -1,0 +1,174 @@
+using System.Collections;
+using System.IO;
+using System.Reflection;
+using Atomic.Elements;
+using Atomic.Entities;
+using NUnit.Framework;
+using UnityEditor.SceneManagement;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.TestTools;
+
+namespace Game.Voxels.Tests
+{
+    /// <summary>
+    /// VoxelSandbox: an air bomb's crater on open ground ahead of the tank, and the tank driven into
+    /// it on full gas with Shift. It must not stop dead against the far slope: it keeps at least half
+    /// its entry speed there and is out over the far rim within 2.5 s of entering.
+    /// Screenshots go to Logs/CraterPlough.
+    /// </summary>
+    public sealed class SandboxCraterPloughTest
+    {
+        private const string SCENE = "Assets/Game/Voxels/Scenes/VoxelSandbox.unity";
+        private const string OUT = "Logs/CraterPlough";
+        private const float RIM = 4f;
+        private const float RUN_UP = 14f;
+        private const int GROUND = 1 << 3;
+
+        [UnityTest]
+        [Timeout(120000)]
+        public IEnumerator Sandbox_TankHitsCraterSlopeAtSpeed_BreaksOutWithoutStopping()
+        {
+            LogAssert.ignoreFailingMessages = true;
+            try
+            {
+                yield return EditorSceneManager.LoadSceneAsyncInPlayMode(SCENE, new LoadSceneParameters(LoadSceneMode.Single));
+                for (int i = 0; i < 90; i++)
+                    yield return new WaitForFixedUpdate();
+
+                // No bombs but ours.
+                FieldInfo on = typeof(VoxelAirStrike).GetField("_on", BindingFlags.NonPublic | BindingFlags.Instance);
+                foreach (VoxelAirStrike strike in Object.FindObjectsByType<VoxelAirStrike>(FindObjectsSortMode.None))
+                    on.SetValue(strike, false);
+
+                GameObject tankObject = GameObject.Find("Tank_01");
+                IEntity tank = tankObject.GetComponent<MonoEntity>();
+                Rigidbody body = tankObject.GetComponent<Rigidbody>();
+
+                Assert.IsTrue(TryFindRunway(out Vector3 start, out Vector3 forward), "open ground for a run-up and a crater");
+                Vector3 crater = start + forward * (RUN_UP + RIM);
+                VoxelDamage.AirBlast(crater, RIM, 32f, 24f, 0, 0.85f, 24f);
+                for (int i = 0; i < 10; i++)
+                    yield return null; // the crater's collider is rebuilt a frame or two later
+
+                body.linearVelocity = Vector3.zero;
+                body.angularVelocity = Vector3.zero;
+                body.position = start + Vector3.up * 0.4f;
+                body.rotation = Quaternion.LookRotation(forward);
+                tankObject.transform.SetPositionAndRotation(body.position, body.rotation);
+                for (int i = 0; i < 40; i++)
+                    yield return new WaitForFixedUpdate();
+
+                Directory.CreateDirectory(OUT);
+                IReactiveVariable<Vector2> drive = tank.GetDriveInput();
+                tank.TryGetDriveBoost(out IReactiveVariable<bool> boost);
+
+                float entrySpeed = -1f, entryTime = -1f, exitTime = -1f;
+                float minFarSpeed = float.MaxValue;
+                float until = Time.time + 8f;
+                int shot = 0;
+                while (Time.time < until && exitTime < 0f)
+                {
+                    drive.Value = new Vector2(0f, 1f);
+                    if (boost != null)
+                        boost.Value = true;
+                    yield return new WaitForEndOfFrame();
+
+                    // Distance along the run from the crater's centre: -RIM at the near rim, +RIM at the far one.
+                    float along = Vector3.Dot(body.position - crater, forward);
+                    float speed = Vector3.Dot(body.linearVelocity, forward);
+                    if (entryTime < 0f && along >= -RIM)
+                    {
+                        entryTime = Time.time;
+                        entrySpeed = speed;
+                    }
+
+                    if (entryTime >= 0f && along > 0f)
+                        minFarSpeed = Mathf.Min(minFarSpeed, speed);
+                    if (entryTime >= 0f && along > RIM + 1.4f)
+                        exitTime = Time.time;
+                    if (entryTime >= 0f && shot < 12 && Time.frameCount % 4 == 0)
+                        Capture($"{shot++:00}_crater");
+                }
+
+                float took = exitTime >= 0f ? exitTime - entryTime : float.PositiveInfinity;
+                Debug.Log($"[CraterPlough] entry {entrySpeed:F2} m/s, min on far slope {minFarSpeed:F2} m/s " +
+                          $"({minFarSpeed / Mathf.Max(0.01f, entrySpeed):P0}), out in {took:F2} s");
+
+                Assert.That(entrySpeed, Is.GreaterThan(6f), "the tank came in fast");
+                Assert.That(minFarSpeed, Is.GreaterThanOrEqualTo(entrySpeed * 0.5f), "kept half its speed on the far slope");
+                Assert.That(took, Is.LessThan(2.5f), "out over the far rim within 2.5 s");
+            }
+            finally
+            {
+                LogAssert.ignoreFailingMessages = false;
+            }
+        }
+
+        [UnityTearDown]
+        public IEnumerator TearDown()
+        {
+            Scene sandbox = SceneManager.GetSceneByPath(SCENE);
+            if (!sandbox.IsValid() || !sandbox.isLoaded)
+                yield break;
+            SceneManager.SetActiveScene(SceneManager.CreateScene("AfterCraterPlough"));
+            yield return SceneManager.UnloadSceneAsync(sandbox);
+        }
+
+        /// <summary>
+        /// A straight 30 m of ground along ±X or ±Z with nothing on it but the ground, nearest the
+        /// origin: room for a run-up, the crater and the way out.
+        /// </summary>
+        private static bool TryFindRunway(out Vector3 start, out Vector3 forward)
+        {
+            start = default;
+            forward = Vector3.forward;
+            Vector3[] ways = { Vector3.right, Vector3.left, Vector3.forward, Vector3.back };
+            float best = float.MaxValue;
+            const int notGround = ~GROUND;
+            for (float x = -30f; x <= 30f; x += 3f)
+            for (float z = -30f; z <= 30f; z += 3f)
+            foreach (Vector3 way in ways)
+            {
+                var from = new Vector3(x, 0f, z);
+                Vector3 centre = from + way * 15f + Vector3.up * 2f;
+                if (Physics.CheckBox(centre, new Vector3(3f, 1.5f, 16f), Quaternion.LookRotation(way), notGround,
+                        QueryTriggerInteraction.Ignore))
+                    continue;
+                if (!Physics.Raycast(from + Vector3.up * 5f, Vector3.down, out RaycastHit hit, 10f, GROUND))
+                    continue;
+                if (!Physics.Raycast(from + way * 28f + Vector3.up * 5f, Vector3.down, out RaycastHit end, 10f, GROUND) ||
+                    Mathf.Abs(end.point.y - hit.point.y) > 0.5f)
+                    continue;
+                if (from.sqrMagnitude < best)
+                {
+                    best = from.sqrMagnitude;
+                    start = hit.point;
+                    forward = way;
+                }
+            }
+
+            return best < float.MaxValue;
+        }
+
+        private static void Capture(string name)
+        {
+            Camera camera = Camera.main;
+            if (camera == null)
+                return;
+            var target = new RenderTexture(1280, 720, 24);
+            RenderTexture previous = camera.targetTexture;
+            camera.targetTexture = target;
+            camera.Render();
+            camera.targetTexture = previous;
+            RenderTexture.active = target;
+            var image = new Texture2D(1280, 720, TextureFormat.RGB24, false);
+            image.ReadPixels(new Rect(0, 0, 1280, 720), 0, 0);
+            image.Apply();
+            RenderTexture.active = null;
+            File.WriteAllBytes(Path.Combine(OUT, name + ".png"), image.EncodeToPNG());
+            Object.Destroy(target);
+            Object.Destroy(image);
+        }
+    }
+}
