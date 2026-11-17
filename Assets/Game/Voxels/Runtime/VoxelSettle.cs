@@ -9,7 +9,7 @@ namespace Game.Voxels
     /// not frozen again; a blast lets it go (VoxelBody.CarveSphere), and this starts over.
     /// </summary>
     [RequireComponent(typeof(VoxelBody))]
-    public sealed class VoxelSettle : MonoBehaviour
+    public sealed class VoxelSettle : MonoBehaviour, IVoxelFixedUpdate
     {
         private const float STILL_TIME = 1f;
         private const float STILL_SPEED = 0.05f;
@@ -21,7 +21,17 @@ namespace Game.Voxels
 
         private void Awake() => _body = GetComponent<VoxelBody>();
 
-        private void FixedUpdate()
+        private void OnEnable() => VoxelTicks.Add(this);
+
+        private void OnDisable() => VoxelTicks.Remove(this);
+
+        private void FixedUpdate() // perf-ok: ticks itself without the game loop (tests, demo scenes); one flag check when driven
+        {
+            if (!VoxelTicks.Driven)
+                VoxelFixedUpdate(Time.fixedDeltaTime);
+        }
+
+        public void VoxelFixedUpdate(float deltaTime)
         {
             if (_body == null || !_body.IsLoose)
             {

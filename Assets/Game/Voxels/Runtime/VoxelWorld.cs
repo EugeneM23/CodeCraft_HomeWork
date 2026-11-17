@@ -20,7 +20,7 @@ namespace Game.Voxels
     /// for dozens of remeshes and PhysX cooks. The tank's skin (no colliders) remeshes the same way.
     /// </summary>
     [DefaultExecutionOrder(10000)]
-    public sealed class VoxelWorld : MonoBehaviour
+    public sealed class VoxelWorld : MonoBehaviour, IVoxelLateUpdate
     {
         /// <summary>Layer for pieces that broke off. Rubble collides with itself (Debris does not).</summary>
         public const int PieceLayer = 16;
@@ -278,10 +278,22 @@ namespace Game.Voxels
             return material;
         }
 
-        private void LateUpdate()
+        private void OnEnable() => VoxelTicks.Add(this);
+
+        private void OnDisable() => VoxelTicks.Remove(this);
+
+        private void LateUpdate() // perf-ok: ticks itself without the game loop; draws (dt 0) while the loop is paused
+        {
+            if (!VoxelTicks.Driven)
+                VoxelLateUpdate(Time.deltaTime);
+            else if (VoxelTicks.Paused)
+                VoxelLateUpdate(0f);
+        }
+
+        public void VoxelLateUpdate(float deltaTime)
         {
             RebuildDirty();
-            Debris?.Tick(Time.deltaTime);
+            Debris?.Tick(deltaTime);
         }
 
         private void RebuildDirty()

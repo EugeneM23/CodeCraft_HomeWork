@@ -9,7 +9,7 @@ namespace Game.Voxels
     /// as clods that fall apart on the ground.
     /// </summary>
     [RequireComponent(typeof(VoxelBody))]
-    public sealed class VoxelImpactFracture : MonoBehaviour
+    public sealed class VoxelImpactFracture : MonoBehaviour, IVoxelFixedUpdate
     {
         /// <summary>Slowest impact (m/s) that breaks a piece.</summary>
         [SerializeField] private float _minSpeed = 3.5f;
@@ -46,12 +46,22 @@ namespace Game.Voxels
         }
 
         /// <summary>Holds off breaking for the arm delay: the piece is new, or was just woken where it lay.</summary>
-        internal void Arm() => _armedAt = Time.time + _armDelay;
+        internal void Arm() => _armedAt = VoxelTicks.Time + _armDelay;
 
         /// <summary>A piece that slipped through the ground (it was thrown while the ground's collider was being rebuilt) is let go.</summary>
         private const float FELL_OUT_Y = -60f;
 
-        private void FixedUpdate()
+        private void OnEnable() => VoxelTicks.Add(this);
+
+        private void OnDisable() => VoxelTicks.Remove(this);
+
+        private void FixedUpdate() // perf-ok: ticks itself without the game loop (tests, demo scenes); one flag check when driven
+        {
+            if (!VoxelTicks.Driven)
+                VoxelFixedUpdate(Time.fixedDeltaTime);
+        }
+
+        public void VoxelFixedUpdate(float deltaTime)
         {
             if (transform.position.y < FELL_OUT_Y)
                 Destroy(gameObject);
@@ -59,7 +69,7 @@ namespace Game.Voxels
 
         private void OnCollisionEnter(Collision collision)
         {
-            if (_broken || Time.time < _armedAt || _body == null)
+            if (_broken || VoxelTicks.Time < _armedAt || _body == null)
                 return;
 
             // A settled piece keeps this component (and its colliders): something landing on it
@@ -80,7 +90,8 @@ namespace Game.Voxels
             pieces = Mathf.Min(_maxPieces, pieces + _body.SolidCount / 400);
 
             // One break per hit: the pieces get their own chance on their next hit.
-            _armedAt = Time.time + _armDelay;
+            _armedAt = VoxelTicks.Time + _armDelay;
+            VoxelSignals.RaiseFractured(collision.GetContact(0).point, speed);
             if (_body.Fracture(collision.GetContact(0).point, pieces, Mathf.Min(3f, speed * 0.25f)) && _body == null)
                 _broken = true;
         }

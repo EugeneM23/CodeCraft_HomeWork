@@ -10,7 +10,6 @@ namespace Game
 {
     public class RangeWeaponInstaller : MonoEntityInstaller
     {
-        [SerializeField] private WeaponID _id;
         [SerializeField] private CooldownTimer _fireRate;
         [SerializeField] private int _damage;
 
@@ -49,7 +48,6 @@ namespace Game
             entity.AddBulletPrefab(_bulletPrefab);
             if (_shellPrefab != null)
                 entity.AddShellPrefab(_shellPrefab);
-            entity.AddWeaponId(_id);
             entity.AddRangeWeaponTag();
             entity.AddFirePoint(_firePoint);
             entity.AddSpread(new Const<float>(_spread));

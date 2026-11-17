@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 71c59311ed514f81aa536eb0ff91b011, type: 3}
+  m_Name: Destruction
+  m_EditorClassIdentifier: AudioEngine::AudioEngine.AudioBank
+  identifier: destruction
+  codeGenPath: Assets/Game/Audio/Banks
+  eventParameters:
+  - identifier: explosion_small
+    value: {fileID: 11400000, guid: d17fa06521d543440847c12cdf715051, type: 2}
+  - identifier: explosion_large
+    value: {fileID: 11400000, guid: 2e7edce882e97f44990a5203cc61f9d5, type: 2}
+  - identifier: voxel_break
+    value: {fileID: 11400000, guid: 1fc052a1949abc14d9786feb33758c9b, type: 2}
+  - identifier: voxel_fracture
+    value: {fileID: 11400000, guid: 0dc8b3bb7b3604946be3b62737af952c, type: 2}
+  - identifier: debris_land
+    value: {fileID: 11400000, guid: 2c548b8750a31e646abf9dc5cfd1c518, type: 2}
+  - identifier: mud_splash
+    value: {fileID: 11400000, guid: e874bce4266eb0340b4229ecbad26466, type: 2}
+  boolParameters: []
+  intParameters: []
+  floatParameters: []
+  callbacks: []

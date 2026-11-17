@@ -1,0 +1,10 @@
+{
+  "name": "com.eugenem23.audio-engine",
+  "version": "1.0.0",
+  "displayName": "Audio Engine",
+  "description": "Sound engine: banks of audio events with behaviours (pitch and volume curves and parameters, filters, random intervals), pooled events and sources, callbacks and triggers, music playlists, UI sounds and code generators for typed bank and UI sound APIs. Needs Odin Inspector 4 in the project (not included).",
+  "unity": "6000.0",
+  "author": {
+    "name": "EugeneM23"
+  }
+}

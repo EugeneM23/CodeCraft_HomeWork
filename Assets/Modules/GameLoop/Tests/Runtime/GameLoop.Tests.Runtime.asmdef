@@ -1,0 +1,28 @@
+{
+    "name": "GameLoop.Tests.Runtime",
+    "rootNamespace": "Ticking.Tests",
+    "references": [
+        "GameLoop",
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [
+        { "name": "com.unity.modules.physics", "expression": "", "define": "GAMELOOP_PHYSICS" },
+        { "name": "com.unity.modules.physics2d", "expression": "", "define": "GAMELOOP_PHYSICS_2D" },
+        { "name": "com.unity.modules.animation", "expression": "", "define": "GAMELOOP_ANIMATION" },
+        { "name": "com.unity.modules.particlesystem", "expression": "", "define": "GAMELOOP_PARTICLES" },
+        { "name": "com.unity.modules.audio", "expression": "", "define": "GAMELOOP_AUDIO" }
+    ],
+    "noEngineReferences": false
+}

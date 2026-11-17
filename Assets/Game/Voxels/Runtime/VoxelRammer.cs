@@ -15,7 +15,7 @@ namespace Game.Voxels
     /// </remarks>
     [DefaultExecutionOrder(5000)]
     [RequireComponent(typeof(Rigidbody))]
-    public sealed class VoxelRammer : MonoBehaviour
+    public sealed class VoxelRammer : MonoBehaviour, IVoxelFixedUpdate
     {
         [SerializeField] private float _minSpeed = 1.2f;
         [Tooltip("Speed (m/s) at which the ram hits as hard as it can.")]
@@ -69,7 +69,17 @@ namespace Game.Voxels
 
         private void Awake() => _rigidbody = GetComponent<Rigidbody>();
 
-        private void FixedUpdate()
+        private void OnEnable() => VoxelTicks.Add(this);
+
+        private void OnDisable() => VoxelTicks.Remove(this);
+
+        private void FixedUpdate() // perf-ok: ticks itself without the game loop (tests, demo scenes); one flag check when driven
+        {
+            if (!VoxelTicks.Driven)
+                VoxelFixedUpdate(Time.fixedDeltaTime);
+        }
+
+        public void VoxelFixedUpdate(float deltaTime)
         {
             _intended = _rigidbody.linearVelocity;
             if (Airborne)
@@ -78,7 +88,7 @@ namespace Game.Voxels
 
         private void BiteAhead()
         {
-            if (Time.time < _next)
+            if (VoxelTicks.Time < _next)
                 return;
 
             Vector3 velocity = _rigidbody.linearVelocity;
@@ -129,7 +139,7 @@ namespace Game.Voxels
 
         private void Ram(Collision collision)
         {
-            if (Time.time < _next)
+            if (VoxelTicks.Time < _next)
                 return;
 
             Vector3 flat = new Vector3(_intended.x, 0f, _intended.z);
@@ -171,7 +181,7 @@ namespace Game.Voxels
                 interval *= _fullGasInterval;
             }
 
-            _next = Time.time + interval;
+            _next = VoxelTicks.Time + interval;
 
             Vector3 centre = point + direction * (radius * 0.5f);
             int voxels = VoxelDamage.Blast(centre, radius, force, transform, false);
