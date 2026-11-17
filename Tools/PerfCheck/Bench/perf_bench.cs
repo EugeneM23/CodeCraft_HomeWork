@@ -34,14 +34,21 @@ MethodInfo FindExt(string name)
     }
     return null;
 }
-object ctx = FindExt("GetPlayerContext").Invoke(null, new object[] { Game.GameContext.Instance });
-object charVar = FindExt("GetCharacter").Invoke(null, new object[] { ctx });
-object character = charVar.GetType().GetProperty("Value").GetValue(charVar);
-var dargs = new object[] { character, null };
-if (!(bool)FindExt("TryGetDriveInput").Invoke(null, dargs)) return "ERROR the player is not in the tank (no DriveInput)";
+// The tank's DriveInput: on the sandbox vehicle itself (the player drives the tank directly since the
+// cleanup); before it, on the player context's character.
+var start = UnityEngine.Object.FindFirstObjectByType<Game.VoxelSandboxStart>();
+object driver = start != null && start.Vehicle != null ? start.Vehicle : null;
+if (driver == null) driver = GameObject.Find("Tank_01")?.GetComponent<Atomic.Entities.MonoEntity>();
+if (driver == null)
+{
+    object ctx = FindExt("GetPlayerContext").Invoke(null, new object[] { Game.GameContext.Instance });
+    object charVar = FindExt("GetCharacter").Invoke(null, new object[] { ctx });
+    driver = charVar.GetType().GetProperty("Value").GetValue(charVar);
+}
+var dargs = new object[] { driver, null };
+if (!(bool)FindExt("TryGetDriveInput").Invoke(null, dargs)) return "ERROR the tank has no DriveInput";
 var driveInput = (Atomic.Elements.IReactiveVariable<Vector2>)dargs[1];
 
-var start = UnityEngine.Object.FindFirstObjectByType<Game.VoxelSandboxStart>();
 Transform tank = start != null && start.Vehicle != null ? start.Vehicle.transform : GameObject.Find("Tank_01")?.transform;
 if (tank == null) return "ERROR no tank";
 Rigidbody tankBody = tank.GetComponent<Rigidbody>();
@@ -93,8 +100,11 @@ var stack = new Stack<(int id, int depth, bool inVox)>();
 bool IsVoxel(string n) => n.Contains("Voxel") && !n.Contains("VoxelAirStrike") && !n.Contains("VoxelSandbox") && !n.Contains("VoxelDemo");
 bool IsEditorOnly(string n) => n.Contains("Burst.Compiler") || n.Contains("JitCompilerService");
 bool IsDebugHud(string n) => n == "GUI.Repaint" || n.Contains("VoxelDemoHud") || n.Contains("VoxelSandboxOrbit.OnGUI");
-bool IsRender(string n) => n == "Camera.Render" || (n.StartsWith("PostLateUpdate.") && n.Contains("Render"));
-bool IsScripts(string n) => n.EndsWith("ScriptRunBehaviourUpdate") || n.EndsWith("ScriptRunBehaviourLateUpdate") || n.EndsWith("ScriptRunBehaviourFixedUpdate") || n.EndsWith("ScriptRunDelayedDynamicFrameRate");
+// Categories are matched by name wherever they sit under PlayerLoop (Unity moves markers between
+// versions: 6.0 has them right under PlayerLoop, 6.3 may nest them). The first match on a path wins.
+bool IsRender(string n) => n == "Camera.Render" || n.Contains("RenderCameraStack") || n.Contains("DoRenderLoop") || n.Contains("FinishFrameRendering") || n.Contains("UpdateAllRenderers");
+bool IsPhysics(string n) => n.Contains("PhysicsFixedUpdate") || n == "Physics.Simulate" || n.StartsWith("Physics.Processing") || n.StartsWith("FixedUpdate.Physics");
+bool IsScripts(string n) => n.Contains("ScriptRunBehaviour") || n.Contains("ScriptRunDelayedDynamicFrameRate");
 string Short(string n)
 {
     int k = n.LastIndexOf("::", StringComparison.Ordinal);
@@ -120,6 +130,8 @@ string HotPath(HierarchyFrameDataView view, int id)
     return string.Join(" > ", parts);
 }
 
+var stack3 = new Stack<(int id, int depth, bool inVox, int cat)>();
+var catSeen = new int[4]; // frames in which physics(1), render(2), scripts(3) were found
 void ReadFrames(int upTo)
 {
     int first = Math.Max(readUpTo + 1, ProfilerDriver.firstFrameIndex);
@@ -136,11 +148,12 @@ void ReadFrames(int upTo)
         double pl = view.GetItemColumnDataAsDouble(plId, HierarchyFrameDataView.columnTotalTime);
         double gc = view.GetItemColumnDataAsDouble(plId, HierarchyFrameDataView.columnGcMemory);
         double vox = 0, phys = 0, scripts = 0, scriptVox = 0, render = 0, gcEditor = 0, gcHud = 0;
-        stack.Clear();
-        stack.Push((plId, 0, false));
-        while (stack.Count > 0)
+        bool seenP = false, seenR = false, seenS = false;
+        stack3.Clear();
+        stack3.Push((plId, 0, false, 0));
+        while (stack3.Count > 0)
         {
-            var (id, d, inVox) = stack.Pop();
+            var (id, d, inVox, cat) = stack3.Pop();
             children.Clear();
             view.GetItemChildren(id, children);
             foreach (int c in children)
@@ -149,23 +162,27 @@ void ReadFrames(int upTo)
                 if (IsEditorOnly(n)) { gcEditor += view.GetItemColumnDataAsDouble(c, HierarchyFrameDataView.columnGcMemory); continue; }
                 if (IsDebugHud(n)) { gcHud += view.GetItemColumnDataAsDouble(c, HierarchyFrameDataView.columnGcMemory); continue; }
                 double t = view.GetItemColumnDataAsDouble(c, HierarchyFrameDataView.columnTotalTime);
-                if (d == 0)
+                int cc = cat;
+                if (cat == 0)
                 {
-                    if (n == "FixedUpdate.PhysicsFixedUpdate") phys += t;
-                    else if (IsRender(n)) render += t;
-                    else if (IsScripts(n)) scripts += t;
+                    if (IsPhysics(n)) { phys += t; cc = 1; seenP = true; }
+                    else if (IsRender(n)) { render += t; cc = 2; seenR = true; }
+                    else if (IsScripts(n)) { scripts += t; cc = 3; seenS = true; }
                 }
                 bool vx = inVox;
                 if (!inVox && IsVoxel(n))
                 {
                     vox += t;
                     // Voxel work inside the script phases is taken out of "scripts".
-                    if (d >= 1) scriptVox += t;
+                    if (cc == 3) scriptVox += t;
                     vx = true;
                 }
-                stack.Push((c, d + 1, vx));
+                stack3.Push((c, d + 1, vx, cc));
             }
         }
+        if (seenP) catSeen[1]++;
+        if (seenR) catSeen[2]++;
+        if (seenS) catSeen[3]++;
         rows.Add(new[] { view.frameTimeMs, pl, Math.Max(0, gc - gcEditor - gcHud), vox, phys, Math.Max(0, scripts - scriptVox), render, gcEditor, gcHud });
         if (worst.Count < 3 || pl > worst[worst.Count - 1].ms)
         {
@@ -254,7 +271,7 @@ void Finish(string status)
 void BeginScenario()
 {
     var (name, _) = plan[phase];
-    rows.Clear(); worst.Clear();
+    rows.Clear(); worst.Clear(); Array.Clear(catSeen, 0, catSeen.Length);
     foreach (var r in recorders) r.Dispose();
     recorders.Clear();
     foreach (var c in counterNames) recorders.Add(ProfilerRecorder.StartNew(c.cat, c.name, 8000));
@@ -297,6 +314,8 @@ void EndScenario()
     drive[0] = drive[1] = 0;
     sub = "read";
     ReadFrames(ProfilerDriver.lastFrameIndex);
+    string[] catNames = { "", "physics", "render", "scripts" };
+    for (int k = 1; k < 4; k++) if (rows.Count > 0 && catSeen[k] == 0) sbNotes.Add(name + ": no " + catNames[k] + " marker found, its column is 0");
     var counters = new List<string>();
     for (int i = 0; i < counterNames.Length; i++) counters.Add($"\"{counterNames[i].key}\":{CounterStats(recorders[i], counterNames[i].key == "gpu")}");
     worst.Sort((a, b) => b.ms.CompareTo(a.ms));
