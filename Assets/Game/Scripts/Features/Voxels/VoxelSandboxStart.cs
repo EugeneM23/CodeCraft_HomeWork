@@ -7,11 +7,10 @@ using UnityEngine;
 namespace Game
 {
     /// <summary>
-    /// VoxelSandbox starts with the player already in the tank: one frame after the scene is up
-    /// (the contexts and the player's character are installed by then), the tank's own "get in"
-    /// action runs for the player's character, exactly as pressing E next to it would.
-    /// Each cannon shot then shakes the tank like a wet dog: mud and blood fly off it, and a few
-    /// shots in a row leave it clean (<see cref="ShotShare"/>).
+    /// The tank's sandbox extras. The player drives the tank from the start: it is the player
+    /// context's Character (PlayerVehicleController). Each cannon shot shakes the tank like a wet
+    /// dog: mud and blood fly off it, and a few shots in a row leave it clean
+    /// (<see cref="ShotShare"/>). Dry ground lets it run faster.
     /// </summary>
     public sealed class VoxelSandboxStart : MonoBehaviour
     {
@@ -55,12 +54,8 @@ namespace Game
         {
             yield return null;
 
-            if (_vehicle == null || GameContext.Instance == null)
+            if (_vehicle == null)
                 yield break;
-
-            IEntity character = GameContext.Instance.GetPlayerContext().GetCharacter().Value;
-            if (character != null && _vehicle.TryGetInteractAction(out var getIn))
-                getIn.Invoke(character);
 
             _mud = _vehicle.GetComponent<VoxelTrackRuts>();
             _vehicle.TryGetBehaviour(out _dirt);

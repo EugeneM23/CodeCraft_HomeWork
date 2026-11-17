@@ -11,8 +11,7 @@
         "Unity.TextMeshPro",
         "UnityEngine.UI",
         "HighlightPlus",
-        "DOTweenModules",
-        "RayFireAssembly"
+        "DOTweenModules"
     ],
     "includePlatforms": [
         "Editor"

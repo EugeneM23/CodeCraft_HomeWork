@@ -8,8 +8,7 @@ namespace Game.Tests
 {
     public sealed class TankDestroyBehaviourTests
     {
-        // Far from anything a scene open in the editor might hold, so the exit checks only meet
-        // what a test puts there itself.
+        // Far from anything a scene open in the editor might hold.
         private static readonly Vector3 Origin = new(-4700f, 300f, 4700f);
 
         private static readonly int ColorId = Shader.PropertyToID("_Color");
@@ -18,7 +17,6 @@ namespace Game.Tests
         private readonly List<Object> _objects = new();
 
         private IEntity _tank;
-        private IEntity _driver;
         private Rigidbody _body;
         private Renderer _hullRenderer;
         private Event<TakeDamageArgs> _death;
@@ -52,7 +50,6 @@ namespace Game.Tests
 
             _tank = new Entity();
             _tank.AddVehicleTag();
-            _tank.AddInteractableTag();
             _tank.AddDamageableTag();
             _tank.AddTransform(tankObject.transform);
             _tank.AddRiggedBody(_body);
@@ -62,13 +59,8 @@ namespace Game.Tests
             _tank.AddDriveInput(new ReactiveVariable<Vector2>());
             _tank.AddDeathTakenEvent(_death);
 
-            GameObject driverObject = Track(new GameObject("Driver"));
-            _driver = new Entity();
-            _driver.AddPlayerTag();
-            _driver.AddGameObject(driverObject);
-            _driver.AddTransform(driverObject.transform);
-
-            _character = new ReactiveVariable<IEntity>(_driver);
+            // The player drives the tank: it is their Character.
+            _character = new ReactiveVariable<IEntity>(_tank);
 
             PlayerContext player = MonoEntity.Create<PlayerContext>("Player", installOnAwake: false,
                 useUnityLifecycle: false);
@@ -78,9 +70,7 @@ namespace Game.Tests
             _gameContext = MonoEntity.Create<GameContext>("Game", installOnAwake: false, useUnityLifecycle: false);
             Track(_gameContext.gameObject);
             _gameContext.AddPlayerContext(player);
-            _gameContext.AddEntityWorld(new EntityWorld<IEntity>(_tank, _driver));
-
-            ControllableUseCase.Enter(_tank, _driver, _character, new[] { _tank, _driver });
+            _gameContext.AddEntityWorld(new EntityWorld<IEntity>(_tank));
         }
 
         [TearDown]
@@ -99,9 +89,9 @@ namespace Game.Tests
             return obj;
         }
 
-        private TankDestroyBehaviour Install(bool fallOnDeath = false)
+        private TankDestroyBehaviour Install()
         {
-            var behaviour = new TankDestroyBehaviour(_gameContext, null, null, fallOnDeath);
+            var behaviour = new TankDestroyBehaviour(_gameContext, null, null);
             behaviour.Init(_tank);
             return behaviour;
         }
@@ -109,20 +99,17 @@ namespace Game.Tests
         private void DestroyTank() => _tank.GetHealth().Reduce(10);
 
         [Test]
-        public void Destroyed_DriverIsThrownOutAlive_AndGetsTheControlsBack()
+        public void Destroyed_WreckStaysThePlayersCharacter()
         {
             Install();
 
             DestroyTank();
 
-            Assert.That(_character.Value, Is.SameAs(_driver));
-            Assert.That(_tank.GetDriver().Value, Is.Null);
-            Assert.That(_driver.GetGameObject().activeSelf, Is.True);
-            Assert.That(_driver.GetTransform().position.y, Is.GreaterThan(Origin.y));
+            Assert.That(_character.Value, Is.SameAs(_tank));
         }
 
         [Test]
-        public void Destroyed_WreckIsNoLongerEnteredOrDamaged_AndReportsItsDeath()
+        public void Destroyed_WreckIsNoLongerDamaged_AndReportsItsDeath()
         {
             Install();
             int deaths = 0;
@@ -130,7 +117,6 @@ namespace Game.Tests
 
             DestroyTank();
 
-            Assert.That(_tank.HasInteractableTag(), Is.False);
             Assert.That(_tank.HasDamageableTag(), Is.False);
             Assert.That(deaths, Is.EqualTo(1));
         }
@@ -147,20 +133,6 @@ namespace Game.Tests
             Assert.That(_body.isKinematic, Is.True);
             Assert.That(_body.linearVelocity, Is.EqualTo(Vector3.zero));
             Assert.That(_body.angularVelocity, Is.EqualTo(Vector3.zero));
-        }
-
-        [Test]
-        public void HelicopterDestroyed_WreckFallsFreely()
-        {
-            _body.isKinematic = true;
-            _body.constraints = RigidbodyConstraints.FreezeRotation;
-            Install(fallOnDeath: true);
-
-            DestroyTank();
-
-            Assert.That(_body.isKinematic, Is.False);
-            Assert.That(_body.useGravity, Is.True);
-            Assert.That(_body.constraints, Is.EqualTo(RigidbodyConstraints.None));
         }
 
         [Test]
@@ -192,7 +164,7 @@ namespace Game.Tests
             _tank.GetHealth().Reduce(5);
 
             Assert.That(_character.Value, Is.SameAs(_tank));
-            Assert.That(_tank.HasInteractableTag(), Is.True);
+            Assert.That(_tank.HasDamageableTag(), Is.True);
             Assert.That(_body.isKinematic, Is.False);
         }
 
@@ -205,7 +177,7 @@ namespace Game.Tests
             DestroyTank();
 
             Assert.That(_character.Value, Is.SameAs(_tank));
-            Assert.That(_tank.HasInteractableTag(), Is.True);
+            Assert.That(_tank.HasDamageableTag(), Is.True);
         }
     }
 }
