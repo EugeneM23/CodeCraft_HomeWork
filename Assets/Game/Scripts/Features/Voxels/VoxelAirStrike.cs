@@ -125,6 +125,8 @@ namespace Game
                 if (_on)
                     _next = Time.time + _resumeDelay;
             }
+            if (_on && Input.GetKeyDown(_toggleKey))
+                GameSignals.RaiseAirStrikeCalled();
 
             if (_on && _target != null && Time.time >= _next)
             {
@@ -147,6 +149,7 @@ namespace Game
             Vector3 velocity = (aim - start).normalized * _startSpeed;
 
             _bombs.Add(new Bomb { Transform = BuildBomb(start).transform, Velocity = velocity });
+            GameSignals.RaiseAirBombDropped(_bombs[_bombs.Count - 1].Transform);
         }
 
         private void Fall(float dt)

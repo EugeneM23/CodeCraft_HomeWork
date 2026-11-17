@@ -32,6 +32,7 @@ namespace Game
         public static void Explode(IEntity projectile, Vector3 point, Collider hit, GameFactory factory)
         {
             float radius = projectile.GetExplosionRadius();
+            GameSignals.RaiseExploded(point, radius);
 
             DamageInRadius(projectile, point, radius);
 
