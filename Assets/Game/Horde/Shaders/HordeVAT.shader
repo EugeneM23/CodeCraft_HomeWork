@@ -1,7 +1,7 @@
 // Horde crowd and corpses, drawn with Graphics.RenderMeshIndirect (Game.Horde.HordeRenderer).
 // Vertex animation from a baked texture (Tools/Horde/Bake Regax VAT); per-instance data in
-// _HordeInstances. Two SubShaders: URP first (the render team moves the game to it), Built-in second
-// (what the game runs on today). Lighting is deliberately simple: one directional light, ambient,
+// _HordeInstances. Two SubShaders: URP (the game's pipeline) and Built-in (a fallback, unused while URP is on).
+// Lighting is deliberately simple: one directional light, ambient,
 // a little specular, emission.
 Shader "Game/HordeVAT"
 {
@@ -20,20 +20,24 @@ Shader "Game/HordeVAT"
     }
 
     // ------------------------------------------------------------------ URP
-    // TODO(URP): URP is not in the project yet, so this SubShader declares the few URP globals it
-    // reads (unity_MatrixVP, _MainLightPosition, _MainLightColor, _LightDirection, _ShadowBias)
-    // instead of including the URP ShaderLibrary: the file must compile without the package. Once
-    // URP is merged, switch to Core.hlsl / Lighting.hlsl (GetMainLight, SH, shadow receiving) and
-    // check the passes in the URP frame debugger.
+    // Lit by the URP library: the main light with its shadows, ambient from the light probes (SH), fog.
+    // Additional lights are not taken: a crowd of thousands under one sun.
     SubShader
     {
         Tags { "RenderPipeline" = "UniversalPipeline" "RenderType" = "Opaque" "Queue" = "Geometry" }
 
         HLSLINCLUDE
+        #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
         #include "HordeVATCommon.hlsl"
 
-        float4x4 unity_MatrixVP;
-        float3 _WorldSpaceCameraPos;
+        CBUFFER_START(UnityPerMaterial)
+            float4 _Color;
+            float4 _EmissionColor;
+            float4 _Ambient;
+            float _Gloss;
+            float _Specular;
+            float4 _MainTex_ST;
+        CBUFFER_END
 
         struct HordeAttributes
         {
@@ -53,19 +57,16 @@ Shader "Game/HordeVAT"
             #pragma vertex Vert
             #pragma fragment Frag
             #pragma target 4.5
+            #pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE _MAIN_LIGHT_SHADOWS_SCREEN
+            #pragma multi_compile_fragment _ _SHADOWS_SOFT _SHADOWS_SOFT_LOW _SHADOWS_SOFT_MEDIUM _SHADOWS_SOFT_HIGH
+            #pragma multi_compile_fog
 
-            float4 _MainLightPosition;
-            float4 _MainLightColor;
-            float4 _Color;
-            float4 _EmissionColor;
-            float4 _Ambient;
-            float _Gloss;
-            float _Specular;
-            float4 _MainTex_ST;
-            Texture2D _MainTex;
-            SamplerState sampler_MainTex;
-            Texture2D _EmissionMap;
-            SamplerState sampler_EmissionMap;
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
+
+            TEXTURE2D(_MainTex);
+            SAMPLER(sampler_MainTex);
+            TEXTURE2D(_EmissionMap);
+            SAMPLER(sampler_EmissionMap);
 
             struct Varyings
             {
@@ -73,6 +74,7 @@ Shader "Game/HordeVAT"
                 float2 uv : TEXCOORD0;
                 float3 normalWS : TEXCOORD1;
                 float3 positionWS : TEXCOORD2;
+                float fogFactor : TEXCOORD3;
             };
 
             Varyings Vert(HordeAttributes v, uint instanceId : SV_InstanceID)
@@ -81,24 +83,26 @@ Shader "Game/HordeVAT"
                 float3 wp;
                 float3 wn;
                 HordeVertex((uint)(v.uv1.x + 0.5), instanceId, v.vertex.xyz, v.normal, wp, wn);
-                o.positionCS = mul(unity_MatrixVP, float4(wp, 1.0));
+                o.positionCS = TransformWorldToHClip(wp);
                 o.uv = v.uv * _MainTex_ST.xy + _MainTex_ST.zw;
                 o.normalWS = wn;
                 o.positionWS = wp;
+                o.fogFactor = ComputeFogFactor(o.positionCS.z);
                 return o;
             }
 
-            float4 Frag(Varyings i) : SV_Target
+            half4 Frag(Varyings i) : SV_Target
             {
                 float3 n = normalize(i.normalWS);
-                float3 l = normalize(_MainLightPosition.xyz);
-                float3 albedo = _MainTex.Sample(sampler_MainTex, i.uv).rgb * _Color.rgb;
-                float diffuse = saturate(dot(n, l));
-                float3 h = normalize(l + normalize(_WorldSpaceCameraPos - i.positionWS));
-                float spec = pow(saturate(dot(n, h)), exp2(10.0 * _Gloss + 1.0)) * _Specular;
-                float3 emission = _EmissionMap.Sample(sampler_EmissionMap, i.uv).rgb * _EmissionColor.rgb;
-                float3 color = albedo * (_Ambient.rgb + diffuse * _MainLightColor.rgb) + spec * _MainLightColor.rgb + emission;
-                return float4(color, 1.0);
+                Light main = GetMainLight(TransformWorldToShadowCoord(i.positionWS));
+                float3 albedo = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, i.uv).rgb * _Color.rgb;
+                float3 lit = main.color * (saturate(dot(n, main.direction)) * main.shadowAttenuation * main.distanceAttenuation);
+                float3 h = normalize(main.direction + GetWorldSpaceNormalizeViewDir(i.positionWS));
+                float spec = pow(saturate(dot(n, h)), exp2(10.0 * _Gloss + 1.0)) * _Specular * main.shadowAttenuation;
+                float3 emission = SAMPLE_TEXTURE2D(_EmissionMap, sampler_EmissionMap, i.uv).rgb * _EmissionColor.rgb;
+                float3 color = albedo * (SampleSH(n) + lit) + spec * main.color + emission;
+                color = MixFog(color, i.fogFactor);
+                return half4(color, 1.0);
             }
             ENDHLSL
         }
@@ -116,20 +120,25 @@ Shader "Game/HordeVAT"
             #pragma fragment Frag
             #pragma target 4.5
 
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Shadows.hlsl"
+
             float3 _LightDirection;
-            float4 _ShadowBias;
 
             float4 Vert(HordeAttributes v, uint instanceId : SV_InstanceID) : SV_POSITION
             {
                 float3 wp;
                 float3 wn;
                 HordeVertex((uint)(v.uv1.x + 0.5), instanceId, v.vertex.xyz, v.normal, wp, wn);
-                wp += _LightDirection * _ShadowBias.x;
-                wp += wn * (1.0 - saturate(dot(_LightDirection, wn))) * _ShadowBias.y;
-                return mul(unity_MatrixVP, float4(wp, 1.0));
+                float4 positionCS = TransformWorldToHClip(ApplyShadowBias(wp, wn, _LightDirection));
+            #if UNITY_REVERSED_Z
+                positionCS.z = min(positionCS.z, UNITY_NEAR_CLIP_VALUE);
+            #else
+                positionCS.z = max(positionCS.z, UNITY_NEAR_CLIP_VALUE);
+            #endif
+                return positionCS;
             }
 
-            float4 Frag() : SV_Target { return 0; }
+            half4 Frag() : SV_Target { return 0; }
             ENDHLSL
         }
 
@@ -150,10 +159,10 @@ Shader "Game/HordeVAT"
                 float3 wp;
                 float3 wn;
                 HordeVertex((uint)(v.uv1.x + 0.5), instanceId, v.vertex.xyz, v.normal, wp, wn);
-                return mul(unity_MatrixVP, float4(wp, 1.0));
+                return TransformWorldToHClip(wp);
             }
 
-            float4 Frag() : SV_Target { return 0; }
+            half4 Frag() : SV_Target { return 0; }
             ENDHLSL
         }
     }
