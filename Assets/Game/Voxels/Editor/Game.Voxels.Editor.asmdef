@@ -4,6 +4,8 @@
     "references": [
         "Game.Voxels",
         "Game.Voxels.Demo",
+        "Unity.Burst",
+        "Unity.Collections",
         "Unity.Mathematics"
     ],
     "includePlatforms": [
