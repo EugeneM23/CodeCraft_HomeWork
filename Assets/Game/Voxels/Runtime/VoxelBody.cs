@@ -17,7 +17,7 @@ namespace Game.Voxels
     /// into debris cubes, bigger ones become voxel bodies of their own with a Rigidbody.
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class VoxelBody : MonoBehaviour
+    public sealed partial class VoxelBody : MonoBehaviour
     {
         public const int CHUNK = 16;
 
@@ -93,6 +93,28 @@ namespace Game.Voxels
         private Vector3 _pendingBlastCenter;
         private float _pendingBlastForce;
         private Vector3 _pendingSpin;
+
+        /// <summary>
+        /// A blast throws a piece up to this mass (kg, ~140 brick voxels) at its full speed; a
+        /// heavier one gets a share in inverse proportion to its mass, as a fixed push would give it.
+        /// A house that loses its last post (56 t) only sags off it.
+        /// </summary>
+        private const float BLAST_FULL_MASS = 250f;
+
+        /// <summary>Distance (m) at which a blast's push on a piece falls off to nothing.</summary>
+        private const float BLAST_REACH = 8f;
+
+        /// <summary>How much "up" is added to a blast's push, so pieces lift rather than skim.</summary>
+        private const float BLAST_LIFT = 0.4f;
+
+        /// <summary>Spin (rad/s per m/s of push) a blast gives a piece, on a random axis.</summary>
+        private const float BLAST_SPIN = 0.35f;
+
+        /// <summary>Fastest a piece may set off (m/s): nothing a blast or a break does exceeds it.</summary>
+        public const float MAX_LAUNCH_SPEED = 30f;
+
+        /// <summary>Fastest a piece may spin (rad/s), at launch and after.</summary>
+        public const float MAX_SPIN = 12f;
 
         /// <summary>
         /// Carve speed (m/s) above which a settled body is thrown again: a shell's blast (9) is, a
@@ -851,6 +873,10 @@ namespace Game.Voxels
             else if (SolidCount <= 0)
                 Destroy(gameObject);
 
+            // A building that lost voxels works out its load again at the end of the frame.
+            if (taken > 0 && split && SolidCount > 0)
+                MarkStructureDirtyAt(center, reach);
+
             return taken;
         }
 
@@ -993,7 +1019,7 @@ namespace Game.Voxels
             float size = VoxelSize * Mathf.Abs(transform.lossyScale.x);
             Vector3 middle = transform.TransformPoint(Origin + ((float3)(piece.Min + piece.Max) * 0.5f + 0.5f) * VoxelSize);
             Vector3 away = (middle - blastCenter).normalized;
-            int clump = debris != null ? debris.BeginCluster(middle, InheritedVelocity(blastCenter) + away * (force * 0.2f)) : -1;
+            int clump = debris != null ? debris.BeginCluster(middle, InheritedVelocity(middle) + away * (force * 0.2f)) : -1;
             Keep(debris, clump);
 
             for (int z = piece.Min.z; z <= piece.Max.z; z++)
@@ -1048,10 +1074,15 @@ namespace Game.Voxels
 
             VoxelBody body = go.AddComponent<VoxelBody>();
             body.Init(size, grid, new NativeArray<Color32>(_palette, Allocator.Persistent), settings);
+            if (HasStrength)
+                body.SetStrength(CopyStrength());
             body.Generation = Generation + 1;
 
+            // The piece goes on at the speed its own middle had, not the blast's point: a spinning
+            // body hit far from its centre would hand the piece ω × r on top of its speed.
+            Vector3 middle = transform.TransformPoint(Origin + ((float3)(piece.Min + piece.Max) * 0.5f + 0.5f) * VoxelSize);
             float mass = MassOf(piece.Count);
-            body.MakeDynamic(mass, InheritedVelocity(blastCenter), blastCenter, force);
+            body.MakeDynamic(mass, InheritedVelocity(middle), blastCenter, force);
         }
 
         /// <summary>
@@ -1074,18 +1105,30 @@ namespace Game.Voxels
             float near = math.max(2f, math.cmax((float3)Size) * 0.25f);
             for (int i = 0; i < cells; i++)
             {
-                // Two seeds in three round the impact, the rest anywhere in the body.
-                seeds[i] = i % 3 != 2
+                // Two seeds in three round the impact, the rest anywhere in the body; a building's
+                // piece, one in two: it breaks all through, along its seams, not only where it hit.
+                bool round = HasStrength ? i % 2 == 0 : i % 3 != 2;
+                seeds[i] = round
                     ? math.clamp(impact + (float3)(Random.insideUnitSphere * near), 0f, (float3)Size)
                     : new float3(Random.value * Size.x, Random.value * Size.y, Random.value * Size.z);
             }
 
             int count = _voxels.Length;
-            var cellOf = new NativeArray<int>(count, Allocator.TempJob, NativeArrayOptions.UninitializedMemory);
-            new VoronoiCellsJob
+            NativeArray<int> cellOf;
+            // A building's piece parts along its weak joints (floor from wall, pane from frame);
+            // anything else along jagged Voronoi borders.
+            if (HasStrength)
             {
-                Voxels = _voxels, Seeds = seeds, Size = Size, Jitter = 1.6f, Seed = _seed++, Cells = cellOf
-            }.Run();
+                cellOf = SeamCells(seeds);
+            }
+            else
+            {
+                cellOf = new NativeArray<int>(count, Allocator.TempJob, NativeArrayOptions.UninitializedMemory);
+                new VoronoiCellsJob
+                {
+                    Voxels = _voxels, Seeds = seeds, Size = Size, Jitter = 1.6f, Seed = _seed++, Cells = cellOf
+                }.Run();
+            }
 
             var labels = new NativeArray<int>(count, Allocator.TempJob);
             var queue = new NativeArray<int>(count, Allocator.TempJob, NativeArrayOptions.UninitializedMemory);
@@ -1298,6 +1341,7 @@ namespace Game.Voxels
                 _rigidbody = gameObject.AddComponent<Rigidbody>();
                 _rigidbody.interpolation = RigidbodyInterpolation.Interpolate;
                 _rigidbody.maxDepenetrationVelocity = 3f;
+                _rigidbody.maxAngularVelocity = MAX_SPIN;
 
                 if (!TryGetComponent(out VoxelImpactFracture added))
                     added = gameObject.AddComponent<VoxelImpactFracture>();
@@ -1719,10 +1763,41 @@ namespace Game.Voxels
 
             _activatePending = false;
             _rigidbody.isKinematic = false;
-            _rigidbody.linearVelocity = _pendingVelocity;
-            _rigidbody.angularVelocity = _pendingSpin;
+
+            // The blast's push goes through the centre of mass and weakens with the piece's mass:
+            // AddExplosionForce in VelocityChange gave a 56 t house a brick's kick, off-centre, and
+            // sent it spinning across the map.
+            // The grid's middle, not worldCenterOfMass: the colliders came this frame, and the
+            // mass properties may not have caught up with them yet.
+            Vector3 middle = transform.TransformPoint(Origin + (float3)Size * (VoxelSize * 0.5f));
+            Vector3 push = BlastPush(middle, _rigidbody.mass, _pendingBlastCenter, _pendingBlastForce);
+            Vector3 spin = _pendingSpin + Random.onUnitSphere * (push.magnitude * BLAST_SPIN);
+            _rigidbody.linearVelocity = Vector3.ClampMagnitude(_pendingVelocity + push, MAX_LAUNCH_SPEED);
+            _rigidbody.angularVelocity = Vector3.ClampMagnitude(spin, MAX_SPIN);
             _pendingSpin = Vector3.zero;
-            _rigidbody.AddExplosionForce(_pendingBlastForce, _pendingBlastCenter, 8f, 0.4f, ForceMode.VelocityChange);
+        }
+
+        /// <summary>
+        /// The speed a blast of <paramref name="force"/> m/s at <paramref name="center"/> gives a piece
+        /// whose centre of mass is at <paramref name="at"/>: away from the blast and a little up,
+        /// falling off linearly to nothing at <see cref="BLAST_REACH"/>, full for pieces up to
+        /// <see cref="BLAST_FULL_MASS"/> and in inverse proportion to the mass above it.
+        /// </summary>
+        internal static Vector3 BlastPush(Vector3 at, float mass, Vector3 center, float force)
+        {
+            if (force <= 0f)
+                return Vector3.zero;
+
+            Vector3 away = at - center;
+            float distance = away.magnitude;
+            float falloff = 1f - Mathf.Clamp01(distance / BLAST_REACH);
+            if (falloff <= 0f)
+                return Vector3.zero;
+
+            Vector3 direction = distance > 0.001f ? away / distance : Vector3.up;
+            direction = (direction + Vector3.up * BLAST_LIFT).normalized;
+            float share = Mathf.Min(1f, BLAST_FULL_MASS / Mathf.Max(1f, mass));
+            return direction * (force * falloff * share);
         }
 
         private Chunk CreateChunk(int index)
@@ -1775,6 +1850,7 @@ namespace Game.Voxels
 
         private void Release()
         {
+            ReleaseStructure();
             if (_voxels.IsCreated)
                 _voxels.Dispose();
             if (_palette.IsCreated)

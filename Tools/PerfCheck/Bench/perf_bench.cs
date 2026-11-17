@@ -78,7 +78,7 @@ catch (Exception e) { frameCountNote = "n/a " + e.GetBaseException().Message; }
 
 // ---------- Scenarios ----------
 string only = domain.GetData("perfbench_only") as string;
-var plan = new List<(string name, float seconds)> { ("idle", 4f), ("drive", 8f), ("airstrike", 6.5f), ("crush", 4f), ("crater", 5f) };
+var plan = new List<(string name, float seconds)> { ("idle", 4f), ("drive", 8f), ("airstrike", 6.5f), ("crush", 4f), ("house", 6.5f), ("crater", 5f) };
 if (!string.IsNullOrEmpty(only)) plan.RemoveAll(p => !("," + only + ",").Contains("," + p.name + ","));
 
 var counterNames = new (ProfilerCategory cat, string name, string key)[]
@@ -241,6 +241,10 @@ bool boostOn = false;
 // The crater scenario's own crater: the blast of SandboxCraterPloughTest, the hole without a debris storm.
 bool craterBlastPending = false;
 Vector3 craterAt = default;
+// The house scenario: the building nearest the tank, bombed at its four corners, a second apart.
+Game.Voxels.VoxelBody houseBody = null;
+int houseBlasts = 0;
+int houseStart = 0;
 UnityEngine.Events.UnityAction onRender = () =>
 {
     if (drive[0] != 0 || drive[1] != 0) driveInput.Value = new Vector2(drive[0], drive[1]);
@@ -392,6 +396,7 @@ void EndScenario()
     string extra = "";
     if (name == "crush" && regax != null) extra = $",\"regaxMinDistance\":{regaxMin.ToString("F2", inv)},\"regaxAlive\":{(regax != null && regax.activeInHierarchy ? "true" : "false")}";
     if (name == "airstrike") extra = $",\"blasts\":{blasts}";
+    if (name == "house") extra = $",\"houseBlasts\":{houseBlasts},\"houseVoxels\":{houseStart},\"houseLeft\":{(houseBody != null ? houseBody.SolidCount : 0)}";
     if (name == "drive" || name == "crush") extra += $",\"tankMoved\":{Vector3.Distance(tank.position, tankStart).ToString("F1", inv)}";
     if (name == "crater")
     {
@@ -463,6 +468,30 @@ onUpdate = () =>
                 Vector3 p = Ground(tank.position + new Vector3(Mathf.Cos(a), 0, Mathf.Sin(a)) * (12f + (blasts % 3) * 2f));
                 pendingBlast.Add(p);
                 blasts++;
+            }
+            if (name == "house" && explode != null && strikes.Length > 0)
+            {
+                if (houseBody == null && houseBlasts == 0)
+                {
+                    float best = float.MaxValue;
+                    foreach (var s in UnityEngine.Object.FindObjectsByType<Game.Voxels.VoxelStructure>(FindObjectsSortMode.None))
+                    {
+                        var body = s.GetComponentInChildren<Game.Voxels.VoxelBody>();
+                        if (!s.IsBuilding || body == null) continue;
+                        float d = Vector3.Distance(s.transform.position, tank.position);
+                        if (d < best) { best = d; houseBody = body; }
+                    }
+                    houseStart = houseBody != null ? houseBody.SolidCount : 0;
+                }
+                if (houseBody != null && houseBlasts < 4 && t >= 0.5f + houseBlasts)
+                {
+                    Bounds hb = houseBody.WorldBounds;
+                    float hx = houseBlasts % 2 == 0 ? hb.min.x + 0.6f : hb.max.x - 0.6f;
+                    float hz = houseBlasts < 2 ? hb.min.z + 0.6f : hb.max.z - 0.6f;
+                    // At the foot of the wall: a raycast from above would land on the eaves.
+                    pendingBlast.Add(new Vector3(hx, hb.min.y + 0.2f, hz));
+                    houseBlasts++;
+                }
             }
             if (name == "crush" && regax != null) regaxMin = Mathf.Min(regaxMin, Vector3.Distance(regax.transform.position, tank.position));
             if (name == "crater")

@@ -26,6 +26,12 @@ namespace Game.Voxels
 
         [SerializeField] private int _maxPieces = 8;
 
+        /// <summary>A building's piece breaks into one piece per this many voxels (3.6 t of brick)...</summary>
+        private const int STRUCTURE_PIECE_VOXELS = 2000;
+
+        /// <summary>...and at most this many.</summary>
+        private const int MAX_STRUCTURE_PIECES = 12;
+
         [Tooltip("Pieces this many breaks from a standing body no longer break on impact: they lie as rubble.")]
         [SerializeField] private int _maxGeneration = 2;
 
@@ -69,6 +75,9 @@ namespace Game.Voxels
 
         private void OnCollisionEnter(Collision collision)
         {
+            if (_body != null && !_broken && _body.IsLoose)
+                PressOnto(collision);
+
             if (_broken || VoxelTicks.Time < _armedAt || _body == null)
                 return;
 
@@ -88,12 +97,37 @@ namespace Game.Voxels
             int pieces = Mathf.Clamp(2 + Mathf.RoundToInt((speed - threshold) * _piecesPerSpeed), 2, _maxPieces);
             // Bigger pieces split into more.
             pieces = Mathf.Min(_maxPieces, pieces + _body.SolidCount / 400);
+            // A storey or a roof that lands breaks into rooms and slopes, not into a few: one piece
+            // per STRUCTURE_PIECE_VOXELS, along its weak joints (VoxelBody.Fracture).
+            if (_body.HasStrength)
+                pieces = Mathf.Max(pieces, Mathf.Min(MAX_STRUCTURE_PIECES, _body.SolidCount / STRUCTURE_PIECE_VOXELS));
 
             // One break per hit: the pieces get their own chance on their next hit.
             _armedAt = VoxelTicks.Time + _armDelay;
             VoxelSignals.RaiseFractured(collision.GetContact(0).point, speed);
             if (_body.Fracture(collision.GetContact(0).point, pieces, Mathf.Min(3f, speed * 0.25f)) && _body == null)
                 _broken = true;
+        }
+
+        /// <summary>
+        /// A piece that lands on a standing building presses on it with its hit (the impulse
+        /// spread over VoxelBody.IMPACT_TIME), once: a floor that falls on the one below can bring
+        /// it down too.
+        /// </summary>
+        private static void PressOnto(Collision collision)
+        {
+            // A standing building has no Rigidbody: anything that has one (another piece, the tank)
+            // is not looked up at all.
+            if (collision.contactCount == 0 || collision.collider == null || collision.rigidbody != null)
+                return;
+
+            VoxelBody target = collision.collider.GetComponentInParent<VoxelBody>();
+            if (target == null || !target.HasStrength || !target.IsStatic)
+                return;
+
+            // Only what lands on it presses on it: a piece glancing off a wall does not load it.
+            float kg = Mathf.Abs(collision.impulse.y) / (Physics.gravity.magnitude * VoxelBody.IMPACT_TIME);
+            target.AddImpactLoad(collision.GetContact(0).point, kg);
         }
     }
 }

@@ -54,6 +54,9 @@ namespace Game.Voxels
         public int3 Min;
         public int3 Max;
         public bool Grounded;
+
+        /// <summary>The fracture cell or load island it lies in (LabelComponentsJob.UseCells); 0 otherwise.</summary>
+        public int Cell;
     }
 
     public struct VoxelBodySettings
