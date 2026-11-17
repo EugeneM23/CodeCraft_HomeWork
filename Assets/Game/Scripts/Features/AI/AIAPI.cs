@@ -32,5 +32,31 @@ namespace Game.AI
         public static readonly ValueKey<IEntity, IHordeAudio> HordeAudio = new(nameof(HordeAudio));
 
         #endregion
+
+        #region Level AI
+
+        /// <summary>The level's AI entity (one per level): the shared navigation grid, the AIKit world and its agents.</summary>
+        public static readonly TagKey<IEntity> AILevel = new(nameof(AILevel));
+
+        /// <summary>The level's navigation grid and its path service, shared by the horde and the elites.</summary>
+        public static readonly ValueKey<IEntity, LevelNav> LevelNavigation = new(nameof(LevelNavigation));
+
+        /// <summary>The level's AIKit world: the decision budget, the roster and the global blackboard.</summary>
+        public static readonly ValueKey<IEntity, AIKit.IAIWorld> AgentWorld = new(nameof(AgentWorld));
+
+        /// <summary>The agents the level steps (Manual simulation), in a fixed order.</summary>
+        public static readonly ValueKey<IEntity, AIAgentList> WorldAgents = new(nameof(WorldAgents));
+
+        /// <summary>The player's vehicle as the AI sees it: its transform and its hull.</summary>
+        public static readonly ValueKey<IEntity, PlayerTank> PlayerVehicle = new(nameof(PlayerVehicle));
+
+        #endregion
+
+        #region Elite Regax
+
+        /// <summary>An elite Regax driven by AIKit.</summary>
+        public static readonly TagKey<IEntity> EliteRegax = new(nameof(EliteRegax));
+
+        #endregion
     }
 }

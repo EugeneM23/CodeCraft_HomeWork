@@ -10,13 +10,14 @@ using UnityEngine;
 namespace Game.AI
 {
     /// <summary>
-    /// The horde as one Atomic entity: owns the navigation grid, the flow field to the tank, the
-    /// crowd simulation, its renderer and the corpses. Frame: <see cref="CompleteFrame"/> (start of
-    /// the frame, <see cref="HordeEarlyUpdate"/>) takes the step of the last frame; <see cref="Tick"/>
-    /// reads the tank, hands out the deaths (corpses, budgeted blood, kills, sound), damages the tank,
-    /// keeps the population, draws, and schedules the grid, the field and the next step.
-    /// Listens to <see cref="VoxelWorld.ChunkCollidersChanged"/> (grid) and
-    /// <see cref="ExplosionEvents.Exploded"/> (area damage). No managed allocations per frame.
+    /// The horde as one Atomic entity: owns the flow field to the tank, the crowd simulation, its
+    /// renderer and the corpses; walks the level's shared navigation grid (<see cref="LevelNav"/>,
+    /// owned by the level AI entity, which keeps it up to date with the digging). Frame:
+    /// <see cref="CompleteFrame"/> (start of the frame, <see cref="LevelAIEarlyUpdate"/>, before the
+    /// grid takes in its new heights) takes the step of the last frame; <see cref="Tick"/> reads the
+    /// tank, hands out the deaths (corpses, budgeted blood, kills, sound), damages the tank, keeps the
+    /// population, draws, and schedules the field and the next step.
+    /// Listens to <see cref="ExplosionEvents.Exploded"/> (area damage). No managed allocations per frame.
     /// </summary>
     public sealed class HordeBehaviour : IEntityInit, IEntityDispose, IEntityTick
     {
@@ -115,11 +116,15 @@ namespace Game.AI
             _bloodSize = look.dropSize;
             _random = new Unity.Mathematics.Random(0x5EED1234u);
 
-            HordeNavGridSettings grid = HordeNavGridSettings.Cover(_options.mapMin, _options.mapMax);
-            grid.RayTop = _options.rayTop;
-            grid.RayLength = _options.rayLength;
-            _grid = new HordeNavGrid(grid);
-            _grid.BuildAll();
+            // The level's one grid: made here (from the horde's map) only if the level has no AI entity yet.
+            var navOptions = new LevelNavOptions
+            {
+                mapMin = _options.mapMin,
+                mapMax = _options.mapMax,
+                rayTop = _options.rayTop,
+                rayLength = _options.rayLength
+            };
+            _grid = LevelAI.Ensure(navOptions).GetLevelNavigation().Grid;
             _groundHeight = LowestGround();
             _flow = new HordeFlowField(_grid);
 
@@ -133,19 +138,16 @@ namespace Game.AI
             _worldBounds = new Bounds(new Vector3((min.x + max.x) * 0.5f, 0f, (min.y + max.y) * 0.5f),
                 new Vector3(max.x - min.x + 4f, 2f * _options.rayTop, max.y - min.y + 4f));
 
-            VoxelWorld.ChunkCollidersChanged += OnChunkCollidersChanged;
             ExplosionEvents.Exploded += OnExploded;
-            HordeEarlyUpdate.Add(this);
+            LevelAIEarlyUpdate.Add(this);
         }
 
         public void Dispose(IEntity entity)
         {
-            VoxelWorld.ChunkCollidersChanged -= OnChunkCollidersChanged;
             ExplosionEvents.Exploded -= OnExploded;
-            HordeEarlyUpdate.Remove(this);
+            LevelAIEarlyUpdate.Remove(this);
             _simulation?.Dispose();
             _flow?.Dispose();
-            _grid?.Dispose();
             _renderer?.Dispose();
             _corpses?.Dispose();
             _simulation = null;
@@ -155,13 +157,15 @@ namespace Game.AI
             _corpses = null;
         }
 
-        /// <summary>Start of the frame: the jobs of the last frame are taken in (step, grid rays, flow field), in that order.</summary>
+        /// <summary>
+        /// Start of the frame: the jobs of the last frame are taken in (step, flow field). The level's grid takes in its
+        /// rays after this (<see cref="LevelAIEarlyUpdate"/>): the step reads the heights on a worker.
+        /// </summary>
         public void CompleteFrame()
         {
             if (_simulation == null)
                 return;
             _simulation.Complete();
-            _grid.CompleteUpdate();
             _flow.Complete();
         }
 
@@ -194,9 +198,6 @@ namespace Game.AI
                 NativeArray<HordeInstance> visible = _simulation.Visible;
                 _renderer.Upload(visible, 0, 0, visible.Length);
                 _renderer.Draw(visible.Length, _worldBounds);
-
-                if (_grid.DirtyRectCount > 0)
-                    _grid.ScheduleUpdate();
 
                 _flowTimer += deltaTime;
                 if (hasTank && _flowTimer >= FLOW_INTERVAL)
@@ -434,8 +435,6 @@ namespace Game.AI
 
             return lowest == float.MaxValue ? 0f : lowest;
         }
-
-        private void OnChunkCollidersChanged(Bounds bounds) => _grid?.MarkDirty(bounds);
 
         private void OnExploded(Vector3 point, float radius) =>
             _simulation?.AddAreaDamage(point, radius, _options.explosionDamage);

@@ -1,0 +1,23 @@
+{
+    "name": "Game.AIKit.Adapters.Editor",
+    "rootNamespace": "Game.AI.EditorTools",
+    "references": [
+        "Game.AIKit.Adapters",
+        "Game",
+        "AIKit",
+        "AIKit.NavMesh",
+        "Atomic.Elements",
+        "Atomic.Entities"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -20,12 +20,12 @@ namespace Game.AI
         [Tooltip("Spawns per frame at most (keeps a big wave from stalling one frame).")]
         public int spawnsPerFrame = 512;
 
-        [Tooltip("Navigation grid: XZ min and max corner of the level, m.")]
+        [Tooltip("XZ min and max corner of the level, m: the draw bounds, and the shared navigation grid if the level has no AI entity yet.")]
         public Vector2 mapMin = new(-40f, -40f);
 
         public Vector2 mapMax = new(40f, 40f);
 
-        [Tooltip("Navigation rays start this high and look this far down, m.")]
+        [Tooltip("Navigation rays start this high and look this far down, m (for a grid the horde makes).")]
         public float rayTop = 20f;
 
         public float rayLength = 30f;

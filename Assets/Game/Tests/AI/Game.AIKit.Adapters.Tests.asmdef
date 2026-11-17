@@ -1,0 +1,32 @@
+{
+    "name": "Game.AIKit.Adapters.Tests",
+    "rootNamespace": "Game.AI.Tests",
+    "references": [
+        "Game.AIKit.Adapters",
+        "Game",
+        "Game.Horde",
+        "AIKit",
+        "AIKit.NavMesh",
+        "Atomic.Elements",
+        "Atomic.Entities",
+        "Unity.Collections",
+        "Unity.Mathematics",
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
