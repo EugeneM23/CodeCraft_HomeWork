@@ -12,7 +12,6 @@
         "UnityEngine.UI",
         "HighlightPlus",
         "DOTweenModules",
-        "RayFireAssembly",
         "Unity.InputSystem",
         "ScreenStack"
     ],

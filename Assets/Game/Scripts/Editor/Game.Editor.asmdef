@@ -5,7 +5,6 @@
         "Game",
         "Atomic.Elements",
         "Atomic.Entities",
-        "RayFireAssembly",
         "UnityEngine.UI",
         "HighlightPlus",
         "Game.Voxels",

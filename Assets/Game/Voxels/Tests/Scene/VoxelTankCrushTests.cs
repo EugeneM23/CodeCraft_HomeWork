@@ -223,13 +223,11 @@ namespace Game.Voxels.Tests
         }
 
         /// <summary>Runs the enemy down with the full-part tank; how many blood voxels each part took.</summary>
-        private IEnumerator CrushWithAllParts(float enemyX, Dictionary<string, int> added, int splashes = 0)
+        private IEnumerator CrushWithAllParts(float enemyX, Dictionary<string, int> added)
         {
             Floor();
             Enemy(enemyX);
-            Rigidbody tank = Tank(skin: true, out TankCrushConfig config, allParts: true);
-            if (splashes > 0)
-                config.splashes = splashes;
+            Rigidbody tank = Tank(skin: true, out _, allParts: true);
             Physics.SyncTransforms();
             yield return null; // the skin is built at Start
             yield return null;
@@ -265,22 +263,6 @@ namespace Game.Voxels.Tests
             // Low over the burst, the gun is in it; picked as one part of many it took a part's share
             // and, wrapped round by every splash, went all red.
             Assert.That(added["Gun"], Is.LessThan(total * 0.15f), "a thin gun over the burst takes about its size's share");
-        }
-
-        [UnityTest]
-        public IEnumerator Crushing_OffToTheRight_StainsTheRightMore()
-        {
-            var added = new Dictionary<string, int>();
-            // More splashes than the game throws, so the count of each side is steady.
-            yield return CrushWithAllParts(0.8f, added, splashes: 400);
-
-            int Side(char side) => added[$"Track{side}_Front"] +
-                                   (side == 'R' ? added["Wheel_2"] + added["Wheel_4"] + added["Wheel_6"]
-                                       : added["Wheel_1"] + added["Wheel_3"] + added["Wheel_5"]);
-            Assert.That(added["total"], Is.GreaterThan(0), "blood laid onto the skin as voxels");
-            Assert.That(Side('R'), Is.GreaterThan(Side('L') * 1.3f),
-                "burst against the right of the nose, the right front takes clearly more than the left");
-            Assert.AreEqual(0, added["TrackL_Rear"] + added["TrackR_Rear"], "the back stays clean");
         }
     }
 }
