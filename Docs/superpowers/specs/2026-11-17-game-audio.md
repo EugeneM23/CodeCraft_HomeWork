@@ -92,7 +92,7 @@ Assets/Game/Audio/
 | Канал (меню) | Группа микшера | Открытый параметр | Что в нём |
 |---|---|---|---|
 | Общая | `Master` | `MasterVolume` | всё |
-| Музыка | `Master/Music` | `MusicVolume` | музыка, победа и поражение |
+| Музыка | `Master/Music` | `MusicVolume` | музыка меню и боя, победа и поражение |
 | Эффекты | `Master/Effects` | `EffectsVolume` | танк, оружие, разрушение, монстры, орда |
 | Интерфейс | `Master/UI` | `UIVolume` | кнопки и экраны |
 | Окружение | `Master/Ambient` | `AmbientVolume` | ветер, дождь, гром |

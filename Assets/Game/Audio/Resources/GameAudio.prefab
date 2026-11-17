@@ -1,0 +1,107 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &9084141571477861478
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4890994670148781144}
+  - component: {fileID: 7886399352015075717}
+  - component: {fileID: 8873754589639595830}
+  m_Layer: 0
+  m_Name: GameAudio
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4890994670148781144
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9084141571477861478}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7886399352015075717
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9084141571477861478}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16bfdfab4b2840c496246064a99b2650, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: AudioEngine::AudioEngine.AudioSystem
+  initOnAwake: 1
+  initialBanks:
+  - {fileID: 11400000, guid: 0da7220db74687946bcafa34e40c0e25, type: 2}
+  - {fileID: 11400000, guid: 1ba19f3fa6af5194684c46b880ef070c, type: 2}
+  - {fileID: 11400000, guid: 60788e4ccdb0a8147b84da5ab15fb634, type: 2}
+  - {fileID: 11400000, guid: 3e6f8d10f674d104797c8d117aa07c50, type: 2}
+  - {fileID: 11400000, guid: 769811968fa5a6e4b8ee2e7d4ac31f56, type: 2}
+  - {fileID: 11400000, guid: 412e8faf6097b0c4489101d1c61ba831, type: 2}
+--- !u!114 &8873754589639595830
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9084141571477861478}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fcbf884e7912a564db92c4d13f5f0099, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game.AudioEngine.Adapters::Game.AudioEngine.Adapters.GameAudio
+  _preloadClips:
+  - {fileID: 8300000, guid: 27c68b20ba4a5423fbf39c3f0eb4db38, type: 3}
+  - {fileID: 8300000, guid: 62cbe99b1eb804549a609de6169d9df4, type: 3}
+  - {fileID: 8300000, guid: 9d3eb7466db37493ea798163778d02c3, type: 3}
+  - {fileID: 8300000, guid: b4a2c68c18ef14552bcdefefca3ed5d2, type: 3}
+  - {fileID: 8300000, guid: 23fdc9203a4a0a51ed2f023be7d70993, type: 3}
+  - {fileID: 8300000, guid: e8112978c8590104bd6c2cef6fb89b59, type: 3}
+  - {fileID: 8300000, guid: a3f494c1bb1694c7682f4ab94df8890a, type: 3}
+  - {fileID: 8300000, guid: 2eb99f326edc34437b92717ce12caa3b, type: 3}
+  - {fileID: 8300000, guid: f5354fd5b13a03739a85c86b3ba48fe0, type: 3}
+  - {fileID: 8300000, guid: 02cdb67c7396c44beb54e44fb1519751, type: 3}
+  - {fileID: 8300000, guid: c2e920c5e714d4c94a3609a0f440c584, type: 3}
+  - {fileID: 8300000, guid: 4cbb8723939a742fcb51cb82e1059928, type: 3}
+  - {fileID: 8300000, guid: 3d4e74a0e14cb44f8b06b86fc2811df6, type: 3}
+  - {fileID: 8300000, guid: bbb4b8eca821e43398bd4fd4c673a7e1, type: 3}
+  - {fileID: 8300000, guid: 88355b2555076420bb57ed334e93fbb7, type: 3}
+  - {fileID: 8300000, guid: 4d1eacb11fd684ab694580c45d2e76c9, type: 3}
+  - {fileID: 8300000, guid: e48126a6fb7c04e3aa8d386db67db486, type: 3}
+  - {fileID: 8300000, guid: 334c4d0608efc42aa88667693c9b7e90, type: 3}
+  - {fileID: 8300000, guid: 8ce8dafae325b4173abb2a9756d41d43, type: 3}
+  - {fileID: 8300000, guid: e1da5f6fdea4749e6ba86cdad0602f73, type: 3}
+  - {fileID: 8300000, guid: 1b86e0f96a7f64a9db99db12957f9ec0, type: 3}
+  - {fileID: 8300000, guid: 21c9c96d4d627428a9dcde4407ef2f65, type: 3}
+  - {fileID: 8300000, guid: f6497b4d19904476791f7f26cda6c3c8, type: 3}
+  - {fileID: 8300000, guid: 921717733469e4634be368172141b8a6, type: 3}
+  - {fileID: 8300000, guid: 863e660b8f1884718815e93ca1c4388c, type: 3}
+  - {fileID: 8300000, guid: 4b012e6346f104ea89574a53f5c86a01, type: 3}
+  - {fileID: 8300000, guid: 4044f8a39d5dd45699d84d9115f2da32, type: 3}
+  - {fileID: 8300000, guid: 4b631362087cd435eb2b674b1d18ca74, type: 3}
+  - {fileID: 8300000, guid: a6fcfda30e3504adf9f568f9b4ec4b4f, type: 3}
+  - {fileID: 8300000, guid: 8989e145fc9da4d1d8a997aaeb9ddd9d, type: 3}
+  - {fileID: 8300000, guid: b77095a6699d84b9eac62258d6b383d6, type: 3}
+  - {fileID: 8300000, guid: 9cde2908b6fbc4823b588eed07b3088c, type: 3}
+  - {fileID: 8300000, guid: c79e892702a394c8e9737be6f97d23c7, type: 3}
+  - {fileID: 8300000, guid: f80ebef4cba544ebeb1bc3c7f3724d71, type: 3}
+  - {fileID: 8300000, guid: 786c8d9858cd04f2d9a2e444d4302f96, type: 3}
+  - {fileID: 8300000, guid: e1f88923a6c2849a69f5bf0774ed47c2, type: 3}
+  - {fileID: 8300000, guid: 3352ade033aba4780b3044e404093b9a, type: 3}
+  - {fileID: 8300000, guid: 31f548bfec660433c9d47d6b73f4a8f2, type: 3}
+  _playBattleMusic: 1
