@@ -28,7 +28,7 @@ namespace Game.AI
         /// <summary>A monster died at this point (rewards, sound, quests).</summary>
         public static readonly ValueKey<IEntity, IEvent<Vector3>> HordeMonsterKilled = new(nameof(HordeMonsterKilled));
 
-        /// <summary>Horde sound (density and waves); <see cref="HordeAudioNull"/> until the audio team plugs theirs in.</summary>
+        /// <summary>Horde sound (density and waves); <see cref="GameHordeAudio"/> in the game, <see cref="HordeAudioNull"/> in tests.</summary>
         public static readonly ValueKey<IEntity, IHordeAudio> HordeAudio = new(nameof(HordeAudio));
 
         #endregion

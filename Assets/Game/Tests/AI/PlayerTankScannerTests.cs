@@ -74,7 +74,7 @@ namespace Game.AI.Tests
         public void Scan_DoesNotAllocate()
         {
             _scanner.Scan(new Vector3(-10f, 0f, 0f), 30f, _found);
-            Assert.That(() => _scanner.Scan(new Vector3(-10f, 0f, 0f), 30f, _found), NoAllocation.Constraint);
+            Assert.That((TestDelegate)(() => _scanner.Scan(new Vector3(-10f, 0f, 0f), 30f, _found)), NoAllocation.Constraint);
         }
 
         [Test]

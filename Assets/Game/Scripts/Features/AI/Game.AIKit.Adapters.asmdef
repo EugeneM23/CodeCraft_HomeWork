@@ -4,6 +4,8 @@
     "references": [
         "Game",
         "Game.Voxels",
+        "Game.AudioEngine.Adapters",
+        "GameLoop",
         "Game.Horde",
         "AIKit",
         "AIKit.NavMesh",

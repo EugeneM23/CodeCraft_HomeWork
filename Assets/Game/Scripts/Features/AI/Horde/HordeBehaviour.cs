@@ -64,6 +64,7 @@ namespace Game.AI
         private float _flowTimer;
         private int2 _flowCell = new(int.MinValue, int.MinValue);
         private float _audioTimer;
+        private int _drawnCount;
         private float _groundHeight;
 
         public HordeBehaviour(HordeArtConfig art, HordeOptions options)
@@ -161,6 +162,18 @@ namespace Game.AI
         /// Start of the frame: the jobs of the last frame are taken in (step, flow field). The level's grid takes in its
         /// rays after this (<see cref="LevelAIEarlyUpdate"/>): the step reads the heights on a worker.
         /// </summary>
+        /// <summary>
+        /// The game is paused: the loop does not tick the horde, so nothing would draw it. Draws the crowd as it stood
+        /// (the instance buffer keeps the last upload) and the corpses, without moving anything.
+        /// </summary>
+        public void DrawPaused()
+        {
+            if (_simulation == null)
+                return;
+            _corpses.Draw(_worldBounds, GameTicks.Time);
+            _renderer.Draw(_drawnCount, _worldBounds);
+        }
+
         public void CompleteFrame()
         {
             if (_simulation == null)
@@ -192,12 +205,13 @@ namespace Game.AI
                     _audio.SetDensity(_simulation.AliveCount > 0 ? (float)_simulation.NearCount / _simulation.AliveCount : 0f);
                 }
 
-                float time = Time.time;
+                float time = GameTicks.Time;
                 _corpses.Update(time);
                 _corpses.Draw(_worldBounds, time);
                 NativeArray<HordeInstance> visible = _simulation.Visible;
                 _renderer.Upload(visible, 0, 0, visible.Length);
-                _renderer.Draw(visible.Length, _worldBounds);
+                _drawnCount = visible.Length;
+                _renderer.Draw(_drawnCount, _worldBounds);
 
                 _flowTimer += deltaTime;
                 if (hasTank && _flowTimer >= FLOW_INTERVAL)
@@ -344,7 +358,7 @@ namespace Game.AI
 
             using (DeathsMarker.Auto())
             {
-                float time = Time.time;
+                float time = GameTicks.Time;
                 int sprays = 0;
                 for (int i = 0; i < deaths.Length; i++)
                 {

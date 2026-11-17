@@ -51,6 +51,11 @@ namespace Game.AI
         {
             for (int i = 0; i < s_hordes.Count; i++)
                 s_hordes[i].CompleteFrame();
+
+            // Paused, the loop ticks nobody: the hordes are drawn from here, standing still (as VoxelWorld draws its debris).
+            if (GameTicks.Loop is { IsPaused: true })
+                for (int i = 0; i < s_hordes.Count; i++)
+                    s_hordes[i].DrawPaused();
             for (int i = 0; i < s_navs.Count; i++)
                 s_navs[i].CompleteUpdate();
         }

@@ -42,7 +42,7 @@ namespace Game.AI
             entity.AddHordeKills(new ReactiveVariable<int>(0));
             entity.AddHordePopulation(new ReactiveVariable<int>(_options.population));
             entity.AddHordeMonsterKilled(new Event<Vector3>());
-            entity.AddHordeAudio(HordeAudioNull.Instance);
+            entity.AddHordeAudio(GameHordeAudio.Instance);
             entity.AddDamage(new ReactiveVariable<int>(0));
             Behaviour = new HordeBehaviour(_art, _options);
             entity.AddBehaviour(Behaviour);
