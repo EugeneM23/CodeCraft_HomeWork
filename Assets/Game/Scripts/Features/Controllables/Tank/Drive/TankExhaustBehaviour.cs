@@ -92,8 +92,18 @@ namespace Game
         private float _size = IDLE_SIZE;
         private float _alpha = IDLE_ALPHA;
 
-        public TankExhaustBehaviour(ParticleSystem[] pipes, TankEngine engine, float acceleration, float boostMultiplier)
+        // Experiment: the same smoke as voxel cubes (VoxelExhaustSettings.Voxel).
+        private readonly VoxelExhaustSettings _voxel;
+        private readonly VoxelExhaustCloud _cloud;
+        private Vector3[] _lastPipe;
+        private float[] _carry;
+        private bool _pipesKnown;
+
+        public TankExhaustBehaviour(ParticleSystem[] pipes, TankEngine engine, float acceleration, float boostMultiplier,
+            VoxelExhaustSettings voxel = null)
         {
+            _voxel = voxel;
+            _cloud = voxel != null ? new VoxelExhaustCloud(voxel) : null;
             _pipes = pipes ?? System.Array.Empty<ParticleSystem>();
             _engine = engine;
             _acceleration = Mathf.Max(0.1f, acceleration);
@@ -178,7 +188,57 @@ namespace Game
             _size = Smooth(_size, size, deltaTime);
             _alpha = Smooth(_alpha, alpha, deltaTime);
 
-            Apply(_engine.State != TankEngine.EngineState.Off);
+            bool running = _engine.State != TankEngine.EngineState.Off;
+            bool voxel = _voxel != null && _voxel.Voxel;
+            Apply(running, voxel);
+            if (_cloud != null)
+            {
+                if (voxel)
+                    EmitCubes(running, deltaTime);
+                else
+                    _pipesKnown = false;
+                _cloud.Tick(deltaTime);
+            }
+        }
+
+        /// <summary>
+        /// Cubes out of each pipe where the particles would come: the rate and the per-metre rate,
+        /// scaled down (a cube is bigger than a particle), aimed along the pipe.
+        /// </summary>
+        private void EmitCubes(bool running, float deltaTime)
+        {
+            if (_lastPipe == null || _lastPipe.Length != _pipes.Length)
+            {
+                _lastPipe = new Vector3[_pipes.Length];
+                _carry = new float[_pipes.Length];
+                _pipesKnown = false;
+            }
+
+            for (int p = 0; p < _pipes.Length; p++)
+            {
+                ParticleSystem pipe = _pipes[p];
+                if (pipe == null)
+                    continue;
+
+                Transform t = pipe.transform;
+                Vector3 position = t.position;
+                float metres = _pipesKnown ? Vector3.Distance(position, _lastPipe[p]) : 0f;
+                Vector3 from = _pipesKnown ? _lastPipe[p] : position;
+                _lastPipe[p] = position;
+
+                float count = _rate * deltaTime + (running ? RATE_PER_METRE * _boostSmoke * metres : 0f);
+                _carry[p] += count * _voxel.RateScale;
+                int n = (int)_carry[p];
+                _carry[p] -= n;
+
+                for (int i = 0; i < n; i++)
+                {
+                    // Spread along the way the pipe moved this frame: no clumps at speed.
+                    Vector3 at = Vector3.Lerp(from, position, (i + Random.value) / n);
+                    _cloud.Emit(at, t.forward, _speed, _size, _alpha);
+                }
+            }
+            _pipesKnown = true;
         }
 
         /// <summary>
@@ -211,8 +271,22 @@ namespace Game
             return Mathf.Clamp01(Mathf.Max(pull, cruise) + _surge);
         }
 
-        private void Apply(bool running)
+        private void Apply(bool running, bool voxel)
         {
+            if (voxel)
+            {
+                // The cubes take over: the particle smoke stops, what is out thins away.
+                foreach (ParticleSystem pipe in _pipes)
+                {
+                    if (pipe == null)
+                        continue;
+                    var off = pipe.emission;
+                    off.rateOverTime = 0f;
+                    off.rateOverDistance = 0f;
+                }
+                return;
+            }
+
             Color dark = SmokeDark;
             dark.a = _alpha;
             Color light = SmokeLight;

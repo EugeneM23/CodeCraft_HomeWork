@@ -212,7 +212,7 @@ namespace Game
             }
         }
 
-        private static Material LoadMaterial()
+        internal static Material LoadMaterial()
         {
             Material material = Resources.Load<Material>(MATERIAL);
             if (material == null)
@@ -223,7 +223,7 @@ namespace Game
         }
 
         /// <summary>A unit cube with white vertex colours (the Voxel shader multiplies by them).</summary>
-        private static Mesh BuildCubeMesh()
+        internal static Mesh BuildCubeMesh()
         {
             var vertices = new Vector3[24];
             var normals = new Vector3[24];
