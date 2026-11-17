@@ -42,5 +42,35 @@ namespace Game.Voxels.Tests
             Object.DestroyImmediate(root);
             Object.DestroyImmediate(config);
         }
+
+        private static int RunPlate(bool cutThinDetails)
+        {
+            var root = new GameObject("Plate");
+            TestMeshes.Add(root.transform, "Plate", TestMeshes.Box(Vector3.one * 0.001f, new Vector3(1.999f, 0.099f, 1.999f)), Color.gray);
+            var config = ScriptableObject.CreateInstance<VoxelizerConfig>();
+            config.kind = VoxelizerConfig.ModelKind.Building; // 0.1 m: the plate is one voxel thick
+            config.cutThinDetails = cutThinDetails;
+
+            using VoxelizerResult result = VoxelizeUseCase.Run(config, root);
+
+            int solid = 0;
+            foreach (VoxelizerResultPart part in result.Parts)
+                foreach (byte b in part.Voxels) if (b != 0) solid++;
+            Object.DestroyImmediate(root);
+            Object.DestroyImmediate(config);
+            return solid;
+        }
+
+        [Test]
+        public void AOneVoxelPlate_UnderAuto_StaysByDefault()
+        {
+            Assert.Greater(RunPlate(false), 0);
+        }
+
+        [Test]
+        public void AOneVoxelPlate_UnderAuto_VanishesWithCutThinDetails()
+        {
+            Assert.AreEqual(0, RunPlate(true));
+        }
     }
 }

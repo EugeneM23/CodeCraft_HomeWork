@@ -62,7 +62,7 @@ namespace Game.Voxels.EditorTools
                         default: VoxelizerSurface.Fill(grid); break;
                     }
 
-                    if (rule.mark == VoxelizerConfig.PartMark.Auto)
+                    if (rule.mark == VoxelizerConfig.PartMark.Auto && config.cutThinDetails)
                         VoxelizerStraighten.Open(grid, 2);
                 }
 

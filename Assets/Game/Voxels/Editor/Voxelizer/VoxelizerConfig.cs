@@ -29,6 +29,8 @@ namespace Game.Voxels.EditorTools
         [Tooltip("Real length of the model's longest side, m; 0 - as the model is.")]
         public float length;
         [Range(4, 32)] public int colours = 12;
+        [Tooltip("Auto parts: cut off features one voxel thick after the fill. Off keeps thin shells whole.")]
+        public bool cutThinDetails;
         public PartRule[] parts = Array.Empty<PartRule>();
         [Tooltip("Patches over the surface colour nearest the paint material's. Paint None: no camouflage.")]
         public VoxelizedModel.Camouflage camouflage;
