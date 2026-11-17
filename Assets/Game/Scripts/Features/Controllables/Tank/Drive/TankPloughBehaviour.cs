@@ -20,10 +20,20 @@ namespace Game
     ///
     /// A hit the sweep missed (the collider was rebuilt late, a thin ledge) shows as a step that
     /// lost much of the speed: it is answered after the fact, from the speed before it.
+    ///
+    /// The dig bends physics for a moment: the ground layer (and only it) is taken out of the body's
+    /// contacts and the springs are softened. Both always come back exactly as they were (EndWindow):
+    /// when the window runs out, on a preset switch, when the tank is disabled (death) or disposed,
+    /// when it goes kinematic, and at once if the hull, no wheel on anything, has sunk below the
+    /// ground under it.
     /// </summary>
-    public sealed class TankPloughBehaviour : IEntityInit, IEntityFixedTick
+    public sealed class TankPloughBehaviour : IEntityInit, IEntityFixedTick, IEntityDisable, IEntityDispose
     {
-        private const int GROUND_MASK = 1 << 3;
+        private const int GROUND_MASK = 1 << PhysicsLayers.Ground;
+        // How far (m) above the hull the ground under it is looked for when checking it has not fallen through.
+        private const float SURFACE_PROBE = 20f;
+        // Deeper (m) than the deepest dig (bite radius 1.4 + depth 0.8 of it, below a hull half a metre up).
+        private const float FALL_DEPTH = 2.5f;
         private const float SHRINK = 0.02f;
         private const float SKIN = 0.05f;
         private const float MISSED_LOSS = 0.4f;
@@ -72,16 +82,49 @@ namespace Game
         private bool _soft;
         private float _springShare = 1f;
 
-        public TankPloughConfig Config { get; set; }
+        private TankPloughConfig _config;
+
+        /// <summary>The preset in use. Switching it mid-dig ends the dig first.</summary>
+        public TankPloughConfig Config
+        {
+            get => _config;
+            set
+            {
+                if (value != _config)
+                    EndWindow();
+                _config = value;
+            }
+        }
 
         /// <summary>Hits the hull was turned by. For tests.</summary>
         public int Impacts { get; private set; }
 
+        /// <summary>The ground layer is out of the body's contacts or the springs are softened right now. For tests.</summary>
+        public bool InWindow => _passing || _soft || _rising;
+
         public TankPloughBehaviour(BoxCollider hull, TankPloughConfig config, IEarthThrow earth)
         {
             _hull = hull;
-            Config = config;
+            _config = config;
             _earth = earth;
+        }
+
+        public void Disable(IEntity entity) => EndWindow();
+
+        public void Dispose(IEntity entity) => EndWindow();
+
+        /// <summary>
+        /// Ends the dig at once: the ground layer back in the body's contacts (unless it was out before),
+        /// the springs back as they were, no hold, no cap.
+        /// </summary>
+        public void EndWindow()
+        {
+            _rising = false;
+            _ploughUntil = 0f;
+            _capUntil = 0f;
+            if (_body != null)
+                PassGround(false);
+            Springs(1f);
         }
 
         public void Init(IEntity entity)
@@ -97,12 +140,12 @@ namespace Game
             TankPloughConfig config = Config;
             if (config == null || _hull == null || _body.isKinematic)
             {
-                _rising = false;
-                PassGround(false); // never left going through the ground
-                Springs(1f);
-
+                EndWindow(); // never left going through the ground
                 return;
             }
+
+            if (_passing && FallingThrough())
+                EndWindow();
 
             Vector3 velocity = _body.linearVelocity;
             float speed = velocity.magnitude;
@@ -153,8 +196,10 @@ namespace Game
             for (int i = 0; i < count; i++)
             {
                 RaycastHit hit = s_hits[i];
+                // Already overlapping at the start of the cast (in the cut, or in ground not rebuilt yet):
+                // Unity gives no point or normal to go by, so it is no hit; the missed-hit check covers it.
                 if (hit.distance <= 0f && hit.point == Vector3.zero)
-                    continue; // already overlapping: no normal to go by
+                    continue;
                 if (hit.distance < best)
                 {
                     best = hit.distance;
@@ -181,6 +226,9 @@ namespace Game
             // The nose cuts a ramp through what it hit: the hull goes on along that, not along a step's face.
             Vector3 ramp = TankPloughMath.Ramp(normal, config.MaxRamp);
             float strength = TankPloughMath.Strength(-Vector3.Dot(velocity, ramp), config.MinClosing, config.FullClosing);
+            // Into the face hard enough, but glancing off the ramp it would cut: no hit at all, not even a bite.
+            if (strength <= 0f)
+                return;
             _ploughGround = ground;
             _ploughStrength = strength;
             _ploughUntil = _time + config.PloughTime;
@@ -209,9 +257,8 @@ namespace Game
             _rising = true;
             Springs(Mathf.Min(_soft ? _springShare : 1f, config.DigSpring));
 
-            if (config.DustRadius > 0f)
-                VoxelSmoke.Blast(hit.point, config.DustRadius * strength, 0.6f);
             if (_driver != null && _driver.Value != null && config.ShakeStrength > 0f)
+                // perf-ok: once per impact (at most one per PloughTime + ImpactCooldown), not per step
                 CameraShakeUseCase.ShakePlayerCamera(new CameraShakeArgs(config.ShakeDuration, config.ShakeStrength * strength));
             TankPloughEvents.RaisePloughed(hit.point, strength);
         }
@@ -224,7 +271,7 @@ namespace Game
             _capUntil = _time + MAX_PASS;
             Transform hull = _hull.transform;
             float strength = _riseStrength;
-            _body.linearVelocity = TankPloughMath.Deflect(_body.linearVelocity, _riseRamp, strength, 0f, config.Deflect, 0f);
+            _body.linearVelocity = TankPloughMath.Deflect(_body.linearVelocity, _riseRamp, strength, 0f, config.Deflect);
             // The nose comes up: at least this pitch rate, whatever the hull was spinning before.
             _body.angularVelocity = TankPloughMath.NoseUpSpin(_body.angularVelocity, hull.right, config.PitchKick * strength);
             // The hop lifts the bow, not the middle: Hop · strength m/s up, and the nose comes up with it.
@@ -281,6 +328,21 @@ namespace Game
             _suspension.Damping = _damping * _springShare;
             if (share >= 1f)
                 _soft = false;
+        }
+
+        /// <summary>
+        /// Going through the ground with no wheel on anything and the hull's middle deeper below the ground
+        /// under it than any cut goes (FALL_DEPTH): it is falling through the world, not digging. Mid-dig the
+        /// hull may well be airborne with its middle inside the uncut slope; that is not it.
+        /// </summary>
+        private bool FallingThrough()
+        {
+            if (_suspension == null || _suspension.GroundedCount > 0)
+                return false;
+            Vector3 centre = _hull.transform.TransformPoint(_hull.center);
+            return Physics.Raycast(centre + Vector3.up * SURFACE_PROBE, Vector3.down, out RaycastHit surface,
+                       SURFACE_PROBE * 2f, GROUND_MASK, QueryTriggerInteraction.Ignore) &&
+                   surface.point.y - centre.y > FALL_DEPTH;
         }
 
         /// <summary>The hull's box is still in the ground.</summary>

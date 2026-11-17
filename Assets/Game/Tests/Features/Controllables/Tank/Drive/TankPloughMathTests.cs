@@ -65,7 +65,7 @@ namespace Game.Tests
         public void Deflect_TurnsTheVelocityUpTheSlope_AndCostsTheLoss()
         {
             var v = new Vector3(0f, 0f, 8f);
-            Vector3 after = TankPloughMath.Deflect(v, Slope32, 1f, 0.33f, 0.3f, 0f);
+            Vector3 after = TankPloughMath.Deflect(v, Slope32, 1f, 0.33f, 0.3f);
             Assert.That(after.y, Is.GreaterThan(0f), "goes up");
             Assert.That(after.z, Is.GreaterThan(0f), "still forward");
             Assert.That(Vector3.Dot(after, Slope32), Is.GreaterThanOrEqualTo(0f), "no longer into the slope");
@@ -73,12 +73,12 @@ namespace Game.Tests
         }
 
         [Test]
-        public void Deflect_HopAddsStraightUp()
+        public void Deflect_Zero_GoesExactlyAlongTheSlope()
         {
             var v = new Vector3(0f, 0f, 8f);
-            Vector3 without = TankPloughMath.Deflect(v, Slope32, 1f, 0.33f, 0.3f, 0f);
-            Vector3 with = TankPloughMath.Deflect(v, Slope32, 1f, 0.33f, 0.3f, 1.5f);
-            Assert.That(with.y - without.y, Is.EqualTo(1.5f).Within(1e-4f));
+            Vector3 after = TankPloughMath.Deflect(v, Slope32, 1f, 0.33f, 0f);
+            Assert.That(Vector3.Dot(after, Slope32), Is.EqualTo(0f).Within(1e-4f));
+            Assert.That(after.magnitude, Is.EqualTo(8f * 0.67f).Within(1e-3f));
         }
 
         [Test]

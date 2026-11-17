@@ -96,8 +96,6 @@ namespace Game
         [SerializeField] private TankPloughConfig[] _ploughPresets;
         [SerializeField, Min(0)] private int _ploughPreset = 1;
 
-        private TankPloughBehaviour _plough;
-
         [Header("Crushing")]
         [Tooltip("Reports the hull's contacts, lasting ones included. Without it the tank crushes nothing it drives into.")]
         [SerializeField] private CollisionContactReceiver _contacts;
@@ -107,6 +105,8 @@ namespace Game
         [Header("Destruction")]
         [SerializeField] private MonoEntity _explosionVfx;
         [SerializeField] private CameraShakeArgs _destroyShake;
+
+        private TankPloughBehaviour _plough;
 
         /// <summary>The main gun. For CombatPoolPrewarm: the muzzle smoke comes as often as it fires.</summary>
         public MonoEntity Cannon => _cannon;

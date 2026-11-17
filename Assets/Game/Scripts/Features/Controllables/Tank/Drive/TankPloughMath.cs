@@ -37,15 +37,14 @@ namespace Game
 
         /// <summary>
         /// Velocity after the hit: along the slope, turned up off it by <paramref name="deflect"/> × strength,
-        /// at <see cref="SpeedAfter"/>, plus <paramref name="hop"/> × strength m/s straight up.
+        /// at <see cref="SpeedAfter"/>. The hop is not here: it is an impulse at the bow (TankPloughBehaviour).
         /// </summary>
-        public static Vector3 Deflect(Vector3 velocity, Vector3 normal, float strength, float speedLoss, float deflect,
-            float hop)
+        public static Vector3 Deflect(Vector3 velocity, Vector3 normal, float strength, float speedLoss, float deflect)
         {
             Vector3 along = Vector3.ProjectOnPlane(velocity, normal);
             Vector3 heading = along.sqrMagnitude > 1e-6f ? along.normalized : normal;
             heading = (heading + normal * (deflect * strength)).normalized;
-            return heading * SpeedAfter(velocity.magnitude, strength, speedLoss) + Vector3.up * (hop * strength);
+            return heading * SpeedAfter(velocity.magnitude, strength, speedLoss);
         }
 
         /// <summary>

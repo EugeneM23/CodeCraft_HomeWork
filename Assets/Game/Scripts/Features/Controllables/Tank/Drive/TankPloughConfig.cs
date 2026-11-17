@@ -36,10 +36,10 @@ namespace Game
         public float SpreadMin = 0.2f;
         [Tooltip("…and at the hardest.")]
         public float SpreadMax = 0.7f;
-        [Tooltip("Most debris cubes one bite may throw while the earth goes out through Dig.")]
+        [Tooltip("Most debris cubes each of the three digs of a bite may throw (times ThrowVolume), while the earth goes out through Dig.")]
         public int BiteDebris = 160;
         [Tooltip("Bites go this share of their radius down into the slope as well as ahead: the cut the nose sinks into.")]
-        public float BiteDepth = 0.5f;
+        public float BiteDepth = 0.8f;
         [Tooltip("Seconds the nose keeps cutting under and ahead of itself after a hit: the longer, the deeper the hull sinks into the slope.")]
         public float PloughTime = 0.25f;
         [Tooltip("Share of the springs' stiffness while the nose digs in: lower lets the hull sink deeper into the cut.")]
@@ -49,22 +49,20 @@ namespace Game
         [Tooltip("Share of the speed the hardest hit costs; a light one costs half of it.")]
         public float SpeedLoss = 0.33f;
         [Tooltip("Steepest slope (°) the hull leaves a hit along: a voxel step's vertical face is dug out, not climbed. Lower flies less.")]
-        public float MaxRamp = 30f;
+        public float MaxRamp = 15f;
         [Tooltip("How far the velocity is turned up off the slope at the hardest hit.")]
-        public float Deflect = 0.3f;
-        [Tooltip("m/s straight up the hardest hit adds: the jump out of the crater.")]
-        public float Hop = 1.2f;
-        [Tooltip("rad/s nose-up the hardest hit adds.")]
-        public float PitchKick = 0.8f;
+        public float Deflect = 0f;
+        [Tooltip("m/s up the hardest hit adds as it rises, as an impulse at the bow (it lifts the nose too).")]
+        public float Hop = 0f;
+        [Tooltip("rad/s nose-up the hull is held to at least (times the hit's strength) as it rises, until RisePitch.")]
+        public float PitchKick = 1.2f;
         [Tooltip("Nose-up (°) the hull is brought to as it comes out of the cut.")]
         public float RisePitch = 14f;
-        [Tooltip("Seconds after a hit before the next can turn the hull again.")]
+        [Tooltip("Seconds after the rise before the next hit can turn the hull again (at least the 0.5 s climb).")]
         public float ImpactCooldown = 0.3f;
 
         [Header("Feel")]
         public float ShakeStrength = 0.6f;
         public float ShakeDuration = 0.35f;
-        [Tooltip("Radius (m) of the dust puff at the hardest hit; 0 — none.")]
-        public float DustRadius = 1.5f;
     }
 }

@@ -38,4 +38,3 @@ MonoBehaviour:
   ImpactCooldown: 0.3
   ShakeStrength: 0.3
   ShakeDuration: 0.25
-  DustRadius: 0
