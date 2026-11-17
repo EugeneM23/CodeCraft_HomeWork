@@ -66,7 +66,6 @@ namespace Game
             }
             else
             {
-                DestructionUseCase.TryImpact(_bullet, collision);
                 SpawnUseCase.SpawnCollisionHit(collision, _gameFactory, _bullet);
                 ChipVoxels(collision);
             }
@@ -89,8 +88,6 @@ namespace Game
             if (!RicochetUseCase.CanRicochet(_bullet, normal))
                 return false;
 
-            // Before the bounce: the impact ray follows the direction the bullet came from.
-            DestructionUseCase.TryImpact(_bullet, collision, _bullet.GetRicochetImpactFactor());
             SpawnUseCase.SpawnCollisionHit(collision, _gameFactory, _bullet);
             RicochetUseCase.Ricochet(_bullet, normal);
             return true;

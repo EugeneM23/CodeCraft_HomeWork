@@ -310,12 +310,12 @@ namespace Game.EditorTools
                         Object.DestroyImmediate(child.gameObject);
                 }
 
-                // Bare steel, as the hubs and the exhaust housings TankBuilder lays round the pipes.
+                // Bare steel, as the hubs and the exhaust housings round the pipes.
                 Material pipeMaterial = AssetDatabase.LoadAssetAtPath<Material>("Assets/Game/Materials/MT_Tank_Steel.mat");
 
-                // The hull is built at 0.75 of full size (TankBuilder.S).
+                // The hull is built at 0.75 of full size.
                 ParticleSystem[] emitters = BuildExhaust(hull, pipeMaterial, 0.75f);
-                TankBuilder.SetArray(root.GetComponent<TankInstaller>(), "_exhaust", emitters);
+                SetArray(root.GetComponent<TankInstaller>(), "_exhaust", emitters);
 
                 PrefabUtility.SaveAsPrefabAsset(root, TANK_PREFAB);
                 Debug.Log("[TANK] Added the exhaust to Tank_01.");
@@ -327,6 +327,19 @@ namespace Game.EditorTools
         }
 
         // ---------------------------------------------------------------- helpers
+
+        private static void SetArray(Object target, string field, Object[] values)
+        {
+            SerializedObject serialized = new(target);
+            SerializedProperty property = serialized.FindProperty(field);
+            if (property == null) return;
+
+            property.arraySize = values.Length;
+            for (int i = 0; i < values.Length; i++)
+                property.GetArrayElementAtIndex(i).objectReferenceValue = values[i];
+
+            serialized.ApplyModifiedPropertiesWithoutUndo();
+        }
 
         /// <summary>A pooled effect entity: back to the pool after <paramref name="lifeTime"/>.</summary>
         private static void PooledEffect(GameObject root, float lifeTime)

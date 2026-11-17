@@ -6,7 +6,6 @@ namespace Game
 {
     public class MeleeWeaponInstaller : MonoEntityInstaller
     {
-        [SerializeField] private WeaponID _id;
         [SerializeField] private int _damage;
         [SerializeField] private float _damageRadius = 0.5f;
         [SerializeField] private CameraShakeArgs _shakeArgs;
@@ -20,7 +19,6 @@ namespace Game
             _gameContext = GameContext.Instance;
 
             //Core
-            entity.AddWeaponId(_id);
             entity.AddMeleeWeaponTag();
             entity.AddTransform(transform);
             entity.AddGameObject(transform.gameObject);

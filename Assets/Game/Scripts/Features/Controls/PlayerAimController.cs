@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Game
 {
     /// <summary>
-    /// Aims the character at the mouse cursor.
+    /// Aims the character (the tank's turret) at the mouse cursor.
     ///
     /// This replaces the on-screen rotation joystick, which was the only source of
     /// RotateDirection — so on a desktop build the value stayed at zero and the character
@@ -22,8 +22,6 @@ namespace Game
 
         private IReactiveVariable<Vector3> _rotateDirection;
         private Transform _characterTransform;
-        private IValue<float> _aimHeight;
-        private IReactiveVariable<Vector3> _aimPoint;
         private UnityEngine.Camera _camera;
 
         public void Init(IPlayerContext context)
@@ -39,14 +37,6 @@ namespace Game
         {
             _rotateDirection = character?.GetRotateDirection();
             _characterTransform = character?.GetTransform();
-
-            // A helicopter aims on the ground under it, not at its own height: with the camera
-            // looking down at an angle, a plane through the helicopter would turn the nose off
-            // the cursor. It also wants the point itself, for its gun.
-            _aimHeight = null;
-            _aimPoint = null;
-            character?.TryGetAimHeight(out _aimHeight);
-            character?.TryGetAimPoint(out _aimPoint);
         }
 
         private void Rotate()
@@ -62,12 +52,7 @@ namespace Game
             }
 
             Vector3 characterPosition = _characterTransform.position;
-            float aimHeight = _aimHeight != null ? _aimHeight.Value : characterPosition.y;
-
-            if (!CursorUseCase.TryProjectOnPlane(_camera, aimHeight, out Vector3 point)) return;
-
-            if (_aimPoint != null)
-                _aimPoint.Value = point;
+            if (!CursorUseCase.TryProjectOnPlane(_camera, characterPosition.y, out Vector3 point)) return;
 
             Vector3 direction = point - characterPosition;
             direction.y = 0f;
