@@ -38,6 +38,8 @@ namespace Game
 
         [Tooltip("Emitters at the exhaust pipes' mouths: black smoke, the jet growing with speed.")]
         [SerializeField] private ParticleSystem[] _exhaust;
+        [Tooltip("Experiment: the exhaust smoke as voxel cubes; off brings the particle smoke back.")]
+        [SerializeField] private VoxelExhaustSettings _voxelExhaust = new();
 
         [Header("Turret")]
         [SerializeField] private Transform _turretPivot;
@@ -231,7 +233,8 @@ namespace Game
             entity.AddBehaviour(new TankTrackMarksBehaviour(_leftTrack, _rightTrack, dirt));
             entity.AddBehaviour(new TankMuzzleMudBehaviour(dirt));
             if (_exhaust != null && _exhaust.Length > 0)
-                entity.AddBehaviour(new TankExhaustBehaviour(_exhaust, engine, _acceleration, _boostMultiplier));
+                entity.AddBehaviour(new TankExhaustBehaviour(_exhaust, engine, _acceleration, _boostMultiplier,
+                    _voxelExhaust));
             entity.AddBehaviour(new TankDestroyBehaviour(gameContext, _explosionVfx, _destroyShake));
             entity.AddBehaviour(new DriverAudioListenerBehaviour());
         }
