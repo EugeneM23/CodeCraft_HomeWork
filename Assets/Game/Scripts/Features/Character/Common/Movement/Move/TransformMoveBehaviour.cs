@@ -5,8 +5,8 @@ using UnityEngine;
 namespace Game
 {
     /// <summary>
-    /// Walks the entity along MoveDirection by writing its transform: enemies, which have no body
-    /// of their own to drive (see <see cref="RigidbodyMoveBehaviour"/>).
+    /// Walks the entity along MoveDirection by writing its transform: enemies have no body of their
+    /// own to drive.
     /// </summary>
     /// <remarks>
     /// Nothing is written on a frame with nothing to move. It used to add the step every frame, a

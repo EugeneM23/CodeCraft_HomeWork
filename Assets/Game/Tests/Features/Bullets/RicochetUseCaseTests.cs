@@ -34,7 +34,6 @@ namespace Game.Tests
             bullet.AddRiggedBody(_gameObject.GetComponent<Rigidbody>());
             bullet.AddRicochetMaxCount(maxCount);
             bullet.AddRicochetMaxAngle(maxAngle);
-            bullet.AddRicochetImpactFactor(0.3f);
             bullet.AddRicochetCount(count);
             return bullet;
         }
