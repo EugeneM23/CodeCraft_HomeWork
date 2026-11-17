@@ -18,7 +18,7 @@ namespace Game.Voxels.Tests
             _floor = GameObject.CreatePrimitive(PrimitiveType.Plane);
             _floor.transform.localScale = Vector3.one * 5f;
             Physics.SyncTransforms();
-            _material = new Material(Shader.Find("Standard")) { enableInstancing = true };
+            _material = new Material(Shader.Find("Universal Render Pipeline/Lit")) { enableInstancing = true };
             _debris = new VoxelDebris(_material, 256, 4);
         }
 

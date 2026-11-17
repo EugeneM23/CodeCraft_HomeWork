@@ -574,8 +574,8 @@ namespace Game.Voxels.EditorTools
             if (material != null)
                 return material;
 
-            material = new Material(Shader.Find("Standard")) { color = new Color(0.42f, 0.34f, 0.25f) };
-            material.SetFloat("_Glossiness", 0.1f);
+            material = new Material(Shader.Find("Universal Render Pipeline/Lit")) { color = new Color(0.42f, 0.34f, 0.25f) };
+            material.SetFloat("_Smoothness", 0.1f);
             AssetDatabase.CreateAsset(material, path);
             return material;
         }

@@ -185,7 +185,7 @@ namespace Game.AudioEngine.Adapters
 
             s_instance = this;
             _system = GetComponent<AudioSystem>();
-            _pauseSource = new TimeScalePauseSource();
+            _pauseSource = CreatePauseSource();
             _signals = new GameSignalAudio();
             Preload();
         }
@@ -248,8 +248,20 @@ namespace Game.AudioEngine.Adapters
             if (_playBattleMusic && app != null)
                 app.StopMusic();
 
+            (_pauseSource as IDisposable)?.Dispose();
+            _pauseSource = null;
+
             s_horde.Reset();
             s_instance = null;
+        }
+
+        // The core's game loop when the app is up; a sandbox Play without the app falls back to Time.timeScale.
+        private static IAudioPauseSource CreatePauseSource()
+        {
+            if (AppContext.TryGet(out AppContext app) && app.TryGetGameLoop(out Ticking.IGameLoop loop) && loop != null)
+                return new GameLoopPauseSource(loop);
+
+            return new TimeScalePauseSource();
         }
 
         private void Preload()

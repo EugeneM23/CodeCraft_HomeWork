@@ -100,8 +100,8 @@ namespace Game
         {
             string entityID = entity.GetEntityID();
 
-            // No pool for this id means the entity was never rented from one: the buff and dash
-            // pickups are placed in the scene by hand and still go through here. Destroy it for
+            // No pool for this id means the entity was never rented from one: an entity placed in
+            // the scene by hand still goes through here. Destroy it for
             // real instead of pooling it.
             //
             // This used to recover by registering the live instance as the pool prefab, which is

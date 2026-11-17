@@ -59,8 +59,8 @@ namespace Game
 
         /// <summary>
         /// Distance to the nearest collider the body can actually hit. A sweep does not know about
-        /// Physics.IgnoreCollision: a bullet leaving the helicopter's gun stopped against the hull
-        /// it passes through. Only when the nearest hit is such a pair are all hits looked at.
+        /// Physics.IgnoreCollision: a bullet leaving a gun mounted on a hull stopped against the
+        /// hull it passes through. Only when the nearest hit is such a pair are all hits looked at.
         /// </summary>
         private static bool SweepToObstacle(Rigidbody body, Collider own, Vector3 direction, float distance,
             out float hitDistance)
@@ -85,8 +85,8 @@ namespace Game
 
         /// <summary>
         /// The nearest hit along the sweep that is not an ignored pair. Rigidbody.SweepTestAll found
-        /// it in a new array on every call — every step of every minigun round still inside the
-        /// helicopter's hull. The same sweep is cast here into a reused buffer: the body's own sphere,
+        /// it in a new array on every call — every step of every round still inside the hull of
+        /// the vehicle that fired it. The same sweep is cast here into a reused buffer: the body's own sphere,
         /// from its physics pose, through the layers its layer collides with, its own colliders left
         /// out as the body sweep leaves them out. A collider of another shape, or a buffer that comes
         /// back full and may have left the nearest hit out, still goes through SweepTestAll.

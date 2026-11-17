@@ -1,23 +1,69 @@
+using System.Text;
 using UnityEngine;
 
 namespace Game.Voxels.Demo
 {
     /// <summary>
     /// Controls and the voxel world's numbers in the corner. F1 hides it.
-    /// The text is rebuilt a few times a second, not on every GUI event: counting the bodies and
-    /// laying out fresh rich text each event cost about a millisecond a frame.
     /// </summary>
+    /// <remarks>
+    /// Every new text costs IMGUI a fresh layout of it, and that layout makes garbage by the length
+    /// of the text: rebuilt four times a second, the whole box made 50–200 KB of it a second. So the
+    /// keys sit in a box of their own, laid out again only when they change (an air strike switched
+    /// on or off), and the numbers, a few short lines, are rebuilt twice a second. Both are built in
+    /// reused buffers, and the GUI skips its layout pass: only GUI.Box is drawn.
+    /// </remarks>
     public sealed class VoxelDemoHud : MonoBehaviour
     {
-        private const float REFRESH = 0.25f;
+        private const float REFRESH = 0.5f;
+        private const float MARGIN = 12f;
+        private const float GAP = 4f;
 
         private float _frameMs = 16f;
         private bool _visible = true;
-        private GUIStyle _style;
-        private readonly GUIContent _content = new();
         private float _nextRefresh;
-        private string _sizedText;
-        private Vector2 _size;
+
+        private readonly Box _keys = new();
+        private readonly Box _numbers = new();
+        private readonly StringBuilder _keysNow = new(512);
+
+        /// <summary>One box of text, measured only when its text changes.</summary>
+        private sealed class Box
+        {
+            public readonly GUIContent Content = new();
+            public readonly StringBuilder Text = new(512);
+            // A style of its own: IMGUI keeps the layout of the last text drawn with a style, and two
+            // texts taking turns on one style would be laid out again on every repaint.
+            public GUIStyle Style;
+            private string _sized;
+            private Vector2 _size;
+
+            public void Draw(float x, float y)
+            {
+                Style ??= new GUIStyle(GUI.skin.box)
+                {
+                    alignment = TextAnchor.UpperLeft, fontSize = 14, richText = true, padding = new RectOffset(8, 8, 6, 6)
+                };
+                GUI.Box(new Rect(x, y, Size.x, Size.y), Content, Style);
+            }
+
+            public Vector2 Size
+            {
+                get
+                {
+                    if (!ReferenceEquals(_sized, Content.text))
+                    {
+                        _sized = Content.text;
+                        _size = Style.CalcSize(Content);
+                    }
+
+                    return _size;
+                }
+            }
+        }
+
+        // Nothing here uses GUILayout: without the layout pass IMGUI does not allocate for it every frame.
+        private void Awake() => useGUILayout = false;
 
         private void Update()
         {
@@ -29,16 +75,45 @@ namespace Game.Voxels.Demo
             if (_visible && Time.unscaledTime >= _nextRefresh)
             {
                 _nextRefresh = Time.unscaledTime + REFRESH;
-                _content.text = BuildText();
+                RefreshKeys();
+                RefreshNumbers();
             }
         }
 
-        private string BuildText()
+        /// <summary>The keys change only when a piece adds or changes its line: the text is replaced then only.</summary>
+        private void RefreshKeys()
+        {
+            StringBuilder text = _keysNow.Clear();
+            text.Append("<b>Voxel sandbox</b> — the game's own tank and controls\n")
+                .Append("W/S/A/D — drive    Shift — full power    Mouse — turn the camera, the crosshair aims\n")
+                .Append("LMB — cannon    RMB — machine gun    Esc — free the cursor, click — take it back\n")
+                .Append("Middle double-click — reset the camera\n");
+            if (VoxelWeatherDemo.SmokeKey)
+                text.Append("B — smoke at the crosshair (shoot it to clear)    ");
+            if (VoxelWeatherDemo.RainKey)
+                text.Append("N — rain on / off");
+            if (VoxelWeatherDemo.SmokeKey || VoxelWeatherDemo.RainKey)
+                text.Append('\n');
+            // Keys from pieces outside this assembly (the air strike), one line each.
+            // Indexed loops here and below: a foreach over an IReadOnlyList boxes its enumerator.
+            for (int i = 0; i < VoxelHudLines.All.Count; i++)
+                text.Append(VoxelHudLines.All[i]()).Append('\n');
+            text.Append("F1 — hide this");
+
+            if (_keys.Content.text != null && Same(text, _keys.Text))
+                return;
+
+            _keys.Text.Clear().Append(text);
+            _keys.Content.text = text.ToString();
+        }
+
+        private void RefreshNumbers()
         {
             int solid = 0;
             int pieces = 0;
-            foreach (VoxelBody body in VoxelWorld.Bodies)
+            for (int i = 0; i < VoxelWorld.Bodies.Count; i++)
             {
+                VoxelBody body = VoxelWorld.Bodies[i];
                 if (body == null)
                     continue;
                 solid += body.SolidCount;
@@ -47,58 +122,47 @@ namespace Game.Voxels.Demo
             }
 
             VoxelWorld world = VoxelWorld.Instance;
-            return
-                "<b>Voxel sandbox</b> — the game's own tank and controls\n" +
-                "W/S/A/D — drive    Mouse — turn the camera, the crosshair aims    E — get out / in\n" +
-                "Esc — free the cursor, click — take it back    Middle double-click — reset the camera\n" +
-                (VoxelWeatherDemo.SmokeKey ? "B — smoke at the crosshair (shoot it to clear)    " : "") +
-                (VoxelWeatherDemo.RainKey ? "N — rain on / off" : "") +
-                (VoxelWeatherDemo.SmokeKey || VoxelWeatherDemo.RainKey ? "\n" : "") +
-                ExtraLines() +
-                "F1 — hide this\n\n" +
-                $"Frame: {_frameMs:F1} ms ({1000f / Mathf.Max(0.1f, _frameMs):F0} fps)\n" +
-                $"Voxels: {solid:N0} in {VoxelWorld.Bodies.Count} bodies ({pieces} loose pieces)\n" +
-                $"Debris cubes: {(world != null && world.Debris != null ? world.Debris.Count : 0):N0}\n" +
-                $"Last remesh: {(world != null ? world.LastRebuildChunks : 0)} chunks in {(world != null ? world.LastRebuildMs : 0f):F1} ms" +
-                $" ({(world != null ? world.AsyncInFlight : 0)} ground in flight)\n" +
-                $"Smoke: {VoxelSmoke.Active.Count} clouds, {SmokeCubes():N0} cubes";
-        }
-
-        // Keys from pieces outside this assembly (the air strike), one line each.
-        private static string ExtraLines()
-        {
-            string text = "";
-            foreach (System.Func<string> line in VoxelHudLines.All)
-                text += line() + "\n";
-            return text;
+            int debris = world != null && world.Debris != null ? world.Debris.Count : 0;
+            StringBuilder text = _numbers.Text.Clear();
+            text.Append("Frame: ").Append(_frameMs.ToString("F1")).Append(" ms (")
+                .Append(Mathf.RoundToInt(1000f / Mathf.Max(0.1f, _frameMs))).Append(" fps)\n");
+            text.Append("Voxels: ").Append(solid.ToString("N0")).Append(" in ").Append(VoxelWorld.Bodies.Count)
+                .Append(" bodies (").Append(pieces).Append(" loose pieces)\n");
+            text.Append("Debris cubes: ").Append(debris.ToString("N0")).Append('\n');
+            text.Append("Last remesh: ").Append(world != null ? world.LastRebuildChunks : 0).Append(" chunks in ")
+                .Append((world != null ? world.LastRebuildMs : 0f).ToString("F1")).Append(" ms (")
+                .Append(world != null ? world.AsyncInFlight : 0).Append(" ground in flight)\n");
+            text.Append("Smoke: ").Append(VoxelSmoke.Active.Count).Append(" clouds, ")
+                .Append(SmokeCubes().ToString("N0")).Append(" cubes");
+            _numbers.Content.text = text.ToString();
         }
 
         private void OnGUI()
         {
-            if (!_visible || Event.current.type != EventType.Repaint)
+            if (!_visible || Event.current.type != EventType.Repaint || _keys.Content.text == null)
                 return;
 
-            _style ??= new GUIStyle(GUI.skin.box)
-            {
-                alignment = TextAnchor.UpperLeft, fontSize = 14, richText = true, padding = new RectOffset(8, 8, 6, 6)
-            };
+            // Each box sized to its text: a fixed box cut the longer lines of keys off at its right edge.
+            _keys.Draw(MARGIN, MARGIN);
+            _numbers.Draw(MARGIN, MARGIN + _keys.Size.y + GAP);
+        }
 
-            // Sized to the text, measured only when the text changes: a fixed box cut the longer
-            // lines of keys off at its right edge.
-            if (_sizedText != _content.text)
-            {
-                _sizedText = _content.text;
-                _size = _style.CalcSize(_content);
-            }
-
-            GUI.Box(new Rect(12, 12, _size.x, _size.y), _content, _style);
+        /// <summary>The same characters (StringBuilder.Equals may also compare the capacity).</summary>
+        private static bool Same(StringBuilder a, StringBuilder b)
+        {
+            if (a.Length != b.Length)
+                return false;
+            for (int i = 0; i < a.Length; i++)
+                if (a[i] != b[i])
+                    return false;
+            return true;
         }
 
         private static int SmokeCubes()
         {
             int cubes = 0;
-            foreach (VoxelSmoke smoke in VoxelSmoke.Active)
-                cubes += smoke.DrawnCubes;
+            for (int i = 0; i < VoxelSmoke.Active.Count; i++)
+                cubes += VoxelSmoke.Active[i].DrawnCubes;
             return cubes;
         }
     }

@@ -36,11 +36,12 @@ namespace Game.Voxels
                 return;
             }
 
-            // The colour Unity lights with: in linear space without linear light intensity (this
-            // project), colour × intensity taken from gamma to linear — far brighter than colour.linear × intensity.
+            // The colour Built-in lit with in this project: linear colour space without linear light
+            // intensity, so colour × intensity taken from gamma to linear. URP lights the flash's real Light
+            // the same way through LightIntensity.FromBuiltIn, so the two still agree.
             Color c = color * intensity;
             if (QualitySettings.activeColorSpace == ColorSpace.Linear)
-                c = UnityEngine.Rendering.GraphicsSettings.lightsUseLinearIntensity ? color.linear * intensity : c.linear;
+                c = c.linear;
             Shader.SetGlobalVector(PositionId, new Vector4(position.x, position.y, position.z, range));
             Shader.SetGlobalVector(ColorId, new Vector4(c.r, c.g, c.b, 1f));
         }

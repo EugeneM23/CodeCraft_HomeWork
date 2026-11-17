@@ -11,6 +11,8 @@ namespace Game
     public static partial class PlayerContextAPI
     {
         public static readonly ValueKey<IPlayerContext, IReactiveVariable<IEntity>> Character = new(nameof(Character));
+        // The one source of the player's controls (Features/Controls/IPlayerInput).
+        public static readonly ValueKey<IPlayerContext, Game.IPlayerInput> PlayerInput = new(nameof(PlayerInput));
         public static readonly ValueKey<IPlayerContext, IEntity> Camera = new(nameof(Camera));
         public static readonly ValueKey<IPlayerContext, IValue<Vector3>> CameraOffset = new(nameof(CameraOffset));
         public static readonly ValueKey<IPlayerContext, Transform> CameraRoot = new(nameof(CameraRoot));

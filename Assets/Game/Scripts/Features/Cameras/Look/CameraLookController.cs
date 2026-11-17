@@ -4,21 +4,23 @@ using UnityEngine;
 namespace Game
 {
     /// <summary>
-    /// Reads where the cursor sits on the screen and writes CameraLook — the way the camera should
+    /// Reads where the player's pointer sits on the screen (IPlayerInput) and writes CameraLook — the way the camera should
     /// lean, on the ground, at a strength from 0 to 1 (more behind the character, where the tilted
     /// camera shows less ground). CameraFollowController turns it into a shift and a pull-back.
     ///
     /// Runs in Tick so the look is ready before the follow in LateTick reads it. Nothing here knows
-    /// whether the player is on foot or in a tank: the follow scales the lean by CameraDistance.
+    /// what the player drives: the follow scales the lean by CameraDistance.
     /// </summary>
     public class CameraLookController : IPlayerContextInit, IPlayerContextTick
     {
         private IVariable<Vector3> _look;
         private CameraLookSettings _settings;
         private UnityEngine.Camera _camera;
+        private IPlayerInput _input;
 
         public void Init(IPlayerContext context)
         {
+            context.TryGetPlayerInput(out _input);
             _look = context.GetCameraLook();
             _settings = context.GetCameraLookSettings();
             _camera = UnityEngine.Camera.main;
@@ -26,6 +28,9 @@ namespace Game
 
         public void Tick(IPlayerContext context, float deltaTime)
         {
+            if (_input == null)
+                return;
+
             if (_camera == null)
             {
                 // The camera can be destroyed on scene teardown; re-resolving is cheap enough
@@ -35,7 +40,7 @@ namespace Game
             }
 
             Vector2 screenLook = CameraLookUseCase.FromCursor(
-                CursorUseCase.ScreenPoint,
+                CursorUseCase.ScreenPoint(_input.Pointer),
                 new Vector2(UnityEngine.Screen.width, UnityEngine.Screen.height),
                 _settings.DeadZone);
 

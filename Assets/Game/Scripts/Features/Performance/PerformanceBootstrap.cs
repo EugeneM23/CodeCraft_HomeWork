@@ -11,21 +11,20 @@ namespace Game
     /// Scene objects are changed from <see cref="SceneManager.sceneLoaded"/>: it runs after every Awake
     /// of the new scene and before any Start or the first rendered frame, so nothing is drawn
     /// with the desktop settings first. Pooled instances are handled by their pool
-    /// (<see cref="VfxBudget"/>), HighlightPlus effects spawned any other way by
-    /// <see cref="MobileHighlights.CatchNewlyEnabled"/> before each cull.
+    /// (<see cref="VfxBudget"/>).
     ///
     /// Desktop keeps its look. Only what changes nothing on screen runs there: players write Log and
     /// Warning messages without stack traces.
     ///
     /// Switching to or from the Mobile quality level while playing re-applies the tier. Going back to
-    /// desktop restores the frame rate, cameras and post-processing; the particle and highlight
-    /// budgets stay until the scene is loaded again, because their desktop values are not kept.
+    /// desktop restores the frame rate, cameras and post-processing; the particle budgets stay
+    /// until the scene is loaded again, because their desktop values are not kept.
     ///
     /// Everything here must stay inside play mode. The editor does not reload the domain when play mode
     /// ends, so these subscriptions would otherwise outlive it: a camera repaint or a quality level
-    /// picked in the project settings would then rewrite the open scene's cameras and highlights,
-    /// and a scene save would keep that. Every handler checks for play mode, and
-    /// leaving it (Application.quitting is raised then too) drops all of them.
+    /// picked in the project settings would then rewrite the open scene's cameras, and a scene save
+    /// would keep that. Every handler checks for play mode, and leaving it (Application.quitting is
+    /// raised then too) drops all of them.
     /// </remarks>
     internal static class PerformanceBootstrap
     {
@@ -45,7 +44,6 @@ namespace Game
             _mobile = false;
             _framePacingApplied = false;
             MobilePostProcessing.Reset();
-            MobileHighlights.Reset();
             VfxBudget.Reset();
         }
 
@@ -89,7 +87,6 @@ namespace Game
                 return;
 
             MobilePostProcessing.Apply(scene);
-            MobileHighlights.ApplyToScene(scene, false);
         }
 
         // Only destroys this class's own profile copies, so it needs no play-mode check.
@@ -125,7 +122,6 @@ namespace Game
                 if (mobile)
                 {
                     MobilePostProcessing.Apply(scene);
-                    MobileHighlights.ApplyToScene(scene, true);
                 }
                 else
                 {
@@ -139,7 +135,6 @@ namespace Game
             if (!_mobile || !Application.isPlaying)
                 return;
 
-            MobileHighlights.CatchNewlyEnabled();
             MobilePostProcessing.ClearStaleDepthFlags();
         }
 

@@ -44,7 +44,7 @@ namespace Game.Tests
             Call("OnEnable");
 
             Assert.That(_light.enabled, Is.True);
-            Assert.That(_light.intensity, Is.EqualTo(6f));
+            Assert.That(_light.intensity, Is.EqualTo(LightIntensity.FromBuiltIn(6f)));
         }
 
         [Test]
@@ -58,8 +58,8 @@ namespace Game.Tests
             // Update adds whatever this editor frame's delta time is, so read back where it got to.
             float left = 1f - GetTime() / 0.12f;
             Assume.That(left, Is.GreaterThan(0f));
-            Assert.That(_light.intensity, Is.EqualTo(6f * left * left).Within(1e-3f));
-            Assert.That(_light.intensity, Is.LessThan(6f * 0.75f * 0.75f + 1e-3f));
+            Assert.That(_light.intensity, Is.EqualTo(LightIntensity.FromBuiltIn(6f * left * left)).Within(1e-3f));
+            Assert.That(_light.intensity, Is.LessThan(LightIntensity.FromBuiltIn(6f * 0.75f * 0.75f) + 1e-3f));
         }
 
         [Test]
@@ -83,7 +83,7 @@ namespace Game.Tests
             Call("OnEnable");
 
             Assert.That(_light.enabled, Is.True);
-            Assert.That(_light.intensity, Is.EqualTo(6f));
+            Assert.That(_light.intensity, Is.EqualTo(LightIntensity.FromBuiltIn(6f)));
         }
 
         [Test]
