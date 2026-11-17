@@ -46,6 +46,12 @@ namespace Game.AudioEngine.Adapters
 
         private bool _subscribed;
 
+        /// <summary>An ExplosionEvents blast this close (m²) to the frame's air blast is that same bomb.</summary>
+        private const float AIR_BLAST_MATCH_SQR = 1f;
+
+        private int _airBlastFrame = -1;
+        private Vector3 _airBlastPoint;
+
         public GameSignalAudio()
         {
             _onExploded = OnExploded;
@@ -64,7 +70,7 @@ namespace Game.AudioEngine.Adapters
                 return;
 
             _subscribed = true;
-            GameSignals.Exploded += _onExploded;
+            ExplosionEvents.Exploded += _onExploded;
             GameSignals.MudHit += _onMudHit;
             GameSignals.Crushed += _onCrushed;
             GameSignals.AirStrikeCalled += _onAirStrikeCalled;
@@ -80,7 +86,7 @@ namespace Game.AudioEngine.Adapters
                 return;
 
             _subscribed = false;
-            GameSignals.Exploded -= _onExploded;
+            ExplosionEvents.Exploded -= _onExploded;
             GameSignals.MudHit -= _onMudHit;
             GameSignals.Crushed -= _onCrushed;
             GameSignals.AirStrikeCalled -= _onAirStrikeCalled;
@@ -131,8 +137,15 @@ namespace Game.AudioEngine.Adapters
             }
         }
 
-        private static void OnExploded(Vector3 point, float radius) =>
+        // Every blast comes through the AI team's ExplosionEvents, the air bomb too: that one already sounded as the
+        // large explosion from its AirBlasted (raised first, in the same frame and at the same point), so skip it.
+        private void OnExploded(Vector3 point, float radius)
+        {
+            if (_airBlastFrame == Time.frameCount && (point - _airBlastPoint).sqrMagnitude < AIR_BLAST_MATCH_SQR)
+                return;
+
             GameAudio.Play(AudioKeys.Destruction.EXPLOSION_SMALL, point);
+        }
 
         private static void OnMudHit(Vector3 point, float size) =>
             GameAudio.Play(AudioKeys.Destruction.MUD_SPLASH, point);
@@ -148,6 +161,8 @@ namespace Game.AudioEngine.Adapters
 
         private void OnAirBlasted(Vector3 point, float radius, int voxels)
         {
+            _airBlastFrame = Time.frameCount;
+            _airBlastPoint = point;
             GameAudio.Play(AudioKeys.Destruction.EXPLOSION_LARGE, point);
             GameAudio.Play(AudioKeys.Destruction.VOXEL_BREAK, point);
             QueueDebris(point, voxels);

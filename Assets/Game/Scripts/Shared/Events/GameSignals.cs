@@ -9,8 +9,7 @@ namespace Game
     /// </summary>
     public static class GameSignals
     {
-        /// <summary>A projectile exploded: point, damage radius (m).</summary>
-        public static event Action<Vector3, float> Exploded;
+        // Blasts are not here: every one comes through ExplosionEvents.Exploded (shells and the air strike).
 
         /// <summary>Something struck mud: point, size of the hit (m) — a bullet is small, a blast is its radius.</summary>
         public static event Action<Vector3, float> MudHit;
@@ -23,8 +22,6 @@ namespace Game
 
         /// <summary>An air bomb was dropped: the bomb, alive until it explodes.</summary>
         public static event Action<Transform> AirBombDropped;
-
-        public static void RaiseExploded(Vector3 point, float radius) => Exploded?.Invoke(point, radius);
 
         public static void RaiseMudHit(Vector3 point, float size) => MudHit?.Invoke(point, size);
 
