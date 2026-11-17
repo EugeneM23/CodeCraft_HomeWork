@@ -17,6 +17,8 @@ namespace Game.Voxels.Tests
         /// <summary>
         /// Hash of every part's size, voxels and palette from VoxelizedModel.Voxelize() on Tank_01, taken on the
         /// code before the paint moved to VoxelPaint (commit d7e304c3b; the same with Burst on and off).
+        /// It guards VoxelizedModel's behaviour, not Tank_01's look: when Tank_01's visual (meshes, materials,
+        /// hierarchy, its VoxelizedModel settings) changes on purpose, re-take it on the new prefab.
         /// </summary>
         private const ulong TANK_HASH_BEFORE_MOVE = 0x99FAC896B21BBE63UL;
 
