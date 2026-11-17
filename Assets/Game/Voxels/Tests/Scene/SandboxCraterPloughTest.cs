@@ -77,6 +77,8 @@ namespace Game.Voxels.Tests
                 foreach (CraterRun run in runs)
                     Assert.IsTrue(run.Restored, $"{run.Preset}: ground layer and springs back as they were ({run.RestoreNote})");
 
+                foreach (CraterRun run in runs)
+                    Assert.That(run.MaxStrength, Is.GreaterThan(0f), $"{run.Preset}: Ploughed came with an impact");
                 // The same entry hits harder the stronger the preset: the sound and the shake go by it.
                 Assert.That(subtle.MaxStrength, Is.LessThan(punchy.MaxStrength), "impact: Subtle below Punchy");
                 Assert.That(punchy.MaxStrength, Is.LessThan(cinema.MaxStrength), "impact: Punchy below Cinema");

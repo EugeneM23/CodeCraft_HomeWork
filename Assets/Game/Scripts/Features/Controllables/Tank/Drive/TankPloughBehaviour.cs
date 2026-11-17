@@ -50,6 +50,8 @@ namespace Game
 
         // How far (m) above the top of the ground's bounds the warm-up dig is made: nothing there to take.
         private const float WARM_UP_ABOVE = 10f;
+        // Seconds of game time between looks for a ready terrain body to warm up on, while there is none.
+        private const float WARM_UP_RETRY = 0.5f;
 
         private static readonly ProfilerMarker BiteMarker = new("TankPlough.Bite");
         private static readonly ProfilerMarker WarmUpMarker = new("TankPlough.WarmUp");
@@ -66,6 +68,8 @@ namespace Game
         private IValue<IEntity> _driver;
 
         private float _time;
+        // When this tank next looks for a ready terrain body to warm up on, while none was.
+        private float _nextWarmUpTry;
         private float _nextBite;
         private float _nextResponse;
         private Vector3 _lastVelocity;
@@ -149,8 +153,11 @@ namespace Game
         public void FixedTick(IEntity entity, float deltaTime)
         {
             _time += deltaTime;
-            if (!s_warmedUp)
+            if (!s_warmedUp && _time >= _nextWarmUpTry)
+            {
+                _nextWarmUpTry = _time + WARM_UP_RETRY;
                 WarmUp();
+            }
             TankPloughConfig config = Config;
             if (config == null || _hull == null || _body.isKinematic)
             {
@@ -273,7 +280,11 @@ namespace Game
 
             // How hard it felt (sound, shake): against the real face, on the scale all presets share. The
             // response strength above is against the ramp the preset cuts, so it is no measure of the hit.
+            // A hit at exactly IMPACT_MIN_CLOSING (or a preset MinClosing below it) turns the hull but makes no impact:
+            // no sound, no shake.
             float impact = TankPloughMath.ImpactStrength(closing, config.ImpactScale);
+            if (impact <= 0f)
+                return;
             if (_driver != null && _driver.Value != null && config.ShakeStrength > 0f)
                 // perf-ok: once per impact (at most one per PloughTime + ImpactCooldown), not per step
                 CameraShakeUseCase.ShakePlayerCamera(new CameraShakeArgs(config.ShakeDuration, config.ShakeStrength * impact));

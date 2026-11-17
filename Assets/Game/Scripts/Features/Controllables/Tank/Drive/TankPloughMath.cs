@@ -11,7 +11,12 @@ namespace Game
         /// <summary>The slope faces the nose when its normal · the hull's forward is below this.</summary>
         public const float NOSE_FACING = -0.2f;
 
-        /// <summary>Speed (m/s) into the ground, against its real face, below which a hit makes no impact (sound, shake).</summary>
+        /// <summary>
+        /// Speed (m/s) into the ground, against its real face, at or below which a hit makes no impact (sound, shake).
+        /// Kept equal to the presets' MinClosing (2): a nose hit needs at least MinClosing into the real face, so with
+        /// a preset MinClosing above this every hit has an impact; below it, the slowest hits would turn the hull
+        /// silently (TankPloughBehaviour raises nothing for impact 0).
+        /// </summary>
         public const float IMPACT_MIN_CLOSING = 2f;
 
         /// <summary>
