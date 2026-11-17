@@ -74,18 +74,21 @@ namespace Game.Voxels
             if (file == null || file.Length < 20 || Encoding.ASCII.GetString(file, 0, 4) != "VOX ")
                 return false;
 
-            int at = 8;
-            int mainContent = BitConverter.ToInt32(file, at + 4);
-            at += 12 + mainContent; // MAIN header and its own content
+            // Lengths come from the file: all positions are longs, and every chunk must fit in what is left.
+            int mainContent = BitConverter.ToInt32(file, 12);
+            long at = 20L + mainContent; // MAIN header and its own content
+            if (mainContent < 0 || at > file.Length)
+                return false;
             byte[] xyzi = null;
             bool hasPalette = false;
             while (at + 12 <= file.Length)
             {
-                string id = Encoding.ASCII.GetString(file, at, 4);
-                int content = BitConverter.ToInt32(file, at + 4);
-                int children = BitConverter.ToInt32(file, at + 8);
-                int body = at + 12;
-                if (content < 0 || children < 0 || body + content > file.Length)
+                int start = (int)at;
+                string id = Encoding.ASCII.GetString(file, start, 4);
+                int content = BitConverter.ToInt32(file, start + 4);
+                int children = BitConverter.ToInt32(file, start + 8);
+                int body = start + 12;
+                if (content < 0 || children < 0 || content > file.Length - body)
                     return false;
                 if (id == "SIZE" && size.x == 0 && content >= 12)
                     size = new int3(BitConverter.ToInt32(file, body), BitConverter.ToInt32(file, body + 8), BitConverter.ToInt32(file, body + 4));
@@ -101,7 +104,7 @@ namespace Game.Voxels
                         palette[i + 1] = new Color32(file[body + i * 4], file[body + i * 4 + 1], file[body + i * 4 + 2], 255);
                 }
 
-                at = body + content + children;
+                at = (long)body + content + children;
             }
 
             if (xyzi == null || xyzi.Length < 4 || math.any(size <= 0) || math.any(size > MAX_SIZE))

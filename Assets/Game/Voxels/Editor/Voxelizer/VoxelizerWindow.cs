@@ -135,8 +135,7 @@ namespace Game.Voxels.EditorTools
                 }
 
                 string path = EditorUtility.SaveFilePanel("Export .vox", "", $"{_config.model.name}_{_part}.vox", "vox");
-                if (path == "") return;
-                File.WriteAllBytes(path, VoxelizerVoxExchange.Export(asset, _part));
+                if (path != "") File.WriteAllBytes(path, VoxelizerVoxExchange.Export(asset, _part)); // cancelled: nothing to write, but the GUI still exits below
                 _error = "";
             }
             catch (Exception e)
@@ -153,8 +152,7 @@ namespace Game.Voxels.EditorTools
             try
             {
                 string path = EditorUtility.OpenFilePanel("Import .vox", "", "vox");
-                if (path == "") return;
-                VoxelizerVoxExchange.Import(asset, _part, File.ReadAllBytes(path));
+                if (path != "") VoxelizerVoxExchange.Import(asset, _part, File.ReadAllBytes(path)); // cancelled: nothing to read, but the GUI still exits below
                 AssetDatabase.SaveAssetIfDirty(asset);
                 _error = "";
             }
