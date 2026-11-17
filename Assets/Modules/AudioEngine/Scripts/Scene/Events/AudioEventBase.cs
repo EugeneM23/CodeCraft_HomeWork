@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -63,6 +62,12 @@ namespace AudioEngine
 
         protected void Complete() => _completeCallback?.Invoke(this);
 
-        protected internal abstract IEnumerator FadeOut(AnimationCurve curve, float duration);
+        // Volume the AudioSystem fades out (the old per-event FadeOut coroutine is gone: it allocated
+        // on every stop and kept playing through a pause).
+        protected internal virtual float FadeVolume
+        {
+            get => 1f;
+            set { }
+        }
     }
 }

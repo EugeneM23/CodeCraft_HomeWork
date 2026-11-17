@@ -46,6 +46,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: AudioEngine::AudioEngine.AudioSystem
   initOnAwake: 1
+  _initialSources: 16
+  _prewarmPerEvent: 1
   initialBanks:
   - {fileID: 11400000, guid: 0da7220db74687946bcafa34e40c0e25, type: 2}
   - {fileID: 11400000, guid: 1ba19f3fa6af5194684c46b880ef070c, type: 2}

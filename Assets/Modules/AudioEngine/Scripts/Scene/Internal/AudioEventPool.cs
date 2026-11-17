@@ -23,6 +23,26 @@ namespace AudioEngine
             _poolMap[identifier] = (prefab, stack);
         }
 
+        // Creates instances of a poolable event up front, so the first plays of a fight do not instantiate them.
+        internal void Prewarm(string identifier, int count)
+        {
+            if (count <= 0)
+                return;
+
+            if (!_poolMap.TryGetValue(identifier, out (AudioEventBase prefab, Stack<AudioEventBase> stack) tuple))
+                return;
+
+            if (tuple.prefab == null || !tuple.prefab.Poolable)
+                return;
+
+            for (int i = tuple.stack.Count; i < count; i++)
+            {
+                AudioEventBase evt = ScriptableObject.Instantiate(tuple.prefab);
+                evt.Initialize(identifier, _audioSystem);
+                tuple.stack.Push(evt);
+            }
+        }
+
         internal void UnregisterPrefab(string identifier)
         {
             if (!_poolMap.Remove(identifier, out (AudioEventBase prefab, Stack<AudioEventBase> stack) tuple))
@@ -32,7 +52,7 @@ namespace AudioEngine
                 return;
 
             foreach (var audioEvent in tuple.stack)
-                ScriptableObject.Destroy(audioEvent);
+                AudioObjects.Destroy(audioEvent);
 
             tuple.stack.Clear();
         }
@@ -80,7 +100,7 @@ namespace AudioEngine
                 if (tuple.prefab.Poolable) 
                     tuple.stack.Push(audioEvent);
                 else
-                    ScriptableObject.Destroy(audioEvent);
+                    AudioObjects.Destroy(audioEvent);
             }
         }
 
@@ -92,7 +112,7 @@ namespace AudioEngine
                     continue;
 
                 foreach (AudioEventBase audioEvent in stack) 
-                    ScriptableObject.Destroy(audioEvent);
+                    AudioObjects.Destroy(audioEvent);
 
                 stack.Clear();
             }

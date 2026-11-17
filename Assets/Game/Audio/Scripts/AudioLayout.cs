@@ -90,7 +90,8 @@ namespace Game.AudioEngine.Adapters
             new(AudioKeys.Weapons.IMPACT_VOXEL, FX, true, maxFrequency: 0.05f),
             new(AudioKeys.Weapons.IMPACT_FLESH, FX, true, maxFrequency: 0.05f, defaultClips: "Common/BulletDamage.wav"),
             new(AudioKeys.Weapons.AIRSTRIKE_CALL, FX, false, maxFrequency: 0.5f, defaultClips: "Common/Alarm.wav"),
-            new(AudioKeys.Weapons.AIRSTRIKE_WHISTLE, FX, true),
+            // Looped: the whistle lasts until GameSignalAudio stops it when the bomb explodes, not until the clip ends.
+            new(AudioKeys.Weapons.AIRSTRIKE_WHISTLE, FX, true, loop: true),
 
             // Destruction.
             new(AudioKeys.Destruction.EXPLOSION_SMALL, FX, true, maxFrequency: 0.05f, defaultClips: "etfx_explosion_magic.wav"),

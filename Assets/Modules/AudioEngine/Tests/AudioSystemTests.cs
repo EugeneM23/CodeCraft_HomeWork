@@ -134,6 +134,81 @@ namespace AudioEngine.Tests
         }
 
         [Test]
+        public void DestroyedPivot_DoesNotThrow_AndTheEventStillFinishes()
+        {
+            GameObject pivot = new GameObject("Pivot");
+            _system.PlayEvent("test.shot", pivot.transform, out AudioEventHandle handle);
+            Object.DestroyImmediate(pivot);
+
+            Assert.DoesNotThrow(() => _system.TickForTests(0.5f));
+            Assert.IsTrue(handle.IsValid, "the event keeps playing where its pivot was");
+
+            _system.TickForTests(0.6f);
+            Assert.IsFalse(handle.IsValid, "the clip is over: the event went back to the pool");
+        }
+
+        [Test]
+        public void DisposeWithFade_LowersTheVolume_ThenReleasesTheEvent()
+        {
+            _system.PlayEvent("test.loop", out AudioEventHandle handle);
+            AudioSourceEvent evt = EventOf(handle);
+            AudioSource source = evt.Source;
+
+            handle.Dispose(1f);
+            Assert.IsFalse(handle.IsValid, "disposing forgets the event at once");
+            Assert.IsTrue(evt.IsValid, "but it is still fading, not back in the pool yet");
+            Assert.AreEqual(1, _system.FadingCount);
+
+            _system.TickForTests(0.5f);
+            Assert.AreEqual(0.5f, source.volume, 0.01f, "linear fade: half way, half volume");
+
+            _system.TickForTests(0.6f);
+            Assert.AreEqual(0, _system.FadingCount);
+            Assert.IsFalse(evt.IsValid, "the fade ended: the event went back to the pool");
+            Assert.IsNull(evt.Source, "the fade ended: the AudioSource went back to its pool");
+        }
+
+        [Test]
+        public void DisposeWithFade_ThenPause_FreezesTheFade()
+        {
+            _system.PlayEvent("test.loop", out AudioEventHandle handle);
+            AudioSourceEvent evt = EventOf(handle);
+            AudioSource source = evt.Source;
+
+            handle.Dispose(0.5f);
+            _system.Pause();
+
+            Assert.IsFalse(_system.enabled, "a paused system stops its Update");
+            Assert.AreEqual(1, _system.FadingCount, "the fading event is still held by the system");
+
+            _system.TickForTests(10f);
+            Assert.AreEqual(1, _system.FadingCount, "a paused system does not advance its fades");
+            Assert.AreEqual(1f, source.volume, 0.01f);
+            Assert.IsTrue(evt.IsValid);
+
+            _system.Resume();
+            _system.TickForTests(0.6f);
+            Assert.AreEqual(0, _system.FadingCount);
+            Assert.IsFalse(evt.IsValid);
+        }
+
+        [Test]
+        public void StopWithFade_ThenPlay_CancelsTheFade()
+        {
+            _system.PlayEvent("test.loop", out AudioEventHandle handle);
+            AudioSource source = EventOf(handle).Source;
+
+            handle.Stop(1f);
+            _system.TickForTests(0.5f);
+            Assert.AreEqual(1, _system.FadingCount);
+
+            handle.Play();
+            Assert.AreEqual(0, _system.FadingCount, "starting the event cancels its stop-fade");
+            Assert.IsTrue(handle.IsPlaying);
+            Assert.AreEqual(1f, source.volume, 0.01f, "and brings the volume back");
+        }
+
+        [Test]
         public void AudioEventKey_ConvertsToBankDotEvent()
         {
             var key = new AudioEventKey();
@@ -167,6 +242,11 @@ namespace AudioEngine.Tests
             if (evt is AudioEventBase audioEvent && audioEvent.IsValid)
                 audioEvent.OnUpdate(deltaTime);
         }
+
+        private static AudioSourceEvent EventOf(AudioEventHandle handle) =>
+            (AudioSourceEvent)typeof(AudioEventHandle)
+                .GetField("audioEvent", BindingFlags.Instance | BindingFlags.NonPublic)!
+                .GetValue(handle);
 
         private static FieldInfo Field(object target, string name)
         {

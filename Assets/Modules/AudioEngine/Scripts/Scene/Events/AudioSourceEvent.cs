@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using Sirenix.OdinInspector;
 #if UNITY_EDITOR
 using UnityEditor;
@@ -170,22 +169,14 @@ namespace AudioEngine
                 _audioSource.UnPause();
         }
 
-        protected internal override IEnumerator FadeOut(AnimationCurve curve, float duration)
+        protected internal override float FadeVolume
         {
-            float time = 0f;
-            float startVolume = _audioSource.volume;
-
-            while (time < duration)
+            get => _audioSource != null ? _audioSource.volume : 0f;
+            set
             {
-                float t = time / duration;
-                float fadeMultiplier = curve?.Evaluate(t) ?? 1f - t;
-                _audioSource.volume = startVolume * fadeMultiplier;
-
-                time += Time.deltaTime;
-                yield return null;
+                if (_audioSource != null)
+                    _audioSource.volume = value;
             }
-
-            _audioSource.volume = 0f;
         }
 
         private void ResetState()

@@ -110,6 +110,25 @@ namespace Game.AudioEngine.Adapters.EditorTools
             return false;
         }
 
+        /// <summary>
+        /// For tests: runs the import-rule fixes queued for the next editor tick now and drops the queued Sync Banks
+        /// (the test syncs itself), so nothing a test import scheduled lands after the test.
+        /// </summary>
+        internal static void FlushScheduledForTests()
+        {
+            if (s_fixScheduled)
+            {
+                EditorApplication.delayCall -= FixPending;
+                FixPending();
+            }
+
+            if (s_syncScheduled)
+            {
+                EditorApplication.delayCall -= SyncAfterImport;
+                s_syncScheduled = false;
+            }
+        }
+
         private static void SyncAfterImport()
         {
             s_syncScheduled = false;

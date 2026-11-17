@@ -17,7 +17,11 @@ namespace AudioEngine
             string bankIdentifier = audioBank.identifier;
 
             foreach (EventParameter eventParameter in audioBank.eventParameters)
-                this.audioEventPool.RegisterPrefab($"{bankIdentifier}.{eventParameter.identifier}", eventParameter.value);
+            {
+                string eventId = $"{bankIdentifier}.{eventParameter.identifier}";
+                this.audioEventPool.RegisterPrefab(eventId, eventParameter.value);
+                this.audioEventPool.Prewarm(eventId, _prewarmPerEvent);
+            }
 
             foreach (BoolParameter boolParameter in audioBank.boolParameters)
                 this.boolParameters[$"{bankIdentifier}.{boolParameter.identifier}"] = boolParameter.value;

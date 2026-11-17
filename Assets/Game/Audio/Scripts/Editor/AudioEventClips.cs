@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using AudioEngine;
 using UnityEditor;
@@ -56,6 +57,26 @@ namespace Game.AudioEngine.Adapters.EditorTools
 
             serialized.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(audioEvent);
+            return true;
+        }
+
+        /// <summary>
+        /// True when these clips (from <see cref="Read"/>) are what the sync itself would have written, so the sync
+        /// may replace them: none (or only deleted ones), the layout defaults, or clips under Clips/ that came from a
+        /// key folder. Anything else was dragged in by hand and must survive a sync.
+        /// </summary>
+        public static bool IsSyncOwned(List<AudioClip> current, IReadOnlyList<AudioClip> defaults)
+        {
+            if (current.Count == 0 || SameSet(current, defaults))
+                return true;
+
+            foreach (AudioClip clip in current)
+            {
+                string path = AssetDatabase.GetAssetPath(clip);
+                if (!path.StartsWith(AudioAssetPaths.CLIPS + "/", StringComparison.Ordinal))
+                    return false;
+            }
+
             return true;
         }
 

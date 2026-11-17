@@ -12,18 +12,18 @@ namespace AudioEngine
         private const string INACTIVE_NAME = "<audio_source_inactive>";
         private const string ACTIVE_NAME = "<audio_source_active>";
 
-        private const int INITIAL_SIZE = 4;
-
         private readonly Transform parent;
 
         [ShowInInspector, ReadOnly]
         private readonly Stack<AudioSource> _pool = new();
 
-        internal AudioSourcePool(Transform parent)
+        // initialSize comes from AudioSystem (serialized): the old fixed 4 sources ran out in the
+        // first second of a fight and the rest were instantiated mid-fight.
+        internal AudioSourcePool(Transform parent, int initialSize)
         {
             this.parent = parent;
 
-            for (int i = 0; i < INITIAL_SIZE; i++)
+            for (int i = 0; i < initialSize; i++)
             {
                 GameObject sourceGO = new GameObject();
                 sourceGO.name = INACTIVE_NAME;
@@ -39,7 +39,7 @@ namespace AudioEngine
         public void Dispose()
         {
             foreach (AudioSource source in _pool) 
-                GameObject.Destroy(source.gameObject);
+                AudioObjects.Destroy(source.gameObject);
 
             _pool.Clear();
         }

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: AudioEngine::AudioEngine.AudioSourceEvent
   _poolable: 1
   duration: 0
-  loop: 0
+  loop: 1
   spartialBlend: 1
   output: {fileID: 3749125731345324096, guid: fcf45067a59444e45a07f67b96ef76a5, type: 2}
   clip:

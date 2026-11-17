@@ -177,6 +177,8 @@ namespace Game.AudioEngine.Adapters
         {
             if (s_instance != null && s_instance != this)
             {
+                // Destroy is deferred: a duplicate would otherwise still get Update before it goes.
+                enabled = false;
                 Destroy(gameObject);
                 return;
             }
@@ -188,9 +190,17 @@ namespace Game.AudioEngine.Adapters
             Preload();
         }
 
-        private void OnEnable() => _signals?.Subscribe();
+        private void OnEnable()
+        {
+            if (s_instance == this)
+                _signals?.Subscribe();
+        }
 
-        private void OnDisable() => _signals?.Unsubscribe();
+        private void OnDisable()
+        {
+            if (s_instance == this)
+                _signals?.Unsubscribe();
+        }
 
         private void Start()
         {
@@ -213,6 +223,9 @@ namespace Game.AudioEngine.Adapters
         // Polls the pause source while the game is paused: Atomic ticks may stop with the pause, this must not.
         private void Update() // perf-ok: ticks during pause (pause poll, delayed signal sounds)
         {
+            if (s_instance != this)
+                return;
+
             SetPaused(_pauseSource.IsPaused);
             if (!_paused)
                 _signals.Tick(Time.deltaTime);
@@ -229,6 +242,11 @@ namespace Game.AudioEngine.Adapters
             if (_context != null && _ambience != null)
                 _context.DelBehaviour(_ambience);
             _ambience = null;
+
+            // The battle music this level started stops with it (AppAudio starts menu music in a menu scene).
+            AppAudio app = AppAudio.Instance;
+            if (_playBattleMusic && app != null)
+                app.StopMusic();
 
             s_horde.Reset();
             s_instance = null;

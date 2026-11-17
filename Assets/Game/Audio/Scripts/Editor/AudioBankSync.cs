@@ -92,8 +92,8 @@ namespace Game.AudioEngine.Adapters.EditorTools
                     created++;
                 }
 
-                List<AudioClip> clips = ClipsOf(sound);
-                if (AudioEventClips.Write(audioEvent, clips))
+                List<AudioClip> clips = ClipsOf(sound, audioEvent, out bool write);
+                if (write && AudioEventClips.Write(audioEvent, clips))
                     clipsChanged++;
 
                 if (clips.Count == 0)
@@ -151,10 +151,25 @@ namespace Game.AudioEngine.Adapters.EditorTools
                 AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
         }
 
-        private static List<AudioClip> ClipsOf(AudioLayout.Sound sound)
+        /// <summary>
+        /// The clips the event should hold. Clips in the key folder always win. With an empty folder the layout
+        /// defaults are written only over what the sync itself put there (nothing, the defaults, deleted clips or
+        /// clips from Clips/); clips the designer dragged in by hand are kept and <paramref name="write"/> is false.
+        /// </summary>
+        private static List<AudioClip> ClipsOf(AudioLayout.Sound sound, AudioSourceEvent audioEvent, out bool write)
         {
+            write = true;
             List<AudioClip> clips = AudioClipFolders.FindClips(AudioAssetPaths.KeyFolder(sound.Bank, sound.Key));
-            return clips.Count > 0 ? clips : AudioClipFolders.LoadDefaultClips(sound.Id, sound.DefaultClips);
+            if (clips.Count > 0)
+                return clips;
+
+            List<AudioClip> defaults = AudioClipFolders.LoadDefaultClips(sound.Id, sound.DefaultClips);
+            List<AudioClip> current = AudioEventClips.Read(audioEvent);
+            if (AudioEventClips.IsSyncOwned(current, defaults))
+                return defaults;
+
+            write = false;
+            return current;
         }
 
         private static AudioSourceEvent CreateEvent(AudioLayout.Sound sound, AudioMixer mixer)
@@ -204,18 +219,16 @@ namespace Game.AudioEngine.Adapters.EditorTools
             serialized.FindProperty("identifier").stringValue = bank;
             serialized.FindProperty("codeGenPath").stringValue = AudioAssetPaths.BANKS;
 
+            // Layout events are updated or appended; entries added by hand that the layout does not know stay.
             SerializedProperty events = serialized.FindProperty("eventParameters");
-            List<AudioLayout.Sound> sounds = new List<AudioLayout.Sound>();
             foreach (AudioLayout.Sound sound in AudioLayout.Sounds)
-                if (sound.Bank == bank)
-                    sounds.Add(sound);
-
-            events.arraySize = sounds.Count;
-            for (int i = 0; i < sounds.Count; i++)
             {
-                SerializedProperty element = events.GetArrayElementAtIndex(i);
-                element.FindPropertyRelative("identifier").stringValue = sounds[i].Key;
-                element.FindPropertyRelative("value").objectReferenceValue = LoadEvent(sounds[i]);
+                if (sound.Bank != bank)
+                    continue;
+
+                SerializedProperty element = FindOrAppend(events, sound.Key, out _);
+                element.FindPropertyRelative("identifier").stringValue = sound.Key;
+                element.FindPropertyRelative("value").objectReferenceValue = LoadEvent(sound);
             }
 
             WriteFloatParameters(serialized.FindProperty("floatParameters"), bank);
@@ -231,29 +244,39 @@ namespace Game.AudioEngine.Adapters.EditorTools
 
         private static void WriteFloatParameters(SerializedProperty array, string bank)
         {
-            // Keep values tuned by hand for parameters that already exist.
-            Dictionary<string, float> existing = new Dictionary<string, float>();
+            // Layout parameters missing from the bank are appended with their default. Existing ones keep the
+            // value tuned by hand, and entries the layout does not know stay.
+            foreach (AudioLayout.Parameter parameter in AudioLayout.Parameters)
+            {
+                if (parameter.Bank != bank)
+                    continue;
+
+                SerializedProperty element = FindOrAppend(array, parameter.Key, out bool appended);
+                if (!appended)
+                    continue;
+
+                element.FindPropertyRelative("identifier").stringValue = parameter.Key;
+                element.FindPropertyRelative("value").floatValue = parameter.Default;
+            }
+        }
+
+        /// <summary>The element of an array of {identifier, …} with this identifier, or a new one at its end.</summary>
+        private static SerializedProperty FindOrAppend(SerializedProperty array, string identifier, out bool appended)
+        {
             for (int i = 0; i < array.arraySize; i++)
             {
                 SerializedProperty element = array.GetArrayElementAtIndex(i);
-                existing[element.FindPropertyRelative("identifier").stringValue] =
-                    element.FindPropertyRelative("value").floatValue;
+                if (element.FindPropertyRelative("identifier").stringValue == identifier)
+                {
+                    appended = false;
+                    return element;
+                }
             }
 
-            List<AudioLayout.Parameter> parameters = new List<AudioLayout.Parameter>();
-            foreach (AudioLayout.Parameter parameter in AudioLayout.Parameters)
-                if (parameter.Bank == bank)
-                    parameters.Add(parameter);
-
-            array.arraySize = parameters.Count;
-            for (int i = 0; i < parameters.Count; i++)
-            {
-                SerializedProperty element = array.GetArrayElementAtIndex(i);
-                string key = parameters[i].Key;
-                element.FindPropertyRelative("identifier").stringValue = key;
-                element.FindPropertyRelative("value").floatValue =
-                    existing.TryGetValue(key, out float value) ? value : parameters[i].Default;
-            }
+            appended = true;
+            int index = array.arraySize;
+            array.arraySize = index + 1;
+            return array.GetArrayElementAtIndex(index);
         }
 
         private static void EnsureArray(SerializedProperty array)
@@ -300,22 +323,36 @@ namespace Game.AudioEngine.Adapters.EditorTools
         private static void WriteMusicCatalog(string assetPath, string clipFolder)
         {
             MusicCatalog catalog = LoadOrCreate<MusicCatalog>(assetPath);
+            SerializedObject serialized = new SerializedObject(catalog);
+            SerializedProperty array = serialized.FindProperty("clips");
+
             List<AudioClip> clips = AudioClipFolders.FindClips(clipFolder);
             if (clips.Count == 0)
             {
+                // An empty folder keeps the tracks put into the catalog by hand; only an empty catalog gets Music.wav.
+                if (HasAnyClip(array))
+                    return;
+
                 AudioClip fallback = AssetDatabase.LoadAssetAtPath<AudioClip>(AudioAssetPaths.FALLBACK_MUSIC);
                 if (fallback != null)
                     clips.Add(fallback);
             }
 
-            SerializedObject serialized = new SerializedObject(catalog);
-            SerializedProperty array = serialized.FindProperty("clips");
             array.arraySize = clips.Count;
             for (int i = 0; i < clips.Count; i++)
                 array.GetArrayElementAtIndex(i).objectReferenceValue = clips[i];
 
             if (serialized.ApplyModifiedPropertiesWithoutUndo())
                 EditorUtility.SetDirty(catalog);
+        }
+
+        private static bool HasAnyClip(SerializedProperty array)
+        {
+            for (int i = 0; i < array.arraySize; i++)
+                if (array.GetArrayElementAtIndex(i).objectReferenceValue != null)
+                    return true;
+
+            return false;
         }
 
         private static string WritePreload(List<AudioClip> clips)

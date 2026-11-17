@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using AudioEngine;
 using UnityEngine;
 using UnityEngine.Audio;
+using UnityEngine.SceneManagement;
 
 namespace Game.AudioEngine.Adapters
 {
@@ -94,6 +95,8 @@ namespace Game.AudioEngine.Adapters
 
             _volumes = new GameAudioVolumes(_mixer);
             _uiSounds = new GameUiSounds(_uiSoundPlayer, _uiCatalog, _stingerSource);
+
+            SceneManager.sceneLoaded += OnSceneLoaded;
         }
 
         // AudioMixer.SetFloat is ignored in Awake.
@@ -101,8 +104,19 @@ namespace Game.AudioEngine.Adapters
 
         private void OnDestroy()
         {
-            if (Instance == this)
-                Instance = null;
+            if (Instance != this)
+                return;
+
+            SceneManager.sceneLoaded -= OnSceneLoaded;
+            Instance = null;
+        }
+
+        // A scene without a GameContext is a menu: it gets the menu music. Battle music is started by GameAudio.
+        // One lookup per scene load, not per frame.
+        private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+        {
+            if (!GameContext.TryGetInstance(out _))
+                PlayMenuMusic();
         }
 
         private void Update() // perf-ok: ticks during pause (music fades and track changes)

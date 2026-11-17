@@ -43,7 +43,12 @@ engine.Dispose(0.3f);                                       // погасить 
 | `Scripts/Scene/AudioEventHandle.cs` | `Dispose(fade)` гасил первое событие с тем же id, а не своё |
 | `Scripts/Scene/Behaviours/Event/AudioEventBehaviour_PlayAudioEventInRandomInterval.cs` | Время срабатывания выбиралось в `Reset()`, который никто не звал: звук срабатывал сразу и один раз |
 | `Scripts/AssemblyInfo.cs` | Новый: `InternalsVisibleTo("AudioEngine.Tests")` |
+| `AudioSystem_Events.cs` (`UpdatePivotEvents`) | Уничтоженный объект, за которым шёл звук, бросал исключение каждый кадр и останавливал весь звук. Теперь событие перестаёт следовать за ним и доигрывает на месте |
+| `AudioSystem_Events.cs` (`PlayEvent`) | `SetCallback(this.DisposeEvent)` создавал новый делегат на каждый звук (мусор). Делегат один, кешируется |
+| `AudioSystem_Events.cs`, `AudioSystem.cs`, `Events/AudioEventBase.cs`, `Events/AudioSourceEvent.cs`, новый `Internal/AudioEventFade.cs` | Затухание шло корутинами: мусор на каждую остановку, а затухающее событие не ставилось на паузу. Теперь список затуханий тикает в `Update` без аллокаций и замирает вместе с `Pause()`; `Pause()`/`Resume()` ставят на паузу и затухающие источники. `Play` после `Stop(fade)` отменяет затухание и возвращает громкость. `FadeOut` (корутина) удалён, вместо него `FadeVolume`. `TickForTests` и `FadingCount` — для тестов |
+| `Internal/AudioEventPool.cs`, `Internal/AudioSourcePool.cs`, `AudioSystem_Banks.cs`, `AudioSystem.cs` | Пулы создавали события и `AudioSource` посреди боя. `LoadBank` заранее создаёт `Prewarm Per Event` экземпляров каждого события (по умолчанию 1), стартовых источников — `Initial Sources` (по умолчанию 16 вместо 4) |
+| `Internal/AudioEventPool.cs`, `Internal/AudioSourcePool.cs`, новый `Internal/AudioObjects.cs` | `Destroy` пулов в режиме редактора (тесты, инструменты) давал ошибку и оставлял объект — там теперь `DestroyImmediate` |
 
 ## Тесты
 
-`Tests/AudioEngine.Tests.asmdef`, EditMode: загрузка и выгрузка банка, неизвестный ключ, `maxFrequency`, длительность по клипу, петля, `Dispose` своей ручки, пауза.
+`Tests/AudioEngine.Tests.asmdef`, EditMode: загрузка и выгрузка банка, неизвестный ключ, `maxFrequency`, длительность по клипу, петля, `Dispose` своей ручки, пауза, уничтоженный pivot, затухание при `Dispose(fade)` и его заморозка на паузе, отмена затухания при `Play`.
