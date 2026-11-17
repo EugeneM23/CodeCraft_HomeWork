@@ -71,6 +71,7 @@ namespace Game.AIKit.Adapters.EditorTools
                     position = hit.point;
 
                 var elite = (GameObject)PrefabUtility.InstantiatePrefab(prefab, scene);
+                elite.name = $"Regax_Elite_{i + 1:00}";
                 elite.transform.SetPositionAndRotation(position, Quaternion.LookRotation(-direction));
                 Undo.RegisterCreatedObjectUndo(elite, "Add Elite Regax");
             }
