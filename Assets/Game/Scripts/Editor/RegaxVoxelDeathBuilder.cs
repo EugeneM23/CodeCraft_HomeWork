@@ -66,10 +66,8 @@ namespace Game.EditorTools
                     return;
                 }
 
-                // The Maya gibs and the pack's death blood come off.
+                // The Maya gibs come off.
                 foreach (CharacterGibsInstaller old in root.GetComponentsInChildren<CharacterGibsInstaller>(true))
-                    Remove(entity, old);
-                foreach (DeathBloodInstaller old in root.GetComponentsInChildren<DeathBloodInstaller>(true))
                     Remove(entity, old);
 
                 // The pack's hit blood: the installer is shared with the zombies, so only its effects go.

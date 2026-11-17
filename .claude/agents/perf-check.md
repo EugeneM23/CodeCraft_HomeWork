@@ -50,6 +50,14 @@ Shared editor rules — break none of them:
 - Enter or leave Play only when `play: free`. With `play: user-in-play`, measure in the running Play and never stop it.
 
 Steps:
+0. Check that the machine is quiet (Performance.md section 4, item 3):
+   ```
+   powershell -NoProfile -Command "(Get-CimInstance Win32_Processor | Measure-Object LoadPercentage -Average).Average"
+   ```
+   Also check CPU time of the other `Unity` processes over 5 s.
+   - If the load without your editor is above 25 %, wait up to 10 min for it to drop.
+   - If it stays high, skip the benchmark and name the busy editors in the report.
+   - Write the load in the report.
 1. Check the state in one call: `unity cmd --port <N> script eval --code "return UnityEditor.EditorApplication.isPlaying + \" \" + UnityEngine.SceneManagement.SceneManager.GetActiveScene().path + \" dirty=\" + UnityEngine.SceneManagement.SceneManager.GetActiveScene().isDirty;"`
 2. If the active scene is not `Assets/Game/Voxels/Scenes/VoxelSandbox.unity`:
    - you may open it only when `play: free`, the editor is not playing, and the open scene is not dirty;

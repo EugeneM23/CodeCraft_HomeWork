@@ -5,8 +5,8 @@ using UnityEngine;
 namespace Game
 {
     /// <summary>
-    /// Turns the turret towards RotateDirection — the same value PlayerAimController writes
-    /// for a character on foot, so the cursor aims the turret with no input code of its own.
+    /// Turns the turret towards RotateDirection — the value PlayerAimController writes for
+    /// the player's character, so the cursor aims the turret with no input code of its own.
     ///
     /// Two transforms move together. The pivot carries the cannon and its fire point and only
     /// ever yaws: SpawnUseCase takes the shell's rotation straight off the fire point, and a fire

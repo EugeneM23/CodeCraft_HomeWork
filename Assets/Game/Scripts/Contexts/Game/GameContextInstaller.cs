@@ -7,7 +7,6 @@ namespace Game
     {
         [SerializeField] private PlayerContext _playerContext;
         [SerializeField] private Transform _poolsParent;
-        [SerializeField] private MonoEntity _audioPrefab;
         [SerializeField] private MonoEntity _hitEffectPrefab;
         [SerializeField] private MonoEntityWorld _entityWorld;
 
@@ -24,8 +23,6 @@ namespace Game
             context.AddEntityWorld(_entityWorld);
             context.AddPlayerContext(_playerContext);
             context.AddGameFactory(new GameFactory(_poolsParent));
-            context.GetGameFactory()
-                .RegisterNewPrefab(_audioPrefab, GameFactoryID.AudioSource.ToString(), prewarm: 8);
 
             // Without it the first shot, hit and blast of each kind instantiates its object mid-fight.
             if (_prewarmPerFrame > 0)

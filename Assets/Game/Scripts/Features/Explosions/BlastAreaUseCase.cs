@@ -9,7 +9,7 @@ namespace Game
     /// Walks every damageable entity inside a sphere, once each, with how far out it stands.
     /// </summary>
     /// <remarks>
-    /// The explosion and the flash grenade used to carry the same loop twice: the overlap query on
+    /// Blast code used to carry the same loop in more than one place: the overlap query on
     /// <see cref="PhysicsLayers.Targets"/>, the collider-to-entity lookup, the set that stops a
     /// character with several colliders being hit several times, and the distance to the nearest
     /// point of the collider that drives the falloff.

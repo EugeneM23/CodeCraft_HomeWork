@@ -10,7 +10,7 @@ namespace Game
     {
         /// <summary>
         /// What a blast or a foot can find mud under it on: everything but people, monsters,
-        /// dummies, pickups and things in flight (layers 6–9, 11–13; ProjectSettings/TagManager.asset).
+        /// dummies, layer 6 (Interactable) and things in flight (layers 6–9, 11–13; ProjectSettings/TagManager.asset).
         /// </summary>
         public const int GROUND_MASK = ~((1 << PhysicsLayers.Interactable) | (1 << PhysicsLayers.Dummy) | (1 << PhysicsLayers.Enemy) | (1 << PhysicsLayers.Character) | (1 << PhysicsLayers.ThrowItem) | (1 << PhysicsLayers.Bullet) | (1 << PhysicsLayers.Weapon));
 

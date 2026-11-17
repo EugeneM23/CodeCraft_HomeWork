@@ -19,7 +19,7 @@ namespace Game
     /// ignores the raycast budget); switches off lights that are not marked Important, which on a
     /// level with one per-pixel light would only add per-vertex and SH work; stops meshes smaller
     /// than 0.3 m (bullets, casings, rocket tips) from casting shadows nobody can make out from this
-    /// camera; and applies the mobile HighlightPlus settings.
+    /// camera.
     ///
     /// Halving cannot be repeated safely, so each instance is changed once: the pool calls this for
     /// every instance it creates and never on rent, and a second call for an instance does nothing.
@@ -47,7 +47,6 @@ namespace Game
                 HalveParticleBudget(root);
                 SwitchOffMinorLights(root);
                 StopSmallShadowCasters(root);
-                MobileHighlights.ApplyToHierarchy(root);
             }
         }
 

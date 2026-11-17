@@ -65,7 +65,7 @@ namespace Game
         /// <summary>
         /// Parked and put to sleep by TankSuspensionBehaviour: no wheel is cast and nothing pushes
         /// the hull, and the drive leaves the body alone too, or the next force would wake it.
-        /// Cleared, in the same physics step, once the body is woken or somebody gets in.
+        /// Cleared, in the same physics step, once the body is woken or the tank gets a driver.
         /// </summary>
         public bool Resting;
 

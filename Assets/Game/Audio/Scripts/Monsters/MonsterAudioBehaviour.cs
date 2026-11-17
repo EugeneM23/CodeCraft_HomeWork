@@ -9,8 +9,6 @@ namespace Game.AudioEngine.Adapters
     /// <summary>
     /// A monster (Regax): a roar when it first appears, a growl every 4–10 s while it lives, steps while it
     /// moves, the swing of the weapon in its hand, a cry when hit, the death cry. Sounds play at its position.
-    /// The kinds the old CharacterAudioInstaller still plays are switched off by the director
-    /// (<see cref="LegacySoundUseCase"/>).
     /// </summary>
     public sealed class MonsterAudioBehaviour : IEntityInit, IEntityEnable, IEntityTick, IEntityDispose
     {
@@ -22,11 +20,6 @@ namespace Game.AudioEngine.Adapters
 
         /// <summary>Speed (m/s) below which it stands still.</summary>
         private const float MOVING = 0.1f;
-
-        private readonly bool _hitSound;
-        private readonly bool _deathSound;
-        private readonly bool _attackSound;
-        private readonly bool _stepSound;
 
         private readonly Action<TakeDamageArgs> _onDamage;
         private readonly Action<TakeDamageArgs> _onDeath;
@@ -43,13 +36,8 @@ namespace Game.AudioEngine.Adapters
         private float _growlTimer;
         private float _stepTimer;
 
-        public MonsterAudioBehaviour(bool hitSound, bool deathSound, bool attackSound, bool stepSound)
+        public MonsterAudioBehaviour()
         {
-            _hitSound = hitSound;
-            _deathSound = deathSound;
-            _attackSound = attackSound;
-            _stepSound = stepSound;
-
             _onDamage = OnDamage;
             _onDeath = OnDeath;
             _onAttack = OnAttack;
@@ -62,11 +50,11 @@ namespace Game.AudioEngine.Adapters
             if (entity.TryGetVelocity(out IReactiveVariable<float> velocity))
                 _velocity = velocity;
 
-            if (_hitSound && entity.TryGetDamageTakenEvent(out _damageEvent))
+            if (entity.TryGetDamageTakenEvent(out _damageEvent))
                 _damageEvent.OnEvent += _onDamage;
-            if (_deathSound && entity.TryGetDeathTakenEvent(out _deathEvent))
+            if (entity.TryGetDeathTakenEvent(out _deathEvent))
                 _deathEvent.OnEvent += _onDeath;
-            if (_attackSound && entity.TryGetWeapon(out IReactiveVariable<IEntity> weapon))
+            if (entity.TryGetWeapon(out IReactiveVariable<IEntity> weapon))
                 _weaponFire = new HeldWeaponFireListener(weapon, _onAttack);
         }
 
@@ -94,7 +82,7 @@ namespace Game.AudioEngine.Adapters
                 GameAudio.Play(AudioKeys.Monsters.GROWL, _transform.position);
             }
 
-            if (!_stepSound || _velocity == null)
+            if (_velocity == null)
                 return;
 
             if (_velocity.Value < MOVING)

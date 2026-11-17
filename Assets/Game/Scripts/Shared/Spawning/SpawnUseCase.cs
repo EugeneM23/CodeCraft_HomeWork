@@ -42,8 +42,8 @@ namespace Game
 
         /// <summary>
         /// Switches collisions off between the bullet and the colliders of whoever fired it
-        /// (the weapon's ShooterColliders): the helicopter's guns hang under its nose and wings and
-        /// aim down and to the side through a wide spread, and their bullets struck its own hull.
+        /// (the weapon's ShooterColliders): a gun mounted on a vehicle that aims down or to the side
+        /// through a wide spread would otherwise strike the vehicle's own hull. No gun sets it now.
         /// A bullet comes from a pool, so the pairs it was given by its previous shooter are put
         /// back first; a weapon without shooter colliders leaves the bullet hitting everything.
         ///
@@ -79,8 +79,8 @@ namespace Game
 
             foreach (Collider own in BulletColliders)
             {
-                // Once per bullet collider, not once per pair: three native calls each, and the
-                // helicopter's hull alone is eight colliders, on every round.
+                // Once per bullet collider, not once per pair: three native calls each, and a
+                // vehicle's hull can be many colliders, on every round.
                 if (!IsLive(own))
                     continue;
 

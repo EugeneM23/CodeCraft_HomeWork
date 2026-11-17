@@ -8,7 +8,6 @@ namespace Game
     {
         [Header("Combat Settings")] [SerializeField]
         private MonoEntity _weapon;
-        [SerializeField] private Transform _weaponRoot;
 
         [Header("Movement Settings")] [SerializeField]
         private float _moveSpeed = 1;
@@ -54,7 +53,7 @@ namespace Game
             entity.AddBehaviour(new PassThroughLoosePiecesBehaviour());
 
             // Attack
-            CharacterAttackUseCase.AddHeldWeapon(entity, _weapon, _weaponRoot);
+            CharacterAttackUseCase.AddHeldWeapon(entity, _weapon);
 
             // No AI here: a plain enemy stands where it is placed. The elite's brain is AIKit
             // (Features/AI/EliteRegax, EliteRegaxInstaller), the horde's is Game.Horde.

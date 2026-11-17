@@ -4,6 +4,7 @@
     "references": [
         "Game",
         "Game.Voxels",
+        "GameLoop",
         "AudioEngine",
         "Atomic.Elements",
         "Atomic.Entities",

@@ -17,6 +17,7 @@ Assets/
   Game/
     Scripts/
       App/                   AppContext, поток игры, загрузка уровней, инсталлеры
+      Adapters/<Модуль>/     сборки-адаптеры модулей Platformer: Game.<Модуль>.Adapters (ядро — GameLoop, Loading, SaveSystem)
       Contexts/{Game,Player} контексты уровня и игрока (уже есть)
       Declarations/          общий EntityAPI.cs и ключи прототипа (уже есть)
       UI/                    экраны и их логика
@@ -87,9 +88,11 @@ Tools/<Инструмент>/          скрипты вне Unity (Maya, PerfCh
 | `Game.AIKit.Adapters.Editor` | `Game/Scripts/Features/AI/Editor` | `Game.AIKit.Adapters.EditorTools` | Editor |
 | `Game.AIKit.Adapters.Tests` | `Game/Tests/AI` | `Game.AIKit.Adapters.Tests` | Editor (EditMode) |
 | `Game.AIKit.Adapters.SceneTests` | `Game/Tests/AI/Scene` | `Game.AIKit.Adapters.Tests` | Editor (PlayMode-тесты сцены) |
+| `Game.GameLoop.Adapters` (и другие модули ядра) | `Game/Scripts/Adapters/<Модуль>` | `Game.<Модуль>.Adapters` | все |
+| `Game.App.SceneTests` | `Game/Tests/App/PlayMode` | `Game.Tests` | все (PlayMode-тесты потока игры) |
 
 - **Новая сборка** называется `Game.<Подсистема>`, её части — `Game.<Подсистема>.Editor`, `.Tests`, `.Adapters`. Пример — `Game.Horde`. `rootNamespace` равен имени сборки, а у редакторских — `….EditorTools`, чтобы не спорить с `UnityEditor`.
-- **Модуль** в `Assets/Modules/<Name>` сохраняет свои сборки как есть. Всё про нашу игру лежит в отдельной сборке-адаптере `Game.<Name>.Adapters` рядом с кодом игры, а не внутри модуля.
+- **Модуль** в `Assets/Modules/<Name>` сохраняет свои сборки как есть. Всё про нашу игру лежит в отдельной сборке-адаптере `Game.<Name>.Adapters` рядом с кодом игры, а не внутри модуля: `Game/Scripts/Adapters/<Name>/` или, у подсистемы со своей папкой, в ней (`Game/Audio/Scripts`).
 - Рантайм-сборка не ссылается на редакторские. `using UnityEditor` в рантайм-коде — только внутри `#if UNITY_EDITOR`.
 - Тяжёлая подсистема без зависимостей от `Game` (воксели, орда) — своя сборка. Она ссылается только на Burst, Collections и Mathematics, а `Game` ссылается на неё, но не наоборот.
 - Тестовые сборки: `UNITY_INCLUDE_TESTS` в `defineConstraints`, `autoReferenced: false`.

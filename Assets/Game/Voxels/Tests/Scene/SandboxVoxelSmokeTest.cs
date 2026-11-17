@@ -84,7 +84,7 @@ namespace Game.Voxels.Tests
 
                 // Ruts are pressed into mud only (grass and the road take a print), and the tank starts
                 // on the road: it is put on a stretch of mud and driven through it as the player drives.
-                Assert.IsTrue(TryFindMud(tankObject.transform.forward, out Vector3 mud), "a stretch of mud to drive through");
+                Assert.IsTrue(TryFindMud(tankObject.transform.forward, impact, out Vector3 mud), "a stretch of mud to drive through");
                 Rigidbody body = tankObject.GetComponent<Rigidbody>();
                 body.linearVelocity = Vector3.zero;
                 body.angularVelocity = Vector3.zero;
@@ -111,6 +111,7 @@ namespace Game.Voxels.Tests
 
                 yield return new WaitForFixedUpdate();
                 Debug.Log($"[VoxelSmoke] drove {Vector3.Distance(from, tankObject.transform.position):F1} m from {from:F1}");
+                Assert.That(Vector3.Distance(from, tankObject.transform.position), Is.GreaterThan(3f), "the tank drove through the mud");
 
                 Debug.Log($"[VoxelSmoke] ruts: tile {before} → {ground.SolidCount} voxels, debris {VoxelWorld.Instance.Debris.Count}");
                 Assert.That(ground.SolidCount, Is.LessThan(before), "the wheels pressed ruts into the mud");
@@ -144,9 +145,10 @@ namespace Game.Voxels.Tests
 
         /// <summary>
         /// A spot with 8 m of mud ahead of it along <paramref name="forward"/>, clear of houses,
-        /// ramps and Regaxes (nothing but the ground in a box round the way), nearest the origin.
+        /// ramps and Regaxes (nothing but the ground in a box round the way) and of the crater at
+        /// <paramref name="crater"/>, nearest the origin.
         /// </summary>
-        private static bool TryFindMud(Vector3 forward, out Vector3 spot)
+        private static bool TryFindMud(Vector3 forward, Vector3 crater, out Vector3 spot)
         {
             spot = default;
             VoxelTerrainSettings terrain = Object.FindFirstObjectByType<VoxelTerrainSettings>();
@@ -161,6 +163,8 @@ namespace Game.Voxels.Tests
             for (float z = -36f; z <= 36f; z += 2f)
             {
                 var start = new Vector3(x, 0f, z);
+                if (Vector3.Distance(start + forward * 2.5f, new Vector3(crater.x, 0f, crater.z)) < 9f)
+                    continue;
                 bool allMud = true;
                 for (float d = -3f; d <= 8f && allMud; d += 0.5f)
                     allMud = terrain.SoilAt(start + forward * d) == TerrainSoil.Mud;
