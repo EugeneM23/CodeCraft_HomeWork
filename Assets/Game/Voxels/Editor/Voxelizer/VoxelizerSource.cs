@@ -108,6 +108,21 @@ namespace Game.Voxels.EditorTools
             return null;
         }
 
+        /// <summary>A material's colour as the voxelizer sees it, sRGB: its tint times its texture's mean.</summary>
+        public static Color32 ColourOf(Material material)
+        {
+            Color32 tint = TintOf(material);
+            Color32[] texels = ReadTexture(TextureOf(material), out _, out _);
+            if (texels == null || texels.Length == 0)
+                return new Color32(tint.r, tint.g, tint.b, 255);
+
+            float3 sum = float3.zero;
+            foreach (Color32 t in texels)
+                sum += new float3(t.r, t.g, t.b);
+            float3 mean = sum / texels.Length / 255f;
+            return new Color32((byte)(tint.r * mean.x), (byte)(tint.g * mean.y), (byte)(tint.b * mean.z), 255);
+        }
+
         private static Color32 TintOf(Material material)
         {
             if (material == null)

@@ -30,6 +30,10 @@ namespace Game.Voxels.EditorTools
         public float length;
         [Range(4, 32)] public int colours = 12;
         public PartRule[] parts = Array.Empty<PartRule>();
+        [Tooltip("Patches over the surface colour nearest the paint material's. Paint None: no camouflage.")]
+        public VoxelizedModel.Camouflage camouflage;
+        [Tooltip("Pixel pictures on a part's side; Part is the part rule's path, as resolved (no wildcards).")]
+        public VoxelizedModel.Decal[] decals = Array.Empty<VoxelizedModel.Decal>();
 
         public float VoxelSize => kind == ModelKind.Vehicle ? VEHICLE_VOXEL : BUILDING_VOXEL;
     }

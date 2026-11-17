@@ -25,12 +25,13 @@ namespace Game.Voxels
         /// palette already has that colour) when it is 1. Returns how many voxels changed colour.
         /// </summary>
         /// <param name="partToModel">Grid's space to the model's: the noise runs on across parts in it, in metres.</param>
+        /// <param name="firstFree">With one slot per colour: where new colours may go (the voxelizer passes 2K + 1).</param>
         public static int Camouflage(NativeArray<byte> voxels, int3 size, float3 origin, float voxelSize, float4x4 partToModel,
-            NativeArray<Color32> palette, int paintFirst, int variants, in VoxelizedModel.Camouflage camo, float noise)
+            NativeArray<Color32> palette, int paintFirst, int variants, in VoxelizedModel.Camouflage camo, float noise, int firstFree = 1)
         {
-            int patch = AddColour(palette, camo.Patch, noise, variants);
-            int dark = AddColour(palette, camo.Dark, noise, variants);
-            int light = AddColour(palette, camo.Light, noise, variants);
+            int patch = AddColour(palette, camo.Patch, noise, variants, firstFree);
+            int dark = AddColour(palette, camo.Dark, noise, variants, firstFree);
+            int light = AddColour(palette, camo.Light, noise, variants, firstFree);
             if (patch < 0 || dark < 0 || light < 0)
                 return 0;
 
@@ -59,19 +60,19 @@ namespace Game.Voxels
 
         /// <summary>The decals whose <see cref="VoxelizedModel.Decal.Part"/> is <paramref name="partPath"/>, painted on this grid.</summary>
         public static void Decals(NativeArray<byte> voxels, int3 size, float3 origin, float voxelSize, NativeArray<Color32> palette,
-            int variants, string partPath, VoxelizedModel.Decal[] decals)
+            int variants, string partPath, VoxelizedModel.Decal[] decals, int firstFree = 1)
         {
             if (decals == null)
                 return;
 
             foreach (VoxelizedModel.Decal decal in decals)
                 if (decal.Part == partPath)
-                    Decal(voxels, size, origin, voxelSize, palette, variants, decal);
+                    Decal(voxels, size, origin, voxelSize, palette, variants, decal, firstFree);
         }
 
         /// <summary>One decal on this grid, whatever part it names.</summary>
         public static void Decal(NativeArray<byte> voxels, int3 size, float3 origin, float voxelSize, NativeArray<Color32> palette,
-            int variants, in VoxelizedModel.Decal decal)
+            int variants, in VoxelizedModel.Decal decal, int firstFree = 1)
         {
             if (decal.Rows == null || decal.Rows.Length == 0 || string.IsNullOrEmpty(decal.Keys) || decal.Colors == null)
                 return;
@@ -79,7 +80,7 @@ namespace Game.Voxels
             // One run of shades per colour, nearly flat.
             var slots = new int[decal.Keys.Length];
             for (int k = 0; k < slots.Length; k++)
-                slots[k] = k < decal.Colors.Length ? AddColour(palette, decal.Colors[k], DECAL_NOISE, variants) : -1;
+                slots[k] = k < decal.Colors.Length ? AddColour(palette, decal.Colors[k], DECAL_NOISE, variants, firstFree) : -1;
 
             int side = decal.Side >= 0 ? 1 : -1;
             int height = decal.Rows.Length;
@@ -120,30 +121,31 @@ namespace Game.Voxels
 
         /// <summary>
         /// A colour's first slot: a run of shades in the first free run when <paramref name="variants"/> is
-        /// <see cref="MeshVoxelizer.VARIANTS"/>; otherwise one slot, the one already holding this colour or
-        /// the first free one after the last used slot (gaps in the voxelizer's runs are left alone). -1 if full.
+        /// <see cref="MeshVoxelizer.VARIANTS"/> (<paramref name="firstFree"/> is ignored then); otherwise one slot
+        /// from <paramref name="firstFree"/> on: the one already holding this colour, or the first free one after
+        /// the last used slot (the voxelizer keeps 1..2K for its own runs, gaps included). -1 if full.
         /// </summary>
-        private static int AddColour(NativeArray<Color32> palette, Color color, float noise, int variants)
+        private static int AddColour(NativeArray<Color32> palette, Color color, float noise, int variants, int firstFree)
         {
             if (variants == MeshVoxelizer.VARIANTS)
                 return MeshVoxelizer.AddShades(palette, color, noise);
 
             Color32 slot = MeshVoxelizer.WithWetness(MeshVoxelizer.ToVertexColor(color), 0f);
-            int last = 0;
-            for (int i = 1; i < palette.Length; i++)
+            int next = math.max(1, firstFree);
+            for (int i = next; i < palette.Length; i++)
             {
                 Color32 c = palette[i];
                 if (c.a == 0)
                     continue;
                 if (c.r == slot.r && c.g == slot.g && c.b == slot.b && c.a == slot.a)
                     return i;
-                last = i;
+                next = i + 1;
             }
 
-            if (last + 1 >= palette.Length)
+            if (next >= palette.Length)
                 return -1;
-            palette[last + 1] = slot;
-            return last + 1;
+            palette[next] = slot;
+            return next;
         }
 
         /// <summary>

@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Reflection;
+using Game.Voxels.EditorTools;
 using NUnit.Framework;
 using Unity.Collections;
 using Unity.Mathematics;
@@ -75,6 +77,81 @@ namespace Game.Voxels.Tests
             voxels.Dispose();
             palette.Dispose();
         }
+
+        [Test]
+        public void Voxelizer_WithTank01sPaint_GivesHullAndTurretCamouflage_AndTurretSidesTheDecals()
+        {
+            var tank = AssetDatabase.LoadAssetAtPath<GameObject>(TANK);
+            var model = tank.GetComponent<VoxelizedModel>();
+            const BindingFlags field = BindingFlags.Instance | BindingFlags.NonPublic;
+            var camo = (VoxelizedModel.Camouflage)typeof(VoxelizedModel).GetField("_camouflage", field).GetValue(model);
+            var decals = (VoxelizedModel.Decal[])typeof(VoxelizedModel).GetField("_decals", field).GetValue(model);
+            Assert.IsNotNull(camo.Paint);
+            Assert.That(decals.Length, Is.GreaterThan(0));
+
+            var config = ScriptableObject.CreateInstance<VoxelizerConfig>();
+            config.kind = VoxelizerConfig.ModelKind.Vehicle;
+            config.colours = 12;
+            config.parts = new[]
+            {
+                Rule("HullVisual", VoxelizerConfig.PartMark.Auto),
+                Rule("HullVisual/TurretVisual", VoxelizerConfig.PartMark.Auto),
+                Rule("HullVisual/TurretVisual/Gun", VoxelizerConfig.PartMark.Auto),
+                Rule("HullVisual/Wheel_*", VoxelizerConfig.PartMark.Cylinder),
+                Rule("HullVisual/Track?_Front", VoxelizerConfig.PartMark.Auto),
+                Rule("HullVisual/Track?_Rear", VoxelizerConfig.PartMark.Auto),
+                Rule("HullVisual/Track?_Link*", VoxelizerConfig.PartMark.Skip)
+            };
+            config.camouflage = camo;
+            config.decals = decals;
+
+            var scene = EditorSceneManager.NewPreviewScene();
+            try
+            {
+                var instance = (GameObject)PrefabUtility.InstantiatePrefab(tank, scene);
+                using VoxelizerResult result = VoxelizeUseCase.Run(config, instance);
+                int k = config.colours;
+                Color32 white = MeshVoxelizer.ToVertexColor(decals[0].Colors[0]);
+
+                foreach (string path in new[] { "HullVisual", "HullVisual/TurretVisual" })
+                {
+                    VoxelizerResultPart part = result.Parts.Find(p => p.Path == path);
+                    Assert.IsNotNull(part, path);
+                    var surface = new HashSet<int>();
+                    int camouflaged = 0;
+                    foreach (byte v in part.Voxels)
+                    {
+                        if (v == 0 || (v > k && v <= 2 * k)) continue;
+                        surface.Add(v);
+                        if (v > 2 * k) camouflaged++;
+                    }
+
+                    Assert.That(surface.Count, Is.GreaterThan(1), path + ": surface colours");
+                    Assert.That(camouflaged, Is.GreaterThan(500), path + ": camouflage voxels");
+                }
+
+                VoxelizerResultPart turret = result.Parts.Find(p => p.Path == "HullVisual/TurretVisual");
+                int left = 0, right = 0;
+                for (int i = 0; i < turret.Voxels.Length; i++)
+                {
+                    Color32 c = result.Palette[turret.Voxels[i]];
+                    if (turret.Voxels[i] == 0 || c.r != white.r || c.g != white.g || c.b != white.b) continue;
+                    if (i % turret.Size.x < turret.Size.x / 2) left++; else right++;
+                }
+
+                // The number is 31 white pixels a side, the cross 28 more: 118 on the turret in all.
+                Assert.That(left, Is.GreaterThanOrEqualTo(40), "decal pixels on the -X side");
+                Assert.That(right, Is.GreaterThanOrEqualTo(40), "decal pixels on the +X side");
+            }
+            finally
+            {
+                EditorSceneManager.ClosePreviewScene(scene);
+                Object.DestroyImmediate(config);
+            }
+        }
+
+        private static VoxelizerConfig.PartRule Rule(string path, VoxelizerConfig.PartMark mark) =>
+            new() { path = path, mark = mark, axis = 0 };
 
         private static ulong Hash(List<VoxelizedModel.Part> parts)
         {

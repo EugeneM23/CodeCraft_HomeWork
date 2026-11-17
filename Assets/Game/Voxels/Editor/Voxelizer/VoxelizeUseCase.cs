@@ -9,6 +9,9 @@ namespace Game.Voxels.EditorTools
     /// <summary>The whole voxelizer: a model instance and its config in, one byte grid per part and the model's palette out.</summary>
     public static class VoxelizeUseCase
     {
+        /// <summary>How far (sRGB, 0..441) the paint material's colour may be from its surface slot.</summary>
+        private const float CAMO_MATCH = 48f;
+
         public static VoxelizerResult Run(VoxelizerConfig config, GameObject instance)
         {
             Transform root = instance.transform;
@@ -77,6 +80,8 @@ namespace Game.Voxels.EditorTools
                         Path = grid.Path, Root = grid.Root, Size = grid.Size, Origin = grid.Origin, Voxels = voxels
                     });
                 }
+
+                Paint(config, root, k, centres, result);
             }
             catch
             {
@@ -89,6 +94,61 @@ namespace Game.Voxels.EditorTools
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// The config's camouflage and decals over the mapped grids, one palette slot per new colour after
+        /// the model's 2K. The camouflage repaints the surface slot nearest the paint material's colour
+        /// (inside slots stay: the paint is a coat), its noise in the model's space in real metres.
+        /// </summary>
+        private static void Paint(VoxelizerConfig config, Transform root, int k, Color32[] centres, VoxelizerResult result)
+        {
+            VoxelizedModel.Camouflage camo = config.camouflage;
+            int paint = camo.Paint != null ? PaintSlot(camo.Paint, centres) : -1;
+            bool decals = config.decals != null && config.decals.Length > 0;
+            if (paint < 0 && !decals)
+                return;
+
+            var palette = new NativeArray<Color32>(result.Palette, Allocator.TempJob);
+            try
+            {
+                foreach (VoxelizerResultPart part in result.Parts)
+                {
+                    if (paint > 0)
+                    {
+                        float4x4 toModel = math.mul(float4x4.Scale(result.Scale), root.worldToLocalMatrix * part.Root.localToWorldMatrix);
+                        VoxelPaint.Camouflage(part.Voxels, part.Size, part.Origin, result.VoxelSize, toModel, palette, paint, 1, camo, 0f, 2 * k + 1);
+                    }
+
+                    if (decals)
+                        VoxelPaint.Decals(part.Voxels, part.Size, part.Origin, result.VoxelSize, palette, 1, part.Path, config.decals, 2 * k + 1);
+                }
+
+                palette.CopyTo(result.Palette);
+            }
+            finally
+            {
+                palette.Dispose();
+            }
+        }
+
+        /// <summary>The surface slot nearest the paint material's colour, or -1 (with a warning) if none is near.</summary>
+        private static int PaintSlot(Material paint, Color32[] centres)
+        {
+            Color32 colour = VoxelizerSource.ColourOf(paint);
+            var p = new float3(colour.r, colour.g, colour.b);
+            int best = -1;
+            float bestD = float.MaxValue;
+            for (int i = 0; i < centres.Length; i++)
+            {
+                float d = math.distance(p, new float3(centres[i].r, centres[i].g, centres[i].b));
+                if (d < bestD) { bestD = d; best = i; }
+            }
+
+            if (best >= 0 && bestD <= CAMO_MATCH)
+                return 1 + best;
+            Debug.LogWarning($"Voxelizer: no surface colour near camouflage paint '{paint.name}' {colour} (nearest {bestD:F0} > {CAMO_MATCH}); camouflage skipped.");
+            return -1;
         }
 
         /// <summary>Model metres to real metres: the config's length over the model's longest side.</summary>
