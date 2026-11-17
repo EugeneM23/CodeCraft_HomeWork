@@ -67,5 +67,36 @@ namespace Game.Voxels.Tests
             }
             finally { full.Dispose(); }
         }
+
+        [Test]
+        public void ThrowEarth_NonFiniteInput_ThrowsNothing()
+        {
+            var good = new EarthThrow { Point = Vector3.up, Velocity = Vector3.up * 3f, Volume = 0.04f, Top = Color.green, Body = Color.gray };
+
+            EarthThrow nanVolume = good; nanVolume.Volume = float.NaN;
+            EarthThrow noVolume = good; noVolume.Volume = 0f;
+            EarthThrow negativeVolume = good; negativeVolume.Volume = -1f;
+            EarthThrow infPoint = good; infPoint.Point = new Vector3(float.PositiveInfinity, 0f, 0f);
+            EarthThrow nanPoint = good; nanPoint.Point = new Vector3(0f, float.NaN, 0f);
+            EarthThrow nanVelocity = good; nanVelocity.Velocity = new Vector3(0f, 0f, float.NaN);
+            EarthThrow infVelocity = good; infVelocity.Velocity = new Vector3(float.NegativeInfinity, 0f, 0f);
+
+            foreach (EarthThrow bad in new[] { nanVolume, noVolume, negativeVolume, infPoint, nanPoint, nanVelocity, infVelocity })
+                Assert.AreEqual(0, _debris.ThrowEarth(bad), "a throw with no volume or a non-finite point / velocity");
+            Assert.AreEqual(0, _debris.Count, "nothing was added");
+            Assert.AreEqual(0, _debris.ClusterCount, "no cluster was begun");
+
+            // An infinite volume is cut to what the pool holds: with its dust on top it does not fit, so nothing goes.
+            EarthThrow infVolume = good; infVolume.Volume = float.PositiveInfinity;
+            Assert.AreEqual(0, _debris.ThrowEarth(infVolume), "an infinite volume");
+            Assert.AreEqual(0, _debris.Count, "nothing was added for an infinite volume");
+
+            // A NaN spread counts as 0: one tight clump.
+            EarthThrow nanSpread = good; nanSpread.Spread = float.NaN;
+            Assert.AreEqual(5, _debris.ThrowEarth(nanSpread), "NaN spread throws like spread 0");
+            var sizes = new List<int>();
+            _debris.GetClusterSizes(sizes);
+            Assert.AreEqual(1, sizes.Count, "one clump");
+        }
     }
 }

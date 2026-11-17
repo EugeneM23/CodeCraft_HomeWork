@@ -3,23 +3,6 @@ using UnityEngine;
 
 namespace Game.Voxels
 {
-    /// <summary>What to throw with <see cref="VoxelDebris.ThrowEarth"/>.</summary>
-    public struct EarthThrow
-    {
-        /// <summary>Where the earth leaves the ground, world space.</summary>
-        public Vector3 Point;
-        /// <summary>Mean velocity of the throw, m/s.</summary>
-        public Vector3 Velocity;
-        /// <summary>m³ of earth thrown; about 0.008 m³ per 20 cm cube.</summary>
-        public float Volume;
-        /// <summary>0 - one tight clump, 1 - a wide fan of small clumps and crumbs.</summary>
-        public float Spread;
-        /// <summary>Turf / surface colour (top cubes).</summary>
-        public Color32 Top;
-        /// <summary>Earth under it (dry or wet mud).</summary>
-        public Color32 Body;
-    }
-
     public sealed partial class VoxelDebris
     {
         private const float EARTH_CUBE = 0.2f;
@@ -56,14 +39,23 @@ namespace Game.Voxels
             return list.ToArray();
         }
 
-        /// <summary>Throws earth as a few clumps, crumbs and a puff of dust. Returns cubes thrown; 0 when full.</summary>
+        /// <summary>
+        /// Throws earth as a few clumps, crumbs and a puff of dust. Returns cubes thrown; 0 when full,
+        /// and 0 (nothing thrown) for no volume or a point or velocity that is not finite. A NaN
+        /// spread counts as 0; a volume past what the pool could hold is cut to it.
+        /// </summary>
         public int ThrowEarth(in EarthThrow earth)
         {
+            if (!(earth.Volume > 0f) || !math.all(math.isfinite((float3)earth.Point)) ||
+                !math.all(math.isfinite((float3)earth.Velocity)))
+                return 0;
+
             Complete();
-            int total = math.max(1, (int)math.round(earth.Volume / EARTH_CUBE_VOLUME));
+            float volume = math.min(earth.Volume, _capacity * EARTH_CUBE_VOLUME);
+            int total = math.max(1, (int)math.round(volume / EARTH_CUBE_VOLUME));
             int crumbs = total < MIN_PIECE ? 0 : (int)math.round(total * CRUMB_SHARE);
             int inClumps = total - crumbs;
-            float spread = Mathf.Clamp01(earth.Spread);
+            float spread = float.IsNaN(earth.Spread) ? 0f : Mathf.Clamp01(earth.Spread);
             int k = math.clamp(1 + (int)math.round(spread * (MAX_CLUMPS - 1)), 1, MAX_CLUMPS);
             k = math.max(1, math.min(k, inClumps / MIN_PIECE));
             // A clump is cut from one ball; the rest of a very big throw would not fit it, so it goes as crumbs.
@@ -75,7 +67,7 @@ namespace Game.Voxels
                 inClumps = k * maxClump;
             }
 
-            int dust = earth.Volume > DUST_VOLUME ? MIN_DUST + (int)math.round(spread * MIN_DUST) : 0;
+            int dust = volume > DUST_VOLUME ? MIN_DUST + (int)math.round(spread * MIN_DUST) : 0;
             if (!HasRoom(total + dust) || _clusters.Length + k + crumbs + dust > _capacity)
                 return 0;
 
