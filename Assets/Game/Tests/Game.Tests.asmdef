@@ -6,14 +6,25 @@
         "Atomic.Elements",
         "Atomic.Entities",
         "UnityEngine.TestRunner",
-        "UnityEditor.TestRunner"
+        "UnityEditor.TestRunner",
+        "Unity.Mathematics",
+        "Unity.TextMeshPro",
+        "UnityEngine.UI",
+        "HighlightPlus",
+        "DOTweenModules",
+        "RayFireAssembly"
     ],
-    "includePlatforms": [],
+    "includePlatforms": [
+        "Editor"
+    ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": true,
     "precompiledReferences": [
-        "nunit.framework.dll"
+        "nunit.framework.dll",
+        "DOTween.dll",
+        "Sirenix.OdinInspector.Attributes.dll",
+        "Sirenix.Serialization.dll"
     ],
     "autoReferenced": false,
     "defineConstraints": [

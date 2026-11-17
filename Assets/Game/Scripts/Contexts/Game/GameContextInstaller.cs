@@ -15,6 +15,14 @@ namespace Game
         [SerializeField] private MonoEntity _enemyPrefab;
         [SerializeField] private Transform _spawnPoint;
 
+        [Header("Pool prewarm")]
+        [Tooltip("Instances made per frame, from just after the start, of what the scene's weapons and vehicles spawn: bullets, casings, impacts, muzzle smoke, blasts. 0 turns the prewarm off.")]
+        [SerializeField, Min(0)] private int _prewarmPerFrame = 4;
+        [Tooltip("No more instances are made in a frame that has spent this long (ms) on them. One always is.")]
+        [SerializeField, Min(0f)] private float _prewarmFrameBudgetMs = 2f;
+        [Tooltip("Most instances of one prefab made ahead. Each gets about its rate of fire × its lifetime, plus one.")]
+        [SerializeField, Min(1)] private int _prewarmMaxPerPrefab = 24;
+
         public override void Install(GameContext context)
         {
             context.AddEntityWorld(_entityWorld);
@@ -24,6 +32,11 @@ namespace Game
             context.GetGameFactory()
                 .RegisterNewPrefab(_audioPrefab, GameFactoryID.AudioSource.ToString(), prewarm: 8);
             context.AddBehaviour(new EnemyController(_enemyPrefab, _spawnPoint));
+
+            // Without it the first shot, hit and blast of each kind instantiates its object mid-fight.
+            if (_prewarmPerFrame > 0)
+                context.AddBehaviour(new CombatPoolPrewarm(_prewarmPerFrame, _prewarmFrameBudgetMs, _prewarmMaxPerPrefab));
+
             context.AddEnemyFilter(new EntityFilter(_entityWorld, static entity => entity.HasEnemyTag()));
         }
     }

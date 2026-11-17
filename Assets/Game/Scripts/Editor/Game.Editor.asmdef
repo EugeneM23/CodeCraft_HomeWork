@@ -4,7 +4,11 @@
     "references": [
         "Game",
         "Atomic.Elements",
-        "Atomic.Entities"
+        "Atomic.Entities",
+        "RayFireAssembly",
+        "UnityEngine.UI",
+        "HighlightPlus",
+        "Game.Voxels"
     ],
     "includePlatforms": [
         "Editor"

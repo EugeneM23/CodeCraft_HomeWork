@@ -24,6 +24,8 @@ tracks hold exactly as before: any sideways slide is gone in one step.
 - `_sideGrip` = 10 m/s² — at 13 m/s full stick asks 17.7, so the hull slides out by 7.7 m/s²; half
   stick (8.8) still holds.
 - A bump's small slip (< 0.2 m/s) is still gone in one step at 10 m/s².
+- Later raised to 18 m/s², when Shift started boosting the turn rate as well
+  (2026-11-16-tank-shift-engine-power.md).
 
 ## Dropped (seen in Play)
 

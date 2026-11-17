@@ -15,6 +15,9 @@ namespace Game
         public static readonly ValueKey<IPlayerContext, IValue<Vector3>> CameraOffset = new(nameof(CameraOffset));
         public static readonly ValueKey<IPlayerContext, Transform> CameraRoot = new(nameof(CameraRoot));
         public static readonly ValueKey<IPlayerContext, IValue<int>> CameraSpeed = new(nameof(CameraSpeed));
+        public static readonly ValueKey<IPlayerContext, IVariable<Vector3>> CameraLook = new(nameof(CameraLook));
+        public static readonly ValueKey<IPlayerContext, Game.CameraLookSettings> CameraLookSettings = new(nameof(CameraLookSettings));
+        public static readonly ValueKey<IPlayerContext, Game.CameraCollisionSettings> CameraCollisionSettings = new(nameof(CameraCollisionSettings));
         public static readonly ValueKey<IPlayerContext, IValue<int>> MaxMana = new(nameof(MaxMana));
         public static readonly ValueKey<IPlayerContext, IReactiveVariable<int>> CurrentMana = new(nameof(CurrentMana));
 

@@ -6629,7 +6629,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _triggerEventReceiver: {fileID: 430235449}
-  _entityAspect: {fileID: 11400000, guid: a9a51db15db69495ba8e8a37c4a918d5, type: 2}
+  _buffs:
+  - {fileID: 11400000, guid: 13df315a9a0c555488163f06a4dbe9f1, type: 2}
+  - {fileID: 11400000, guid: c65d75fd79178ef44a168ec8b463e96f, type: 2}
+  - {fileID: 11400000, guid: ebdcce95f82150b488e54c974a683c73, type: 2}
 --- !u!114 &430235449
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7547,6 +7550,10 @@ MonoBehaviour:
     _cameraRoot: {fileID: 192477114}
     _cameraSpeed: 5
     _character: {fileID: 5160812569022390376}
+    _look:
+      <MaxShift>k__BackingField: 3.45
+      <MaxZoom>k__BackingField: 0.15
+      <DeadZone>k__BackingField: 0.2
   _abilitySystem:
     _dashAbility: {fileID: 11400000, guid: f814d177676104d7db18cb0b1f9956e6, type: 2}
     _teleportAbility: {fileID: 11400000, guid: fcb1d9163cb494c83aca47a8168ede99, type: 2}
@@ -62064,7 +62071,6 @@ MonoBehaviour:
   _health: 100
   _weapon: {fileID: 737229949194823617}
   _weaponRoot: {fileID: 1461814895349909856}
-  _triggerReceiver: {fileID: 1370405035296018266}
   _characterRoot: {fileID: 5160812569022390376}
   _rigidbody: {fileID: 8650786013527117929}
   _cameraPoint: {fileID: 4197534759168245739}

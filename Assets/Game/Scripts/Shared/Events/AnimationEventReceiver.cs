@@ -14,8 +14,8 @@ namespace Game
         [UsedImplicitly]
         private void ReceiveEvent(string message)
         {
-            if (_handlers.TryGetValue(message, out Action handler)) 
-                handler.Invoke();
+            if (_handlers.TryGetValue(message, out Action handler))
+                handler?.Invoke();
 
             this.OnEvent?.Invoke(message);
         }
@@ -35,7 +35,11 @@ namespace Game
             if (_handlers.TryGetValue(evt, out Action handler))
             {
                 handler -= action;
-                _handlers[evt] = handler;
+
+                if (handler == null)
+                    _handlers.Remove(evt);
+                else
+                    _handlers[evt] = handler;
             }
         }
     }

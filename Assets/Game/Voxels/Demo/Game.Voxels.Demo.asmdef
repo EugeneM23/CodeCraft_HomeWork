@@ -1,0 +1,16 @@
+{
+    "name": "Game.Voxels.Demo",
+    "rootNamespace": "Game.Voxels.Demo",
+    "references": [
+        "Game.Voxels"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -9,6 +9,7 @@ TagManager:
   - Range
   - Enemy
   - Melee
+  - FX
   layers:
   - Default
   - TransparentFX
@@ -24,9 +25,9 @@ TagManager:
   - ThrowItem
   - Bullet
   - Weapon
-  - 
-  - 
-  - 
+  - Destructible
+  - Debris
+  - Rubble
   - 
   - 
   - 

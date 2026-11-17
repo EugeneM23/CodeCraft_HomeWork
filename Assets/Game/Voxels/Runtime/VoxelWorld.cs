@@ -1,0 +1,402 @@
+using System.Collections.Generic;
+using Unity.Collections;
+using Unity.Jobs;
+using UnityEngine;
+
+namespace Game.Voxels
+{
+    /// <summary>
+    /// The scene's voxel bookkeeping, created on first use: every live body, the shared materials,
+    /// the debris cubes, and the once-a-frame rebuild. Carves during the frame (bullets, blasts,
+    /// rams) only mark chunks dirty; in LateUpdate the dirty chunks are meshed in parallel jobs.
+    ///
+    /// Blocky bodies (buildings, the tank, loose pieces) are meshed and put in the same frame: a
+    /// piece is let go only once its colliders exist. The smooth ground is remeshed without the
+    /// frame waiting: each job reads its own copy of the voxels round its chunk, at most
+    /// <see cref="ASYNC_PER_FRAME"/> start per frame, and each is put in at the start of the next
+    /// frame (or the first LateUpdate) that finds it done. Its collision mesh is then cooked on a
+    /// worker and swapped into the collider when ready, at the latest at the start of the frame
+    /// after. A track's rut or a bomb's crater shows a frame later, and the frame no longer stops
+    /// for dozens of remeshes and PhysX cooks. The tank's skin (no colliders) remeshes the same way.
+    /// </summary>
+    [DefaultExecutionOrder(10000)]
+    public sealed class VoxelWorld : MonoBehaviour
+    {
+        /// <summary>Layer for pieces that broke off. Rubble collides with itself (Debris does not).</summary>
+        public const int PieceLayer = 16;
+
+        /// <summary>Most smooth (ground) chunk remeshes started in one frame.</summary>
+        public const int ASYNC_PER_FRAME = 12;
+
+        /// <summary>
+        /// A/B switch for measuring: false remeshes the ground the old way, every chunk in the
+        /// frame it was dug, the frame waiting for it and for its colliders.
+        /// </summary>
+        public static bool AsyncGround = true;
+
+        /// <summary>A remesh still running after this many frames is waited for.</summary>
+        private const int ASYNC_MAX_FRAMES = 4;
+
+        /// <summary>
+        /// Vertices of finished ground remeshes put into meshes per frame (at least one chunk):
+        /// a crater's chunks are uploaded over a couple of frames, not all in one.
+        /// </summary>
+        private const int ASYNC_APPLY_VERTICES = 40000;
+
+        private const string CHUNK_MATERIAL = "Voxels/VoxelChunk";
+        private const string DEBRIS_MATERIAL = "Voxels/VoxelDebris";
+
+        private static VoxelWorld s_instance;
+        private static readonly List<VoxelBody> s_bodies = new();
+        private static bool s_quitting;
+
+        private readonly List<VoxelBody.ChunkJob> _jobs = new();
+        private readonly List<VoxelBody.ChunkJob> _asyncJobs = new();
+        private readonly List<VoxelBody> _snapshot = new();
+        private int _bodyCursor;
+
+        /// <summary>Collision meshes written this frame, to be cooked.</summary>
+        private static readonly List<Mesh> s_bakeMeshes = new();
+        private static readonly List<VoxelBody.Chunk> s_bakeChunks = new();
+
+        /// <summary>Cooks in flight.</summary>
+        private readonly List<BakeBatch> _bakes = new();
+
+        private sealed class BakeBatch
+        {
+            public NativeArray<int> Ids;
+            public Mesh[] Meshes;
+            public VoxelBody.Chunk[] Chunks;
+            public JobHandle Handle;
+        }
+
+        public Material ChunkMaterial { get; private set; }
+
+        /// <summary>Main-thread time of the last frame's rebuild (schedule, wait, upload), ms.</summary>
+        public float LastRebuildMs { get; private set; }
+
+        /// <summary>Chunks remeshed in the last frame that had any to remesh.</summary>
+        public int LastRebuildChunks { get; private set; }
+
+        /// <summary>Ground remeshes running on workers right now.</summary>
+        public int AsyncInFlight => _asyncJobs.Count;
+
+        public VoxelDebris Debris { get; private set; }
+
+        public static IReadOnlyList<VoxelBody> Bodies => s_bodies;
+
+        public static VoxelWorld Instance
+        {
+            get
+            {
+                if (s_instance == null && !s_quitting && Application.isPlaying)
+                    new GameObject("[VoxelWorld]").AddComponent<VoxelWorld>();
+                return s_instance;
+            }
+        }
+
+        /// <summary>The world if there is one; never creates it.</summary>
+        internal static VoxelWorld Current => s_instance;
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetStatics()
+        {
+            s_instance = null;
+            s_bodies.Clear();
+            s_bakeMeshes.Clear();
+            s_bakeChunks.Clear();
+            s_quitting = false;
+            SetEarlyHook(false);
+        }
+
+        /// <summary>Marks our entry in the player loop.</summary>
+        private struct VoxelDebrisSync
+        {
+        }
+
+        /// <summary>
+        /// Puts (or takes out) a step at the very start of each frame, before physics, that waits
+        /// for the debris step started at the end of the last frame: its raycasts run on workers
+        /// while the frame renders, never while colliders move.
+        /// </summary>
+        private static void SetEarlyHook(bool on)
+        {
+            UnityEngine.LowLevel.PlayerLoopSystem loop = UnityEngine.LowLevel.PlayerLoop.GetCurrentPlayerLoop();
+            if (loop.subSystemList == null)
+                return;
+
+            for (int i = 0; i < loop.subSystemList.Length; i++)
+            {
+                if (loop.subSystemList[i].type != typeof(UnityEngine.PlayerLoop.EarlyUpdate))
+                    continue;
+
+                var early = loop.subSystemList[i];
+                var systems = new List<UnityEngine.LowLevel.PlayerLoopSystem>(early.subSystemList ?? System.Array.Empty<UnityEngine.LowLevel.PlayerLoopSystem>());
+                bool had = systems.RemoveAll(s => s.type == typeof(VoxelDebrisSync)) > 0;
+                if (on)
+                    systems.Insert(0, new UnityEngine.LowLevel.PlayerLoopSystem
+                    {
+                        type = typeof(VoxelDebrisSync),
+                        updateDelegate = CompleteDebrisStep
+                    });
+                else if (!had)
+                    return;
+
+                early.subSystemList = systems.ToArray();
+                loop.subSystemList[i] = early;
+                UnityEngine.LowLevel.PlayerLoop.SetPlayerLoop(loop);
+                return;
+            }
+        }
+
+        /// <summary>
+        /// The very start of a frame, before physics: the debris step and the collision cooks
+        /// started at the end of the last frame have had its whole render to run and are waited
+        /// for (normally done already); ground remeshes that are done go in and their colliders
+        /// start cooking. A crater's collider thus follows its mesh by at most a frame.
+        /// </summary>
+        private static void CompleteDebrisStep()
+        {
+            if (s_instance == null)
+                return;
+
+            s_instance.Debris?.Complete();
+            s_instance.FinishBakes(true);
+            if (s_instance.ApplyFinished(Time.frameCount) > 0)
+                s_instance.StartBakes(false);
+        }
+
+        internal static void Register(VoxelBody body)
+        {
+            if (!s_bodies.Contains(body))
+                s_bodies.Add(body);
+        }
+
+        internal static void Unregister(VoxelBody body) => s_bodies.Remove(body);
+
+        /// <summary>A chunk's collision mesh, freshly written, is cooked and then handed to its collider.</summary>
+        internal static void QueueBake(Mesh mesh, VoxelBody.Chunk chunk)
+        {
+            s_bakeMeshes.Add(mesh);
+            s_bakeChunks.Add(chunk);
+        }
+
+        /// <summary>
+        /// Starts cooking the collision meshes written this frame, in parallel on workers; with
+        /// <paramref name="wait"/> they are cooked and handed over now (the first build).
+        /// </summary>
+        private void StartBakes(bool wait)
+        {
+            if (s_bakeMeshes.Count == 0)
+                return;
+
+            var batch = new BakeBatch
+            {
+                Ids = new NativeArray<int>(s_bakeMeshes.Count, Allocator.Persistent),
+                Meshes = s_bakeMeshes.ToArray(),
+                Chunks = s_bakeChunks.ToArray()
+            };
+            for (int i = 0; i < batch.Ids.Length; i++)
+                batch.Ids[i] = batch.Meshes[i].GetInstanceID();
+            batch.Handle = new BakeMeshesJob { MeshIds = batch.Ids }.Schedule(batch.Ids.Length, 1);
+            JobHandle.ScheduleBatchedJobs();
+
+            s_bakeMeshes.Clear();
+            s_bakeChunks.Clear();
+            _bakes.Add(batch);
+
+            if (wait)
+                FinishBakes(true);
+        }
+
+        /// <summary>
+        /// Hands every cooked collision mesh to its collider; with <paramref name="force"/> waits
+        /// for the ones still cooking.
+        /// </summary>
+        internal void FinishBakes(bool force)
+        {
+            for (int b = 0; b < _bakes.Count; b++)
+            {
+                BakeBatch batch = _bakes[b];
+                if (!force && !batch.Handle.IsCompleted)
+                    continue;
+
+                batch.Handle.Complete();
+                batch.Ids.Dispose();
+                for (int i = 0; i < batch.Chunks.Length; i++)
+                {
+                    VoxelBody.Chunk chunk = batch.Chunks[i];
+                    chunk.Cooking = false;
+                    if (chunk.Collider != null && batch.Meshes[i] != null)
+                        chunk.Collider.sharedMesh = batch.Meshes[i];
+                }
+
+                _bakes.RemoveAt(b);
+                b--;
+            }
+        }
+
+        private void Awake()
+        {
+            if (s_instance != null && s_instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
+            s_instance = this;
+            ChunkMaterial = LoadMaterial(CHUNK_MATERIAL, false);
+            Debris = new VoxelDebris(LoadMaterial(DEBRIS_MATERIAL, true), 24000);
+            SetEarlyHook(true);
+        }
+
+        private static Material LoadMaterial(string path, bool instanced)
+        {
+            Material material = Resources.Load<Material>(path);
+            if (material == null)
+            {
+                Shader shader = Shader.Find("Game/Voxel");
+                material = new Material(shader != null ? shader : Shader.Find("Standard"));
+            }
+
+            if (instanced && !material.enableInstancing)
+            {
+                material = new Material(material) { enableInstancing = true };
+            }
+
+            return material;
+        }
+
+        private void LateUpdate()
+        {
+            RebuildDirty();
+            Debris?.Tick(Time.deltaTime);
+        }
+
+        private void RebuildDirty()
+        {
+            long start = System.Diagnostics.Stopwatch.GetTimestamp();
+            int frame = Time.frameCount;
+            int remeshed = 0;
+
+            // Cooked collision meshes from earlier frames go into their colliders.
+            FinishBakes(false);
+            remeshed += ApplyFinished(frame);
+
+            _snapshot.Clear();
+            _snapshot.AddRange(s_bodies);
+
+            bool firstBuild = false;
+            int budget = ASYNC_PER_FRAME;
+            // Round the bodies from a different one each frame: one dirtied every frame (the
+            // tank's gear being washed) cannot take the whole async budget from the ground.
+            int bodies = _snapshot.Count;
+            int first = bodies > 0 ? _bodyCursor++ % bodies : 0;
+            for (int k = 0; k < bodies; k++)
+            {
+                VoxelBody body = _snapshot[(first + k) % bodies];
+                if (body == null || !body.IsCreated || !body.HasDirtyChunks)
+                    continue;
+
+                if (body.RebuildsAsync && AsyncGround)
+                {
+                    if (budget > 0)
+                        body.ScheduleAsync(_asyncJobs, ref budget, frame);
+                    continue;
+                }
+
+                firstBuild |= body.IsTerrain || !AsyncGround;
+                body.ScheduleRebuild(_jobs);
+            }
+
+            JobHandle.ScheduleBatchedJobs();
+
+            if (_jobs.Count > 0)
+            {
+                for (int i = 0; i < _jobs.Count; i++)
+                {
+                    VoxelBody.ChunkJob job = _jobs[i];
+                    job.Handle.Complete();
+                    if (job.Body != null)
+                        job.Body.ApplyChunk(job);
+                    job.Dispose();
+                }
+
+                remeshed += _jobs.Count;
+                _jobs.Clear();
+            }
+
+            // The first build of the ground waits for its colliders: the tank stands on them.
+            StartBakes(firstBuild);
+
+            if (remeshed > 0)
+            {
+                LastRebuildChunks = remeshed;
+                LastRebuildMs = (System.Diagnostics.Stopwatch.GetTimestamp() - start) * 1000f /
+                                System.Diagnostics.Stopwatch.Frequency;
+            }
+
+            foreach (VoxelBody body in _snapshot)
+                if (body != null)
+                    body.FinishRebuild();
+        }
+
+        /// <summary>
+        /// Puts in the ground remeshes that are done, oldest first, within one upload budget; one
+        /// running too long is waited for. Returns how many went in.
+        /// </summary>
+        private int ApplyFinished(int frame)
+        {
+            int applied = 0;
+            int uploads = ASYNC_APPLY_VERTICES;
+            for (int i = 0; i < _asyncJobs.Count; i++)
+            {
+                VoxelBody.ChunkJob job = _asyncJobs[i];
+                // With the A/B switch off everything still running lands now, before the in-step pass.
+                bool overdue = !AsyncGround || frame - job.Frame >= ASYNC_MAX_FRAMES;
+                if (!job.Handle.IsCompleted && !overdue)
+                    continue;
+                if (uploads <= 0 && !overdue)
+                    break;
+
+                job.Handle.Complete();
+                uploads -= job.Vertices.Length;
+                if (job.Body != null)
+                    job.Body.ApplyChunk(job);
+                job.Dispose();
+                applied++;
+                _asyncJobs.RemoveAt(i);
+                i--;
+            }
+
+            return applied;
+        }
+
+        private void OnApplicationQuit() => s_quitting = true;
+
+        private void OnDestroy()
+        {
+            if (s_instance != this)
+                return;
+
+            SetEarlyHook(false);
+            foreach (VoxelBody.ChunkJob job in _asyncJobs)
+            {
+                job.Handle.Complete();
+                // A body that outlives the world remeshes that chunk again under the next one.
+                if (job.Body != null)
+                    job.Body.CancelAsync(job.Chunk, job.Shape);
+                job.Dispose();
+            }
+
+            _asyncJobs.Clear();
+            FinishBakes(true);
+            s_bakeMeshes.Clear();
+            s_bakeChunks.Clear();
+
+            Debris?.Dispose();
+            Debris = null;
+            s_instance = null;
+        }
+    }
+}

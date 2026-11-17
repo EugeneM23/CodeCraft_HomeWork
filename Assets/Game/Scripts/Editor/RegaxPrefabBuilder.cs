@@ -38,7 +38,19 @@ namespace Game.EditorTools
         private const string HIT_EFFECT =
             "Assets/3rdParty/RPG_VFXPack/Prefab/HitImpact_VFX_Pref/HitImpact_VFX_Zombie.prefab";
 
-        private const string DEATH_EFFECT = "Assets/3rdParty/VolumetricBloodFX/Prefabs/Blood7_02.prefab";
+        /// <summary>
+        /// KriptoFX Volumetric Blood FX's effects, as the pack ships them: a volumetric gush and
+        /// its ground decal each, at the pack's own animation speed. Every one of them in this
+        /// folder (not its SimplePlaneDecals copies) goes into the death blood config.
+        /// AttachedBloodDecal is left out: it is a stain for a body, with no gush.
+        /// </summary>
+        private const string DEATH_BLOOD_PACK = "Assets/3rdParty/KriptoFX/VolumetricBloodFX/Prefabs";
+
+        /// <summary>
+        /// Which effect a death throws, at what size and in what colour (green).
+        /// See <see cref="DeathBloodConfig"/> for the values.
+        /// </summary>
+        private const string DEATH_BLOOD_CONFIG = "Assets/Game/Configs/Vfx/RegaxDeathBlood.asset";
 
         /// <summary>
         /// The bone the blood is anchored to, standing in for the zombie's Spine_01.
@@ -49,16 +61,23 @@ namespace Game.EditorTools
 
         /// <summary>
         /// Where in the attack clip the melee damage goes out. Zombie_Attack fires
-        /// damage_cast_event 0.8s into 2.5s, so the creature uses the same fraction of its own,
+        /// damage_cast_event 0.8s into 2.5s, so Regax uses the same fraction of its own,
         /// shorter swing. Tune by eye if the claws and the hit drift apart.
         /// </summary>
         private const float DAMAGE_CAST_FRACTION = 0.8f / 2.5f;
 
         /// <summary>
-        /// The creature's capsule height over the zombie's, used to lift the blood to the same
+        /// Regax's capsule height over the zombie's, used to lift the blood to the same
         /// place on a body more than twice as tall.
         /// </summary>
         private const float HEIGHT_SCALE = 4.28f / 1.8f;
+
+        /// <summary>
+        /// One tank shell kills: the cannon deals 150 at the centre of a 5 m blast and down to a
+        /// quarter at its edge, so 60 goes within about 4 m of where the shell lands. A rifle
+        /// (10 a bullet) needs six hits.
+        /// </summary>
+        private const int HEALTH = 60;
 
         [MenuItem("Tools/Regax/Build")]
         public static void Build()
@@ -78,7 +97,7 @@ namespace Game.EditorTools
         /// <remarks>
         /// The enemy's melee damage does not come from its animator at all: DamageCastBehaviour
         /// opens a 0.1s damage window when it hears damage_cast_event, and that event lives in
-        /// Zombie_Attack.anim. Swap the clip for one of Rapax's and the creature swings without
+        /// Zombie_Attack.anim. Swap the clip for one of Rapax's and Regax swings without
         /// ever dealing damage. The event cannot be added to the clip inside the FBX, so the clip
         /// is copied out as an asset of its own and the event added there. AC_Rapax points at
         /// that asset, so refreshing it in place is all this has to do.
@@ -175,6 +194,12 @@ namespace Game.EditorTools
             AssetDatabase.SaveAssets();
 
             Debug.Log($"{LOG} built {TARGET_PREFAB}");
+
+            // The zombie it is rebuilt from has no gibs; put them back.
+            RegaxGibsBuilder.WireExistingGibs();
+
+            // …and trades them for the voxel death (Docs/superpowers/specs/2026-11-16-regax-voxel-death.md).
+            RegaxVoxelDeathBuilder.Apply();
         }
 
         private static bool SwapSkeletonAndSkin(GameObject root)
@@ -196,7 +221,7 @@ namespace Game.EditorTools
 
             if (modelAsset == null || material == null || controller == null || avatar == null)
             {
-                Debug.LogError($"{LOG} missing model, material, controller or avatar for the creature");
+                Debug.LogError($"{LOG} missing model, material, controller or avatar for Regax");
                 return false;
             }
 
@@ -247,7 +272,7 @@ namespace Game.EditorTools
             // to cull itself by looking for renderers in its own hierarchy, and with the skin a
             // sibling it finds none, concludes it is never on screen, and -- on the prefab's
             // CullUpdateTransforms -- stops writing the bones. The animation runs, the state
-            // machine advances, and the creature stands frozen. The source project nests it this
+            // machine advances, and Regax stands frozen. The source project nests it this
             // way too. The zombie has the same arrangement and the same frozen locomotion; it is
             // left alone here, since this port does not touch that prefab.
             renderer.transform.SetParent(skeleton, false);
@@ -279,15 +304,15 @@ namespace Game.EditorTools
                 return false;
             }
 
-            // The creature stands about 4.3 units tall against the zombie's 1.8, so both capsules
+            // Regax stands about 4.3 units tall against the zombie's 1.8, so both capsules
             // -- the one on <Collider> and the one on the root, which DeathBehaviour switches off
             // -- take the source project's height.
             //
-            // The radius does not: the source enemy's 0.71 makes the creature unable to attack
-            // here. EnemyAttackBehaviour swings only inside one unit, measured centre to centre,
+            // The radius does not: the source enemy's 0.71 makes Regax unable to attack
+            // here. EnemyCharacterAttackBehaviour swings only inside one unit, measured centre to centre,
             // and 0.71 against the player's 0.38 keeps the two capsules 1.09 apart at their
             // closest -- the zombie's 0.3 left it 0.68 and well inside. At 0.5 the pair closes to
-            // 0.88 and the creature can reach, which is what the number is for.
+            // 0.88 and Regax can reach, which is what the number is for.
             foreach (CapsuleCollider capsule in new[]
                      {
                          collider.GetComponent<CapsuleCollider>(),
@@ -316,11 +341,10 @@ namespace Game.EditorTools
             }
 
             GameObject hit = AssetDatabase.LoadAssetAtPath<GameObject>(HIT_EFFECT);
-            GameObject death = AssetDatabase.LoadAssetAtPath<GameObject>(DEATH_EFFECT);
 
-            if (hit == null || death == null)
+            if (hit == null)
             {
-                Debug.LogError($"{LOG} missing the hit or death effect prefab");
+                Debug.LogError($"{LOG} missing the hit effect prefab");
                 return false;
             }
 
@@ -333,21 +357,128 @@ namespace Game.EditorTools
             //
             // The heights are the zombie's own, scaled to this body. The hit effect's asset sits
             // at (15, 1, 5) -- it was authored at a position in the other project's scene -- so
-            // leaving its transform alone would play the blood off to one side of the creature.
+            // leaving its transform alone would play the blood off to one side of Regax.
             AddEffect(hit, vfx, "BulletDamageBlood", 1f * HEIGHT_SCALE, active: true);
             AddEffect(hit, vfx, "MeleeDamageBlood", 1.4f * HEIGHT_SCALE, active: true);
 
-            // The volumetric blood has no ParticleSystem -- it is a mesh animated from its own
-            // BFX scripts, and it plays the moment it is enabled. So it goes in switched off, and
-            // DeathEffectBehaviour switches it on when the creature dies. Its own scale of 4 is
-            // left alone: the other project used this very effect on this very creature.
-            //
-            // Near the feet, not at chest height like the hit blood. The effect carries a ground
-            // decal that finds the floor by raycasting five units down; from up on the creature's
-            // chest that ray falls short, the script writes an unusable position, and Unity
-            // reports "Invalid worldAABB. Object is too large or too far away from the origin."
-            // A pool of blood belongs on the ground anyway.
-            AddEffect(death, vfx, "DeathBlood", 0.3f, active: false);
+            // The death blood is not kept inside Regax: DeathBloodInstaller (wired in Rewire)
+            // spawns one of the pack's effects at <VFX> when Regax dies.
+            return true;
+        }
+
+        // ------------------------------------------------------------------ death blood
+
+        /// <summary>
+        /// Rebuilds the death blood config from the pack and puts the installer on the built
+        /// Regax.prefab, without rebuilding Regax from the zombie.
+        /// </summary>
+        [MenuItem("Tools/Regax/Refresh Death Blood")]
+        public static void RefreshDeathBlood()
+        {
+            if (EditorApplication.isPlayingOrWillChangePlaymode)
+            {
+                Debug.LogError($"{LOG} stop Play first: the refresh rewrites Regax.prefab");
+                return;
+            }
+
+            GameObject root = PrefabUtility.LoadPrefabContents(TARGET_PREFAB);
+
+            try
+            {
+                if (!WireDeathBlood(root))
+                    return;
+
+                PrefabUtility.SaveAsPrefabAsset(root, TARGET_PREFAB);
+                Debug.Log($"{LOG} Regax now throws one of the effects in {DEATH_BLOOD_CONFIG} on death");
+            }
+            finally
+            {
+                PrefabUtility.UnloadPrefabContents(root);
+            }
+        }
+
+        /// <summary>
+        /// Every effect in the pack's prefab folder, in the pack's own order (Blood1, Blood2,
+        /// Blood2_Left, ... Blood15). The config's sizes and colours are kept when it exists.
+        /// </summary>
+        private static DeathBloodConfig EnsureDeathBloodConfig()
+        {
+            DeathBloodConfig config = AssetDatabase.LoadAssetAtPath<DeathBloodConfig>(DEATH_BLOOD_CONFIG);
+
+            if (config == null)
+            {
+                string folder = System.IO.Path.GetDirectoryName(DEATH_BLOOD_CONFIG)!.Replace('\\', '/');
+                if (!AssetDatabase.IsValidFolder(folder))
+                    AssetDatabase.CreateFolder(System.IO.Path.GetDirectoryName(folder)!.Replace('\\', '/'),
+                        System.IO.Path.GetFileName(folder));
+
+                config = ScriptableObject.CreateInstance<DeathBloodConfig>();
+                AssetDatabase.CreateAsset(config, DEATH_BLOOD_CONFIG);
+            }
+
+            int Number(string name)
+            {
+                string digits = new(name.SkipWhile(c => !char.IsDigit(c)).TakeWhile(char.IsDigit).ToArray());
+                return digits.Length > 0 ? int.Parse(digits) : int.MaxValue;
+            }
+
+            config.variants = System.IO.Directory.GetFiles(DEATH_BLOOD_PACK, "*.prefab")
+                .Select(path => path.Replace('\\', '/'))
+                .Select(AssetDatabase.LoadAssetAtPath<GameObject>)
+                // The pack's scripts live in Assembly-CSharp, out of this assembly's reach; an effect
+                // with a gush is told by the gush's shader instead.
+                .Where(prefab => prefab != null && prefab.GetComponentsInChildren<Renderer>(true)
+                    .Any(r => r.sharedMaterial != null && r.sharedMaterial.shader.name.EndsWith("BFX_Blood")))
+                .OrderBy(prefab => Number(prefab.name))
+                .ThenBy(prefab => prefab.name.Length)
+                .ThenBy(prefab => prefab.name)
+                .ToArray();
+
+            EditorUtility.SetDirty(config);
+            AssetDatabase.SaveAssets();
+            return config;
+        }
+
+        /// <summary>
+        /// DeathBloodInstaller on &lt;VFX&gt;, listed in the entity's installers; the old switched-off
+        /// DeathBlood child and CharacterVfxInstaller's hold on it go.
+        /// </summary>
+        private static bool WireDeathBlood(GameObject root)
+        {
+            Transform vfx = root.transform.Find("<VFX>");
+            CharacterVfxInstaller effects = root.GetComponentInChildren<CharacterVfxInstaller>(true);
+            MonoEntity entity = root.GetComponent<MonoEntity>();
+
+            if (vfx == null || effects == null || entity == null)
+            {
+                Debug.LogError($"{LOG} missing <VFX>, CharacterVfxInstaller or MonoEntity");
+                return false;
+            }
+
+            Transform old = vfx.Find("DeathBlood");
+            if (old != null)
+                Object.DestroyImmediate(old.gameObject);
+            SetField(effects, "_deathEffect", null);
+
+            DeathBloodInstaller installer = vfx.GetComponent<DeathBloodInstaller>();
+            if (installer == null)
+                installer = vfx.gameObject.AddComponent<DeathBloodInstaller>();
+
+            SetField(installer, "_config", EnsureDeathBloodConfig());
+            SetField(installer, "_anchor", vfx);
+
+            SerializedObject serialized = new(entity);
+            SerializedProperty list = serialized.FindProperty("sceneInstallers");
+            bool listed = false;
+            for (int i = 0; i < list.arraySize; i++)
+                listed |= list.GetArrayElementAtIndex(i).objectReferenceValue == installer;
+
+            if (!listed)
+            {
+                list.InsertArrayElementAtIndex(list.arraySize);
+                list.GetArrayElementAtIndex(list.arraySize - 1).objectReferenceValue = installer;
+                serialized.ApplyModifiedPropertiesWithoutUndo();
+            }
 
             return true;
         }
@@ -409,9 +540,9 @@ namespace Game.EditorTools
             Transform vfx = root.transform.Find("<VFX>");
             Transform weapons = root.transform.Find("<Weapons>");
 
-            EnemyAnimInstaller anim = root.GetComponentInChildren<EnemyAnimInstaller>(true);
-            EnemyVfxInstaller effects = root.GetComponentInChildren<EnemyVfxInstaller>(true);
-            EnemyCoreInstaller core = root.GetComponentInChildren<EnemyCoreInstaller>(true);
+            CharacterAnimInstaller anim = root.GetComponentInChildren<CharacterAnimInstaller>(true);
+            CharacterVfxInstaller effects = root.GetComponentInChildren<CharacterVfxInstaller>(true);
+            EnemyCharacterCoreInstaller core = root.GetComponentInChildren<EnemyCharacterCoreInstaller>(true);
 
             if (anim == null || effects == null || core == null)
             {
@@ -426,12 +557,8 @@ namespace Game.EditorTools
             SetField(effects, "_meleeBlood", FindParticles(vfx, "MeleeDamageBlood"));
             SetField(effects, "_rootTransform", skeleton);
 
-            Transform deathEffect = vfx.Find("DeathBlood");
-
-            if (deathEffect == null)
-                Debug.LogError($"{LOG} no DeathBlood under <VFX>");
-
-            SetField(effects, "_deathEffect", deathEffect == null ? null : deathEffect.gameObject);
+            if (!WireDeathBlood(root))
+                return false;
 
             // The zombie's _groundPoint was its Spine_01 bone, which went out with the skeleton.
             Transform spine = skeleton.GetComponentsInChildren<Transform>(true)
@@ -453,6 +580,11 @@ namespace Game.EditorTools
             SetField(core, "_weapon", weapon);
             SetField(core, "_weaponRoot", weapons);
             SetField(core, "_characterRoot", root.transform);
+
+            // The zombie's 100 outlasted a tank shell landing a few metres off. See HEALTH.
+            SerializedObject coreSettings = new(core);
+            coreSettings.FindProperty("_health").intValue = HEALTH;
+            coreSettings.ApplyModifiedPropertiesWithoutUndo();
 
             return true;
         }

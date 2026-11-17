@@ -33,6 +33,11 @@ namespace Game.EditorTools
         private static readonly string[] StripRoots = { "[Environment]", "[Level]" };
 
         private const float FLOOR_SIZE = 24f;
+        /// <summary>
+        /// Extra floor (m) beyond the south wall, towards the camera: room for the vehicles. The
+        /// arena runs from z = −FLOOR_SIZE/2 − SOUTH_EXTENSION to z = FLOOR_SIZE/2.
+        /// </summary>
+        private const float SOUTH_EXTENSION = 12f;
         private const float WALL_HEIGHT = 4f;
         private const float WALL_THICKNESS = 1f;
         private const float STATION_STEP = 2.5f;
@@ -41,6 +46,22 @@ namespace Game.EditorTools
         [MenuItem("Tools/Playground/Build")]
         public static void Build()
         {
+            // The build replaces Playground.unity wholesale with a copy of GameScene. Since it was
+            // written, the scene has been filled by the other builders (tank, helicopter, Regax,
+            // grenades) and by hand (<Destructibles> and more) — not all of it in git. Opening
+            // GameScene in Single mode also drops unsaved edits in the open scenes without asking.
+            if (!EditorUtility.DisplayDialog(
+                    "Rebuild Playground",
+                    "Playground.unity will be replaced by a fresh copy of GameScene plus what this " +
+                    "builder adds. Everything else in it is lost: what the tank, helicopter, Regax " +
+                    "and grenade builders placed, and what was placed by hand (<Destructibles> and " +
+                    "more). Part of that is not in git.\n\nRebuild anyway?",
+                    "Rebuild", "Cancel"))
+                return;
+
+            if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
+                return;
+
             Scene scene = EditorSceneManager.OpenScene(SOURCE_SCENE, OpenSceneMode.Single);
 
             StripLevel(scene);
@@ -132,17 +153,23 @@ namespace Game.EditorTools
             float half = FLOOR_SIZE * 0.5f;
             float wallCentre = WALL_HEIGHT * 0.5f;
 
+            // The square of the original arena, stretched south (−Z) by SOUTH_EXTENSION.
+            float depth = FLOOR_SIZE + SOUTH_EXTENSION;
+            float centreZ = -SOUTH_EXTENSION * 0.5f;
+            float south = -half - SOUTH_EXTENSION;
+
             // Floor top flush with y = 0.
-            CreateCube("Floor", box, new Vector3(0f, -0.5f, 0f), new Vector3(FLOOR_SIZE, 1f, FLOOR_SIZE));
+            // Mud is off for now; Tools/Playground/Mud Ground puts it on this floor.
+            CreateCube("Floor", box, new Vector3(0f, -0.5f, centreZ), new Vector3(FLOOR_SIZE, 1f, depth));
 
             CreateCube("Wall_N", box, new Vector3(0f, wallCentre, half),
                 new Vector3(FLOOR_SIZE, WALL_HEIGHT, WALL_THICKNESS));
-            CreateCube("Wall_S", box, new Vector3(0f, wallCentre, -half),
+            CreateCube("Wall_S", box, new Vector3(0f, wallCentre, south),
                 new Vector3(FLOOR_SIZE, WALL_HEIGHT, WALL_THICKNESS));
-            CreateCube("Wall_E", box, new Vector3(half, wallCentre, 0f),
-                new Vector3(WALL_THICKNESS, WALL_HEIGHT, FLOOR_SIZE));
-            CreateCube("Wall_W", box, new Vector3(-half, wallCentre, 0f),
-                new Vector3(WALL_THICKNESS, WALL_HEIGHT, FLOOR_SIZE));
+            CreateCube("Wall_E", box, new Vector3(half, wallCentre, centreZ),
+                new Vector3(WALL_THICKNESS, WALL_HEIGHT, depth));
+            CreateCube("Wall_W", box, new Vector3(-half, wallCentre, centreZ),
+                new Vector3(WALL_THICKNESS, WALL_HEIGHT, depth));
         }
 
         private static GameObject CreateCube(string name, Transform parent, Vector3 position, Vector3 scale)
@@ -169,6 +196,8 @@ namespace Game.EditorTools
                 "Assets/Game/Prefabs/Weapons/PT_01_PickUp.prefab",
                 "Assets/Game/Prefabs/Weapons/Knife_01_PickUp.prefab",
                 "Assets/Game/Prefabs/Items/AmmoItem.prefab",
+                "Assets/Game/Prefabs/Items/GrenadeItem.prefab",
+                "Assets/Game/Prefabs/Items/FlashGrenadeItem.prefab",
                 "Assets/Game/Prefabs/Items/HealthItem.prefab"
             };
 
@@ -233,28 +262,29 @@ namespace Game.EditorTools
         {
             Transform row = new GameObject("<Zones>").transform;
 
-            string[] aspects =
+            // One buff per zone; the configs have Duration 0, so a buff lasts while the character stands in it.
+            string[] buffs =
             {
-                "Assets/Game/Configs/Aspects/DamageAspect.asset",
-                "Assets/Game/Configs/Aspects/JumpAspect.asset",
-                "Assets/Game/Configs/Aspects/MoveSpeedAspect.asset"
+                "Assets/Game/Configs/Buffs/Zones/ZoneDamage.asset",
+                "Assets/Game/Configs/Buffs/Zones/ZoneJump.asset",
+                "Assets/Game/Configs/Buffs/Zones/ZoneSlow.asset"
             };
 
-            for (int i = 0; i < aspects.Length; i++)
+            for (int i = 0; i < buffs.Length; i++)
             {
-                Object aspect = AssetDatabase.LoadAssetAtPath<Object>(aspects[i]);
+                BuffConfig buff = AssetDatabase.LoadAssetAtPath<BuffConfig>(buffs[i]);
 
-                if (aspect == null)
+                if (buff == null)
                 {
-                    Debug.LogError($"[PGBUILD] missing aspect {aspects[i]}");
+                    Debug.LogError($"[PGBUILD] missing zone buff {buffs[i]}");
                     continue;
                 }
 
-                GameObject zone = new(aspect.name);
+                GameObject zone = new(buff.name);
                 zone.transform.SetParent(row, false);
                 // South of the spawn, behind the player: a zone in front of them would be crossed
                 // by every shot.
-                zone.transform.position = RowPosition(i, aspects.Length, -11f);
+                zone.transform.position = RowPosition(i, buffs.Length, -11f);
 
                 BoxCollider collider = zone.AddComponent<BoxCollider>();
                 collider.isTrigger = true;
@@ -270,7 +300,11 @@ namespace Game.EditorTools
                 EffectAreaInstaller installer = zone.AddComponent<EffectAreaInstaller>();
 
                 SetPrivateField(installer, "_triggerEventReceiver", trigger);
-                SetPrivateField(installer, "_entityAspect", aspect);
+                SerializedObject serialized = new(installer);
+                SerializedProperty list = serialized.FindProperty("_buffs");
+                list.arraySize = 1;
+                list.GetArrayElementAtIndex(0).objectReferenceValue = buff;
+                serialized.ApplyModifiedPropertiesWithoutUndo();
                 AttachInstaller(entity, installer);
             }
 
@@ -348,8 +382,8 @@ namespace Game.EditorTools
         /// The zone that hands the standing enemy its target when the player walks in.
         /// </summary>
         /// <remarks>
-        /// Nothing else does. EnemyChaseBehaviour and EnemyAttackBehaviour both return early on a
-        /// null target, and the only thing in the project that sets one is EnemyTrigger, which
+        /// Nothing else does. EnemyCharacterChaseBehaviour and EnemyCharacterAttackBehaviour both return early on a
+        /// null target, and the only thing in the project that sets one is EnemyAggroZone, which
         /// until now was used nowhere -- so an enemy dropped into a scene patrolled and never
         /// noticed the player. It holds a fixed list, so this covers the standing enemy only; the
         /// ones the spawn button makes still have no way to acquire a target.
@@ -374,7 +408,7 @@ namespace Game.EditorTools
             collider.size = new Vector3(AGGRO_ZONE_SIZE, 6f, AGGRO_ZONE_SIZE);
             collider.center = new Vector3(0f, 3f, 0f);
 
-            EnemyTrigger aggro = zone.AddComponent<EnemyTrigger>();
+            EnemyAggroZone aggro = zone.AddComponent<EnemyAggroZone>();
 
             SerializedObject serialized = new(aggro);
             SerializedProperty list = serialized.FindProperty("_enemies");

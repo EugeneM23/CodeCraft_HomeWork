@@ -164,6 +164,7 @@ Material:
     - _Brightness: 1
     - _BumpScale: 1
     - _CameraFadeEnd: 0
+    - _CameraFadeInvert: 0
     - _CameraFadeStart: 0
     - _Contrast: 1
     - _Cull: 2

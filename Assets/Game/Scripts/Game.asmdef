@@ -7,9 +7,11 @@
         "HighlightPlus",
         "Unity.TextMeshPro",
         "Unity.Mathematics",
-        "UniTask",
         "DOTweenModules",
-        "UnityEngine.UI"
+        "UnityEngine.UI",
+        "RayFireAssembly",
+        "Unity.Postprocessing.Runtime",
+        "Game.Voxels"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

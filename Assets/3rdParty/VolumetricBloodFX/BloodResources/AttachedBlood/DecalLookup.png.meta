@@ -112,6 +112,6 @@ AssetOrigin:
   serializedVersion: 1
   productId: 173863
   packageName: Volumetric Blood Fluids
-  packageVersion: 1.0.2
-  assetPath: Assets/AssetStoreContent/KriptoFX/VolumetricBloodFX/BloodResources/AttachedBlood/DecalLookup.png
-  uploadId: 697396
+  packageVersion: 1.0.3
+  assetPath: Assets/3rdParty/VolumetricBloodFX/BloodResources/AttachedBlood/DecalLookup.png
+  uploadId: 919946

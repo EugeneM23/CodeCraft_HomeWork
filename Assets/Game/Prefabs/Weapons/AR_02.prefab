@@ -19375,6 +19375,7 @@ MonoBehaviour:
   _damage: 10
   _firePoint: {fileID: 1400432033415768503}
   _bulletPrefab: {fileID: 4751814292507788537, guid: 80aed013aadef4a42a5ddde1b678d8d4, type: 3}
+  _spread: 7
   _hasAmmo: 0
   _ammoCount: 50
   _shellPoint: {fileID: 5441659318418926944}

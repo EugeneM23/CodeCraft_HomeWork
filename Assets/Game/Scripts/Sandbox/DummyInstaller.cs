@@ -27,12 +27,9 @@ namespace Game.Sandbox
             entity.AddGameObject(this.gameObject);
             entity.AddTransform(origin);
 
-            entity.AddHealth(new Health(_health, _health));
-
-            // TakeDamageBloodBehaviour subscribes to both events, so the death one has to exist
-            // even though nothing ever raises it here.
-            entity.AddDamageTakenEvent(new Event<TakeDamageArgs>());
-            entity.AddDeathTakenEvent(new Event<TakeDamageArgs>());
+            // The death event is never raised here (no DeathBehaviour), but TakeDamageBloodBehaviour
+            // subscribes to it.
+            HealthUseCase.AddHealthWithEvents(entity, _health);
 
             entity.AddBehaviour<RestoreHealthOnDamageBehaviour>();
 

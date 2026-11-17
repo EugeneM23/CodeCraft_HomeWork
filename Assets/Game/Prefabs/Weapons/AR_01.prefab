@@ -9788,7 +9788,8 @@ MonoBehaviour:
     _duration: 0.2
   _damage: 10
   _firePoint: {fileID: 1400432033415768503}
-  _bulletPrefab: {fileID: 4751814292507788537, guid: 1f3ad6e72c1314ee0850eae794be3335, type: 3}
+  _bulletPrefab: {fileID: 4751814292507788537, guid: 9f31f7de463628640a70e540b1473de6, type: 3}
+  _spread: 7
   _hasAmmo: 1
   _ammoCount: 50
   _shellPoint: {fileID: 5441659318418926944}
