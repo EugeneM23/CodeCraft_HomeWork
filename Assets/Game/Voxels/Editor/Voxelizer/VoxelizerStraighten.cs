@@ -11,15 +11,13 @@ namespace Game.Voxels.EditorTools
         /// <summary>Corners closer than this (model units) count as one vertex when faces are joined; positions up to ±21 km.</summary>
         public const float WELD = 1e-5f;
 
-        /// <summary>A face whose corners spread this many voxels or more along its axis is a slope, not a flat face.</summary>
-        public const float MAX_SPREAD_VOXELS = 2f;
-
         /// <summary>
         /// Before Sample. Triangles whose normal lies within maxAngleDeg of the same signed axis and that share
         /// edges form one face; the face moves along that axis onto the centre of the voxel layer holding its
-        /// area-weighted mean, so it samples as one even layer, the layer it really lies in. A face whose
-        /// corners spread MAX_SPREAD_VOXELS or more along the axis is left alone: flattening it would open
-        /// holes against its neighbours. Min/Max are updated.
+        /// area-weighted mean, so it samples as one even layer, the layer it really lies in. A face with any
+        /// corner outside that layer and the two next to it is left alone (a slope, not a flat face): its
+        /// unmoved neighbours end at those corners, and a gap of a whole layer would let the outside fill in.
+        /// Min/Max are updated.
         /// </summary>
         public static void SnapPlanes(VoxelizerTriangles triangles, float voxelSize, float maxAngleDeg = 10f)
         {
@@ -66,7 +64,7 @@ namespace Game.Voxels.EditorTools
                 }
             }
 
-            // Per face: area-weighted mean along the axis and the corners' spread.
+            // Per face: area-weighted mean along the axis and the lowest and highest corner.
             var sum = new Dictionary<int, (double weighted, double area, float min, float max)>();
             for (int t = 0; t < count; t++)
             {
@@ -91,10 +89,11 @@ namespace Game.Voxels.EditorTools
                 {
                     int axis = axisOf[t] / 2;
                     var s = sum[Find(parent, t)];
-                    if (s.area > 0 && s.max - s.min < MAX_SPREAD_VOXELS * voxelSize)
+                    float mean = s.area > 0 ? (float)(s.weighted / s.area) : 0f;
+                    float layer = math.floor(mean / voxelSize);
+                    if (s.area > 0 && math.floor(s.min / voxelSize) >= layer - 1f && math.floor(s.max / voxelSize) <= layer + 1f)
                     {
-                        float mean = (float)(s.weighted / s.area);
-                        float plane = (math.floor(mean / voxelSize) + 0.5f) * voxelSize;
+                        float plane = (layer + 0.5f) * voxelSize;
                         for (int k = 0; k < 3; k++)
                         {
                             float3 p = corners[t * 3 + k];
