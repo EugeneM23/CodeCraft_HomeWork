@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Game
 {
     /// <summary>
-    /// Aims the character (the tank's turret) at the mouse cursor.
+    /// Aims the character (the tank's turret) at the player's pointer (IPlayerInput.Pointer).
     ///
     /// This replaces the on-screen rotation joystick, which was the only source of
     /// RotateDirection — so on a desktop build the value stayed at zero and the character
@@ -23,9 +23,11 @@ namespace Game
         private IReactiveVariable<Vector3> _rotateDirection;
         private Transform _characterTransform;
         private UnityEngine.Camera _camera;
+        private IPlayerInput _input;
 
         public void Init(IPlayerContext context)
         {
+            context.TryGetPlayerInput(out _input);
             _characterSource = context.GetCharacter();
             _characterSubscription = _characterSource.Observe(OnCharacterChanged);
             _camera = UnityEngine.Camera.main;
@@ -41,7 +43,7 @@ namespace Game
 
         private void Rotate()
         {
-            if (_rotateDirection == null || _characterTransform == null) return;
+            if (_rotateDirection == null || _characterTransform == null || _input == null) return;
 
             if (_camera == null)
             {
@@ -52,7 +54,7 @@ namespace Game
             }
 
             Vector3 characterPosition = _characterTransform.position;
-            if (!CursorUseCase.TryProjectOnPlane(_camera, characterPosition.y, out Vector3 point)) return;
+            if (!CursorUseCase.TryProjectOnPlane(_camera, CursorUseCase.ScreenPoint(_input.Pointer), characterPosition.y, out Vector3 point)) return;
 
             Vector3 direction = point - characterPosition;
             direction.y = 0f;

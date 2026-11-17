@@ -57,7 +57,6 @@ namespace Game
         public static readonly ValueKey<IEntity, Game.Ammo> Ammo = new(nameof(Ammo));
         public static readonly ValueKey<IEntity, Game.CooldownTimer> WeaponCooldown = new(nameof(WeaponCooldown));
         public static readonly ValueKey<IEntity, IReactiveVariable<IEntity>> Weapon = new(nameof(Weapon));
-        public static readonly ValueKey<IEntity, UnityEngine.Transform> WeaponRoot = new(nameof(WeaponRoot));
         public static readonly ValueKey<IEntity, UnityEngine.Transform> FirePoint = new(nameof(FirePoint));
         public static readonly ValueKey<IEntity, UnityEngine.Transform> ShellPoint = new(nameof(ShellPoint));
         public static readonly ValueKey<IEntity, IValue<float>> Spread = new(nameof(Spread));
@@ -67,8 +66,8 @@ namespace Game
         public static readonly ValueKey<IEntity, IAction> FireAction = new(nameof(FireAction));
         public static readonly ValueKey<IEntity, IEvent> FireEvent = new(nameof(FireEvent));
         public static readonly ValueKey<IEntity, IExpression<bool>> FireCondition = new(nameof(FireCondition));
-        // On a weapon mounted on something with a body (a vehicle): the colliders its bullets
-        // fly through instead of hitting. Without it, a bullet hits whatever it meets.
+        // On a weapon mounted on something with a body: the colliders its bullets fly through
+        // instead of hitting. Without it, a bullet hits whatever it meets. No gun sets it now.
         public static readonly ValueKey<IEntity, UnityEngine.Collider[]> ShooterColliders = new(nameof(ShooterColliders));
         // On a bullet: the shooter colliders its collisions are switched off with, put back when a
         // pooled bullet is fired by somebody else.

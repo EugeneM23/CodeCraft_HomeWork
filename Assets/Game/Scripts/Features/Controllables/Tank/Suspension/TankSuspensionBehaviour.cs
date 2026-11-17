@@ -22,14 +22,14 @@ namespace Game
     /// forces every step for a hull that did not move, and the forces alone kept the body awake for
     /// good. Gravity goes off with the springs that carried the weight, so a step in which a hit,
     /// a blast or a body walking into it wakes the tank drops it no more than it lifts it. Anything
-    /// that wakes it, a driver getting in, or the ground under a wheel changing — looked at again
+    /// that wakes it, a new driver, or the ground under a wheel changing — looked at again
     /// every <see cref="REST_PROBE_INTERVAL"/> — gives gravity back, and that step runs as before.
     /// </summary>
     public sealed class TankSuspensionBehaviour : IEntityInit, IEntityFixedTick
     {
         /// <summary>
         /// What a wheel can stand on: not the tank itself or the player (9 Character), not enemies
-        /// (8) or dummies (7) — the hull shoves those, it does not climb them — and not pickups (6)
+        /// (8) or dummies (7) — the hull shoves those, it does not climb them — and not layer 6 (Interactable)
         /// or anything flying (11 ThrowItem, 12 Bullet, 13 Weapon). Floor, walls and platforms
         /// count; of debris and floor chips only what is not loose (see FindGround).
         /// Layer names: ProjectSettings/TagManager.asset.

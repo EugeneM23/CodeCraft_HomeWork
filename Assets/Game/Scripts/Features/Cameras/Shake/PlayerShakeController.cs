@@ -6,8 +6,8 @@ namespace Game
     /// <summary>
     /// Shakes the camera when the weapon in hand fires.
     ///
-    /// Both links are kept live through subscriptions rather than snapshotted: the character can be
-    /// replaced on respawn, and the weapon it holds changes on every pick-up. Both subscriptions are
+    /// Both links are kept live through subscriptions rather than snapshotted: the player's character can
+    /// be replaced, and so can the weapon it fires. Both subscriptions are
     /// released on dispose — previously neither was, so a pooled weapon kept a Shake handler aimed
     /// at a dead camera after every scene reload, and one shot fired N shakes.
     ///
