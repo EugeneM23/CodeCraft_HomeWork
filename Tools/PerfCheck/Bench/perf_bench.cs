@@ -1,7 +1,7 @@
 // VoxelSandbox benchmark (Docs/Rules/Performance.md, sections 3-4).
 // Run in Play, in VoxelSandbox, with one call:
 //   unity cmd --port <port> script eval --file Tools/PerfCheck/Bench/perf_bench.cs
-// It returns at once and plays the scenarios over the next ~40 s from EditorApplication.update and
+// It returns at once and plays the scenarios over the next ~50 s from EditorApplication.update and
 // Application.onBeforeRender. Read the result with perf_bench_read.cs. Leaving Play aborts the run.
 // Optional: set AppDomain data "perfbench_only" to a comma list of scenarios before the call.
 using System;
@@ -48,6 +48,9 @@ if (driver == null)
 var dargs = new object[] { driver, null };
 if (!(bool)FindExt("TryGetDriveInput").Invoke(null, dargs)) return "ERROR the tank has no DriveInput";
 var driveInput = (Atomic.Elements.IReactiveVariable<Vector2>)dargs[1];
+var bargs = new object[] { driver, null };
+MethodInfo boostExt = FindExt("TryGetDriveBoost");
+var driveBoost = boostExt != null && (bool)boostExt.Invoke(null, bargs) ? (Atomic.Elements.IReactiveVariable<bool>)bargs[1] : null;
 
 Transform tank = start != null && start.Vehicle != null ? start.Vehicle.transform : GameObject.Find("Tank_01")?.transform;
 if (tank == null) return "ERROR no tank";
@@ -75,7 +78,7 @@ catch (Exception e) { frameCountNote = "n/a " + e.GetBaseException().Message; }
 
 // ---------- Scenarios ----------
 string only = domain.GetData("perfbench_only") as string;
-var plan = new List<(string name, float seconds)> { ("idle", 4f), ("drive", 8f), ("airstrike", 6.5f), ("crush", 4f) };
+var plan = new List<(string name, float seconds)> { ("idle", 4f), ("drive", 8f), ("airstrike", 6.5f), ("crush", 4f), ("crater", 5f) };
 if (!string.IsNullOrEmpty(only)) plan.RemoveAll(p => !("," + only + ",").Contains("," + p.name + ","));
 
 var counterNames = new (ProfilerCategory cat, string name, string key)[]
@@ -89,7 +92,8 @@ var counterNames = new (ProfilerCategory cat, string name, string key)[]
 var recorders = new List<ProfilerRecorder>();
 
 // Per-frame CPU data, from the profiler hierarchy (frames the bench itself spent time in are skipped).
-// Columns: 0 main, 1 playerLoop, 2 gc (game), 3 voxels, 4 physics, 5 scripts, 6 render, 7 gc editor-only (Burst JIT), 8 gc debug HUD (IMGUI).
+// Columns: 0 main, 1 playerLoop, 2 gc (game), 3 voxels, 4 physics, 5 scripts, 6 render, 7 gc editor-only (Burst JIT), 8 gc debug HUD (IMGUI),
+// 9 plough bite ms, 10 bite calls, 11 bite gc (marker TankPlough.Bite, inclusive).
 var skipFrames = new HashSet<int>();
 var rows = new List<double[]>();
 var worst = new List<(double ms, int frame, string top)>();
@@ -147,7 +151,7 @@ void ReadFrames(int upTo)
         if (plId < 0) continue;
         double pl = view.GetItemColumnDataAsDouble(plId, HierarchyFrameDataView.columnTotalTime);
         double gc = view.GetItemColumnDataAsDouble(plId, HierarchyFrameDataView.columnGcMemory);
-        double vox = 0, phys = 0, scripts = 0, scriptVox = 0, render = 0, gcEditor = 0, gcHud = 0;
+        double vox = 0, phys = 0, scripts = 0, scriptVox = 0, render = 0, gcEditor = 0, gcHud = 0, bite = 0, biteCalls = 0, biteGc = 0;
         bool seenP = false, seenR = false, seenS = false;
         stack3.Clear();
         stack3.Push((plId, 0, false, 0));
@@ -162,6 +166,12 @@ void ReadFrames(int upTo)
                 if (IsEditorOnly(n)) { gcEditor += view.GetItemColumnDataAsDouble(c, HierarchyFrameDataView.columnGcMemory); continue; }
                 if (IsDebugHud(n)) { gcHud += view.GetItemColumnDataAsDouble(c, HierarchyFrameDataView.columnGcMemory); continue; }
                 double t = view.GetItemColumnDataAsDouble(c, HierarchyFrameDataView.columnTotalTime);
+                if (n == "TankPlough.Bite")
+                {
+                    bite += t;
+                    biteCalls += view.GetItemColumnDataAsDouble(c, HierarchyFrameDataView.columnCalls);
+                    biteGc += view.GetItemColumnDataAsDouble(c, HierarchyFrameDataView.columnGcMemory);
+                }
                 int cc = cat;
                 if (cat == 0)
                 {
@@ -183,7 +193,7 @@ void ReadFrames(int upTo)
         if (seenP) catSeen[1]++;
         if (seenR) catSeen[2]++;
         if (seenS) catSeen[3]++;
-        rows.Add(new[] { view.frameTimeMs, pl, Math.Max(0, gc - gcEditor - gcHud), vox, phys, Math.Max(0, scripts - scriptVox), render, gcEditor, gcHud });
+        rows.Add(new[] { view.frameTimeMs, pl, Math.Max(0, gc - gcEditor - gcHud), vox, phys, Math.Max(0, scripts - scriptVox), render, gcEditor, gcHud, bite, biteCalls, biteGc });
         if (worst.Count < 3 || pl > worst[worst.Count - 1].ms)
         {
             worst.Add((pl, f, HotPath(view, plId)));
@@ -194,11 +204,13 @@ void ReadFrames(int upTo)
     readUpTo = Math.Max(readUpTo, upTo);
 }
 
-string Stats(int col, double scale = 1, string fmt = "F2", bool frames = true)
+// "of" is a subset of the rows (the crater's bite frames); all rows by default.
+string Stats(int col, double scale = 1, string fmt = "F2", bool frames = true, List<double[]> of = null)
 {
-    if (rows.Count == 0) return "\"n\":0";
-    var v = new double[rows.Count];
-    for (int i = 0; i < v.Length; i++) v[i] = rows[i][col] * scale;
+    of ??= rows;
+    if (of.Count == 0) return "\"n\":0";
+    var v = new double[of.Count];
+    for (int i = 0; i < v.Length; i++) v[i] = of[i][col] * scale;
     Array.Sort(v);
     double sum = 0; foreach (var x in v) sum += x;
     int over = 0; foreach (var x in v) if (x > 16.6) over++;
@@ -225,9 +237,15 @@ var drive = new float[2]; // steer, throttle; 0,0 = leave the input alone
 // A blast is queued from EditorApplication.update and set off here, inside the player loop, so its
 // main-thread cost lands in PlayerLoop like a real bomb's (from EditorApplication.update it did not).
 var pendingBlast = new List<Vector3>();
+bool boostOn = false;
+// The crater scenario's own crater: the blast of SandboxCraterPloughTest, the hole without a debris storm.
+bool craterBlastPending = false;
+Vector3 craterAt = default;
 UnityEngine.Events.UnityAction onRender = () =>
 {
     if (drive[0] != 0 || drive[1] != 0) driveInput.Value = new Vector2(drive[0], drive[1]);
+    if (driveBoost != null && driveBoost.Value != boostOn) driveBoost.Value = boostOn;
+    if (craterBlastPending) { craterBlastPending = false; Game.Voxels.VoxelDamage.AirBlast(craterAt, 4f, 32f, 24f, 0, 0.85f, 24f); }
     if (pendingBlast.Count > 0 && explode != null && strikes.Length > 0 && strikes[0] != null)
     {
         foreach (var p in pendingBlast) explode.Invoke(strikes[0], new object[] { p });
@@ -245,6 +263,33 @@ GameObject regax = null;
 float regaxMin = float.MaxValue;
 Vector3 regaxStart = default;
 
+// Crater: a straight run nearest the origin, as SandboxCraterPloughTest.TryFindRunway; the crater 18 m on
+// (14 m run-up + 4 m rim); the tank from the start at full throttle with boost.
+const int GROUND = 1 << Game.PhysicsLayers.Ground;
+bool TryFindRunway(out Vector3 from0, out Vector3 way0)
+{
+    from0 = default; way0 = Vector3.forward;
+    Vector3[] ways = { Vector3.right, Vector3.left, Vector3.forward, Vector3.back };
+    float bestR = float.MaxValue;
+    for (float x = -30f; x <= 30f; x += 3f)
+    for (float z = -30f; z <= 30f; z += 3f)
+    foreach (Vector3 way in ways)
+    {
+        var from = new Vector3(x, 0f, z);
+        if (Physics.CheckBox(from + way * 15f + Vector3.up * 2f, new Vector3(3f, 1.5f, 16f), Quaternion.LookRotation(way), ~GROUND, QueryTriggerInteraction.Ignore)) continue;
+        if (!Physics.Raycast(from + Vector3.up * 5f, Vector3.down, out RaycastHit hit, 10f, GROUND)) continue;
+        if (!Physics.Raycast(from + way * 28f + Vector3.up * 5f, Vector3.down, out RaycastHit end, 10f, GROUND) || Mathf.Abs(end.point.y - hit.point.y) > 0.5f) continue;
+        if (from.sqrMagnitude < bestR) { bestR = from.sqrMagnitude; from0 = hit.point; way0 = way; }
+    }
+    return bestR < float.MaxValue;
+}
+var tankInstaller = tank.GetComponent<Game.TankInstaller>();
+Vector3 craterStart = default, craterFwd = Vector3.forward;
+string craterStep = "";
+int ploughEvents = 0, impactsBefore = 0;
+float entrySpeed = -1f, minFarSpeed = float.MaxValue, maxAlong = float.MinValue, entryTime = -1f, exitTime = -1f;
+Action<Vector3, float> onPloughed = (pt, strength) => ploughEvents++;
+
 int phase = -1;
 string sub = "warmup";
 float phaseStart = 0;
@@ -261,7 +306,9 @@ void Finish(string status)
 {
     EditorApplication.update -= onUpdate;
     Application.onBeforeRender -= onRender;
+    Game.TankPloughEvents.Ploughed -= onPloughed;
     drive[0] = drive[1] = 0;
+    if (driveBoost != null) driveBoost.Value = false;
     foreach (var r in recorders) r.Dispose();
     recorders.Clear();
     for (int i = 0; i < strikes.Length; i++) if (strikes[i] != null) onField.SetValue(strikes[i], strikeWasOn[i]);
@@ -314,6 +361,16 @@ void BeginScenario()
         else sbNotes.Add("crush: no Regax in the scene");
         drive[1] = 1;
     }
+    if (name == "crater")
+    {
+        ploughEvents = 0;
+        impactsBefore = tankInstaller != null && tankInstaller.Plough != null ? tankInstaller.Plough.Impacts : 0;
+        entrySpeed = -1f; minFarSpeed = float.MaxValue; maxAlong = float.MinValue; entryTime = exitTime = -1f;
+        Game.TankPloughEvents.Ploughed -= onPloughed;
+        Game.TankPloughEvents.Ploughed += onPloughed;
+        drive[1] = 1;
+        boostOn = true;
+    }
     sub = "run";
 }
 
@@ -321,6 +378,8 @@ void EndScenario()
 {
     var (name, _) = plan[phase];
     drive[0] = drive[1] = 0;
+    boostOn = false;
+    Game.TankPloughEvents.Ploughed -= onPloughed;
     sub = "read";
     ReadFrames(ProfilerDriver.lastFrameIndex);
     string[] catNames = { "", "physics", "render", "scripts" };
@@ -334,6 +393,18 @@ void EndScenario()
     if (name == "crush" && regax != null) extra = $",\"regaxMinDistance\":{regaxMin.ToString("F2", inv)},\"regaxAlive\":{(regax != null && regax.activeInHierarchy ? "true" : "false")}";
     if (name == "airstrike") extra = $",\"blasts\":{blasts}";
     if (name == "drive" || name == "crush") extra += $",\"tankMoved\":{Vector3.Distance(tank.position, tankStart).ToString("F1", inv)}";
+    if (name == "crater")
+    {
+        // Bite figures over the frames the plough bit in only.
+        var biteRows = rows.FindAll(r => r[10] > 0);
+        string preset = tankInstaller != null && tankInstaller.PloughPreset != null ? tankInstaller.PloughPreset.DisplayName : "none";
+        int impacts = tankInstaller != null && tankInstaller.Plough != null ? tankInstaller.Plough.Impacts - impactsBefore : -1;
+        extra = $",\"preset\":\"{preset}\",\"ploughEvents\":{ploughEvents},\"impacts\":{impacts},\"entrySpeed\":{entrySpeed.ToString("F2", inv)}," +
+                $"\"minFarSpeed\":{(minFarSpeed == float.MaxValue ? -1f : minFarSpeed).ToString("F2", inv)},\"outIn\":{(exitTime >= 0 ? exitTime - entryTime : -1f).ToString("F2", inv)},\"maxAlong\":{maxAlong.ToString("F1", inv)}," +
+                $"\"biteFrames\":{biteRows.Count},\"biteMs\":{{{Stats(9, 1, "F3", true, biteRows)}}},\"biteCalls\":{{{Stats(10, 1, "F0", false, biteRows)}}},\"biteGc\":{{{Stats(11, 1, "F0", false, biteRows)}}}," +
+                $"\"biteFramePlayerLoop\":{{{Stats(1, 1, "F2", true, biteRows)}}},\"biteFrameGc\":{{{Stats(2, 1, "F0", false, biteRows)}}}";
+        if (biteRows.Count == 0) sbNotes.Add("crater: the plough never bit");
+    }
     results.Add($"\"{name}\":{{\"frames\":{rows.Count},\"seconds\":{(Time.time - runStart).ToString("F1", inv)}," +
                 $"\"main\":{{{Stats(0)}}},\"playerLoop\":{{{Stats(1)}}},\"gcBytes\":{{{Stats(2, 1, "F0", false)}}},\"gcEditorOnly\":{{{Stats(7, 1, "F0", false)}}},\"gcDebugHud\":{{{Stats(8, 1, "F0", false)}}}," +
                 $"\"voxels\":{{{Stats(3)}}},\"physics\":{{{Stats(4)}}},\"scripts\":{{{Stats(5)}}},\"render\":{{{Stats(6)}}}," +
@@ -356,6 +427,31 @@ onUpdate = () =>
         if (phase >= plan.Count) { Finish("done"); return; }
         var (name, seconds) = plan[phase];
         domain.SetData("perfbench_status", $"running: {name} {sub} {(Time.time - phaseStart).ToString("F1", inv)}/{seconds}");
+        if (sub == "settle" && name == "crater")
+        {
+            // Not measured: find the run, blast the crater, give its collider a moment, put the tank at the start.
+            float s = Time.time - phaseStart;
+            if (craterStep == "")
+            {
+                if (!TryFindRunway(out craterStart, out craterFwd)) { sbNotes.Add("crater: no open run for a crater"); phase++; phaseStart = Time.time; return; }
+                if (tankInstaller == null || tankInstaller.Plough == null) sbNotes.Add("crater: the tank has no plough");
+                craterAt = craterStart + craterFwd * 18f;
+                craterBlastPending = true;
+                craterStep = "blast";
+                return;
+            }
+            if (craterStep == "blast" && s >= 0.5f)
+            {
+                tankBody.linearVelocity = Vector3.zero; tankBody.angularVelocity = Vector3.zero;
+                tankBody.position = craterStart + Vector3.up * 0.4f; tankBody.rotation = Quaternion.LookRotation(craterFwd);
+                tank.SetPositionAndRotation(tankBody.position, tankBody.rotation);
+                tankStart = tankBody.position;
+                craterStep = "place";
+                return;
+            }
+            if (craterStep == "place" && s >= 1.5f) { craterStep = ""; BeginScenario(); }
+            return;
+        }
         if (sub == "settle") { if (Time.time - phaseStart >= 0.5f) BeginScenario(); return; }
         if (sub == "run")
         {
@@ -369,6 +465,16 @@ onUpdate = () =>
                 blasts++;
             }
             if (name == "crush" && regax != null) regaxMin = Mathf.Min(regaxMin, Vector3.Distance(regax.transform.position, tank.position));
+            if (name == "crater")
+            {
+                // In: 4 m before the crater centre (the near rim); out: 5.4 m past it (over the far rim).
+                float along = Vector3.Dot(tankBody.position - craterAt, craterFwd);
+                float speed = Vector3.Dot(tankBody.linearVelocity, craterFwd);
+                maxAlong = Mathf.Max(maxAlong, along);
+                if (entryTime < 0 && along >= -4f) { entryTime = Time.time; entrySpeed = speed; }
+                if (entryTime >= 0 && exitTime < 0 && along > 0) minFarSpeed = Mathf.Min(minFarSpeed, speed);
+                if (entryTime >= 0 && exitTime < 0 && along > 5.4f) exitTime = Time.time;
+            }
             // Read the profiler in chunks so its buffer never wraps; the frame doing it is skipped.
             if (ProfilerDriver.lastFrameIndex - readUpTo > 200)
             {
@@ -376,7 +482,7 @@ onUpdate = () =>
                 skipFrames.Add(ProfilerDriver.lastFrameIndex + 1);
                 skipFrames.Add(ProfilerDriver.lastFrameIndex + 2);
             }
-            if (t >= seconds) { drive[0] = drive[1] = 0; sub = "tail"; phaseStart = Time.time; }
+            if (t >= seconds) { drive[0] = drive[1] = 0; boostOn = false; sub = "tail"; phaseStart = Time.time; }
             return;
         }
         if (sub == "tail")
@@ -399,5 +505,5 @@ domain.SetData("perfbench_render", onRender);
 domain.SetData("perfbench_status", "running: armed");
 domain.SetData("perfbench_result", null);
 float total = 10f;
-foreach (var p in plan) total += p.seconds + 0.6f;
+foreach (var p in plan) total += p.seconds + (p.name == "crater" ? 1.6f : 0.6f);
 return $"armed: {string.Join(",", plan.ConvertAll(p => p.name))}, ~{total:F0} s from scene start; strikes={strikes.Length} profilerFrames={frameCountNote}; read with perf_bench_read.cs";
