@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Game.AudioEngine.Adapters.EditorTools
 {
     /// <summary>
-    /// Loops whose pitch and volume follow a bank parameter. On event creation the sync adds one
+    /// Sounds whose pitch and volume follow a bank parameter. On event creation the sync adds one
     /// AudioEventBehaviour_ParameterCurve (runtime assembly, found by name so this compiles without it) per row.
     /// </summary>
     internal static class AudioParameterCurves
@@ -40,6 +40,8 @@ namespace Game.AudioEngine.Adapters.EditorTools
             new(AudioKeys.Tank.TRACKS_MUD_LOOP, AudioKeys.Tank.MUD, 1f, 1f, 0f, 1f),
             new(AudioKeys.Tank.WHEEL_SPIN_LOOP, AudioKeys.Tank.SLIP, 1f, 1f, 0f, 1f),
             new(AudioKeys.Tank.TURRET_LOOP, AudioKeys.Tank.TURRET, 1f, 1f, 0f, 1f),
+            // One-shot: a light graze is a quiet, higher thud, a full dig a loud, deep one.
+            new(AudioKeys.Tank.PLOUGH, AudioKeys.Tank.PLOUGH_STRENGTH, 1.15f, 0.85f, 0.35f, 1f),
             new(AudioKeys.World.RAIN_LOOP, AudioKeys.World.RAIN, 1f, 1f, 0f, 1f),
             new(AudioKeys.Horde.CROWD_LOOP, AudioKeys.Horde.DENSITY, 1f, 1f, 0f, 1f),
         };

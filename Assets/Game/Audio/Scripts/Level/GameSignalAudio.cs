@@ -8,7 +8,8 @@ namespace Game.AudioEngine.Adapters
 {
     /// <summary>
     /// Sounds of the moments without an entity event: blasts, carved and broken voxels, mud hits, crushes, the
-    /// air strike. Listens to <see cref="GameSignals"/> and <see cref="VoxelSignals"/> while its GameAudio is
+    /// air strike, the tank's nose ploughing in. Listens to <see cref="GameSignals"/>, <see cref="VoxelSignals"/>,
+    /// <see cref="ExplosionEvents"/> and <see cref="TankPloughEvents"/> while its GameAudio is
     /// enabled. Debris landing after a big carve and the bombs whistling are kept in fixed buffers: no
     /// allocation per signal or per frame.
     /// </summary>
@@ -35,6 +36,7 @@ namespace Game.AudioEngine.Adapters
         private readonly Action<Vector3, float, int> _onCarved;
         private readonly Action<Vector3, float, int> _onAirBlasted;
         private readonly Action<Vector3, float> _onFractured;
+        private readonly Action<Vector3, float> _onPloughed;
 
         private readonly Vector3[] _debrisPoints = new Vector3[DEBRIS_CAPACITY];
         private readonly float[] _debrisTimers = new float[DEBRIS_CAPACITY];
@@ -62,6 +64,7 @@ namespace Game.AudioEngine.Adapters
             _onCarved = OnCarved;
             _onAirBlasted = OnAirBlasted;
             _onFractured = OnFractured;
+            _onPloughed = OnPloughed;
         }
 
         public void Subscribe()
@@ -78,6 +81,7 @@ namespace Game.AudioEngine.Adapters
             VoxelSignals.Carved += _onCarved;
             VoxelSignals.AirBlasted += _onAirBlasted;
             VoxelSignals.Fractured += _onFractured;
+            TankPloughEvents.Ploughed += _onPloughed;
         }
 
         public void Unsubscribe()
@@ -94,6 +98,7 @@ namespace Game.AudioEngine.Adapters
             VoxelSignals.Carved -= _onCarved;
             VoxelSignals.AirBlasted -= _onAirBlasted;
             VoxelSignals.Fractured -= _onFractured;
+            TankPloughEvents.Ploughed -= _onPloughed;
 
             _debrisCount = 0;
             for (int i = 0; i < _bombCount; i++)
@@ -158,6 +163,14 @@ namespace Game.AudioEngine.Adapters
         // The module has no per-play volume, so a fracture sounds the same at any impact speed.
         private static void OnFractured(Vector3 point, float speed) =>
             GameAudio.Play(AudioKeys.Destruction.VOXEL_FRACTURE, point);
+
+        // The module has no per-play volume: the strength goes into a bank parameter first, and the event's
+        // ParameterCurve reads it when the sound starts (louder and lower the harder the nose dug in).
+        private static void OnPloughed(Vector3 point, float strength01)
+        {
+            GameAudio.SetParameter(AudioKeys.Tank.PLOUGH_STRENGTH, Mathf.Clamp01(strength01));
+            GameAudio.Play(AudioKeys.Tank.PLOUGH, point);
+        }
 
         private void OnAirBlasted(Vector3 point, float radius, int voxels)
         {

@@ -78,6 +78,8 @@ namespace Game.AudioEngine.Adapters
             new(AudioKeys.Tank.TURRET_LOOP, FX, true, loop: true),
             new(AudioKeys.Tank.RAM, FX, true, maxFrequency: 0.15f, defaultClips: "Common/MeleeDamage.wav"),
             new(AudioKeys.Tank.LANDING, FX, true, maxFrequency: 0.3f, defaultClips: "Common/BodyFall2.wav"),
+            // The nose ploughs into the ground: louder and lower the harder (tank.plough_strength).
+            new(AudioKeys.Tank.PLOUGH, FX, true, maxFrequency: 0.2f, defaultClips: "Common/BodyFall2.wav"),
             new(AudioKeys.Tank.HIT, FX, true, maxFrequency: 0.1f, defaultClips: "Common/BulletDamage.wav"),
             new(AudioKeys.Tank.LOW_HEALTH, FX, false, defaultClips: "Common/Alarm4.wav"),
             new(AudioKeys.Tank.DESTROYED, FX, true, defaultClips: "etfx_explosion_magic.wav"),
@@ -125,6 +127,7 @@ namespace Game.AudioEngine.Adapters
         {
             new(AudioKeys.Tank.RPM), new(AudioKeys.Tank.THROTTLE), new(AudioKeys.Tank.SPEED),
             new(AudioKeys.Tank.MUD), new(AudioKeys.Tank.SLIP), new(AudioKeys.Tank.TURRET),
+            new(AudioKeys.Tank.PLOUGH_STRENGTH),
             new(AudioKeys.Horde.DENSITY), new(AudioKeys.World.RAIN),
         };
 
