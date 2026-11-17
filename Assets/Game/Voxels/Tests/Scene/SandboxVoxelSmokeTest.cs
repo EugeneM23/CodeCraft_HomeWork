@@ -129,6 +129,65 @@ namespace Game.Voxels.Tests
         }
 
         /// <summary>
+        /// The air strike drops its bombs on its own timer (first 3 s in, then every 5 s), and each one
+        /// goes off the whole way: crater, fireballs, the camera shake, the shove and the explosion
+        /// event the sound plays on, with no exception on the way. The shake used to throw when the game
+        /// context had no PlayerContext, and the event after it never came.
+        /// </summary>
+        [UnityTest]
+        [Timeout(60000)]
+        public IEnumerator Sandbox_AirStrikeBombsGoOffWithoutExceptions()
+        {
+            LogAssert.ignoreFailingMessages = true;
+            var exceptions = new List<string>();
+            Application.LogCallback collect = (message, stack, type) =>
+            {
+                if (type == LogType.Exception)
+                    exceptions.Add(message + "\n" + stack);
+            };
+            int dropped = 0;
+            int exploded = 0;
+            System.Action<Transform> onDropped = _ => dropped++;
+            System.Action<Vector3, float> onExploded = (_, _) =>
+            {
+                if (dropped > 0)
+                    exploded++;
+            };
+            Application.logMessageReceived += collect;
+            GameSignals.AirBombDropped += onDropped;
+            ExplosionEvents.Exploded += onExploded;
+
+            try
+            {
+                yield return EditorSceneManager.LoadSceneAsyncInPlayMode(SCENE, new LoadSceneParameters(LoadSceneMode.Single));
+                yield return null;
+
+                VoxelAirStrike strike = Object.FindFirstObjectByType<VoxelAirStrike>();
+                Assert.IsNotNull(strike, "the sandbox has its air strike");
+                Assert.IsTrue(strike.On, "the air strike is on from the start");
+                Assert.IsTrue(GameContext.Instance.TryGetPlayerContext(out PlayerContext _), "the game context has the player");
+
+                // Two bombs: the first at about 4.5 s, the second 5 s on.
+                float until = Time.time + 15f;
+                while (exploded < 2 && Time.time < until)
+                    yield return null;
+
+                foreach (string exception in exceptions.Take(5))
+                    Debug.Log($"[VoxelSmoke] exception: {exception}");
+                Assert.That(dropped, Is.GreaterThanOrEqualTo(2), "bombs were dropped");
+                Assert.That(exploded, Is.GreaterThanOrEqualTo(2), "each bomb went off as far as its explosion event");
+                Assert.IsEmpty(exceptions);
+            }
+            finally
+            {
+                Application.logMessageReceived -= collect;
+                GameSignals.AirBombDropped -= onDropped;
+                ExplosionEvents.Exploded -= onExploded;
+                LogAssert.ignoreFailingMessages = false;
+            }
+        }
+
+        /// <summary>
         /// The scene goes with the test: an empty scene takes its place, so the next test does not
         /// find its ground, debris or voxel world.
         /// </summary>

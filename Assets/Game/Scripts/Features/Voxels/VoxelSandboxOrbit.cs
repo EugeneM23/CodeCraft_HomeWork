@@ -109,10 +109,13 @@ namespace Game
             // The player context is installed by the time the scene's first frame is over.
             yield return null;
 
-            if (GameContext.Instance == null)
+            if (!GameContext.TryGetInstance(out GameContext game) || !game.TryGetPlayerContext(out PlayerContext player))
+            {
+                Debug.LogWarning("[VoxelSandboxOrbit] No player context: no orbit.");
+                enabled = false;
                 yield break;
+            }
 
-            IPlayerContext player = GameContext.Instance.GetPlayerContext();
             _offset = player.GetCameraOffset() as IVariable<Vector3>;
             _rig = player.GetCameraRoot();
             _character = player.GetCharacter();

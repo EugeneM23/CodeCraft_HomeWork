@@ -18,7 +18,15 @@ namespace Game
                 shake.Invoke(args);
         }
 
-        public static void ShakePlayerCamera(CameraShakeArgs args) =>
-            ShakePlayerCamera(GameContext.Instance.GetPlayerContext(), args);
+        /// <summary>
+        /// Shakes the scene player's camera, if there is one. A shake is only a look: with no game or
+        /// player context (a test scene, or a context whose PlayerContext did not install) the blast,
+        /// the wreck or the air bomb goes on without it.
+        /// </summary>
+        public static void ShakePlayerCamera(CameraShakeArgs args)
+        {
+            if (GameContext.TryGetInstance(out GameContext game) && game.TryGetPlayerContext(out PlayerContext player))
+                ShakePlayerCamera(player, args);
+        }
     }
 }

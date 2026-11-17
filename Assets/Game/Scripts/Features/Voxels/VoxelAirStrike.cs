@@ -235,8 +235,7 @@ namespace Game
 
         private void SpawnFireballs(Vector3 point)
         {
-            GameContext context = GameContext.Instance;
-            if (_explosionVfx == null || context == null)
+            if (_explosionVfx == null || !GameContext.TryGetInstance(out GameContext context))
                 return;
 
             GameFactory factory = context.GetGameFactory();
@@ -281,7 +280,7 @@ namespace Game
             Camera camera = Camera.main;
             float distance = camera != null ? Vector3.Distance(camera.transform.position, point) : 0f;
             float share = 1f - Mathf.Clamp01(distance / _shakeReach);
-            if (share <= 0.05f || GameContext.Instance == null)
+            if (share <= 0.05f)
                 return;
 
             CameraShakeUseCase.ShakePlayerCamera(new CameraShakeArgs(_shakeDuration, _shakeStrength * share));
