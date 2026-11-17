@@ -51,4 +51,29 @@ namespace Game.Voxels.EditorTools
             if (Cells.IsCreated) Cells.Dispose();
         }
     }
+
+    public sealed class VoxelizerResultPart
+    {
+        public string Path;
+        public Transform Root;
+        public int3 Size;
+        /// <summary>Part space, model units (the prefab root scales them to real size).</summary>
+        public float3 Origin;
+        public NativeArray<byte> Voxels;
+    }
+
+    public sealed class VoxelizerResult : IDisposable
+    {
+        public readonly System.Collections.Generic.List<VoxelizerResultPart> Parts = new();
+        public Color32[] Palette;
+        public float VoxelSize; // model units: the class voxel / Scale
+        public float Scale = 1f;
+
+        public void Dispose()
+        {
+            foreach (VoxelizerResultPart part in Parts)
+                if (part.Voxels.IsCreated) part.Voxels.Dispose();
+            Parts.Clear();
+        }
+    }
 }
