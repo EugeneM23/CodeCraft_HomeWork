@@ -1,3 +1,4 @@
+using Ticking;
 using UnityEngine;
 
 namespace Game
@@ -8,13 +9,15 @@ namespace Game
     /// effect waiting in its pool slot costs no lighting pass.
     /// </summary>
     [RequireComponent(typeof(Light))]
-    public sealed class ExplosionFlash : MonoBehaviour
+    public sealed class ExplosionFlash : MonoBehaviour, IUpdateListener
     {
         [SerializeField] private float _duration = 0.12f;
         [SerializeField] private float _intensity = 6f;
 
         private Light _light;
         private float _time;
+
+        private bool _looped;
 
         private void Awake()
         {
@@ -25,17 +28,32 @@ namespace Game
         // Pooled: the effect is re-activated on every explosion, which restarts the flash.
         private void OnEnable()
         {
+            _looped = GameTicks.TryAdd(this);
             _time = 0f;
             _light.intensity = _intensity;
             _light.enabled = true;
         }
 
-        private void Update()
+        private void OnDisable()
+        {
+            if (_looped)
+                GameTicks.Remove(this);
+            _looped = false;
+        }
+
+        private void Update() // perf-ok: ticks itself without the game loop (tests); one flag check with it
+        {
+            if (!_looped)
+                OnUpdate(Time.deltaTime);
+        }
+
+        // On the game loop with the app: the flash stands on pause
+        public void OnUpdate(float deltaTime)
         {
             if (!_light.enabled)
                 return;
 
-            _time += Time.deltaTime;
+            _time += deltaTime;
             float t = _time / _duration;
 
             if (t >= 1f)
