@@ -2,7 +2,9 @@ using System;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Jobs;
+using Unity.Jobs.LowLevel.Unsafe;
 using Unity.Mathematics;
+using Unity.Profiling;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -19,13 +21,28 @@ namespace Game.Voxels
     /// hard, a last one compacts the dead and writes one matrix per cube; GPU instancing draws
     /// them, 1023 per call.
     ///
-    /// Kept clumps and drops never age: once still (or after MAX_KEPT_FLIGHT, wherever they are),
-    /// their cubes move to a lying store that is only drawn (no raycasts), up to LYING_CAPACITY.
+    /// Every clump that comes to rest (dust aside) lies for good: once it has lain still SETTLE_TIME
+    /// (a kept clump after MAX_KEPT_FLIGHT wherever it is, a drop at once as a tile) its cubes move to
+    /// a dense lying store that is only drawn (no raycasts), baked into one mesh per world cell
+    /// (VoxelDebris.Cells.cs), with no shadows. Flying clumps still go at the end of their life. A full
+    /// store overwrites its slots in turn.
     /// </summary>
-    public sealed class VoxelDebris : IDisposable
+    public sealed partial class VoxelDebris : IDisposable
     {
         private const int BATCH = 1023;
         private static readonly int InstanceColorId = Shader.PropertyToID("_InstColor");
+
+        private static readonly ProfilerMarker s_drawLyingMarker = new("VoxelDebris.DrawLying");
+        private static readonly ProfilerMarker s_drawFlyingMarker = new("VoxelDebris.DrawFlying");
+        private static readonly ProfilerMarker s_completeMarker = new("VoxelDebris.Complete");
+        private static readonly ProfilerMarker s_scheduleMarker = new("VoxelDebris.Schedule");
+        private static readonly ProfilerMarker s_cullLyingMarker = new("VoxelDebris.CullLying");
+
+        /// <summary>
+        /// Lying cells whose nearest point is farther than this (m) from the view camera are not
+        /// drawn: crumbs and tiles a few centimetres across are a pixel or less out there.
+        /// </summary>
+        public const float LYING_DRAW_DISTANCE = 120f;
 
         /// <summary>Debris falls this many times faster than g: heavy clods, low arcs, a thud.</summary>
         public const float GRAVITY_SCALE = 2.2f;
@@ -33,10 +50,7 @@ namespace Game.Voxels
         /// <summary>Impact speed (m/s) at which a clump breaks into single cubes.</summary>
         private const float SHATTER_SPEED = 2.2f;
 
-        /// <summary>Lying cubes kept at most; past this the oldest go, or the frame would grow all game.</summary>
-        public const int LYING_CAPACITY = 60000;
-
-        /// <summary>How long (s) a kept clump lies still before its cubes join the lying ones.</summary>
+        /// <summary>How long (s) a clump lies still before its cubes join the lying ones.</summary>
         private const float SETTLE_TIME = 0.5f;
 
         /// <summary>A landed drop is a tile: this much wider and this much flatter than its cube.</summary>
@@ -58,35 +72,11 @@ namespace Game.Voxels
         private const int SPLAT = 2;
         /// <summary>A drop that has landed: drawn as a tile.</summary>
         private const int LAID = 4;
+        /// <summary>A puff of dust: drifts down slowly, stops where it touches, never lies; shrinks and goes.</summary>
+        private const int DUST = 8;
 
         /// <summary>Marks a clump in the compact pass whose cubes move to the lying store.</summary>
         private const int SETTLED = -2;
-
-        private struct Cluster
-        {
-            public float3 Position;
-            public float3 Velocity;
-            public quaternion Rotation;
-            public float3 Spin;
-            public float Radius;
-            public float Life;
-            public int Count;
-            public int Resting;
-            public int Shatter;
-            public int Flags;
-            /// <summary>How long a kept clump has rested, s.</summary>
-            public float Still;
-            /// <summary>How long a kept clump has been simulated, s: past MAX_KEPT_FLIGHT it lies where it is.</summary>
-            public float Flight;
-        }
-
-        private struct Cube
-        {
-            public int Cluster;
-            public float3 Offset;
-            public float Size;
-            public float4 Color;
-        }
 
         private readonly int _capacity;
         private readonly Material _material;
@@ -102,15 +92,38 @@ namespace Game.Voxels
         private NativeArray<float4x4> _matrices;
         private NativeArray<float4> _colors;
         private NativeReference<int> _alive;
+        private NativeArray<LyingCube> _lyingCubes;
+        /// <summary>Per slot, as drawn when drawn instanced (a sinking cube shrunk).</summary>
         private NativeArray<float4x4> _lyingMatrices;
         private NativeArray<float4> _lyingColors;
-        /// <summary>x - the slot the next lying cube goes to; y - how many slots are filled.</summary>
-        private NativeReference<int2> _lying;
+        /// <summary>LyingQueryJob's hits, per worker thread: LyingJob sums them and does nothing when a step's queries hit nothing.</summary>
+        private NativeArray<int> _queryHits;
+        private readonly Plane[] _frustum = new Plane[6];
+        private NativeReference<LyingState> _lyingState;
+        /// <summary>
+        /// How lying cubes not in a cell mesh are drawn instanced: layer 0 like the flying ones, no
+        /// shadows, their box as bounds. No light or reflection probes: sampling them per instance cost
+        /// ~1.25 ms per 50k cubes, and the scenes have no baked probes, so the ambient is the same.
+        /// </summary>
+        private RenderParams _lyingParams;
+        /// <summary>Crush / Blow / Loosen asked for this frame (main thread writes it).</summary>
+        private NativeList<LyingQuery> _queries;
+        /// <summary>The queries the running step reads; swapped with <see cref="_queries"/> when a step is scheduled.</summary>
+        private NativeList<LyingQuery> _queriesInFlight;
+        /// <summary>Debris time (s): the sum of the steps; when a cube lay down.</summary>
+        private float _time;
         private uint _seed = 1;
 
         /// <summary>The frame's step, still running on workers (see <see cref="Complete"/>).</summary>
         private JobHandle _step;
         private bool _stepping;
+
+        /// <summary>
+        /// The camera the game is seen through (VoxelWorld sets it each frame): lying cells outside
+        /// its frustum or past LYING_DRAW_DISTANCE are not drawn. Null - every cell is drawn. The
+        /// Scene view then shows only the lying cubes the game camera sees.
+        /// </summary>
+        public Camera ViewCamera { get; set; }
 
         /// <summary>What debris lands on: everything but bullets, debris and Ignore Raycast.</summary>
         public int CollisionMask { get; set; } = ~((1 << 2) | (1 << 12) | (1 << 15));
@@ -124,23 +137,60 @@ namespace Game.Voxels
             }
         }
 
-        /// <summary>Cubes lying for good (kept clumps that came to rest, landed drops).</summary>
+        /// <summary>Clusters still simulated (flying or resting, not yet lying).</summary>
+        public int ClusterCount
+        {
+            get
+            {
+                Complete();
+                return _clusters.IsCreated ? _clusters.Length : 0;
+            }
+        }
+
+        /// <summary>Cube counts of the clusters still simulated: for tests and debugging.</summary>
+        public void GetClusterSizes(System.Collections.Generic.List<int> sizes)
+        {
+            Complete();
+            sizes.Clear();
+            if (!_clusters.IsCreated)
+                return;
+            for (int i = 0; i < _clusters.Length; i++)
+                sizes.Add(_clusters[i].Count);
+        }
+
+        /// <summary>Single flying cubes of about this colour (±0.02 per channel): for tests.</summary>
+        public int CountCrumbsOfColour(Color color)
+        {
+            Complete();
+            int n = 0;
+            var c = new float4(color.r, color.g, color.b, color.a);
+            for (int i = 0; i < _cubes.Length; i++)
+            {
+                Cube cube = _cubes[i];
+                if (_clusters[cube.Cluster].Count == 1 && (_clusters[cube.Cluster].Flags & DUST) == 0 &&
+                    math.all(math.abs(cube.Color - c) < 0.02f))
+                    n++;
+            }
+            return n;
+        }
+
+        /// <summary>Cubes lying for good (every clump that came to rest, landed drops; not dust).</summary>
         public int LyingCount
         {
             get
             {
                 Complete();
-                return _lying.IsCreated ? _lying.Value.y : 0;
+                return _lyingState.IsCreated ? _lyingState.Value.Count : 0;
             }
         }
 
-        /// <summary>One lying cube, by its slot (0 ... LyingCount - 1): for tests and debugging.</summary>
+        /// <summary>One lying cube, by its slot (0 ... LyingCount - 1), as drawn (a sinking one shrunk): for tests and debugging.</summary>
         public bool TryGetLying(int slot, out Matrix4x4 matrix, out Color color)
         {
             Complete();
             matrix = default;
             color = default;
-            if (!_lying.IsCreated || slot < 0 || slot >= _lying.Value.y)
+            if (!_lyingState.IsCreated || slot < 0 || slot >= _lyingState.Value.Count)
                 return false;
 
             matrix = _lyingMatrices[slot];
@@ -195,10 +245,11 @@ namespace Game.Voxels
             if (!_stepping)
                 return;
             _stepping = false;
-            _step.Complete();
+            using (s_completeMarker.Auto())
+                _step.Complete();
         }
 
-        public VoxelDebris(Material material, int capacity, int lyingCapacity = LYING_CAPACITY)
+        public VoxelDebris(Material material, int capacity, int lyingCapacity = LYING_DEFAULT, int cellCapacity = MAX_CELLS)
         {
             _capacity = capacity;
             _material = material;
@@ -213,9 +264,23 @@ namespace Game.Voxels
             _alive = new NativeReference<int>(Allocator.Persistent);
 
             int lying = math.max(1, lyingCapacity);
+            _lyingCubes = new NativeArray<LyingCube>(lying, Allocator.Persistent);
             _lyingMatrices = new NativeArray<float4x4>(lying, Allocator.Persistent);
             _lyingColors = new NativeArray<float4>(lying, Allocator.Persistent);
-            _lying = new NativeReference<int2>(Allocator.Persistent);
+            _queryHits = new NativeArray<int>(JobsUtility.ThreadIndexCount, Allocator.Persistent);
+            _lyingState = new NativeReference<LyingState>(Allocator.Persistent);
+            _queries = new NativeList<LyingQuery>(MAX_QUERIES, Allocator.Persistent);
+            _queriesInFlight = new NativeList<LyingQuery>(MAX_QUERIES, Allocator.Persistent);
+
+            _lyingParams = new RenderParams(material)
+            {
+                layer = 0,
+                shadowCastingMode = ShadowCastingMode.Off,
+                receiveShadows = true,
+                lightProbeUsage = LightProbeUsage.Off,
+                reflectionProbeUsage = ReflectionProbeUsage.Off
+            };
+            CreateCells(material, cellCapacity);
         }
 
         public bool HasRoom(int cubes)
@@ -292,19 +357,49 @@ namespace Game.Voxels
             Complete();
             if (!_clusters.IsCreated)
                 return;
+            ApplyBuiltCells();
 
-            Draw(_matrices, _colors, _alive.Value, ShadowCastingMode.On);
-            // Lying cubes cast no shadow: tens of thousands of tiles and crumbs, flat on the ground.
-            Draw(_lyingMatrices, _lyingColors, _lying.Value.y, ShadowCastingMode.Off);
+            // The lying state is read only here, with no job running: the numbers deciding whether to evict.
+            LyingState seen = _lyingState.Value;
 
-            int clusters = _clusters.Length;
-            if (clusters == 0 || deltaTime <= 0f)
+            using (s_drawFlyingMarker.Auto())
+                Draw(_matrices, _colors, _alive.Value, ShadowCastingMode.On);
+            using (s_drawLyingMarker.Auto())
+                DrawLying();
+
+            if (deltaTime <= 0f)
             {
                 _alive.Value = 0;
                 return;
             }
 
             float dt = math.min(deltaTime, 1f / 20f);
+            _time += dt;
+
+            using (s_scheduleMarker.Auto())
+                Schedule(dt, seen);
+        }
+
+        /// <summary>Starts the frame's step on workers: the flying clusters' jobs, then the lying store's.</summary>
+        private void Schedule(float dt, in LyingState seen)
+        {
+            // The step done (Complete above), the queries it read are spent: the frame's new ones go
+            // to this step, and the main thread writes the next frame's into the emptied list.
+            (_queries, _queriesInFlight) = (_queriesInFlight, _queries);
+            _queries.Clear();
+            // Reads the cells, so before any job of the step is scheduled.
+            ChooseCellBuilds();
+
+            int clusters = _clusters.Length;
+            if (clusters == 0)
+            {
+                // Nothing flies, but lying cubes may still be sinking.
+                _alive.Value = 0;
+                _step = ScheduleLying(dt, default, seen);
+                _stepping = true;
+                JobHandle.ScheduleBatchedJobs();
+                return;
+            }
 
             JobHandle handle = new BuildRaysJob
             {
@@ -342,15 +437,71 @@ namespace Game.Voxels
                 Matrices = _matrices,
                 Colors = _colors,
                 Alive = _alive,
-                Lying = _lyingMatrices,
+                Lying = _lyingCubes,
+                LyingMatrices = _lyingMatrices,
                 LyingColors = _lyingColors,
-                LyingState = _lying
+                Cells = _cells,
+                CellIndex = _cellIndex,
+                FreeCells = _freeCells,
+                State = _lyingState,
+                Time = _time
             }.Schedule(handle);
 
-            _step = handle;
+            _step = ScheduleLying(dt, handle, seen);
             _stepping = true;
             JobHandle.ScheduleBatchedJobs();
         }
+
+        private JobHandle ScheduleLying(float dt, JobHandle dependsOn, in LyingState seen)
+        {
+            NativeArray<LyingQuery> queries = _queriesInFlight.AsArray();
+            JobHandle handle = dependsOn;
+            // Over the cubes lying when the frame began ("seen", read after Complete()): those the
+            // compact pass lays down in this step meet the queries from the next step on.
+            if (queries.Length > 0 && seen.Count > 0)
+            {
+                handle = new LyingQueryJob
+                {
+                    Lying = _lyingCubes,
+                    Queries = queries,
+                    State = _lyingState,
+                    Hits = _queryHits
+                }.Schedule(math.min(seen.Count, _lyingCubes.Length), 256, handle);
+            }
+
+            handle = new LyingJob
+            {
+                Lying = _lyingCubes,
+                Matrices = _lyingMatrices,
+                Colors = _lyingColors,
+                Cells = _cells,
+                State = _lyingState,
+                Clusters = _clusters,
+                Cubes = _cubes,
+                Capacity = _capacity,
+                Queries = queries,
+                QueryHits = _queryHits,
+                Seed = _seed ^ math.asuint(_time),
+                DeltaTime = dt
+            }.Schedule(handle);
+
+            // "seen" was read on the main thread right after Complete(), before any job of this step was scheduled.
+            if (seen.Count > EVICT_FROM * _lyingCubes.Length && seen.Evicting == 0)
+            {
+                handle = new EvictJob
+                {
+                    Lying = _lyingCubes,
+                    Cells = _cells,
+                    State = _lyingState,
+                    Time = _time,
+                    ViewPoint = ViewPoint
+                }.Schedule(handle);
+            }
+            // Last: the cells built see every change of the step.
+            return ScheduleCells(handle);
+        }
+
+        private static Bounds ToBounds(in float3x2 box) => new((box.c0 + box.c1) * 0.5f, box.c1 - box.c0);
 
         private void Draw(NativeArray<float4x4> source, NativeArray<float4> sourceColors, int count, ShadowCastingMode shadows)
         {
@@ -377,418 +528,15 @@ namespace Game.Voxels
             if (_matrices.IsCreated) _matrices.Dispose();
             if (_colors.IsCreated) _colors.Dispose();
             if (_alive.IsCreated) _alive.Dispose();
+            if (_lyingCubes.IsCreated) _lyingCubes.Dispose();
             if (_lyingMatrices.IsCreated) _lyingMatrices.Dispose();
             if (_lyingColors.IsCreated) _lyingColors.Dispose();
-            if (_lying.IsCreated) _lying.Dispose();
+            if (_queryHits.IsCreated) _queryHits.Dispose();
+            if (_lyingState.IsCreated) _lyingState.Dispose();
+            if (_queries.IsCreated) _queries.Dispose();
+            if (_queriesInFlight.IsCreated) _queriesInFlight.Dispose();
+            DisposeCells();
             if (_mesh != null) UnityEngine.Object.Destroy(_mesh);
-        }
-
-        /// <summary>
-        /// A flying clump looks along its path as far as it will go this frame plus its own size;
-        /// a resting one just under itself, to notice the ground it lay on was blown away.
-        /// </summary>
-        [BurstCompile]
-        private struct BuildRaysJob : IJobParallelFor
-        {
-            [ReadOnly] public NativeArray<Cluster> Clusters;
-            [WriteOnly] public NativeArray<RaycastCommand> Commands;
-            public float DeltaTime;
-            public QueryParameters Query;
-            public QueryParameters DropQuery;
-            public PhysicsScene Scene;
-
-            public void Execute(int i)
-            {
-                Cluster cluster = Clusters[i];
-                float reach = math.max(0.03f, cluster.Radius * 0.6f);
-                QueryParameters query = (cluster.Flags & SPLAT) != 0 ? DropQuery : Query;
-
-                if (cluster.Resting != 0)
-                {
-                    Commands[i] = new RaycastCommand(Scene, cluster.Position, Vector3.down, query, reach * 1.6f);
-                    return;
-                }
-
-                float speed = math.length(cluster.Velocity);
-                float3 direction = speed > 0.0001f ? cluster.Velocity / speed : new float3(0f, -1f, 0f);
-                Commands[i] = new RaycastCommand(Scene, cluster.Position, direction, query, speed * DeltaTime + reach);
-            }
-        }
-
-        /// <summary>
-        /// Heavy and dull: a landing keeps almost none of the bounce and loses most of the slide,
-        /// so a clod lands with a thud and stays. A clump that hit hard is marked to break up.
-        /// </summary>
-        [BurstCompile]
-        private struct IntegrateJob : IJobParallelFor
-        {
-            public NativeArray<Cluster> Clusters;
-            [ReadOnly] public NativeArray<RaycastHit> Hits;
-            public float DeltaTime;
-            public float3 Gravity;
-            public uint Seed;
-
-            public void Execute(int i)
-            {
-                Cluster cluster = Clusters[i];
-                cluster.Life -= DeltaTime;
-
-                if (cluster.Position.y < FELL_OUT_Y)
-                {
-                    cluster.Life = 0f;
-                    cluster.Flags &= ~KEEP;
-                    Clusters[i] = cluster;
-                    return;
-                }
-
-                if ((cluster.Flags & KEEP) != 0)
-                {
-                    cluster.Flight += DeltaTime;
-                    if (cluster.Flight >= MAX_KEPT_FLIGHT)
-                    {
-                        // Lies where it is: the compact pass of this step moves it to the lying store.
-                        cluster.Velocity = float3.zero;
-                        cluster.Spin = float3.zero;
-                        cluster.Resting = 1;
-                        cluster.Still = SETTLE_TIME;
-                        Clusters[i] = cluster;
-                        return;
-                    }
-                }
-
-                RaycastHit hit = Hits[i];
-                float3 normal = hit.normal;
-                bool touched = math.lengthsq(normal) > 0.5f;
-
-                if (cluster.Resting != 0)
-                {
-                    if (!touched)
-                    {
-                        cluster.Resting = 0;
-                        cluster.Still = 0f;
-                    }
-                    else if ((cluster.Flags & KEEP) != 0)
-                        cluster.Still += DeltaTime;
-
-                    Clusters[i] = cluster;
-                    return;
-                }
-
-                if (touched && (cluster.Flags & SPLAT) != 0)
-                {
-                    Lay(ref cluster, hit.point, normal, i);
-                    Clusters[i] = cluster;
-                    return;
-                }
-
-                if (touched)
-                {
-                    float vn = math.dot(cluster.Velocity, normal);
-                    float3 tangent = cluster.Velocity - vn * normal;
-                    float reach = math.max(0.03f, cluster.Radius * 0.6f);
-                    cluster.Position = (float3)hit.point + normal * reach;
-
-                    // Small clumps hold together better: three cubes or fewer need a much harder hit.
-                    if (cluster.Count > 1 && -vn > SHATTER_SPEED * (cluster.Count <= 3 ? 1.8f : 1f))
-                        cluster.Shatter = 1;
-
-                    cluster.Velocity = tangent * 0.25f - normal * (vn * 0.08f);
-                    cluster.Spin *= 0.2f;
-
-                    if (normal.y > 0.5f && math.lengthsq(cluster.Velocity) < 0.6f)
-                    {
-                        cluster.Resting = 1;
-                        cluster.Velocity = float3.zero;
-                        cluster.Spin = float3.zero;
-                    }
-                }
-                else
-                {
-                    cluster.Position += cluster.Velocity * DeltaTime;
-                }
-
-                if (cluster.Resting == 0)
-                {
-                    cluster.Velocity += Gravity * DeltaTime;
-                    cluster.Rotation = math.normalize(math.mul(cluster.Rotation, quaternion.Euler(cluster.Spin * DeltaTime)));
-                }
-
-                Clusters[i] = cluster;
-            }
-
-            /// <summary>
-            /// A drop spreads where it lands: a thin tile flat on the surface (a wall too), turned at
-            /// random, lying at once - the compact pass moves it to the lying store in this step.
-            /// </summary>
-            private void Lay(ref Cluster cluster, float3 point, float3 normal, int i)
-            {
-                // Hashed, not xor-ed: a raw small seed gives near-zero first outputs, so the first
-                // tiles of a step all lay at about the same angle. (| 1: a seed is never 0.)
-                var random = new Unity.Mathematics.Random(math.hash(new uint2(Seed, (uint)i)) | 1u);
-                quaternion tilt = FromTo(new float3(0f, 1f, 0f), normal);
-                cluster.Rotation = math.mul(tilt, quaternion.AxisAngle(new float3(0f, 1f, 0f), random.NextFloat(0f, 2f * math.PI)));
-                cluster.Position = point + normal * (cluster.Radius * SPLAT_HEIGHT + 0.002f);
-                cluster.Velocity = float3.zero;
-                cluster.Spin = float3.zero;
-                cluster.Resting = 1;
-                cluster.Still = SETTLE_TIME;
-                cluster.Flags |= LAID;
-            }
-
-            private static quaternion FromTo(float3 from, float3 to)
-            {
-                float d = math.dot(from, to);
-                if (d < -0.9999f)
-                    return quaternion.AxisAngle(new float3(1f, 0f, 0f), math.PI);
-                float3 axis = math.cross(from, to);
-                return math.normalize(new quaternion(axis.x, axis.y, axis.z, 1f + d));
-            }
-        }
-
-        /// <summary>
-        /// A clump that smacked into the ground breaks the way a voxel body does, by Voronoi: two
-        /// or three seed cubes are picked at random, every cube joins the nearest (with a little
-        /// jitter, so the break is ragged) and each group flies on as a smaller clump — a hop and
-        /// a short slide apart. A clump of three or fewer falls into single crumbs. The smaller
-        /// clumps can break again on a hard enough landing.
-        /// </summary>
-        [BurstCompile]
-        private struct ShatterJob : IJob
-        {
-            private const int MAX_PARTS = 3;
-
-            public NativeList<Cluster> Clusters;
-            public NativeList<Cube> Cubes;
-            public int Capacity;
-            public uint Seed;
-
-            public void Execute()
-            {
-                int original = Clusters.Length;
-                bool any = false;
-                for (int i = 0; i < original; i++)
-                    any |= Clusters[i].Shatter != 0;
-                if (!any)
-                    return;
-
-                var random = new Unity.Mathematics.Random(Seed * 747796405u + 1u);
-                var parts = new NativeArray<int>(original, Allocator.Temp);
-                var firstChild = new NativeArray<int>(original, Allocator.Temp);
-                var seen = new NativeArray<int>(original, Allocator.Temp);
-                var seeds = new NativeArray<float3>(original * MAX_PARTS, Allocator.Temp);
-
-                // How many parts each breaking clump makes, and their (still empty) clumps.
-                for (int i = 0; i < original; i++)
-                {
-                    Cluster parent = Clusters[i];
-                    if (parent.Shatter == 0)
-                        continue;
-
-                    int k = parent.Count <= 3 ? parent.Count : parent.Count >= 10 ? MAX_PARTS : 2;
-                    if (Clusters.Length + k > Capacity)
-                    {
-                        parent.Shatter = 0;
-                        Clusters[i] = parent;
-                        continue;
-                    }
-
-                    parts[i] = k;
-                    firstChild[i] = Clusters.Length;
-                    for (int j = 0; j < k; j++)
-                    {
-                        Clusters.Add(new Cluster
-                        {
-                            Rotation = parent.Rotation,
-                            Life = parent.Life + random.NextFloat(-0.8f, 0.8f),
-                            Flags = parent.Flags & KEEP,
-                            // A break does not start the clock over: the parts lie when the clump would have.
-                            Flight = parent.Flight
-                        });
-                    }
-                }
-
-                // Seeds: k cubes of each breaking clump, picked at random (reservoir sampling).
-                for (int c = 0; c < Cubes.Length; c++)
-                {
-                    Cube cube = Cubes[c];
-                    if (cube.Cluster >= original || Clusters[cube.Cluster].Shatter == 0)
-                        continue;
-
-                    Cluster parent = Clusters[cube.Cluster];
-                    float3 world = parent.Position + math.mul(parent.Rotation, cube.Offset);
-                    int k = parts[cube.Cluster];
-                    int n = seen[cube.Cluster]++;
-                    int slot = n < k ? n : random.NextInt(0, n + 1);
-                    if (slot < k)
-                        seeds[cube.Cluster * MAX_PARTS + slot] = world;
-                }
-
-                // Every cube to its nearest seed; the cube's offset holds its world position for now.
-                for (int c = 0; c < Cubes.Length; c++)
-                {
-                    Cube cube = Cubes[c];
-                    if (cube.Cluster >= original || Clusters[cube.Cluster].Shatter == 0)
-                        continue;
-
-                    Cluster parent = Clusters[cube.Cluster];
-                    float3 world = parent.Position + math.mul(parent.Rotation, cube.Offset);
-                    int k = parts[cube.Cluster];
-                    int best = 0;
-                    float bestDistance = float.MaxValue;
-                    for (int j = 0; j < k; j++)
-                    {
-                        float d = math.distance(world, seeds[cube.Cluster * MAX_PARTS + j]) +
-                                  random.NextFloat(0f, cube.Size * 0.8f);
-                        if (d < bestDistance)
-                        {
-                            bestDistance = d;
-                            best = j;
-                        }
-                    }
-
-                    int child = firstChild[cube.Cluster] + best;
-                    Cluster part = Clusters[child];
-                    part.Position += world;
-                    part.Count++;
-                    Clusters[child] = part;
-
-                    cube.Cluster = child;
-                    cube.Offset = world;
-                    Cubes[c] = cube;
-                }
-
-                // Each part: its centre, and a hop and a slide away from where the clump hit.
-                for (int i = 0; i < original; i++)
-                {
-                    Cluster parent = Clusters[i];
-                    if (parent.Shatter == 0)
-                        continue;
-
-                    for (int j = 0; j < parts[i]; j++)
-                    {
-                        int index = firstChild[i] + j;
-                        Cluster part = Clusters[index];
-                        if (part.Count == 0)
-                        {
-                            part.Life = 0f;
-                            Clusters[index] = part;
-                            continue;
-                        }
-
-                        part.Position /= part.Count;
-                        float3 away = part.Position - parent.Position;
-                        away.y = 0f;
-                        float3 slide = math.lengthsq(away) > 1e-6f ? math.normalize(away) : random.NextFloat3Direction() * new float3(1f, 0f, 1f);
-                        float hop = part.Count == 1 ? random.NextFloat(0.4f, 1.2f) : random.NextFloat(0.3f, 0.9f);
-                        part.Velocity = parent.Velocity * 0.35f + slide * random.NextFloat(0.3f, 1.1f) + new float3(0f, hop, 0f);
-                        part.Spin = random.NextFloat3Direction() * random.NextFloat(2f, part.Count == 1 ? 9f : 5f);
-                        Clusters[index] = part;
-                    }
-
-                    parent.Shatter = 0;
-                    parent.Life = 0f;
-                    Clusters[i] = parent;
-                }
-
-                // Offsets back into each part's own space, and its size for the ground checks.
-                for (int c = 0; c < Cubes.Length; c++)
-                {
-                    Cube cube = Cubes[c];
-                    if (cube.Cluster < original)
-                        continue;
-
-                    Cluster part = Clusters[cube.Cluster];
-                    float3 offset = math.mul(math.inverse(part.Rotation), cube.Offset - part.Position);
-                    cube.Offset = offset;
-                    Cubes[c] = cube;
-
-                    part.Radius = math.max(part.Radius, math.length(offset) + cube.Size * 0.5f);
-                    Clusters[cube.Cluster] = part;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Drops dead clumps and their cubes, moves the cubes of kept clumps that came to rest into the
-        /// lying store (a ring: past its end the oldest are overwritten), and writes a matrix and a
-        /// colour per flying cube.
-        /// </summary>
-        [BurstCompile]
-        private struct CompactJob : IJob
-        {
-            public NativeList<Cluster> Clusters;
-            public NativeList<Cube> Cubes;
-            [WriteOnly] public NativeArray<float4x4> Matrices;
-            [WriteOnly] public NativeArray<float4> Colors;
-            public NativeReference<int> Alive;
-            [WriteOnly] public NativeArray<float4x4> Lying;
-            [WriteOnly] public NativeArray<float4> LyingColors;
-            public NativeReference<int2> LyingState;
-
-            public void Execute()
-            {
-                int count = Clusters.Length;
-                var remap = new NativeArray<int>(count, Allocator.Temp);
-                var settled = new NativeArray<Cluster>(count, Allocator.Temp);
-                int clusters = 0;
-                for (int i = 0; i < count; i++)
-                {
-                    Cluster cluster = Clusters[i];
-                    if ((cluster.Flags & KEEP) != 0 && cluster.Resting != 0 && cluster.Still >= SETTLE_TIME && cluster.Count > 0)
-                    {
-                        settled[i] = cluster;
-                        remap[i] = SETTLED;
-                        continue;
-                    }
-
-                    bool alive = cluster.Life > 0f && cluster.Count > 0;
-                    remap[i] = alive ? clusters : -1;
-                    if (alive)
-                        Clusters[clusters++] = cluster;
-                }
-
-                int2 lying = LyingState.Value;
-                int capacity = Lying.Length;
-                int cubes = 0;
-                for (int i = 0; i < Cubes.Length; i++)
-                {
-                    Cube cube = Cubes[i];
-                    int owner = remap[cube.Cluster];
-                    if (owner == SETTLED)
-                    {
-                        Lying[lying.x] = Matrix(settled[cube.Cluster], cube, 1f);
-                        LyingColors[lying.x] = cube.Color;
-                        lying.x = (lying.x + 1) % capacity;
-                        lying.y = math.min(lying.y + 1, capacity);
-                        continue;
-                    }
-
-                    if (owner < 0)
-                        continue;
-
-                    cube.Cluster = owner;
-                    Cubes[cubes] = cube;
-
-                    Cluster cluster = Clusters[owner];
-                    Matrices[cubes] = Matrix(cluster, cube, math.saturate(cluster.Life / 0.6f));
-                    Colors[cubes] = cube.Color;
-                    cubes++;
-                }
-
-                LyingState.Value = lying;
-                Clusters.ResizeUninitialized(clusters);
-                Cubes.ResizeUninitialized(cubes);
-                Alive.Value = cubes;
-            }
-
-            private static float4x4 Matrix(in Cluster cluster, in Cube cube, float shrink)
-            {
-                float3 scale = (cluster.Flags & LAID) != 0
-                    ? new float3(SPLAT_WIDTH, SPLAT_HEIGHT, SPLAT_WIDTH)
-                    : new float3(1f);
-                float3 position = cluster.Position + math.mul(cluster.Rotation, cube.Offset);
-                return float4x4.TRS(position, cluster.Rotation, scale * (cube.Size * shrink));
-            }
         }
 
         /// <summary>A unit cube with white vertex colours, so the instance colour shows as is.</summary>

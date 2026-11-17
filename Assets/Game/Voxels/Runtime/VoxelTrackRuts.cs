@@ -204,6 +204,8 @@ namespace Game.Voxels
             for (int i = 0; i < _wheelList.Count; i++)
                 Bite(i, moving, speed);
 
+            CrushDebris(velocity, speed);
+
             // Shares of the wheels in mud and on dry ground, eased so a single wheel crossing a
             // border does not flick the tank's speed.
             float ease = 1f - Mathf.Exp(-4f * deltaTime);
@@ -380,6 +382,19 @@ namespace Game.Voxels
             Vector3 side = Vector3.Cross(Vector3.up, moving) * Random.Range(-0.5f, 0.5f);
             Vector3 throwBack = -moving * (0.4f + speed * 0.3f) + Vector3.up * (1.2f + speed * 0.12f) + side;
             ground.Dig(hit.point + Vector3.down * 0.04f, _biteRadius, throwBack, _clodsPerBite);
+        }
+
+        /// <summary>What lies under a moving road wheel is crushed: a sphere per wheel, run in the debris step.</summary>
+        private void CrushDebris(Vector3 velocity, float speed)
+        {
+            if (speed <= 0.5f)
+                return;
+            VoxelDebris debris = VoxelWorld.Instance != null ? VoxelWorld.Instance.Debris : null;
+            if (debris == null)
+                return;
+
+            for (int i = 0; i < _wheelList.Count; i++)
+                debris.Crush(_wheelList[i].position - Vector3.up * (_wheelRadius * 0.5f), _wheelRadius + 0.1f, velocity);
         }
 
         /// <summary>Clods of mud dropping off the top run of the tracks, front and back.</summary>

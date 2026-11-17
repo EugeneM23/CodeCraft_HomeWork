@@ -61,6 +61,8 @@ namespace Game.Voxels
         private readonly List<VoxelBody.ChunkJob> _asyncJobs = new(JOBS_CAPACITY);
         private readonly List<VoxelBody> _snapshot = new(BODIES_CAPACITY);
         private int _bodyCursor;
+        private Camera _viewCamera;
+        private float _nextCameraLook;
 
         /// <summary>Collision meshes written this frame, to be cooked.</summary>
         private static readonly List<Mesh> s_bakeMeshes = new(BAKES_CAPACITY);
@@ -89,6 +91,10 @@ namespace Game.Voxels
         public int AsyncInFlight => _asyncJobs.Count;
 
         public VoxelDebris Debris { get; private set; }
+
+        /// <summary>Cached once in Awake: subscribing them allocates nothing per frame.</summary>
+        private System.Action<Vector3, float, int> _onCarved;
+        private System.Action<Vector3, float, int> _onAirBlasted;
 
         public static IReadOnlyList<VoxelBody> Bodies => s_bodies;
 
@@ -264,6 +270,8 @@ namespace Game.Voxels
 
         private void Awake()
         {
+            _onCarved = OnCarved;
+            _onAirBlasted = OnAirBlasted;
             if (s_instance != null && s_instance != this)
             {
                 Destroy(gameObject);
@@ -272,7 +280,7 @@ namespace Game.Voxels
 
             s_instance = this;
             ChunkMaterial = LoadMaterial(CHUNK_MATERIAL, false);
-            Debris = new VoxelDebris(LoadMaterial(DEBRIS_MATERIAL, true), 24000);
+            Debris = new VoxelDebris(LoadMaterial(DEBRIS_MATERIAL, true), 24000, VoxelDebris.LYING_DEFAULT);
             SetEarlyHook(true);
         }
 
@@ -298,6 +306,8 @@ namespace Game.Voxels
             VoxelTicks.Add(this);
             VoxelSignals.Carved += OnGroundCarved;
             VoxelSignals.AirBlasted += OnGroundCarved;
+            VoxelSignals.Carved += _onCarved;
+            VoxelSignals.AirBlasted += _onAirBlasted;
         }
 
         private void OnDisable()
@@ -305,6 +315,8 @@ namespace Game.Voxels
             VoxelTicks.Remove(this);
             VoxelSignals.Carved -= OnGroundCarved;
             VoxelSignals.AirBlasted -= OnGroundCarved;
+            VoxelSignals.Carved -= _onCarved;
+            VoxelSignals.AirBlasted -= _onAirBlasted;
         }
 
         /// <summary>Buildings waiting for a load solve this frame (see VoxelBody.SolveStructure).</summary>
@@ -397,6 +409,20 @@ namespace Game.Voxels
                               System.Diagnostics.Stopwatch.Frequency;
         }
 
+        /// <summary>A shell or a blast dug the ground: what lay there flies, what lay round the hole falls in.</summary>
+        private void OnCarved(Vector3 point, float radius, int voxels)
+        {
+            Debris?.Blow(point, radius * 1.5f, 4f + radius * 3f);
+            Debris?.Loosen(point, radius + 0.3f);
+        }
+
+        /// <summary>An air bomb: everything lying within twice the crater flies.</summary>
+        private void OnAirBlasted(Vector3 point, float radius, int voxels)
+        {
+            Debris?.Blow(point, radius * 2f, 14f);
+            Debris?.Loosen(point, radius + 0.3f);
+        }
+
         private void LateUpdate() // perf-ok: ticks itself without the game loop; draws (dt 0) while the loop is paused
         {
             if (!VoxelTicks.Driven)
@@ -409,6 +435,19 @@ namespace Game.Voxels
         {
             SolveStructures();
             RebuildDirty();
+            if (Debris != null)
+            {
+                // Eviction counts distance from the viewer and lying cubes are culled by its frustum;
+                // look for the camera again once a second if there is none.
+                if (_viewCamera == null && Time.unscaledTime >= _nextCameraLook)
+                {
+                    _viewCamera = Camera.main;
+                    _nextCameraLook = Time.unscaledTime + 1f;
+                }
+                if (_viewCamera != null)
+                    Debris.ViewPoint = _viewCamera.transform.position;
+                Debris.ViewCamera = _viewCamera;
+            }
             Debris?.Tick(deltaTime);
         }
 
