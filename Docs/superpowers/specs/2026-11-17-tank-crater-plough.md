@@ -72,13 +72,13 @@ Atomic-поведение танка (`IEntityInit`, `IEntityFixedTick`), пап
 | `Hop` (м/с) / `PitchKick` (рад/с) | 0.5 / 0.4 | 1.2 / 0.8 | 2.2 / 1.3 |
 | `ShakeStrength` / `ShakeDuration` | 0.3 / 0.25 | 0.6 / 0.35 | 1.0 / 0.5 |
 
-`TankInstaller` держит массив пресетов и номер текущего (`IReactiveVariable<int>` в ключах `TankPloughAPI.cs`). Песочница: действие `Sandbox/Plough` на клавише **M** в `GameControls.inputactions` переключает пресет по кругу. Строка в HUD (`VoxelHudLines`): `Plough: Punchy [M]`, текст пересобирается только по смене.
+`TankInstaller` держит массив пресетов и номер текущего, `NextPloughPreset()` меняет `Config` у поведения. Песочница: действие `Sandbox/Plough` на клавише **M** в `GameControls.inputactions` переключает пресет по кругу. Строка в HUD (`VoxelHudLines`): `Plough: Punchy [M]`, текст пересобирается только по смене.
 
 ### Файлы
 
 - `Features/Controllables/Tank/Drive/TankPloughBehaviour.cs` — упреждение, вырез, отклик, страховка.
 - `Features/Controllables/Tank/Drive/TankPloughMath.cs` — чистая математика: сила, скорость после удара, новое направление, выброс. Её покрывают EditMode-тесты.
-- `Features/Controllables/Tank/Drive/TankPloughConfig.cs`, `TankPloughEvents.cs`, `TankPloughAPI.cs`.
+- `Features/Controllables/Tank/Drive/TankPloughConfig.cs`, `TankPloughEvents.cs`.
 - `Features/Voxels/VoxelSandboxPloughSwitch.cs` — клавиша M и строка HUD.
 - `TankInstaller.cs`, `Tank_01.prefab`, `GameControls.inputactions`, сцена `VoxelSandbox` (переключатель) — правки подключения.
 - `Features/Controllables/Tank/Drive/IEarthThrow.cs` и две реализации: `DebrisEarthThrow` (через `ThrowEarth`) и временная `DigEarthThrow`.

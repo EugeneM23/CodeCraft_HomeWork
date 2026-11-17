@@ -54,6 +54,7 @@
 ```csharp
 using System.Collections;
 using System.IO;
+using System.Reflection;
 using Atomic.Elements;
 using Atomic.Entities;
 using NUnit.Framework;
@@ -90,8 +91,9 @@ namespace Game.Voxels.Tests
                     yield return new WaitForFixedUpdate();
 
                 // No bombs but ours.
-                foreach (VoxelAirStrikeSwitch strike in Object.FindObjectsByType<VoxelAirStrikeSwitch>(FindObjectsSortMode.None))
-                    strike.SetOn(false);
+                FieldInfo on = typeof(VoxelAirStrike).GetField("_on", BindingFlags.NonPublic | BindingFlags.Instance);
+                foreach (VoxelAirStrike strike in Object.FindObjectsByType<VoxelAirStrike>(FindObjectsSortMode.None))
+                    on.SetValue(strike, false);
 
                 GameObject tankObject = GameObject.Find("Tank_01");
                 IEntity tank = tankObject.GetComponent<MonoEntity>();
@@ -226,7 +228,7 @@ namespace Game.Voxels.Tests
 }
 ```
 
-`VoxelAirStrikeSwitch` в коде нет: исполнитель проверяет, как выключить таймер авиаудара. `VoxelAirStrike._on` — приватное поле, в `perf_bench.cs` его выключают рефлексией. Сделать так же: `typeof(VoxelAirStrike).GetField("_on", NonPublic|Instance).SetValue(strike, false)` для каждого `VoxelAirStrike` в сцене. Тип `VoxelAirStrike` лежит в сборке `Game`, она в ссылках `Game.Voxels.SceneTests` есть.
+`VoxelAirStrike._on` приватное: таймер авиаудара выключается рефлексией, как в `Tools/PerfCheck/Bench/perf_bench.cs`. `VoxelAirStrike` лежит в сборке `Game`, она в ссылках `Game.Voxels.SceneTests` есть.
 
 - [ ] **Шаг 2: прогнать тест — он должен упасть**
 
