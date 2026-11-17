@@ -95,11 +95,12 @@ namespace Game.Voxels.Demo
             if (VoxelWeatherDemo.SmokeKey || VoxelWeatherDemo.RainKey)
                 text.Append('\n');
             // Keys from pieces outside this assembly (the air strike), one line each.
-            foreach (System.Func<string> line in VoxelHudLines.All)
-                text.Append(line()).Append('\n');
+            // Indexed loops here and below: a foreach over an IReadOnlyList boxes its enumerator.
+            for (int i = 0; i < VoxelHudLines.All.Count; i++)
+                text.Append(VoxelHudLines.All[i]()).Append('\n');
             text.Append("F1 — hide this");
 
-            if (_keys.Content.text != null && text.Equals(_keys.Text))
+            if (_keys.Content.text != null && Same(text, _keys.Text))
                 return;
 
             _keys.Text.Clear().Append(text);
@@ -110,8 +111,9 @@ namespace Game.Voxels.Demo
         {
             int solid = 0;
             int pieces = 0;
-            foreach (VoxelBody body in VoxelWorld.Bodies)
+            for (int i = 0; i < VoxelWorld.Bodies.Count; i++)
             {
+                VoxelBody body = VoxelWorld.Bodies[i];
                 if (body == null)
                     continue;
                 solid += body.SolidCount;
@@ -145,11 +147,22 @@ namespace Game.Voxels.Demo
             _numbers.Draw(MARGIN, MARGIN + _keys.Size.y + GAP);
         }
 
+        /// <summary>The same characters (StringBuilder.Equals may also compare the capacity).</summary>
+        private static bool Same(StringBuilder a, StringBuilder b)
+        {
+            if (a.Length != b.Length)
+                return false;
+            for (int i = 0; i < a.Length; i++)
+                if (a[i] != b[i])
+                    return false;
+            return true;
+        }
+
         private static int SmokeCubes()
         {
             int cubes = 0;
-            foreach (VoxelSmoke smoke in VoxelSmoke.Active)
-                cubes += smoke.DrawnCubes;
+            for (int i = 0; i < VoxelSmoke.Active.Count; i++)
+                cubes += VoxelSmoke.Active[i].DrawnCubes;
             return cubes;
         }
     }

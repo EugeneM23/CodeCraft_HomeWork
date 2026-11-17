@@ -8,15 +8,13 @@ namespace Game
     public static class CharacterAttackUseCase
     {
         /// <summary>
-        /// A weapon in hand and the attack that fires it: the slot, where the weapon sits, the
-        /// condition (alive, plus <paramref name="extraCondition"/> — the ridden Regax attacks only
-        /// with a rider on it), the fire action and the melee hit cast.
+        /// A weapon in hand and the attack that fires it: the slot, the condition (alive, plus
+        /// <paramref name="extraCondition"/>), the fire action and the melee hit cast.
         /// </summary>
-        public static void AddHeldWeapon(IEntity entity, MonoEntity weapon, Transform weaponRoot,
+        public static void AddHeldWeapon(IEntity entity, MonoEntity weapon,
             Func<bool> extraCondition = null)
         {
             entity.AddWeapon(new ReactiveVariable<IEntity>(weapon));
-            entity.AddWeaponRoot(weaponRoot);
 
             AndExpression condition = new AndExpression(new ExpressionMember<bool>(entity.GetHealth().Exists));
             if (extraCondition != null)

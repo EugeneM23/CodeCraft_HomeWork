@@ -8,7 +8,6 @@ namespace Game
     {
         [Header("Combat Settings")] [SerializeField]
         private MonoEntity _weapon;
-        [SerializeField] private Transform _weaponRoot;
 
         [Header("Movement Settings")] [SerializeField]
         private float _moveSpeed = 1;
@@ -60,7 +59,7 @@ namespace Game
             entity.AddBehaviour(new PassThroughLoosePiecesBehaviour());
 
             // Attack
-            CharacterAttackUseCase.AddHeldWeapon(entity, _weapon, _weaponRoot);
+            CharacterAttackUseCase.AddHeldWeapon(entity, _weapon);
 
             // AI
             if (!_standStill)
