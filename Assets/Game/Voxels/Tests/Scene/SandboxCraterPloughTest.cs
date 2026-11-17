@@ -30,6 +30,8 @@ namespace Game.Voxels.Tests
         private const int GROUND = 1 << 3;
         // Past the far rim: how far on the nose-up pitch is looked at.
         private const float PAST_RIM = 3f;
+        // Spacing (m) of the ground heights the cut and the bow's depth are measured against.
+        private const float PROFILE_STEP = 0.25f;
 
         private GameObject _tankObject;
         private IEntity _tank;
@@ -58,6 +60,9 @@ namespace Game.Voxels.Tests
                 VoxelBody farGround = TankPloughBehaviour.FindGround(farHit.point);
                 Assert.IsNotNull(farGround, "the ground body under the far slope");
                 int before = farGround.SolidCount;
+                float[] slope = Profile(crater, forward);
+                BoxCollider hull = HullBox();
+                float bowDepth = float.MinValue;
                 int ploughed = 0;
                 void OnPloughed(Vector3 point, float strength) => ploughed++;
                 TankPloughEvents.Ploughed += OnPloughed;
@@ -100,21 +105,37 @@ namespace Game.Voxels.Tests
                             apex = Mathf.Max(apex, _body.position.y - restY);
                         if (along >= RIM && along <= RIM + PAST_RIM)
                             maxNoseUp = Mathf.Max(maxNoseUp, Mathf.Asin(Mathf.Clamp(_tankObject.transform.forward.y, -1f, 1f)) * Mathf.Rad2Deg);
+                        Vector3 bow = hull.transform.TransformPoint(hull.center + new Vector3(0f, -hull.size.y * 0.5f, hull.size.z * 0.5f));
+                        float bowAlong = Vector3.Dot(bow - crater, forward);
+                        if (bowAlong >= 0f && bowAlong <= RIM + 1.5f)
+                            bowDepth = Mathf.Max(bowDepth, HeightAt(slope, bowAlong) - bow.y);
                         past = along > RIM + PAST_RIM;
                         if (shot < 12 && Time.frameCount % 4 == 0)
                             Capture($"{shot++:00}_crater");
+                    }
+
+                    // The cut: how far the ground along the run's centre line on the far slope went down.
+                    float[] after = Profile(crater, forward);
+                    float cut = 0f;
+                    for (int i = 0; i < slope.Length; i++)
+                    {
+                        float a = -RIM + i * PROFILE_STEP;
+                        if (a >= 0f && a <= RIM + 1.5f)
+                            cut = Mathf.Max(cut, slope[i] - after[i]);
                     }
 
                     float took = exitTime >= 0f ? exitTime - entryTime : float.PositiveInfinity;
                     TankPloughConfig preset = _tankObject.GetComponent<TankInstaller>().PloughPreset;
                     Debug.Log($"[CraterPlough] {(preset != null ? preset.DisplayName : "-")}: entry {entrySpeed:F2} m/s, " +
                               $"min on far slope {minFarSpeed:F2} m/s ({minFarSpeed / Mathf.Max(0.01f, entrySpeed):P0}), " +
-                              $"out in {took:F2} s, nose up over the far rim {maxNoseUp:F1}°, apex {apex:F2} m above the rim");
+                              $"out in {took:F2} s, nose up over the far rim {maxNoseUp:F1}°, apex {apex:F2} m above the rim, " +
+                              $"cut {cut:F2} m deep, bow {bowDepth:F2} m below the slope");
 
                     Assert.That(entrySpeed, Is.GreaterThan(6f), "the tank came in fast");
                     Assert.That(minFarSpeed, Is.GreaterThanOrEqualTo(entrySpeed * 0.5f), "kept half its speed on the far slope");
                     Assert.That(took, Is.LessThan(2.5f), "out over the far rim within 2.5 s");
-                    Assert.That(maxNoseUp, Is.GreaterThanOrEqualTo(12f), "nose up over the far rim");
+                    Assert.That(maxNoseUp, Is.GreaterThanOrEqualTo(8f), "nose up over the far rim");
+                    Assert.That(cut, Is.GreaterThanOrEqualTo(0.3f), "a deep cut in the far slope");
                     Assert.That(ploughed, Is.GreaterThan(0), "the nose ploughed");
                     Assert.That(farGround.SolidCount, Is.LessThan(before), "earth dug out of the far slope");
                 }
@@ -202,6 +223,38 @@ namespace Game.Voxels.Tests
             _tankObject.transform.SetPositionAndRotation(_body.position, _body.rotation);
             for (int i = 0; i < 40; i++)
                 yield return new WaitForFixedUpdate();
+        }
+
+        /// <summary>Ground height along the run's centre line, every PROFILE_STEP m from the near rim to 2 m past the far one.</summary>
+        private static float[] Profile(Vector3 crater, Vector3 forward)
+        {
+            int count = Mathf.RoundToInt((2f * RIM + 2f) / PROFILE_STEP) + 1;
+            var heights = new float[count];
+            for (int i = 0; i < count; i++)
+            {
+                Vector3 at = crater + forward * (-RIM + i * PROFILE_STEP) + Vector3.up * 6f;
+                heights[i] = Physics.Raycast(at, Vector3.down, out RaycastHit hit, 12f, GROUND) ? hit.point.y : float.NaN;
+            }
+
+            return heights;
+        }
+
+        /// <summary>The <see cref="Profile"/> height <paramref name="along"/> m from the crater's centre.</summary>
+        private static float HeightAt(float[] heights, float along)
+        {
+            float f = Mathf.Clamp((along + RIM) / PROFILE_STEP, 0f, heights.Length - 1.001f);
+            int i = (int)f;
+            return Mathf.Lerp(heights[i], heights[i + 1], f - i);
+        }
+
+        /// <summary>The hull's box on the tank: the longest of its box colliders (the turret's is shorter).</summary>
+        private BoxCollider HullBox()
+        {
+            BoxCollider best = null;
+            foreach (BoxCollider box in _tankObject.GetComponents<BoxCollider>())
+                if (best == null || box.size.z > best.size.z)
+                    best = box;
+            return best;
         }
 
         /// <summary>

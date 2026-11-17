@@ -74,6 +74,13 @@ namespace Game
             return noseUp >= minRate ? angular : angular - right * (minRate - noseUp);
         }
 
+        /// <summary><paramref name="angular"/> without any nose-up spin (about -<paramref name="right"/>); a nose-down one is kept.</summary>
+        public static Vector3 NoNoseUpSpin(Vector3 angular, Vector3 right)
+        {
+            float noseUp = -Vector3.Dot(angular, right);
+            return noseUp > 0f ? angular + right * noseUp : angular;
+        }
+
         /// <summary>Mean velocity of the earth the nose throws: forward along the slope and up off it.</summary>
         public static Vector3 Throw(Vector3 velocity, Vector3 normal, float lift, float scale)
         {

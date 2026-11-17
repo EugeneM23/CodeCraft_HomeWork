@@ -123,6 +123,15 @@ namespace Game.Tests
         }
 
         [Test]
+        public void NoNoseUpSpin_TakesOutANoseUpSpin_KeepsANoseDownOne()
+        {
+            Assert.That(TankPloughMath.NoNoseUpSpin(new Vector3(-0.7f, 0.2f, 0.1f), Vector3.right),
+                Is.EqualTo(new Vector3(0f, 0.2f, 0.1f)).Using(Vector3EqualityComparer.Instance));
+            Assert.That(TankPloughMath.NoNoseUpSpin(new Vector3(0.4f, 0f, 0f), Vector3.right),
+                Is.EqualTo(new Vector3(0.4f, 0f, 0f)).Using(Vector3EqualityComparer.Instance));
+        }
+
+        [Test]
         public void Throw_GoesForwardAndUp_ScaledBySpeed()
         {
             var v = new Vector3(0f, 0f, 8f);

@@ -38,16 +38,26 @@ namespace Game
         public float SpreadMax = 0.7f;
         [Tooltip("Most debris cubes one bite may throw while the earth goes out through Dig.")]
         public int BiteDebris = 160;
+        [Tooltip("Bites go this share of their radius down into the slope as well as ahead: the cut the nose sinks into.")]
+        public float BiteDepth = 0.5f;
+        [Tooltip("Seconds the nose keeps cutting under and ahead of itself after a hit: the longer, the deeper the hull sinks into the slope.")]
+        public float PloughTime = 0.25f;
+        [Tooltip("Share of the springs' stiffness while the nose digs in: lower lets the hull sink deeper into the cut.")]
+        public float DigSpring = 0.3f;
 
         [Header("Response")]
         [Tooltip("Share of the speed the hardest hit costs; a light one costs half of it.")]
         public float SpeedLoss = 0.33f;
+        [Tooltip("Steepest slope (°) the hull leaves a hit along: a voxel step's vertical face is dug out, not climbed. Lower flies less.")]
+        public float MaxRamp = 30f;
         [Tooltip("How far the velocity is turned up off the slope at the hardest hit.")]
         public float Deflect = 0.3f;
         [Tooltip("m/s straight up the hardest hit adds: the jump out of the crater.")]
         public float Hop = 1.2f;
         [Tooltip("rad/s nose-up the hardest hit adds.")]
         public float PitchKick = 0.8f;
+        [Tooltip("Nose-up (°) the hull is brought to as it comes out of the cut.")]
+        public float RisePitch = 14f;
         [Tooltip("Seconds after a hit before the next can turn the hull again.")]
         public float ImpactCooldown = 0.3f;
 

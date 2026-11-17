@@ -26,10 +26,15 @@ MonoBehaviour:
   SpreadMin: 0.2
   SpreadMax: 0.7
   BiteDebris: 160
+  BiteDepth: 0.8
+  PloughTime: 0.25
+  DigSpring: 0.3
   SpeedLoss: 0.33
+  MaxRamp: 15
   Deflect: 0
-  Hop: 0.15
-  PitchKick: 0.5
+  Hop: 0
+  PitchKick: 1.2
+  RisePitch: 14
   ImpactCooldown: 0.3
   ShakeStrength: 0.6
   ShakeDuration: 0.35
