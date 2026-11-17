@@ -2455,6 +2455,66 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 
 ---
 
+### Task 9.1: Камуфляж и декали — общий код для `VoxelizedModel` и вокселизатора
+
+Решение пользователя от 2026-11-17 после контрольной точки (Task 9): танк по новым правилам теряет камуфляж и надписи. Покраска переносится в общий код. Тимлид разрешил правку `VoxelizedModel` — отдельным коммитом, без изменения поведения.
+
+**Files:**
+- Create: `Assets/Game/Voxels/Runtime/VoxelPaint.cs` — статический класс и Burst-задача покраски.
+- Modify: `Assets/Game/Voxels/Runtime/VoxelizedModel.cs` — `PaintCamouflage`/`PaintDecals`/`CamouflageJob` переезжают в `VoxelPaint`. Публичные типы `VoxelizedModel.Camouflage` и `VoxelizedModel.Decal` остаются на месте, их сериализованные поля не меняются, поэтому префаб `Tank_01` не ломается.
+- Modify: `Assets/Game/Voxels/Editor/Voxelizer/VoxelizerConfig.cs`, `VoxelizeUseCase.cs` — у конфига появляются поля `camouflage` и `decals` тех же типов. Покраска идёт после `Map`/`Smooth`.
+- Test: `Assets/Game/Voxels/Tests/Voxelizer/VoxelPaintTests.cs`.
+
+**Interfaces:**
+- `public static class VoxelPaint`:
+  - `int Camouflage(NativeArray<byte> voxels, int3 size, float3 origin, float voxelSize, float4x4 partToModel, NativeArray<Color32> palette, int paintFirst, int variants, in VoxelizedModel.Camouflage camo, float noise)` — перекрашивает воксели слотов `[paintFirst, paintFirst + variants)`. Новые цвета кладёт в свободные слоты палитры через `MeshVoxelizer.AddShades` при `variants == MeshVoxelizer.VARIANTS`; при `variants == 1` — по одному слоту на цвет. Возвращает число перекрашенных вокселей.
+  - `void Decals(NativeArray<byte> voxels, int3 size, float3 origin, float voxelSize, NativeArray<Color32> palette, int variants, string partPath, VoxelizedModel.Decal[] decals)` — декали только для `decal.Part == partPath`.
+- В вокселизаторе `variants = 1`, слоты 1..2K. `paintFirst` — слот поверхности, ближайший к цвету `camo.Paint`, а если материала нет — к `camo.Paint.color`. Если ближайший цвет дальше порога, камуфляж пропускается с предупреждением.
+
+**Требования:**
+- `VoxelizedModel` даёт **побайтно ту же** сетку и палитру, что до переноса. Тест: `VoxelizedModel.Voxelize()` на копии `Tank_01.prefab`, хеш всех `Voxels` и `Palette` до и после переноса. Хеш «до» снять заранее на текущем коде и записать в тест константой.
+- Вокселизатор с камуфляжем и декалями танка (взять из компонента `VoxelizedModel` на `Tank_01.prefab`: пути частей те же) даёт на корпусе и башне больше одного цвета поверхности, а на борту башни — пиксели декали.
+- Отдельные коммиты: (1) перенос в `VoxelPaint` без изменения поведения, вместе с тестом хеша; (2) конфиг и вокселизатор.
+
+### Task 9.2: Коробка и цилиндр сохраняют цвета исходника
+
+Решение пользователя: колёса-цилиндры не должны быть сплошными тёмными барабанами.
+
+**Files:** Modify `Assets/Game/Voxels/Editor/Voxelizer/VoxelizerPrimitives.cs`; Test `VoxelizerPrimitivesTests.cs`.
+
+**Требования:**
+- Каждая клетка поверхности примитива берёт цвет ближайшей клетки поверхности исходной части. Ближайшая — по BFS от клеток `SURFACE` исходной сетки по 26 соседям. Внутренность — этот цвет × `INSIDE_SHADE`.
+- Тест: деталь «диск» из двух цветов (обод и центр разными материалами) после `Cylinder` имеет оба цвета на торце. Старый тест «одного цвета» тоже остаётся зелёным.
+
+### Task 9.3: Срез тонких деталей — выключатель, по умолчанию выключен
+
+Решение пользователя: тонкие оболочки (Dropship) не должны рассыпаться.
+
+**Files:** Modify `VoxelizerConfig.cs` (поле `public bool cutThinDetails;` по умолчанию `false`, с тултипом), `VoxelizeUseCase.cs` (`Open` только если `cutThinDetails`); Test `VoxelizeUseCaseTests.cs`.
+
+**Требования:**
+- По умолчанию «авто» = только выпрямление плоскостей.
+- Тест: однослойная пластина (незамкнутый quad или плита в 1 воксель) по умолчанию остаётся. С `cutThinDetails = true` она исчезает.
+
+### Task 9.4: Воксель 6 см для техники длиннее 6 м
+
+Решение пользователя: крупная техника — воксель 6 см вместо 3 см.
+
+**Files:** Modify `VoxelizerConfig.cs`, `VoxelizeUseCase.cs`; Test `VoxelizeUseCaseTests.cs`.
+
+**Требования:**
+- `VoxelizerConfig`: константы `LARGE_VEHICLE_LENGTH = 6f`, `LARGE_VEHICLE_VOXEL = 0.06f`.
+- Метод `public float VoxelSizeFor(float realLength)`:
+  - техника — `realLength > LARGE_VEHICLE_LENGTH ? 0.06 : 0.03`;
+  - здание — `0.1`.
+- Свойство `VoxelSize` убирается. Все вызовы переходят на `VoxelSizeFor`, в том числе `VoxelModelBakeUseCase.ToAsset`, который берёт `result.VoxelSize`.
+- Реальная длина = `length`, если он больше 0, иначе длиннейшая сторона габарита модели.
+- Тесты:
+  - техника длиной 5 м → 0.03, 7 м → 0.06, здание → 0.1;
+  - `Run` на модели 8 м даёт `VoxelSize ≈ 0.06 / scale`.
+
+---
+
 ### Task 10: Окно «Вокселизатор» и превью без Play
 
 **Files:**
