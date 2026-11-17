@@ -34,6 +34,7 @@ namespace Game
             float radius = projectile.GetExplosionRadius();
 
             DamageInRadius(projectile, point, radius);
+            ExplosionEvents.Raise(point, radius);
 
             if (projectile.TryGetExplosionBomb(out RayfireBomb bomb) && bomb != null)
             {
