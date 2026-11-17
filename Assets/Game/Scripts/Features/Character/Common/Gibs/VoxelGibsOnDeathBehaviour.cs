@@ -28,7 +28,20 @@ namespace Game
             _deathTakenEvent = entity.GetDeathTakenEvent();
             _damageTakenEvent.Subscribe(this.OnDamageTaken);
             _deathTakenEvent.Subscribe(this.OnDeath);
+
+            // The first body of the session to come in (at level load) plays a death through once, so the first
+            // death of a fight does not compile its code mid-frame (VoxelGibs.WarmUp).
+            if (!s_warmedUp && UnityEngine.Application.isPlaying)
+            {
+                s_warmedUp = true;
+                VoxelGibs.WarmUp(_rig, _config);
+            }
         }
+
+        private static bool s_warmedUp;
+
+        [UnityEngine.RuntimeInitializeOnLoadMethod(UnityEngine.RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetStatics() => s_warmedUp = false;
 
         // Null when disposed without having been initialised.
         public void Dispose(IEntity entity)

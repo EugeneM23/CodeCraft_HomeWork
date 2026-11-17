@@ -28,6 +28,7 @@ namespace Game
         // The kill (damage, death, voxel gibs) and the tank's spray and stain, apart (perf debt of the crush frame).
         private static readonly Unity.Profiling.ProfilerMarker KillMarker = new("Crush.Kill");
         private static readonly Unity.Profiling.ProfilerMarker SprayMarker = new("Crush.SprayAndStain");
+        private static readonly Unity.Profiling.ProfilerMarker StainMarker = new("Crush.StainStep");
 
         /// <summary>
         /// How far (m) past this step's travel the hull looks ahead, and how far below its collider:
@@ -55,6 +56,24 @@ namespace Game
 
         /// <summary>Tries per splash to find a spot of skin facing the burst and in reach of it.</summary>
         private const int STAIN_TRIES = 16;
+
+        /// <summary>Splashes laid on the skin per physics step (about 0.15 ms each): see <see cref="Stain"/>.</summary>
+        private const int STAINS_PER_STEP = 12;
+
+        /// <summary>Crushes whose stain is still being laid; more at once and the oldest gives way.</summary>
+        private const int PENDING_STAINS = 8;
+
+        /// <summary>A crush's stain still being laid: the burst in the tank's frame, its height over the ground, the next splash.</summary>
+        private struct PendingStain
+        {
+            public Vector3 LocalBurst;
+            public float Height;
+            public int Next;
+        }
+
+        private readonly PendingStain[] _pending = new PendingStain[PENDING_STAINS];
+        private int _pendingCount;
+        private bool _stainsReserved;
 
         /// <summary>
         /// A pressed contact counts as ahead when its normal, which points back at the tank, is at
@@ -109,6 +128,23 @@ namespace Game
         /// </summary>
         public void FixedTick(IEntity entity, float deltaTime)
         {
+            if (!_stainsReserved && _skin != null && _skin.Bodies.Count > 0)
+            {
+                // Once the skin is built (VoxelizedModel, at Start): the first crush allocates nothing for its stain.
+                _stainsReserved = true;
+                IReadOnlyList<VoxelBody> parts = _skin.Bodies;
+                for (int i = 0; i < parts.Count; i++)
+                    if (parts[i] != null)
+                        parts[i].ReserveStains();
+            }
+
+            if (_pendingCount > 0)
+            {
+                StainMarker.Begin();
+                StainStep();
+                StainMarker.End();
+            }
+
             if (_hull == null || !_hull.enabled)
                 return;
 
@@ -272,11 +308,60 @@ namespace Game
         /// so a thin gun over the burst takes as much as its size says, not one part's share; and a
         /// splash sticks to the face it hits, not round the far side of a thin part.
         /// </summary>
+        /// <remarks>
+        /// A splash costs about 0.15 ms (finding a spot of skin and laying voxels on it), so the
+        /// <see cref="TankCrushConfig.splashes"/> of one crush, done at once, took 16–18 ms of the crush
+        /// frame. They are queued instead and laid <see cref="STAINS_PER_STEP"/> a physics step
+        /// (<see cref="StainStep"/>): the stain spreads over a fifth of a second. The burst is kept in the
+        /// tank's own frame, so the blood lands where the body burst even as the tank drives on.
+        /// </remarks>
         private void Stain(Vector3 burst, float groundY)
         {
-            if (_skin == null || _skin.Bodies.Count == 0 || _blood.Length == 0)
+            if (_skin == null || _skin.Bodies.Count == 0 || _blood.Length == 0 || _config.splashes <= 0)
                 return;
 
+            if (_pendingCount == PENDING_STAINS)
+            {
+                // A pile-up of crushes: the oldest stain gives way to the newest.
+                System.Array.Copy(_pending, 1, _pending, 0, PENDING_STAINS - 1);
+                _pendingCount--;
+            }
+
+            _pending[_pendingCount++] = new PendingStain
+            {
+                LocalBurst = _body.transform.InverseTransformPoint(burst),
+                Height = burst.y - groundY,
+                Next = 0
+            };
+        }
+
+        /// <summary>Lays up to <see cref="STAINS_PER_STEP"/> queued splashes, oldest stain first.</summary>
+        private void StainStep()
+        {
+            int budget = STAINS_PER_STEP;
+            while (budget > 0 && _pendingCount > 0)
+            {
+                PendingStain stain = _pending[0];
+                Vector3 burst = _body.transform.TransformPoint(stain.LocalBurst);
+                int count = Mathf.Min(budget, _config.splashes - stain.Next);
+                Splash(burst, burst.y - stain.Height, stain.Next, count);
+                budget -= count;
+                stain.Next += count;
+
+                if (stain.Next < _config.splashes)
+                {
+                    _pending[0] = stain;
+                    continue;
+                }
+
+                System.Array.Copy(_pending, 1, _pending, 0, _pendingCount - 1);
+                _pendingCount--;
+            }
+        }
+
+        /// <summary>Splashes <paramref name="first"/>..<paramref name="first"/>+<paramref name="count"/> of a burst.</summary>
+        private void Splash(Vector3 burst, float groundY, int first, int count)
+        {
             float reach = Mathf.Max(0.1f, _config.splashReach);
             Parts.Clear();
             Sizes.Clear();
@@ -296,7 +381,7 @@ namespace Game
             if (Parts.Count == 0)
                 return;
 
-            for (int i = 0; i < _config.splashes; i++)
+            for (int i = first; i < first + count; i++)
             {
                 for (int t = 0; t < STAIN_TRIES; t++)
                 {

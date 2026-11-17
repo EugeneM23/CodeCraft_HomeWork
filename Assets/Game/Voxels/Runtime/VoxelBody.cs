@@ -251,6 +251,17 @@ namespace Game.Voxels
         public bool IsTerrain => _settings.Terrain;
 
         /// <summary>
+        /// Makes room now for the plate remembered under stains and mud (Paint, Deposit), which is
+        /// otherwise made at the first stain — half a megabyte over a tank's skin in the frame of the
+        /// first crush. For a skin that will be stained in a fight; call it at level start.
+        /// </summary>
+        public void ReserveStains()
+        {
+            if (_voxels.IsCreated && !IsStatic)
+                _beneath ??= new byte[_voxels.Length];
+        }
+
+        /// <summary>
         /// The colour of the first solid voxel at or below a point, looking a few voxels down.
         /// False when there is none.
         /// </summary>
