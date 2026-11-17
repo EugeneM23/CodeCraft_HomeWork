@@ -349,7 +349,6 @@ GameObject:
   - component: {fileID: 903072692925490868}
   - component: {fileID: 5107114153367632572}
   - component: {fileID: 4918008619899490482}
-  - component: {fileID: 3577847232284004491}
   - component: {fileID: 5655884024937215095}
   m_Layer: 8
   m_Name: Regax
@@ -401,7 +400,6 @@ MonoBehaviour:
   - {fileID: 2802536002029629334}
   - {fileID: 5331188433194752158}
   - {fileID: 5107114153367632572}
-  - {fileID: 3577847232284004491}
   - {fileID: 5655884024937215095}
   - {fileID: 1993207444018421047}
   onlySelectedGizmos: 0
@@ -417,10 +415,10 @@ Rigidbody:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1958972971538300470}
-  serializedVersion: 4
+  serializedVersion: 5
   m_Mass: 10000
-  m_Drag: 10000
-  m_AngularDrag: 10000
+  m_LinearDamping: 10000
+  m_AngularDamping: 10000
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -483,19 +481,6 @@ CapsuleCollider:
   m_Height: 4.28
   m_Direction: 1
   m_Center: {x: 0, y: 2, z: 0}
---- !u!114 &3577847232284004491
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1958972971538300470}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f312ab9752914155925f8b2dff4b9249, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _buffsParticles: []
 --- !u!114 &5655884024937215095
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -517,6 +502,7 @@ MonoBehaviour:
     toughness: 0.6
     density: 1000
     fractureSpeed: 7
+    colliderCell: 2
     spineFrom: Rapax_ Pelvis
     spineTo: Rapax_ Spine2
     leftMarker: Rapax_ L UpperArm
@@ -2096,6 +2082,8 @@ SkinnedMeshRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -2117,9 +2105,11 @@ SkinnedMeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   serializedVersion: 2
   m_Quality: 0
   m_UpdateWhenOffscreen: 0

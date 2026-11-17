@@ -12,7 +12,6 @@
         "UnityEngine.UI",
         "HighlightPlus",
         "DOTweenModules",
-        "RayFireAssembly",
         "SaveSystem",
         "Loading",
         "GameLoop"

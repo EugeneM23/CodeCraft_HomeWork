@@ -13,9 +13,9 @@ using UnityEngine.TestTools;
 namespace Game.Voxels.Tests
 {
     /// <summary>
-    /// Plays VoxelSandbox with the game's own tank: the player starts in it, a tank shell leaves a
-    /// bowl in the mud (not a hole to the bedrock), the wheels press ruts as the tank rolls, and
-    /// the spray flies in clumps. Screenshots go to Logs/VoxelSmoke.
+    /// Plays VoxelSandbox with the game's own tank: the player drives it from the start, a tank
+    /// shell leaves a bowl in the mud (not a hole to the bedrock), and the wheels press ruts into
+    /// mud as the tank drives through it. Screenshots go to Logs/VoxelSmoke.
     /// </summary>
     public sealed class SandboxVoxelSmokeTest
     {
@@ -82,19 +82,35 @@ namespace Game.Voxels.Tests
                     yield return null;
                 Capture("31_crater");
 
-                // Roll the tank forward by hand (the wheels follow the suspension); the ruts follow the wheels.
+                // Ruts are pressed into mud only (grass and the road take a print), and the tank starts
+                // on the road: it is put on a stretch of mud and driven through it as the player drives.
+                Assert.IsTrue(TryFindMud(tankObject.transform.forward, out Vector3 mud), "a stretch of mud to drive through");
+                Rigidbody body = tankObject.GetComponent<Rigidbody>();
+                body.linearVelocity = Vector3.zero;
+                body.angularVelocity = Vector3.zero;
+                body.position = mud + Vector3.up * 0.3f;
+                tankObject.transform.position = body.position;
+                for (int i = 0; i < 50; i++)
+                    yield return new WaitForFixedUpdate();
+
                 VoxelBody ground = Physics.Raycast(tankObject.transform.position + Vector3.up, Vector3.down, out RaycastHit under, 3f, 1 << 3)
                     ? under.collider.GetComponentInParent<VoxelBody>()
                     : null;
                 Assert.IsNotNull(ground, "the tank stands on voxel mud");
                 int before = ground.SolidCount;
-                Rigidbody body = tankObject.GetComponent<Rigidbody>();
-                for (int i = 0; i < 60; i++)
+                Vector3 from = tankObject.transform.position;
+                // The player's controller writes the keys into the stick every LateUpdate: the throttle
+                // is put in at the end of each frame, for the physics steps of the next one.
+                var drive = tank.GetDriveInput();
+                float until = Time.time + 2f;
+                while (Time.time < until)
                 {
-                    body.MovePosition(body.position + tankObject.transform.forward * 0.05f);
-                    yield return new WaitForFixedUpdate();
-                    yield return null;
+                    drive.Value = new Vector2(0f, 1f);
+                    yield return new WaitForEndOfFrame();
                 }
+
+                yield return new WaitForFixedUpdate();
+                Debug.Log($"[VoxelSmoke] drove {Vector3.Distance(from, tankObject.transform.position):F1} m from {from:F1}");
 
                 Debug.Log($"[VoxelSmoke] ruts: tile {before} → {ground.SolidCount} voxels, debris {VoxelWorld.Instance.Debris.Count}");
                 Assert.That(ground.SolidCount, Is.LessThan(before), "the wheels pressed ruts into the mud");
@@ -109,6 +125,65 @@ namespace Game.Voxels.Tests
                 Application.logMessageReceived -= collect;
                 LogAssert.ignoreFailingMessages = false;
             }
+        }
+
+        /// <summary>
+        /// The scene goes with the test: an empty scene takes its place, so the next test does not
+        /// find its ground, debris or voxel world.
+        /// </summary>
+        [UnityTearDown]
+        public IEnumerator TearDown()
+        {
+            Scene sandbox = SceneManager.GetSceneByPath(SCENE);
+            if (!sandbox.IsValid() || !sandbox.isLoaded)
+                yield break;
+
+            SceneManager.SetActiveScene(SceneManager.CreateScene("AfterSandboxSmoke"));
+            yield return SceneManager.UnloadSceneAsync(sandbox);
+        }
+
+        /// <summary>
+        /// A spot with 8 m of mud ahead of it along <paramref name="forward"/>, clear of houses,
+        /// ramps and Regaxes (nothing but the ground in a box round the way), nearest the origin.
+        /// </summary>
+        private static bool TryFindMud(Vector3 forward, out Vector3 spot)
+        {
+            spot = default;
+            VoxelTerrainSettings terrain = Object.FindFirstObjectByType<VoxelTerrainSettings>();
+            if (terrain == null)
+                return false;
+
+            forward.y = 0f;
+            forward.Normalize();
+            const int notGround = ~(1 << 3);
+            float best = float.MaxValue;
+            for (float x = -36f; x <= 36f; x += 2f)
+            for (float z = -36f; z <= 36f; z += 2f)
+            {
+                var start = new Vector3(x, 0f, z);
+                bool allMud = true;
+                for (float d = -3f; d <= 8f && allMud; d += 0.5f)
+                    allMud = terrain.SoilAt(start + forward * d) == TerrainSoil.Mud;
+                if (!allMud)
+                    continue;
+
+                Vector3 centre = start + forward * 2.5f + Vector3.up * 1.5f;
+                var box = new Vector3(3f, 1.2f, 7f);
+                if (Physics.CheckBox(centre, box, Quaternion.LookRotation(forward), notGround, QueryTriggerInteraction.Ignore))
+                    continue;
+
+                if (!Physics.Raycast(start + Vector3.up * 5f, Vector3.down, out RaycastHit hit, 10f, 1 << 3))
+                    continue;
+
+                float distance = start.sqrMagnitude;
+                if (distance < best)
+                {
+                    best = distance;
+                    spot = hit.point;
+                }
+            }
+
+            return best < float.MaxValue;
         }
 
         /// <summary>What the game camera sees right now.</summary>

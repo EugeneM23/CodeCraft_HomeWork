@@ -9,23 +9,22 @@ namespace Game
     /// </summary>
     /// <remarks>
     /// Scene objects are changed from <see cref="SceneManager.sceneLoaded"/>: it runs after every Awake
-    /// of the new scene, when RayFire has already built its particle emitters and copied its debris
-    /// onto the wall pieces, and before any Start or the first rendered frame, so nothing is drawn
+    /// of the new scene and before any Start or the first rendered frame, so nothing is drawn
     /// with the desktop settings first. Pooled instances are handled by their pool
     /// (<see cref="VfxBudget"/>), HighlightPlus effects spawned any other way by
     /// <see cref="MobileHighlights.CatchNewlyEnabled"/> before each cull.
     ///
-    /// Desktop keeps its look. Only the parts that change nothing on screen run there: RayFire stops
-    /// logging in players, and players write Log and Warning messages without stack traces.
+    /// Desktop keeps its look. Only what changes nothing on screen runs there: players write Log and
+    /// Warning messages without stack traces.
     ///
     /// Switching to or from the Mobile quality level while playing re-applies the tier. Going back to
-    /// desktop restores the frame rate, cameras and post-processing; the particle, highlight and
-    /// RayFire budgets stay until the scene is loaded again, because their desktop values are not kept.
+    /// desktop restores the frame rate, cameras and post-processing; the particle and highlight
+    /// budgets stay until the scene is loaded again, because their desktop values are not kept.
     ///
     /// Everything here must stay inside play mode. The editor does not reload the domain when play mode
     /// ends, so these subscriptions would otherwise outlive it: a camera repaint or a quality level
-    /// picked in the project settings would then rewrite the open scene's cameras, highlights and
-    /// RayFire components, and a scene save would keep that. Every handler checks for play mode, and
+    /// picked in the project settings would then rewrite the open scene's cameras and highlights,
+    /// and a scene save would keep that. Every handler checks for play mode, and
     /// leaving it (Application.quitting is raised then too) drops all of them.
     /// </remarks>
     internal static class PerformanceBootstrap
@@ -86,8 +85,6 @@ namespace Game
             if (!Application.isPlaying)
                 return;
 
-            RayFireBudget.Apply(_mobile);
-
             if (!_mobile)
                 return;
 
@@ -105,7 +102,6 @@ namespace Game
 
             // Engine-wide statics are not reset when the editor leaves play mode.
             ApplyFramePacing(false);
-            RayFireBudget.RestoreLogging();
         }
 
         private static void OnQualityLevelChanged(int previousLevel, int currentLevel)
@@ -136,9 +132,6 @@ namespace Game
                     MobilePostProcessing.Restore(scene);
                 }
             }
-
-            if (mobile)
-                RayFireBudget.Apply(true);
         }
 
         private static void OnCameraPreCull(Camera camera)

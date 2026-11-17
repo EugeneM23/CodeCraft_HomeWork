@@ -10,51 +10,33 @@ using Object = UnityEngine.Object;
 namespace Game.Voxels.EditorTools
 {
     /// <summary>
-    /// Builds VoxelSandbox from a copy of Playground: the game's own systems stay — the contexts,
-    /// the camera rig, the player's character and the real Tank_01 with its drive, suspension,
-    /// camera, smoke and shot — and the arena is replaced by voxels: thick mud ground (the colours
-    /// of the main project's MT_MudGround) and a small town, with wooden ramps to jump the tank
-    /// into its houses from. The player starts in the tank.
-    /// Running it again rebuilds the scene from scratch.
+    /// Edits to VoxelSandbox as it is, made in place: the Regax row, the jump ramps, the air strike
+    /// and the weather. The scene itself is the source: it is edited by hand like any other, and
+    /// nothing rebuilds it. The plan of the town and the ramps below is the one the scene was laid
+    /// out from; the Regaxes and the ramps are placed by it.
     /// </summary>
     public static class VoxelDemoBuilder
     {
         private const string LOG = "[VoxelDemo]";
         private const string RESOURCES = "Assets/Game/Voxels/Resources/Voxels";
         private const string SHADER = "Game/Voxel";
-        private const string PLAYGROUND = "Assets/Game/Scenes/Playground.unity";
         private const string SCENE_FOLDER = "Assets/Game/Voxels/Scenes";
         public const string SANDBOX = SCENE_FOLDER + "/VoxelSandbox.unity";
 
         private const int LAYER_GROUND = 3;
 
-        /// <summary>
-        /// The ground: one body of 800 × 80 × 800 voxels (80 × 8 × 80 m), its bottom at
-        /// <see cref="GROUND_BOTTOM"/>. The hills (VoxelTerrain) run from y = 0 to 6 m, so even the
-        /// lowest valley has 1.2 m of ground under it. One body, not tiles: a smooth surface over
-        /// tiles would crease along every seam.
-        /// </summary>
+        /// <summary>The ground: 8 × 8 tiles of 10 m, centred on the origin.</summary>
         private const int TILES = 8;
         private const float TILE = 10f;
-        private const int GROUND_VOXELS = 80;
-        private const float GROUND_BOTTOM = -1.2f;
 
-        /// <summary>Hills (true) or flat ground (false); soils, mud fields and trees either way.</summary>
-        private static readonly bool HILLS = false;
-
-        /// <summary>Plant the tree groves (off for now; to come back to).</summary>
-        private static readonly bool TREES = false;
-
-        /// <summary>Edge (m) of a tree's voxels.</summary>
-        private const float TREE_VOXEL = 0.14f;
-
-        /// <summary>What Playground keeps: the game's systems and the tank. The rest is the old arena.</summary>
-        private static readonly HashSet<string> Kept = new() { "[CameraRoot]", "[Character]", "[Context]", "Tank_01", "RayFireMan" };
-
-        /// <summary>Where the tank and the character start (x, z); their height comes from the terrain.</summary>
+        /// <summary>Where the tank starts (x, z); its height comes from the terrain.</summary>
         private static readonly Vector3 TankStart = new(-34f, 0f, 0f);
-        private const float TANK_YAW = 90f;
-        private static readonly Vector3 CharacterStart = new(-34f, 0f, -4f);
+
+        /// <summary>
+        /// A flat pad 4 m beside the tank, where the player used to start on foot. The scene's ground
+        /// was laid out with it; the plan keeps it so the Regaxes and ramps land where they did.
+        /// </summary>
+        private static readonly Vector3 SidePad = new(-34f, 0f, -4f);
 
         private static TerrainShape s_shape;
         private static Vector4[] s_pads;
@@ -209,50 +191,6 @@ namespace Game.Voxels.EditorTools
             return Mathf.Abs(local.x) < RAMP_WIDTH * 0.5f + margin && local.z > -margin && local.z < RampRun + margin;
         }
 
-        [MenuItem("Tools/Voxels/Build Sandbox Scene")]
-        public static void BuildSandbox()
-        {
-            if (EditorApplication.isPlayingOrWillChangePlaymode)
-            {
-                Debug.LogError($"{LOG} Leave Play Mode first.");
-                return;
-            }
-
-            EnsureMaterials();
-            if (!AssetDatabase.IsValidFolder(SCENE_FOLDER))
-                AssetDatabase.CreateFolder("Assets/Game/Voxels", "Scenes");
-
-            if (AssetDatabase.LoadAssetAtPath<SceneAsset>(SANDBOX) != null)
-                AssetDatabase.DeleteAsset(SANDBOX);
-            if (!AssetDatabase.CopyAsset(PLAYGROUND, SANDBOX))
-            {
-                Debug.LogError($"{LOG} Could not copy {PLAYGROUND}.");
-                return;
-            }
-
-            Scene scene = EditorSceneManager.OpenScene(SANDBOX, OpenSceneMode.Single);
-            int removed = ClearArena(scene);
-
-            PlanTerrain();
-            BuildGround();
-            BuildTown();
-            BuildRamps(scene);
-            if (TREES)
-                BuildTrees();
-            GameObject tank = PlaceTank(scene);
-            PlaceCharacter(scene);
-            AddStart(tank);
-            PlaceRegaxes(scene);
-            new GameObject("<Hud>").AddComponent<VoxelDemoHud>();
-            BuildWeather(scene);
-
-            EditorSceneManager.MarkSceneDirty(scene);
-            EditorSceneManager.SaveScene(scene);
-            AddToBuildSettings(SANDBOX);
-            AssetDatabase.SaveAssets();
-            Debug.Log($"{LOG} {SANDBOX} built from {PLAYGROUND}: {removed} arena objects removed, {TILES * TILES} ground tiles, {Town.Length} buildings.");
-        }
-
         /// <summary>Smoke on the map: the spots and the B key (off for now; to come back to).</summary>
         private static readonly bool SMOKE = false;
 
@@ -334,49 +272,15 @@ namespace Game.Voxels.EditorTools
             Debug.Log($"{LOG} <Weather>: rain {(RAIN ? "on" : "off")}, {(SMOKE ? SmokeSpots.Length : 0)} smoke spots.");
         }
 
-        /// <summary>Takes the voxel street back out of Playground: the voxels have a scene of their own.</summary>
-        [MenuItem("Tools/Voxels/Remove Street From Playground")]
-        public static void RemoveStreetFromPlayground()
-        {
-            Scene scene = EditorSceneManager.OpenScene(PLAYGROUND, OpenSceneMode.Single);
-            foreach (GameObject root in scene.GetRootGameObjects())
-            {
-                if (root.name != "<Voxels>")
-                    continue;
-
-                Object.DestroyImmediate(root);
-                EditorSceneManager.MarkSceneDirty(scene);
-                EditorSceneManager.SaveScene(scene);
-                Debug.Log($"{LOG} <Voxels> removed from {PLAYGROUND}.");
-                return;
-            }
-        }
-
-        /// <summary>Everything but the game's systems, the tank and the light goes.</summary>
-        private static int ClearArena(Scene scene)
-        {
-            int removed = 0;
-            foreach (GameObject root in scene.GetRootGameObjects())
-            {
-                if (Kept.Contains(root.name) || root.GetComponent<Light>() != null)
-                    continue;
-
-                Object.DestroyImmediate(root);
-                removed++;
-            }
-
-            return removed;
-        }
-
         /// <summary>
-        /// The hills, and a flat pad under every building and where the tank and the character
-        /// start, each at the height the hills have there, so nothing floats or sinks.
+        /// The hills (flat in the sandbox), and a flat pad under every building, where the tank starts
+        /// and beside it, each at the height the hills have there, so nothing floats or sinks.
         /// </summary>
         private static void PlanTerrain()
         {
             s_shape = TerrainShape.Default;
-            if (!HILLS)
-                s_shape.Amplitude = 0f;
+            // Flat ground, as the scene has it.
+            s_shape.Amplitude = 0f;
             var pads = new List<Vector4>();
 
             foreach (Placement placement in Town)
@@ -388,7 +292,7 @@ namespace Game.Voxels.EditorTools
             }
 
             pads.Add(Pad(TankStart, 4f));
-            pads.Add(Pad(CharacterStart, 1.5f));
+            pads.Add(Pad(SidePad, 1.5f));
             s_pads = pads.ToArray();
         }
 
@@ -397,187 +301,7 @@ namespace Game.Voxels.EditorTools
 
         private static float GroundAt(Vector3 at) => VoxelTerrain.Height(new Vector2(at.x, at.z), s_shape, s_pads);
 
-        private static void BuildGround()
-        {
-            var root = new GameObject("<Ground>") { layer = LAYER_GROUND };
-            root.AddComponent<VoxelTerrainSettings>().Set(s_shape, s_pads, Streets);
-            float half = TILES * TILE * 0.5f;
-
-            // On the Ground layer, like the floor in the game: the character stands on it.
-            var ground = new GameObject("Terrain") { layer = LAYER_GROUND };
-            ground.transform.SetParent(root.transform, false);
-            ground.transform.position = new Vector3(0f, GROUND_BOTTOM, 0f);
-            int side = Mathf.RoundToInt(half * 2f / 0.1f);
-            Configure(ground.AddComponent<VoxelStructure>(), VoxelStructure.Shape.Ground,
-                new Vector3Int(side, GROUND_VOXELS, side), 7);
-
-            // Below the tiles, so whatever drops through a crater to the bottom lands somewhere.
-            GameObject floor = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            floor.name = "Bedrock";
-            floor.layer = LAYER_GROUND;
-            floor.transform.SetParent(root.transform, false);
-            floor.transform.position = new Vector3(0f, GROUND_BOTTOM - 0.5f, 0f);
-            floor.transform.localScale = new Vector3(TILES * TILE + 2f, 1f, TILES * TILE + 2f);
-            floor.GetComponent<MeshRenderer>().sharedMaterial = BedrockMaterial();
-        }
-
-        private static void BuildTown()
-        {
-            var root = new GameObject("<Town>");
-            foreach (Placement placement in Town)
-            {
-                var go = new GameObject(placement.Name);
-                go.transform.SetParent(root.transform, false);
-                Vector3 at = placement.Position;
-                at.y = GroundAt(at);
-                go.transform.SetPositionAndRotation(at, Quaternion.Euler(0f, placement.Yaw, 0f));
-                Configure(go.AddComponent<VoxelStructure>(), placement.Shape, placement.Size,
-                    placement.Seed != 0 ? placement.Seed : placement.Name.GetHashCode() & 0xFFFF);
-            }
-        }
-
-        /// <summary>
-        /// Groves of trees and a few lone ones round the town: leafy trees and pines of different
-        /// heights, kept off the buildings, the start and the map's edge. Always the same layout.
-        /// </summary>
-        private static void BuildTrees()
-        {
-            var root = new GameObject("<Trees>");
-            var random = new System.Random(1234);
-            var placed = new List<Vector3>();
-            float edge = TILES * TILE * 0.5f - 2.5f;
-
-            float Range(float a, float b) => a + (float)random.NextDouble() * (b - a);
-
-            bool Free(Vector3 at)
-            {
-                if (Mathf.Abs(at.x) > edge || Mathf.Abs(at.z) > edge)
-                    return false;
-                if (Vector3.Distance(Flat(at), Flat(TankStart)) < 8f || Vector3.Distance(Flat(at), Flat(CharacterStart)) < 4f)
-                    return false;
-                foreach (Placement building in Town)
-                {
-                    float halfX = building.Size.x * 0.05f;
-                    float halfZ = building.Size.z * 0.05f;
-                    if (Vector3.Distance(Flat(at), Flat(building.Position)) < Mathf.Sqrt(halfX * halfX + halfZ * halfZ) + 2.5f)
-                        return false;
-                }
-
-                foreach (Vector3 other in placed)
-                    if (Vector3.Distance(Flat(at), Flat(other)) < 3f)
-                        return false;
-                return true;
-            }
-
-            void Plant(Vector3 at)
-            {
-                at.y = GroundAt(at);
-                int seed = random.Next(1, 100000);
-                bool pine = (seed & 1) == 1;
-                // Trees are built of 14 cm voxels, not 10: the same size of tree in a third of the
-                // voxels — half the triangles, and a cheaper break when one comes down.
-                int width = Mathf.RoundToInt((pine ? random.Next(26, 32) : random.Next(34, 42)) * 0.1f / TREE_VOXEL);
-                int height = Mathf.RoundToInt((pine ? random.Next(80, 104) : random.Next(58, 80)) * 0.1f / TREE_VOXEL);
-
-                var go = new GameObject(pine ? $"Pine_{placed.Count}" : $"Tree_{placed.Count}");
-                go.transform.SetParent(root.transform, false);
-                go.transform.SetPositionAndRotation(at, Quaternion.Euler(0f, Range(0f, 360f), 0f));
-                VoxelStructure structure = go.AddComponent<VoxelStructure>();
-                Configure(structure, VoxelStructure.Shape.Tree, new Vector3Int(width, height, width), seed);
-                var serialized = new SerializedObject(structure);
-                serialized.FindProperty("_voxelSize").floatValue = TREE_VOXEL;
-                serialized.ApplyModifiedPropertiesWithoutUndo();
-                placed.Add(at);
-            }
-
-            // Groves: a handful of trees round a few spots.
-            for (int grove = 0; grove < 7; grove++)
-            {
-                var centre = new Vector3(Range(-edge, edge), 0f, Range(-edge, edge));
-                int count = random.Next(4, 9);
-                for (int i = 0, tries = 0; i < count && tries < 40; tries++)
-                {
-                    Vector3 at = centre + new Vector3(Range(-6f, 6f), 0f, Range(-6f, 6f));
-                    if (!Free(at))
-                        continue;
-                    Plant(at);
-                    i++;
-                }
-            }
-
-            // And some standing on their own.
-            for (int i = 0, tries = 0; i < 12 && tries < 200; tries++)
-            {
-                var at = new Vector3(Range(-edge, edge), 0f, Range(-edge, edge));
-                if (!Free(at))
-                    continue;
-                Plant(at);
-                i++;
-            }
-
-            Debug.Log($"{LOG} {placed.Count} trees planted.");
-        }
-
         private static Vector3 Flat(Vector3 v) => new(v.x, 0f, v.z);
-
-        /// <summary>The real Tank_01 from Playground, at the south edge of town, with voxel ruts.</summary>
-        private static GameObject PlaceTank(Scene scene)
-        {
-            GameObject tank = Find(scene, "Tank_01");
-            Vector3 start = TankStart;
-            start.y = GroundAt(start) + 0.05f;
-            tank.transform.SetPositionAndRotation(start, Quaternion.Euler(0f, TANK_YAW, 0f));
-            if (!tank.TryGetComponent(out VoxelTrackRuts _))
-                tank.AddComponent<VoxelTrackRuts>();
-            // No aim pitch: the shells fly straight out of the barrel, not at the crosshair.
-            return tank;
-        }
-
-        private static void PlaceCharacter(Scene scene)
-        {
-            GameObject character = Find(scene, "[Character]");
-            if (character == null)
-                return;
-
-            // The game works out the camera's offset once, from where the rig and the character
-            // stand at the start: the rig moves with the character, or the camera would hang
-            // metres off to one side looking at nothing.
-            Vector3 start = CharacterStart;
-            start.y = GroundAt(start) + 0.05f;
-            Vector3 shift = start - character.transform.position;
-            character.transform.SetPositionAndRotation(start, Quaternion.identity);
-
-            GameObject rig = Find(scene, "[CameraRoot]");
-            if (rig != null)
-                rig.transform.position += shift;
-        }
-
-        /// <summary>
-        /// VoxelSandboxStart lives in the game's assembly (it uses the game's contexts), which this
-        /// editor assembly does not reference: it is added by name.
-        /// </summary>
-        private static void AddStart(GameObject tank)
-        {
-            Type type = Type.GetType("Game.VoxelSandboxStart, Game");
-            if (type == null)
-            {
-                Debug.LogWarning($"{LOG} Game.VoxelSandboxStart not found: the player starts on foot.");
-                return;
-            }
-
-            var go = new GameObject("<SandboxStart>");
-            Component start = go.AddComponent(type);
-            var serialized = new SerializedObject(start);
-            serialized.FindProperty("_vehicle").objectReferenceValue = tank.GetComponent("MonoEntity");
-            serialized.ApplyModifiedPropertiesWithoutUndo();
-
-            // Mouse look: the mouse swings the game camera round the tank, a crosshair aims.
-            Type orbit = Type.GetType("Game.VoxelSandboxOrbit, Game");
-            if (orbit != null)
-                go.AddComponent(orbit);
-
-            AddAirStrike(go, tank);
-        }
 
         /// <summary>The tank shell's explosion effect: the air bomb's fireball is a cluster of them.</summary>
         private const string EXPLOSION_VFX_GUID = "b4c963e707aa04a49a4aee66432d1356";
@@ -658,7 +382,7 @@ namespace Game.Voxels.EditorTools
         /// every row that starts on mud (2 m grid, 15° steps) and keeps off the buildings, the
         /// streets' edge and the starts, the one with the most of its spots on mud — on a tie, the
         /// one nearer the tank. They all face the tank's start, stand still, and stand at the scene's
-        /// root, as on Playground. Always the same layout; earlier ones are replaced.
+        /// root. Always the same layout; earlier ones are replaced.
         /// </summary>
         private static void PlaceRegaxes(Scene scene)
         {
@@ -686,7 +410,7 @@ namespace Game.Voxels.EditorTools
             {
                 if (Mathf.Abs(at.x) > edge || Mathf.Abs(at.z) > edge)
                     return false;
-                if (Vector3.Distance(Flat(at), Flat(TankStart)) < 6f || Vector3.Distance(Flat(at), Flat(CharacterStart)) < 4f)
+                if (Vector3.Distance(Flat(at), Flat(TankStart)) < 6f || Vector3.Distance(Flat(at), Flat(SidePad)) < 4f)
                     return false;
                 foreach (Ramp ramp in ramps)
                     if (OnRamp(at, ramp, 1.5f))
@@ -763,7 +487,7 @@ namespace Game.Voxels.EditorTools
 
         /// <summary>
         /// The Regax stands where it is placed — no patrol, chase or attack — like the targets on
-        /// Playground: the enemy installer's own switch, set as an override on this instance. The
+        /// a shooting range: the enemy installer's own switch, set as an override on this instance. The
         /// installer lives in the game's assembly, which this one does not reference: found by name.
         /// </summary>
         private static void StandStill(GameObject regax)
@@ -812,7 +536,7 @@ namespace Game.Voxels.EditorTools
         /// <summary>
         /// &lt;Ramps&gt;: a box at each spot of <see cref="RampPlan"/>, tilted so its top runs from
         /// the ground at the foot up to the lip; its far end reaches down to the ground, its near
-        /// one is sunk in it. On the Ground layer, so the tank's wheels and the character stand on
+        /// one is sunk in it. On the Ground layer, so the tank's wheels stand on
         /// it. Not voxels: shells and the tank do not break it. Earlier ones are replaced.
         /// </summary>
         private static void BuildRamps(Scene scene)
@@ -864,28 +588,6 @@ namespace Game.Voxels.EditorTools
             return null;
         }
 
-        private static void Configure(VoxelStructure structure, VoxelStructure.Shape shape, Vector3Int size, int seed)
-        {
-            var serialized = new SerializedObject(structure);
-            serialized.FindProperty("_shape").enumValueIndex = (int)shape;
-            serialized.FindProperty("_size").vector3IntValue = size;
-            serialized.FindProperty("_seed").intValue = seed;
-            serialized.ApplyModifiedPropertiesWithoutUndo();
-        }
-
-        private static Material BedrockMaterial()
-        {
-            const string path = RESOURCES + "/Bedrock.mat";
-            Material material = AssetDatabase.LoadAssetAtPath<Material>(path);
-            if (material != null)
-                return material;
-
-            material = new Material(Shader.Find("Standard")) { color = new Color(0.12f, 0.09f, 0.06f) };
-            material.SetFloat("_Glossiness", 0.05f);
-            AssetDatabase.CreateAsset(material, path);
-            return material;
-        }
-
         private static void EnsureMaterials()
         {
             Shader shader = Shader.Find(SHADER);
@@ -926,15 +628,6 @@ namespace Game.Voxels.EditorTools
             material.enableInstancing = instanced;
             EditorUtility.SetDirty(material);
             return material;
-        }
-
-        private static void AddToBuildSettings(string path)
-        {
-            var scenes = new List<EditorBuildSettingsScene>(EditorBuildSettings.scenes);
-            if (scenes.Exists(s => s.path == path))
-                return;
-            scenes.Add(new EditorBuildSettingsScene(path, true));
-            EditorBuildSettings.scenes = scenes.ToArray();
         }
     }
 }

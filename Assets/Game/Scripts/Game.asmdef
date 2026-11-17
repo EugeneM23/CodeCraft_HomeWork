@@ -9,7 +9,6 @@
         "Unity.Mathematics",
         "DOTweenModules",
         "UnityEngine.UI",
-        "RayFireAssembly",
         "Unity.Postprocessing.Runtime",
         "Game.Voxels",
         "Loading",
