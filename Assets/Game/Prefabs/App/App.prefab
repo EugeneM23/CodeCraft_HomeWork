@@ -317,6 +317,7 @@ MonoBehaviour:
   _catalog: {fileID: 11400000, guid: 46eac20fceb1c204b8589218fd1488e1, type: 2}
   _loadingScreen: {fileID: 5683719281420259009}
   _ticker: {fileID: 1935837395770865474}
+  _warmUpCode: 1
 --- !u!114 &4541725104221138598
 MonoBehaviour:
   m_ObjectHideFlags: 0
