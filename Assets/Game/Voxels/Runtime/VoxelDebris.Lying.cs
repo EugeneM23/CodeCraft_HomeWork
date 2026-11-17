@@ -8,8 +8,13 @@ namespace Game.Voxels
 {
     public sealed partial class VoxelDebris
     {
-        /// <summary>Lying cubes kept by default: past this, new ones overwrite the slots in turn.</summary>
-        public const int LYING_DEFAULT = 100000;
+        /// <summary>
+        /// Lying cubes kept by default: past this, new ones overwrite the slots in turn. Measured
+        /// 2026-11-17 in the editor: ~0.045 ms of PlayerLoop per thousand lying cubes (the instanced
+        /// draw), so 30 000 keeps a driving tank within the 5 ms budget. Raise it once lying cubes are
+        /// drawn from a GPU buffer.
+        /// </summary>
+        public const int LYING_DEFAULT = 30000;
 
         /// <summary>How long (s) a lying cube takes to sink into the ground and go.</summary>
         private const float SINK_TIME = 1.5f;
