@@ -63,7 +63,7 @@ Steps:
    - you may open it only when `play: free`, the editor is not playing, and the open scene is not dirty;
    - otherwise skip the benchmark.
 3. If not playing and `play: free`: `unity cmd --port <N> editor.playmode start`.
-4. Arm the bench, one call: `unity cmd --port <N> script eval --file <repo>/Tools/PerfCheck/Bench/perf_bench.cs`. It waits until 10 s after scene start (Burst warm-up), then runs idle, drive, airstrike and crush, about 40 s in all.
+4. Arm the bench, one call: `unity cmd --port <N> script eval --file <repo>/Tools/PerfCheck/Bench/perf_bench.cs`. It waits until 10 s after scene start (Burst warm-up), then runs idle, drive, airstrike, crush and crater, about 50 s in all. Crater's result carries the plough's bite figures (`biteFrames`, `biteMs`, `biteGc`, `biteFrameGc`) and its own checks; a note "crater: the plough never bit" means the run says nothing about the plough.
 5. Poll every 15 s with `perf_bench_read.cs` until it returns JSON (no `STATUS running`). Wait between polls with a background `sleep 15`. If it says `aborted` (someone left Play), report that and stop.
 6. If any budget is broken or a metric grew >10 % against history, run the scenario again: set `AppDomain.CurrentDomain.SetData("perfbench_only", "<scenario>")` in an eval, then arm again. Keep the better run and give the spread.
 7. Leave Play only if you entered it (`play: free`).
