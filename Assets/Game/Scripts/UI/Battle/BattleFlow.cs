@@ -16,7 +16,6 @@ namespace Game
     public sealed class BattleFlow : MonoBehaviour
     {
         private const string HANGAR_SCREEN = "Hangar";
-        private const string OLD_SANDBOX_HUD = "VoxelDemoHud";
 
         [SerializeField] private HudScreen _hud;
         [SerializeField] private PauseScreen _pause;
@@ -24,6 +23,8 @@ namespace Game
         [SerializeField] private ConfirmDialog _confirmDialog;
         [SerializeField] private SettingsScreen _settings;
         [SerializeField] private LevelCatalog _levelCatalog;
+        [Tooltip("Design fields and the menu names of the levels (until they move into the core's LevelConfig)")]
+        [SerializeField] private LevelDesignConfig _levelDesign;
         [Tooltip("Implements IBattleStats and IBattleResultSource (SandboxBattleStats in VoxelSandbox)")]
         [SerializeField] private MonoBehaviour _battleStats;
 
@@ -97,18 +98,8 @@ namespace Game
 
         private void Start()
         {
-            DisableOldSandboxHud();
             _flow.Push(_hud);
             ResumeGame();
-        }
-
-        // TEMPORARY until the render team's VoxelSandbox scene (without VoxelDemoHud) is merged; then this goes
-        // together with VoxelDemoHud.cs. Found by type name: the Game assembly does not reference the voxel demo.
-        private static void DisableOldSandboxHud()
-        {
-            foreach (MonoBehaviour behaviour in FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None))
-                if (behaviour.GetType().Name == OLD_SANDBOX_HUD)
-                    behaviour.enabled = false;
         }
 
         // Leaving the level: the game-wide input and the player's pause must not stay switched off.
@@ -253,7 +244,8 @@ namespace Game
             _nextLevel = LevelUnlockUseCase.Next(_levelCatalog, level);
             bool hasNext = _nextLevel != null && LevelUnlockUseCase.IsUnlocked(_nextLevel, progress);
             int killTarget = _battleStats is IBattleStats stats ? stats.KillTarget : 0;
-            _results.Setup(result, level, killTarget, hasNext);
+            string levelName = level == null ? null : _levelDesign != null ? _levelDesign.DisplayName(level) : level.DisplayName;
+            _results.Setup(result, levelName, killTarget, hasNext);
 
             StopGame();
             while (_flow.Stack.Count > 1)

@@ -84,7 +84,8 @@ namespace Game.EditorTools
             LevelDesignConfig design = LoadOrCreate<LevelDesignConfig>(LEVEL_DESIGN_PATH);
             design.levels = new List<LevelDesignData>
             {
-                new() { levelId = SANDBOX_LEVEL_ID, difficulty = 1, killTarget = 10, reward = 300 },
+                new() { levelId = SANDBOX_LEVEL_ID, displayName = "Песочница",
+                    description = "Разрушаемый городок, Regax прячутся в домах. Разнесите укрытия и зачистите улицы.", difficulty = 1, killTarget = 10, reward = 300 },
                 new() { levelId = QUARRY_LEVEL_ID, difficulty = 2, killTarget = 20, reward = 600 }
             };
             EditorUtility.SetDirty(design);

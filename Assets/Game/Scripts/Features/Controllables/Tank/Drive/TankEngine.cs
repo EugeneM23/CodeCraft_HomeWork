@@ -5,9 +5,9 @@ using UnityEngine;
 namespace Game
 {
     /// <summary>
-    /// The tank's engine. Off while nobody is inside; once a driver gets in it cranks for
+    /// The tank's engine. Off while it has no driver; once it gets one it cranks for
     /// <see cref="StartTime"/> seconds — the tank cannot drive yet, the exhaust belches ever bigger
-    /// jets of smoke — and then runs. Getting out, or the hull going up, stops it at once.
+    /// jets of smoke — and then runs. Losing the driver, or the hull going up, stops it at once.
     ///
     /// TankDriveBehaviour holds the stick at zero until it runs; TankExhaustBehaviour reads
     /// <see cref="State"/> and <see cref="StartProgress"/>. Ticks before both.

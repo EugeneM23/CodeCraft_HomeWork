@@ -18,14 +18,13 @@ namespace Game
     ///
     /// For now the view does not turn up and down at all (<see cref="_turnView"/> off): mouse down
     /// only moves the camera back and up, mouse up only brings it back, and the view keeps the
-    /// scene's angle. Left and right still swing it round the tank. The battle HUD's crosshair in the middle of the
-    /// screen aims: while the cursor is locked, the
+    /// scene's angle. Left and right still swing it round the tank. The battle HUD's crosshair in the middle
+    /// of the screen aims: while the cursor is locked, the
     /// turret turns to the screen centre (<see cref="CursorUseCase.ScreenPoint"/>); the shells fly
     /// straight out of the barrel.
     ///
     /// The camera starts as the scene shows it. The offset is taken from where [CameraRoot] stands
-    /// to the camera point of the tank it follows, not to [Character], which waits 4 m behind the
-    /// tank. The rig's angle and the camera's own turn and shift under the rig are kept as well
+    /// to the camera point of the tank it follows. The rig's angle and the camera's own turn and shift under the rig are kept as well
     /// (the follow keeps the camera's turn). The swing turns all of it round the vertical and tilts
     /// it; a vehicle's CameraDistance does not push the camera further out here.
     ///
@@ -34,7 +33,8 @@ namespace Game
     /// and turns its view <see cref="_lookTilt"/> up towards the horizon. More ground ahead shows,
     /// and the tank sits lower on the screen.
     ///
-    /// Esc lets the cursor go: the camera stays where it is and the cursor aims as it did before. A
+    /// The keys and the mouse come from the player context's IPlayerInput. Esc lets the cursor go:
+    /// the camera stays where it is and the cursor aims as it did before. A
     /// click in the game takes the cursor back. Double-click the middle button to put the camera back.
     ///
     /// The game's follow is left to do the following: this only turns its offset (the player
@@ -42,9 +42,6 @@ namespace Game
     /// </summary>
     public sealed class VoxelSandboxOrbit : MonoBehaviour
     {
-        // The old Input Manager's "Mouse X/Y" sensitivity: keeps _turnSpeed meaning what it meant.
-        private const float LEGACY_AXIS_SCALE = 0.1f;
-
         [Tooltip("Degrees the camera turns per pixel of mouse movement.")]
         [SerializeField] private float _turnSpeed = 0.45f;
         [Tooltip("How far (degrees) mouse up, towards where the view looks, tilts the camera towards the horizon.")]
@@ -76,6 +73,7 @@ namespace Game
 
         private IVariable<Vector3> _offset;
         private IReactiveVariable<IEntity> _character;
+        private IPlayerInput _input;
         private Transform _rig;
         private Vector3 _baseOffset;
         private Quaternion _baseRotation;
@@ -92,6 +90,7 @@ namespace Game
         private float _shownPitch;
         // 0..1: how much the camera looks ahead; eases in while the cursor is held, out when it is let go.
         private float _ahead;
+        private float _lastClick = -1f;
         private bool _holding;
 
         private void Awake()
@@ -117,16 +116,16 @@ namespace Game
             _offset = player.GetCameraOffset() as IVariable<Vector3>;
             _rig = player.GetCameraRoot();
             _character = player.GetCharacter();
-            if (_offset == null || _rig == null)
+            player.TryGetPlayerInput(out _input);
+            if (_offset == null || _rig == null || _input == null)
             {
-                Debug.LogWarning("[VoxelSandboxOrbit] The camera offset is not a variable: no orbit.");
+                Debug.LogWarning("[VoxelSandboxOrbit] No camera offset variable, rig or player input: no orbit.");
                 enabled = false;
                 yield break;
             }
 
             // As the scene shows it: from the tank's camera point, which the follow keeps the rig
-            // round, to where the rig stood. The installer's offset is from [Character], 4 m behind
-            // the tank, and put the camera that much closer. It stays the fallback.
+            // round, to where the rig stood. The installer's offset stays the fallback.
             _baseOffset = _offset.Value;
             VoxelSandboxStart start = GetComponent<VoxelSandboxStart>();
             if (_sceneRig == _rig && start != null && start.Vehicle != null
@@ -160,26 +159,24 @@ namespace Game
             if (_offset == null)
                 return;
 
-            // The Tank map of the game's input actions; it is off while a menu covers the battle, so
-            // a click on a pause button neither fires nor takes the cursor back.
-            IGameInput input = AppServices.Input;
-            GameControls.TankActions tank = input.Controls.Tank;
+            if (_input.ResetLookPressed)
+            {
+                if (Time.unscaledTime - _lastClick < 0.3f)
+                    _yaw = _pitch = 0f;
+                _lastClick = Time.unscaledTime;
+            }
 
-            if (tank.ResetCamera.WasPerformedThisFrame())
-                _yaw = _pitch = 0f;
-
-            if (tank.Pause.WasPressedThisFrame())
+            if (_input.FreeCursorPressed)
                 Release();
             else if (Cursor.lockState != CursorLockMode.Locked && Application.isFocused
-                     && (tank.FireMain.WasPressedThisFrame() || tank.FireSecondary.WasPressedThisFrame()))
+                     && _input.HoldCursorPressed)
                 Hold();
 
             // Only a held cursor turns the camera: a free one is aiming, or off in another window.
             bool held = Cursor.lockState == CursorLockMode.Locked;
             if (held)
             {
-                // Mouse delta in pixels, scaled like the old "Mouse X/Y" axes, times the player's sensitivity.
-                Vector2 look = tank.Look.ReadValue<Vector2>() * (LEGACY_AXIS_SCALE * input.LookSensitivity);
+                Vector2 look = _input.Look;
                 _yaw += look.x * _turnSpeed * 10f;
                 // Mouse up tilts the camera towards the horizon; mouse down, up over the tank. With the
                 // view not turning, up has nothing to do past the start.

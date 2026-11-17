@@ -27,9 +27,9 @@ namespace Game
 
         /// <summary>
         /// Fills the screen before it is shown (once per battle; the screen may not have woken yet, so texts are
-        /// fetched here). level may be null (the scene was started without one).
+        /// fetched here). levelName may be empty (the scene was started without a level).
         /// </summary>
-        public void Setup(BattleResult result, LevelConfig level, int killTarget, bool hasNextLevel)
+        public void Setup(BattleResult result, string levelName, int killTarget, bool hasNextLevel)
         {
             _title.text = UiStrings.Get(result.Victory ? "results.victory" : "results.defeat");
             _title.color = result.Victory ? UiStyle.Good : UiStyle.Bad;
@@ -37,8 +37,8 @@ namespace Game
             string goal = killTarget > 0
                 ? string.Format(UiStrings.Get("goal.kill_format"), killTarget)
                 : UiStrings.Get("goal.survive");
-            _goal.text = level != null
-                ? string.Format(UiStrings.Get("results.goal_with_level_format"), level.DisplayName, goal)
+            _goal.text = !string.IsNullOrEmpty(levelName)
+                ? string.Format(UiStrings.Get("results.goal_with_level_format"), levelName, goal)
                 : goal;
 
             _time.text = string.Format(UiStrings.Get("results.time_format"), ClockTextUseCase.Format(result.Time));

@@ -9,6 +9,10 @@ namespace Game
     {
         [Tooltip("Id of the core's LevelConfig these fields belong to")]
         public string levelId;
+        [Tooltip("Name in the menus; empty = the core LevelConfig's DisplayName")]
+        public string displayName;
+        [Tooltip("Description in the level select; empty = the core LevelConfig's Description")]
+        [TextArea] public string description;
         [Tooltip("Shown in the level select as N/3")]
         [Range(1, 3)] public int difficulty = 1;
         [Tooltip("Regax to kill to win; 0 = no kill goal")]

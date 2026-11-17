@@ -124,7 +124,7 @@ namespace Game
                 };
                 int index = _cards.Count;
                 button.onClick.AddListener(() => Select(index)); // once per card, at creation
-                card.Name.text = level.DisplayName;
+                card.Name.text = NameOf(level);
                 card.Difficulty.text = string.Format(_difficultyFormat, Mathf.Clamp(Difficulty(level), 1, MAX_DIFFICULTY),
                     MAX_DIFFICULTY);
                 card.Reward.SetText(_cardRewardFormat, Reward(level));
@@ -170,8 +170,8 @@ namespace Game
             }
 
             bool unlocked = LevelUnlockUseCase.IsUnlocked(level, _progress);
-            _detailName.text = level.DisplayName;
-            _detailDescription.text = level.Description ?? string.Empty;
+            _detailName.text = NameOf(level);
+            _detailDescription.text = (_design != null ? _design.Description(level) : level.Description) ?? string.Empty;
             int killTarget = KillTarget(level);
             if (killTarget > 0)
                 _detailGoal.SetText(_goalKillFormat, killTarget);
@@ -181,7 +181,7 @@ namespace Game
             _detailLock.gameObject.SetActive(!unlocked);
             if (!unlocked)
                 _detailLock.text = level.RequiredLevel != null
-                    ? string.Format(_unlockAfterFormat, level.RequiredLevel.DisplayName)
+                    ? string.Format(_unlockAfterFormat, NameOf(level.RequiredLevel))
                     : _locked;
             _start.interactable = unlocked;
         }
@@ -194,6 +194,9 @@ namespace Game
         }
 
         // Design fields by level id; defaults when the level has no entry
+        private string NameOf(LevelConfig level) =>
+            _design != null ? _design.DisplayName(level) : level.DisplayName;
+
         private int Difficulty(LevelConfig level) =>
             _design != null ? _design.Difficulty(level) : LevelDesignConfig.DEFAULT_DIFFICULTY;
 

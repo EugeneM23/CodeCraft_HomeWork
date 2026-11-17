@@ -355,7 +355,7 @@ namespace Game
                     ""name"": """",
                     ""id"": ""6a1d0000-0000-4000-8000-000000001015"",
                     ""path"": ""<Mouse>/middleButton"",
-                    ""interactions"": ""MultiTap(tapCount=2)"",
+                    ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""ResetCamera"",

@@ -40,9 +40,7 @@ namespace Game.Tests
             health = new Health(10, 10);
             IEntity character = new Entity();
             character.AddHealth(health);
-            var root = new GameObject("WeaponRoot");
-            _created.Add(root);
-            CharacterAttackUseCase.AddHeldWeapon(character, this.Weapon(), root.transform, extraCondition);
+            CharacterAttackUseCase.AddHeldWeapon(character, this.Weapon(), extraCondition);
             return character;
         }
 

@@ -8,8 +8,8 @@ namespace Game
     /// Follows a weapon slot and reports every shot of the weapon in it.
     /// </summary>
     /// <remarks>
-    /// An attack raises the FireEvent of the weapon, not of whoever holds it, and the weapon in hand
-    /// changes on every pick-up and drop. The attack animations, the attack sound and the camera
+    /// An attack raises the FireEvent of the weapon, not of whoever holds it, and the weapon can be
+    /// replaced while the holder lives. The attack animations, the attack sound and the camera
     /// shake each used to re-subscribe by hand, and the copies drifted: only some survived a weapon
     /// destroyed first when the scene unloads.
     /// </remarks>

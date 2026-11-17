@@ -27,6 +27,23 @@ namespace Game
             return null;
         }
 
+        /// <summary>The name the menus show: the design entry's, else the core level's.</summary>
+        public string DisplayName(LevelConfig level)
+        {
+            if (level == null)
+                return string.Empty;
+            LevelDesignData data = Find(level.Id);
+            return data != null && !string.IsNullOrEmpty(data.displayName) ? data.displayName : level.DisplayName;
+        }
+
+        public string Description(LevelConfig level)
+        {
+            if (level == null)
+                return string.Empty;
+            LevelDesignData data = Find(level.Id);
+            return data != null && !string.IsNullOrEmpty(data.description) ? data.description : level.Description;
+        }
+
         public int Difficulty(LevelConfig level)
         {
             LevelDesignData data = level != null ? Find(level.Id) : null;

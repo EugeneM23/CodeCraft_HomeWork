@@ -23,9 +23,9 @@ namespace Game
             _target = entity.GetTarget();
             _patrolTransfroms = entity.GetPatrolPoints();
 
-            // Init runs again whenever the behaviour is re-added to a live entity, which is exactly
-            // what StunBuff does when it removes and restores the patrol behaviour. Without this
-            // Clear the point list grew by one lap per stun.
+            // Init runs again whenever the behaviour is re-added to a live entity, as when
+            // something removes and restores the patrol behaviour. Without this Clear the point list
+            // would grow by one lap each time.
             _patrolPoints.Clear();
 
             // Enemy.prefab ships two unassigned patrol points; dereferencing them threw and

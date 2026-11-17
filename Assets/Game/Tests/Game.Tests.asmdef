@@ -10,7 +10,6 @@
         "Unity.Mathematics",
         "Unity.TextMeshPro",
         "UnityEngine.UI",
-        "HighlightPlus",
         "DOTweenModules",
         "SaveSystem",
         "Loading",

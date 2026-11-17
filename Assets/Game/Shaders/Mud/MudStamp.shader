@@ -9,8 +9,8 @@
 // The rut's edge and its berm wander with noise along the ground, so a rut is never ruler-straight.
 Shader "Hidden/Game/MudStamp"
 {
-    CGINCLUDE
-    #include "UnityCG.cginc"
+    HLSLINCLUDE
+    #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 
     // Distance (m) between grooves across the track.
     #define TREAD_PITCH 0.15
@@ -51,7 +51,7 @@ Shader "Hidden/Game/MudStamp"
     v2f vert(appdata v)
     {
         v2f o;
-        o.pos = UnityObjectToClipPos(float4(v.vertex.xy, 0, 1));
+        o.pos = TransformObjectToHClip(float3(v.vertex.xy, 0));
         o.local = v.local;
         o.data = v.data;
         o.shape = v.shape;
@@ -84,10 +84,10 @@ Shader "Hidden/Game/MudStamp"
 
         float outer = 1.0 + 2.0 * i.shape.y;
         float t = saturate((d - 0.85) / max(outer - 0.85, 1e-4));
-        float rim = i.shape.y > 0 ? sin(t * UNITY_PI) * step(0.85, d) : 0;
+        float rim = i.shape.y > 0 ? sin(t * PI) * step(0.85, d) : 0;
         // Sampled round a circle rather than by angle: no seam where the angle wraps.
-        float2 round = n / max(d, 1e-4);
-        rim *= lerp(1.0, 0.3 + 1.4 * ValueNoise(round * 1.7 + seed * 9.0), rough);
+        float2 onCircle = n / max(d, 1e-4);
+        rim *= lerp(1.0, 0.3 + 1.4 * ValueNoise(onCircle * 1.7 + seed * 9.0), rough);
 
         return float4(float2(bowl, rim * 0.6) * i.data.z, 0, 0);
     }
@@ -105,15 +105,15 @@ Shader "Hidden/Game/MudStamp"
     float2 Profile(v2f i)
     {
         float across = abs(i.local.y);
-        float half = WanderingHalf(i);
-        float outer = max(i.data.y, half * 1.2);
+        float halfWidth = WanderingHalf(i);
+        float outer = max(i.data.y, halfWidth * 1.2);
 
         // Full depth across the track, rounded off over its ragged edge.
-        float rut = 1.0 - smoothstep(half * 0.78, half, across);
+        float rut = 1.0 - smoothstep(halfWidth * 0.78, halfWidth, across);
 
         // Berm: rises past the track's edge and falls off to the strip's edge, heaped unevenly.
-        float t = saturate((across - half * 0.9) / max(outer - half * 0.9, 1e-4));
-        float berm = sin(t * UNITY_PI) * step(half * 0.9, across);
+        float t = saturate((across - halfWidth * 0.9) / max(outer - halfWidth * 0.9, 1e-4));
+        float berm = sin(t * PI) * step(halfWidth * 0.9, across);
         float side = i.local.y >= 0 ? 3.1 : 8.7;
         berm *= lerp(0.45, 1.45, ValueNoise(float2(i.data.w * 2.5, side)));
 
@@ -138,7 +138,7 @@ Shader "Hidden/Game/MudStamp"
         float groove = step(frac(i.data.w / TREAD_PITCH), 0.5);
         return float4(0, 0, 0.5 + 0.5 * groove, 0);
     }
-    ENDCG
+    ENDHLSL
 
     SubShader
     {
@@ -153,10 +153,10 @@ Shader "Hidden/Game/MudStamp"
             Blend One One
             ColorMask RG
 
-            CGPROGRAM
+            HLSLPROGRAM
             #pragma vertex vert
             #pragma fragment fragDig
-            ENDCG
+            ENDHLSL
         }
 
         Pass
@@ -166,10 +166,10 @@ Shader "Hidden/Game/MudStamp"
             Blend One One
             ColorMask RG
 
-            CGPROGRAM
+            HLSLPROGRAM
             #pragma vertex vert
             #pragma fragment fragPress
-            ENDCG
+            ENDHLSL
         }
 
         Pass
@@ -178,10 +178,10 @@ Shader "Hidden/Game/MudStamp"
             Blend One One
             ColorMask RG
 
-            CGPROGRAM
+            HLSLPROGRAM
             #pragma vertex vert
             #pragma fragment fragDent
-            ENDCG
+            ENDHLSL
         }
 
         Pass
@@ -190,10 +190,10 @@ Shader "Hidden/Game/MudStamp"
             Blend Off
             ColorMask B
 
-            CGPROGRAM
+            HLSLPROGRAM
             #pragma vertex vert
             #pragma fragment fragTread
-            ENDCG
+            ENDHLSL
         }
     }
 }

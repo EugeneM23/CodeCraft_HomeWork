@@ -108,8 +108,7 @@ namespace Game
 
         private void Plan()
         {
-            // Guns already in the scene: the tank's cannon and machine gun, the helicopter's gun, a
-            // weapon in hand.
+            // Guns already in the scene: the tank's cannon and machine gun, an enemy's weapon.
             foreach (RangeWeaponInstaller gun in
                      Object.FindObjectsByType<RangeWeaponInstaller>(FindObjectsInactive.Include, FindObjectsSortMode.None))
                 WantShotsOf(gun);

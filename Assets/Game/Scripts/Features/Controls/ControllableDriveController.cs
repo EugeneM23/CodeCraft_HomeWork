@@ -5,21 +5,22 @@ using UnityEngine;
 namespace Game
 {
     /// <summary>
-    /// Drive input for a vehicle the player sits in, from the Tank map of the game's input actions (Drive, Boost).
-    /// Vertical is the throttle along the hull, horizontal turns the hull on the spot.
+    /// Drive input for the player's vehicle, off IPlayerInput: Drive is the stick (y the throttle
+    /// along the hull, x turns the hull on the spot), Boost full power.
     ///
-    /// Idle while Character has no DriveInput (on foot, PlayerMoveController has the keys).
-    /// The stick of the vehicle being left is zeroed on the way out, so an abandoned tank does not
-    /// keep the throttle it was given last.
+    /// Idle while Character has no DriveInput. The stick of the vehicle being left is zeroed on the
+    /// way out, so a tank handed over does not keep the throttle it was given last.
     /// </summary>
     public sealed class ControllableDriveController : IPlayerContextInit, IPlayerContextDispose, IPlayerContextLateTick
     {
         private Subscription<IEntity> _characterSubscription;
         private IReactiveVariable<Vector2> _driveInput;
         private IReactiveVariable<bool> _driveBoost;
+        private IPlayerInput _input;
 
         public void Init(IPlayerContext context)
         {
+            context.TryGetPlayerInput(out _input);
             _characterSubscription = context.GetCharacter().Observe(OnCharacterChanged);
         }
 
@@ -54,15 +55,13 @@ namespace Game
 
         public void LateTick(IPlayerContext context, float deltaTime)
         {
-            if (_driveInput == null)
+            if (_driveInput == null || _input == null)
                 return;
 
-            // The Tank map is off while a menu covers the battle: both read as released and the tank stops.
-            GameControls.TankActions tank = AppServices.Input.Controls.Tank;
-            _driveInput.Value = tank.Drive.ReadValue<Vector2>();
+            _driveInput.Value = _input.Drive;
 
             if (_driveBoost != null)
-                _driveBoost.Value = tank.Boost.IsPressed();
+                _driveBoost.Value = _input.Boost;
         }
     }
 }
