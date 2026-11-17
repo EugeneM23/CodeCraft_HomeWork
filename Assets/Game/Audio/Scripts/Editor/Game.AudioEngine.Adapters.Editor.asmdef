@@ -4,7 +4,9 @@
     "references": [
         "Game.AudioEngine.Adapters",
         "AudioEngine",
-        "AudioEngine.Editor"
+        "AudioEngine.Editor",
+        "Game",
+        "Atomic.Entities"
     ],
     "includePlatforms": [
         "Editor"

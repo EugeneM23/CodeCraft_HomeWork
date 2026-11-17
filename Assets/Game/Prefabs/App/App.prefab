@@ -225,6 +225,7 @@ GameObject:
   - component: {fileID: 4541725104221138598}
   - component: {fileID: 5697305190831272477}
   - component: {fileID: 7535636842190319915}
+  - component: {fileID: 7608747516896743866}
   m_Layer: 0
   m_Name: App
   m_TagString: Untagged
@@ -355,6 +356,7 @@ MonoBehaviour:
   - {fileID: 6591172579230066781}
   - {fileID: 4541725104221138598}
   - {fileID: 7535636842190319915}
+  - {fileID: 7608747516896743866}
   onlySelectedGizmos: 0
   onlyEditModeGizmos: 0
   autoCompile: 0
@@ -374,6 +376,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 64f79312062576e4b8435333df0db8d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Game::Game.GameInputInstaller
+--- !u!114 &7608747516896743866
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6583453422252469877}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2094a35f980c61045990401eb7ea83de, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game.AudioEngine.Adapters::Game.AudioEngine.Adapters.AppAudioInstaller
+  _prefab: {fileID: 7334042573059722618, guid: 9958e4f44d6132b4cbc99b2b20af5cfd, type: 3}
 --- !u!1 &8705544613752321856
 GameObject:
   m_ObjectHideFlags: 0
