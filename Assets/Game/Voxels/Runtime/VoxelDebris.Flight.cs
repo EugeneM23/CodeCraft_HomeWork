@@ -20,7 +20,7 @@ namespace Game.Voxels
             public int Resting;
             public int Shatter;
             public int Flags;
-            /// <summary>How long a kept clump has rested, s.</summary>
+            /// <summary>How long the clump has rested, s: past SETTLE_TIME it lies for good.</summary>
             public float Still;
             /// <summary>How long a kept clump has been simulated, s: past MAX_KEPT_FLIGHT it lies where it is.</summary>
             public float Flight;
@@ -127,7 +127,7 @@ namespace Game.Voxels
                         cluster.Resting = 0;
                         cluster.Still = 0f;
                     }
-                    else if ((cluster.Flags & KEEP) != 0)
+                    else
                         cluster.Still += DeltaTime;
 
                     Clusters[i] = cluster;
@@ -223,9 +223,9 @@ namespace Game.Voxels
         }
 
         /// <summary>
-        /// Drops dead clumps and their cubes, moves the cubes of kept clumps that came to rest into the
-        /// lying store (a ring: past its end the oldest are overwritten), and writes a matrix and a
-        /// colour per flying cube.
+        /// Drops dead clumps and their cubes, moves the cubes of every clump that has lain still
+        /// SETTLE_TIME (dust aside) into the lying store - each such clump a group of its own; a full
+        /// store overwrites its slots in turn - and writes a matrix and a colour per flying cube.
         /// </summary>
         [BurstCompile]
         private struct CompactJob : IJob
@@ -235,24 +235,30 @@ namespace Game.Voxels
             [WriteOnly] public NativeArray<float4x4> Matrices;
             [WriteOnly] public NativeArray<float4> Colors;
             public NativeReference<int> Alive;
-            [WriteOnly] public NativeArray<float4x4> Lying;
+            [WriteOnly] public NativeArray<LyingCube> Lying;
+            [WriteOnly] public NativeArray<float4x4> LyingMatrices;
             [WriteOnly] public NativeArray<float4> LyingColors;
-            public NativeReference<int2> LyingState;
+            public NativeArray<byte> DirtyBatches;
+            public NativeReference<LyingState> State;
+            public float Time;
 
             public void Execute()
             {
                 int count = Clusters.Length;
                 var remap = new NativeArray<int>(count, Allocator.Temp);
                 var settled = new NativeArray<Cluster>(count, Allocator.Temp);
+                var groups = new NativeArray<int>(count, Allocator.Temp);
+                LyingState state = State.Value;
                 int clusters = 0;
                 for (int i = 0; i < count; i++)
                 {
                     Cluster cluster = Clusters[i];
-                    // Dust never lies: it shrinks away in flight (task 3 widens who lies; dust stays out).
-                    if ((cluster.Flags & KEEP) != 0 && (cluster.Flags & DUST) == 0 &&
-                        cluster.Resting != 0 && cluster.Still >= SETTLE_TIME && cluster.Count > 0)
+                    // Dust never lies: it shrinks away in flight.
+                    if (cluster.Resting != 0 && cluster.Still >= SETTLE_TIME && cluster.Count > 0 &&
+                        (cluster.Flags & DUST) == 0)
                     {
                         settled[i] = cluster;
+                        groups[i] = state.NextGroup++;
                         remap[i] = SETTLED;
                         continue;
                     }
@@ -263,7 +269,6 @@ namespace Game.Voxels
                         Clusters[clusters++] = cluster;
                 }
 
-                int2 lying = LyingState.Value;
                 int capacity = Lying.Length;
                 int cubes = 0;
                 for (int i = 0; i < Cubes.Length; i++)
@@ -272,10 +277,7 @@ namespace Game.Voxels
                     int owner = remap[cube.Cluster];
                     if (owner == SETTLED)
                     {
-                        Lying[lying.x] = Matrix(settled[cube.Cluster], cube, 1f);
-                        LyingColors[lying.x] = cube.Color;
-                        lying.x = (lying.x + 1) % capacity;
-                        lying.y = math.min(lying.y + 1, capacity);
+                        Lie(settled[cube.Cluster], cube, groups[cube.Cluster], capacity, ref state);
                         continue;
                     }
 
@@ -291,10 +293,41 @@ namespace Game.Voxels
                     cubes++;
                 }
 
-                LyingState.Value = lying;
+                State.Value = state;
                 Clusters.ResizeUninitialized(clusters);
                 Cubes.ResizeUninitialized(cubes);
                 Alive.Value = cubes;
+            }
+
+            /// <summary>One cube of a settled clump into the store: a free slot, or when full the next to overwrite.</summary>
+            private void Lie(in Cluster settledCluster, in Cube cube, int group, int capacity, ref LyingState state)
+            {
+                int slot;
+                if (state.Count < capacity)
+                    slot = state.Count++;
+                else
+                {
+                    slot = state.Overwrite;
+                    state.Overwrite = (state.Overwrite + 1) % capacity;
+                }
+
+                float3 scale = (settledCluster.Flags & LAID) != 0 ? new float3(SPLAT_WIDTH, SPLAT_HEIGHT, SPLAT_WIDTH) : new float3(1f);
+                var lying = new LyingCube
+                {
+                    Position = settledCluster.Position + math.mul(settledCluster.Rotation, cube.Offset),
+                    Rotation = settledCluster.Rotation,
+                    Scale = scale * cube.Size,
+                    Size = cube.Size,
+                    Color = cube.Color,
+                    Group = group,
+                    Born = Time,
+                    SinkTime = SINK_TIME,
+                    Flags = settledCluster.Flags & LAID
+                };
+                Lying[slot] = lying;
+                LyingMatrices[slot] = float4x4.TRS(lying.Position, lying.Rotation, lying.Scale);
+                LyingColors[slot] = lying.Color;
+                DirtyBatches[slot / BATCH] = 1;
             }
 
             private static float4x4 Matrix(in Cluster cluster, in Cube cube, float shrink)

@@ -270,7 +270,7 @@ namespace Game.Voxels
 
             s_instance = this;
             ChunkMaterial = LoadMaterial(CHUNK_MATERIAL, false);
-            Debris = new VoxelDebris(LoadMaterial(DEBRIS_MATERIAL, true), 24000);
+            Debris = new VoxelDebris(LoadMaterial(DEBRIS_MATERIAL, true), 24000, VoxelDebris.LYING_DEFAULT);
             SetEarlyHook(true);
         }
 

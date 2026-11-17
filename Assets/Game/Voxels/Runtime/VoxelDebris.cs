@@ -19,8 +19,10 @@ namespace Game.Voxels
     /// hard, a last one compacts the dead and writes one matrix per cube; GPU instancing draws
     /// them, 1023 per call.
     ///
-    /// Kept clumps and drops never age: once still (or after MAX_KEPT_FLIGHT, wherever they are),
-    /// their cubes move to a lying store that is only drawn (no raycasts), up to LYING_CAPACITY.
+    /// Every clump that comes to rest (dust aside) lies for good: once it has lain still SETTLE_TIME
+    /// (a kept clump after MAX_KEPT_FLIGHT wherever it is, a drop at once as a tile) its cubes move to
+    /// a dense lying store that is only drawn (no raycasts), straight from native arrays, with no
+    /// shadows. Flying clumps still go at the end of their life. A full store overwrites its slots in turn.
     /// </summary>
     public sealed partial class VoxelDebris : IDisposable
     {
@@ -33,10 +35,7 @@ namespace Game.Voxels
         /// <summary>Impact speed (m/s) at which a clump breaks into single cubes.</summary>
         private const float SHATTER_SPEED = 2.2f;
 
-        /// <summary>Lying cubes kept at most; past this the oldest go, or the frame would grow all game.</summary>
-        public const int LYING_CAPACITY = 60000;
-
-        /// <summary>How long (s) a kept clump lies still before its cubes join the lying ones.</summary>
+        /// <summary>How long (s) a clump lies still before its cubes join the lying ones.</summary>
         private const float SETTLE_TIME = 0.5f;
 
         /// <summary>A landed drop is a tile: this much wider and this much flatter than its cube.</summary>
@@ -78,10 +77,17 @@ namespace Game.Voxels
         private NativeArray<float4x4> _matrices;
         private NativeArray<float4> _colors;
         private NativeReference<int> _alive;
+        private NativeArray<LyingCube> _lyingCubes;
+        /// <summary>Drawn as is (RenderMeshInstanced takes the native array).</summary>
         private NativeArray<float4x4> _lyingMatrices;
         private NativeArray<float4> _lyingColors;
-        /// <summary>x - the slot the next lying cube goes to; y - how many slots are filled.</summary>
-        private NativeReference<int2> _lying;
+        /// <summary>Per batch of BATCH lying slots: 1 when its colours changed and its block must be set again.</summary>
+        private NativeArray<byte> _dirtyBatches;
+        private NativeReference<LyingState> _lyingState;
+        /// <summary>One block per batch of lying cubes, its colours set only when the batch is dirty.</summary>
+        private readonly MaterialPropertyBlock[] _lyingBlocks;
+        /// <summary>Debris time (s): the sum of the steps; when a cube lay down.</summary>
+        private float _time;
         private uint _seed = 1;
 
         /// <summary>The frame's step, still running on workers (see <see cref="Complete"/>).</summary>
@@ -137,23 +143,23 @@ namespace Game.Voxels
             return n;
         }
 
-        /// <summary>Cubes lying for good (kept clumps that came to rest, landed drops).</summary>
+        /// <summary>Cubes lying for good (every clump that came to rest, landed drops; not dust).</summary>
         public int LyingCount
         {
             get
             {
                 Complete();
-                return _lying.IsCreated ? _lying.Value.y : 0;
+                return _lyingState.IsCreated ? _lyingState.Value.Count : 0;
             }
         }
 
-        /// <summary>One lying cube, by its slot (0 ... LyingCount - 1): for tests and debugging.</summary>
+        /// <summary>One lying cube, by its slot (0 ... LyingCount - 1), as drawn (a sinking one shrunk): for tests and debugging.</summary>
         public bool TryGetLying(int slot, out Matrix4x4 matrix, out Color color)
         {
             Complete();
             matrix = default;
             color = default;
-            if (!_lying.IsCreated || slot < 0 || slot >= _lying.Value.y)
+            if (!_lyingState.IsCreated || slot < 0 || slot >= _lyingState.Value.Count)
                 return false;
 
             matrix = _lyingMatrices[slot];
@@ -211,7 +217,7 @@ namespace Game.Voxels
             _step.Complete();
         }
 
-        public VoxelDebris(Material material, int capacity, int lyingCapacity = LYING_CAPACITY)
+        public VoxelDebris(Material material, int capacity, int lyingCapacity = LYING_DEFAULT)
         {
             _capacity = capacity;
             _material = material;
@@ -226,9 +232,20 @@ namespace Game.Voxels
             _alive = new NativeReference<int>(Allocator.Persistent);
 
             int lying = math.max(1, lyingCapacity);
+            int batches = (lying + BATCH - 1) / BATCH;
+            _lyingCubes = new NativeArray<LyingCube>(lying, Allocator.Persistent);
             _lyingMatrices = new NativeArray<float4x4>(lying, Allocator.Persistent);
             _lyingColors = new NativeArray<float4>(lying, Allocator.Persistent);
-            _lying = new NativeReference<int2>(Allocator.Persistent);
+            _dirtyBatches = new NativeArray<byte>(batches, Allocator.Persistent);
+            _lyingState = new NativeReference<LyingState>(Allocator.Persistent);
+
+            // The first SetVectorArray fixes the array's length for good: set it full length once.
+            _lyingBlocks = new MaterialPropertyBlock[batches];
+            for (int i = 0; i < batches; i++)
+            {
+                _lyingBlocks[i] = new MaterialPropertyBlock();
+                _lyingBlocks[i].SetVectorArray(InstanceColorId, _batchColors);
+            }
         }
 
         public bool HasRoom(int cubes)
@@ -307,17 +324,27 @@ namespace Game.Voxels
                 return;
 
             Draw(_matrices, _colors, _alive.Value, ShadowCastingMode.On);
-            // Lying cubes cast no shadow: tens of thousands of tiles and crumbs, flat on the ground.
-            Draw(_lyingMatrices, _lyingColors, _lying.Value.y, ShadowCastingMode.Off);
+            DrawLying();
 
-            int clusters = _clusters.Length;
-            if (clusters == 0 || deltaTime <= 0f)
+            if (deltaTime <= 0f)
             {
                 _alive.Value = 0;
                 return;
             }
 
             float dt = math.min(deltaTime, 1f / 20f);
+            _time += dt;
+
+            int clusters = _clusters.Length;
+            if (clusters == 0)
+            {
+                // Nothing flies, but lying cubes may still be sinking.
+                _alive.Value = 0;
+                _step = ScheduleLying(dt, default);
+                _stepping = true;
+                JobHandle.ScheduleBatchedJobs();
+                return;
+            }
 
             JobHandle handle = new BuildRaysJob
             {
@@ -355,14 +382,52 @@ namespace Game.Voxels
                 Matrices = _matrices,
                 Colors = _colors,
                 Alive = _alive,
-                Lying = _lyingMatrices,
+                Lying = _lyingCubes,
+                LyingMatrices = _lyingMatrices,
                 LyingColors = _lyingColors,
-                LyingState = _lying
+                DirtyBatches = _dirtyBatches,
+                State = _lyingState,
+                Time = _time
             }.Schedule(handle);
 
-            _step = handle;
+            _step = ScheduleLying(dt, handle);
             _stepping = true;
             JobHandle.ScheduleBatchedJobs();
+        }
+
+        private JobHandle ScheduleLying(float dt, JobHandle dependsOn) =>
+            new LyingJob
+            {
+                Lying = _lyingCubes,
+                Matrices = _lyingMatrices,
+                Colors = _lyingColors,
+                DirtyBatches = _dirtyBatches,
+                State = _lyingState,
+                DeltaTime = dt
+            }.Schedule(dependsOn);
+
+        /// <summary>
+        /// Lying cubes, drawn straight from the native matrices, a batch at a time; a batch's colours
+        /// are copied into its own block only when they changed. No shadows: tens of thousands of
+        /// tiles and crumbs flat on the ground.
+        /// </summary>
+        private void DrawLying()
+        {
+            int count = _lyingState.Value.Count;
+            NativeArray<Matrix4x4> matrices = _lyingMatrices.Reinterpret<Matrix4x4>();
+            var rp = new RenderParams(_material) { shadowCastingMode = ShadowCastingMode.Off, receiveShadows = true };
+            for (int start = 0, batch = 0; start < count; start += BATCH, batch++)
+            {
+                int n = Mathf.Min(BATCH, count - start);
+                if (_dirtyBatches[batch] != 0)
+                {
+                    NativeArray<Vector4>.Copy(_lyingColors.Reinterpret<Vector4>(), start, _batchColors, 0, n);
+                    _lyingBlocks[batch].SetVectorArray(InstanceColorId, _batchColors);
+                    _dirtyBatches[batch] = 0;
+                }
+                rp.matProps = _lyingBlocks[batch];
+                Graphics.RenderMeshInstanced(rp, _mesh, 0, matrices, n, start);
+            }
         }
 
         private void Draw(NativeArray<float4x4> source, NativeArray<float4> sourceColors, int count, ShadowCastingMode shadows)
@@ -390,9 +455,11 @@ namespace Game.Voxels
             if (_matrices.IsCreated) _matrices.Dispose();
             if (_colors.IsCreated) _colors.Dispose();
             if (_alive.IsCreated) _alive.Dispose();
+            if (_lyingCubes.IsCreated) _lyingCubes.Dispose();
             if (_lyingMatrices.IsCreated) _lyingMatrices.Dispose();
             if (_lyingColors.IsCreated) _lyingColors.Dispose();
-            if (_lying.IsCreated) _lying.Dispose();
+            if (_dirtyBatches.IsCreated) _dirtyBatches.Dispose();
+            if (_lyingState.IsCreated) _lyingState.Dispose();
             if (_mesh != null) UnityEngine.Object.Destroy(_mesh);
         }
 

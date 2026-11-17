@@ -88,11 +88,14 @@ namespace Game.Voxels.Tests
             foreach (int n in first) biggest = Mathf.Max(biggest, n);
 
             Run(3f);
+            // Pieces that have lain still have moved to the lying store by now: count them there too.
             var later = new List<int>();
             _debris.GetClusterSizes(later);
+            var lying = new List<int>();
+            _debris.GetLyingGroupSizes(lying);
+            later.AddRange(lying);
             int biggestLater = 0;
             foreach (int n in later) biggestLater = Mathf.Max(biggestLater, n);
-            // Pieces that have lain still have moved to the lying store by now (task 3); until then they stay here.
             Assert.That(biggestLater, Is.LessThan(biggest), "the second landing broke the biggest piece again");
         }
 
@@ -101,21 +104,24 @@ namespace Game.Voxels.Tests
         {
             Clump(new Vector3(0f, 1.2f, 0f), new Vector3(0f, -15f, 0f), 7, Color.gray);
             Run(4f);
-            // Nothing lies yet (task 3): every cube is still in a flying cluster.
+            // Most of it lies by now, a piece a group: count the flying clusters and the lying groups.
+            var flying = new List<int>();
+            _debris.GetClusterSizes(flying);
             var sizes = new List<int>();
-            _debris.GetClusterSizes(sizes);
-            int crumbs = 0, pieces = 0, biggest = 0, cubes = 0;
+            _debris.GetLyingGroupSizes(sizes);
+            sizes.AddRange(flying);
+            int crumbs = 0, pieces = 0, biggest = 0;
             foreach (int n in sizes)
             {
                 if (n == 1) crumbs++;
                 else pieces++;
                 biggest = Mathf.Max(biggest, n);
-                cubes += n;
             }
-            int dust = cubes + _debris.LyingCount - 343;
+            // Dust lives under 1.5 s and never lies: after 4 s none is left, so every cube is the clump's own.
+            Assert.AreEqual(343, Sum(flying) + _debris.LyingCount, "no cube lost, and the dust has gone");
             Assert.That(pieces, Is.InRange(8, 24), "pieces stay pieces: the cascade stops");
             Assert.That(biggest, Is.LessThanOrEqualTo(60), "the biggest piece");
-            Assert.That(crumbs - dust, Is.InRange(343 * 15 / 100, 343 * 40 / 100), "crumbs: about a quarter of the clump");
+            Assert.That(crumbs, Is.InRange(343 * 15 / 100, 343 * 40 / 100), "crumbs: about a quarter of the clump");
         }
 
         [Test]

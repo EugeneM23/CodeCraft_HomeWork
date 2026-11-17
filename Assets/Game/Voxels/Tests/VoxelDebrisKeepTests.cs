@@ -92,12 +92,20 @@ namespace Game.Voxels.Tests
         }
 
         [Test]
-        public void UnkeptClump_StillGoes()
+        public void UnkeptClump_ThatNeverComesToRest_GoesAtTheEndOfItsLife()
         {
-            int clump = _debris.BeginCluster(new Vector3(0f, 0.5f, 0f), Vector3.zero, 0f);
-            _debris.AddCube(clump, new Vector3(0f, 0.5f, 0f), 0.05f, Color.red);
+            // Every clump that comes to rest lies for good (VoxelDebrisLyingTests); one still flying
+            // when its life runs out goes. Nothing to land on, high up: it is still falling at 3 s.
+            _debris.CollisionMask = 0;
+            const float height = 1000f;
+            int clump = _debris.BeginCluster(new Vector3(0f, height, 0f), Vector3.zero, 0f);
+            _debris.AddCube(clump, new Vector3(0f, height, 0f), 0.05f, Color.red);
+            _debris.SetLife(clump, 3f);
 
-            Run(45f);
+            Run(2f);
+            Assert.AreEqual(1, _debris.Count, "still flying");
+
+            Run(2f);
 
             Assert.AreEqual(0, _debris.Count);
             Assert.AreEqual(0, _debris.LyingCount);
