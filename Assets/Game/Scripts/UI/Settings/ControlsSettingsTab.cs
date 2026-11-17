@@ -11,7 +11,7 @@ namespace Game
     /// The Controls tab: mouse sensitivity and the key table. Keys are edited right on the game's one
     /// GameControls (the settings screen restores the old overrides on revert); sensitivity goes into the bound
     /// ControlsSettingsData. A key taken by another row of the same map is swapped, and both rows flash.
-    /// Not rebindable: Look, Pause, ResetCamera, ToggleDebug and the UI map.
+    /// Not rebindable: Look, Pause, ResetCamera, ToggleDebug, the UI map and Sandbox Smoke/Rain (nothing reads them).
     /// </summary>
     public sealed class ControlsSettingsTab : MonoBehaviour
     {
@@ -99,8 +99,6 @@ namespace Game
             AddPlain(controls.Tank.FireSecondary, UiStrings.Get("settings.action_fire_secondary"));
             AddPlain(controls.Tank.ToggleHints, UiStrings.Get("settings.action_hints"));
             AddPlain(controls.Sandbox.AirStrike, Sandbox("settings.action_air_strike"));
-            AddPlain(controls.Sandbox.Smoke, Sandbox("settings.action_smoke"));
-            AddPlain(controls.Sandbox.Rain, Sandbox("settings.action_rain"));
             _rowTemplate.gameObject.SetActive(false);
         }
 

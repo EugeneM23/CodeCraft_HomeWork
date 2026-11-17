@@ -42,5 +42,14 @@ namespace Game
 
         /// <summary>Whether the current language's table has this key.</summary>
         public static bool Has(string key) => key != null && UiStringTable.For(s_language).ContainsKey(key);
+
+        // Play without a domain reload keeps statics: start every Play in Russian, warnings and listeners fresh.
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetStatics()
+        {
+            s_language = UiLanguage.Russian;
+            Reported.Clear();
+            LanguageChanged = null;
+        }
     }
 }

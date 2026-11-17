@@ -85,7 +85,9 @@ namespace Game.EditorTools
         [MenuItem("Tools/UI/Build Main Menu Scene")]
         public static void BuildScene()
         {
-            if (!Application.isBatchMode && !EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
+            // No question in batch mode or when the only open scene is the menu scene itself: it is rebuilt anyway.
+            bool onlyMenuOpen = SceneManager.sceneCount == 1 && SceneManager.GetActiveScene().path == SCENE_PATH;
+            if (!Application.isBatchMode && !onlyMenuOpen && !EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
                 return;
 
             GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>($"{UiFactory.PREFAB_FOLDER}/{PREFAB_NAME}.prefab");
@@ -432,7 +434,7 @@ namespace Game.EditorTools
 
         private static void CreateEventSystem(Transform parent)
         {
-            GameObject go = new("EventSystem", typeof(EventSystem), typeof(InputSystemUIInputModule), typeof(UiEventSystem));
+            GameObject go = new("EventSystem", typeof(EventSystem), typeof(InputSystemUIInputModule), typeof(UiInputModuleBinding));
             go.transform.SetParent(parent, false);
         }
 

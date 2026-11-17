@@ -108,11 +108,19 @@ namespace Game
             Begin(LoadLevel(level));
         }
 
+        // The player's pause stays on while the scenes load: the battle under the pause or results screen must
+        // not run until the new scenes are in (Finish or Fail lifts it).
         private void Begin(IEnumerator routine)
         {
             _loading = true;
-            AppServices.Pause.Resume();
             SceneGameFlowRunner.Run(routine);
+        }
+
+        private void Finish(GameState state)
+        {
+            _loading = false;
+            AppServices.Pause.Resume();
+            Enter(state);
         }
 
         // The level layer goes in only after every scene of the level has loaded.
@@ -164,8 +172,7 @@ namespace Game
                 }
             }
 
-            _loading = false;
-            Enter(GameState.Level);
+            Finish(GameState.Level);
         }
 
         private IEnumerator LoadScene(string path, GameState state)
@@ -178,8 +185,7 @@ namespace Game
             }
 
             yield return operation;
-            _loading = false;
-            Enter(state);
+            Finish(state);
         }
 
         private static AsyncOperation LoadAsync(string path, LoadSceneMode mode)
@@ -196,6 +202,7 @@ namespace Game
         private void Fail(string what)
         {
             _loading = false;
+            AppServices.Pause.Resume();
             Debug.LogError($"SceneGameFlow: cannot load '{what}'.");
         }
 

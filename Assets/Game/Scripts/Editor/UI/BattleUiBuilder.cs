@@ -55,7 +55,6 @@ namespace Game.EditorTools
             UiFactory.SetField(flow, "_confirmDialog", dialog);
             UiFactory.SetField(flow, "_settings", settings);
             UiFactory.SetField(flow, "_levelCatalog", catalog);
-            UiFactory.SetField(flow, "_levelDesign", design);
             UiFactory.SetField(flow, "_battleStats", stats);
 
             GameObject prefab = UiFactory.SavePrefab(canvas.gameObject, PREFAB_NAME);
@@ -352,7 +351,7 @@ namespace Game.EditorTools
 
         private static void CreateEventSystem(Transform parent)
         {
-            GameObject go = new("EventSystem", typeof(EventSystem), typeof(InputSystemUIInputModule), typeof(UiEventSystem));
+            GameObject go = new("EventSystem", typeof(EventSystem), typeof(InputSystemUIInputModule), typeof(UiInputModuleBinding));
             go.transform.SetParent(parent, false);
         }
     }

@@ -2,7 +2,7 @@ namespace Game
 {
     /// <summary>
     /// The one GameControls of the game, with the player's key overrides loaded. Screens switch the
-    /// Tank map off while a menu is open. Later lives in AppContext (core team).
+    /// gameplay maps (Tank, Sandbox) off while a menu is open. Later lives in AppContext (core team).
     /// </summary>
     public interface IGameInput
     {
@@ -17,7 +17,10 @@ namespace Game
         /// <summary>The current key overrides as JSON, for GameSettings.</summary>
         string SaveOverrides();
 
-        /// <summary>Tank driving and firing on or off (off while a menu covers the battle).</summary>
-        void SetTankEnabled(bool enabled);
+        /// <summary>
+        /// The gameplay maps on or off together: Tank (driving, firing) and Sandbox (air strike). Off while a
+        /// menu covers the battle.
+        /// </summary>
+        void SetGameplayEnabled(bool enabled);
     }
 }

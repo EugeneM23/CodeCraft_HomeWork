@@ -156,8 +156,6 @@ namespace Game
             ["settings.action_fire_secondary"] = "Пулемёт",
             ["settings.action_hints"] = "Подсказки",
             ["settings.action_air_strike"] = "Авиаудар",
-            ["settings.action_smoke"] = "Дым",
-            ["settings.action_rain"] = "Дождь",
 
             // ---------- Battle HUD ----------
             ["hud.health"] = "ПРОЧНОСТЬ",

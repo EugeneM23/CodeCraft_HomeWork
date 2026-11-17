@@ -16,7 +16,20 @@ namespace Game.EditorTools
             MenuUiBuilder.BuildScene();
             BattleUiBuilder.Build();
             UiDataBuilder.AddBattleUiToLevelLayer();
+
+            // The fonts are dynamic: glyphs are added when text is drawn. Saved empty, they don't put
+            // megabytes of atlas into every commit.
+            UiFactory.Regular.ClearFontAssetData(true);
+            UiFactory.Bold.ClearFontAssetData(true);
+            EditorUtility.SetDirty(UiFactory.Regular);
+            EditorUtility.SetDirty(UiFactory.Bold);
             AssetDatabase.SaveAssets();
+
+            // The builders make and drop temporary objects in the open scene; when that is the menu scene we
+            // just built, leave it saved: a dirty scene makes the test runner stop on a save dialog.
+            UnityEngine.SceneManagement.Scene active = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
+            if (active.path == MenuUiBuilder.SCENE_PATH && active.isDirty)
+                UnityEditor.SceneManagement.EditorSceneManager.SaveScene(active);
         }
     }
 }

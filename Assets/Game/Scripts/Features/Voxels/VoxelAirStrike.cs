@@ -19,6 +19,8 @@ namespace Game
     /// </summary>
     public sealed class VoxelAirStrike : MonoBehaviour
     {
+        private const float HUD_REFRESH = 0.25f;
+
         [Tooltip("What the bombs fall round: the tank.")]
         [SerializeField] private Transform _target;
 
@@ -79,6 +81,9 @@ namespace Game
         private Light _flash;
         private float _flashTime = 1f;
         private System.Func<string> _hudLine;
+        private string _hudText;
+        private bool _hudOn;
+        private float _hudRefreshTime;
 
         /// <summary>Whether new bombs fall; the Sandbox/AirStrike input action flips it.</summary>
         public bool On => _on;
@@ -111,10 +116,19 @@ namespace Game
             VoxelHudLines.Add(_hudLine);
         }
 
+        // The HUD asks every frame: the line is rebuilt only when the bombs are switched or, for a rebound key,
+        // at most every HUD_REFRESH seconds (unscaled: keys are rebound under the pause); otherwise no allocation.
         private string HudLine()
         {
+            float now = Time.unscaledTime;
+            if (_hudText != null && _hudOn == _on && now < _hudRefreshTime)
+                return _hudText;
+
+            _hudOn = _on;
+            _hudRefreshTime = now + HUD_REFRESH;
             string key = AppServices.Input.Controls.Sandbox.AirStrike.GetBindingDisplayString();
-            return $"{key} — air strikes on / off (now {(_on ? "on" : "off")})";
+            _hudText = $"{key} — air strikes on / off (now {(_on ? "on" : "off")})";
+            return _hudText;
         }
 
         private void OnDisable() => VoxelHudLines.Remove(_hudLine);

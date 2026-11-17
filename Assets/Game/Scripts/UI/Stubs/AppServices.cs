@@ -38,7 +38,7 @@ namespace Game
 
         /// <summary>
         /// Applies the saved volumes and keys once and keeps applying them whenever the store saves new
-        /// settings (graphics the store applies itself). Called by UiEventSystem before the first frame.
+        /// settings (graphics the store applies itself). Called by UiInputModuleBinding before the first frame.
         /// </summary>
         public static void EnsureSettingsApplied()
         {

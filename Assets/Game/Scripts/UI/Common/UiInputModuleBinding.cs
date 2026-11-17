@@ -9,7 +9,7 @@ namespace Game
     /// menus and the key overrides use the same actions. Sits on the EventSystem object.
     /// </summary>
     [RequireComponent(typeof(InputSystemUIInputModule))]
-    public sealed class UiEventSystem : MonoBehaviour
+    public sealed class UiInputModuleBinding : MonoBehaviour
     {
         private void Awake()
         {

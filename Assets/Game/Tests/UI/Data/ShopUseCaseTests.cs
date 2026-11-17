@@ -57,6 +57,19 @@ namespace Game.Tests
         }
 
         [Test]
+        public void EnsureStarted_NoStartModules_GrantsNothing()
+        {
+            IPlayerProgress data = new JsonPlayerProgress(null);
+            _catalog.startModules.Clear();
+            _catalog.startModules.Add(null);
+
+            Assert.IsFalse(ShopUseCase.EnsureStarted(data, _catalog));
+            Assert.IsFalse(ShopUseCase.EnsureStarted(data, _catalog));
+
+            Assert.AreEqual(0, data.Credits);
+        }
+
+        [Test]
         public void TryBuy_EnoughCredits_TakesThePriceAndOwnsTheModuleWithoutInstallingIt()
         {
             IPlayerProgress data = Started();

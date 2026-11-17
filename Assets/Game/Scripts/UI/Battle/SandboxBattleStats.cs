@@ -177,6 +177,7 @@ namespace Game
 
             _finished = true;
             _endTime = Time.time;
+            // The one reward of the battle: the results screen shows it and BattleFlow pays exactly it.
             int levelReward = _level != null && _levelDesign != null ? _levelDesign.Reward(_level) : LevelDesignConfig.DEFAULT_REWARD;
             int reward = BattleOutcomeUseCase.Reward(outcome, levelReward);
             Finished?.Invoke(new BattleResult(outcome == BattleOutcome.Victory, Kills, ElapsedTime, reward));

@@ -170,6 +170,7 @@ namespace Game
             AudioSettingsUseCase.ApplyAll(AppServices.SettingsStore.Current.audio, AppServices.Audio);
             AppServices.Input.LoadOverrides(_savedOverrides);
             _edited = AppServices.SettingsStore.Current.Clone();
+            BindTabs(); // the tabs must edit the new copy, not the dropped one
             SetDirty(false);
         }
 

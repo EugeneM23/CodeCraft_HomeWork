@@ -5,7 +5,8 @@ namespace Game
     {
         /// <summary>
         /// Gives a new player the start credits and modules and opens the levels that need nothing, once:
-        /// a player who owns none of the start modules is new.
+        /// a player who owns none of the start modules is new. A catalog without start modules grants nothing
+        /// (false), or every call would pay the start credits again.
         /// </summary>
         public static bool EnsureStarted(IPlayerProgress progress, ShopCatalogConfig catalog, LevelCatalog levels = null)
         {
@@ -19,9 +20,19 @@ namespace Game
                 }
             }
 
+            // No start modules: nothing tells a new player from an old one, so nothing is granted.
+            bool hasStartModule = false;
             foreach (TankModuleConfig module in catalog.startModules)
-                if (module != null && progress.OwnsModule(module.id))
+            {
+                if (module == null)
+                    continue;
+                if (progress.OwnsModule(module.id))
                     return false;
+                hasStartModule = true;
+            }
+
+            if (!hasStartModule)
+                return false;
 
             progress.AddCredits(catalog.startCredits);
             foreach (TankModuleConfig module in catalog.startModules)

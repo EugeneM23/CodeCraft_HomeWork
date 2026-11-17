@@ -7,14 +7,16 @@ namespace Game
     /// <summary>
     /// The battle UI's orchestrator, on the BattleUi root. One screen stack: the HUD at the root, the pause
     /// over it (settings and Yes/No questions above that), the results in place of the HUD at the end.
-    /// While anything covers the HUD the game is paused, the Tank map is off and the cursor is free; back on
-    /// the bare HUD the game runs, the tank drives and the cursor is locked.
-    /// Esc is both Tank.Pause and UI.Cancel: Pause opens the pause only from the HUD, Cancel goes back only
-    /// when the HUD is not on top and not in the frame the pause opened, so one press does one thing.
+    /// While anything covers the HUD the game is paused, the gameplay maps (Tank, Sandbox) are off and the
+    /// cursor is free; back on the bare HUD the game runs, the tank drives and the cursor is locked.
+    /// Esc is both Tank.Pause and UI.Cancel: Pause opens the pause only from the HUD and not in the frame the
+    /// pause closed, Cancel goes back only when the HUD is not on top and not in the frame the pause opened,
+    /// so one press does one thing. While the game flow loads a scene, keys and buttons do nothing.
     /// </summary>
     public sealed class BattleFlow : MonoBehaviour
     {
         private const string HANGAR_SCREEN = "Hangar";
+        private const string OLD_SANDBOX_HUD = "VoxelDemoHud";
 
         [SerializeField] private HudScreen _hud;
         [SerializeField] private PauseScreen _pause;
@@ -22,8 +24,6 @@ namespace Game
         [SerializeField] private ConfirmDialog _confirmDialog;
         [SerializeField] private SettingsScreen _settings;
         [SerializeField] private LevelCatalog _levelCatalog;
-        [Tooltip("Reward of a won level by its id")]
-        [SerializeField] private LevelDesignConfig _levelDesign;
         [Tooltip("Implements IBattleStats and IBattleResultSource (SandboxBattleStats in VoxelSandbox)")]
         [SerializeField] private MonoBehaviour _battleStats;
 
@@ -32,6 +32,7 @@ namespace Game
         private IBattleResultSource _resultSource;
         private LevelConfig _nextLevel;
         private int _pauseOpenedFrame = -1;
+        private int _pauseClosedFrame = -1;
         private bool _gameStopped;
         private bool _finished;
 
@@ -94,8 +95,18 @@ namespace Game
 
         private void Start()
         {
+            DisableOldSandboxHud();
             _flow.Push(_hud);
             ResumeGame();
+        }
+
+        // TEMPORARY until the render team's VoxelSandbox scene (without VoxelDemoHud) is merged; then this goes
+        // together with VoxelDemoHud.cs. Found by type name: the Game assembly does not reference the voxel demo.
+        private static void DisableOldSandboxHud()
+        {
+            foreach (MonoBehaviour behaviour in FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None))
+                if (behaviour.GetType().Name == OLD_SANDBOX_HUD)
+                    behaviour.enabled = false;
         }
 
         // Leaving the level: the game-wide input and the player's pause must not stay switched off.
@@ -103,7 +114,7 @@ namespace Game
         {
             if (_gameStopped)
                 AppServices.Pause.Resume();
-            _input.SetTankEnabled(true);
+            _input.SetGameplayEnabled(true);
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
             _flow.Dispose();
@@ -111,9 +122,13 @@ namespace Game
 
         // ---------- Input ----------
 
+        // A scene is loading: the battle is on its way out, nothing may push, pop or start another load.
+        private static bool Busy => AppServices.GameFlow.IsBusy;
+
         private void HandlePauseKey(InputAction.CallbackContext _)
         {
-            if (_finished || !ReferenceEquals(_flow.Stack.Top, _hud))
+            // The Esc that closed the pause (UI.Cancel, gameplay maps back on) must not reopen it.
+            if (Busy || _finished || !ReferenceEquals(_flow.Stack.Top, _hud) || Time.frameCount == _pauseClosedFrame)
                 return;
 
             _pauseOpenedFrame = Time.frameCount;
@@ -123,7 +138,7 @@ namespace Game
 
         private void HandleCancel(InputAction.CallbackContext _)
         {
-            if (ReferenceEquals(_flow.Stack.Top, _hud) || Time.frameCount == _pauseOpenedFrame)
+            if (Busy || ReferenceEquals(_flow.Stack.Top, _hud) || Time.frameCount == _pauseOpenedFrame)
                 return;
 
             _flow.Back();
@@ -133,6 +148,7 @@ namespace Game
         {
             if (!_finished && _flow.Stack.Count == 1 && ReferenceEquals(_flow.Stack.Top, _hud) && _gameStopped)
             {
+                _pauseClosedFrame = Time.frameCount;
                 _hud.RefreshHints(); // the keys may have been rebound in the settings
                 ResumeGame();
             }
@@ -142,7 +158,7 @@ namespace Game
         {
             _gameStopped = true;
             AppServices.Pause.Pause();
-            _input.SetTankEnabled(false);
+            _input.SetGameplayEnabled(false);
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
         }
@@ -152,20 +168,28 @@ namespace Game
             if (_gameStopped)
                 AppServices.Pause.Resume();
             _gameStopped = false;
-            _input.SetTankEnabled(true);
+            _input.SetGameplayEnabled(true);
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
         }
 
         // ---------- Pause ----------
 
-        private void HandleResume() => _flow.Back();
+        private void HandleResume()
+        {
+            if (!Busy)
+                _flow.Back();
+        }
 
-        private void HandleSettings() => _flow.Push(_settings);
+        private void HandleSettings()
+        {
+            if (!Busy)
+                _flow.Push(_settings);
+        }
 
         private void HandleRestart()
         {
-            if (AppServices.GameFlow.IsBusy)
+            if (Busy)
                 return;
 
             _flow.Ask(UiStrings.Get("pause.restart_title"), UiStrings.Get("pause.progress_lost"),
@@ -178,7 +202,7 @@ namespace Game
 
         private void HandleMenu()
         {
-            if (AppServices.GameFlow.IsBusy)
+            if (Busy)
                 return;
 
             _flow.Ask(UiStrings.Get("pause.menu_title"), UiStrings.Get("pause.progress_lost"),
@@ -191,7 +215,7 @@ namespace Game
 
         private void HandleQuit()
         {
-            if (AppServices.GameFlow.IsBusy)
+            if (Busy)
                 return;
 
             _flow.Ask(UiStrings.Get("pause.quit_title"), UiStrings.Get("pause.progress_lost"),
@@ -206,7 +230,7 @@ namespace Game
 
         private void HandleFinished(BattleResult result)
         {
-            if (_finished)
+            if (_finished || Busy)
                 return;
 
             _finished = true;
@@ -214,8 +238,14 @@ namespace Game
             string levelId = AppServices.GameFlow.CurrentLevelId;
             LevelConfig level = _levelCatalog != null && !string.IsNullOrEmpty(levelId) ? _levelCatalog.Find(levelId) : null;
 
-            if (result.Victory && level != null)
-                ShopUseCase.CompleteLevel(progress, _levelCatalog, level, LevelReward(level));
+            // The reward paid is the one the results screen shows: the battle source's.
+            if (result.Victory)
+            {
+                if (level != null)
+                    ShopUseCase.CompleteLevel(progress, _levelCatalog, level, result.Reward);
+                else if (result.Reward > 0)
+                    progress.AddCredits(result.Reward); // the scene started straight, without a level
+            }
 
             _nextLevel = LevelUnlockUseCase.Next(_levelCatalog, level);
             bool hasNext = _nextLevel != null && LevelUnlockUseCase.IsUnlocked(_nextLevel, progress);
@@ -228,24 +258,21 @@ namespace Game
             _flow.Stack.Replace(_results);
         }
 
-        private int LevelReward(LevelConfig level) =>
-            _levelDesign != null ? _levelDesign.Reward(level) : LevelDesignConfig.DEFAULT_REWARD;
-
         private void HandleAgain()
         {
-            if (!AppServices.GameFlow.IsBusy)
+            if (!Busy)
                 AppServices.GameFlow.RestartLevel();
         }
 
         private void HandleHangar()
         {
-            if (!AppServices.GameFlow.IsBusy)
+            if (!Busy)
                 AppServices.GameFlow.ReturnToMenu(HANGAR_SCREEN);
         }
 
         private void HandleNext()
         {
-            if (_nextLevel != null && !AppServices.GameFlow.IsBusy)
+            if (_nextLevel != null && !Busy)
                 AppServices.GameFlow.StartLevel(_nextLevel.Id);
         }
     }
