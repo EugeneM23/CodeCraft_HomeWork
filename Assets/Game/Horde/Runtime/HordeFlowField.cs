@@ -67,6 +67,12 @@ namespace Game.Horde
         public int GridVersion => _gridVersion;
 
         /// <summary>
+        /// The readable directions, one per grid cell, for jobs (read only). Valid until the next
+        /// <see cref="Complete"/> swaps the buffers: a job reading it must be done before that.
+        /// </summary>
+        internal NativeArray<float2> Directions => _direction;
+
+        /// <summary>
         /// Starts a field toward <paramref name="target"/> (clamped into the grid). While one is still
         /// running this does nothing and returns its handle.
         /// </summary>
