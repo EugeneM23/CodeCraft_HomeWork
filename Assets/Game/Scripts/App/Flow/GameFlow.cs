@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using Loading;
 using Ticking;
 using UnityEngine;
@@ -20,10 +21,14 @@ namespace Game
         // A screen that never covers (switched off, broken) must not hold the game: the scenes change anyway
         private const float MAX_COVER_WAIT_SECONDS = 3f;
 
+        // Compile time per frame behind the loading screen: it keeps about 30 frames a second
+        private const double WARM_UP_FRAME_MS = 16d;
+
         private readonly LevelCatalog _catalog;
         private readonly ILevelLoader _loader;
         private readonly ILoadingScreen _screen;
         private readonly IGameLoop _loop;
+        private readonly IReadOnlyList<Assembly> _warmUp;
         private readonly LoadingRunner _runner = new();
         private readonly Action<LoadingResult> _finish;
         private readonly Func<bool> _isCovered;
@@ -35,12 +40,14 @@ namespace Game
 
         /// <param name="screen">May be null: transitions run uncovered.</param>
         /// <param name="loop">May be null; otherwise every pause is let go after a transition.</param>
-        public GameFlow(LevelCatalog catalog, ILevelLoader loader, ILoadingScreen screen = null, IGameLoop loop = null)
+        public GameFlow(LevelCatalog catalog, ILevelLoader loader, ILoadingScreen screen = null, IGameLoop loop = null,
+            IReadOnlyList<Assembly> warmUp = null)
         {
             _catalog = catalog != null ? catalog : throw new ArgumentNullException(nameof(catalog));
             _loader = loader ?? throw new ArgumentNullException(nameof(loader));
             _screen = screen;
             _loop = loop;
+            _warmUp = warmUp;
             _finish = Finish;
             _isCovered = IsCovered;
         }
@@ -162,13 +169,18 @@ namespace Game
 
         private LoadingOperation LoadMenuTree() => _loader.LoadScene(_catalog.MainMenuScene.Path);
 
+        // The code of the fight is compiled behind the screen, once a session, while the scenes load: the first
+        // crush must not stall on the JIT, and the wait for the level grows as little as it can
         private LoadingOperation LoadLevelTree() => new SequenceOperation(
-            _loader.Load(_targetLevel),
+            new ParallelOperation(_loader.Load(_targetLevel), WarmUp()),
             new ActionOperation(EnterTargetLevel));
 
         private LoadingOperation LoadMissingTree() => new SequenceOperation(
-            _loader.LoadMissing(_targetLevel),
+            new ParallelOperation(_loader.LoadMissing(_targetLevel), WarmUp()),
             new ActionOperation(EnterTargetLevel));
+
+        private LoadingOperation WarmUp() =>
+            _warmUp != null && _warmUp.Count > 0 ? new WarmUpCodeOperation(_warmUp, WARM_UP_FRAME_MS) : new SequenceOperation();
 
         // Synchronous, behind the screen: the HUD and the pause screen are in the level before the player sees it
         private void EnterTargetLevel()
