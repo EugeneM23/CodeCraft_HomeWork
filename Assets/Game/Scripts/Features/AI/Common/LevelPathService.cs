@@ -7,7 +7,7 @@ namespace Game.AI
     /// <summary>
     /// One A* (<see cref="HordePathfinder"/>) shared by every walker of the level that needs its own way: the search
     /// buffers are as big as the grid, so one set serves everyone. Requests wait in a ring; one search runs on a worker
-    /// at a time, scheduled in one frame and taken in at the next <see cref="Pump"/>. A client has at most one request:
+    /// at a time, scheduled only by <see cref="Pump"/> and taken in by the next one (a frame later). A client has at most one request:
     /// asking again only moves its start and goal. No managed allocations after construction.
     /// </summary>
     public sealed class LevelPathService : IDisposable
@@ -73,9 +73,7 @@ namespace Game.AI
 
             _queue[(_head + _count) % CAPACITY] = new PathRequest { Client = client, Start = start, Goal = goal };
             _count++;
-            if (_running == null)
-                ScheduleNext();
-            return true;
+            return true; // scheduled by the next Pump, taken in by the one after (a frame on a worker)
         }
 
         /// <summary>Forgets the client's request (a running search finishes, its result goes nowhere).</summary>

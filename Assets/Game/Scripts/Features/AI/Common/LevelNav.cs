@@ -10,14 +10,27 @@ namespace Game.AI
     /// flow field and the elites' A*. Built on first use (a horde or an elite may ask before the level entity starts);
     /// listens to <see cref="VoxelWorld.ChunkCollidersChanged"/> and rereads the dug cells: rays scheduled in the level's
     /// tick (<see cref="ScheduleUpdate"/>), taken in at the start of the next frame (<see cref="LevelAIEarlyUpdate"/>,
-    /// after the horde's step, which reads the heights on a worker).
+    /// after the horde's step, which reads the heights on a worker). Every changed rect is read once more
+    /// <see cref="REREAD_DELAY"/> later: a wall piece that broke off is still standing in the frame it broke, and the
+    /// first read would keep it as a wall after it fell.
     /// </summary>
     public sealed class LevelNav : IDisposable
     {
+        /// <summary>Seconds after a change at which its cells are read again (the broken-off pieces have fallen).</summary>
+        public const float REREAD_DELAY = 0.5f;
+
+        /// <summary>Second reads waiting at most; past this the newest one grows to cover the next change.</summary>
+        private const int REREAD_CAPACITY = 32;
+
         private readonly LevelNavOptions _options;
         private readonly bool _ownsGrid;
+        private readonly Bounds[] _rereadBounds = new Bounds[REREAD_CAPACITY];
+        private readonly float[] _rereadAt = new float[REREAD_CAPACITY];
         private HordeNavGrid _grid;
         private LevelPathService _paths;
+        private int _rereadHead;
+        private int _rereadCount;
+        private float _clock;
         private bool _hooked;
         private bool _disposed;
 
@@ -38,6 +51,9 @@ namespace Game.AI
         public LevelNavOptions Options => _options;
 
         public bool IsBuilt => _grid != null;
+
+        /// <summary>Second reads waiting (tests, the debugger).</summary>
+        public int PendingRereads => _rereadCount;
 
         /// <summary>The grid (read from the colliders the first time it is asked).</summary>
         public HordeNavGrid Grid
@@ -72,10 +88,24 @@ namespace Game.AI
             _hooked = true;
         }
 
-        /// <summary>Schedules rays over the cells dug since the last call (a no-op while rays are in flight).</summary>
-        public void ScheduleUpdate()
+        /// <summary>
+        /// Once a frame: queues the second reads that are due, then schedules rays over the cells dug since the last
+        /// call (a no-op while rays are in flight).
+        /// </summary>
+        public void ScheduleUpdate(float deltaTime)
         {
-            if (_grid != null && _grid.DirtyRectCount > 0)
+            _clock += deltaTime;
+            if (_grid == null)
+                return;
+
+            while (_rereadCount > 0 && _rereadAt[_rereadHead] <= _clock)
+            {
+                _grid.MarkDirty(_rereadBounds[_rereadHead]);
+                _rereadHead = (_rereadHead + 1) % REREAD_CAPACITY;
+                _rereadCount--;
+            }
+
+            if (_grid.DirtyRectCount > 0)
                 _grid.ScheduleUpdate();
         }
 
@@ -84,6 +114,28 @@ namespace Game.AI
 
         /// <summary>Takes in the path search of the last frame and starts the next one.</summary>
         public void PumpPaths() => _paths?.Pump();
+
+        /// <summary>A change of the ground under <paramref name="bounds"/>: read now and once more a little later.</summary>
+        public void MarkChanged(Bounds bounds)
+        {
+            if (_grid == null)
+                return;
+
+            _grid.MarkDirty(bounds);
+            float at = _clock + REREAD_DELAY;
+            if (_rereadCount == REREAD_CAPACITY)
+            {
+                int newest = (_rereadHead + _rereadCount - 1) % REREAD_CAPACITY;
+                _rereadBounds[newest].Encapsulate(bounds);
+                _rereadAt[newest] = at;
+                return;
+            }
+
+            int slot = (_rereadHead + _rereadCount) % REREAD_CAPACITY;
+            _rereadBounds[slot] = bounds;
+            _rereadAt[slot] = at;
+            _rereadCount++;
+        }
 
         public void Dispose()
         {
@@ -99,11 +151,17 @@ namespace Game.AI
 
             _paths?.Dispose();
             _paths = null;
-            if (_ownsGrid)
-                _grid?.Dispose();
+            if (_ownsGrid && _grid != null)
+            {
+                // The hordes' steps scheduled this frame read the heights on a worker: done before they are freed.
+                LevelAIEarlyUpdate.CompleteHordes();
+                _grid.Dispose();
+            }
+
             _grid = null;
+            _rereadCount = 0;
         }
 
-        private void OnChunkCollidersChanged(Bounds bounds) => _grid?.MarkDirty(bounds);
+        private void OnChunkCollidersChanged(Bounds bounds) => MarkChanged(bounds);
     }
 }

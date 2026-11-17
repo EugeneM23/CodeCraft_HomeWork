@@ -178,6 +178,11 @@ namespace Game.AI.Tests
             Assert.That(_navigator.SetDestination(new Vector3(8f, 0f, 0f)), Is.EqualTo(NavVerdict.Reachable));
             Assert.That(_navigator.Status, Is.EqualTo(NavStatus.Planning));
             Assert.IsTrue(_navigator.IsPlanning);
+            Assert.IsFalse(_nav.Paths.IsRunning, "nothing is scheduled outside the pump");
+
+            _nav.PumpPaths();
+            Assert.IsTrue(_nav.Paths.IsRunning, "the first pump schedules the search");
+            Assert.IsTrue(_navigator.IsPlanning, "and its result waits for the next frame");
 
             _nav.PumpPaths();
 

@@ -232,7 +232,7 @@ namespace Game.AI
         private void Forget()
         {
             if (_pending)
-                _nav?.Paths.Cancel(this);
+                _nav?.Paths?.Cancel(this); // the level's grid may be gone already (the level unloads first)
             _pending = false;
             _count = 0;
             _index = 0;

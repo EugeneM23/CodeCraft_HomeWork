@@ -20,7 +20,7 @@ namespace Game.AI
         public void Tick(IEntity entity, float deltaTime)
         {
             _nav.PumpPaths();
-            _nav.ScheduleUpdate();
+            _nav.ScheduleUpdate(deltaTime);
         }
 
         public void Dispose(IEntity entity) => _nav?.Dispose();

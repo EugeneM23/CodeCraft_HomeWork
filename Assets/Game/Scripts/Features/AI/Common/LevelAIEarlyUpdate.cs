@@ -47,10 +47,19 @@ namespace Game.AI
             SetHook(false);
         }
 
-        private static void Run()
+        /// <summary>
+        /// Takes in every horde's running step now. The steps read the level grid's heights on a worker, so whoever
+        /// disposes the grid calls this first (<see cref="LevelNav.Dispose"/>).
+        /// </summary>
+        public static void CompleteHordes()
         {
             for (int i = 0; i < s_hordes.Count; i++)
                 s_hordes[i].CompleteFrame();
+        }
+
+        private static void Run()
+        {
+            CompleteHordes();
 
             // Paused, the loop ticks nobody: the hordes are drawn from here, standing still (as VoxelWorld draws its debris).
             if (GameTicks.Loop is { IsPaused: true })
