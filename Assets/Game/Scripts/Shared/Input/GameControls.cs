@@ -650,6 +650,16 @@ namespace Game
                     ""interactions"": """",
                     ""initialStateCheck"": false,
                     ""priority"": 0
+                },
+                {
+                    ""name"": ""Plough"",
+                    ""type"": ""Button"",
+                    ""id"": ""6a1d0000-0000-4000-8000-000000000304"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
                 }
             ],
             ""bindings"": [
@@ -685,6 +695,17 @@ namespace Game
                     ""action"": ""Rain"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""6a1d0000-0000-4000-8000-000000003004"",
+                    ""path"": ""<Keyboard>/m"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Plough"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -717,6 +738,7 @@ namespace Game
             m_Sandbox_AirStrike = m_Sandbox.FindAction("AirStrike", throwIfNotFound: true);
             m_Sandbox_Smoke = m_Sandbox.FindAction("Smoke", throwIfNotFound: true);
             m_Sandbox_Rain = m_Sandbox.FindAction("Rain", throwIfNotFound: true);
+            m_Sandbox_Plough = m_Sandbox.FindAction("Plough", throwIfNotFound: true);
         }
 
         ~@GameControls()
@@ -1159,6 +1181,7 @@ namespace Game
         private readonly InputAction m_Sandbox_AirStrike;
         private readonly InputAction m_Sandbox_Smoke;
         private readonly InputAction m_Sandbox_Rain;
+        private readonly InputAction m_Sandbox_Plough;
         /// <summary>
         /// Provides access to input actions defined in input action map "Sandbox".
         /// </summary>
@@ -1182,6 +1205,10 @@ namespace Game
             /// Provides access to the underlying input action "Sandbox/Rain".
             /// </summary>
             public InputAction @Rain => m_Wrapper.m_Sandbox_Rain;
+            /// <summary>
+            /// Provides access to the underlying input action "Sandbox/Plough".
+            /// </summary>
+            public InputAction @Plough => m_Wrapper.m_Sandbox_Plough;
             /// <summary>
             /// Provides access to the underlying input action map instance.
             /// </summary>
@@ -1217,6 +1244,9 @@ namespace Game
                 @Rain.started += instance.OnRain;
                 @Rain.performed += instance.OnRain;
                 @Rain.canceled += instance.OnRain;
+                @Plough.started += instance.OnPlough;
+                @Plough.performed += instance.OnPlough;
+                @Plough.canceled += instance.OnPlough;
             }
 
             /// <summary>
@@ -1237,6 +1267,9 @@ namespace Game
                 @Rain.started -= instance.OnRain;
                 @Rain.performed -= instance.OnRain;
                 @Rain.canceled -= instance.OnRain;
+                @Plough.started -= instance.OnPlough;
+                @Plough.performed -= instance.OnPlough;
+                @Plough.canceled -= instance.OnPlough;
             }
 
             /// <summary>
@@ -1433,6 +1466,13 @@ namespace Game
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnRain(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "Plough" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnPlough(InputAction.CallbackContext context);
         }
     }
 }
