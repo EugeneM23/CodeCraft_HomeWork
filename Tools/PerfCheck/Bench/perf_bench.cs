@@ -296,7 +296,8 @@ void BeginScenario()
         float best = float.MaxValue;
         foreach (var go in UnityEngine.SceneManagement.SceneManager.GetActiveScene().GetRootGameObjects())
         {
-            if (!go.name.StartsWith("Regax") || !go.activeInHierarchy) continue;
+            // Only the plain Regax that stand still; the elite ones walk and fight.
+            if (!go.name.StartsWith("Regax") || go.name.StartsWith("Regax_Elite") || !go.activeInHierarchy) continue;
             float d = (go.transform.position - tank.position).sqrMagnitude;
             if (d < best) { best = d; regax = go; }
         }
