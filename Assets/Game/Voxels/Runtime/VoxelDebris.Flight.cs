@@ -29,6 +29,8 @@ namespace Game.Voxels
             /// <summary>Where that landing touched, and the surface normal there.</summary>
             public float3 HitPoint;
             public float3 HitNormal;
+            /// <summary>How many breaks made this clump: 0 for a clump thrown as is, its pieces 1, theirs 2.</summary>
+            public int Generation;
         }
 
         private struct Cube
@@ -158,7 +160,8 @@ namespace Game.Voxels
                     cluster.Position = (float3)hit.point + normal * reach;
 
                     // Small clumps hold together better: three cubes or fewer need a much harder hit.
-                    if (cluster.Count > 1 && -vn > SHATTER_SPEED * (cluster.Count <= 3 ? 1.8f : 1f))
+                    // Pieces of a break break once more at most, and only big ones (see MAX_GENERATION).
+                    if (cluster.Count > 1 && CanBreak(cluster) && -vn > SHATTER_SPEED * (cluster.Count <= 3 ? 1.8f : 1f))
                     {
                         cluster.Shatter = 1;
                         cluster.Impact = -vn;

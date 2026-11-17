@@ -97,6 +97,28 @@ namespace Game.Voxels.Tests
         }
 
         [Test]
+        public void BigClump_AfterSettling_LeavesPiecesAndAQuarterCrumbs()
+        {
+            Clump(new Vector3(0f, 1.2f, 0f), new Vector3(0f, -15f, 0f), 7, Color.gray);
+            Run(4f);
+            // Nothing lies yet (task 3): every cube is still in a flying cluster.
+            var sizes = new List<int>();
+            _debris.GetClusterSizes(sizes);
+            int crumbs = 0, pieces = 0, biggest = 0, cubes = 0;
+            foreach (int n in sizes)
+            {
+                if (n == 1) crumbs++;
+                else pieces++;
+                biggest = Mathf.Max(biggest, n);
+                cubes += n;
+            }
+            int dust = cubes + _debris.LyingCount - 343;
+            Assert.That(pieces, Is.InRange(8, 24), "pieces stay pieces: the cascade stops");
+            Assert.That(biggest, Is.LessThanOrEqualTo(60), "the biggest piece");
+            Assert.That(crumbs - dust, Is.InRange(343 * 15 / 100, 343 * 40 / 100), "crumbs: about a quarter of the clump");
+        }
+
+        [Test]
         public void SmallClump_FallsIntoCrumbs()
         {
             int clump = _debris.BeginCluster(new Vector3(0f, 0.5f, 0f), new Vector3(0f, -8f, 0f), 0f);

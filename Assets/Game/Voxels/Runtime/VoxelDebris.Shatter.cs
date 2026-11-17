@@ -13,9 +13,15 @@ namespace Game.Voxels
         private const int MIN_PIECE = 6;
         /// <summary>
         /// About this share of a breaking clump, on the side that hit, falls off as single crumbs
-        /// (what the crumb depth in <see cref="ShatterJob"/> - 0.4 of the clump's radius - comes to).
+        /// (what CRUMB_DEPTH comes to).
         /// </summary>
         private const float CRUMB_SHARE = 0.18f;
+        /// <summary>
+        /// A cube is a crumb when it lies deeper than this share of the clump's reach (from its centre,
+        /// towards the side that hit), less a jitter of up to a cube: the cap past half the radius is
+        /// about 16 % of a ball, and the jitter brings it to about CRUMB_SHARE.
+        /// </summary>
+        private const float CRUMB_DEPTH = 0.5f;
         /// <summary>Impact speed (m/s) at which a clump breaks into as many pieces as its size allows.</summary>
         private const float FULL_IMPACT = 15f;
         /// <summary>A break harder than this (m/s) knocks out a puff of dust.</summary>
@@ -24,6 +30,22 @@ namespace Game.Voxels
         private const float DUST_GRAVITY = 0.3f / GRAVITY_SCALE;
         /// <summary>Most dust cubes one break knocks out.</summary>
         private const int MAX_DUST = 12;
+
+        /// <summary>
+        /// Breaks after which a piece no longer breaks: a thrown clump (0) breaks into pieces, a big
+        /// piece (1) once more, theirs (2) land whole with the dull bounce. Without it every landing
+        /// after a hop breaks again until all is crumbs; with it pieces stay pieces and the crumbs
+        /// stay about a quarter of the clump.
+        /// </summary>
+        private const int MAX_GENERATION = 2;
+        /// <summary>Smallest piece of a break (generation 1) that breaks again.</summary>
+        private const int MIN_REBREAK = MIN_PIECE * 2;
+        /// <summary>Most pieces a piece breaks into on its second landing.</summary>
+        private const int MAX_REBREAK_PARTS = 3;
+
+        /// <summary>Whether a clump may break on a hard landing at all (by its generation and size).</summary>
+        private static bool CanBreak(in Cluster cluster) =>
+            cluster.Generation == 0 || (cluster.Generation < MAX_GENERATION && cluster.Count >= MIN_REBREAK);
 
         /// <summary>
         /// How many pieces a clump of <paramref name="cubes"/> breaks into when it hits at
@@ -113,8 +135,11 @@ namespace Game.Voxels
                 for (int i = 0; i < original; i++)
                 {
                     Cluster parent = Clusters[i];
-                    if (parent.Shatter != 0)
-                        parts[i] = parent.Count < MIN_PIECE ? 0 : PartsFor(parent.Count, parent.Impact);
+                    if (parent.Shatter == 0)
+                        continue;
+                    // A thrown clump under MIN_PIECE falls into crumbs; a piece breaking again makes 2-3.
+                    parts[i] = parent.Generation > 0 ? math.min(PartsFor(parent.Count, parent.Impact), MAX_REBREAK_PARTS)
+                        : parent.Count < MIN_PIECE ? 0 : PartsFor(parent.Count, parent.Impact);
                 }
 
                 for (int c = 0; c < cubeCount; c++)
@@ -127,7 +152,7 @@ namespace Game.Voxels
                     Cluster parent = Clusters[p];
                     float3 world = parent.Position + math.mul(parent.Rotation, cube.Offset);
                     bool isCrumb = parts[p] == 0 ||
-                                   math.dot(world - centers[p], -parent.HitNormal) > extents[p] * 0.4f - random.NextFloat(0f, cube.Size);
+                                   math.dot(world - centers[p], -parent.HitNormal) > extents[p] * CRUMB_DEPTH - random.NextFloat(0f, cube.Size);
                     if (isCrumb)
                     {
                         crumb[c] = 1;
@@ -165,7 +190,10 @@ namespace Game.Voxels
                             Life = parent.Life + random.NextFloat(-0.8f, 0.8f),
                             Flags = parent.Flags & KEEP,
                             // A break does not start the clock over: the parts lie when the clump would have.
-                            Flight = parent.Flight
+                            Flight = parent.Flight,
+                            Generation = parent.Generation + 1,
+                            HitPoint = parent.HitPoint,
+                            HitNormal = parent.HitNormal
                         });
                     }
 
@@ -177,7 +205,9 @@ namespace Game.Voxels
                             Rotation = parent.Rotation,
                             Life = parent.Life,
                             Flags = parent.Flags & KEEP,
-                            Flight = parent.Flight
+                            Flight = parent.Flight,
+                            HitPoint = parent.HitPoint,
+                            HitNormal = parent.HitNormal
                         });
                     }
 
@@ -316,6 +346,24 @@ namespace Game.Voxels
 
                     part.Radius = math.max(part.Radius, math.length(offset) + cube.Size * 0.5f);
                     Clusters[cube.Cluster] = part;
+                }
+
+                // A clump lands with its centre only 0.6 of its radius above the ground, so its
+                // lowest cubes are in it. A crumb or piece whose centre starts under the surface it
+                // hit would never see that surface again and fall out of the world: lift it out.
+                for (int i = original; i < Clusters.Length; i++)
+                {
+                    Cluster child = Clusters[i];
+                    if (child.Count == 0 || math.lengthsq(child.HitNormal) < 0.5f)
+                        continue;
+
+                    float above = math.dot(child.Position - child.HitPoint, child.HitNormal);
+                    float least = child.Count == 1 ? child.Radius : 0.02f;
+                    if (above < least)
+                    {
+                        child.Position += child.HitNormal * (least - above);
+                        Clusters[i] = child;
+                    }
                 }
             }
 
