@@ -229,6 +229,7 @@ Assets/Game/Audio/
 Сейчас в обоих — `Music/Music.wav`. Переходы между ними — затухание 1 с.
 
 ### 3.8. Старый звук
+**Сделано 2026-11-17** после влития чистки: старые установщики сняты с префабов (`Tank_01`, `Heli_01`, `Regax`, `Enemy`, `Zombie`, `Regax_Mount`, `[Character]`) и сцен, их скрипты, `AudioSourceInstaller`, пул `AudioSource` в `GameContextInstaller`, ключ `AudioSource` и клипы боли и смерти удалены, проверка `LegacySoundUseCase` убрана. Проверка в Play — после обновления Unity Hub (лицензия).
 
 Когда события из 3.6 зазвучат через AudioEngine, старые источники надо снять: `WeaponFireSoundInstaller` с `Tank_01`, `CharacterAudioInstaller` с `Regax`. Иначе звук двойной. До этого новые поведения их не дублируют: оружие и Regax подключаются, только если на сущности нет старого установщика. Снимать их и удалять скрипты — вопрос 2.
 
