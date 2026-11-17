@@ -67,11 +67,7 @@ namespace Game.AudioEngine.Adapters
             if (monster.HasBehaviour<MonsterAudioBehaviour>() || !monster.HasTransform())
                 return;
 
-            monster.AddBehaviour(new MonsterAudioBehaviour(
-                hitSound: !LegacySoundUseCase.HasLegacyCharacterSound<DamageSoundBehaviour>(monster),
-                deathSound: !LegacySoundUseCase.HasLegacyCharacterSound<DeathSoundBehaviour>(monster),
-                attackSound: !LegacySoundUseCase.HasLegacyCharacterSound<AttackSoundBehaviour>(monster),
-                stepSound: !LegacySoundUseCase.HasLegacyCharacterSound<MoveStepSoundBehaviour>(monster)));
+            monster.AddBehaviour(new MonsterAudioBehaviour());
         }
     }
 }
