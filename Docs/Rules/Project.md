@@ -72,6 +72,7 @@ Tools/<Инструмент>/          скрипты вне Unity (Maya, PerfCh
 | `Game.Voxels.Demo` | `Game/Voxels/Demo` | `Game.Voxels.Demo` | все |
 | `Game.Voxels.Tests` | `Game/Voxels/Tests` | `Game.Voxels.Tests` | все |
 | `Game.Voxels.SceneTests` | `Game/Voxels/Tests/Scene` | `Game.Voxels.Tests` | Editor (PlayMode-тесты сцены) |
+| `Game.Voxels.VoxelizerTests` | `Game/Voxels/Tests/Voxelizer` | `Game.Voxels.Tests` | Editor (EditMode-тесты вокселизатора) |
 
 - **Новая сборка** называется `Game.<Подсистема>`, её части — `Game.<Подсистема>.Editor`, `.Tests`, `.Adapters`. Пример — `Game.Horde`. `rootNamespace` равен имени сборки, а у редакторских — `….EditorTools`, чтобы не спорить с `UnityEditor`.
 - **Модуль** в `Assets/Modules/<Name>` сохраняет свои сборки как есть. Всё про нашу игру лежит в отдельной сборке-адаптере `Game.<Name>.Adapters` рядом с кодом игры, а не внутри модуля.
