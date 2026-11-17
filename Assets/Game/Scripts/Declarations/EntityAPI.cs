@@ -124,7 +124,6 @@ namespace Game
 
         #region Sound
 
-        public static readonly ValueKey<IEntity, UnityEngine.AudioSource> AudioSource = new(nameof(AudioSource));
 
         #endregion
 

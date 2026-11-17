@@ -7,8 +7,7 @@ namespace Game.AudioEngine.Adapters
 {
     /// <summary>
     /// The tank's guns: the cannon shot and, once its cooldown runs out after a shot, the reload clank; the
-    /// machine gun's burst. Follows the Weapon and SecondaryWeapon slots, so a swapped gun is heard too. A gun
-    /// that still has its old shot sound (<see cref="LegacySoundUseCase"/>) gets no new one.
+    /// machine gun's burst. Follows the Weapon and SecondaryWeapon slots, so a swapped gun is heard too.
     /// </summary>
     public sealed class TankWeaponsAudioBehaviour : IEntityInit, IEntityTick, IEntityDispose
     {
@@ -31,12 +30,10 @@ namespace Game.AudioEngine.Adapters
         private Transform _primaryMuzzle;
         private CooldownTimer _cooldown;
         private bool _awaitingReload;
-        private bool _primaryLegacy;
 
         private IEntity _secondary;
         private IEvent _secondaryFire;
         private Transform _secondaryMuzzle;
-        private bool _secondaryLegacy;
 
         public TankWeaponsAudioBehaviour()
         {
@@ -97,7 +94,6 @@ namespace Game.AudioEngine.Adapters
 
             _primary = weapon;
             _primaryMuzzle = FindMuzzle(weapon);
-            _primaryLegacy = LegacySoundUseCase.HasLegacyShotSound(weapon);
             if (weapon.TryGetWeaponCooldown(out CooldownTimer cooldown) && cooldown.Duration >= MIN_RELOAD)
                 _cooldown = cooldown;
             Listen(weapon, ref _primaryFire, _onPrimaryFire);
@@ -113,22 +109,18 @@ namespace Game.AudioEngine.Adapters
 
             _secondary = weapon;
             _secondaryMuzzle = FindMuzzle(weapon);
-            _secondaryLegacy = LegacySoundUseCase.HasLegacyShotSound(weapon);
             Listen(weapon, ref _secondaryFire, _onSecondaryFire);
         }
 
         private void OnPrimaryFire()
         {
-            // The reload is new; only the shot can be doubled by the old sound.
-            if (!_primaryLegacy)
-                GameAudio.Play(AudioKeys.Weapons.CANNON_SHOT, MuzzleOf(_primaryMuzzle));
+            GameAudio.Play(AudioKeys.Weapons.CANNON_SHOT, MuzzleOf(_primaryMuzzle));
             _awaitingReload = _cooldown != null;
         }
 
         private void OnSecondaryFire()
         {
-            if (!_secondaryLegacy)
-                GameAudio.Play(AudioKeys.Weapons.MG_SHOT, MuzzleOf(_secondaryMuzzle));
+            GameAudio.Play(AudioKeys.Weapons.MG_SHOT, MuzzleOf(_secondaryMuzzle));
         }
 
         private Vector3 MuzzleOf(Transform muzzle) => muzzle != null ? muzzle.position : _hull.position;

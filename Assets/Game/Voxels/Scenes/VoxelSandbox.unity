@@ -2501,7 +2501,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _playerContext: {fileID: 460514778}
   _poolsParent: {fileID: 312067144}
-  _audioPrefab: {fileID: 1947329655139426485, guid: 19e1fbd2116be433dbe35c5cdaf44a55, type: 3}
   _hitEffectPrefab: {fileID: 5814017759711512355, guid: b34ef2dbb38014c32b6e4533c0611105, type: 3}
   _entityWorld: {fileID: 1225762023}
   _prewarmPerFrame: 4
