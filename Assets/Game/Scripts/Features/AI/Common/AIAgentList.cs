@@ -14,6 +14,7 @@ namespace Game.AI
 
         private readonly IAIWorld _world;
         private readonly List<IAIAgent> _agents = new(16);
+        private int _stepping = -1;
 
         public AIAgentList(IAIWorld world) => _world = world;
 
@@ -34,20 +35,37 @@ namespace Game.AI
 
         public void Remove(IAIAgent agent)
         {
-            if (agent == null || !_agents.Remove(agent))
+            if (agent == null)
                 return;
+            int index = _agents.IndexOf(agent);
+            if (index < 0)
+                return;
+            _agents.RemoveAt(index);
+            // Left during the step at or before the one stepping: the rest move down a place, so does the cursor.
+            if (_stepping >= 0 && index <= _stepping)
+                _stepping--;
             if (agent.Character != null && agent.Character.World == _world)
                 agent.Character.SetWorld(null);
         }
 
-        /// <summary>The world's step, then every agent's. An agent that leaves meanwhile (it died) is not stepped again.</summary>
+        /// <summary>
+        /// The world's step, then every agent's. An agent that leaves meanwhile (it died) is not stepped again, and the
+        /// ones after it are still stepped once each.
+        /// </summary>
         public void Step(float dt)
         {
             using (StepMarker.Auto())
             {
                 _world?.BeginStep(dt);
-                for (int i = 0; i < _agents.Count; i++)
-                    _agents[i].Step(dt);
+                try
+                {
+                    for (_stepping = 0; _stepping < _agents.Count; _stepping++)
+                        _agents[_stepping].Step(dt);
+                }
+                finally
+                {
+                    _stepping = -1;
+                }
             }
         }
     }

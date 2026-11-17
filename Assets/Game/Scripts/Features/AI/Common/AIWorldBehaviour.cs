@@ -1,4 +1,5 @@
 using Atomic.Entities;
+using Unity.Profiling;
 
 namespace Game.AI
 {
@@ -9,6 +10,8 @@ namespace Game.AI
     /// </summary>
     public sealed class AIWorldBehaviour : IEntityInit, IEntityTick
     {
+        private static readonly ProfilerMarker WorldMarker = new("AI.World");
+
         private AIAgentList _agents;
         private PlayerTank _tank;
 
@@ -20,8 +23,11 @@ namespace Game.AI
 
         public void Tick(IEntity entity, float deltaTime)
         {
-            _tank.Refresh();
-            _agents.Step(deltaTime);
+            using (WorldMarker.Auto())
+            {
+                _tank.Refresh();
+                _agents.Step(deltaTime);
+            }
         }
     }
 }
