@@ -9,7 +9,6 @@ namespace Game
     [EntityExtensionsAPI]
     public static partial class GameContextAPI
     {
-        public static readonly ValueKey<IGameContext, WeaponCatalog> WeaponCatalog = new(nameof(WeaponCatalog));
         public static readonly ValueKey<IGameContext, PlayerContext> PlayerContext = new(nameof(PlayerContext));
         public static readonly ValueKey<IGameContext, GameFactory> GameFactory = new(nameof(GameFactory));
         public static readonly ValueKey<IGameContext, IEntityWorld<IEntity>> EntityWorld = new(nameof(EntityWorld));

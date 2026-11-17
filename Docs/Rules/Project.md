@@ -27,7 +27,7 @@ Assets/
     Horde/                   подсистема орды: Runtime, Tests, своя сборка
     Voxels/                  воксельный модуль: Runtime, Editor (в нём Voxelizer), Demo, Tests, Shaders, Resources, Scenes
     Tests/                   тесты сборки Game; повторяет дерево Scripts/
-    Audio/Banks/             банки звуков
+    Audio/                   звук: Banks/, Events/, Clips/<банк>/<ключ>/, Resources/, микшер; Scripts/ — адаптер AudioEngine (своя сборка), Tests/
     Scenes/                  Boot, MainMenu, Hangar, Levels/<Уровень>/...
     Animations/ Configs/ Fonts/ Materials/ Models/ Prefabs/ Shaders/ Sprites/ Textures/
                              ассеты по типу, внутри — папки по фиче или объекту
@@ -73,6 +73,9 @@ Tools/<Инструмент>/          скрипты вне Unity (Maya, PerfCh
 | `Game.Voxels.Tests` | `Game/Voxels/Tests` | `Game.Voxels.Tests` | все |
 | `Game.Voxels.SceneTests` | `Game/Voxels/Tests/Scene` | `Game.Voxels.Tests` | Editor (PlayMode-тесты сцены) |
 | `Game.Voxels.VoxelizerTests` | `Game/Voxels/Tests/Voxelizer` | `Game.Voxels.Tests` | Editor (EditMode-тесты вокселизатора) |
+| `Game.AudioEngine.Adapters` | `Game/Audio/Scripts` | `Game.AudioEngine.Adapters` | все |
+| `Game.AudioEngine.Adapters.Editor` | `Game/Audio/Scripts/Editor` | `Game.AudioEngine.Adapters.EditorTools` | Editor |
+| `Game.AudioEngine.Adapters.Tests` | `Game/Audio/Tests` | `Game.AudioEngine.Adapters.Tests` | Editor (EditMode) |
 
 - **Новая сборка** называется `Game.<Подсистема>`, её части — `Game.<Подсистема>.Editor`, `.Tests`, `.Adapters`. Пример — `Game.Horde`. `rootNamespace` равен имени сборки, а у редакторских — `….EditorTools`, чтобы не спорить с `UnityEditor`.
 - **Модуль** в `Assets/Modules/<Name>` сохраняет свои сборки как есть. Всё про нашу игру лежит в отдельной сборке-адаптере `Game.<Name>.Adapters` рядом с кодом игры, а не внутри модуля.

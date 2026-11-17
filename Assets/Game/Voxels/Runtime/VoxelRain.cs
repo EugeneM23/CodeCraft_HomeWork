@@ -15,7 +15,7 @@ namespace Game.Voxels
     /// when it is born (or carried round to the other side of the block as the camera moves) tells
     /// where it lands. Moving the drops and the splashes is a Burst job; GPU instancing draws them.
     /// </summary>
-    public sealed class VoxelRain : MonoBehaviour
+    public sealed class VoxelRain : MonoBehaviour, IVoxelLateUpdate
     {
         private const int BATCH = 1023;
         private const string MATERIAL = "Voxels/VoxelRain";
@@ -111,10 +111,12 @@ namespace Game.Voxels
             }
 
             Gloom(true);
+            VoxelTicks.Add(this);
         }
 
         private void OnDisable()
         {
+            VoxelTicks.Remove(this);
             Gloom(false);
             if (!_created)
                 return;
@@ -184,12 +186,20 @@ namespace Game.Voxels
             return (float3)t.position;
         }
 
-        private void LateUpdate()
+        private void LateUpdate() // perf-ok: ticks itself without the game loop; draws (dt 0) while the loop is paused
+        {
+            if (!VoxelTicks.Driven)
+                VoxelLateUpdate(Time.deltaTime);
+            else if (VoxelTicks.Paused)
+                VoxelLateUpdate(0f);
+        }
+
+        public void VoxelLateUpdate(float deltaTime)
         {
             if (!_created)
                 return;
 
-            float dt = math.min(Time.deltaTime, 1f / 20f);
+            float dt = math.min(deltaTime, 1f / 20f);
             _centre = math.lerp(_centre, Focus(), math.saturate(dt * 4f));
             float3 wind = _wind;
 

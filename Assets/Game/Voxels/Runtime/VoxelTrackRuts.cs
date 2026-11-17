@@ -17,7 +17,7 @@ namespace Game.Voxels
     /// </remarks>
     [DefaultExecutionOrder(9000)]
     [RequireComponent(typeof(Rigidbody))]
-    public sealed class VoxelTrackRuts : MonoBehaviour
+    public sealed class VoxelTrackRuts : MonoBehaviour, IVoxelLateUpdate
     {
         [Tooltip("The road wheels, as paths from this object; '*' matches any name.")]
         [SerializeField] private string _wheels = "HullVisual/Wheel_*";
@@ -180,7 +180,17 @@ namespace Game.Voxels
             }
         }
 
-        private void LateUpdate()
+        private void OnEnable() => VoxelTicks.Add(this);
+
+        private void OnDisable() => VoxelTicks.Remove(this);
+
+        private void LateUpdate() // perf-ok: ticks itself without the game loop (tests, demo scenes); one flag check when driven
+        {
+            if (!VoxelTicks.Driven)
+                VoxelLateUpdate(Time.deltaTime);
+        }
+
+        public void VoxelLateUpdate(float deltaTime)
         {
             Vector3 velocity = _body.linearVelocity;
             Vector3 planar = new Vector3(velocity.x, 0f, velocity.z);
@@ -196,7 +206,7 @@ namespace Game.Voxels
 
             // Shares of the wheels in mud and on dry ground, eased so a single wheel crossing a
             // border does not flick the tank's speed.
-            float ease = 1f - Mathf.Exp(-4f * Time.deltaTime);
+            float ease = 1f - Mathf.Exp(-4f * deltaTime);
             float mud = _wheelsOnGround > 0 ? _wheelsInMud / (float)_wheelsOnGround : MudShare;
             float dry = _wheelsOnGround > 0 ? _wheelsOnDry / (float)_wheelsOnGround : DryShare;
             MudShare = Mathf.Lerp(MudShare, mud, ease);
@@ -207,7 +217,7 @@ namespace Game.Voxels
             {
                 float spinMud = _wheelsInMud / (float)_wheelsOnGround;
                 float spinGrass = (_wheelsOnGround - _wheelsInMud - _wheelsOnDry) / (float)_wheelsOnGround;
-                Roost(Time.deltaTime, spinMud, spinGrass);
+                Roost(deltaTime, spinMud, spinGrass);
             }
 
             // How far the tracks ran, not the hull: turning on the spot churns mud as well.
@@ -221,7 +231,7 @@ namespace Game.Voxels
             travelled /= Mathf.Max(1, _wheelList.Count);
 
             // The wheels bob on the springs even standing still: that is not driving.
-            if (travelled < MIN_TRACK_SPEED * Time.deltaTime)
+            if (travelled < MIN_TRACK_SPEED * deltaTime)
                 return;
             if (!_onMud || travelled > 2f)
                 return;

@@ -61,10 +61,8 @@ namespace Game
 
         private readonly List<Entry> _queue = new();
         private readonly Dictionary<int, Entry> _entries = new();
-        private readonly List<MonoEntity> _weaponPrefabs = new();
 
         private GameFactory _factory;
-        private WeaponCatalog _catalog;
         private int _delay = START_DELAY_FRAMES;
         private bool _planned;
         private bool _done;
@@ -84,7 +82,6 @@ namespace Game
         public void Init(IGameContext context)
         {
             _factory = context.GetGameFactory();
-            _catalog = context.GetWeaponCatalog();
         }
 
         public void Tick(IGameContext context, float deltaTime)
@@ -116,17 +113,6 @@ namespace Game
             foreach (RangeWeaponInstaller gun in
                      Object.FindObjectsByType<RangeWeaponInstaller>(FindObjectsInactive.Include, FindObjectsSortMode.None))
                 WantShotsOf(gun);
-
-            // Every gun a pickup can hand out.
-            if (_catalog != null)
-            {
-                _catalog.CollectWeaponPrefabs(_weaponPrefabs);
-                foreach (MonoEntity weapon in _weaponPrefabs)
-                foreach (RangeWeaponInstaller gun in weapon.GetComponentsInChildren<RangeWeaponInstaller>(true))
-                    WantShotsOf(gun);
-
-                _weaponPrefabs.Clear();
-            }
 
             // What a tank spawns besides its guns' rounds: smoke at the muzzle on every shot of the
             // cannon, and the blast it goes up in.

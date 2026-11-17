@@ -7,7 +7,7 @@ namespace Game.Voxels
     /// that one has thinned away, another after a short pause — the map always has smoke to shoot
     /// through.
     /// </summary>
-    public sealed class VoxelSmokeSource : MonoBehaviour
+    public sealed class VoxelSmokeSource : MonoBehaviour, IVoxelUpdate
     {
         [SerializeField] private float _radius = 3.2f;
         [SerializeField] private float _lifetime = 20f;
@@ -18,6 +18,7 @@ namespace Game.Voxels
 
         private VoxelSmoke _cloud;
         private float _wait;
+        private bool _started;
 
         public VoxelSmoke Cloud => _cloud;
 
@@ -29,14 +30,29 @@ namespace Game.Voxels
             _delay = delay;
         }
 
-        private void Start() => _wait = _delay;
-
-        private void Update()
+        private void Start()
         {
-            if (_cloud != null)
+            _wait = _delay;
+            _started = true;
+        }
+
+        private void OnEnable() => VoxelTicks.Add(this);
+
+        private void OnDisable() => VoxelTicks.Remove(this);
+
+        private void Update() // perf-ok: ticks itself without the game loop (tests, demo scenes); one flag check when driven
+        {
+            if (!VoxelTicks.Driven)
+                VoxelUpdate(Time.deltaTime);
+        }
+
+        // Driven, the hub can reach a source added mid-frame before its Start: the delay is not set yet
+        public void VoxelUpdate(float deltaTime)
+        {
+            if (_cloud != null || !_started)
                 return;
 
-            _wait -= Time.deltaTime;
+            _wait -= deltaTime;
             if (_wait > 0f)
                 return;
 

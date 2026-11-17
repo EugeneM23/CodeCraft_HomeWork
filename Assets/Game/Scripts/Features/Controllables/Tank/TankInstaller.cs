@@ -1,20 +1,19 @@
 using Atomic.Elements;
 using Atomic.Entities;
-using HighlightPlus;
 using UnityEngine;
 
 namespace Game
 {
     /// <summary>
-    /// A tank the player can drive. It carries the keys the player controllers read off a
-    /// character — RotateDirection (the turret's aim), Weapon, FireCondition, FireAction,
-    /// CameraPoint, Health — so once PlayerContext.Character points at it, aiming, firing, the
-    /// camera and its shake work unchanged. Driving has its own stick, DriveInput, written by
-    /// ControllableDriveController.
+    /// The player's tank. It carries the keys the player controllers read off the character in
+    /// PlayerContext.Character — RotateDirection (the turret's aim), Weapon, FireCondition,
+    /// FireAction, CameraPoint, Health — and its own drive stick, DriveInput, written by
+    /// ControllableDriveController. It runs and fires while it has a Driver
+    /// (PlayerVehicleController gives it the player).
     ///
     /// Every collider sits on this object. Collider.TryGetEntity only looks at the collider's own
-    /// GameObject, so a collider on a child would leave bullets, blasts, enemy swings and the
-    /// interaction probe unable to find the tank.
+    /// GameObject, so a collider on a child would leave bullets, blasts and enemy swings unable
+    /// to find the tank.
     /// </summary>
     public sealed class TankInstaller : MonoEntityInstaller
     {
@@ -69,7 +68,6 @@ namespace Game
         [SerializeField] private Transform _cameraPoint;
         [Tooltip("Camera offset multiplier while driving: 1.1 sits the camera a tenth further out.")]
         [SerializeField] private float _cameraDistance = 1.1f;
-        [SerializeField] private Transform[] _exitPoints;
         [SerializeField] private int _health = 400;
 
         [Header("Suspension")]
@@ -91,22 +89,11 @@ namespace Game
         [SerializeField] private TankTrackRig _leftTrack;
         [SerializeField] private TankTrackRig _rightTrack;
 
-        [Header("Ramming")]
-        [Tooltip("Reports the hull's contacts, lasting ones included. Without it the tank breaks nothing it drives into.")]
+        [Header("Crushing")]
+        [Tooltip("Reports the hull's contacts, lasting ones included. Without it the tank crushes nothing it drives into.")]
         [SerializeField] private CollisionContactReceiver _contacts;
         [Tooltip("Enemies the tank runs into fast enough die under it: blood from under the tracks, splashes on the skin.")]
         [SerializeField] private TankCrushConfig _crush = new();
-        [Tooltip("How far (m) around the point of contact a rammed destructible breaks: about the hull's half-width.")]
-        [SerializeField] private float _ramRadius = 1.1f;
-        [Tooltip("Slowest (m/s) the tank can strike or push into a destructible and still break it.")]
-        [SerializeField] private float _ramMinSpeed = 1f;
-        [Tooltip("Share of the bricks the ram knocks out that break into 2-3 parts in the air.")]
-        [SerializeField, Range(0f, 1f)] private float _ramSplitChance = 0.3f;
-
-        [Header("Interaction")]
-        [SerializeField] private HighlightEffect _highlight;
-        [Tooltip("Where the interaction marker hangs, from the tank's origin. The marker's own offset is sized for pickups and would bury it in the hull.")]
-        [SerializeField] private Vector3 _markerOffset = new(0f, 1.4f, 0f);
 
         [Header("Destruction")]
         [SerializeField] private MonoEntity _explosionVfx;
@@ -128,7 +115,6 @@ namespace Game
             // Core
             entity.AddVehicleTag();
             entity.AddDamageableTag();
-            entity.AddInteractableTag();
             entity.AddGameObject(gameObject);
             entity.AddTransform(transform);
             entity.AddRiggedBody(_rigidbody);
@@ -142,7 +128,6 @@ namespace Game
             entity.AddDriveBoost(new ReactiveVariable<bool>());
             entity.AddMoveSpeed(new ReactiveFloat(_moveSpeed));
             entity.AddRotationSpeed(new Const<float>(_turnSpeed));
-            entity.AddExitPoints(_exitPoints);
             entity.AddSuspension(new TankSuspension(_wheelMounts, _wheelVisuals, _wheelRadius,
                 _springMaxLength, _springMinLength, _staticSag, _dampingRatio));
 
@@ -154,7 +139,7 @@ namespace Game
             entity.AddTurretRotationSpeed(new Const<float>(_turretSpeed));
 
             // Combat: the cannon is a weapon entity of its own; the tank fires it only while
-            // somebody is inside and the hull is intact.
+            // somebody drives it and the hull is intact.
             entity.AddWeapon(new ReactiveVariable<IEntity>(_cannon));
             entity.AddFireCondition(new AndExpression(
                 new ExpressionMember<bool>(entity.GetHealth().Exists),
@@ -179,28 +164,9 @@ namespace Game
             entity.AddCameraDistance(_cameraDistance);
             entity.AddHullVisual(_hullVisual);
 
-            // Interaction: E next to the tank gets in, E inside gets out.
-            if (_highlight != null)
-            {
-                ControllableHighlight.UseSingleTargetFX(_highlight);
-                entity.AddHighlight(_highlight);
-            }
-            entity.AddPositionOffset(_markerOffset);
-
-            entity.AddInteractAction(new InlineAction<IEntity>(driver =>
-            {
-                if (ControllableUseCase.CanEnter(entity, driver))
-                    ControllableUseCase.Enter(entity, driver, gameContext.GetPlayerContext().GetCharacter(),
-                        gameContext.GetEntityWorld());
-            }));
-
-            entity.AddVehicleExitAction(new InlineAction(() =>
-                ControllableUseCase.TryExit(entity, gameContext.GetPlayerContext().GetCharacter(),
-                    gameContext.GetEntityWorld())));
-
             // Behaviours. The suspension goes first: the drive reads what it found under the wheels
             // in the same physics step.
-            // The engine cranks for two seconds after a driver gets in; the drive waits for it.
+            // The engine cranks for two seconds after it gets a driver; the drive waits for it.
             TankEngine engine = new();
             entity.AddBehaviour(engine);
             entity.AddBehaviour<TankSuspensionBehaviour>();
@@ -208,12 +174,10 @@ namespace Game
                 _boostMultiplier, engine, _driftSpeed, _sideGrip));
             if (_contacts != null)
             {
-                entity.AddBehaviour(new TankRamBehaviour(_contacts, _ramRadius, _ramMinSpeed, _ramSplitChance));
                 // Enemies it runs into fast enough die under it, in blood (TankCrushBehaviour).
                 entity.AddBehaviour(new TankCrushBehaviour(_contacts, _rigidbody, _crush));
             }
-            // Standing walls stop the hull and get rammed; what is knocked out of them no longer
-            // touches it.
+            // Debris and voxel flesh on the ground no longer touch the hull.
             entity.AddBehaviour(new PassThroughLoosePiecesBehaviour());
             entity.AddBehaviour<TurretAimBehaviour>();
             entity.AddBehaviour(new TankRecoilBehaviour(_recoilImpulse));
