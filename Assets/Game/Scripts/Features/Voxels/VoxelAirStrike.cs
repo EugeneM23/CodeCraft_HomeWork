@@ -121,12 +121,11 @@ namespace Game
             if (Input.GetKeyDown(_toggleKey))
             {
                 _on = !_on;
+                if (_on) GameSignals.RaiseAirStrikeCalled();
                 // Back on: the next bomb a moment later, not at once and not a whole interval on.
                 if (_on)
                     _next = Time.time + _resumeDelay;
             }
-            if (_on && Input.GetKeyDown(_toggleKey))
-                GameSignals.RaiseAirStrikeCalled();
 
             if (_on && _target != null && Time.time >= _next)
             {
