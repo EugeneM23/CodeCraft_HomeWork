@@ -12,7 +12,10 @@
         "UnityEngine.UI",
         "HighlightPlus",
         "DOTweenModules",
-        "RayFireAssembly"
+        "RayFireAssembly",
+        "SaveSystem",
+        "Loading",
+        "GameLoop"
     ],
     "includePlatforms": [
         "Editor"
@@ -24,7 +27,8 @@
         "nunit.framework.dll",
         "DOTween.dll",
         "Sirenix.OdinInspector.Attributes.dll",
-        "Sirenix.Serialization.dll"
+        "Sirenix.Serialization.dll",
+        "Newtonsoft.Json.dll"
     ],
     "autoReferenced": false,
     "defineConstraints": [
