@@ -40,7 +40,7 @@ namespace Game.Voxels.EditorTools
         public Transform Root;
         public int3 Size;
         public float3 Origin;
-        public float VoxelSize; // model units: the class voxel / Scale
+        public float VoxelSize; // part space: the class voxel / Scale / the part's world scale
         public NativeArray<Color32> Cells;
 
         public const byte SURFACE = 255;
@@ -57,8 +57,10 @@ namespace Game.Voxels.EditorTools
         public string Path;
         public Transform Root;
         public int3 Size;
-        /// <summary>Part space, model units (the prefab root scales them to real size).</summary>
+        /// <summary>Part space (the prefab root's Scale brings it to real size).</summary>
         public float3 Origin;
+        /// <summary>The voxel edge in the part's own space: the class voxel / Scale / the part's world scale.</summary>
+        public float VoxelSize;
         public NativeArray<byte> Voxels;
     }
 
@@ -68,8 +70,13 @@ namespace Game.Voxels.EditorTools
         /// <summary>Rule roots that gave no part (Skip, or no triangles): their renderers stay as they are.</summary>
         public readonly System.Collections.Generic.List<Transform> KeptRoots = new();
         public Color32[] Palette;
-        public float VoxelSize; // model units: the class voxel / Scale
+        public float VoxelSize; // world units of the instance as placed: the class voxel / Scale
+        /// <summary>The class voxel in real metres (3 cm, 6 cm, 10 cm).</summary>
+        public float ClassVoxel;
+        /// <summary>World to real metres: the config's length over the model's longest side (1 without a length).</summary>
         public float Scale = 1f;
+        /// <summary>The model root's uniform world scale (R).</summary>
+        public float RootScale = 1f;
 
         public void Dispose()
         {

@@ -12,23 +12,37 @@ namespace Game.Voxels.EditorTools
         /// <summary>How far (sRGB, 0..441) the paint material's colour may be from its surface slot.</summary>
         private const float CAMO_MATCH = 48f;
 
+        /// <summary>How far apart (relative) a world scale's axes may be and still count as uniform.</summary>
+        private const float UNIFORM_TOLERANCE = 1e-3f;
+
+        /// <exception cref="System.InvalidOperationException">
+        /// The root or a part has a non-uniform scale, or a part does not fit the grid's 512 cells an axis.
+        /// </exception>
         public static VoxelizerResult Run(VoxelizerConfig config, GameObject instance)
         {
+            // The unit chain. "World" is the instance as placed, its root's own scale R included. Real metres
+            // are world × Scale: Bake makes that true by scaling the prefab root by Scale. The class voxel c is
+            // in real metres, so it is c / Scale in the world, and c / Scale / s in a part's own space, where the
+            // part's triangles are, s being the part's uniform world scale (R and every parent's in it). After the
+            // bake the part's world scale is s × Scale, so its voxels are c in the world again.
             Transform root = instance.transform;
+            float rootScale = UniformScale(root, root);
             float longest = LongestSide(instance);
             float scale = config.length > 0f && longest > 1e-4f ? config.length / longest : 1f;
-            float voxel = config.VoxelSizeFor(config.length > 0f ? config.length : longest) / scale;
+            float classVoxel = config.VoxelSizeFor(config.length > 0f ? config.length : longest);
+            float voxel = classVoxel / scale;
             int k = math.clamp(config.colours, 4, 32);
 
-            var rules = new List<(Transform part, VoxelizerConfig.PartRule rule)>();
-            foreach (VoxelizerConfig.PartRule rule in config.parts)
-                foreach (Transform t in Resolve(root, rule.path))
-                    rules.Add((t, rule));
+            List<(Transform part, VoxelizerConfig.PartRule rule)> rules = Rules(config, root);
             if (rules.Count == 0)
                 rules.Add((root, new VoxelizerConfig.PartRule { path = "", mark = VoxelizerConfig.PartMark.Auto }));
+            var partVoxel = new Dictionary<Transform, float>();
+            foreach (var (part, rule) in rules)
+                if (rule.mark != VoxelizerConfig.PartMark.Skip)
+                    partVoxel[part] = voxel / UniformScale(part, root);
 
             var owned = new Dictionary<Transform, List<Renderer>>();
-            foreach (Renderer renderer in instance.GetComponentsInChildren<Renderer>(true))
+            foreach (Renderer renderer in VoxelizerSource.Voxelizable(instance))
             {
                 Transform owner = null;
                 for (Transform t = renderer.transform; t != null && owner == null; t = t == root ? null : t.parent)
@@ -40,7 +54,7 @@ namespace Game.Voxels.EditorTools
             }
 
             var grids = new List<VoxelizerPartGrid>();
-            var result = new VoxelizerResult { VoxelSize = voxel, Scale = scale };
+            var result = new VoxelizerResult { VoxelSize = voxel, ClassVoxel = classVoxel, Scale = scale, RootScale = rootScale };
             try
             {
                 foreach (var (part, rule) in rules)
@@ -50,12 +64,14 @@ namespace Game.Voxels.EditorTools
 
                     using VoxelizerTriangles triangles = VoxelizerSource.Collect(part, renderers);
                     if (triangles.Count == 0) continue;
+                    float size = partVoxel[part];
                     if (rule.mark == VoxelizerConfig.PartMark.Auto)
-                        VoxelizerStraighten.SnapPlanes(triangles, voxel);
-                    VoxelizerPartGrid grid = VoxelizerSurface.Sample(triangles, voxel);
+                        VoxelizerStraighten.SnapPlanes(triangles, size);
+                    string path = PathOf(root, part);
+                    VoxelizerPartGrid grid = VoxelizerSurface.Sample(triangles, size, path);
                     grids.Add(grid);
                     grid.Root = part;
-                    grid.Path = PathOf(root, part);
+                    grid.Path = path;
                     switch (rule.mark)
                     {
                         case VoxelizerConfig.PartMark.Box: VoxelizerPrimitives.Box(grid); break;
@@ -78,7 +94,7 @@ namespace Game.Voxels.EditorTools
                     VoxelizerPalette.Smooth(voxels, grid.Size, k);
                     result.Parts.Add(new VoxelizerResultPart
                     {
-                        Path = grid.Path, Root = grid.Root, Size = grid.Size, Origin = grid.Origin, Voxels = voxels
+                        Path = grid.Path, Root = grid.Root, Size = grid.Size, Origin = grid.Origin, VoxelSize = grid.VoxelSize, Voxels = voxels
                     });
                 }
 
@@ -117,12 +133,13 @@ namespace Game.Voxels.EditorTools
                 {
                     if (paint > 0)
                     {
-                        float4x4 toModel = math.mul(float4x4.Scale(result.Scale), root.worldToLocalMatrix * part.Root.localToWorldMatrix);
-                        VoxelPaint.Camouflage(part.Voxels, part.Size, part.Origin, result.VoxelSize, toModel, palette, paint, 1, camo, 0f, 2 * k + 1);
+                        // Part space → the root's space (÷ R) → real metres (× R × Scale), so the noise runs on across parts.
+                        float4x4 toModel = math.mul(float4x4.Scale(result.RootScale * result.Scale), root.worldToLocalMatrix * part.Root.localToWorldMatrix);
+                        VoxelPaint.Camouflage(part.Voxels, part.Size, part.Origin, part.VoxelSize, toModel, palette, paint, 1, camo, 0f, 2 * k + 1);
                     }
 
                     if (decals)
-                        VoxelPaint.Decals(part.Voxels, part.Size, part.Origin, result.VoxelSize, palette, 1, part.Path, config.decals, 2 * k + 1);
+                        VoxelPaint.Decals(part.Voxels, part.Size, part.Origin, part.VoxelSize, palette, 1, part.Path, config.decals, 2 * k + 1);
                 }
 
                 palette.CopyTo(result.Palette);
@@ -152,13 +169,46 @@ namespace Game.Voxels.EditorTools
             return -1;
         }
 
-        /// <summary>Model metres to real metres: the config's length over the model's longest side.</summary>
-        /// <summary>The model's longest bounds side, in the model's own units.</summary>
-        private static float LongestSide(GameObject instance)
+        /// <summary>The longest side of the voxelizable renderers' world bounds (the pivot not counted); 0 with none.</summary>
+        private static float LongestSide(GameObject instance) =>
+            VoxelizerSource.TryBounds(instance, out Bounds bounds) ? math.cmax((float3)bounds.size) : 0f;
+
+        /// <summary>A transform's world scale, which must be the same on every axis (a mirror allowed).</summary>
+        private static float UniformScale(Transform t, Transform root)
         {
-            var bounds = new Bounds(instance.transform.position, Vector3.zero);
-            foreach (Renderer r in instance.GetComponentsInChildren<Renderer>(true)) bounds.Encapsulate(r.bounds);
-            return math.cmax((float3)bounds.size);
+            Vector3 s = t.lossyScale;
+            float3 a = math.abs((float3)s);
+            if (math.cmax(a) - math.cmin(a) > UNIFORM_TOLERANCE * math.cmax(a) || math.cmin(a) <= 0f)
+                throw new System.InvalidOperationException(
+                    $"Voxelizer: '{(t == root ? t.name : PathOf(root, t))}' has a non-uniform world scale {s}; a part's voxels " +
+                    "must be cubes. Make the scale uniform on the root and the parts (put the stretch on a mesh child or into the mesh).");
+            return math.cmax(a);
+        }
+
+        /// <summary>Each transform under its first matching rule; a later match of it is skipped, and a rule matching nothing warns.</summary>
+        private static List<(Transform part, VoxelizerConfig.PartRule rule)> Rules(VoxelizerConfig config, Transform root)
+        {
+            var rules = new List<(Transform part, VoxelizerConfig.PartRule rule)>();
+            var firstRule = new Dictionary<Transform, string>();
+            foreach (VoxelizerConfig.PartRule rule in config.parts ?? System.Array.Empty<VoxelizerConfig.PartRule>())
+            {
+                List<Transform> matched = Resolve(root, rule.path);
+                if (matched.Count == 0)
+                    Debug.LogWarning($"Voxelizer: rule '{rule.path}' matches nothing in '{root.name}'.");
+                foreach (Transform t in matched)
+                {
+                    if (firstRule.TryGetValue(t, out string first))
+                    {
+                        Debug.LogWarning($"Voxelizer: '{PathOf(root, t)}' is already under rule '{first}'; rule '{rule.path}' is skipped for it.");
+                        continue;
+                    }
+
+                    firstRule[t] = rule.path;
+                    rules.Add((t, rule));
+                }
+            }
+
+            return rules;
         }
 
         private static string PathOf(Transform root, Transform t)

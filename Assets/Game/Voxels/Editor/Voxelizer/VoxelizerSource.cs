@@ -11,6 +11,62 @@ namespace Game.Voxels.EditorTools
         private static readonly string[] TextureNames = { "_BaseMap", "_MainTex", "_BaseColorMap" };
         private static readonly string[] ColorNames = { "_BaseColor", "_Color" };
 
+        /// <summary>
+        /// The renderers the voxelizer takes, for the real length, part ownership, the bake's removal and the
+        /// preview alike: an active, enabled MeshRenderer with a mesh in its MeshFilter, or a SkinnedMeshRenderer
+        /// with a mesh, and not one of an LODGroup's lower levels (only LOD 0 is the model). Particles, lines,
+        /// trails and the like are left out, and stay as they are in the baked prefab.
+        /// </summary>
+        public static bool IsVoxelizable(Renderer renderer)
+        {
+            if (renderer == null || !renderer.enabled || !renderer.gameObject.activeInHierarchy)
+                return false;
+            bool hasMesh = renderer switch
+            {
+                MeshRenderer => renderer.TryGetComponent(out MeshFilter filter) && filter.sharedMesh != null,
+                SkinnedMeshRenderer skin => skin.sharedMesh != null,
+                _ => false
+            };
+            return hasMesh && !InLowerLod(renderer);
+        }
+
+        /// <summary>The voxelizable renderers under an object, inactive children looked at (and turned down) too.</summary>
+        public static List<Renderer> Voxelizable(GameObject instance)
+        {
+            var list = new List<Renderer>();
+            foreach (Renderer r in instance.GetComponentsInChildren<Renderer>(true))
+                if (IsVoxelizable(r)) list.Add(r);
+            return list;
+        }
+
+        /// <summary>World bounds of the voxelizable renderers, from the first of them (not the pivot); false if none.</summary>
+        public static bool TryBounds(GameObject instance, out Bounds bounds)
+        {
+            bounds = default;
+            bool any = false;
+            foreach (Renderer r in Voxelizable(instance))
+            {
+                if (any) bounds.Encapsulate(r.bounds);
+                else bounds = r.bounds;
+                any = true;
+            }
+
+            return any;
+        }
+
+        private static bool InLowerLod(Renderer renderer)
+        {
+            LODGroup group = renderer.GetComponentInParent<LODGroup>(true);
+            if (group == null)
+                return false;
+            LOD[] lods = group.GetLODs();
+            for (int level = 0; level < lods.Length; level++)
+                foreach (Renderer r in lods[level].renderers)
+                    if (r == renderer)
+                        return level > 0;
+            return false;
+        }
+
         public static VoxelizerTriangles Collect(Transform part, IReadOnlyList<Renderer> renderers)
         {
             var corners = new List<float3>();

@@ -20,10 +20,17 @@ namespace Game.Voxels.EditorTools
         /// </summary>
         public const float BOUNDARY_NUDGE = 1e-3f;
 
-        public static VoxelizerPartGrid Sample(VoxelizerTriangles triangles, float voxelSize)
+        /// <param name="part">The part's path, for the error when it does not fit ("" — the root).</param>
+        /// <exception cref="System.InvalidOperationException">The part needs more than <see cref="MAX_SIZE"/> cells on an axis.</exception>
+        public static VoxelizerPartGrid Sample(VoxelizerTriangles triangles, float voxelSize, string part = "")
         {
             float3 origin = math.floor(triangles.Min / voxelSize) * voxelSize - voxelSize;
-            int3 size = math.clamp((int3)math.ceil((triangles.Max - origin) / voxelSize) + 2, 1, MAX_SIZE);
+            float3 cells = math.max(math.ceil((triangles.Max - origin) / voxelSize) + 2f, 1f);
+            if (math.any(cells > MAX_SIZE))
+                throw new System.InvalidOperationException(
+                    $"Voxelizer: part '{(part == "" ? "(root)" : part)}' needs {cells.x:0}×{cells.y:0}×{cells.z:0} voxels, " +
+                    $"at most {MAX_SIZE} per axis. Set Length in the config, or check the model's scale/units.");
+            var size = (int3)cells;
             var grid = new VoxelizerPartGrid
             {
                 Size = size,
