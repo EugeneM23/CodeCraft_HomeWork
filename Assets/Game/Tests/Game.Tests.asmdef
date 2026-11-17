@@ -10,7 +10,10 @@
         "Unity.Mathematics",
         "Unity.TextMeshPro",
         "UnityEngine.UI",
-        "DOTweenModules"
+        "DOTweenModules",
+        "SaveSystem",
+        "Loading",
+        "GameLoop"
     ],
     "includePlatforms": [
         "Editor"
@@ -22,7 +25,8 @@
         "nunit.framework.dll",
         "DOTween.dll",
         "Sirenix.OdinInspector.Attributes.dll",
-        "Sirenix.Serialization.dll"
+        "Sirenix.Serialization.dll",
+        "Newtonsoft.Json.dll"
     ],
     "autoReferenced": false,
     "defineConstraints": [

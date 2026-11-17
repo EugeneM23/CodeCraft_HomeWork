@@ -55,6 +55,7 @@ namespace Game
 
             Vector3 back = flat.sqrMagnitude > 1e-6f ? -flat.normalized : Vector3.zero;
             surface.Throw(point, Vector3.up * 3f + back * 1f, 1.4f, Random.Range(4, 9), 0.6f);
+            GameSignals.RaiseMudHit(point, 0.1f);
         }
 
         /// <summary>
@@ -65,6 +66,7 @@ namespace Game
         {
             if (!TryFindBelow(point, BLAST_REACH, out MudSurface surface, out Vector3 ground))
                 return;
+            GameSignals.RaiseMudHit(ground, radius);
 
             // Weaker the higher it went off.
             float closeness = 1f - Mathf.Clamp01((point.y - ground.y) / BLAST_REACH);

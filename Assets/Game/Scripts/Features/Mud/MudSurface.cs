@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using Ticking;
 using UnityEngine.Rendering;
 
 namespace Game
@@ -21,7 +22,7 @@ namespace Game
     /// They land on the mud's surface, not on the collider beneath it.
     /// </summary>
     [RequireComponent(typeof(BoxCollider))]
-    public sealed class MudSurface : MonoBehaviour
+    public sealed class MudSurface : MonoBehaviour, ILateUpdateListener
     {
         private const float BERM_SHARE = 0.3f;
         private const int PASS_DIG = 0;
@@ -98,6 +99,8 @@ namespace Game
         }
 
         /// <summary>One frame's stamps of one kind, drawn as one mesh.</summary>
+        private bool _looped;
+
         private sealed class Batch
         {
             public readonly Mesh Mesh = new() { name = "MudStamps", indexFormat = IndexFormat.UInt32 };
@@ -396,7 +399,7 @@ namespace Game
             _landings.Add(new Landing
             {
                 // A beat after it lands: the clump has to be seen hitting before the mud gives.
-                Time = Time.time + time + LANDING_LAG,
+                Time = GameTicks.Time + time + LANDING_LAG,
                 Point = point,
                 Heading = new Vector3(velocity.x, 0f, velocity.z),
                 Size = size
@@ -409,7 +412,7 @@ namespace Game
         /// </summary>
         private void StampLandings()
         {
-            float now = Time.time;
+            float now = GameTicks.Time;
             for (int i = _landings.Count - 1; i >= 0; i--)
             {
                 Landing landing = _landings[i];
@@ -471,7 +474,23 @@ namespace Game
             batch.Indices.Add(first + 3);
         }
 
-        private void LateUpdate()
+        // With the app the game loop ticks the surface (it stands on pause); without it (tests) it ticks itself
+        private void OnEnable() => _looped = GameTicks.TryAdd(this);
+
+        private void OnDisable()
+        {
+            if (_looped)
+                GameTicks.Remove(this);
+            _looped = false;
+        }
+
+        private void LateUpdate() // perf-ok: ticks itself without the game loop (tests); one flag check with it
+        {
+            if (!_looped)
+                OnLateUpdate(Time.deltaTime);
+        }
+
+        public void OnLateUpdate(float deltaTime)
         {
             if (_landings.Count > 0)
                 StampLandings();

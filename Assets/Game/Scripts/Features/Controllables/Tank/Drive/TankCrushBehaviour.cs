@@ -208,6 +208,7 @@ namespace Game
             DamageUseCase.TakeDamage(victim, new TakeDamageArgs(_crusher));
             if (IsAlive(victim))
                 return;
+            GameSignals.RaiseCrushed(point, speed);
 
             Vector3 under = Under(point);
             Spray(under, speed);
