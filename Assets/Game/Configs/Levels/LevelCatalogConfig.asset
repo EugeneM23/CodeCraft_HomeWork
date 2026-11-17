@@ -17,4 +17,6 @@ MonoBehaviour:
     _path: Assets/Game/Scenes/MainMenu.unity
   _levels:
   - {fileID: 11400000, guid: 76594bcf15ce96740b83de265f64c86a, type: 2}
-  _levelLayer: []
+  - {fileID: 11400000, guid: a2a39024ebcf6604c99b0b461fe99079, type: 2}
+  _levelLayer:
+  - {fileID: 782705038986123669, guid: 4b3b8cfc1b31a5a4ba03d6688e25a9f3, type: 3}
