@@ -12,6 +12,9 @@
         "UnityEngine.UI",
         "HighlightPlus",
         "DOTweenModules",
+        "SaveSystem",
+        "Loading",
+        "GameLoop",
         "Unity.InputSystem",
         "ScreenStack"
     ],
@@ -25,7 +28,8 @@
         "nunit.framework.dll",
         "DOTween.dll",
         "Sirenix.OdinInspector.Attributes.dll",
-        "Sirenix.Serialization.dll"
+        "Sirenix.Serialization.dll",
+        "Newtonsoft.Json.dll"
     ],
     "autoReferenced": false,
     "defineConstraints": [

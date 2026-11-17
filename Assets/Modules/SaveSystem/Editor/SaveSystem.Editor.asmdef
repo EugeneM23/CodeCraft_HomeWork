@@ -1,0 +1,23 @@
+{
+    "name": "SaveSystem.Editor",
+    "rootNamespace": "Saving.Editor",
+    "references": [
+        "SaveSystem",
+        "SaveSystem.Objects"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "SAVE_SYSTEM_JSON"
+    ],
+    "versionDefines": [
+        { "name": "com.unity.nuget.newtonsoft-json", "expression": "", "define": "SAVE_SYSTEM_JSON" }
+    ],
+    "noEngineReferences": false
+}

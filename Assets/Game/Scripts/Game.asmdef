@@ -11,7 +11,11 @@
         "UnityEngine.UI",
         "Unity.Postprocessing.Runtime",
         "Game.Voxels",
+        "Loading",
+        "SaveSystem",
+        "GameLoop",
         "Unity.InputSystem",
+        "Game.GameLoop.Adapters",
         "ScreenStack"
     ],
     "includePlatforms": [],

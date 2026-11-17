@@ -1,0 +1,39 @@
+{
+    "name": "SaveSystem.Tests",
+    "rootNamespace": "Saving.Tests",
+    "references": [
+        "SaveSystem",
+        "SaveSystem.Objects",
+        "SaveSystem.Tests.Runtime",
+        "SaveSystem.Editor",
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner",
+        "UnityEngine.UI",
+        "SaveSystem.UI",
+        "SaveSystem.UI.Editor",
+        "Unity.TextMeshPro"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll",
+        "Newtonsoft.Json.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS",
+        "SAVE_SYSTEM_JSON",
+        "SAVE_SYSTEM_UGUI",
+        "SAVE_SYSTEM_TESTS"
+    ],
+    "versionDefines": [
+        { "name": "com.unity.nuget.newtonsoft-json", "expression": "", "define": "SAVE_SYSTEM_JSON" },
+        { "name": "com.unity.ugui", "expression": "", "define": "SAVE_SYSTEM_UGUI" },
+        { "name": "com.unity.test-framework", "expression": "", "define": "SAVE_SYSTEM_TESTS" }
+    ],
+    "noEngineReferences": false
+}
