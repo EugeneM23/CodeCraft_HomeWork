@@ -19,10 +19,12 @@ var profile = AssetDatabase.LoadAssetAtPath<VolumeProfile>(Path);
 if (profile == null) return "no profile at " + Path;
 
 // Start clean: the profile held template leftovers (shadows/midtones/highlights) that Built-in never showed.
-foreach (var c in profile.components.ToList())
+// Every sub-asset goes, listed or not (an earlier version left an orphan behind).
+profile.components.Clear();
+foreach (var sub in AssetDatabase.LoadAllAssetsAtPath(Path))
 {
-    profile.components.Remove(c);
-    Object.DestroyImmediate(c, true);
+    if (sub != null && sub != profile)
+        Object.DestroyImmediate(sub, true);
 }
 
 T Add<T>() where T : VolumeComponent
