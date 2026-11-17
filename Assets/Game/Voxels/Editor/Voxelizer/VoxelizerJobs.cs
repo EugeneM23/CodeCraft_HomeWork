@@ -105,4 +105,109 @@ namespace Game.Voxels.EditorTools
             }
         }
     }
+
+    /// <summary>
+    /// Floods the empty space from the grid's border; every empty cell it never reaches is inside
+    /// (a = INSIDE). Unlike parity rays it does not care whether the mesh is closed or overlaps itself.
+    /// </summary>
+    [BurstCompile]
+    public struct FloodOutsideJob : IJob
+    {
+        public NativeArray<Color32> Cells;
+        public int3 Size;
+
+        public void Execute()
+        {
+            var outside = new NativeArray<bool>(Cells.Length, Allocator.Temp);
+            var queue = new NativeQueue<int>(Allocator.Temp);
+            for (int z = 0; z < Size.z; z++)
+            for (int y = 0; y < Size.y; y++)
+            for (int x = 0; x < Size.x; x++)
+            {
+                bool border = x == 0 || y == 0 || z == 0 || x == Size.x - 1 || y == Size.y - 1 || z == Size.z - 1;
+                int i = x + Size.x * (y + Size.y * z);
+                if (border && Cells[i].a == 0)
+                {
+                    outside[i] = true;
+                    queue.Enqueue(i);
+                }
+            }
+
+            int sy = Size.x, sz = Size.x * Size.y;
+            while (queue.TryDequeue(out int i))
+            {
+                int x = i % Size.x, y = (i / Size.x) % Size.y, z = i / sz;
+                if (x > 0) Visit(i - 1, ref outside, ref queue);
+                if (x < Size.x - 1) Visit(i + 1, ref outside, ref queue);
+                if (y > 0) Visit(i - sy, ref outside, ref queue);
+                if (y < Size.y - 1) Visit(i + sy, ref outside, ref queue);
+                if (z > 0) Visit(i - sz, ref outside, ref queue);
+                if (z < Size.z - 1) Visit(i + sz, ref outside, ref queue);
+            }
+
+            for (int i = 0; i < Cells.Length; i++)
+                if (Cells[i].a == 0 && !outside[i])
+                    Cells[i] = new Color32(0, 0, 0, VoxelizerPartGrid.INSIDE);
+
+            outside.Dispose();
+            queue.Dispose();
+        }
+
+        private void Visit(int j, ref NativeArray<bool> outside, ref NativeQueue<int> queue)
+        {
+            if (outside[j] || Cells[j].a != 0)
+                return;
+            outside[j] = true;
+            queue.Enqueue(j);
+        }
+    }
+
+    /// <summary>Inside cells take the colour of the nearest surface (breadth-first from it), × Darken.</summary>
+    [BurstCompile]
+    public struct ShadeInteriorJob : IJob
+    {
+        public NativeArray<Color32> Cells;
+        public int3 Size;
+        public float Darken;
+
+        public void Execute()
+        {
+            var done = new NativeArray<bool>(Cells.Length, Allocator.Temp);
+            var queue = new NativeQueue<int>(Allocator.Temp);
+            for (int i = 0; i < Cells.Length; i++)
+                if (Cells[i].a == VoxelizerPartGrid.SURFACE)
+                {
+                    done[i] = true;
+                    queue.Enqueue(i);
+                }
+
+            int sy = Size.x, sz = Size.x * Size.y;
+            while (queue.TryDequeue(out int i))
+            {
+                Color32 from = Cells[i];
+                int x = i % Size.x, y = (i / Size.x) % Size.y, z = i / sz;
+                if (x > 0) Spread(i - 1, from, ref done, ref queue);
+                if (x < Size.x - 1) Spread(i + 1, from, ref done, ref queue);
+                if (y > 0) Spread(i - sy, from, ref done, ref queue);
+                if (y < Size.y - 1) Spread(i + sy, from, ref done, ref queue);
+                if (z > 0) Spread(i - sz, from, ref done, ref queue);
+                if (z < Size.z - 1) Spread(i + sz, from, ref done, ref queue);
+            }
+
+            done.Dispose();
+            queue.Dispose();
+        }
+
+        private void Spread(int j, Color32 from, ref NativeArray<bool> done, ref NativeQueue<int> queue)
+        {
+            if (done[j] || Cells[j].a != VoxelizerPartGrid.INSIDE)
+                return;
+            done[j] = true;
+            bool fromSurface = from.a == VoxelizerPartGrid.SURFACE;
+            Cells[j] = fromSurface
+                ? new Color32((byte)(from.r * Darken), (byte)(from.g * Darken), (byte)(from.b * Darken), VoxelizerPartGrid.INSIDE)
+                : new Color32(from.r, from.g, from.b, VoxelizerPartGrid.INSIDE);
+            queue.Enqueue(j);
+        }
+    }
 }

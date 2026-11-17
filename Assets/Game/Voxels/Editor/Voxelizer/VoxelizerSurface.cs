@@ -9,6 +9,7 @@ namespace Game.Voxels.EditorTools
     public static class VoxelizerSurface
     {
         public const int MAX_SIZE = 512;
+        public const float INSIDE_SHADE = 0.85f;
 
         public static VoxelizerPartGrid Sample(VoxelizerTriangles triangles, float voxelSize)
         {
@@ -33,6 +34,12 @@ namespace Game.Voxels.EditorTools
             new ResolveCellsJob { Keys = keys.AsArray(), Cells = grid.Cells }.Run();
             keys.Dispose();
             return grid;
+        }
+
+        public static void Fill(VoxelizerPartGrid grid)
+        {
+            new FloodOutsideJob { Cells = grid.Cells, Size = grid.Size }.Run();
+            new ShadeInteriorJob { Cells = grid.Cells, Size = grid.Size, Darken = INSIDE_SHADE }.Run();
         }
     }
 }
