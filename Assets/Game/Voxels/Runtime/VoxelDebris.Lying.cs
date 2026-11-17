@@ -98,7 +98,7 @@ namespace Game.Voxels
             public int Evicting;
             /// <summary>Cubes sinking for any reason: LyingJob has nothing to do while this is 0.</summary>
             public int Sinking;
-            /// <summary>Cell slots taken (they are never given back).</summary>
+            /// <summary>Cell slots ever used: slots below it are in use or on the free list.</summary>
             public int Cells;
             /// <summary>Cubes flagged PENDING: LyingInstancesJob has nothing to gather while this and Sinking are 0.</summary>
             public int Unbaked;
@@ -217,7 +217,7 @@ namespace Game.Voxels
                     cube.SinkTime = SINK_TIME * (0.6f + 0.8f * ((h & 0xffffu) / 65535f));
                     cube.Flags |= EVICTED;
                     Lying[i] = cube;
-                    MarkDirty(Cells, cube.Cell);
+                    LeaveMesh(Cells, cube.Cell);
                     marked++;
                 }
 
@@ -369,7 +369,7 @@ namespace Game.Voxels
                         cube.Sinking = 1e-4f;
                         cube.SinkTime = query.Kind == QUERY_CRUSH ? CRUSH_SINK_TIME : SINK_TIME;
                         state.Sinking++;
-                        MarkDirty(Cells, cube.Cell);
+                        LeaveMesh(Cells, cube.Cell);
                     }
 
                     cube.Sinking += DeltaTime;

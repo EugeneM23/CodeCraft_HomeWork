@@ -242,6 +242,8 @@ namespace Game.Voxels
             public NativeArray<LyingCell> Cells;
             /// <summary>Cell coordinate to its slot.</summary>
             public NativeParallelHashMap<int2, int> CellIndex;
+            /// <summary>Slots given back by the main thread: a new cell takes one of these first.</summary>
+            public NativeList<int> FreeCells;
             public NativeReference<LyingState> State;
             public float Time;
 
@@ -361,15 +363,24 @@ namespace Game.Voxels
                 state.Unbaked++;
             }
 
-            /// <summary>The slot of the cell under <paramref name="position"/>, taken now if new; -1 when all MAX_CELLS are taken.</summary>
+            /// <summary>
+            /// The slot of the cell under <paramref name="position"/>, taken now if new - a given-back slot
+            /// first, then an unused one; -1 when every slot is taken.
+            /// </summary>
             private int TakeCell(float3 position, ref LyingState state)
             {
                 int2 coord = CellOf(position);
                 if (!CellIndex.TryGetValue(coord, out int cell))
                 {
-                    if (state.Cells >= Cells.Length)
+                    if (FreeCells.Length > 0)
+                    {
+                        cell = FreeCells[FreeCells.Length - 1];
+                        FreeCells.RemoveAt(FreeCells.Length - 1);
+                    }
+                    else if (state.Cells < Cells.Length)
+                        cell = state.Cells++;
+                    else
                         return -1;
-                    cell = state.Cells++;
                     CellIndex.TryAdd(coord, cell);
                     Cells[cell] = new LyingCell { Coord = coord };
                 }

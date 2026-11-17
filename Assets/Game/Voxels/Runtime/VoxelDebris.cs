@@ -249,7 +249,7 @@ namespace Game.Voxels
                 _step.Complete();
         }
 
-        public VoxelDebris(Material material, int capacity, int lyingCapacity = LYING_DEFAULT)
+        public VoxelDebris(Material material, int capacity, int lyingCapacity = LYING_DEFAULT, int cellCapacity = MAX_CELLS)
         {
             _capacity = capacity;
             _material = material;
@@ -280,7 +280,7 @@ namespace Game.Voxels
                 lightProbeUsage = LightProbeUsage.Off,
                 reflectionProbeUsage = ReflectionProbeUsage.Off
             };
-            CreateCells(material);
+            CreateCells(material, cellCapacity);
         }
 
         public bool HasRoom(int cubes)
@@ -442,6 +442,7 @@ namespace Game.Voxels
                 LyingColors = _lyingColors,
                 Cells = _cells,
                 CellIndex = _cellIndex,
+                FreeCells = _freeCells,
                 State = _lyingState,
                 Time = _time
             }.Schedule(handle);

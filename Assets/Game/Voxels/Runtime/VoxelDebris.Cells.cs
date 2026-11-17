@@ -23,10 +23,21 @@ namespace Game.Voxels
         public const float CELL_SIZE = 8f;
 
         /// <summary>
-        /// Cell slots: a slot, once taken by a cell, keeps it for good (its mesh is reused). 1024
-        /// cells of 8 m cover 256 x 256 m; a cube past them has no cell and is drawn instanced.
+        /// Cell slots (default; the constructor takes another). A slot whose cell has no cubes left and
+        /// an empty mesh is given back and taken by the next new cell, its Mesh reused. 1024 cells of
+        /// 8 m hold 256 x 256 m of lying debris at once; a cube past them has no cell and is drawn instanced.
         /// </summary>
-        private const int MAX_CELLS = 1024;
+        public const int MAX_CELLS = 1024;
+
+        /// <summary>
+        /// Cubes smaller than this (m) - crumbs, dust-sized bits, blood tiles - are left out of a cell's
+        /// far mesh: past LOD_DISTANCE they are a few pixels, and most lying cubes lie apart, so hiding
+        /// faces between neighbours saves little (13 % of triangles at 29k lying).
+        /// </summary>
+        public const float LOD_MIN_SIZE = 0.12f;
+
+        /// <summary>A cell whose nearest point is farther than this (m) from the view camera draws only its big cubes.</summary>
+        public const float LOD_DISTANCE = 30f;
 
         /// <summary>Most cells rebuilt a frame: the rest stay dirty for the next frames, so a bomb is no spike.</summary>
         private const int MAX_CELL_BUILDS_PER_FRAME = 4;
@@ -44,6 +55,13 @@ namespace Game.Voxels
             public int Cubes;
             /// <summary>1 when its mesh no longer shows its cubes: it waits for a build.</summary>
             public int Dirty;
+            /// <summary>
+            /// 1 when a cube left its mesh (sinking, crushed, evicted, woken): the mesh still draws it at
+            /// full size, so the cell is built before those that only gained cubes (drawn instanced meanwhile).
+            /// </summary>
+            public int Urgent;
+            /// <summary>1 while the slot is given back (on the free list, out of the index).</summary>
+            public int Free;
         }
 
         /// <summary>A cell mesh's vertex: position, normal, colour (alpha is dryness, as on chunk meshes).</summary>
@@ -57,13 +75,22 @@ namespace Game.Voxels
 
         private NativeArray<LyingCell> _cells;
         private NativeParallelHashMap<int2, int> _cellIndex;
+        /// <summary>Slots given back (main thread, before the step), taken first by new cells (CompactJob).</summary>
+        private NativeList<int> _freeCells;
         /// <summary>Per cell slot, created at its first build and reused: never destroyed during play.</summary>
         private Mesh[] _cellMeshes;
-        /// <summary>Per cell slot, as last applied: triangles in its mesh, and the mesh's world box.</summary>
+        /// <summary>
+        /// Per cell slot, as last applied: triangles in its mesh (submesh 0, every cube), in its far
+        /// submesh (1, the big cubes only: a prefix of the same index buffer), and the mesh's world box.
+        /// </summary>
         private int[] _cellTriangles;
+        private int[] _cellFarTriangles;
         private Bounds[] _cellBounds;
-        /// <summary>Per cell slot, this frame: drawn (see <see cref="CullCells"/>).</summary>
+        /// <summary>Per cell slot, this frame: drawn, and drawn far (see <see cref="CullCells"/>).</summary>
         private bool[] _cellVisible;
+        private bool[] _cellFar;
+        /// <summary>Plain dirty cells met while looking for urgent ones (ChooseCellBuilds).</summary>
+        private readonly int[] _plainDirty = new int[MAX_CELL_BUILDS_PER_FRAME];
         /// <summary>
         /// The debris material with instancing off: a cell mesh is drawn once, with its colours in the
         /// vertices and _InstColor (white) from the material.
@@ -75,6 +102,7 @@ namespace Game.Voxels
         private NativeArray<int> _buildCells;
         private NativeArray<float3x2> _builtBounds;
         private NativeArray<int> _builtTriangles;
+        private NativeArray<int> _builtFarTriangles;
         private Mesh.MeshDataArray _buildData;
         private int _buildCount;
         private bool _buildPending;
@@ -123,12 +151,17 @@ namespace Game.Voxels
             }
         }
 
-        /// <summary>Triangles in one cell slot's mesh: for tests and debugging.</summary>
-        public int LyingCellTriangles(int cell)
+        /// <summary>Triangles in the mesh of the cell under <paramref name="position"/> (0 with no cell): for tests and debugging.</summary>
+        public int LyingCellTrianglesAt(Vector3 position)
         {
             ApplyBuiltCells();
-            return _cellTriangles != null && cell >= 0 && cell < _cellTriangles.Length ? _cellTriangles[cell] : 0;
+            if (!_cellIndex.IsCreated || !_cellIndex.TryGetValue(CellOf(position), out int cell))
+                return 0;
+            return _cellTriangles[cell];
         }
+
+        /// <summary>Triangles of the cell meshes drawn last frame: for tests and debugging.</summary>
+        public int LyingTrianglesDrawn { get; private set; }
 
         /// <summary>Lying cubes drawn instanced, not from a cell mesh (sinking, waiting for a build, with no cell): for tests.</summary>
         public int LyingInstancedCount
@@ -142,17 +175,18 @@ namespace Game.Voxels
 
         private static int2 CellOf(float3 position) => (int2)math.floor(position.xz / CELL_SIZE);
 
-        /// <summary>The cell's mesh no longer shows its cubes (-1, no cell: nothing to do).</summary>
-        private static void MarkDirty(NativeArray<LyingCell> cells, int cell)
+        /// <summary>A cube of the cell left its mesh (it sinks): the cell is rebuilt first (-1, no cell: nothing to do).</summary>
+        private static void LeaveMesh(NativeArray<LyingCell> cells, int cell)
         {
             if (cell < 0)
                 return;
             LyingCell c = cells[cell];
             c.Dirty = 1;
+            c.Urgent = 1;
             cells[cell] = c;
         }
 
-        /// <summary>A cube leaves its cell; the cell is rebuilt only when the cube was in its mesh.</summary>
+        /// <summary>A cube leaves its cell; the cell is rebuilt (first) only when the cube was in its mesh.</summary>
         private static void LeaveCell(NativeArray<LyingCell> cells, int cell, bool inMesh)
         {
             if (cell < 0)
@@ -160,21 +194,29 @@ namespace Game.Voxels
             LyingCell c = cells[cell];
             c.Cubes = math.max(0, c.Cubes - 1);
             if (inMesh)
+            {
                 c.Dirty = 1;
+                c.Urgent = 1;
+            }
             cells[cell] = c;
         }
 
-        private void CreateCells(Material material)
+        private void CreateCells(Material material, int cellCapacity)
         {
-            _cells = new NativeArray<LyingCell>(MAX_CELLS, Allocator.Persistent);
-            _cellIndex = new NativeParallelHashMap<int2, int>(MAX_CELLS, Allocator.Persistent);
-            _cellMeshes = new Mesh[MAX_CELLS];
-            _cellTriangles = new int[MAX_CELLS];
-            _cellBounds = new Bounds[MAX_CELLS];
-            _cellVisible = new bool[MAX_CELLS];
+            cellCapacity = math.max(1, cellCapacity);
+            _cells = new NativeArray<LyingCell>(cellCapacity, Allocator.Persistent);
+            _cellIndex = new NativeParallelHashMap<int2, int>(cellCapacity, Allocator.Persistent);
+            _cellMeshes = new Mesh[cellCapacity];
+            _freeCells = new NativeList<int>(cellCapacity, Allocator.Persistent);
+            _cellTriangles = new int[cellCapacity];
+            _cellFarTriangles = new int[cellCapacity];
+            _cellBounds = new Bounds[cellCapacity];
+            _cellVisible = new bool[cellCapacity];
+            _cellFar = new bool[cellCapacity];
             _buildCells = new NativeArray<int>(MAX_CELL_BUILDS_PER_FRAME, Allocator.Persistent);
             _builtBounds = new NativeArray<float3x2>(MAX_CELL_BUILDS_PER_FRAME, Allocator.Persistent);
             _builtTriangles = new NativeArray<int>(MAX_CELL_BUILDS_PER_FRAME, Allocator.Persistent);
+            _builtFarTriangles = new NativeArray<int>(MAX_CELL_BUILDS_PER_FRAME, Allocator.Persistent);
             _instancedMatrices = new NativeArray<float4x4>(MAX_LYING_INSTANCED, Allocator.Persistent);
             _instancedColors = new NativeArray<float4>(MAX_LYING_INSTANCED, Allocator.Persistent);
             _instancedCount = new NativeReference<int>(Allocator.Persistent);
@@ -202,9 +244,11 @@ namespace Game.Voxels
             }
             if (_cells.IsCreated) _cells.Dispose();
             if (_cellIndex.IsCreated) _cellIndex.Dispose();
+            if (_freeCells.IsCreated) _freeCells.Dispose();
             if (_buildCells.IsCreated) _buildCells.Dispose();
             if (_builtBounds.IsCreated) _builtBounds.Dispose();
             if (_builtTriangles.IsCreated) _builtTriangles.Dispose();
+            if (_builtFarTriangles.IsCreated) _builtFarTriangles.Dispose();
             if (_instancedMatrices.IsCreated) _instancedMatrices.Dispose();
             if (_instancedColors.IsCreated) _instancedColors.Dispose();
             if (_instancedCount.IsCreated) _instancedCount.Dispose();
@@ -217,24 +261,56 @@ namespace Game.Voxels
         }
 
         /// <summary>
-        /// Picks up to MAX_CELL_BUILDS_PER_FRAME dirty cells, in turn, for this step to build, and
-        /// allocates their mesh data. Main thread, with no job of the step scheduled yet.
+        /// Picks up to MAX_CELL_BUILDS_PER_FRAME dirty cells for this step to build - urgent ones (a cube
+        /// left the mesh) first, then those that only gained cubes, each kind in turn - and allocates
+        /// their mesh data. On the way gives back the slots of cells with no cubes and an empty mesh.
+        /// Main thread, after the last step's meshes were applied, with no job of the step scheduled yet.
         /// </summary>
         private void ChooseCellBuilds()
         {
             _buildCount = 0;
+            int plain = 0;
+            int last = -1;
             int cells = _lyingState.Value.Cells;
-            for (int j = 0; j < cells && _buildCount < MAX_CELL_BUILDS_PER_FRAME; j++)
+            for (int j = 0; j < cells; j++)
             {
                 int c = (_buildFrom + j) % cells;
-                if (_cells[c].Dirty == 0)
+                LyingCell cell = _cells[c];
+                if (cell.Free != 0)
                     continue;
-                _buildCells[_buildCount++] = c;
-                _buildFrom = c + 1;
+
+                if (cell.Cubes == 0 && cell.Dirty == 0 && _cellTriangles[c] == 0)
+                {
+                    _cellIndex.Remove(cell.Coord);
+                    cell.Free = 1;
+                    _cells[c] = cell;
+                    _freeCells.Add(c);
+                    continue;
+                }
+
+                if (cell.Dirty == 0)
+                    continue;
+                if (cell.Urgent != 0)
+                {
+                    if (_buildCount < MAX_CELL_BUILDS_PER_FRAME)
+                    {
+                        _buildCells[_buildCount++] = c;
+                        last = c;
+                    }
+                }
+                else if (plain < MAX_CELL_BUILDS_PER_FRAME)
+                    _plainDirty[plain++] = c;
+            }
+
+            for (int p = 0; p < plain && _buildCount < MAX_CELL_BUILDS_PER_FRAME; p++)
+            {
+                _buildCells[_buildCount++] = _plainDirty[p];
+                last = _plainDirty[p];
             }
 
             if (_buildCount == 0)
                 return;
+            _buildFrom = last + 1;
             using (s_buildCellsMarker.Auto())
                 _buildData = Mesh.AllocateWritableMeshData(_buildCount);
             _buildPending = true;
@@ -254,7 +330,8 @@ namespace Game.Voxels
                     State = _lyingState,
                     Meshes = _buildData,
                     Bounds = _builtBounds,
-                    Triangles = _builtTriangles
+                    Triangles = _builtTriangles,
+                    FarTriangles = _builtFarTriangles
                 }.Schedule(_buildCount, 1, handle);
             }
 
@@ -306,6 +383,7 @@ namespace Game.Voxels
                     _cellMeshes[cell].bounds = bounds;
                     _cellBounds[cell] = bounds;
                     _cellTriangles[cell] = _builtTriangles[k];
+                    _cellFarTriangles[cell] = _builtFarTriangles[k];
                 }
             }
         }
@@ -321,15 +399,19 @@ namespace Game.Voxels
                 CullCells(cells);
 
             int drawn = 0;
+            int triangles = 0;
             for (int c = 0; c < cells; c++)
             {
                 if (!_cellVisible[c])
                     continue;
+                bool far = _cellFar[c];
                 _cellParams.worldBounds = _cellBounds[c];
-                Graphics.RenderMesh(_cellParams, _cellMeshes[c], 0, Matrix4x4.identity);
+                Graphics.RenderMesh(_cellParams, _cellMeshes[c], far ? 1 : 0, Matrix4x4.identity);
                 drawn++;
+                triangles += far ? _cellFarTriangles[c] : _cellTriangles[c];
             }
             LyingCellsDrawn = drawn;
+            LyingTrianglesDrawn = triangles;
 
             int count = _instancedCount.Value;
             if (count == 0)
@@ -351,7 +433,7 @@ namespace Game.Voxels
         /// <summary>
         /// Marks which of the first <paramref name="cells"/> cells are drawn: a mesh with triangles,
         /// its box in the view camera's frustum and its nearest point within LYING_DRAW_DISTANCE
-        /// (every non-empty one with no camera).
+        /// (every non-empty one with no camera); past LOD_DISTANCE only its far submesh, if it has one.
         /// </summary>
         private void CullCells(int cells)
         {
@@ -364,24 +446,32 @@ namespace Game.Voxels
             }
 
             const float FAR_SQ = LYING_DRAW_DISTANCE * LYING_DRAW_DISTANCE;
+            const float LOD_SQ = LOD_DISTANCE * LOD_DISTANCE;
             for (int c = 0; c < cells; c++)
             {
                 bool visible = _cellTriangles[c] > 0;
+                bool far = false;
                 if (visible && camera != null)
                 {
                     Bounds bounds = _cellBounds[c];
                     float3 gap = math.max(0f, math.max((float3)bounds.min - eye, eye - (float3)bounds.max));
-                    visible = math.lengthsq(gap) <= FAR_SQ && GeometryUtility.TestPlanesAABB(_frustum, bounds);
+                    float distanceSq = math.lengthsq(gap);
+                    far = distanceSq > LOD_SQ;
+                    visible = distanceSq <= FAR_SQ && (!far || _cellFarTriangles[c] > 0) &&
+                              GeometryUtility.TestPlanesAABB(_frustum, bounds);
                 }
                 _cellVisible[c] = visible;
+                _cellFar[c] = far;
             }
         }
 
         /// <summary>
         /// Bakes one chosen cell per index: its lying cubes that are not sinking, each face left out
         /// when it looks down (lies on the ground) or when the next cube on its piece's grid, of the
-        /// same size, covers it. Writes the mesh data, the mesh's world box and its triangle count,
-        /// and clears the cell's Dirty.
+        /// same size, covers it. The big cubes (LOD_MIN_SIZE and up) go first in the index buffer:
+        /// submesh 0 is every face, submesh 1 (the far mesh) the big cubes' faces only - the same
+        /// indices, a prefix of them - so a cell is one draw near or far. Writes the mesh data, the
+        /// mesh's world box and both triangle counts, and clears the cell's Dirty and Urgent.
         /// </summary>
         [BurstCompile]
         private struct BuildCellsJob : IJobParallelFor
@@ -394,34 +484,47 @@ namespace Game.Voxels
             public Mesh.MeshDataArray Meshes;
             public NativeArray<float3x2> Bounds;
             public NativeArray<int> Triangles;
+            /// <summary>Triangles of submesh 1, the far mesh (big cubes only).</summary>
+            public NativeArray<int> FarTriangles;
 
             public void Execute(int k)
             {
                 int cell = Chosen[k];
                 LyingCell c = Cells[cell];
                 c.Dirty = 0;
+                c.Urgent = 0;
                 Cells[cell] = c;
 
                 int count = State.Value.Count;
                 var members = new NativeList<int>(64, Allocator.Temp);
+                var small = new NativeList<int>(64, Allocator.Temp);
                 var grid = new NativeParallelHashMap<int4, float>(64, Allocator.Temp);
                 for (int i = 0; i < count; i++)
                 {
                     LyingCube cube = Lying[i];
                     if (cube.Cell != cell || cube.Sinking > 0f)
                         continue;
-                    members.Add(i);
+                    if (cube.Size >= LOD_MIN_SIZE)
+                        members.Add(i);
+                    else
+                        small.Add(i);
                     if ((cube.Flags & LAID) == 0 && OnGrid(cube, out int3 g))
                         grid.TryAdd(new int4(cube.Group, g), cube.Size);
                 }
+                // Big cubes first, then the small ones.
+                int bigMembers = members.Length;
+                members.AddRange(small.AsArray());
 
                 var masks = new NativeArray<byte>(members.Length, Allocator.Temp);
                 int faces = 0;
+                int bigFaces = 0;
                 for (int m = 0; m < members.Length; m++)
                 {
                     byte mask = VisibleFaces(Lying[members[m]], grid);
                     masks[m] = mask;
                     faces += math.countbits((uint)mask);
+                    if (m == bigMembers - 1)
+                        bigFaces = faces;
                 }
 
                 int vertices = faces * 4;
@@ -489,19 +592,21 @@ namespace Game.Voxels
                     max = min;
                 }
 
-                data.subMeshCount = 1;
-                data.SetSubMesh(0, new SubMeshDescriptor(0, indices)
-                {
-                    bounds = new Bounds((min + max) * 0.5f, max - min),
-                    vertexCount = vertices
-                }, MeshUpdateFlags.DontRecalculateBounds | MeshUpdateFlags.DontValidateIndices | MeshUpdateFlags.DontNotifyMeshUsers);
+                const MeshUpdateFlags FLAGS = MeshUpdateFlags.DontRecalculateBounds | MeshUpdateFlags.DontValidateIndices |
+                                              MeshUpdateFlags.DontNotifyMeshUsers;
+                var bounds = new Bounds((min + max) * 0.5f, max - min);
+                data.subMeshCount = 2;
+                data.SetSubMesh(0, new SubMeshDescriptor(0, indices) { bounds = bounds, vertexCount = vertices }, FLAGS);
+                data.SetSubMesh(1, new SubMeshDescriptor(0, bigFaces * 6) { bounds = bounds, vertexCount = bigFaces * 4 }, FLAGS);
 
                 Bounds[k] = new float3x2(min, max);
                 Triangles[k] = faces * 2;
+                FarTriangles[k] = bigFaces * 2;
 
                 layout.Dispose();
                 masks.Dispose();
                 grid.Dispose();
+                small.Dispose();
                 members.Dispose();
             }
 
