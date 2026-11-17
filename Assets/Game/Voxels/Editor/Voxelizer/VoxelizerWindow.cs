@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using Unity.Mathematics;
 using UnityEditor;
 using UnityEngine;
 
@@ -20,6 +21,7 @@ namespace Game.Voxels.EditorTools
         private VoxelizerPreview _preview;
         private Vector2 _scroll;
         private string _error = "";
+        private int _part;
 
         [MenuItem("Tools/Voxels/Voxelizer")]
         public static void Open()
@@ -84,11 +86,85 @@ namespace Game.Voxels.EditorTools
                         Bake();
             }
 
+            VoxFileButtons();
             if (EditorApplication.isPlaying)
                 EditorGUILayout.HelpBox("Baking is off in Play mode.", MessageType.Info);
             if (_preview != null && _preview.PartCounts != "")
                 EditorGUILayout.HelpBox(_preview.PartCounts.TrimEnd(), MessageType.None);
             EditorGUILayout.EndScrollView();
+        }
+
+        /// <summary>The baked VX_&lt;Name&gt;_Data.asset next to the config, or null.</summary>
+        private VoxelModelAsset BakedAsset() =>
+            _config.model == null ? null : AssetDatabase.LoadAssetAtPath<VoxelModelAsset>($"{Folder()}/VX_{_config.model.name}_Data.asset");
+
+        private void VoxFileButtons()
+        {
+            VoxelModelAsset asset = BakedAsset();
+            bool ready = asset != null && asset.parts.Length > 0;
+            EditorGUILayout.Space();
+            using (new EditorGUI.DisabledScope(!ready || EditorApplication.isPlaying))
+            {
+                string[] names = ready ? PartNames(asset) : new[] { "(bake first)" };
+                _part = EditorGUILayout.Popup("MagicaVoxel part", math.clamp(_part, 0, names.Length - 1), names);
+                using (new EditorGUILayout.HorizontalScope())
+                {
+                    if (GUILayout.Button("Export .vox")) ExportVox(asset);
+                    if (GUILayout.Button("Import .vox")) ImportVox(asset);
+                }
+            }
+        }
+
+        private static string[] PartNames(VoxelModelAsset asset)
+        {
+            var names = new string[asset.parts.Length];
+            for (int i = 0; i < names.Length; i++)
+                names[i] = asset.parts[i].path == "" ? "(root)" : asset.parts[i].path.Replace('/', '∕'); // '/' would make a submenu
+            return names;
+        }
+
+        private void ExportVox(VoxelModelAsset asset)
+        {
+            try
+            {
+                VoxelModelAsset.Part part = asset.parts[_part];
+                if (math.any(new int3(part.size.x, part.size.y, part.size.z) > VoxFile.MAX_SIZE))
+                {
+                    _error = "The part is over 256 voxels a side; it cannot be exported in pieces.";
+                    return;
+                }
+
+                string path = EditorUtility.SaveFilePanel("Export .vox", "", $"{_config.model.name}_{_part}.vox", "vox");
+                if (path == "") return;
+                File.WriteAllBytes(path, VoxelizerVoxExchange.Export(asset, _part));
+                _error = "";
+            }
+            catch (Exception e)
+            {
+                _error = e.Message;
+                Debug.LogException(e);
+            }
+
+            GUIUtility.ExitGUI();
+        }
+
+        private void ImportVox(VoxelModelAsset asset)
+        {
+            try
+            {
+                string path = EditorUtility.OpenFilePanel("Import .vox", "", "vox");
+                if (path == "") return;
+                VoxelizerVoxExchange.Import(asset, _part, File.ReadAllBytes(path));
+                AssetDatabase.SaveAssetIfDirty(asset);
+                _error = "";
+            }
+            catch (Exception e)
+            {
+                _error = e.Message;
+                Debug.LogException(e);
+            }
+
+            GUIUtility.ExitGUI();
         }
 
         private void Panels()
