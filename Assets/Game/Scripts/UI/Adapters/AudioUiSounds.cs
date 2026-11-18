@@ -25,6 +25,19 @@ namespace Game.UI.Adapters
                 case UiSound.Error: sounds.Error(); break;
                 case UiSound.Victory: sounds.Victory(); break;
                 case UiSound.Defeat: sounds.Defeat(); break;
+
+                // The audio adapter's IUiSounds in this branch has no methods for these yet: the nearest old sound.
+                // They move to IUiSounds.Play(AudioKeys.UI.*) when the audio team's new interface is merged.
+                case UiSound.Close: sounds.Back(); break;
+                case UiSound.Install: sounds.Purchase(); break;
+                case UiSound.Upgrade: sounds.Purchase(); break;
+                case UiSound.MarksTick: sounds.Hover(); break;
+                case UiSound.SamplesTick: sounds.Hover(); break;
+                case UiSound.PauseOn: sounds.Open(); break;
+                case UiSound.PauseOff: sounds.Back(); break;
+                case UiSound.SkillChoice: sounds.Click(); break;
+                case UiSound.SkillTaken: sounds.Click(); break;
+                case UiSound.LevelUp: sounds.Open(); break;
             }
         }
     }

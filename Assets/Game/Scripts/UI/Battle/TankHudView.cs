@@ -8,7 +8,7 @@ using UnityEngine.UI;
 namespace Game
 {
     /// <summary>
-    /// The tank's part of the HUD: hull health and armour bars, the cannon's reload (bar, seconds and the
+    /// The tank's part of the HUD: the hull's health bar (the tank's real max), the cannon's reload (bar, seconds and the
     /// arc round the crosshair), the machine gun's ammo and the boost lamp. Follows PlayerContext.Character
     /// (the tank while the player drives it); parts the character lacks are hidden. Health, ammo and boost
     /// come by their events; the cooldowns have none and are read in Tick, from cached fields, without
@@ -21,11 +21,6 @@ namespace Game
         [Header("Hull")]
         [SerializeField] private Image _healthFill;
         [SerializeField] private TMP_Text _healthText;
-        [Tooltip("Placeholder until the tank has armour")]
-        [SerializeField] private Image _armorFill;
-        [SerializeField] private TMP_Text _armorText;
-        [SerializeField, Min(0)] private int _armor = 40;
-        [SerializeField, Min(1)] private int _armorMax = 100;
 
         [Header("Cannon")]
         [SerializeField] private GameObject _gunGroup;
@@ -87,9 +82,6 @@ namespace Game
 
         private void OnEnable()
         {
-            _armorFill.fillAmount = Mathf.Clamp01((float)_armor / _armorMax);
-            _armorText.SetText("{0:0}/{1:0}", _armor, _armorMax);
-
             if (GameContext.TryGetInstance(out GameContext context))
                 _characterSubscription = context.GetPlayerContext().GetCharacter().Observe(_onCharacterChanged);
             else

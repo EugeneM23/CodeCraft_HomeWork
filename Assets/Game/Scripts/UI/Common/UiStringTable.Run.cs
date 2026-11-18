@@ -12,6 +12,7 @@ namespace Game
         static partial void AddRunRussian(Dictionary<string, string> table)
         {
             // ---------- HUD ----------
+            table["run.hud_health"] = "Здоровье";
             table["run.hud_arena_format"] = "Арена {0:0}/{1:0}"; // TMP
             table["run.hud_time_format"] = "{0:00}:{1:00}"; // TMP
             table["run.hud_level_format"] = "Ур. {0:0}"; // TMP

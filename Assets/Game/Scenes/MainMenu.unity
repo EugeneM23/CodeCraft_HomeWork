@@ -37,7 +37,7 @@ RenderSettings:
   m_ReflectionBounces: 1
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
-  m_Sun: {fileID: 794662539}
+  m_Sun: {fileID: 650661501}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -119,7 +119,7 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1001 &794662537
+--- !u!1001 &650661499
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -176,10 +176,10 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e23702280bbecb248861748c82b2a6cc, type: 3}
---- !u!114 &794662538 stripped
+--- !u!114 &650661500 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2541300735379651218, guid: e23702280bbecb248861748c82b2a6cc, type: 3}
-  m_PrefabInstance: {fileID: 794662537}
+  m_PrefabInstance: {fileID: 650661499}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
@@ -187,12 +187,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8cdaf97999269824eb7a667c0d9d1fab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Game::Game.HangarStage
---- !u!108 &794662539 stripped
+--- !u!108 &650661501 stripped
 Light:
   m_CorrespondingSourceObject: {fileID: 1561657543283811392, guid: e23702280bbecb248861748c82b2a6cc, type: 3}
-  m_PrefabInstance: {fileID: 794662537}
+  m_PrefabInstance: {fileID: 650661499}
   m_PrefabAsset: {fileID: 0}
---- !u!1001 &830475980
+--- !u!1001 &1721870353
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -203,7 +203,7 @@ PrefabInstance:
     - target: {fileID: 2531019065769818960, guid: 240a8aa21813d4248abb601978d6c71f, type: 3}
       propertyPath: _stage
       value: 
-      objectReference: {fileID: 794662538}
+      objectReference: {fileID: 650661500}
     - target: {fileID: 4503416693226843381, guid: 240a8aa21813d4248abb601978d6c71f, type: 3}
       propertyPath: m_Name
       value: MenuUi
@@ -297,5 +297,5 @@ PrefabInstance:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
-  - {fileID: 794662537}
-  - {fileID: 830475980}
+  - {fileID: 650661499}
+  - {fileID: 1721870353}

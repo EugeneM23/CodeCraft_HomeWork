@@ -137,16 +137,14 @@ namespace Game.EditorTools
         {
             RectTransform group = UiFactory.Rect("Hull", parent);
             UiFactory.Place(group, Vector2.zero, new Vector2(UiStyle.PADDING, UiStyle.PADDING),
-                new Vector2(LABEL_WIDTH + BAR_WIDTH + VALUE_WIDTH + 2 * UiStyle.SPACING, 2 * ROW_HEIGHT + 6));
+                new Vector2(LABEL_WIDTH + BAR_WIDTH + VALUE_WIDTH + 2 * UiStyle.SPACING, ROW_HEIGHT));
             UiFactory.Vertical(group, 6);
 
-            Row(group, "Health", "hud.health", UiStyle.Health, out Image healthFill, out TMP_Text healthText);
-            Row(group, "Armor", "hud.armor", UiStyle.Armor, out Image armorFill, out TMP_Text armorText);
+            // GDD HUD: health only, no armour stat
+            Row(group, "Health", "run.hud_health", UiStyle.Health, out Image healthFill, out TMP_Text healthText);
 
             UiFactory.SetField(tank, "_healthFill", healthFill);
             UiFactory.SetField(tank, "_healthText", healthText);
-            UiFactory.SetField(tank, "_armorFill", armorFill);
-            UiFactory.SetField(tank, "_armorText", armorText);
         }
 
         private static void CreateWeaponBars(RectTransform parent, TankHudView tank)

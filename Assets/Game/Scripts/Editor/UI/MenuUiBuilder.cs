@@ -126,6 +126,7 @@ namespace Game.EditorTools
             UiFactory.Place(column.rectTransform, new Vector2(0f, 1f), new Vector2(UiStyle.PADDING * 2, -180f),
                 new Vector2(420f, height));
             UiFactory.Vertical(column.rectTransform, UiStyle.SPACING, (int)UiStyle.PADDING);
+            UiFactory.FitHeight(column.rectTransform); // fits the visible buttons: Continue is hidden without a save
 
             Button resume = UiFactory.LocalizedButton("Continue", column.transform, "hangar.main.continue", accent: true);
             Button newGame = UiFactory.LocalizedButton("NewGame", column.transform, "hangar.main.new_game");

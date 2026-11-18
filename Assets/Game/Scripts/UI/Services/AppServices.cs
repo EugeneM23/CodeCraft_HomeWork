@@ -23,6 +23,8 @@ namespace Game
         private static RunServiceHudSource s_runAdapter;
         private static StubRunHudSource s_stubRun;
         private static IHangarSource s_hangar;
+        private static MetaProgressHangarSource s_hangarAdapter;
+        private static StubHangarSource s_stubHangar;
 
         // Made on first use when there is no app
         private static SceneGameFlow s_stubFlow;
@@ -112,8 +114,26 @@ namespace Game
             set => s_runHud = value;
         }
 
-        /// <summary>The progress as the menus see it. Stub until the adapter over the core's save and catalogs.</summary>
-        public static IHangarSource Hangar { get => s_hangar ??= new StubHangarSource(); set => s_hangar = value; }
+        /// <summary>The progress as the menus see it: the core's IMetaProgress and GameCatalog, else a stub (no app).</summary>
+        public static IHangarSource Hangar
+        {
+            get
+            {
+                if (s_hangar != null) return s_hangar;
+                if (AppContext.TryGet(out AppContext app) && app.TryGetMetaProgress(out IMetaProgress meta) &&
+                    app.TryGetGameCatalog(out GameCatalog catalog))
+                {
+                    if (s_hangarAdapter == null || !ReferenceEquals(s_hangarAdapter.Meta, meta))
+                    {
+                        s_hangarAdapter?.Dispose();
+                        s_hangarAdapter = new MetaProgressHangarSource(meta, catalog);
+                    }
+                    return s_hangarAdapter;
+                }
+                return s_stubHangar ??= new StubHangarSource();
+            }
+            set => s_hangar = value;
+        }
 
         public static IAudioVolumes Audio { get => s_audio ??= new ListenerAudioVolumes(); set => s_audio = value; }
         public static IUiSounds UiSounds { get => s_uiSounds ??= new SilentUiSounds(); set => s_uiSounds = value; }
@@ -169,6 +189,9 @@ namespace Game
             s_runAdapter = null;
             s_stubRun = null;
             s_hangar = null;
+            s_hangarAdapter?.Dispose();
+            s_hangarAdapter = null;
+            s_stubHangar = null;
             s_stubFlow = null;
             s_stubPause = null;
             s_stubSettings = null;
