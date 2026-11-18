@@ -38,6 +38,10 @@ namespace Game.Voxels
         /// <summary>A building's piece landing faster than this (m/s, a fall of about a storey at 2 g) breaks up evenly.</summary>
         private const float HARD_LANDING = 6f;
 
+        /// <summary>...into one piece per this many voxels, up to HARD_MAX_PIECES.</summary>
+        private const int HARD_PIECE_VOXELS = 250;
+        private const int HARD_MAX_PIECES = 32;
+
         /// <summary>
         /// Most voxels breaking up in one frame: a falling house's pieces that land together break
         /// over a few frames (each later hit is its own chance), not all in one.
@@ -48,7 +52,7 @@ namespace Game.Voxels
         private static int s_fracturedVoxels;
 
         /// <summary>A piece lighter than this (kg) presses on nothing it lands on: rubble does not bring a house down.</summary>
-        private const float PRESSING_MASS = 2000f;
+        private const float PRESSING_MASS = 800f;
 
         private static readonly ContactPoint[] Contacts = new ContactPoint[8];
 
@@ -135,8 +139,8 @@ namespace Game.Voxels
             // Landing hard it breaks all through, into twice as many.
             bool hard = _body.HasStrength && speed > HARD_LANDING;
             if (_body.HasStrength)
-                pieces = Mathf.Max(pieces, Mathf.Min(hard ? MAX_STRUCTURE_PIECES * 3 / 2 : MAX_STRUCTURE_PIECES,
-                    _body.SolidCount / (hard ? STRUCTURE_PIECE_VOXELS / 2 : STRUCTURE_PIECE_VOXELS)));
+                pieces = Mathf.Max(pieces, Mathf.Min(hard ? HARD_MAX_PIECES : MAX_STRUCTURE_PIECES,
+                    _body.SolidCount / (hard ? HARD_PIECE_VOXELS : STRUCTURE_PIECE_VOXELS)));
 
             // Within the frame's budget, the first break always: the rest break on a later hit.
             if (Time.frameCount != s_fractureFrame)
@@ -194,8 +198,8 @@ namespace Game.Voxels
         /// <summary>Joules of a landing that start crushing what it lands on.</summary>
         private const float CRUSH_ENERGY = 40000f;
 
-        /// <summary>Crushed radius (m) per cube root of joules at one contact: 500 kJ crush 1.6 m.</summary>
-        private const float CRUSH_PER_ENERGY = 0.02f;
+        /// <summary>Crushed radius (m) per cube root of joules at one contact: 500 kJ crush 2.4 m (capped at CRUSH_MAX_RADIUS).</summary>
+        private const float CRUSH_PER_ENERGY = 0.03f;
 
         private const float CRUSH_MAX_RADIUS = 2f;
 
@@ -207,7 +211,7 @@ namespace Game.Voxels
         private const int CRUSH_DEBRIS = 250;
 
         /// <summary>Most crushed spots in one frame: a whole falling house lands over a few.</summary>
-        private const int FRAME_CRUSH_SPOTS = 12;
+        private const int FRAME_CRUSH_SPOTS = 16;
 
         private static int s_crushFrame = -1;
         private static int s_crushSpots;
