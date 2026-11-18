@@ -47,21 +47,33 @@ namespace Game
             Pop();
         }
 
+        private static void BloodCrumbs(Vector3 at, int count, float minSpeed, float maxSpeed, float size)
+        {
+            VoxelWorld world = VoxelWorld.Instance;
+            VoxelDebris debris = world != null ? world.Debris : null;
+            if (debris == null)
+                return;
+            for (int i = 0; i < count; i++)
+            {
+                Vector3 heading = (Vector3.up + Random.insideUnitSphere * 0.9f).normalized;
+                Color32 color = Blood[Random.Range(0, Blood.Length)];
+                if (debris.Spawn(at, heading * Random.Range(minSpeed, maxSpeed), color, size * Random.Range(0.8f, 1.2f)) < 0)
+                    break;
+            }
+        }
+
         private void Pop()
         {
             _popped = true;
             Vector3 at = _body.WorldBounds.center;
 
-            VoxelSpray.Burst(at, Vector3.up, 90, 2f, 6f, 0.9f, Blood, 0.04f);
-            VoxelSpray.Burst(at, Vector3.up, 40, 1f, 4f, 1f, Blood, 0.07f);
+            // Red crumbs that fall and fade, not blood drops: a drop lies as a flat world tile for good, and on a
+            // tank that turns (the lab's table) or on its sloped armour those tiles hung over the model. The blood
+            // that stays is painted into the voxels round him, so it turns with the tank.
+            BloodCrumbs(at, 90, 2f, 6f, 0.04f);
+            BloodCrumbs(at, 40, 1f, 4f, 0.07f);
             if (_inside != null && _inside.IsCreated)
                 _inside.Paint(at, 0.7f, Blood[0], 0.45f);
-
-            var drip = new GameObject("CrewDrip");
-            drip.transform.position = at;
-            var points = new List<Vector3> { at, at + Vector3.left * 0.1f, at + Vector3.forward * 0.1f };
-            drip.AddComponent<VoxelDrip>().Begin(points, Blood, 0.035f, 3f, 12f);
-            Destroy(drip, 5f);
 
             // What is left of him goes as clods: the whole body carved out.
             _body.CarveSphere(at, 1.2f, 3f, 300);
