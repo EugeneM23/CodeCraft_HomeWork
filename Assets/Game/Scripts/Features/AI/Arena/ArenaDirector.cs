@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Atomic.Entities;
-using Game.Arenas;
 using Unity.Profiling;
 using UnityEngine;
 

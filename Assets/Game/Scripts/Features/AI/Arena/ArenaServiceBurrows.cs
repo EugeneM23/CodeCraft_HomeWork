@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Game.Arenas;
 using UnityEngine;
 
 namespace Game.AIKit.Adapters
