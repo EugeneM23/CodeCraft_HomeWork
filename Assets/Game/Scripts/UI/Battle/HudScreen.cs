@@ -1,6 +1,5 @@
 using System;
 using ScreenNavigation;
-using Game.Arenas;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;

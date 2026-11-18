@@ -136,6 +136,7 @@ namespace Game
             table["hangar.shop.soon"] = "Скоро";
             table["hangar.buy_title"] = "Покупка";
             table["hangar.buy_text_format"] = "Купить «{0}» за {1}?\nОстанется {2} марок.";
+            table["hangar.buy_text_both_format"] = "Купить «{0}» за {1}?\nОстанется {2} марок и {3} образцов.";
 
             // ---------- Chapter select ----------
             table["hangar.chapter.title"] = "ВЫБОР ГЛАВЫ";

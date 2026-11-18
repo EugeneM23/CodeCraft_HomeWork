@@ -16,8 +16,10 @@ namespace Game.Tests
         private static string Howitzer => ModuleIds.GunHowitzer.Value;
         private static string Armor => ModuleIds.ArmorStandard.Value;
         private static string Skirts => ModuleIds.ArmorSkirts.Value;
+        private static string Repair => ModuleIds.SpecialRepair.Value;
         private static string GunSlot => HangarSlots.Id(ModuleSlot.Gun);
         private static string ArmorSlot => HangarSlots.Id(ModuleSlot.Armor);
+        private static string SpecialSlot => HangarSlots.Id(ModuleSlot.Special);
 
         [SetUp]
         public void SetUp()
@@ -31,6 +33,7 @@ namespace Game.Tests
             ModuleConfig howitzer = Module(ModuleIds.GunHowitzer, ModuleSlot.Gun, false, 2500, cheap2, cheap3, false);
             ModuleConfig armor = Module(ModuleIds.ArmorStandard, ModuleSlot.Armor, true, 0, standard2, standard3, false);
             ModuleConfig skirts = Module(ModuleIds.ArmorSkirts, ModuleSlot.Armor, false, 1200, cheap2, cheap3, true);
+            ModuleConfig repair = Module(ModuleIds.SpecialRepair, ModuleSlot.Special, false, 500, cheap2, cheap3, true);
 
             TankConfig tiger = Create<TankConfig>();
             tiger.Configure(TankIds.Tiger, true, 4, 6, ModuleIds.Gun88He, default, ModuleIds.ArmorStandard);
@@ -42,7 +45,7 @@ namespace Game.Tests
             town.Configure(ChapterIds.Town, null, 1.6f, 1.5f, 2000, 15, outskirts);
 
             GameCatalog catalog = Create<GameCatalog>();
-            catalog.Configure(new[] { tiger }, new[] { gun, ap, howitzer, armor, skirts }, new SkillConfig[0],
+            catalog.Configure(new[] { tiger }, new[] { gun, ap, howitzer, armor, skirts, repair }, new SkillConfig[0],
                 new[] { outskirts, town });
 
             _config = Create<HangarStubConfig>();
@@ -115,6 +118,20 @@ namespace Game.Tests
             Assert.AreEqual(1, changes);
             Assert.IsTrue(source.HasSave);
             Assert.AreEqual(PurchaseResult.AlreadyOwned, source.TryBuy(Ap));
+        }
+
+        [Test]
+        public void TryBuy_IntoAnEmptySlot_DoesNotInstall_AsTheCoreDoes()
+        {
+            StubHangarSource source = New();
+            Assert.IsNull(source.InstalledIn(SpecialSlot));
+
+            Assert.AreEqual(PurchaseResult.Done, source.TryBuy(Repair));
+
+            Assert.IsTrue(source.Module(Repair).Owned);
+            Assert.IsNull(source.InstalledIn(SpecialSlot));
+            Assert.AreEqual(PurchaseResult.Done, source.TryInstall(Repair));
+            Assert.AreEqual(Repair, source.InstalledIn(SpecialSlot));
         }
 
         [Test]

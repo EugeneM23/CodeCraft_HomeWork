@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using Atomic.Elements;
 using Atomic.Entities;
-using Game.Arenas;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;

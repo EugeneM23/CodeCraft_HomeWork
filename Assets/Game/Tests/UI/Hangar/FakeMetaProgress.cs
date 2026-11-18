@@ -18,6 +18,7 @@ namespace Game.Tests
 
         public PurchaseResult BuyResult = PurchaseResult.Done;
         public PurchaseResult UpgradeResult = PurchaseResult.Done;
+        public bool InstallFails;
         public int BuyCalls;
         public int UpgradeCalls;
         public int InstallCalls;
@@ -85,7 +86,7 @@ namespace Game.Tests
         public bool Install(TankId tank, ModuleSlot slot, ModuleId module)
         {
             InstallCalls++;
-            if (!OwnsModule(module))
+            if (InstallFails || !OwnsModule(module))
                 return false;
             Installed[(tank, slot)] = module;
             Changed?.Invoke();

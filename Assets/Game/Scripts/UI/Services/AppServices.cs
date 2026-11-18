@@ -90,7 +90,11 @@ namespace Game
             set => s_input = value;
         }
 
-        /// <summary>The run as the battle UI sees it: the core's IRunService of the open level, else a stub (a scene played on its own).</summary>
+        /// <summary>
+        /// The run as the battle UI sees it: the core's IRunService of the open level, else a stub (a scene played
+        /// on its own). Read it from Start, not Awake: the level's GameContext installs the run service in its own
+        /// Awake. The adapter takes the arena service lazily, so it may come later. Released by ReleaseRunHud.
+        /// </summary>
         public static IRunHudSource RunHud
         {
             get
@@ -101,17 +105,30 @@ namespace Game
                     if (s_runAdapter == null || !ReferenceEquals(s_runAdapter.Run, run))
                     {
                         s_runAdapter?.Dispose();
-                        game.TryGetArena(out Game.Arenas.IArenaService arena);
                         GameCatalog catalog = null;
                         if (AppContext.TryGet(out AppContext app))
                             app.TryGetGameCatalog(out catalog);
-                        s_runAdapter = new RunServiceHudSource(run, arena, catalog, game);
+                        s_runAdapter = new RunServiceHudSource(run, catalog, game);
                     }
                     return s_runAdapter;
                 }
                 return s_stubRun ??= new StubRunHudSource();
             }
             set => s_runHud = value;
+        }
+
+        /// <summary>
+        /// The battle UI of a level is going: disposes and forgets the run adapter so it does not outlive its
+        /// level (events of the old run, the old GameContext). Only when the given source is still the current
+        /// adapter: a newer level's adapter is left alone. The stub and a value set explicitly are kept.
+        /// </summary>
+        public static void ReleaseRunHud(IRunHudSource source)
+        {
+            if (s_runAdapter == null || !ReferenceEquals(s_runAdapter, source))
+                return;
+
+            s_runAdapter.Dispose();
+            s_runAdapter = null;
         }
 
         /// <summary>The progress as the menus see it: the core's IMetaProgress and GameCatalog, else a stub (no app).</summary>

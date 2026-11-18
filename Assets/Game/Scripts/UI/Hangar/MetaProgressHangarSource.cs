@@ -152,7 +152,8 @@ namespace Game
             if (_meta.GetInstalled(tank, module.Slot) == module.Id)
                 return PurchaseResult.Done;
 
-            return _meta.Install(tank, module.Slot, module.Id) ? PurchaseResult.Done : PurchaseResult.NotOwned;
+            // Owned, so a refusal is something else (the tank, the slot): NotOwned would lie.
+            return _meta.Install(tank, module.Slot, module.Id) ? PurchaseResult.Done : PurchaseResult.Unknown;
         }
 
         public void StartChapter(string chapterId)

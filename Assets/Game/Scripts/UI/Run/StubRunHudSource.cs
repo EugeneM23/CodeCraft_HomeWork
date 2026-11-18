@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using Atomic.Elements;
 using Atomic.Entities;
-using Game.Arenas;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Object = UnityEngine.Object;
@@ -15,11 +14,13 @@ namespace Game
     /// - A run starts whenever a scene with a GameContext appears (a battle start or restart).
     /// - Every enemy death in the GameContext world (DeathTakenEvent, as the old SandboxBattleStats) gives
     ///   1 kill, 1 mark and XP_PER_KILL experience; the curve is GDD's (RunXpUseCase). A level up raises
-    ///   SkillOffered with 3 offers of the 6 milestone skills (core SkillIds), one level up at a time.
+    ///   SkillOffered with 3 offers of the 6 milestone skills (core SkillIds), one level up at a time; the next
+    ///   pending one is offered from inside ChooseSkill, as the core does.
     /// - KILLS_PER_ARENA kills clear the arena (+10 + 2·n marks); the gate opens GATE_DISTANCE ahead of the
     ///   tank and driving to it (or F6) leads into the next arena. Arena 5 cleared: victory.
     /// - The elite comes from the AI team's EliteStatus (+40 marks, +2 samples when it dies).
-    /// - The tank's health at 0: defeat. ExitToHangar: abandoned. Crush streak stays 0.
+    /// - The tank's health at 0: defeat. ExitToHangar: abandoned, then the game flow goes to the hangar.
+    ///   Crush streak stays 0.
     /// - Arena hints: controls on arena 1, crush on 2, destroy cover on 3.
     /// - Special01 is -1 (no module) until the combat team's ISpecialModule.
     /// - Debug keys: F6 clears the arena or goes through the open gate, F7 gives a level's experience.
@@ -35,6 +36,7 @@ namespace Game
         private const int ELITE_SAMPLES = 2;
         private const float GATE_DISTANCE = 18f;
         private const float GATE_REACH = 5f;
+        private const string HANGAR_SCREEN = "Hangar";
 
         private static readonly string[] PoolIds =
         {
@@ -132,6 +134,7 @@ namespace Game
         public bool GateOpen => _gateOpen;
         public Vector3 GatePosition => _gatePosition;
         public IReadOnlyList<RunSkill> Skills => _skills;
+        public IReadOnlyList<SkillOffer> PendingOffer => _offerOpen ? _offers : Array.Empty<SkillOffer>();
         /// <summary>No special module until combat's ISpecialModule: -1 hides it.</summary>
         public float Special01 => -1f;
 
@@ -141,11 +144,23 @@ namespace Game
                 return;
 
             SkillOfferUseCase.Apply(_skills, _offers[index]);
-            _offerOpen = false; // the next pending level is offered by Tick, once the game runs again
+            _offerOpen = false;
             RaiseChanged();
+            // As the core does: the next pending level is offered at once, from inside this call.
+            while (!_offerOpen && _pendingLevels > 0)
+                Offer();
         }
 
-        public void ExitToHangar() => End(false, true);
+        /// <summary>Ends the run as abandoned, then goes to the hangar (the core's LeaveToHangar does both).</summary>
+        public void ExitToHangar()
+        {
+            if (_ended)
+                return;
+
+            End(false, true);
+            if (!AppServices.GameFlow.IsBusy)
+                AppServices.GameFlow.ReturnToMenu(HANGAR_SCREEN);
+        }
 
         // ---------- Runner ----------
 

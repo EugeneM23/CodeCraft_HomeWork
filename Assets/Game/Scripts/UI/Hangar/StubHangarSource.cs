@@ -161,10 +161,8 @@ namespace Game
             ModuleConfig module = FindModule(moduleId);
             _data.marks -= module.PriceMarks;
             _data.samples -= module.PriceSamples;
+            // Bought, not installed: as the core's BuyModule, installing is TryInstall's.
             _data.modules.Add(new HangarModuleSave { id = moduleId, level = 1 });
-            string slot = HangarSlots.Id(module.Slot);
-            if (InstalledIn(slot) == null)
-                SetInstalled(slot, moduleId);
             SaveAndRaise();
             return PurchaseResult.Done;
         }

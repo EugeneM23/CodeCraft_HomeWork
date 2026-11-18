@@ -167,6 +167,24 @@ namespace Game.Tests
         }
 
         [Test]
+        public void TryInstall_OwnedButRefused_IsUnknown_NotNotOwned()
+        {
+            _source.TryBuy(Skirts);
+            _meta.InstallFails = true;
+
+            Assert.AreEqual(PurchaseResult.Unknown, _source.TryInstall(Skirts));
+            Assert.AreEqual(1, _meta.InstallCalls);
+        }
+
+        [Test]
+        public void TryBuy_DoesNotInstall()
+        {
+            Assert.AreEqual(PurchaseResult.Done, _source.TryBuy(Skirts));
+
+            Assert.AreEqual(0, _meta.InstallCalls);
+        }
+
+        [Test]
         public void Stats_AreTheTanksNumbers_AndTheReplacementTakesItsSlot_AtItsLevelOr1()
         {
             HangarTankStats stats = _source.Stats();

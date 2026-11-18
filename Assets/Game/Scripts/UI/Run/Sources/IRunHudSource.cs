@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Game.Arenas;
 using UnityEngine;
 
 namespace Game
@@ -15,7 +14,11 @@ namespace Game
         /// <summary>A counter changed (kills, marks, level, arena, skills…): the HUD refreshes its texts.</summary>
         event Action Changed;
 
-        /// <summary>A new level: the game is to stand while the player picks one of these (1–3 offers).</summary>
+        /// <summary>
+        /// A new level: the game is to stand while the player picks one of these (1–3 offers). May be raised from
+        /// inside ChooseSkill when another level-up is pending. The list may be reused by the source: it always
+        /// holds the current offer.
+        /// </summary>
         event Action<IReadOnlyList<SkillOffer>> SkillOffered;
 
         /// <summary>The run is over (victory, death, or the player left to the hangar).</summary>
@@ -56,10 +59,18 @@ namespace Game
         /// <summary>The special module (E): 1 ready, 0..1 recharging; negative when the tank has none.</summary>
         float Special01 { get; }
 
-        /// <summary>The player picked SkillOffered[index]; the game goes on.</summary>
+        /// <summary>
+        /// The offer waiting for a choice (raised before the UI subscribed, or not chosen yet); empty when none.
+        /// </summary>
+        IReadOnlyList<SkillOffer> PendingOffer { get; }
+
+        /// <summary>The player picked SkillOffered[index]; the game goes on unless another level-up is offered.</summary>
         void ChooseSkill(int index);
 
-        /// <summary>Leaves to the hangar from the pause: ends the run as a defeat, keeping what was collected.</summary>
+        /// <summary>
+        /// Leaves from the pause: ends the run as abandoned (RunEnded, keeping what was collected) AND goes to the
+        /// hangar. The caller does not navigate itself.
+        /// </summary>
         void ExitToHangar();
     }
 }

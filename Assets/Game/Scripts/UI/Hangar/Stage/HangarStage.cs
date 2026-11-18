@@ -47,13 +47,16 @@ namespace Game
         private bool _hangar;
         private bool _dragging;
         private float _sinceDrag = float.MaxValue;
+        private bool _started;
 
         public bool InHangar => _hangar;
 
+        // A ShowMenu/ShowHangar before this only remembered its pose: the first frame starts there, with no
+        // flight in from wherever the scene left the camera.
         private void Start()
         {
-            if (!_moving && _target == null)
-                Snap(_hangar ? _hangarPose : _menuPose);
+            _started = true;
+            Snap(_target != null ? _target : _hangar ? _hangarPose : _menuPose);
 
             if (_tankVisual != null)
                 BuildSkin(_tankVisual, _skinVoxelSize);
@@ -198,6 +201,12 @@ namespace Game
                 return;
 
             _target = pose;
+            if (!_started)
+            {
+                _moving = false; // Start snaps to it
+                return;
+            }
+
             _fromPosition = _camera.position;
             _fromRotation = _camera.rotation;
             _moveElapsed = 0f;

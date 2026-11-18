@@ -264,11 +264,21 @@ namespace Game
                 return;
 
             _pendingBuy = moduleId;
-            string price = module.PriceSamples > 0
-                ? string.Format(UiStrings.Get("hangar.price_both_format"), module.PriceMarks, module.PriceSamples)
-                : string.Format(UiStrings.Get("hangar.price_marks_format"), module.PriceMarks);
-            string text = string.Format(UiStrings.Get("hangar.buy_text_format"), HangarLook.ModuleName(moduleId), price,
-                _source.Marks - module.PriceMarks);
+            string moduleName = HangarLook.ModuleName(moduleId);
+            int marksLeft = _source.Marks - module.PriceMarks;
+            string text;
+            if (module.PriceSamples > 0)
+            {
+                // A price in samples too: what remains of both.
+                string price = string.Format(UiStrings.Get("hangar.price_both_format"), module.PriceMarks, module.PriceSamples);
+                text = string.Format(UiStrings.Get("hangar.buy_text_both_format"), moduleName, price, marksLeft,
+                    _source.Samples - module.PriceSamples);
+            }
+            else
+            {
+                string price = string.Format(UiStrings.Get("hangar.price_marks_format"), module.PriceMarks);
+                text = string.Format(UiStrings.Get("hangar.buy_text_format"), moduleName, price, marksLeft);
+            }
             _flow.Ask(UiStrings.Get("hangar.buy_title"), text, UiStrings.Get("hangar.shop.buy"),
                 UiStrings.Get("common.cancel"), _buyAnswer);
         }
