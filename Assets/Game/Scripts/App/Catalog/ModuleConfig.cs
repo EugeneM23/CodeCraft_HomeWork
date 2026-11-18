@@ -29,6 +29,8 @@ namespace Game
         [SerializeField] private bool _inShop = true;
         [Tooltip("The highest level reachable now (milestone 1: 2)")]
         [SerializeField, Range(1, MAX_LEVEL)] private int _levelCap = MAX_LEVEL;
+        [Tooltip("What the shop shows while it is locked, e.g. finish the elite of chapter 1")]
+        [SerializeField] private string _unlockHint;
 
         public ModuleId Id => _id;
         public ModuleSlot Slot => _slot;
@@ -39,6 +41,7 @@ namespace Game
         public int PriceSamples => _priceSamples;
         public bool InShop => _inShop;
         public int LevelCap => _levelCap;
+        public string UnlockHint => _unlockHint;
 
         /// <summary>The cost of reaching the level (2 or 3); default for any other.</summary>
         public Cost UpgradeCost(int toLevel) => toLevel == 2 ? _level2 : toLevel == 3 ? _level3 : default;

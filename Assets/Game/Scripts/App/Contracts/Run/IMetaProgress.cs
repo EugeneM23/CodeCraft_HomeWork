@@ -16,6 +16,9 @@ namespace Game
         /// <summary>Anything changed: money, a purchase, a loadout, a chapter, a load.</summary>
         event Action Changed;
 
+        /// <summary>A save exists (the main menu's «Продолжить»).</summary>
+        bool HasSave { get; }
+
         int Marks { get; }
 
         int Samples { get; }
@@ -67,5 +70,8 @@ namespace Game
 
         /// <summary>Writes the save now (leaving to the menu, quitting).</summary>
         void Save();
+
+        /// <summary>«Новая игра»: everything back to the start (starting tank, standard modules, chapter 1), saved.</summary>
+        void NewGame();
     }
 }
