@@ -64,6 +64,33 @@ namespace Game.AIKit.Adapters.Tests
         }
 
         [Test]
+        public void NearestBeyond_SkipsTheOnesInsideTheMinimum_AndOutsideTheMaximum()
+        {
+            Spawn(10f, 10f); // 0 m: inside the blast
+            Spawn(12f, 10f); // 2 m: inside the minimum
+            int ring = Spawn(15f, 10f); // 5 m
+            Spawn(17f, 10f); // 7 m: farther than the ring's nearest
+            Spawn(30f, 10f); // 20 m: beyond the maximum
+            var from = new Vector3(10f, 0.5f, 10f);
+
+            IEnemyTargetRingQuery query = _source;
+            Assert.IsTrue(query.TryFindNearestBeyond(from, 3f, 10f, out int index, out int version, out Vector3 at));
+            Assert.AreEqual(ring, index);
+            Assert.IsTrue(_source.IsAlive(index, version));
+            Assert.AreEqual(15f, at.x, 1e-4f);
+
+            Assert.IsFalse(query.TryFindNearestBeyond(from, 8f, 15f, out _, out _, out _), "none between 8 and 15 m");
+            Assert.IsTrue(query.TryFindNearestBeyond(from, 0f, 1f, out index, out _, out _), "a zero minimum takes the nearest");
+            Assert.AreEqual(0, index);
+
+            Assert.That(() =>
+            {
+                for (int i = 0; i < 10; i++)
+                    query.TryFindNearestBeyond(from, 3f, 10f, out _, out _, out _);
+            }, NoAllocation.Constraint);
+        }
+
+        [Test]
         public void Raycast_HitsTheFirstBodyOnTheWay_AndMissesBeside()
         {
             int first = Spawn(10f, 10f);

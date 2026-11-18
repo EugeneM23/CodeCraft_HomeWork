@@ -12,7 +12,7 @@ namespace Game.AIKit.Adapters
     /// <see cref="IsAlive"/> until then, and its death (corpse, events) comes with that step. Positions are aim points,
     /// the middle of the body. Linear scans over the used slots, no allocations.
     /// </summary>
-    public sealed class HordeTargets : IEnemyTargetSource
+    public sealed class HordeTargets : IEnemyTargetSource, IEnemyTargetRingQuery
     {
         /// <summary>Middle of the body over the feet at render scale 1 (the Regax model), m.</summary>
         public const float BODY_HEIGHT = 1.3f;
@@ -47,6 +47,41 @@ namespace Game.AIKit.Adapters
                 float3 c = Center(i);
                 float d2 = math.distancesq(c, (float3)from);
                 if (d2 > bestSq)
+                    continue;
+                bestSq = d2;
+                index = i;
+                position = c;
+            }
+
+            if (index < 0)
+                return false;
+            version = _simulation.Version(index);
+            return true;
+        }
+
+        /// <summary>
+        /// The nearest live monster whose aim point lies between <paramref name="minRange"/> and
+        /// <paramref name="maxRange"/> (inclusive) of <paramref name="from"/> (the ricochet looks outside its own blast).
+        /// </summary>
+        public bool TryFindNearestBeyond(Vector3 from, float minRange, float maxRange, out int index, out int version,
+            out Vector3 position)
+        {
+            index = -1;
+            version = 0;
+            position = default;
+            if (_simulation == null || maxRange < minRange)
+                return false;
+
+            float minSq = minRange > 0f ? minRange * minRange : 0f;
+            float bestSq = maxRange * maxRange;
+            int n = _simulation.HighWater;
+            for (int i = 0; i < n; i++)
+            {
+                if (!_simulation.IsSlotLive(i))
+                    continue;
+                float3 c = Center(i);
+                float d2 = math.distancesq(c, (float3)from);
+                if (d2 < minSq || d2 > bestSq)
                     continue;
                 bestSq = d2;
                 index = i;
