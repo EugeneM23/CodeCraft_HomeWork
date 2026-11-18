@@ -146,8 +146,49 @@ namespace Game
             shownTenths = tenths;
             if (tenths <= 0)
                 text.SetText(_readyText);
+            else if (tenths < MAX_CACHED_TENTHS)
+                text.SetText(ReloadText(tenths));
             else
                 text.SetText(_reloadFormat, tenths / 10f);
+        }
+
+        /// <summary>Reload times (tenths of a second) whose text is kept once made.</summary>
+        private const int MAX_CACHED_TENTHS = 600;
+
+        private readonly string[] _reloadTexts = new string[MAX_CACHED_TENTHS];
+
+        /// <summary>
+        /// The reload text for <paramref name="tenths"/>, made once: SetText(format, float) builds a string on every
+        /// call in the editor (TMP keeps m_text there), every 0.1 s while a gun reloads; SetText(string) does not.
+        /// </summary>
+        private string ReloadText(int tenths)
+        {
+            string text = _reloadTexts[tenths];
+            if (text == null)
+                _reloadTexts[tenths] = text = FormatTmp(_reloadFormat, tenths / 10f);
+            return text;
+        }
+
+        /// <summary>A TMP SetText format with one float ("{0:1}" — one decimal) as a plain string.</summary>
+        private static string FormatTmp(string format, float value)
+        {
+            int open = format.IndexOf("{0", StringComparison.Ordinal);
+            int close = open >= 0 ? format.IndexOf('}', open) : -1;
+            if (close < 0)
+                return format;
+
+            // As TMP reads it: a digit 1-9 is the decimals ("{0:1}"), or the zeros after a dot ("{0:0.00}").
+            int decimals = 0;
+            bool afterDot = false;
+            for (int i = open + 2; i < close; i++)
+                if (format[i] == '.')
+                    afterDot = true;
+                else if (format[i] >= '1' && format[i] <= '9')
+                    decimals = format[i] - '0';
+                else if (format[i] == '0' && afterDot)
+                    decimals++;
+            string number = value.ToString("F" + decimals, System.Globalization.CultureInfo.InvariantCulture);
+            return format.Substring(0, open) + number + format.Substring(close + 1);
         }
 
         private static float Remaining(CooldownTimer cooldown) =>

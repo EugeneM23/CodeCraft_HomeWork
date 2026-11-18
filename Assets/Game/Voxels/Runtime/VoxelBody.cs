@@ -869,13 +869,21 @@ namespace Game.Voxels
             }
 
             if (taken > 0 && split && _settings.Split)
-                Split(blastCenter, force);
+            {
+                // A small bite (a bullet's hole, a chip) looks for what broke off at the end of the frame,
+                // once for every bite this frame: Split labels the whole grid (1.3-1.6 ms on a house), and a
+                // machine-gun bullet bit 3 times a wall, up to 3 walls.
+                if (taken <= DEFER_SPLIT_MAX && SolidCount > 0)
+                    DeferSplit(blastCenter, force);
+                else
+                    Split(blastCenter, force);
+            }
             else if (SolidCount <= 0)
                 Destroy(gameObject);
 
             // A building that lost voxels works out its load again at the end of the frame.
             if (taken > 0 && split && SolidCount > 0)
-                MarkStructureDirtyAt(center, reach);
+                MarkStructureDirtyAt(center, reach, false, taken <= DEFER_SPLIT_MAX ? MINOR_SOLVE_DELAY : 0f);
 
             return taken;
         }
@@ -961,6 +969,42 @@ namespace Game.Voxels
             away = away.sqrMagnitude > 0.0001f ? away.normalized : Vector3.up;
             Vector3 direction = (away * 0.45f + Vector3.up + Random.insideUnitSphere * 0.15f).normalized;
             return direction * (force * speedShare * Random.Range(0.35f, 0.7f));
+        }
+
+        /// <summary>Carves that took at most this many voxels split at the end of the frame (see DeferSplit).</summary>
+        private const int DEFER_SPLIT_MAX = 600;
+
+        private bool _splitPending;
+        private Vector3 _splitCenter;
+        private float _splitForce;
+
+        /// <summary>
+        /// Asks for a Split at the end of this frame (VoxelWorld, before the load solve and the rebuild):
+        /// what broke off still goes in this frame, but one labelling serves every bite the frame took.
+        /// </summary>
+        private void DeferSplit(Vector3 blastCenter, float force)
+        {
+            if (!_splitPending || force >= _splitForce)
+            {
+                _splitCenter = blastCenter;
+                _splitForce = force;
+            }
+
+            if (_splitPending)
+                return;
+            _splitPending = true;
+            VoxelWorld.QueueSplit(this);
+        }
+
+        /// <summary>Runs the Split asked for this frame, if any (VoxelWorld).</summary>
+        internal void RunDeferredSplit()
+        {
+            if (!_splitPending)
+                return;
+            _splitPending = false;
+            if (_voxels.IsCreated && SolidCount > 0)
+                Split(_splitCenter, _splitForce);
+            _splitForce = 0f;
         }
 
         /// <summary>

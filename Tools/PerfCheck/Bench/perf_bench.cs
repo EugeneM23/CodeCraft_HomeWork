@@ -48,6 +48,23 @@ if (driver == null)
 var dargs = new object[] { driver, null };
 if (!(bool)FindExt("TryGetDriveInput").Invoke(null, dargs)) return "ERROR the tank has no DriveInput";
 var driveInput = (Atomic.Elements.IReactiveVariable<Vector2>)dargs[1];
+// The run (core, milestone 1) also runs in the sandbox: a level-up holds the game loop paused until a skill is
+// picked, and the tank stands. The bench picks at once, as combat_bench.cs: lowest level first, ties by name.
+MethodInfo getRun = FindExt("GetRun");
+var runSvc = getRun != null ? getRun.Invoke(null, new object[] { Game.GameContext.Instance }) as Game.IRunService : null;
+var skillPicks = new List<string>();
+void TendSkills()
+{
+    if (runSvc == null || runSvc.PendingLevelUps <= 0 || runSvc.SkillOffer.Count == 0) return;
+    Game.SkillId pick = runSvc.SkillOffer[0];
+    for (int i = 1; i < runSvc.SkillOffer.Count; i++)
+    {
+        var s = runSvc.SkillOffer[i];
+        int a = runSvc.GetSkillLevel(s), b = runSvc.GetSkillLevel(pick);
+        if (a < b || (a == b && string.CompareOrdinal(s.ToString(), pick.ToString()) < 0)) pick = s;
+    }
+    if (runSvc.ChooseSkill(pick)) skillPicks.Add(pick.ToString());
+}
 var bargs = new object[] { driver, null };
 MethodInfo boostExt = FindExt("TryGetDriveBoost");
 var driveBoost = boostExt != null && (bool)boostExt.Invoke(null, bargs) ? (Atomic.Elements.IReactiveVariable<bool>)bargs[1] : null;
@@ -78,7 +95,7 @@ catch (Exception e) { frameCountNote = "n/a " + e.GetBaseException().Message; }
 
 // ---------- Scenarios ----------
 string only = domain.GetData("perfbench_only") as string;
-var plan = new List<(string name, float seconds)> { ("idle", 4f), ("drive", 8f), ("airstrike", 6.5f), ("crush", 4f), ("house", 6.5f), ("crater", 5f) };
+var plan = new List<(string name, float seconds)> { ("idle", 4f), ("drive", 8f), ("airstrike", 6.5f), ("crush", 4f), ("mg", 7f), ("house", 6.5f), ("crater", 5f) };
 if (!string.IsNullOrEmpty(only)) plan.RemoveAll(p => !("," + only + ",").Contains("," + p.name + ","));
 
 var counterNames = new (ProfilerCategory cat, string name, string key)[]
@@ -132,6 +149,55 @@ string HotPath(HierarchyFrameDataView view, int id)
         id = best; parentT = bestT;
     }
     return string.Join(" > ", parts);
+}
+
+// Where the game's garbage comes from: every GC.Alloc under PlayerLoop (editor-only and debug HUD left out),
+// keyed by the last 4 markers above it. Per scenario: frames, bytes, worst frame.
+var gcSrc = new Dictionary<string, double[]>();
+var gcStack = new Stack<(int id, string path)>();
+var gcKids = new List<int>();
+void AddGcSources(HierarchyFrameDataView view, int plId)
+{
+    var frame = new Dictionary<string, double>();
+    gcStack.Clear();
+    gcStack.Push((plId, ""));
+    while (gcStack.Count > 0)
+    {
+        var (id, path) = gcStack.Pop();
+        gcKids.Clear();
+        view.GetItemChildren(id, gcKids);
+        foreach (int c in gcKids)
+        {
+            if (view.GetItemColumnDataAsDouble(c, HierarchyFrameDataView.columnGcMemory) <= 0) continue;
+            string n = view.GetItemName(c);
+            if (IsEditorOnly(n) || IsDebugHud(n)) continue;
+            if (n == "GC.Alloc")
+            {
+                double b = view.GetItemColumnDataAsDouble(c, HierarchyFrameDataView.columnGcMemory);
+                frame.TryGetValue(path, out double cur);
+                frame[path] = cur + b;
+                continue;
+            }
+            string np = path.Length == 0 ? Short(n) : path + " > " + Short(n);
+            int cut = 0;
+            for (int q = 0, k = np.Length - 1; k >= 0; k--) if (np[k] == '>' && ++q == 4) { cut = k + 2; break; }
+            gcStack.Push((c, cut > 0 ? np.Substring(cut) : np));
+        }
+    }
+    foreach (var kv in frame)
+    {
+        if (!gcSrc.TryGetValue(kv.Key, out var a)) gcSrc[kv.Key] = a = new double[3];
+        a[0]++; a[1] += kv.Value; a[2] = Math.Max(a[2], kv.Value);
+    }
+}
+string GcSourcesJson()
+{
+    var e = new List<KeyValuePair<string, double[]>>(gcSrc);
+    e.Sort((a, b) => b.Value[1].CompareTo(a.Value[1]));
+    var l = new List<string>();
+    for (int i = 0; i < e.Count && i < 8; i++)
+        l.Add($"\"{e[i].Value[0]}f {e[i].Value[1]:F0}B max {e[i].Value[2]:F0}B: {e[i].Key.Replace("\"", "'")}\"");
+    return "[" + string.Join(",", l) + "]";
 }
 
 var stack3 = new Stack<(int id, int depth, bool inVox, int cat)>();
@@ -194,6 +260,7 @@ void ReadFrames(int upTo)
         if (seenR) catSeen[2]++;
         if (seenS) catSeen[3]++;
         rows.Add(new[] { view.frameTimeMs, pl, Math.Max(0, gc - gcEditor - gcHud), vox, phys, Math.Max(0, scripts - scriptVox), render, gcEditor, gcHud, bite, biteCalls, biteGc });
+        if (gc - gcEditor - gcHud > 0) AddGcSources(view, plId);
         if (worst.Count < 3 || pl > worst[worst.Count - 1].ms)
         {
             worst.Add((pl, f, HotPath(view, plId)));
@@ -245,9 +312,25 @@ Vector3 craterAt = default;
 Game.Voxels.VoxelBody houseBody = null;
 int houseBlasts = 0;
 int houseStart = 0;
+// The mg scenario: the roof machine gun fires bursts at the nearest house's wall (CombatFocus, as with the right
+// button held), and the cannon fires every 1.5 s, so the bullets fly through its muzzle smoke.
+bool mgOn = false;
+Vector3 mgAim = default;
+bool cannonPending = false;
+int cannonShots = 0;
+Game.Voxels.VoxelBody mgHouse = null;
+int mgHouseStart = 0;
+var fargs = new object[] { driver, null };
+MethodInfo fireExt = FindExt("TryGetFireAction");
+var cannonFire = fireExt != null && (bool)fireExt.Invoke(null, fargs) ? fargs[1] as Atomic.Elements.IAction : null;
+var cargs = new object[] { driver, null };
+MethodInfo condExt = FindExt("TryGetFireCondition");
+var cannonReady = condExt != null && (bool)condExt.Invoke(null, cargs) ? cargs[1] as Atomic.Elements.IExpression<bool> : null;
 UnityEngine.Events.UnityAction onRender = () =>
 {
     if (drive[0] != 0 || drive[1] != 0) driveInput.Value = new Vector2(drive[0], drive[1]);
+    if (mgOn) Game.CombatFocus.Set(mgAim);
+    if (cannonPending && cannonFire != null && (cannonReady == null || cannonReady.Invoke())) { cannonPending = false; cannonFire.Invoke(); cannonShots++; }
     if (driveBoost != null && driveBoost.Value != boostOn) driveBoost.Value = boostOn;
     if (craterBlastPending) { craterBlastPending = false; Game.Voxels.VoxelDamage.AirBlast(craterAt, 4f, 32f, 24f, 0, 0.85f, 24f); }
     if (pendingBlast.Count > 0 && explode != null && strikes.Length > 0 && strikes[0] != null)
@@ -304,6 +387,8 @@ var results = new List<string>();
 var sbNotes = new List<string>();
 var inv = System.Globalization.CultureInfo.InvariantCulture;
 Vector3 tankStart = tank.position;
+Vector3 sceneStart = tank.position;
+string mgStep = "";
 EditorApplication.CallbackFunction onUpdate = null;
 
 void Finish(string status)
@@ -313,6 +398,8 @@ void Finish(string status)
     Game.TankPloughEvents.Ploughed -= onPloughed;
     drive[0] = drive[1] = 0;
     if (driveBoost != null) driveBoost.Value = false;
+    mgOn = false; cannonPending = false;
+    Game.CombatFocus.Clear();
     foreach (var r in recorders) r.Dispose();
     recorders.Clear();
     for (int i = 0; i < strikes.Length; i++) if (strikes[i] != null) onField.SetValue(strikes[i], strikeWasOn[i]);
@@ -322,6 +409,7 @@ void Finish(string status)
                  $"\"quality\":\"{QualitySettings.names[QualitySettings.GetQualityLevel()]}\",\"screen\":\"{Screen.width}x{Screen.height}\"," +
                  $"\"sceneViews\":{SceneView.sceneViews.Count},\"maximized\":{(EditorWindow.focusedWindow != null && EditorWindow.focusedWindow.maximized ? "true" : "false")}," +
                  $"\"burst\":{(Unity.Burst.BurstCompiler.IsEnabled ? "true" : "false")},\"gpu\":\"{SystemInfo.graphicsDeviceName}\",\"cpu\":\"{SystemInfo.processorType.Trim()}\",\"profilerFrames\":\"{frameCountNote}\"";
+    if (skillPicks.Count > 0) sbNotes.Add("skills picked: " + string.Join(",", skillPicks));
     string notes = string.Join("; ", sbNotes).Replace("\"", "'");
     domain.SetData("perfbench_result", $"{{\"status\":\"{status}\",\"date\":\"{DateTime.Now:yyyy-MM-dd HH:mm}\",{env},\"notes\":\"{notes}\",\"scenarios\":{{{string.Join(",", results)}}}}}");
     domain.SetData("perfbench_status", status);
@@ -330,7 +418,7 @@ void Finish(string status)
 void BeginScenario()
 {
     var (name, _) = plan[phase];
-    rows.Clear(); worst.Clear(); Array.Clear(catSeen, 0, catSeen.Length);
+    rows.Clear(); worst.Clear(); gcSrc.Clear(); Array.Clear(catSeen, 0, catSeen.Length);
     foreach (var r in recorders) r.Dispose();
     recorders.Clear();
     foreach (var c in counterNames) recorders.Add(ProfilerRecorder.StartNew(c.cat, c.name, 8000));
@@ -396,7 +484,8 @@ void EndScenario()
     string extra = "";
     if (name == "crush" && regax != null) extra = $",\"regaxMinDistance\":{regaxMin.ToString("F2", inv)},\"regaxAlive\":{(regax != null && regax.activeInHierarchy ? "true" : "false")}";
     if (name == "airstrike") extra = $",\"blasts\":{blasts}";
-    if (name == "house") extra = $",\"houseBlasts\":{houseBlasts},\"houseVoxels\":{houseStart},\"houseLeft\":{(houseBody != null ? houseBody.SolidCount : 0)}";
+    if (name == "mg") extra = $",\"cannonShots\":{cannonShots},\"houseVoxels\":{mgHouseStart},\"houseLost\":{(mgHouse != null ? mgHouseStart - mgHouse.SolidCount : -1)}";
+    if (name == "house") extra =$",\"houseBlasts\":{houseBlasts},\"houseVoxels\":{houseStart},\"houseLeft\":{(houseBody != null ? houseBody.SolidCount : 0)}";
     if (name == "drive" || name == "crush") extra += $",\"tankMoved\":{Vector3.Distance(tank.position, tankStart).ToString("F1", inv)}";
     if (name == "crater")
     {
@@ -413,7 +502,7 @@ void EndScenario()
     results.Add($"\"{name}\":{{\"frames\":{rows.Count},\"seconds\":{(Time.time - runStart).ToString("F1", inv)}," +
                 $"\"main\":{{{Stats(0)}}},\"playerLoop\":{{{Stats(1)}}},\"gcBytes\":{{{Stats(2, 1, "F0", false)}}},\"gcEditorOnly\":{{{Stats(7, 1, "F0", false)}}},\"gcDebugHud\":{{{Stats(8, 1, "F0", false)}}}," +
                 $"\"voxels\":{{{Stats(3)}}},\"physics\":{{{Stats(4)}}},\"scripts\":{{{Stats(5)}}},\"render\":{{{Stats(6)}}}," +
-                $"{string.Join(",", counters)},\"worst\":[{string.Join(",", w)}]{extra}}}");
+                $"{string.Join(",", counters)},\"worst\":[{string.Join(",", w)}],\"gcSources\":{GcSourcesJson()}{extra}}}");
     tankStart = tank.position;
 }
 
@@ -423,6 +512,7 @@ onUpdate = () =>
     {
         if (!EditorApplication.isPlaying) { Finish("aborted: left Play"); return; }
         if (EditorApplication.isPaused) return;
+        TendSkills();
         if (phase < 0)
         {
             // Burst warm-up: at least 10 s into the scene.
@@ -432,6 +522,39 @@ onUpdate = () =>
         if (phase >= plan.Count) { Finish("done"); return; }
         var (name, seconds) = plan[phase];
         domain.SetData("perfbench_status", $"running: {name} {sub} {(Time.time - phaseStart).ToString("F1", inv)}/{seconds}");
+        if (sub == "settle" && name == "mg")
+        {
+            // Not measured: the building nearest the tank's start in the scene, the tank 10 m off its near wall,
+            // facing it, so every run shoots the same wall from the same place.
+            float s = Time.time - phaseStart;
+            if (mgStep == "")
+            {
+                float best = float.MaxValue;
+                foreach (var st2 in UnityEngine.Object.FindObjectsByType<Game.Voxels.VoxelStructure>(FindObjectsSortMode.None))
+                {
+                    var body = st2.GetComponentInChildren<Game.Voxels.VoxelBody>();
+                    if (!st2.IsBuilding || body == null) continue;
+                    float dd = Vector3.Distance(body.WorldBounds.center, sceneStart);
+                    if (dd < best) { best = dd; mgHouse = body; }
+                }
+                if (mgHouse != null)
+                {
+                    Bounds hb = mgHouse.WorldBounds;
+                    Vector3 near = hb.ClosestPoint(sceneStart);
+                    Vector3 away = sceneStart - near; away.y = 0;
+                    away = away.sqrMagnitude > 1e-4f ? away.normalized : Vector3.left;
+                    Vector3 at = Ground(near + away * 10f) + Vector3.up * 0.4f;
+                    tankBody.linearVelocity = Vector3.zero; tankBody.angularVelocity = Vector3.zero;
+                    tankBody.position = at; tankBody.rotation = Quaternion.LookRotation(-away);
+                    tank.SetPositionAndRotation(at, tankBody.rotation);
+                    tankStart = at;
+                }
+                mgStep = "place";
+                return;
+            }
+            if (s >= 1.5f) { mgStep = ""; BeginScenario(); }
+            return;
+        }
         if (sub == "settle" && name == "crater")
         {
             // Not measured: find the run, blast the crater, give its collider a moment, put the tank at the start.
@@ -493,6 +616,28 @@ onUpdate = () =>
                     houseBlasts++;
                 }
             }
+            if (name == "mg")
+            {
+                if (!mgOn)
+                {
+                    // The house and the tank's place were set in the settle (the same house every run).
+                    if (mgHouse != null)
+                    {
+                        // A point just inside the wall facing the tank, 1.5 m up.
+                        Bounds hb = mgHouse.WorldBounds;
+                        Vector3 eye = tank.position + Vector3.up * 1.5f;
+                        Vector3 onWall = hb.ClosestPoint(eye);
+                        onWall.y = Mathf.Clamp(eye.y, hb.min.y + 0.5f, hb.max.y - 0.5f);
+                        Vector3 inward = hb.center - onWall; inward.y = 0;
+                        mgAim = onWall + (inward.sqrMagnitude > 1e-4f ? inward.normalized : Vector3.zero) * 0.3f;
+                        mgHouseStart = mgHouse.SolidCount;
+                        sbNotes.Add($"mg: house {mgHouse.name} at {Vector3.Distance(tank.position, mgAim):F1} m, gun {(cannonFire != null ? "yes" : "no")}");
+                    }
+                    else sbNotes.Add("mg: no building");
+                    mgOn = true;
+                }
+                if (t >= 1f + cannonShots * 1.5f && !cannonPending) cannonPending = true;
+            }
             if (name == "crush" && regax != null) regaxMin = Mathf.Min(regaxMin, Vector3.Distance(regax.transform.position, tank.position));
             if (name == "crater")
             {
@@ -511,7 +656,7 @@ onUpdate = () =>
                 skipFrames.Add(ProfilerDriver.lastFrameIndex + 1);
                 skipFrames.Add(ProfilerDriver.lastFrameIndex + 2);
             }
-            if (t >= seconds) { drive[0] = drive[1] = 0; boostOn = false; sub = "tail"; phaseStart = Time.time; }
+            if (t >= seconds) { drive[0] = drive[1] = 0; boostOn = false; mgOn = false; cannonPending = false; Game.CombatFocus.Clear(); sub = "tail"; phaseStart = Time.time; }
             return;
         }
         if (sub == "tail")
@@ -534,5 +679,5 @@ domain.SetData("perfbench_render", onRender);
 domain.SetData("perfbench_status", "running: armed");
 domain.SetData("perfbench_result", null);
 float total = 10f;
-foreach (var p in plan) total += p.seconds + (p.name == "crater" ? 1.6f : 0.6f);
+foreach (var p in plan) total += p.seconds + (p.name == "crater" || p.name == "mg" ? 1.6f : 0.6f);
 return $"armed: {string.Join(",", plan.ConvertAll(p => p.name))}, ~{total:F0} s from scene start; strikes={strikes.Length} profilerFrames={frameCountNote}; read with perf_bench_read.cs";
