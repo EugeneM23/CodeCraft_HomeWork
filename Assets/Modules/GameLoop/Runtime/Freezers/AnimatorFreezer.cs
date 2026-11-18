@@ -10,7 +10,8 @@ namespace Ticking
     /// </summary>
     public sealed class AnimatorFreezer : ComponentFreezer<Animator>
     {
-        private readonly Dictionary<Animator, float> _speeds = new();
+        // Sized ahead and only emptied by Remove on resume, so pause after pause reuses its buckets (no growth).
+        private readonly Dictionary<Animator, float> _speeds = new(64);
 
         protected override bool Freeze(Animator animator)
         {

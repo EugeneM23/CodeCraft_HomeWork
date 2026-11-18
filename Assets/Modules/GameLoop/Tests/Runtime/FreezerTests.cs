@@ -207,6 +207,122 @@ namespace Ticking.Tests
         }
 
         [Test]
+        public void ComponentFreezer_ObjectsMadeAfterAPause_StandOnTheNext()
+        {
+            var freezer = new AnimatorFreezer();
+            freezer.OnPause();
+            freezer.OnResume();
+
+            _go = new GameObject("SpawnedLater");
+            var child = new GameObject("Child");
+            child.transform.SetParent(_go.transform);
+            var animator = child.AddComponent<Animator>();
+
+            freezer.OnPause();
+            Assert.AreEqual(0f, animator.speed, "a nested animator made after the scene started is frozen");
+
+            freezer.OnResume();
+            Assert.AreEqual(1f, animator.speed);
+            freezer.Dispose();
+        }
+
+        [Test]
+        public void ComponentFreezer_DontDestroyOnLoadObject_StandsToo()
+        {
+            if (!Application.isPlaying)
+                Assert.Ignore("DontDestroyOnLoad needs Play Mode");
+
+            _go = new GameObject("Persistent");
+            Object.DontDestroyOnLoad(_go);
+            var animator = _go.AddComponent<Animator>();
+            var freezer = new AnimatorFreezer();
+
+            freezer.OnPause();
+            Assert.AreEqual(0f, animator.speed);
+
+            freezer.OnResume();
+            Assert.AreEqual(1f, animator.speed);
+            freezer.Dispose();
+        }
+
+        [Test]
+        public void ComponentFreezer_InactiveObject_LeftAlone()
+        {
+            _go = new GameObject("Off");
+            var animator = _go.AddComponent<Animator>();
+            animator.speed = 1.25f;
+            _go.SetActive(false);
+            var freezer = new AnimatorFreezer();
+
+            freezer.OnPause();
+            Assert.AreEqual(1.25f, animator.speed);
+            freezer.OnResume();
+            freezer.Dispose();
+        }
+
+        [Test]
+        public void ComponentFreezer_PauseAndResume_AllocateNothingAfterWarmUp()
+        {
+            _go = new GameObject("Crowd");
+            for (int i = 0; i < 40; i++)
+            {
+                var member = new GameObject("Member" + i);
+                member.transform.SetParent(_go.transform);
+                member.AddComponent<Animator>();
+            }
+
+            var freezer = new AnimatorFreezer();
+            for (int i = 0; i < 3; i++)
+            {
+                freezer.OnPause();
+                freezer.OnResume();
+            }
+
+            Assert.That(() =>
+            {
+                freezer.OnPause();
+                freezer.OnResume();
+            }, new NUnit.Framework.Constraints.NotConstraint(new UnityEngine.TestTools.Constraints.AllocatingGCMemoryConstraint()));
+            freezer.Dispose();
+        }
+
+        [Test]
+        public void Runner_PauseAndResume_AllocateNothingAfterWarmUp()
+        {
+            var runnerObject = new GameObject("Runner");
+            GameLoop loop = runnerObject.AddComponent<GameLoopRunner>().Loop;
+            _go = new GameObject("Scene");
+            for (int i = 0; i < 20; i++)
+            {
+                var member = new GameObject("Member" + i);
+                member.transform.SetParent(_go.transform);
+                member.AddComponent<Animator>();
+#if GAMELOOP_PARTICLES
+                member.AddComponent<ParticleSystem>().Play();
+#endif
+            }
+
+            try
+            {
+                for (int i = 0; i < 3; i++)
+                {
+                    loop.Pause(this);
+                    loop.Resume(this);
+                }
+
+                Assert.That(() =>
+                {
+                    loop.Pause(this);
+                    loop.Resume(this);
+                }, new NUnit.Framework.Constraints.NotConstraint(new UnityEngine.TestTools.Constraints.AllocatingGCMemoryConstraint()));
+            }
+            finally
+            {
+                Object.DestroyImmediate(runnerObject);
+            }
+        }
+
+        [Test]
         public void LegacyAnimation_Paused_StateSpeedZeroThenBack()
         {
             _go = new GameObject("Saw");
