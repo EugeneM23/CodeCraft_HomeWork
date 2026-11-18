@@ -12,6 +12,7 @@ namespace Game.Tests
 
         private readonly List<Object> _assets = new();
         private readonly List<string> _log = new();
+        private readonly List<IReadOnlyList<SkillId>> _offersShown = new();
         private readonly HashSet<ChapterId> _completed = new();
         private readonly Dictionary<ChapterId, int> _bestArena = new();
 
@@ -26,6 +27,7 @@ namespace Game.Tests
         public void SetUp()
         {
             _log.Clear();
+            _offersShown.Clear();
             _completed.Clear();
             _bestArena.Clear();
             _leftToHangar = 0;
@@ -556,13 +558,78 @@ namespace Game.Tests
             Assert.AreEqual(2, _run.Result.levelReached);
         }
 
+        [Test]
+        public void WithASkillScreen_TheOfferIsShown_AndTheLoopWaitsForTheChoice()
+        {
+            _run.StartRun(ChapterIds.Outskirts, TankIds.Tiger);
+            _run.AddExperience(10);
+
+            Assert.AreEqual(1, _offersShown.Count);
+            Assert.AreEqual(3, _offersShown[0].Count);
+            Assert.IsTrue(_loop.IsPausedBy(_run));
+            Assert.AreEqual(0, _run.Skills.Count, "nothing is taken until the screen chooses");
+
+            Assert.IsTrue(_run.ChooseSkill(_run.SkillOffer[0]));
+            Assert.IsFalse(_loop.IsPaused);
+            Assert.AreEqual(1, _run.Skills.Count);
+        }
+
+        [Test]
+        public void WithoutASkillScreen_ALevelUpTakesASkillAtOnce_AndNothingPauses()
+        {
+            _run.Dispose();
+            _run = Create(_catalog, withSkillScreen: false);
+            var levelUps = new List<int>();
+            var taken = new List<SkillId>();
+            _run.LevelUp += levelUps.Add;
+            _run.SkillChanged += (skill, _) => taken.Add(skill);
+            _run.StartRun(ChapterIds.Outskirts, TankIds.Tiger);
+
+            _run.AddExperience(10);
+
+            Assert.IsFalse(_loop.IsPaused, "the sandbox has no skill screen: the game must not stand");
+            CollectionAssert.AreEqual(new[] { 2 }, levelUps, "the sounds and the HUD still hear the level-up");
+            Assert.AreEqual(1, taken.Count);
+            Assert.AreEqual(1, _run.Skills.Count);
+            Assert.AreEqual(0, _run.PendingLevelUps);
+            Assert.AreEqual(0, _run.SkillOffer.Count);
+        }
+
+        [Test]
+        public void WithoutASkillScreen_SeveralLevelUpsAtOnce_TakeASkillEach()
+        {
+            _run.Dispose();
+            _run = Create(_catalog, withSkillScreen: false);
+            var levelUps = new List<int>();
+            _run.LevelUp += levelUps.Add;
+            _run.StartRun(ChapterIds.Outskirts, TankIds.Tiger);
+
+            _run.AddExperience(10 + 22 + 34);
+
+            Assert.AreEqual(4, _run.Level);
+            CollectionAssert.AreEqual(new[] { 2, 3, 4 }, levelUps);
+            int levels = 0;
+            foreach (SkillId skill in _run.Skills)
+                levels += _run.GetSkillLevel(skill);
+            Assert.AreEqual(3, levels);
+            Assert.AreEqual(0, _run.PendingLevelUps);
+            Assert.IsFalse(_loop.IsPaused);
+        }
+
         // ---------- Helpers ----------
 
-        private RunService Create(GameCatalog catalog, bool withBuilder = true) =>
-            new(catalog, _deaths, new System.Random(1), RunTimings.Default, withBuilder ? _builder : null, _loop,
+        // withSkillScreen: a listener of SkillOffered, as the menu's skill screen will be — the tests choose by hand
+        private RunService Create(GameCatalog catalog, bool withBuilder = true, bool withSkillScreen = true)
+        {
+            var run = new RunService(catalog, _deaths, new System.Random(1), RunTimings.Default,
+                withBuilder ? _builder : null, _loop,
                 c => _completed.Contains(c),
                 c => _bestArena.TryGetValue(c, out int best) ? best : 0,
                 () => _leftToHangar++);
+            if (withSkillScreen)
+                run.SkillOffered += _offersShown.Add;
+            return run;
+        }
 
         private RunResult WinRich()
         {
