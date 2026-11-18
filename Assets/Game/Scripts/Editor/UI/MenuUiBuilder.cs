@@ -30,6 +30,12 @@ namespace Game.EditorTools
         private const float PRICE_WIDTH = 260f;
         private const float SIDE_WIDTH = 0.26f;
         private const float STATS_LEFT = 0.74f;
+        private const float MENU_BUTTON_HEIGHT = 76f;
+        private const float MENU_COLUMN_WIDTH = 500f;
+        private const float TITLE_SCALE = 0.85f; // of the pack's 1109×254 title backdrop
+
+        // The icon set given to every icon view of this build
+        private static UiIconSetConfig s_icons;
 
         // Stat labels of the stats panel, by HangarTankStats index
         private static readonly string[] StatLabelKeys =
@@ -53,6 +59,7 @@ namespace Game.EditorTools
                 levels = UiDataBuilder.LoadLevelCatalog();
             }
 
+            s_icons = UiIconSetBuilder.Ensure();
             Canvas canvas = UiFactory.Canvas(PREFAB_NAME);
             Transform root = canvas.transform;
 
@@ -115,23 +122,32 @@ namespace Game.EditorTools
         {
             MainMenuScreen screen = UiFactory.Screen<MainMenuScreen>("MainMenuScreen", parent, canGoBack: false);
 
-            // Top left: the tank sits low right in the menu framing
-            TextMeshProUGUI title = UiFactory.LocalizedText("GameTitle", screen.transform, "game.title",
-                UiStyle.FONT_TITLE * 1.6f, TextAlignmentOptions.TopLeft, bold: true);
-            UiFactory.Place(title.rectTransform, new Vector2(0f, 1f), new Vector2(UiStyle.PADDING * 2, -UiStyle.PADDING * 2),
-                new Vector2(1000f, 90f));
+            // Top left, on the pack's striped title backdrop: the tank sits low right in the menu framing
+            Vector2 titleSize = new(1109f * TITLE_SCALE, 254f * TITLE_SCALE);
+            Image titleBack = UiFactory.Frame("TitleBack", screen.transform, UiPackSprites.LargeTitle);
+            titleBack.raycastTarget = false;
+            UiFactory.Place(titleBack.rectTransform, new Vector2(0f, 1f), new Vector2(UiStyle.PADDING, -UiStyle.PADDING),
+                titleSize);
+            TextMeshProUGUI title = UiFactory.LocalizedText("GameTitle", titleBack.transform, "game.title",
+                UiStyle.FONT_TITLE * 1.6f, TextAlignmentOptions.Center, bold: true);
+            title.textWrappingMode = TextWrappingModes.NoWrap;
+            title.enableAutoSizing = true;
+            title.fontSizeMin = UiStyle.FONT_TITLE;
+            title.fontSizeMax = UiStyle.FONT_TITLE * 1.6f;
+            UiFactory.Stretch(title.rectTransform, 90f, 90f, 40f, 40f);
 
-            Image column = UiFactory.Panel("Buttons", screen.transform, UiStyle.Panel);
-            float height = 4 * UiStyle.BUTTON_HEIGHT + 3 * UiStyle.SPACING + 2 * UiStyle.PADDING;
-            UiFactory.Place(column.rectTransform, new Vector2(0f, 1f), new Vector2(UiStyle.PADDING * 2, -180f),
-                new Vector2(420f, height));
-            UiFactory.Vertical(column.rectTransform, UiStyle.SPACING, (int)UiStyle.PADDING);
-            UiFactory.FitHeight(column.rectTransform); // fits the visible buttons: Continue is hidden without a save
+            // The pack's long menu buttons, no panel behind them
+            RectTransform column = UiFactory.Rect("Buttons", screen.transform);
+            float height = 4 * MENU_BUTTON_HEIGHT + 3 * UiStyle.SPACING;
+            UiFactory.Place(column, new Vector2(0f, 1f), new Vector2(UiStyle.PADDING * 2, -(UiStyle.PADDING * 2 + titleSize.y)),
+                new Vector2(MENU_COLUMN_WIDTH, height));
+            UiFactory.Vertical(column, UiStyle.SPACING);
+            UiFactory.FitHeight(column); // fits the visible buttons: Continue is hidden without a save
 
-            Button resume = UiFactory.LocalizedButton("Continue", column.transform, "hangar.main.continue", accent: true);
-            Button newGame = UiFactory.LocalizedButton("NewGame", column.transform, "hangar.main.new_game");
-            Button settings = UiFactory.LocalizedButton("Settings", column.transform, "main.settings");
-            Button quit = UiFactory.LocalizedButton("Quit", column.transform, "main.quit");
+            Button resume = UiFactory.LocalizedMenuButton("Continue", column, "hangar.main.continue", MENU_BUTTON_HEIGHT);
+            Button newGame = UiFactory.LocalizedMenuButton("NewGame", column, "hangar.main.new_game", MENU_BUTTON_HEIGHT);
+            Button settings = UiFactory.LocalizedMenuButton("Settings", column, "main.settings", MENU_BUTTON_HEIGHT);
+            Button quit = UiFactory.LocalizedMenuButton("Quit", column, "main.quit", MENU_BUTTON_HEIGHT);
 
             // MainMenuScreen writes the version
             TextMeshProUGUI version = UiFactory.Text("Version", screen.transform, "-", UiStyle.FONT_SMALL,
@@ -158,14 +174,14 @@ namespace Game.EditorTools
             Button back = BackButton(screen.transform, "common.back", UiSound.Back);
 
             // Left: the six slots. The centre stays empty for the 3D tank.
-            Image slots = UiFactory.Panel("Slots", content, UiStyle.Panel);
+            Image slots = UiFactory.Frame("Slots", content, UiPackSprites.Panel);
             UiFactory.Span(slots.rectTransform, Vector2.zero, new Vector2(SIDE_WIDTH, 1f));
             UiFactory.Vertical(slots.rectTransform, UiStyle.SPACING / 2, (int)UiStyle.SPACING);
             Header(slots.transform, "hangar.slots");
             HangarItemView slot = ListItem(slots.transform, "SlotTemplate", false);
 
             // Right: the tank's numbers
-            Image statsPanel = UiFactory.Panel("Stats", content, UiStyle.Panel);
+            Image statsPanel = UiFactory.Frame("Stats", content, UiPackSprites.Panel);
             UiFactory.Span(statsPanel.rectTransform, new Vector2(STATS_LEFT, 0.4f), Vector2.one);
             UiFactory.Vertical(statsPanel.rectTransform, UiStyle.SPACING / 2, (int)UiStyle.PADDING);
             TextMeshProUGUI tankName = UiFactory.Text("TankName", statsPanel.transform, "-", UiStyle.FONT_HEADER, bold: true);
@@ -205,7 +221,7 @@ namespace Game.EditorTools
             Button close = BackButton(screen.transform, "hangar.close", UiSound.Close);
 
             // Left, over the hangar's slots: the owned modules of the slot
-            Image list = UiFactory.Panel("Modules", content, UiStyle.Background);
+            Image list = UiFactory.Frame("Modules", content, UiPackSprites.PanelSolid);
             UiFactory.Span(list.rectTransform, Vector2.zero, new Vector2(SIDE_WIDTH, 1f));
             UiFactory.Vertical(list.rectTransform, UiStyle.SPACING / 2, (int)UiStyle.SPACING);
             TextMeshProUGUI title = UiFactory.Text("Title", list.transform, "-", UiStyle.FONT_HEADER, bold: true,
@@ -214,7 +230,7 @@ namespace Game.EditorTools
             HangarItemView item = ListItem(list.transform, "ModuleTemplate", false);
 
             // Right, over the hangar's numbers: «было → стало», the module and Install
-            Image side = UiFactory.Panel("Details", content, UiStyle.Background);
+            Image side = UiFactory.Frame("Details", content, UiPackSprites.PanelSolid);
             UiFactory.Span(side.rectTransform, new Vector2(STATS_LEFT, 0f), Vector2.one);
             UiFactory.Vertical(side.rectTransform, UiStyle.SPACING / 2, (int)UiStyle.PADDING);
             Header(side.transform, "hangar.compare");
@@ -250,7 +266,7 @@ namespace Game.EditorTools
             Button close = BackButton(screen.transform, "hangar.close", UiSound.Close);
 
             // Left half, over the slots; the hangar's numbers stay visible on the right
-            Image panel = UiFactory.Panel("Upgrades", content, UiStyle.Background);
+            Image panel = UiFactory.Frame("Upgrades", content, UiPackSprites.PanelSolid);
             UiFactory.Span(panel.rectTransform, Vector2.zero, new Vector2(0.55f, 1f));
             TextMeshProUGUI title = UiFactory.LocalizedText("Title", panel.transform, "hangar.upgrade_title",
                 UiStyle.FONT_HEADER, bold: true, color: UiStyle.Accent);
@@ -286,19 +302,11 @@ namespace Game.EditorTools
             {
                 tabs[i] = UiFactory.LocalizedButton("Tab_" + i, tabRow, tabKeys[i]);
                 UiFactory.Size(tabs[i], UiStyle.BUTTON_HEIGHT, -1, 1);
-                Image marker = UiFactory.Panel("Marker", tabs[i].transform, UiStyle.Accent);
-                RectTransform rect = marker.rectTransform;
-                rect.anchorMin = Vector2.zero;
-                rect.anchorMax = new Vector2(1f, 0f);
-                rect.pivot = new Vector2(0.5f, 0f);
-                rect.anchoredPosition = Vector2.zero;
-                rect.sizeDelta = new Vector2(0f, 4f);
-                marker.raycastTarget = false;
-                markers[i] = marker.gameObject;
+                markers[i] = UiFactory.TabSkin(tabs[i]); // the pack's tab; its selected look marks the active one
             }
 
             float below = UiStyle.BUTTON_HEIGHT + UiStyle.SPACING;
-            Image modules = UiFactory.Panel("Modules", content, UiStyle.Panel);
+            Image modules = UiFactory.Frame("Modules", content, UiPackSprites.Panel);
             UiFactory.Span(modules.rectTransform, Vector2.zero, Vector2.one, 0, 0, below);
             RectTransform grid = UiFactory.Rect("Grid", modules.transform);
             UiFactory.Stretch(grid, UiStyle.PADDING, UiStyle.PADDING, UiStyle.PADDING, UiStyle.PADDING);
@@ -306,14 +314,14 @@ namespace Game.EditorTools
             HangarItemView card = ShopCard(grid);
 
             // The Tanks tab: placeholder cards (milestone 1 has only the Tiger)
-            Image tanks = UiFactory.Panel("Tanks", content, UiStyle.Panel);
+            Image tanks = UiFactory.Frame("Tanks", content, UiPackSprites.Panel);
             UiFactory.Span(tanks.rectTransform, Vector2.zero, Vector2.one, 0, 0, below);
             RectTransform tankGrid = UiFactory.Rect("Grid", tanks.transform);
             UiFactory.Stretch(tankGrid, UiStyle.PADDING, UiStyle.PADDING, UiStyle.PADDING, UiStyle.PADDING);
             UiFactory.Grid(tankGrid, new Vector2(440f, 200f), UiStyle.SPACING);
             for (int i = 0; i < TankCards.GetLength(0); i++)
             {
-                Image tank = UiFactory.Panel("Tank_" + i, tankGrid, UiStyle.PanelLight);
+                Image tank = UiFactory.Frame("Tank_" + i, tankGrid, UiPackSprites.Card);
                 TextMeshProUGUI tankName = UiFactory.LocalizedText("Name", tank.transform, TankCards[i, 0],
                     UiStyle.FONT_HEADER, TextAlignmentOptions.TopLeft, bold: true);
                 UiFactory.Stretch(tankName.rectTransform, UiStyle.PADDING, UiStyle.PADDING, UiStyle.PADDING, 80f);
@@ -343,12 +351,12 @@ namespace Game.EditorTools
             Button back = BackButton(screen.transform, "common.back", UiSound.Back);
 
             // Left two thirds: the tank stands low right in the menu framing
-            Image listPanel = UiFactory.Panel("Chapters", content, UiStyle.Panel);
+            Image listPanel = UiFactory.Frame("Chapters", content, UiPackSprites.Panel);
             UiFactory.Span(listPanel.rectTransform, Vector2.zero, new Vector2(0.3f, 1f), 0, UiStyle.SPACING / 2);
             UiFactory.Vertical(listPanel.rectTransform, UiStyle.SPACING / 2, (int)UiStyle.SPACING);
             HangarItemView item = ListItem(listPanel.transform, "ChapterTemplate", false, icon: false);
 
-            Image details = UiFactory.Panel("Details", content, UiStyle.Panel);
+            Image details = UiFactory.Frame("Details", content, UiPackSprites.Panel);
             UiFactory.Span(details.rectTransform, new Vector2(0.3f, 0f), new Vector2(0.62f, 1f), UiStyle.SPACING / 2);
             UiFactory.Vertical(details.rectTransform, UiStyle.SPACING, (int)UiStyle.PADDING);
             TextMeshProUGUI name = UiFactory.Text("Name", details.transform, "-", UiStyle.FONT_HEADER, bold: true);
@@ -387,18 +395,23 @@ namespace Game.EditorTools
 
         // ---------- Common parts ----------
 
-        /// <summary>The top strip: marks and samples on the left (CurrencyBar writes them), the screen title by key in the middle.</summary>
+        /// <summary>
+        /// The top strip (the pack's store top bar): marks and samples on coin plates on the left (CurrencyBar writes
+        /// them), the screen title by key in the middle.
+        /// </summary>
         private static CurrencyBar Bar(Transform screen, string titleKey)
         {
-            Image panel = UiFactory.Panel("CurrencyBar", screen, UiStyle.Panel);
+            Image panel = UiFactory.Frame("CurrencyBar", screen, UiPackSprites.TopBar);
             TopStrip(panel.rectTransform, BAR_HEIGHT);
 
+            CoinPlate(panel.transform, "MarksPlate", 0f, 0.15f, UiStyle.PADDING);
             TextMeshProUGUI marks = UiFactory.Text("Marks", panel.transform, "-", UiStyle.FONT_BODY,
                 TextAlignmentOptions.Left, bold: true, color: UiStyle.Accent);
-            UiFactory.Span(marks.rectTransform, Vector2.zero, new Vector2(0.15f, 1f), UiStyle.PADDING);
+            UiFactory.Span(marks.rectTransform, Vector2.zero, new Vector2(0.15f, 1f), UiStyle.PADDING + 18f);
+            CoinPlate(panel.transform, "SamplesPlate", 0.15f, 0.3f, UiStyle.SPACING);
             TextMeshProUGUI samples = UiFactory.Text("Samples", panel.transform, "-", UiStyle.FONT_BODY,
                 TextAlignmentOptions.Left, bold: true, color: UiStyle.Armor);
-            UiFactory.Span(samples.rectTransform, new Vector2(0.15f, 0f), new Vector2(0.3f, 1f), UiStyle.SPACING);
+            UiFactory.Span(samples.rectTransform, new Vector2(0.15f, 0f), new Vector2(0.3f, 1f), UiStyle.SPACING + 18f);
             TextMeshProUGUI titleText = UiFactory.LocalizedText("Title", panel.transform, titleKey, UiStyle.FONT_HEADER,
                 TextAlignmentOptions.Center, bold: true);
             UiFactory.Span(titleText.rectTransform, new Vector2(0.3f, 0f), new Vector2(0.7f, 1f));
@@ -408,6 +421,15 @@ namespace Game.EditorTools
             UiFactory.SetField(bar, "_marks", marks);
             UiFactory.SetField(bar, "_samples", samples);
             return bar;
+        }
+
+        /// <summary>The pack's coin plate under a currency value, between two anchors of the bar.</summary>
+        private static void CoinPlate(Transform bar, string name, float xMin, float xMax, float left)
+        {
+            Image plate = UiFactory.Frame(name, bar, UiPackSprites.CoinPlate);
+            plate.raycastTarget = false;
+            UiFactory.Span(plate.rectTransform, new Vector2(xMin, 0f), new Vector2(xMax, 1f), left, UiStyle.SPACING,
+                UiStyle.SPACING, UiStyle.SPACING);
         }
 
         /// <summary>The area between the bar and the bottom buttons, inset from the edges; takes no raycasts.</summary>
@@ -464,17 +486,19 @@ namespace Game.EditorTools
         }
 
         /// <summary>
-        /// A switched-off list row: marker, slot icon, a small caption on top (Extra), the name (Title), a small
-        /// line below (Info); with action, the price and an action button on the right.
+        /// A switched-off list row (the pack's tab sprite; its selected look is the marker): slot icon, a small
+        /// caption on top (Extra), the name (Title), a small line below (Info); with action, the price and an action
+        /// button on the right.
         /// </summary>
         private static HangarItemView ListItem(Transform parent, string name, bool action, bool icon = true)
         {
             Button button = UiFactory.Button(name, parent, string.Empty);
             Object.DestroyImmediate(button.transform.Find("Label").gameObject);
             UiFactory.Size(button, ITEM_HEIGHT);
+            GameObject marker = UiFactory.TabSkin(button);
             HangarItemView view = button.gameObject.AddComponent<HangarItemView>();
             UiFactory.SetField(view, "_button", button);
-            UiFactory.SetField(view, "_marker", Marker(button.transform));
+            UiFactory.SetField(view, "_marker", marker);
             if (icon)
                 Icon(view, button.transform, new Vector2(0f, 0.5f), new Vector2(16f + MARKER, 0f));
 
@@ -512,7 +536,7 @@ namespace Game.EditorTools
         /// </summary>
         private static HangarItemView ShopCard(Transform grid)
         {
-            Image card = UiFactory.Panel("CardTemplate", grid, UiStyle.PanelLight);
+            Image card = UiFactory.Frame("CardTemplate", grid, UiPackSprites.Card);
             HangarItemView view = card.gameObject.AddComponent<HangarItemView>();
             Icon(view, card.transform, new Vector2(0f, 1f), new Vector2(16f, -16f));
 
@@ -543,17 +567,14 @@ namespace Game.EditorTools
             return view;
         }
 
-        /// <summary>The slot icon: a coloured square (HangarItemView colours it) with a short glyph.</summary>
+        /// <summary>The slot or module icon: the pack's frame with the icon set's sprite in it (HangarItemView puts it), or a short glyph.</summary>
         private static void Icon(HangarItemView view, Transform item, Vector2 anchor, Vector2 position)
         {
-            Image icon = UiFactory.Panel("Icon", item, Color.white);
-            icon.raycastTarget = false;
-            UiFactory.Place(icon.rectTransform, anchor, position, new Vector2(ICON, ICON));
-            TextMeshProUGUI glyph = UiFactory.Text("Glyph", icon.transform, "-", UiStyle.FONT_BODY,
-                TextAlignmentOptions.Center, bold: true, color: UiStyle.AccentText);
-            UiFactory.Stretch(glyph.rectTransform);
-            UiFactory.SetField(view, "_icon", icon);
+            Image frame = UiFactory.IconFrame("Icon", item, ICON, false, out Image symbol, out TextMeshProUGUI glyph);
+            UiFactory.Place(frame.rectTransform, anchor, position, new Vector2(ICON, ICON));
+            UiFactory.SetField(view, "_icon", symbol);
             UiFactory.SetField(view, "_glyph", glyph);
+            UiFactory.SetField(view, "_icons", s_icons);
         }
 
         private static TMP_Text Line(Transform item, string name, float size, bool bold, Color color, float yMin, float yMax,
@@ -563,21 +584,6 @@ namespace Game.EditorTools
             label.textWrappingMode = TextWrappingModes.NoWrap;
             UiFactory.Span(label.rectTransform, new Vector2(0f, yMin), new Vector2(1f, yMax), left, right, 2f, 2f);
             return label;
-        }
-
-        /// <summary>The accent strip on the left edge of a list item: shown on the selected one.</summary>
-        private static GameObject Marker(Transform item)
-        {
-            Image marker = UiFactory.Panel("Marker", item, UiStyle.Accent);
-            RectTransform rect = marker.rectTransform;
-            rect.anchorMin = Vector2.zero;
-            rect.anchorMax = new Vector2(0f, 1f);
-            rect.pivot = new Vector2(0f, 0.5f);
-            rect.anchoredPosition = Vector2.zero;
-            rect.sizeDelta = new Vector2(MARKER, 0f);
-            marker.raycastTarget = false;
-            marker.gameObject.SetActive(false);
-            return marker.gameObject;
         }
 
         private static void TopStrip(RectTransform rect, float height)

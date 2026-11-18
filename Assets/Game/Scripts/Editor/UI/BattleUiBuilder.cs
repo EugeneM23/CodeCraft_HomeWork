@@ -28,11 +28,15 @@ namespace Game.EditorTools
         private const int SKILL_PLACES = SkillOfferUseCase.MAX_WEAPONS + SkillOfferUseCase.MAX_UPGRADES;
         private const float SKILL_ICON = 48f;
         private const float SPECIAL_SIZE = 72f;
-        private const string ARROW_SPRITE = "UI/Skin/DropdownArrow.psd";
+        private const string KNOB_SPRITE = "UI/Skin/Knob.psd";
+
+        // The icon set given to every skill icon view of this build
+        private static UiIconSetConfig s_icons;
 
         [MenuItem("Tools/UI/Build Battle UI")]
         public static void Build()
         {
+            s_icons = UiIconSetBuilder.Ensure();
             Canvas canvas = UiFactory.Canvas(PREFAB_NAME, SORTING_ORDER);
             Transform root = canvas.transform;
 
@@ -119,7 +123,7 @@ namespace Game.EditorTools
 
         private static CanvasGroup CreateHints(RectTransform parent, out TMP_Text text)
         {
-            Image panel = UiFactory.Panel("Hints", parent, UiStyle.Panel);
+            Image panel = UiFactory.Frame("Hints", parent, UiPackSprites.Panel);
             panel.raycastTarget = false;
             UiFactory.Place(panel.rectTransform, Vector2.zero, new Vector2(UiStyle.PADDING, UiStyle.PADDING + 110f),
                 new Vector2(360, 170));
@@ -163,7 +167,7 @@ namespace Game.EditorTools
             TextMeshProUGUI boostLabel = UiFactory.LocalizedText("Label", boost, "hud.boost", UiStyle.FONT_SMALL, bold: true,
                 color: UiStyle.TextMuted);
             UiFactory.Size(boostLabel, ROW_HEIGHT, LABEL_WIDTH);
-            Image lamp = UiFactory.Panel("Lamp", boost, UiStyle.Disabled);
+            Image lamp = UiFactory.Frame("Lamp", boost, UiPackSprites.BarFill, UiStyle.Disabled); // TankHudView tints it
             lamp.raycastTarget = false;
             UiFactory.Size(lamp, BAR_HEIGHT, 48);
 
@@ -206,7 +210,7 @@ namespace Game.EditorTools
 
             Image arc = UiFactory.Panel("ReloadArc", cross, new Color(UiStyle.Accent.r, UiStyle.Accent.g, UiStyle.Accent.b, 0.35f));
             UiFactory.Stretch(arc.rectTransform);
-            arc.sprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/Knob.psd");
+            arc.sprite = AssetDatabase.GetBuiltinExtraResource<Sprite>(KNOB_SPRITE);
             arc.type = Image.Type.Filled;
             arc.fillMethod = Image.FillMethod.Radial360;
             arc.fillOrigin = (int)Image.Origin360.Top;
@@ -241,7 +245,7 @@ namespace Game.EditorTools
 
         private static TMP_Text[] CreateDebug(RectTransform parent)
         {
-            Image panel = UiFactory.Panel("Panel", parent, UiStyle.Panel);
+            Image panel = UiFactory.Frame("Panel", parent, UiPackSprites.Panel);
             panel.raycastTarget = false;
             UiFactory.Place(panel.rectTransform, Vector2.one, new Vector2(-UiStyle.PADDING, -UiStyle.PADDING),
                 new Vector2(560, 5 * 24 + 24));
@@ -264,7 +268,7 @@ namespace Game.EditorTools
         /// <summary>The arena's hints other than the keys (crush, destroy cover), top centre under the elite bar.</summary>
         private static CanvasGroup CreateArenaHint(RectTransform parent, out TMP_Text text)
         {
-            Image panel = UiFactory.Panel("ArenaHint", parent, UiStyle.Panel);
+            Image panel = UiFactory.Frame("ArenaHint", parent, UiPackSprites.Panel);
             panel.raycastTarget = false;
             UiFactory.Place(panel.rectTransform, new Vector2(0.5f, 1), new Vector2(0, -170), new Vector2(760, 84));
             CanvasGroup group = panel.gameObject.AddComponent<CanvasGroup>();
@@ -280,7 +284,7 @@ namespace Game.EditorTools
 
         private static void CreateRunCounters(RectTransform parent, RunHudView run)
         {
-            Image panel = UiFactory.Panel("Run", parent, UiStyle.Panel);
+            Image panel = UiFactory.Frame("Run", parent, UiPackSprites.Panel);
             panel.raycastTarget = false;
             UiFactory.Place(panel.rectTransform, new Vector2(0, 1), new Vector2(UiStyle.PADDING, -UiStyle.PADDING),
                 new Vector2(480, 140));
@@ -293,7 +297,8 @@ namespace Game.EditorTools
 
             RectTransform xp = HudRow("Experience", panel.transform, 26);
             TMP_Text level = HudText("Level", xp, UiStyle.FONT_BODY, 90, true, UiStyle.Accent);
-            Image xpFill = UiFactory.Bar("XpBar", xp, UiStyle.Accent, new Vector2(250, 14));
+            Image xpFill = UiFactory.Bar("XpBar", xp, Color.white, new Vector2(250, 14), UiPackSprites.ProgressBack,
+                UiPackSprites.ProgressFill, Color.white); // the pack's cyan progress bar
             UiFactory.Size(xpFill.transform.parent.GetComponent<Image>(), 14, 250);
             TMP_Text xpText = HudText("XpValue", xp, UiStyle.FONT_SMALL, 90, false, UiStyle.TextMuted);
 
@@ -337,32 +342,32 @@ namespace Game.EditorTools
             var icons = new Object[SKILL_PLACES];
             for (int i = 0; i < SKILL_PLACES; i++)
             {
-                Image background = SkillIcon($"Skill{i + 1}", row, SKILL_ICON, out TMP_Text glyph, out TMP_Text level);
-                UiFactory.Size(background, SKILL_ICON, SKILL_ICON);
-                SkillIconView icon = background.gameObject.AddComponent<SkillIconView>();
-                UiFactory.SetField(icon, "_background", background);
+                Image frame = SkillIcon($"Skill{i + 1}", row, SKILL_ICON, out Image symbol, out TMP_Text glyph,
+                    out TMP_Text level);
+                UiFactory.Size(frame, SKILL_ICON, SKILL_ICON);
+                SkillIconView icon = frame.gameObject.AddComponent<SkillIconView>();
+                UiFactory.SetField(icon, "_symbol", symbol);
                 UiFactory.SetField(icon, "_glyph", glyph);
                 UiFactory.SetField(icon, "_level", level);
+                UiFactory.SetField(icon, "_icons", s_icons);
                 icons[i] = icon;
             }
             UiFactory.SetArray(run, "_skillIcons", icons);
         }
 
-        /// <summary>A placeholder skill icon: coloured square, glyph in the middle, level in the corner.</summary>
-        private static Image SkillIcon(string name, Transform parent, float size, out TMP_Text glyphText, out TMP_Text levelText)
+        /// <summary>
+        /// A skill icon: the pack's icon frame with the icon set's sprite in it (the glyph when it has none), the
+        /// level on the pack's small plate in the corner.
+        /// </summary>
+        private static Image SkillIcon(string name, Transform parent, float size, out Image symbol, out TMP_Text glyphText,
+            out TMP_Text levelText)
         {
-            Image background = UiFactory.Panel(name, parent, UiStyle.Disabled);
-            background.sprite = UiFactory.WhiteSprite;
-            background.raycastTarget = false;
+            Image frame = UiFactory.IconFrame(name, parent, size, false, out symbol, out TextMeshProUGUI glyph);
 
-            TextMeshProUGUI glyph = UiFactory.Text("Glyph", background.transform, "-", Mathf.Round(size * 0.4f),
-                TextAlignmentOptions.Center, bold: true, color: UiStyle.AccentText);
-            glyph.textWrappingMode = TextWrappingModes.NoWrap;
-            UiFactory.Stretch(glyph.rectTransform);
-
-            Image levelBack = UiFactory.Panel("Level", background.transform, new Color(0f, 0f, 0f, 0.7f));
+            Image levelBack = UiFactory.Frame("Level", frame.transform, UiPackSprites.LevelPlate);
             levelBack.raycastTarget = false;
-            UiFactory.Place(levelBack.rectTransform, new Vector2(1, 0), Vector2.zero, new Vector2(size * 0.42f, size * 0.38f));
+            float plate = Mathf.Round(size * 0.42f);
+            UiFactory.Place(levelBack.rectTransform, new Vector2(1, 0), new Vector2(4f, -4f), new Vector2(plate, plate));
             TextMeshProUGUI level = UiFactory.Text("Value", levelBack.transform, "1", Mathf.Round(size * 0.28f),
                 TextAlignmentOptions.Center, bold: true);
             level.textWrappingMode = TextWrappingModes.NoWrap;
@@ -370,22 +375,23 @@ namespace Game.EditorTools
 
             glyphText = glyph;
             levelText = level;
-            return background;
+            return frame;
         }
 
         private static void CreateSpecial(RectTransform parent, RunHudView run)
         {
-            // Above the weapon bars, bottom-right.
-            Image frame = UiFactory.Panel("Special", parent, UiStyle.Panel);
-            frame.sprite = UiFactory.WhiteSprite;
+            // Above the weapon bars, bottom-right: the pack's round skill frame (RunHudView tints it by readiness)
+            // and a round charge fill in it.
+            Image frame = UiFactory.Frame("Special", parent, UiPackSprites.SpecialFrame, UiStyle.Panel);
+            frame.preserveAspect = true;
             frame.raycastTarget = false;
             UiFactory.Place(frame.rectTransform, new Vector2(1, 0),
                 new Vector2(-UiStyle.PADDING, UiStyle.PADDING + 3 * ROW_HEIGHT + 12 + UiStyle.SPACING),
                 new Vector2(SPECIAL_SIZE, SPECIAL_SIZE));
 
             Image fill = UiFactory.Panel("Fill", frame.transform, UiStyle.Accent);
-            UiFactory.Stretch(fill.rectTransform, 4, 4, 4, 4);
-            fill.sprite = UiFactory.WhiteSprite;
+            UiFactory.Stretch(fill.rectTransform, 10, 10, 10, 10);
+            fill.sprite = AssetDatabase.GetBuiltinExtraResource<Sprite>(KNOB_SPRITE);
             fill.type = Image.Type.Filled;
             fill.fillMethod = Image.FillMethod.Radial360;
             fill.fillOrigin = (int)Image.Origin360.Top;
@@ -446,8 +452,9 @@ namespace Game.EditorTools
             RectTransform pointer = UiFactory.Rect("GatePointer", parent);
             UiFactory.Place(pointer, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(96, 96));
 
-            Image arrow = UiFactory.Panel("Arrow", pointer, UiStyle.Accent);
-            arrow.sprite = AssetDatabase.GetBuiltinExtraResource<Sprite>(ARROW_SPRITE);
+            // The pack's cyan chevron, pointing down like the built-in arrow the pointer's rotation expects
+            Image arrow = UiFactory.Frame("Arrow", pointer, UiPackSprites.GateArrow);
+            arrow.type = Image.Type.Simple;
             arrow.preserveAspect = true;
             arrow.raycastTarget = false;
             UiFactory.Place(arrow.rectTransform, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(56, 56));
@@ -469,13 +476,11 @@ namespace Game.EditorTools
         {
             PauseScreen pause = UiFactory.Screen<PauseScreen>("Pause", parent, overlay: true, canGoBack: true, dim: true);
 
-            Image box = UiFactory.Panel("Box", pause.transform, UiStyle.PanelLight);
-            UiFactory.Place(box.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(-250, 0), new Vector2(440, 360));
-            UiFactory.Vertical(box.rectTransform, UiStyle.SPACING, (int)UiStyle.PADDING);
-
-            TextMeshProUGUI title = UiFactory.LocalizedText("Title", box.transform, "run.pause_title", UiStyle.FONT_TITLE,
-                TextAlignmentOptions.Center, bold: true);
-            UiFactory.Size(title, 64);
+            // Two pack windows side by side, the titles on their plates
+            Image box = UiFactory.Window("Box", pause.transform);
+            UiFactory.Place(box.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(-250, 0), new Vector2(440, 320));
+            UiFactory.WindowLayout(box.rectTransform, UiStyle.SPACING, true);
+            UiFactory.LocalizedWindowTitle(box, "run.pause_title", 360f);
 
             Button resume = UiFactory.LocalizedButton("Resume", box.transform, "run.pause_resume", accent: true);
             Button settings = UiFactory.LocalizedButton("Settings", box.transform, "run.pause_settings");
@@ -483,13 +488,10 @@ namespace Game.EditorTools
             resume.GetComponent<UiButtonSounds>().Click = UiSound.Back;
 
             // The run's skills, right of the buttons
-            Image list = UiFactory.Panel("Skills", pause.transform, UiStyle.PanelLight);
-            UiFactory.Place(list.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(250, 0), new Vector2(440, 600));
-            UiFactory.Vertical(list.rectTransform, 6, (int)UiStyle.PADDING);
-
-            TextMeshProUGUI header = UiFactory.LocalizedText("Header", list.transform, "run.pause_skills", UiStyle.FONT_HEADER,
-                TextAlignmentOptions.Center, bold: true);
-            UiFactory.Size(header, 40);
+            Image list = UiFactory.Window("Skills", pause.transform);
+            UiFactory.Place(list.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(250, 0), new Vector2(440, 640));
+            UiFactory.WindowLayout(list.rectTransform, 6, true);
+            UiFactory.LocalizedWindowTitle(list, "run.pause_skills", 360f);
 
             var rows = new Object[SKILL_PLACES];
             for (int i = 0; i < SKILL_PLACES; i++)
@@ -516,8 +518,8 @@ namespace Game.EditorTools
             UiFactory.Horizontal(row, UiStyle.SPACING, 0, TextAnchor.MiddleLeft, expandHeight: false);
             UiFactory.Size(row, height);
 
-            Image background = SkillIcon("Icon", row, height, out TMP_Text glyph, out TMP_Text level);
-            UiFactory.Size(background, height, height);
+            Image frame = SkillIcon("Icon", row, height, out Image symbol, out TMP_Text glyph, out TMP_Text level);
+            UiFactory.Size(frame, height, height);
 
             TextMeshProUGUI skillName = UiFactory.Text("Name", row, "-", UiStyle.FONT_BODY); // SkillIconView writes it
             skillName.textWrappingMode = TextWrappingModes.NoWrap;
@@ -525,10 +527,11 @@ namespace Game.EditorTools
 
             // The row is the pooled place, so hiding hides the whole row.
             SkillIconView view = row.gameObject.AddComponent<SkillIconView>();
-            UiFactory.SetField(view, "_background", background);
+            UiFactory.SetField(view, "_symbol", symbol);
             UiFactory.SetField(view, "_glyph", glyph);
             UiFactory.SetField(view, "_level", level);
             UiFactory.SetField(view, "_name", skillName);
+            UiFactory.SetField(view, "_icons", s_icons);
             row.gameObject.SetActive(false);
             return view;
         }
@@ -538,7 +541,7 @@ namespace Game.EditorTools
         private static SkillChoiceScreen CreateSkillChoice(Transform parent)
         {
             const float cardWidth = 360f;
-            const float cardHeight = 460f;
+            const float cardHeight = 480f;
             const float gap = 24f;
 
             SkillChoiceScreen choice = UiFactory.Screen<SkillChoiceScreen>("SkillChoice", parent, overlay: true,
@@ -546,7 +549,9 @@ namespace Game.EditorTools
 
             TextMeshProUGUI title = UiFactory.LocalizedText("Title", choice.transform, "run.choice_title", UiStyle.FONT_TITLE,
                 TextAlignmentOptions.Center, bold: true, color: UiStyle.Accent);
+            title.textWrappingMode = TextWrappingModes.NoWrap;
             UiFactory.Place(title.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0, cardHeight / 2 + 110), new Vector2(1000, 64));
+            UiFactory.TitleLines(title.rectTransform, 240f); // the pack's lines either side of the title
             TextMeshProUGUI hint = UiFactory.LocalizedText("Hint", choice.transform, "run.choice_hint", UiStyle.FONT_BODY,
                 TextAlignmentOptions.Center, color: UiStyle.TextMuted);
             UiFactory.Place(hint.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0, cardHeight / 2 + 56), new Vector2(1000, 36));
@@ -570,13 +575,15 @@ namespace Game.EditorTools
 
         private static SkillCardView SkillCard(string name, Transform parent)
         {
-            const float iconSize = 96f;
+            const float iconSize = 104f;
+            // The pack's item button (its pressed sprite on hover and selection)
             Image image = UiFactory.Panel(name, parent, Color.white);
             Button button = image.gameObject.AddComponent<Button>();
             button.targetGraphic = image;
-            button.colors = UiFactory.Colors(false);
+            UiFactory.ApplyButtonSkin(button, UiPackSprites.SkillCard);
             image.gameObject.AddComponent<SelectOnPointerEnter>();
-            UiFactory.Vertical(image.rectTransform, 8, (int)UiStyle.PADDING, TextAnchor.UpperCenter);
+            VerticalLayoutGroup layout = UiFactory.Vertical(image.rectTransform, 8, (int)UiStyle.PADDING, TextAnchor.UpperCenter);
+            layout.padding = new RectOffset(32, 32, 30, 30);
             SkillCardView card = image.gameObject.AddComponent<SkillCardView>();
 
             // SkillCardView.Setup writes every text
@@ -587,14 +594,8 @@ namespace Game.EditorTools
             RectTransform iconRow = UiFactory.Rect("IconRow", image.transform);
             UiFactory.Horizontal(iconRow, 0, 0, TextAnchor.MiddleCenter, expandHeight: false);
             UiFactory.Size(iconRow, iconSize);
-            Image icon = UiFactory.Panel("Icon", iconRow, UiStyle.Disabled);
-            icon.sprite = UiFactory.WhiteSprite;
-            icon.raycastTarget = false;
+            Image icon = UiFactory.IconFrame("Icon", iconRow, iconSize, true, out Image symbol, out TextMeshProUGUI glyph);
             UiFactory.Size(icon, iconSize, iconSize);
-            TextMeshProUGUI glyph = UiFactory.Text("Glyph", icon.transform, "-", 40, TextAlignmentOptions.Center, bold: true,
-                color: UiStyle.AccentText);
-            glyph.textWrappingMode = TextWrappingModes.NoWrap;
-            UiFactory.Stretch(glyph.rectTransform);
 
             TextMeshProUGUI skillName = UiFactory.Text("Name", image.transform, "-", UiStyle.FONT_HEADER,
                 TextAlignmentOptions.Center, bold: true);
@@ -610,8 +611,9 @@ namespace Game.EditorTools
             UiFactory.Size(description, 100, -1, -1, 1);
 
             UiFactory.SetField(card, "_button", button);
-            UiFactory.SetField(card, "_icon", icon);
+            UiFactory.SetField(card, "_symbol", symbol);
             UiFactory.SetField(card, "_glyph", glyph);
+            UiFactory.SetField(card, "_icons", s_icons);
             UiFactory.SetField(card, "_name", skillName);
             UiFactory.SetField(card, "_kind", kind);
             UiFactory.SetField(card, "_level", level);
@@ -627,9 +629,10 @@ namespace Game.EditorTools
             RunResultsScreen results = UiFactory.Screen<RunResultsScreen>("Results", parent, overlay: false,
                 canGoBack: false, dim: true);
 
-            Image box = UiFactory.Panel("Box", results.transform, UiStyle.PanelLight);
-            UiFactory.Place(box.rectTransform, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(720, 720));
-            UiFactory.Vertical(box.rectTransform, 8, (int)UiStyle.PADDING);
+            // The pack's window; the big victory/defeat title stays inside it (the screen colours it)
+            Image box = UiFactory.Window("Box", results.transform);
+            UiFactory.Place(box.rectTransform, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(760, 760));
+            UiFactory.WindowLayout(box.rectTransform, 8, false);
 
             // RunResultsScreen.Setup writes the values; labels and buttons are static.
             TextMeshProUGUI title = UiFactory.Text("Title", box.transform, "-", UiStyle.FONT_TITLE + 12,

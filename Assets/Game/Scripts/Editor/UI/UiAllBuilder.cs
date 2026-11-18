@@ -12,6 +12,7 @@ namespace Game.EditorTools
         public static void Build()
         {
             UiDataBuilder.Build();
+            UiIconSetBuilder.Ensure();
             MenuUiBuilder.Build();
             MenuUiBuilder.BuildScene();
             BattleUiBuilder.Build();
@@ -20,10 +21,13 @@ namespace Game.EditorTools
 
             // The fonts are dynamic: glyphs are added when text is drawn. Saved empty, they don't put
             // megabytes of atlas into every commit.
-            UiFactory.Regular.ClearFontAssetData(true);
-            UiFactory.Bold.ClearFontAssetData(true);
-            EditorUtility.SetDirty(UiFactory.Regular);
-            EditorUtility.SetDirty(UiFactory.Bold);
+            // Play draws the screens, Roboto behind it the signs Play lacks: all four dynamic.
+            TMPro.TMP_FontAsset[] fonts = { UiFactory.Regular, UiFactory.Bold, UiFactory.FallbackRegular, UiFactory.FallbackBold };
+            foreach (TMPro.TMP_FontAsset font in fonts)
+            {
+                font.ClearFontAssetData(true);
+                EditorUtility.SetDirty(font);
+            }
             AssetDatabase.SaveAssets();
 
             // The builders make and drop temporary objects in the open scene; when that is the menu scene we

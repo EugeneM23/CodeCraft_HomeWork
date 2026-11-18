@@ -125,7 +125,7 @@ namespace Game
 
                 string id = _ids[i];
                 HangarModule module = _source.Module(id);
-                item.SetIcon(_slot);
+                item.SetIcon(_slot, id);
                 item.SetSelected(id == _selected);
                 item.Title.text = HangarLook.ModuleName(id);
                 item.Info.SetText(_levelFormat, module.Level, module.MaxLevel);

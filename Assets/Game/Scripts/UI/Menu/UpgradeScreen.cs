@@ -75,7 +75,7 @@ namespace Game
 
         private void Draw(HangarItemView item, HangarModule module)
         {
-            item.SetIcon(module.SlotId);
+            item.SetIcon(module.SlotId, module.Id);
             item.Title.text = HangarLook.ModuleName(module.Id);
             item.Info.SetText(_levelFormat, module.Level, module.MaxLevel);
             item.Extra.text = HangarLook.SlotName(module.SlotId);

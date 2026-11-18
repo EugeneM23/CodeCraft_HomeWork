@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using ScreenNavigation;
 using TMPro;
 using UnityEditor;
@@ -9,19 +10,34 @@ namespace Game.EditorTools
 {
     /// <summary>
     /// Building blocks for the screen prefab builders: every panel, text, button and control in the
-    /// one UiStyle. Builders compose these, wire the screen's serialized fields with SetField and save
-    /// the prefab with SavePrefab.
+    /// one UiStyle, drawn with the SCI-FI UI Pack Pro's cyan sprites (UiPackSprites). Builders compose these,
+    /// wire the screen's serialized fields with SetField and save the prefab with SavePrefab.
     /// </summary>
     public static class UiFactory
     {
         public const string PREFAB_FOLDER = "Assets/Game/Prefabs/UI";
-        private const string FONT_FOLDER = "Assets/Game/Fonts/Roboto";
+        private const string FONT_FOLDER = "Assets/Game/Fonts/Play";
+        private const string FALLBACK_FONT_FOLDER = "Assets/Game/Fonts/Roboto";
+
+        /// <summary>Inner top padding of a window with a title plate on its top edge.</summary>
+        public const float WINDOW_TOP = UiStyle.PADDING + UiPackSprites.WINDOW_TITLE_HEIGHT / 2f + 4f;
+        private const float WINDOW_TITLE_WIDTH = 440f;
 
         private static TMP_FontAsset s_regular;
         private static TMP_FontAsset s_bold;
+        private static TMP_FontAsset s_fallbackRegular;
+        private static TMP_FontAsset s_fallbackBold;
 
-        public static TMP_FontAsset Regular => s_regular != null ? s_regular : s_regular = EnsureFont("Roboto-Regular", "Roboto_Regular_SDF");
-        public static TMP_FontAsset Bold => s_bold != null ? s_bold : s_bold = EnsureFont("Roboto-Bold", "Roboto_Bold_SDF");
+        /// <summary>Play (the pack's font, Latin and Cyrillic), dynamic; Roboto behind it for the signs Play lacks (→, −).</summary>
+        public static TMP_FontAsset Regular => s_regular != null ? s_regular
+            : s_regular = EnsureFont(UiPackSprites.FONT_PLAY_REGULAR, FONT_FOLDER, "Play_Regular_SDF", FallbackRegular);
+        public static TMP_FontAsset Bold => s_bold != null ? s_bold
+            : s_bold = EnsureFont(UiPackSprites.FONT_PLAY_BOLD, FONT_FOLDER, "Play_Bold_SDF", FallbackBold);
+
+        public static TMP_FontAsset FallbackRegular => s_fallbackRegular != null ? s_fallbackRegular
+            : s_fallbackRegular = EnsureFont($"{FALLBACK_FONT_FOLDER}/Roboto-Regular.ttf", FALLBACK_FONT_FOLDER, "Roboto_Regular_SDF", null);
+        public static TMP_FontAsset FallbackBold => s_fallbackBold != null ? s_fallbackBold
+            : s_fallbackBold = EnsureFont($"{FALLBACK_FONT_FOLDER}/Roboto-Bold.ttf", FALLBACK_FONT_FOLDER, "Roboto_Bold_SDF", null);
 
         // ---------- Layout ----------
 
@@ -131,14 +147,45 @@ namespace Game.EditorTools
             return fitter;
         }
 
+        /// <summary>Keeps a decoration out of its parent's layout group.</summary>
+        public static void IgnoreLayout(Component component)
+        {
+            LayoutElement element = component.GetComponent<LayoutElement>();
+            if (element == null)
+                element = component.gameObject.AddComponent<LayoutElement>();
+            element.ignoreLayout = true;
+        }
+
         // ---------- Elements ----------
 
+        /// <summary>A plain coloured rectangle (markers, dim, lines). Framed panels: Frame.</summary>
         public static Image Panel(string name, Transform parent, Color color)
         {
             RectTransform rect = Rect(name, parent);
             Image image = rect.gameObject.AddComponent<Image>();
             image.color = color;
             return image;
+        }
+
+        /// <summary>An image drawn with a pack sprite (9-sliced when the sprite has borders), tinted (white keeps its colours).</summary>
+        public static Image Frame(string name, Transform parent, UiPackSprites.Skin skin, Color? tint = null)
+        {
+            Image image = Panel(name, parent, tint ?? Color.white);
+            Skin(image, skin, tint);
+            return image;
+        }
+
+        /// <summary>Puts a pack sprite on an existing image.</summary>
+        public static void Skin(Image image, UiPackSprites.Skin skin, Color? tint = null)
+        {
+            if (image == null)
+                return;
+            Sprite sprite = skin.Sprite;
+            image.sprite = sprite;
+            image.type = sprite != null && sprite.border != Vector4.zero ? Image.Type.Sliced : Image.Type.Simple;
+            image.fillCenter = true;
+            image.pixelsPerUnitMultiplier = skin.Ppu;
+            image.color = tint ?? Color.white;
         }
 
         public static TextMeshProUGUI Text(string name, Transform parent, string text, float size = UiStyle.FONT_BODY,
@@ -157,22 +204,180 @@ namespace Game.EditorTools
             return label;
         }
 
-        /// <summary>A button with a centred label child named "Label". Accent: the screen's main action.</summary>
+        /// <summary>A button with a centred label child named "Label". Accent: the screen's main action (bright cyan).</summary>
         public static Button Button(string name, Transform parent, string label, bool accent = false,
             float fontSize = UiStyle.FONT_BODY)
         {
             Image image = Panel(name, parent, Color.white);
             Button button = image.gameObject.AddComponent<Button>();
             button.targetGraphic = image;
-            button.colors = Colors(accent);
+            ApplyButtonSkin(button, accent ? UiPackSprites.ButtonAccent : UiPackSprites.ButtonSecondary);
             image.gameObject.AddComponent<SelectOnPointerEnter>();
             image.gameObject.AddComponent<UiButtonSounds>();
 
-            TextMeshProUGUI text = Text("Label", image.transform, label, fontSize, TextAlignmentOptions.Center, accent,
-                accent ? UiStyle.AccentText : UiStyle.Text);
-            Stretch(text.rectTransform, 12, 12, 0, 0);
+            TextMeshProUGUI text = Text("Label", image.transform, label, fontSize, TextAlignmentOptions.Center, true,
+                UiStyle.Text);
+            text.textWrappingMode = TextWrappingModes.NoWrap;
+            text.enableAutoSizing = true; // long Russian labels shrink instead of being cut
+            text.fontSizeMin = UiStyle.FONT_SMALL - 2f;
+            text.fontSizeMax = fontSize;
+            Stretch(text.rectTransform, 16, 16, 0, 0);
             Size(image, UiStyle.BUTTON_HEIGHT);
             return button;
+        }
+
+        /// <summary>
+        /// Draws a selectable with the pack's state sprites: normal, the pressed sprite on hover, selection and
+        /// press, the grey one when disabled.
+        /// </summary>
+        public static void ApplyButtonSkin(Selectable selectable, UiPackSprites.ButtonSkin skin)
+        {
+            Image image = selectable.targetGraphic as Image;
+            Skin(image, skin.AsSkin);
+            Sprite pressed = UiPackSprites.Get(skin.Pressed);
+            selectable.transition = Selectable.Transition.SpriteSwap;
+            selectable.spriteState = new SpriteState
+            {
+                highlightedSprite = pressed,
+                selectedSprite = pressed,
+                pressedSprite = pressed,
+                disabledSprite = UiPackSprites.Get(skin.Disabled)
+            };
+        }
+
+        /// <summary>
+        /// Draws a selectable with one pack sprite and a colour tint for the states (list rows and tabs, whose
+        /// selected look is a separate overlay).
+        /// </summary>
+        public static void ApplyTintSkin(Selectable selectable, UiPackSprites.Skin skin)
+        {
+            Skin(selectable.targetGraphic as Image, skin);
+            selectable.transition = Selectable.Transition.ColorTint;
+            selectable.colors = TintColors();
+        }
+
+        /// <summary>The main menu's long button: the pack's menu sprite, label on the left.</summary>
+        public static Button LocalizedMenuButton(string name, Transform parent, string key, float height)
+        {
+            Button button = LocalizedButton(name, parent, key, false, UiStyle.FONT_HEADER);
+            ApplyButtonSkin(button, UiPackSprites.ButtonMenu);
+            TMP_Text label = button.GetComponentInChildren<TMP_Text>(true);
+            label.alignment = TextAlignmentOptions.Left;
+            Stretch(label.rectTransform, 64, 24, 0, 0);
+            Size(button, height);
+            return button;
+        }
+
+        /// <summary>
+        /// A tab or list row: the pack's tab sprite, tinted on hover and press. The returned overlay is its
+        /// selected look (behind the label, switched off): the screen shows it on the active one.
+        /// </summary>
+        public static GameObject TabSkin(Button button)
+        {
+            ApplyTintSkin(button, UiPackSprites.Tab.AsSkin);
+            Image selected = Frame("Selected", button.transform, UiPackSprites.TabSelected);
+            Stretch(selected.rectTransform);
+            selected.raycastTarget = false;
+            selected.transform.SetAsFirstSibling();
+            IgnoreLayout(selected);
+            selected.gameObject.SetActive(false);
+            return selected.gameObject;
+        }
+
+        /// <summary>
+        /// A modal window frame (the pack's popup) with nothing in it; the caller places it and adds the layout
+        /// (WindowLayout leaves room for a title plate).
+        /// </summary>
+        public static Image Window(string name, Transform parent)
+        {
+            Image window = Frame(name, parent, UiPackSprites.Window);
+            return window;
+        }
+
+        /// <summary>A vertical layout inside a window: the pack frame's insets, and room for the title plate when titled.</summary>
+        public static VerticalLayoutGroup WindowLayout(RectTransform window, float spacing, bool titled,
+            TextAnchor align = TextAnchor.UpperLeft)
+        {
+            const int inset = (int)UiStyle.PADDING + 8;
+            VerticalLayoutGroup group = Vertical(window, spacing, inset, align);
+            group.padding = new RectOffset(inset, inset, titled ? (int)WINDOW_TOP + 8 : inset, inset);
+            return group;
+        }
+
+        /// <summary>The pack's hexagonal title plate on the window's top edge with a text (set by the screen).</summary>
+        public static TextMeshProUGUI WindowTitle(Image window, string text, float width = WINDOW_TITLE_WIDTH)
+        {
+            Image plate = Frame("TitlePlate", window.transform, UiPackSprites.WindowTitle);
+            plate.raycastTarget = false;
+            IgnoreLayout(plate);
+            RectTransform rect = plate.rectTransform;
+            rect.anchorMin = new Vector2(0.5f, 1f);
+            rect.anchorMax = new Vector2(0.5f, 1f);
+            rect.pivot = new Vector2(0.5f, 0.5f);
+            rect.anchoredPosition = new Vector2(0f, -6f);
+            rect.sizeDelta = new Vector2(width, UiPackSprites.WINDOW_TITLE_HEIGHT);
+
+            TextMeshProUGUI title = Text("Title", plate.transform, text, UiStyle.FONT_HEADER, TextAlignmentOptions.Center,
+                true, UiStyle.Text);
+            title.textWrappingMode = TextWrappingModes.NoWrap;
+            title.enableAutoSizing = true;
+            title.fontSizeMin = UiStyle.FONT_SMALL;
+            title.fontSizeMax = UiStyle.FONT_HEADER;
+            Stretch(title.rectTransform, 48, 48, 4, 4);
+            return title;
+        }
+
+        /// <summary>The title plate with a static text by key.</summary>
+        public static TextMeshProUGUI LocalizedWindowTitle(Image window, string key, float width = WINDOW_TITLE_WIDTH)
+        {
+            TextMeshProUGUI title = WindowTitle(window, UiStrings.Get(key), width);
+            Localize(title, key);
+            return title;
+        }
+
+        /// <summary>The pack's title lines either side of a centred title, outside its layout.</summary>
+        public static void TitleLines(RectTransform title, float gap, float length = 300f)
+        {
+            Image left = Frame("LineLeft", title, UiPackSprites.TitleLineLeft, UiStyle.Accent);
+            left.raycastTarget = false;
+            left.preserveAspect = true;
+            IgnoreLayout(left);
+            Place(left.rectTransform, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(length, 26f));
+            left.rectTransform.pivot = new Vector2(1f, 0.5f);
+            left.rectTransform.anchoredPosition = new Vector2(-gap, 0f);
+
+            Image right = Frame("LineRight", title, UiPackSprites.TitleLineRight, UiStyle.Accent);
+            right.raycastTarget = false;
+            right.preserveAspect = true;
+            IgnoreLayout(right);
+            Place(right.rectTransform, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(length, 26f));
+            right.rectTransform.pivot = new Vector2(0f, 0.5f);
+            right.rectTransform.anchoredPosition = new Vector2(gap, 0f);
+        }
+
+        /// <summary>
+        /// An icon place: the pack's frame, a white pack icon in it (Symbol, switched off until a view puts a sprite)
+        /// and the glyph shown when there is no icon. Sized by the caller.
+        /// </summary>
+        public static Image IconFrame(string name, Transform parent, float size, bool large, out Image symbol,
+            out TextMeshProUGUI glyph)
+        {
+            Image frame = Frame(name, parent, large ? UiPackSprites.IconFrameLarge : UiPackSprites.IconFrame);
+            frame.raycastTarget = false;
+            frame.rectTransform.sizeDelta = new Vector2(size, size);
+
+            float inset = Mathf.Round(size * (large ? 0.22f : 0.18f));
+            symbol = Panel("Symbol", frame.transform, UiStyle.Text);
+            Stretch(symbol.rectTransform, inset, inset, inset, inset);
+            symbol.preserveAspect = true;
+            symbol.raycastTarget = false;
+            symbol.enabled = false;
+
+            glyph = Text("Glyph", frame.transform, "-", Mathf.Round(size * 0.36f), TextAlignmentOptions.Center, true,
+                UiStyle.Text);
+            glyph.textWrappingMode = TextWrappingModes.NoWrap;
+            Stretch(glyph.rectTransform);
+            return frame;
         }
 
         // ---------- Localized (static labels from UiStringTable) ----------
@@ -214,6 +419,7 @@ namespace Game.EditorTools
             return localized;
         }
 
+        /// <summary>Colour states of a plain (sprite-less) selectable in the palette.</summary>
         public static ColorBlock Colors(bool accent)
         {
             ColorBlock colors = ColorBlock.defaultColorBlock;
@@ -226,14 +432,38 @@ namespace Game.EditorTools
             return colors;
         }
 
-        /// <summary>A horizontal bar: background and a filled image named "Fill" (Image.Type.Filled, horizontal).</summary>
-        public static Image Bar(string name, Transform parent, Color fill, Vector2 size)
+        /// <summary>Colour states over a pack sprite: a little dimmed at rest, full on hover, darker pressed.</summary>
+        public static ColorBlock TintColors()
         {
-            Image back = Panel(name, parent, new Color(0f, 0f, 0f, 0.55f));
+            ColorBlock colors = ColorBlock.defaultColorBlock;
+            colors.normalColor = new Color(0.86f, 0.86f, 0.86f, 1f);
+            colors.highlightedColor = Color.white;
+            colors.selectedColor = Color.white;
+            colors.pressedColor = new Color(0.68f, 0.68f, 0.68f, 1f);
+            colors.disabledColor = new Color(0.5f, 0.5f, 0.5f, 0.5f);
+            colors.colorMultiplier = 1f;
+            colors.fadeDuration = 0.08f;
+            return colors;
+        }
+
+        /// <summary>
+        /// A horizontal bar: the pack's white bar pair, the background darkened and the filled image named "Fill"
+        /// (Image.Type.Filled, horizontal) tinted with the fill colour.
+        /// </summary>
+        public static Image Bar(string name, Transform parent, Color fill, Vector2 size) =>
+            Bar(name, parent, fill, size, UiPackSprites.BarBack, UiPackSprites.BarFill, new Color(0f, 0.05f, 0.07f, 0.85f));
+
+        /// <summary>A horizontal bar with the given pack sprites (the fill is never 9-sliced: Filled ignores borders).</summary>
+        public static Image Bar(string name, Transform parent, Color fill, Vector2 size, UiPackSprites.Skin backSkin,
+            UiPackSprites.Skin fillSkin, Color backTint)
+        {
+            Image back = Frame(name, parent, backSkin, backTint);
+            back.type = Image.Type.Simple;
             back.rectTransform.sizeDelta = size;
-            Image bar = Panel("Fill", back.transform, fill);
+            Image bar = Frame("Fill", back.transform, fillSkin, fill);
             Stretch(bar.rectTransform, 2, 2, 2, 2);
-            bar.sprite = WhiteSprite;
+            if (bar.sprite == null)
+                bar.sprite = WhiteSprite;
             bar.type = Image.Type.Filled;
             bar.fillMethod = Image.FillMethod.Horizontal;
             bar.fillAmount = 1f;
@@ -249,10 +479,14 @@ namespace Game.EditorTools
             go.transform.SetParent(parent, false);
             SetLayerRecursive(go);
             Slider slider = go.GetComponent<Slider>();
-            Recolor(go.transform.Find("Background"), UiStyle.ButtonPressed);
-            Recolor(go.transform.Find("Fill Area/Fill"), UiStyle.Accent);
-            Recolor(go.transform.Find("Handle Slide Area/Handle"), UiStyle.Text);
-            slider.colors = Colors(false);
+            SkinChild(go.transform, "Background", UiPackSprites.SliderBack);
+            SkinChild(go.transform, "Fill Area/Fill", UiPackSprites.SliderFill);
+            if (go.transform.Find("Handle Slide Area/Handle") is RectTransform handle)
+            {
+                Skin(handle.GetComponent<Image>(), UiPackSprites.SliderHandle);
+                handle.sizeDelta = new Vector2(17f, 4f); // 34×58 at half size: as tall as the slider plus a little
+            }
+            slider.colors = TintColors();
             go.AddComponent<SelectOnPointerEnter>();
             Size(slider, 28, -1, 1);
             return slider;
@@ -266,14 +500,20 @@ namespace Game.EditorTools
             SetLayerRecursive(go);
             Toggle toggle = go.GetComponent<Toggle>();
             Transform background = go.transform.Find("Background");
-            ((RectTransform)background).sizeDelta = new Vector2(28, 28);
-            Recolor(background, UiStyle.ButtonPressed);
-            Recolor(go.transform.Find("Background/Checkmark"), UiStyle.Accent);
+            ((RectTransform)background).sizeDelta = new Vector2(30, 30);
+            ((RectTransform)background).anchoredPosition = new Vector2(15, -16); // centred in the 32-high row
+            SkinChild(go.transform, "Background", UiPackSprites.CheckOff);
+            // The pack's "on" box is the whole box with the tick: it covers the "off" one
+            if (go.transform.Find("Background/Checkmark") is RectTransform check)
+            {
+                Skin(check.GetComponent<Image>(), UiPackSprites.CheckOn);
+                Stretch(check);
+            }
             Object.DestroyImmediate(go.transform.Find("Label").gameObject);
             TextMeshProUGUI text = Text("Label", go.transform, label);
-            Stretch(text.rectTransform, 40, 0, 0, 0);
+            Stretch(text.rectTransform, 44, 0, 0, 0);
             text.alignment = TextAlignmentOptions.Left;
-            toggle.colors = Colors(false);
+            toggle.colors = TintColors();
             go.AddComponent<SelectOnPointerEnter>();
             go.AddComponent<UiButtonSounds>();
             Size(toggle, 32);
@@ -287,23 +527,26 @@ namespace Game.EditorTools
             go.transform.SetParent(parent, false);
             SetLayerRecursive(go);
             TMP_Dropdown dropdown = go.GetComponent<TMP_Dropdown>();
-            dropdown.colors = Colors(false);
-            go.GetComponent<Image>().color = Color.white;
+            Skin(go.GetComponent<Image>(), UiPackSprites.Field);
+            dropdown.colors = TintColors();
             foreach (TMP_Text text in go.GetComponentsInChildren<TMP_Text>(true))
             {
                 text.font = Regular;
                 text.fontSize = UiStyle.FONT_BODY;
                 text.color = UiStyle.Text;
             }
-            Recolor(go.transform.Find("Template"), UiStyle.PanelLight);
-            Recolor(go.transform.Find("Template/Viewport/Content/Item/Item Background"), UiStyle.Button);
-            // Without sprites the arrow is a white square: a small muted diamond instead.
+            SkinChild(go.transform, "Template", UiPackSprites.PanelSolid);
+            SkinChild(go.transform, "Template/Viewport/Content/Item/Item Background", UiPackSprites.FieldSelected);
+            if (go.transform.Find("Template/Viewport/Content/Item") is Transform item && item.TryGetComponent(out Toggle itemToggle))
+                itemToggle.colors = TintColors();
+            Recolor(go.transform.Find("Template/Viewport/Content/Item/Item Checkmark"), UiStyle.Accent);
+            SkinChild(go.transform, "Template/Scrollbar", UiPackSprites.Field);
+            SkinChild(go.transform, "Template/Scrollbar/Sliding Area/Handle", UiPackSprites.SliderFill);
             if (go.transform.Find("Arrow") is RectTransform arrow)
             {
-                arrow.sizeDelta = new Vector2(12, 12);
-                arrow.anchoredPosition = new Vector2(-20, 0);
-                arrow.localRotation = Quaternion.Euler(0, 0, 45);
-                Recolor(arrow, UiStyle.TextMuted);
+                Skin(arrow.GetComponent<Image>(), UiPackSprites.DropdownArrow);
+                arrow.sizeDelta = new Vector2(22, 17);
+                arrow.anchoredPosition = new Vector2(-22, 0);
             }
 
             Transform template = go.transform.Find("Template");
@@ -328,8 +571,9 @@ namespace Game.EditorTools
             go.GetComponent<Image>().color = new Color(0, 0, 0, 0);
             Object.DestroyImmediate(scroll.horizontalScrollbar.gameObject);
             scroll.horizontalScrollbar = null;
-            Recolor(scroll.verticalScrollbar.transform, UiStyle.ButtonPressed);
-            Recolor(scroll.verticalScrollbar.handleRect, UiStyle.ButtonHover);
+            Skin(scroll.verticalScrollbar.GetComponent<Image>(), UiPackSprites.Field);
+            Skin(scroll.verticalScrollbar.handleRect.GetComponent<Image>(), UiPackSprites.SliderFill);
+            scroll.verticalScrollbar.colors = TintColors();
             scroll.verticalScrollbarVisibility = ScrollRect.ScrollbarVisibility.AutoHideAndExpandViewport;
 
             RectTransform content = scroll.content;
@@ -450,6 +694,13 @@ namespace Game.EditorTools
                 image.color = color;
         }
 
+        private static void SkinChild(Transform root, string path, UiPackSprites.Skin skin)
+        {
+            Transform child = root.Find(path);
+            if (child != null && child.TryGetComponent(out Image image))
+                Skin(image, skin);
+        }
+
         private static void SetLayerRecursive(GameObject go)
         {
             int layer = LayerMask.NameToLayer("UI");
@@ -457,23 +708,38 @@ namespace Game.EditorTools
                 child.gameObject.layer = layer;
         }
 
-        /// <summary>A dynamic TMP font asset from a Roboto ttf: glyphs (Cyrillic too) are added on first use.</summary>
-        private static TMP_FontAsset EnsureFont(string ttf, string assetName)
+        /// <summary>
+        /// A dynamic TMP font asset from a ttf: glyphs (Cyrillic too) are added on first use. The fallback (Roboto)
+        /// draws the signs the font lacks; it is set on an existing asset too.
+        /// </summary>
+        private static TMP_FontAsset EnsureFont(string ttfPath, string folder, string assetName, TMP_FontAsset fallback)
         {
-            string path = $"{FONT_FOLDER}/{assetName}.asset";
-            TMP_FontAsset existing = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(path);
-            if (existing != null)
-                return existing;
+            string path = $"{folder}/{assetName}.asset";
+            TMP_FontAsset asset = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(path);
+            if (asset == null)
+            {
+                Font font = AssetDatabase.LoadAssetAtPath<Font>(ttfPath);
+                if (font == null)
+                    throw new System.InvalidOperationException($"{nameof(UiFactory)}: no font at {ttfPath}");
 
-            Font font = AssetDatabase.LoadAssetAtPath<Font>($"{FONT_FOLDER}/{ttf}.ttf");
-            TMP_FontAsset asset = TMP_FontAsset.CreateFontAsset(font, 90, 9, GlyphRenderMode.SDFAA, 1024, 1024,
-                AtlasPopulationMode.Dynamic, true);
-            asset.name = assetName;
-            AssetDatabase.CreateAsset(asset, path);
-            asset.atlasTextures[0].name = assetName + " Atlas";
-            AssetDatabase.AddObjectToAsset(asset.atlasTextures[0], asset);
-            asset.material.name = assetName + " Material";
-            AssetDatabase.AddObjectToAsset(asset.material, asset);
+                EnsureFolder(folder);
+                asset = TMP_FontAsset.CreateFontAsset(font, 90, 9, GlyphRenderMode.SDFAA, 1024, 1024,
+                    AtlasPopulationMode.Dynamic, true);
+                asset.name = assetName;
+                AssetDatabase.CreateAsset(asset, path);
+                asset.atlasTextures[0].name = assetName + " Atlas";
+                AssetDatabase.AddObjectToAsset(asset.atlasTextures[0], asset);
+                asset.material.name = assetName + " Material";
+                AssetDatabase.AddObjectToAsset(asset.material, asset);
+            }
+
+            if (fallback != null && (asset.fallbackFontAssetTable == null || !asset.fallbackFontAssetTable.Contains(fallback)))
+            {
+                asset.fallbackFontAssetTable ??= new List<TMP_FontAsset>();
+                asset.fallbackFontAssetTable.Add(fallback);
+                EditorUtility.SetDirty(asset);
+            }
+
             AssetDatabase.SaveAssets();
             return asset;
         }

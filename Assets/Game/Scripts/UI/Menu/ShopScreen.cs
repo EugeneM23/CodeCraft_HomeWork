@@ -133,7 +133,7 @@ namespace Game
 
         private void Draw(HangarItemView card, HangarModule module, HangarTankStats current)
         {
-            card.SetIcon(module.SlotId);
+            card.SetIcon(module.SlotId, module.Id);
             card.Title.text = HangarLook.ModuleName(module.Id);
             card.Info.text = HangarLook.ModuleDescription(module.Id);
             card.Extra.text = StatsText(current, _source.Stats(module.Id));

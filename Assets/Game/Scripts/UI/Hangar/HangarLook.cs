@@ -6,8 +6,8 @@ namespace Game
 {
     /// <summary>
     /// How the menus show the source's ids: names and descriptions from UiStrings by key (module.&lt;id&gt;.name,
-    /// module.&lt;id&gt;.desc, chapter.&lt;id&gt;.name, tank.&lt;id&gt;.name, slot.&lt;id&gt;) and the slot icon: a
-    /// coloured square with a short glyph (slot.&lt;id&gt;.glyph). Texts are cached per id and language, so a
+    /// module.&lt;id&gt;.desc, chapter.&lt;id&gt;.name, tank.&lt;id&gt;.name, slot.&lt;id&gt;) and the slot's tint and
+    /// short glyph (slot.&lt;id&gt;.glyph, shown when the icon set has no icon). Texts are cached per id and language, so a
     /// redraw builds no key strings.
     /// </summary>
     public static class HangarLook

@@ -403,7 +403,14 @@ namespace Game.EditorTools
             string path = $"{MATERIAL_FOLDER}/{name}.mat";
             var material = AssetDatabase.LoadAssetAtPath<Material>(path);
             if (material != null)
+            {
+                // Colours follow UiStyle (the accent ring and lamps take the UI palette's accent)
+                material.SetColor("_BaseColor", color);
+                if (emission.HasValue)
+                    material.SetColor("_EmissionColor", emission.Value);
+                EditorUtility.SetDirty(material);
                 return material;
+            }
 
             Shader shader = Shader.Find(LIT_SHADER);
             if (shader == null)

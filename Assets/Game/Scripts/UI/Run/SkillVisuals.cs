@@ -3,7 +3,8 @@ using UnityEngine;
 namespace Game
 {
     /// <summary>
-    /// How a run skill looks until it has an icon: a coloured square with a two-letter glyph. Texts by id from
+    /// How a run skill looks besides its icon (UiIconSetConfig): its tint, and the two-letter glyph shown when it
+    /// has no icon. Texts by id from
     /// the string table: skill.&lt;id&gt;.name, .glyph, .desc (level 1), .desc_up (next levels). The keys are
     /// built once per id and kept, so views can ask for them on change without new strings.
     /// </summary>
