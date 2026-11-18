@@ -9,7 +9,8 @@
 // Profiler on, allocation callstacks on. Per kill: frames D..D+5 (D = the kill frame) with PlayerLoop ms, game GC bytes and
 // the Death.* / Crush.* / voxel marker times; over the whole window: PlayerLoop avg/p95/max/over16; GC sources by
 // managed callstack (top frames) over all death frames. Read the result with death_bench_read.cs.
-// AppDomain data (optional): "deathbench_kills" int (default 9), "deathbench_kinds" string "shot,blast,crush".
+// AppDomain data (optional): "deathbench_kills" int (default 9), "deathbench_kinds" string "shot,blast,crush",
+// "deathbench_stacks" bool (default true; false for timing without the callstacks' cost on every allocation).
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -66,10 +67,12 @@ bool profWasEditor = ProfilerDriver.profileEditor;
 bool stacksWere = UnityEngine.Profiling.Profiler.enableAllocationCallstacks;
 ProfilerDriver.profileEditor = false;
 ProfilerDriver.enabled = true;
-UnityEngine.Profiling.Profiler.enableAllocationCallstacks = true;
+// Callstacks make every GC.Alloc slower: "deathbench_stacks" false times the deaths without them (no gcSources then).
+bool withStacks = !(domain.GetData("deathbench_stacks") is bool ws) || ws;
+UnityEngine.Profiling.Profiler.enableAllocationCallstacks = withStacks;
 object memModeWas = null;
 PropertyInfo memMode = typeof(ProfilerDriver).GetProperty("memoryRecordMode", BindingFlags.Public | BindingFlags.Static);
-try { if (memMode != null) { memModeWas = memMode.GetValue(null); memMode.SetValue(null, Enum.Parse(memMode.PropertyType, "GCAlloc")); } } catch { memMode = null; }
+try { if (memMode != null) { memModeWas = memMode.GetValue(null); memMode.SetValue(null, Enum.Parse(memMode.PropertyType, withStacks ? "GCAlloc" : "None")); } } catch { memMode = null; }
 try
 {
     var pus = typeof(ProfilerDriver).Assembly.GetType("UnityEditor.Profiling.ProfilerUserSettings");
@@ -255,8 +258,9 @@ void Finish(string status)
     for (int i = 0; i < strikes.Length; i++) if (strikes[i] != null) onField.SetValue(strikes[i], strikeWasOn[i]);
     ProfilerDriver.enabled = profWasEnabled;
     ProfilerDriver.profileEditor = profWasEditor;
-    UnityEngine.Profiling.Profiler.enableAllocationCallstacks = stacksWere;
+    // The record mode first: setting it turns the callstacks on or off too (and it outlives Play, an editor setting).
     try { if (memMode != null && memModeWas != null) memMode.SetValue(null, memModeWas); } catch { }
+    UnityEngine.Profiling.Profiler.enableAllocationCallstacks = stacksWere;
     UnityEngine.Object.Destroy(killerGo);
 
     string F(double x, string fmt = "F2") => x.ToString(fmt, inv);
