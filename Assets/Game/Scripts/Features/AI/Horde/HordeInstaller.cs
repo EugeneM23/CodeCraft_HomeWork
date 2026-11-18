@@ -46,7 +46,6 @@ namespace Game.AIKit.Adapters
             entity.AddDamage(new ReactiveVariable<int>(0));
             Behaviour = new HordeBehaviour(_art, _options);
             entity.AddBehaviour(Behaviour);
-            entity.AddBehaviour(new HordeCombatBridge(Behaviour)); // combat: horde targets and deaths (temporary bridge)
         }
     }
 }

@@ -160,9 +160,7 @@ namespace Game.Tests
             {
                 capacity = Mathf.Max(population, 64),
                 population = population,
-                attackDps = 0f,
-                health = 20f,
-                speed = 6.5f,
+                tankDamageScale = 0f,
                 castShadows = false
             };
             HordeInstaller installer = HordeSpawn.CreateInScene(art, options);
