@@ -23,6 +23,11 @@ namespace Game
         /// <summary>An air bomb was dropped: the bomb, alive until it explodes.</summary>
         public static event Action<Transform> AirBombDropped;
 
+        /// <summary>The tank picked up an experience clot: its point.</summary>
+        public static event Action<Vector3> XpPicked;
+
+        public static void RaiseXpPicked(Vector3 point) => XpPicked?.Invoke(point);
+
         public static void RaiseMudHit(Vector3 point, float size) => MudHit?.Invoke(point, size);
 
         public static void RaiseCrushed(Vector3 point, float speed) => Crushed?.Invoke(point, speed);
