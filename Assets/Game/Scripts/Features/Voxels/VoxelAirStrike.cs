@@ -76,7 +76,14 @@ namespace Game
         [SerializeField] private float _shove = 1.2f;
         [SerializeField] private float _shoveReach = 20f;
 
+        /// <summary>Landed bombs' objects kept for the next drops; more than this are destroyed.</summary>
+        private const int BOMB_POOL = 4;
+
         private readonly List<Bomb> _bombs = new();
+        // With the frame each was put back: one is reused only after a whole frame inactive, so the whistle
+        // (GameSignalAudio stops it when its bomb goes inactive) cannot carry over to the next bomb.
+        private readonly Queue<(Transform bomb, int frame)> _freeBombs = new(BOMB_POOL);
+        private readonly Stack<Bomb> _freeBombData = new(BOMB_POOL);
         private float _next;
         private bool _on = true;
         private bool _looped;
@@ -90,10 +97,21 @@ namespace Game
         /// <summary>Whether new bombs fall; the Sandbox/AirStrike input action flips it.</summary>
         public bool On => _on;
 
+        /// <summary>
+        /// The run's air strike skill (AirStrikeSkillBehaviour) holds the prototype's own timer while it is on: only
+        /// <see cref="Strike(Vector3)"/> drops bombs then. The X toggle still flips <see cref="On"/> underneath.
+        /// </summary>
+        public bool TimerSuppressed { get; set; }
+
         private sealed class Bomb
         {
             public Transform Transform;
             public Vector3 Velocity;
+
+            /// <summary>Damage to the level's enemy targets where it lands (skill bombs); 0 for the prototype's.</summary>
+            public float Damage;
+            public float DamageRadius;
+            public float MinFactor;
         }
 
         private void Start()
@@ -162,7 +180,7 @@ namespace Game
         // On the game loop with the app: no bombs fall and none move while the game is paused
         public void OnUpdate(float deltaTime)
         {
-            if (_on && _target != null && GameTicks.Time >= _next)
+            if (_on && !TimerSuppressed && _target != null && GameTicks.Time >= _next)
             {
                 _next = GameTicks.Time + _interval;
                 Drop();
@@ -176,14 +194,69 @@ namespace Game
         {
             Vector2 ring = Random.insideUnitCircle.normalized * Random.Range(_minDistance, _maxDistance);
             Vector3 aim = _target.position + new Vector3(ring.x, 0f, ring.y);
+            DropAt(aim, 0f, 0f, 0f);
+        }
 
+        /// <summary>A bomb falls on the point (it lands on whatever is below it) and goes off as the prototype's do.</summary>
+        public void Strike(Vector3 point) => DropAt(point, 0f, 0f, 0f);
+
+        /// <summary>
+        /// <see cref="Strike(Vector3)"/>, and where it lands every enemy target of the level (entities and the horde)
+        /// within <paramref name="damageRadius"/> takes <paramref name="damage"/>, down to <paramref name="minFactor"/>
+        /// of it at the edge (EnemyTargets.DamageArea).
+        /// </summary>
+        public void Strike(Vector3 point, float damage, float damageRadius, float minFactor) =>
+            DropAt(point, damage, damageRadius, minFactor);
+
+        // The bomb objects come from a small pool (the skill drops several at once); one is built only when none is free.
+        private void DropAt(Vector3 aim, float damage, float damageRadius, float minFactor)
+        {
             // It comes in on a slant from a random side, so it is seen falling.
             Vector2 side = Random.insideUnitCircle.normalized * _slant;
             Vector3 start = aim + new Vector3(side.x, _dropHeight, side.y);
             Vector3 velocity = (aim - start).normalized * _startSpeed;
 
-            _bombs.Add(new Bomb { Transform = BuildBomb(start).transform, Velocity = velocity });
-            GameSignals.RaiseAirBombDropped(_bombs[_bombs.Count - 1].Transform);
+            Bomb bomb = _freeBombData.Count > 0 ? _freeBombData.Pop() : new Bomb();
+            bomb.Transform = RentBomb(start);
+            bomb.Velocity = velocity;
+            bomb.Damage = damage;
+            bomb.DamageRadius = damageRadius;
+            bomb.MinFactor = minFactor;
+            _bombs.Add(bomb);
+            GameSignals.RaiseAirBombDropped(bomb.Transform);
+        }
+
+        private Transform RentBomb(Vector3 position)
+        {
+            while (_freeBombs.Count > 0 && _freeBombs.Peek().frame < Time.frameCount - 1)
+            {
+                Transform pooled = _freeBombs.Dequeue().bomb;
+                if (pooled == null)
+                    continue;
+                pooled.SetPositionAndRotation(position, Quaternion.identity);
+                pooled.gameObject.SetActive(true);
+                return pooled;
+            }
+
+            return BuildBomb(position).transform;
+        }
+
+        /// <summary>A landed bomb's object back to the pool (destroyed past <see cref="BOMB_POOL"/>).</summary>
+        private void ReturnBomb(Bomb bomb)
+        {
+            if (_freeBombs.Count < BOMB_POOL)
+            {
+                bomb.Transform.gameObject.SetActive(false);
+                _freeBombs.Enqueue((bomb.Transform, Time.frameCount));
+            }
+            else
+            {
+                Destroy(bomb.Transform.gameObject);
+            }
+
+            bomb.Transform = null;
+            if (_freeBombData.Count < BOMB_POOL)
+                _freeBombData.Push(bomb);
         }
 
         private void Fall(float dt)
@@ -205,15 +278,26 @@ namespace Game
                         QueryTriggerInteraction.Ignore) || from.y < -50f)
                 {
                     Vector3 point = hit.collider != null ? hit.point : from;
-                    Destroy(bomb.Transform.gameObject);
+                    float damage = bomb.Damage;
+                    float damageRadius = bomb.DamageRadius;
+                    float minFactor = bomb.MinFactor;
+                    ReturnBomb(bomb);
                     _bombs.RemoveAt(i);
                     Explode(point);
+                    if (damage > 0f)
+                        DamageTargets(point, damage, damageRadius, minFactor);
                     continue;
                 }
 
                 bomb.Transform.position = from + step;
                 bomb.Transform.rotation = Quaternion.LookRotation(bomb.Velocity.normalized) * Quaternion.Euler(-90f, 0f, 0f);
             }
+        }
+
+        private static void DamageTargets(Vector3 point, float damage, float radius, float minFactor)
+        {
+            if (GameContext.TryGetInstance(out GameContext context) && context.TryGetEnemyTargets(out IEnemyTargets targets))
+                targets.DamageArea(point, radius, damage, minFactor);
         }
 
         private void Explode(Vector3 point)

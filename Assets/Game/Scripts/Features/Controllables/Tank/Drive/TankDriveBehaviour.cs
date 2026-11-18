@@ -39,7 +39,7 @@ namespace Game
         private readonly float _braking;
         private readonly float _turnAcceleration;
         private readonly float _pitchLean;
-        private readonly float _boostMultiplier;
+        private float _boostMultiplier;
         private readonly float _driftSpeed;
         private readonly float _sideGrip;
 
@@ -47,6 +47,15 @@ namespace Game
 
         /// <summary>Last step the tracks could not take the whole slide out: the hull is drifting.</summary>
         public bool Drifting => _drifting;
+
+        /// <summary>Shift's power: boost top speed over normal top speed (at least 1). The loadout sets it.</summary>
+        public float BoostMultiplier
+        {
+            get => _boostMultiplier;
+            set => _boostMultiplier = Mathf.Max(1f, value);
+        }
+
+        private IEntity _entity;
 
         private Rigidbody _body;
         private TankSuspension _suspension;
@@ -79,6 +88,7 @@ namespace Game
 
         public void Init(IEntity entity)
         {
+            _entity = entity;
             _body = entity.GetRiggedBody();
             _suspension = entity.GetSuspension();
             _input = entity.GetDriveInput();
@@ -96,7 +106,8 @@ namespace Game
             if (_suspension.Resting && _driver.Value == null)
                 return;
 
-            bool engine = _engine == null || _engine.Running;
+            // Stunned (the elite's leap): the stick counts as let go, so the hull brakes to a stop.
+            bool engine = (_engine == null || _engine.Running) && !TankStunUseCase.IsStunned(_entity);
             Vector2 input = engine && _driver.Value != null && _health.Exists() ? _input.Value : Vector2.zero;
             input.x = Mathf.Clamp(input.x, -1f, 1f);
             input.y = Mathf.Clamp(input.y, -1f, 1f);

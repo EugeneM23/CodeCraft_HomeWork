@@ -36,7 +36,7 @@ namespace Game
                 cooldown.Reset();
 
             if (_weapon.TryGetFirePoint(out var firePoint))
-                SpawnUseCase.SpawnBullet(_weapon, _gameFactory, firePoint);
+                BulletShotUseCase.Fire(_weapon, _gameFactory, firePoint);
 
             if (_weapon.TryGetShellPoint(out var shellPoint))
                 SpawnUseCase.SpawnShell(_gameFactory, _weapon, shellPoint, IMPULSE);
