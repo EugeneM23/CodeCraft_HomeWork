@@ -279,11 +279,19 @@ namespace Game
             Transform player = start.Vehicle != null ? start.Vehicle.transform : start.transform;
             Vector3 forward = Vector3.ProjectOnPlane(player.forward, Vector3.up).normalized;
             Vector3 right = Vector3.Cross(Vector3.up, forward);
+            // The target's root sits where the player's tank root sits over its ground: same model, same pivot. The
+            // ground under each is looked up past the tanks (their layer is not in the mask); without ground yet
+            // (the voxel terrain is built after load) the player's height is kept.
+            const int GROUND = (1 << 0) | (1 << 3) | (1 << 10) | (1 << 14) | (1 << 16);
+            float playerGround = Physics.Raycast(player.position + Vector3.up * 5f, Vector3.down, out RaycastHit under,
+                50f, GROUND, QueryTriggerInteraction.Ignore) ? under.point.y : float.NaN;
             for (int i = 0; i < 2; i++)
             {
                 Vector3 at = player.position + forward * (18f + 6f * i) + right * (i == 0 ? -5f : 5f);
-                if (Physics.Raycast(at + Vector3.up * 50f, Vector3.down, out RaycastHit hit, 100f, ~0, QueryTriggerInteraction.Ignore))
-                    at = hit.point;
+                at.y = player.position.y;
+                if (!float.IsNaN(playerGround) && Physics.Raycast(at + Vector3.up * 30f, Vector3.down, out RaycastHit hit,
+                        60f, GROUND, QueryTriggerInteraction.Ignore))
+                    at.y += hit.point.y - playerGround;
                 // Broadside on to the player.
                 Instantiate(prefab, at, Quaternion.LookRotation(right), null).name = RESOURCE;
             }
