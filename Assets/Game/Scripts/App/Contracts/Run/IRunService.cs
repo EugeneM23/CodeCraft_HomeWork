@@ -10,8 +10,10 @@ namespace Game
     ///
     /// Who calls what:
     /// <list type="bullet">
-    /// <item>core — StartRun (on entering the level), the shutter and the lull timers, Victory after the last arena;</item>
-    /// <item>arena team — MarkArenaReady (the arena is built), MarkGateOpened, MarkArenaLeft (the tank is through the gate);</item>
+    /// <item>core — StartRun (on entering the level), the arena team's Build(arena, Seed + n) while the shutter is closed,
+    /// the shutter and the lull timers, the pause while a skill offer is shown, Victory after the last arena;</item>
+    /// <item>arena team — MarkArenaReady (only if its Build takes frames), MarkGateOpened, MarkArenaLeft (the tank is
+    /// through the gate);</item>
     /// <item>AI — MarkArenaCleared (the director's last wave is dead), deaths go to <see cref="IEnemyDeaths"/>;</item>
     /// <item>combat — AddExperience (an orb collected), EndRun(Defeat) when the tank dies;</item>
     /// <item>menu — ChooseSkill (1 of 3 cards), EndRun(Abandoned) from the pause.</item>
@@ -27,7 +29,8 @@ namespace Game
         event Action RunStarted;
 
         /// <summary>
-        /// Arena n (1-based) begins, behind the closed shutter (state Preparing): build it now, then MarkArenaReady.
+        /// Arena n (1-based) begins, behind the closed shutter (state Preparing): the core has just called the arena
+        /// team's Build for it.
         /// </summary>
         event Action<int> ArenaStarted;
 
@@ -39,13 +42,19 @@ namespace Game
 
         event Action<int> GateOpened;
 
-        /// <summary>The tank is through the gate of arena n: the orbs fly in, the shutter closes.</summary>
+        /// <summary>
+        /// The tank is through the gate of arena n: the orbs fly in (combat). Raised before the shutter starts closing
+        /// (ShutterChanged(true) follows), so there is a moment to pull them.
+        /// </summary>
         event Action<int> ArenaLeft;
 
         /// <summary>The shutter is closing (true) or opening (false); the menu draws it, about 0.5 s each way.</summary>
         event Action<bool> ShutterChanged;
 
-        /// <summary>A new level (the level number). An offer of skills is ready: the menu pauses and shows it.</summary>
+        /// <summary>
+        /// A new level (the level number). An offer of skills is ready; the core has paused the game loop and resumes
+        /// it after the last ChooseSkill of the queue. The menu shows the cards.
+        /// </summary>
         event Action<int> LevelUp;
 
         /// <summary>A skill was taken or levelled up (the skill, its new level 1..5).</summary>
@@ -65,6 +74,12 @@ namespace Game
         bool IsRunning { get; }
 
         ChapterId Chapter { get; }
+
+        /// <summary>
+        /// The run's random seed. Arena n is built with Seed + n (the core calls the arena team's Build with it), so a
+        /// run is reproducible and every run differs.
+        /// </summary>
+        int Seed { get; }
 
         /// <summary>The current arena, 1-based; 0 before the run.</summary>
         int ArenaNumber { get; }
@@ -114,6 +129,9 @@ namespace Game
 
         int Crushes { get; }
 
+        /// <summary>Crushes in a row for the HUD «Давка ×N»: each within 2 s of the previous one; 0 after 2 s without one.</summary>
+        int CrushStreak { get; }
+
         int ElitesKilled { get; }
 
         /// <summary>The summary once Ended; default before.</summary>
@@ -144,5 +162,11 @@ namespace Game
 
         /// <summary>Combat: Defeat when the tank dies; menu: Abandoned from the pause. Victory is the core's own.</summary>
         bool EndRun(RunOutcome outcome);
+
+        /// <summary>
+        /// Menu, «В ангар» from the pause: ends the run as Abandoned (the loot is kept and saved, GDD §3) and goes to the
+        /// main menu's hangar. After the results screen use the game flow's ReturnToMenu instead.
+        /// </summary>
+        bool LeaveToHangar();
     }
 }

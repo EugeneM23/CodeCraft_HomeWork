@@ -10,10 +10,10 @@ namespace Game
         Spitter,
 
         /// <summary>Взрывун: blows up close to the tank (chapter 2).</summary>
-        Bomber,
+        Exploder,
 
         /// <summary>The elite Regax of arenas 5, 10, 15.</summary>
-        Elite,
+        EliteRegax,
 
         /// <summary>The chapter's boss on arena 20.</summary>
         Boss
