@@ -286,6 +286,7 @@ namespace Game.Voxels
             s_instance = this;
             ChunkMaterial = LoadMaterial(CHUNK_MATERIAL, false);
             Debris = new VoxelDebris(LoadMaterial(DEBRIS_MATERIAL, true), 24000, VoxelDebris.LYING_DEFAULT);
+            VoxelBody.Prewarm();
             SetEarlyHook(true);
         }
 
@@ -384,7 +385,9 @@ namespace Game.Voxels
             {
                 VoxelBody body = s_bodies[i];
                 if (body != null && body.HasStrength && body.IsStatic && body.WorldBounds.SqrDistance(point) <= reach * reach)
+                {
                     body.MarkStructureDirty(point, reach, delay);
+                }
             }
         }
 
@@ -577,6 +580,25 @@ namespace Game.Voxels
             }
 
             return applied;
+        }
+
+        /// <summary>A body going back to a pool (VoxelBody.Recycle): its remeshes still running are waited for and dropped.</summary>
+        internal static void DropJobsOf(VoxelBody body)
+        {
+            s_splits.Remove(body);
+            UnqueueStructure(body);
+            if (s_instance == null)
+                return;
+
+            List<VoxelBody.ChunkJob> jobs = s_instance._asyncJobs;
+            for (int i = jobs.Count - 1; i >= 0; i--)
+            {
+                if (jobs[i].Body != body)
+                    continue;
+                jobs[i].Handle.Complete();
+                jobs[i].Dispose();
+                jobs.RemoveAt(i);
+            }
         }
 
         private void OnApplicationQuit() => s_quitting = true;

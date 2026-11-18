@@ -192,6 +192,8 @@ namespace Game.Voxels
 
         public void VoxelLateUpdate(float deltaTime)
         {
+            // As soon as the skin exists (one flag check after that).
+            ReserveStains();
             Vector3 velocity = _body.linearVelocity;
             Vector3 planar = new Vector3(velocity.x, 0f, velocity.z);
             float speed = planar.magnitude;
@@ -422,11 +424,30 @@ namespace Game.Voxels
             }
         }
 
+        private bool _stainsReserved;
+
+        /// <summary>
+        /// The skin's stain buffers (VoxelBody.ReserveStains), made once the skin is built — at the start,
+        /// before a fight — not in the frame of the first splash (24 KB of garbage there).
+        /// </summary>
+        private void ReserveStains()
+        {
+            if (_stainsReserved || _skin == null || _skin.Bodies.Count == 0)
+                return;
+            _stainsReserved = true;
+            IReadOnlyList<VoxelBody> bodies = _skin.Bodies;
+            for (int i = 0; i < bodies.Count; i++)
+                if (bodies[i] != null)
+                    bodies[i].ReserveStains();
+        }
+
         /// <summary>Mud splashed onto the lower hull and the wheels.</summary>
         private void Splash(float travelled)
         {
             if (_skin == null || _skin.Bodies.Count == 0 || _wheelList.Count == 0)
                 return;
+
+            ReserveStains();
 
             _splashDebt += travelled * _splashesPerMetre;
             while (_splashDebt >= 1f)

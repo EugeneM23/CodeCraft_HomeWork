@@ -46,7 +46,7 @@ namespace Game.Voxels
         private const float SUPPORT_ABOVE = 0.3f;
 
         /// <summary>A fallen piece's hit counts as its impulse spread over this long (s).</summary>
-        public const float IMPACT_TIME = 0.5f;
+        public const float IMPACT_TIME = 0.2f;
 
         /// <summary>Hits lighter than this (kg of load) are not worth a solve.</summary>
         public const float MIN_IMPACT_LOAD = 1000f;
@@ -88,6 +88,9 @@ namespace Game.Voxels
                 return;
             float3 center = ((float3)transform.InverseTransformPoint(worldCenter) - Origin) / VoxelSize;
             float radius = worldRadius / (VoxelSize * Mathf.Abs(transform.lossyScale.x));
+            // Damage down by its foot may have taken the ground from under it: probe it again.
+            if (center.y - radius < SUPPORT_REPROBE / VoxelSize)
+                MarkSupportStale();
             MarkStructureDirtyAt(center, new float3(radius), false, delay);
         }
 
@@ -134,7 +137,7 @@ namespace Game.Voxels
         /// <summary>A piece fell on the body: its hit presses there in the next solve.</summary>
         internal void AddImpactLoad(Vector3 worldPoint, float kg)
         {
-            if (!HasStrength || !IsStatic || kg < MIN_IMPACT_LOAD)
+            if (!HasStrength || !IsStatic || kg <= 0f)
                 return;
 
             float3 p = ((float3)transform.InverseTransformPoint(worldPoint) - Origin) / VoxelSize;
@@ -209,7 +212,7 @@ namespace Game.Voxels
             var bottom = new NativeArray<byte>(columns, Allocator.TempJob);
             new BuildBlocksJob
             {
-                Voxels = _voxels, Size = Size, Strength = _strength, VoxelMass = edge * edge * edge * _settings.Density,
+                Voxels = _voxels, Size = Size, Strength = _strength, VoxelVolume = edge * edge * edge,
                 Blocks = blocks, Mass = mass, BondX = bondX, BondY = bondY, BondZ = bondZ, Bottom = bottom
             }.ScheduleParallel(blocks.z, 1, default).Complete();
 
@@ -313,6 +316,20 @@ namespace Game.Voxels
         /// </summary>
         private void FindSupport(int3 blocks, NativeArray<byte> bottom, NativeArray<byte> support)
         {
+            // The ground under a building changes only when a crater opens near it (MarkSupportStale):
+            // the probes are kept till then.
+            int columns = blocks.x * blocks.z;
+            if (_groundHeld.IsCreated && !_supportStale)
+            {
+                for (int c = 0; c < columns; c++)
+                    support[c] = (byte)(bottom[c] & _groundHeld[c]);
+                return;
+            }
+
+            if (!_groundHeld.IsCreated)
+                _groundHeld = new NativeArray<byte>(columns, Allocator.Persistent);
+            _supportStale = false;
+
             VoxelBody ground = null;
             Bounds bounds = WorldBounds;
             bounds.Expand(new Vector3(0f, SUPPORT_BELOW * 2f, 0f));
@@ -332,11 +349,10 @@ namespace Game.Voxels
             for (int bx = 0; bx < blocks.x; bx++)
             {
                 int column = bx + blocks.x * bz;
-                if (bottom[column] == 0)
-                    continue;
                 if (ground == null)
                 {
-                    support[column] = 1;
+                    _groundHeld[column] = 1;
+                    support[column] = bottom[column];
                     continue;
                 }
 
@@ -354,9 +370,20 @@ namespace Game.Voxels
                     }
                 }
 
-                support[column] = held ? (byte)1 : (byte)0;
+                _groundHeld[column] = held ? (byte)1 : (byte)0;
+                support[column] = (byte)(bottom[column] & _groundHeld[column]);
             }
         }
+
+        /// <summary>Per bottom block column: the ground was under it when last probed (FindSupport).</summary>
+        private NativeArray<byte> _groundHeld;
+        private bool _supportStale = true;
+
+        /// <summary>Damage reaching this far (m) above the bottom layer has the ground under the building probed again.</summary>
+        private const float SUPPORT_REPROBE = 0.5f;
+
+        /// <summary>The ground near the building changed (a crater): probe it again on the next solve.</summary>
+        internal void MarkSupportStale() => _supportStale = true;
 
         /// <summary>
         /// Takes the islands out as pieces (clods when small, crushed ones as clods where they stood),
@@ -366,18 +393,16 @@ namespace Game.Voxels
         /// </summary>
         private bool DropIslands(int3 blocks, NativeArray<int> island)
         {
+            RebuildNow();
             using var marker = DropMarker.Auto();
-            int count = _voxels.Length;
-            var cells = new NativeArray<int>(count, Allocator.TempJob, NativeArrayOptions.UninitializedMemory);
-            new BlockCellsJob { Size = Size, Blocks = blocks, BlockCell = island, Cells = cells }.Run();
-
-            var labels = new NativeArray<int>(count, Allocator.TempJob);
-            var queue = new NativeArray<int>(count, Allocator.TempJob, NativeArrayOptions.UninitializedMemory);
+            // Only the islands' voxels are labelled (IslandLabelJob): what falls, not the whole grid.
+            var labels = new NativeArray<int>(_voxels.Length, Allocator.TempJob);
+            var queue = new NativeList<int>(4096, Allocator.TempJob);
             var components = new NativeList<VoxelComponent>(16, Allocator.TempJob);
-            new LabelComponentsJob
+            new IslandLabelJob
             {
-                Voxels = _voxels, Size = Size, Labels = labels, Queue = queue, Components = components, Cells = cells,
-                UseCells = true
+                Voxels = _voxels, Size = Size, Blocks = blocks, Island = island, Labels = labels, Queue = queue,
+                Components = components
             }.Run();
 
             int dropped = 0;
@@ -385,8 +410,7 @@ namespace Game.Voxels
             for (int i = 0; i < components.Length; i++)
             {
                 VoxelComponent piece = components[i];
-                // What stays is what still touches the bottom; a scrap held only by an island goes too.
-                if (piece.Cell == 0 && piece.Grounded)
+                if (piece.Cell == 0)
                     continue;
                 if (dropped > 0 && dropped + piece.Count > DROP_BUDGET)
                 {
@@ -404,9 +428,10 @@ namespace Game.Voxels
                 else
                     Detach(labels, i + 1, piece, middle, 0f);
                 MarkDirty(piece.Min, piece.Max);
+                // A scrap the island alone held to the rest goes at the end of the frame (LocalSplit round it).
+                DeferSplit(middle, 0f, (float3)(piece.Min + piece.Max) * 0.5f, (float3)(piece.Max - piece.Min) * 0.5f + 1f);
             }
 
-            cells.Dispose();
             labels.Dispose();
             queue.Dispose();
             components.Dispose();
@@ -443,6 +468,31 @@ namespace Game.Voxels
             }
 
             return -1;
+        }
+
+        /// <summary>Share of the voxels lining a building piece's cracks that go as crumbs when it breaks.</summary>
+        private const float SEAM_CRUMBS = 0.6f;
+
+        /// <summary>Most crumbs one break throws (the rest is dust).</summary>
+        private const int SEAM_CRUMB_DEBRIS = 500;
+
+        /// <summary>A building's piece breaking: a share of the voxels along its cracks go as crumbs.</summary>
+        private void CrumbleSeams(NativeArray<int> cells, Vector3 worldPoint, float spread)
+        {
+            var removed = new NativeList<RemovedVoxel>(1024, Allocator.TempJob);
+            new SeamCrumbsJob
+            {
+                Voxels = _voxels, Size = Size, Cells = cells, Share = SEAM_CRUMBS, Seed = _seed++, Removed = removed
+            }.Run();
+
+            if (removed.Length > 0)
+            {
+                SolidCount -= removed.Length;
+                MarkDirty(int3.zero, Size - 1);
+                ThrowDebris(removed, worldPoint, math.max(1f, spread * 2f), Vector3.zero, SEAM_CRUMB_DEBRIS);
+            }
+
+            removed.Dispose();
         }
 
         /// <summary>Most clods one crushed piece goes to; the rest is dust.</summary>
@@ -492,7 +542,7 @@ namespace Game.Voxels
             var bottom = new NativeArray<byte>(blocks.x * blocks.z, Allocator.TempJob);
             new BuildBlocksJob
             {
-                Voxels = _voxels, Size = Size, Strength = _strength, VoxelMass = edge * edge * edge * _settings.Density,
+                Voxels = _voxels, Size = Size, Strength = _strength, VoxelVolume = edge * edge * edge,
                 Blocks = blocks, Mass = mass, BondX = bondX, BondY = bondY, BondZ = bondZ, Bottom = bottom
             }.ScheduleParallel(blocks.z, 1, default).Complete();
 
@@ -536,6 +586,9 @@ namespace Game.Voxels
         {
             if (_cracks.IsCreated)
                 _cracks.Dispose();
+            if (_groundHeld.IsCreated)
+                _groundHeld.Dispose();
+            _supportStale = true;
             if (_scale.IsCreated)
                 _scale.Dispose();
             if (_strength.IsCreated)

@@ -51,7 +51,7 @@ namespace Game.Voxels
 
 
         /// <summary>Most break-and-resolve rounds in one pass; the rest goes on next frame.</summary>
-        public const int ROUNDS = 8;
+        public const int ROUNDS = 3;
 
         /// <summary>A whole face of brick (16 pairs × 1000 kg): the yardstick of a seam fracture's step cost.</summary>
         public const float FULL_FACE = 16000f;
@@ -60,6 +60,23 @@ namespace Game.Voxels
         public const float SEAM_FRACTURE_COST = 8f;
 
         public static int3 Blocks(int3 size) => (size + BLOCK - 1) / BLOCK;
+
+        /// <summary>
+        /// kg per cubic metre of a material group (the z of a strength entry): a building weighs
+        /// what it is made of, and its pieces fall with it — a slate roof heavy, a floor of boards light.
+        /// </summary>
+        public static float GroupDensity(float group) => (int)group switch
+        {
+            0 => 2400f, // concrete
+            1 => 2500f, // stone
+            2 => 1800f, // brick
+            3 => 1600f, // plaster, trim, paper
+            4 => 600f, // wood
+            5 => 2000f, // slate on its battens
+            6 => 700f, // furniture, cloth
+            7 => 2500f, // glass
+            _ => 1800f
+        };
     }
 
     /// <summary>
@@ -76,8 +93,8 @@ namespace Game.Voxels
         /// <summary>Per palette entry, see <see cref="VoxelLoad"/>.</summary>
         [ReadOnly] public NativeArray<float3> Strength;
 
-        /// <summary>kg of one voxel.</summary>
-        public float VoxelMass;
+        /// <summary>Cubic metres of one voxel: its mass is this times its material's density.</summary>
+        public float VoxelVolume;
 
         public int3 Blocks;
 
@@ -109,7 +126,7 @@ namespace Game.Voxels
 
                 int3 b = new int3(x, y, z) / VoxelLoad.BLOCK;
                 int block = b.x + Blocks.x * (b.y + Blocks.y * b.z);
-                Mass[block] += VoxelMass;
+                Mass[block] += VoxelVolume * VoxelLoad.GroupDensity(Strength[v].z);
                 if (y == 0)
                     Bottom[b.x + Blocks.x * b.z] = 1;
 
@@ -621,6 +638,255 @@ namespace Game.Voxels
             }
 
             return top;
+        }
+    }
+
+    /// <summary>
+    /// Takes out a share of the voxels lining the cracks between fracture cells (a voxel with a
+    /// neighbour in another cell): they go as crumbs, the pieces part with ragged edges.
+    /// </summary>
+    [BurstCompile(CompileSynchronously = true, DisableSafetyChecks = true)]
+    public struct SeamCrumbsJob : IJob
+    {
+        public NativeArray<byte> Voxels;
+        public int3 Size;
+        [ReadOnly] public NativeArray<int> Cells;
+        public float Share;
+        public uint Seed;
+        public NativeList<RemovedVoxel> Removed;
+
+        public void Execute()
+        {
+            int sx = Size.x;
+            int sxy = Size.x * Size.y;
+            for (int z = 0; z < Size.z; z++)
+            for (int y = 0; y < Size.y; y++)
+            for (int x = 0; x < Size.x; x++)
+            {
+                int i = x + sx * y + sxy * z;
+                byte v = Voxels[i];
+                if (v == 0)
+                    continue;
+
+                int cell = Cells[i];
+                bool seam = (x + 1 < Size.x && Voxels[i + 1] != 0 && Cells[i + 1] != cell) ||
+                            (y + 1 < Size.y && Voxels[i + sx] != 0 && Cells[i + sx] != cell) ||
+                            (z + 1 < Size.z && Voxels[i + sxy] != 0 && Cells[i + sxy] != cell);
+                if (!seam || VoxelMath.Hash01(new int3(x, y, z), Seed) >= Share)
+                    continue;
+
+                Removed.Add(new RemovedVoxel { Position = new int3(x, y, z), Material = v });
+                Voxels[i] = 0;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Connectivity round a few bites only (VoxelBody.LocalSplit): a flood from every solid voxel in
+    /// the bites' boxes, each stopped when it reaches the bottom layer, grows past Budget or runs
+    /// into a flood that did — those hold (Grounded). The others closed off on their own: loose scraps,
+    /// fully labelled (1-based component index, as LabelComponentsJob).
+    /// </summary>
+    [BurstCompile(CompileSynchronously = true, DisableSafetyChecks = true)]
+    public struct LocalSplitJob : IJob
+    {
+        [ReadOnly] public NativeArray<byte> Voxels;
+        public int3 Size;
+        [ReadOnly] public NativeArray<int3> Lo;
+        [ReadOnly] public NativeArray<int3> Hi;
+        public int Budget;
+
+        /// <summary>Zeroed on input; per voxel the 1-based component that reached it.</summary>
+        public NativeArray<int> Labels;
+
+        /// <summary>The flood's stack.</summary>
+        public NativeList<int> Queue;
+        public NativeList<VoxelComponent> Components;
+
+        public void Execute()
+        {
+            for (int r = 0; r < Lo.Length; r++)
+            for (int z = Lo[r].z; z <= Hi[r].z; z++)
+            for (int y = Lo[r].y; y <= Hi[r].y; y++)
+            for (int x = Lo[r].x; x <= Hi[r].x; x++)
+            {
+                int start = VoxelMath.Index(new int3(x, y, z), Size);
+                if (Voxels[start] == 0 || Labels[start] != 0)
+                    continue;
+                Flood(start);
+            }
+        }
+
+        /// <summary>
+        /// Depth first, down first: through a wall it runs straight to the bottom layer in a few
+        /// hundred voxels; a piece cut loose it walks whole.
+        /// </summary>
+        private void Flood(int start)
+        {
+            int label = Components.Length + 1;
+            var info = new VoxelComponent { Min = new int3(int.MaxValue), Max = new int3(int.MinValue) };
+            Queue.Clear();
+            Queue.Add(start);
+            Labels[start] = label;
+
+            while (Queue.Length > 0)
+            {
+                int current = Queue[Queue.Length - 1];
+                Queue.RemoveAt(Queue.Length - 1);
+                int3 p = VoxelMath.Coord(current, Size);
+                info.Count++;
+                info.Min = math.min(info.Min, p);
+                info.Max = math.max(info.Max, p);
+                if (p.y == 0 || info.Count > Budget)
+                {
+                    info.Grounded = true;
+                    break;
+                }
+
+                // Pushed last, popped first: down (k = 3) leads.
+                for (int i = 0; i < 6; i++)
+                {
+                    int k = i == 5 ? 3 : i == 3 ? 5 : i;
+                    int3 n = p;
+                    n[k >> 1] += (k & 1) == 0 ? 1 : -1;
+                    if (!VoxelMath.Inside(n, Size))
+                        continue;
+                    int index = VoxelMath.Index(n, Size);
+                    if (Voxels[index] == 0)
+                        continue;
+                    int other = Labels[index];
+                    if (other == label)
+                        continue;
+                    if (other != 0)
+                    {
+                        // Ran into an earlier flood: only one that held can still be open to it.
+                        info.Grounded = true;
+                        break;
+                    }
+
+                    Labels[index] = label;
+                    Queue.Add(index);
+                }
+
+                if (info.Grounded)
+                    break;
+            }
+
+            Components.Add(info);
+        }
+    }
+
+    /// <summary>
+    /// Labels the voxels of the load islands only (VoxelBody.DropIslands): a flood from each island
+    /// block's voxels that stays in its island. Costs what falls, not the whole building's grid.
+    /// Components as LabelComponentsJob (1-based), Cell = the island.
+    /// </summary>
+    [BurstCompile(CompileSynchronously = true, DisableSafetyChecks = true)]
+    public struct IslandLabelJob : IJob
+    {
+        [ReadOnly] public NativeArray<byte> Voxels;
+        public int3 Size;
+        public int3 Blocks;
+        [ReadOnly] public NativeArray<int> Island;
+        public NativeArray<int> Labels;
+        public NativeList<int> Queue;
+        public NativeList<VoxelComponent> Components;
+
+        private int CellOf(int3 p)
+        {
+            int3 b = p / VoxelLoad.BLOCK;
+            return Island[b.x + Blocks.x * (b.y + Blocks.y * b.z)];
+        }
+
+        public void Execute()
+        {
+            for (int block = 0; block < Island.Length; block++)
+            {
+                int cell = Island[block];
+                if (cell == 0)
+                    continue;
+
+                int bx = block % Blocks.x;
+                int byz = block / Blocks.x;
+                int3 lo = new int3(bx, byz % Blocks.y, byz / Blocks.y) * VoxelLoad.BLOCK;
+                int3 hi = math.min(lo + VoxelLoad.BLOCK, Size);
+                for (int z = lo.z; z < hi.z; z++)
+                for (int y = lo.y; y < hi.y; y++)
+                for (int x = lo.x; x < hi.x; x++)
+                {
+                    int start = VoxelMath.Index(new int3(x, y, z), Size);
+                    if (Voxels[start] != 0 && Labels[start] == 0)
+                        Flood(start, cell);
+                }
+            }
+        }
+
+        private void Flood(int start, int cell)
+        {
+            int label = Components.Length + 1;
+            var info = new VoxelComponent { Min = new int3(int.MaxValue), Max = new int3(int.MinValue), Cell = cell };
+            Queue.Clear();
+            Queue.Add(start);
+            Labels[start] = label;
+            for (int head = 0; head < Queue.Length; head++)
+            {
+                int3 p = VoxelMath.Coord(Queue[head], Size);
+                info.Count++;
+                info.Min = math.min(info.Min, p);
+                info.Max = math.max(info.Max, p);
+                if (p.y == 0)
+                    info.Grounded = true;
+                for (int k = 0; k < 6; k++)
+                {
+                    int3 n = p;
+                    n[k >> 1] += (k & 1) == 0 ? 1 : -1;
+                    if (!VoxelMath.Inside(n, Size))
+                        continue;
+                    int index = VoxelMath.Index(n, Size);
+                    if (Voxels[index] == 0 || Labels[index] != 0 || CellOf(n) != cell)
+                        continue;
+                    Labels[index] = label;
+                    Queue.Add(index);
+                }
+            }
+
+            Components.Add(info);
+        }
+    }
+
+    /// <summary>Zeroes a byte array (a recycled body's voxels, VoxelBody.TakeVoxels).</summary>
+    [BurstCompile(CompileSynchronously = true, DisableSafetyChecks = true)]
+    public struct ClearBytesJob : IJob
+    {
+        public NativeArray<byte> Bytes;
+
+        public void Execute()
+        {
+            for (int i = 0; i < Bytes.Length; i++)
+                Bytes[i] = 0;
+        }
+    }
+
+    /// <summary>The mass of a body with a strength table: every voxel by its material's density.</summary>
+    [BurstCompile(CompileSynchronously = true, DisableSafetyChecks = true)]
+    public struct BodyMassJob : IJob
+    {
+        [ReadOnly] public NativeArray<byte> Voxels;
+        [ReadOnly] public NativeArray<float3> Strength;
+        public float VoxelVolume;
+        public NativeReference<float> Mass;
+
+        public void Execute()
+        {
+            float mass = 0f;
+            for (int i = 0; i < Voxels.Length; i++)
+            {
+                byte v = Voxels[i];
+                if (v != 0)
+                    mass += VoxelLoad.GroupDensity(Strength[v].z);
+            }
+
+            Mass.Value = mass * VoxelVolume;
         }
     }
 
