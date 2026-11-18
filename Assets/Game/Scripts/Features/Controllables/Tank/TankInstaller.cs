@@ -60,15 +60,15 @@ namespace Game
         [Tooltip("Seconds the recuperator takes to run the barrel back into battery.")]
         [SerializeField] private float _gunReturnTime = 0.8f;
         [Tooltip("Most the visible gun nods on its trunnion (degrees) as the hull rocks.")]
-        [SerializeField, Min(0f)] private float _gunSwayLimit = 7f;
+        [SerializeField, Min(0f)] private float _gunSwayLimit = 12f;
         [Tooltip("The gun's own swing on the trunnion (Hz).")]
         [SerializeField, Min(0.1f)] private float _gunSwayFrequency = 1.4f;
         [Tooltip("How fast the swing dies: 1 — no overshoot.")]
-        [SerializeField, Range(0f, 1.5f)] private float _gunSwayDamping = 0.22f;
+        [SerializeField, Range(0f, 1.5f)] private float _gunSwayDamping = 0.1f;
         [Tooltip("Barrel tip per vertical jolt (rad per m/s² of the trunnion's acceleration).")]
-        [SerializeField, Min(0f)] private float _gunSwayHeave = 0.004f;
+        [SerializeField, Min(0f)] private float _gunSwayHeave = 0.008f;
         [Tooltip("Nod per m/s² along the barrel (rad): up when speeding up, down when braking.")]
-        [SerializeField, Min(0f)] private float _gunSwaySurge = 0.012f;
+        [SerializeField, Min(0f)] private float _gunSwaySurge = 0.025f;
         [Tooltip("Pooled burst (HitEffectInstaller) put at the cannon's muzzle on every shot: flash, flame, smoke.")]
         [SerializeField] private MonoEntity _muzzleSmoke;
         [Tooltip("Smoke still trickling out of the barrel after a shot; restarted on every shot.")]

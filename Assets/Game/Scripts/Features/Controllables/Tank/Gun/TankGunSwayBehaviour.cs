@@ -17,6 +17,9 @@ namespace Game
         /// <summary>Below this (rad, rad/s) the gun counts as resting and is left alone.</summary>
         private const float REST = 1e-4f;
 
+        /// <summary>Share of its swing the gun keeps when it bounces off the cradle stop.</summary>
+        private const float BOUNCE = 0.4f;
+
         private readonly Transform _gun;
         private readonly float _limit;
         private readonly float _stiffness;
@@ -53,7 +56,7 @@ namespace Game
         /// One step of the gun's pitch off its rest (rad, up positive) and its pitch rate in the world, for a
         /// hull pitching at <paramref name="hullRate"/> (rad/s, nose up positive), speeding up along the barrel at
         /// <paramref name="push"/> (m/s²) and a trunnion accelerating
-        /// up at <paramref name="lift"/> (m/s²). Clamped at ±limit, where it stops against the cradle.
+        /// up at <paramref name="lift"/> (m/s²). At ±limit it hits the cradle stop and bounces back off it, losing most of its swing.
         /// </summary>
         public static void Step(ref float angle, ref float rate, float hullRate, float lift, float push, float stiffness,
             float damping, float heave, float surge, float limit, float deltaTime)
@@ -63,7 +66,7 @@ namespace Game
             if (angle > limit || angle < -limit)
             {
                 angle = Mathf.Clamp(angle, -limit, limit);
-                rate = hullRate;
+                rate = hullRate - (rate - hullRate) * BOUNCE;
             }
         }
 

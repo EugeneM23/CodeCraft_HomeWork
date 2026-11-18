@@ -11570,11 +11570,11 @@ MonoBehaviour:
   _gunKickTime: 0.05
   _gunHoldTime: 0.12
   _gunReturnTime: 0.8
-  _gunSwayLimit: 7
+  _gunSwayLimit: 12
   _gunSwayFrequency: 1.4
-  _gunSwayDamping: 0.22
-  _gunSwayHeave: 0.004
-  _gunSwaySurge: 0.012
+  _gunSwayDamping: 0.1
+  _gunSwayHeave: 0.008
+  _gunSwaySurge: 0.025
   _muzzleSmoke: {fileID: 3955101175473679286, guid: 857ee7fe9fa9c5346999cde6f2c57896, type: 3}
   _muzzleWisp: {fileID: 899977559652608855}
   _voxelMuzzleSmoke:
