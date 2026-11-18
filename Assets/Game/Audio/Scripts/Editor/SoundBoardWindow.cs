@@ -59,7 +59,12 @@ namespace Game.AudioEngine.Adapters.EditorTools
 
             DrawUICatalog();
             DrawMusicCatalog("Menu music", AudioAssetPaths.MENU_MUSIC, AudioAssetPaths.MENU_MUSIC_CLIPS);
+            DrawMusicCatalog("Hangar music", AudioAssetPaths.HANGAR_MUSIC, AudioAssetPaths.HANGAR_MUSIC_CLIPS);
             DrawMusicCatalog("Battle music", AudioAssetPaths.BATTLE_MUSIC, AudioAssetPaths.BATTLE_MUSIC_CLIPS);
+            DrawMusicCatalog("Battle: calm", AudioAssetPaths.BATTLE_CALM, AudioAssetPaths.BATTLE_CALM_CLIPS);
+            DrawMusicCatalog("Battle: horde", AudioAssetPaths.BATTLE_HORDE, AudioAssetPaths.BATTLE_HORDE_CLIPS);
+            DrawMusicCatalog("Battle: peak", AudioAssetPaths.BATTLE_PEAK, AudioAssetPaths.BATTLE_PEAK_CLIPS);
+            DrawMusicCatalog("Elite music", AudioAssetPaths.ELITE_MUSIC, AudioAssetPaths.ELITE_MUSIC_CLIPS);
 
             EditorGUILayout.EndScrollView();
         }

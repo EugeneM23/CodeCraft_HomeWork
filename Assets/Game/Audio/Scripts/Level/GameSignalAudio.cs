@@ -37,6 +37,9 @@ namespace Game.AudioEngine.Adapters
         private readonly Action<Vector3, float, int> _onAirBlasted;
         private readonly Action<Vector3, float> _onFractured;
         private readonly Action<Vector3, float> _onPloughed;
+        private readonly Action<Vector3> _onXpPicked;
+        private readonly Action _onEliteAppeared;
+        private readonly Action _onEliteGone;
 
         private readonly Vector3[] _debrisPoints = new Vector3[DEBRIS_CAPACITY];
         private readonly float[] _debrisTimers = new float[DEBRIS_CAPACITY];
@@ -65,6 +68,9 @@ namespace Game.AudioEngine.Adapters
             _onAirBlasted = OnAirBlasted;
             _onFractured = OnFractured;
             _onPloughed = OnPloughed;
+            _onXpPicked = OnXpPicked;
+            _onEliteAppeared = GameAudio.Elite.Appeared;
+            _onEliteGone = GameAudio.Elite.Gone;
         }
 
         public void Subscribe()
@@ -82,6 +88,9 @@ namespace Game.AudioEngine.Adapters
             VoxelSignals.AirBlasted += _onAirBlasted;
             VoxelSignals.Fractured += _onFractured;
             TankPloughEvents.Ploughed += _onPloughed;
+            GameSignals.XpPicked += _onXpPicked;
+            EliteStatus.Appeared += _onEliteAppeared;
+            EliteStatus.Died += _onEliteGone;
         }
 
         public void Unsubscribe()
@@ -99,6 +108,9 @@ namespace Game.AudioEngine.Adapters
             VoxelSignals.AirBlasted -= _onAirBlasted;
             VoxelSignals.Fractured -= _onFractured;
             TankPloughEvents.Ploughed -= _onPloughed;
+            GameSignals.XpPicked -= _onXpPicked;
+            EliteStatus.Appeared -= _onEliteAppeared;
+            EliteStatus.Died -= _onEliteGone;
 
             _debrisCount = 0;
             for (int i = 0; i < _bombCount; i++)
@@ -155,8 +167,13 @@ namespace Game.AudioEngine.Adapters
         private static void OnMudHit(Vector3 point, float size) =>
             GameAudio.Play(AudioKeys.Destruction.MUD_SPLASH, point);
 
-        private static void OnCrushed(Vector3 point, float speed) =>
-            GameAudio.Play(AudioKeys.Monsters.CRUSHED, point);
+        // The crunch, and the streak sound over it from the second crush in quick succession.
+        // Where the level reports deaths, the crush is heard from the report (RunEventAudio); this is the sandbox's.
+        private static void OnCrushed(Vector3 point, float speed)
+        {
+            if (!GameAudio.DeathsReported)
+                GameAudio.Run.Crushed(point);
+        }
 
         private static void OnAirStrikeCalled() => GameAudio.Play(AudioKeys.Weapons.AIRSTRIKE_CALL);
 
@@ -171,6 +188,8 @@ namespace Game.AudioEngine.Adapters
             GameAudio.SetParameter(AudioKeys.Tank.PLOUGH_STRENGTH, Mathf.Clamp01(strength01));
             GameAudio.Play(AudioKeys.Tank.PLOUGH, point);
         }
+
+        private static void OnXpPicked(Vector3 point) => GameAudio.Run.XpPicked();
 
         private void OnAirBlasted(Vector3 point, float radius, int voxels)
         {

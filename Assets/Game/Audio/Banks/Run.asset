@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 71c59311ed514f81aa536eb0ff91b011, type: 3}
+  m_Name: Run
+  m_EditorClassIdentifier: AudioEngine::AudioEngine.AudioBank
+  identifier: run
+  codeGenPath: Assets/Game/Audio/Banks
+  eventParameters:
+  - identifier: arena_start
+    value: {fileID: 11400000, guid: ceb4174b2ca6e704e9e40fcda52b3007, type: 2}
+  - identifier: arena_cleared
+    value: {fileID: 11400000, guid: 07a8f43d4fdcf0542a66e7c34e487f8b, type: 2}
+  - identifier: gate_open
+    value: {fileID: 11400000, guid: 8c191b0dc8c147c489f940f329a099a1, type: 2}
+  - identifier: transition
+    value: {fileID: 11400000, guid: 68ca0bddc15a731409b431bad725b5ed, type: 2}
+  - identifier: xp_pickup
+    value: {fileID: 11400000, guid: 85e01e7be7498af4989289953c2e1f9a, type: 2}
+  - identifier: elite_appear
+    value: {fileID: 11400000, guid: 7924ac95319536940abb922e38f4a747, type: 2}
+  boolParameters: []
+  intParameters: []
+  floatParameters:
+  - identifier: xp_streak
+    value: 0
+  callbacks: []

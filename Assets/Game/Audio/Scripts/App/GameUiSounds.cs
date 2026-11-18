@@ -30,7 +30,7 @@ namespace Game.AudioEngine.Adapters
         public void Victory() => PlayStinger(AudioKeys.UI.VICTORY);
         public void Defeat() => PlayStinger(AudioKeys.UI.DEFEAT);
 
-        private void Play(string key)
+        public void Play(string key)
         {
             if (_player != null && TryGetClip(key, out AudioClip clip))
                 _player.PlayOneShot(clip);

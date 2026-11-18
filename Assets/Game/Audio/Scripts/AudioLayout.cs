@@ -54,7 +54,8 @@ namespace Game.AudioEngine.Adapters
         public static readonly string[] Banks =
         {
             AudioKeys.Tank.BANK, AudioKeys.Weapons.BANK, AudioKeys.Destruction.BANK,
-            AudioKeys.Monsters.BANK, AudioKeys.Horde.BANK, AudioKeys.World.BANK
+            AudioKeys.Monsters.BANK, AudioKeys.Horde.BANK, AudioKeys.World.BANK,
+            AudioKeys.Run.BANK, AudioKeys.Crawler.BANK, AudioKeys.Spitter.BANK, AudioKeys.Elite.BANK
         };
 
         private const AudioChannel FX = AudioChannel.Effects;
@@ -80,6 +81,8 @@ namespace Game.AudioEngine.Adapters
             new(AudioKeys.Tank.LANDING, FX, true, maxFrequency: 0.3f, defaultClips: "Common/BodyFall2.wav"),
             // The nose ploughs into the ground: louder and lower the harder (tank.plough_strength).
             new(AudioKeys.Tank.PLOUGH, FX, true, maxFrequency: 0.2f, defaultClips: "Common/BodyFall2.wav"),
+            // On top of monsters.crushed from the second crush of a streak: higher and louder the longer.
+            new(AudioKeys.Tank.CRUSH_STREAK, FX, false, maxFrequency: 0.05f),
             new(AudioKeys.Tank.HIT, FX, true, maxFrequency: 0.1f, defaultClips: "Common/BulletDamage.wav"),
             new(AudioKeys.Tank.LOW_HEALTH, FX, false, defaultClips: "Common/Alarm4.wav"),
             new(AudioKeys.Tank.DESTROYED, FX, true, defaultClips: "etfx_explosion_magic.wav"),
@@ -112,6 +115,39 @@ namespace Game.AudioEngine.Adapters
             new(AudioKeys.Monsters.DEATH, FX, true, maxFrequency: 0.05f, defaultClips: ZOMBIE_DEATH),
             new(AudioKeys.Monsters.CRUSHED, FX, true, maxFrequency: 0.05f, defaultClips: "Common/MeleeDamage.wav"),
             new(AudioKeys.Monsters.GIBS, FX, true, maxFrequency: 0.05f, defaultClips: "Common/BodyFall1.wav"),
+            new(AudioKeys.Monsters.BURROW_OPEN, FX, true, maxFrequency: 0.1f, defaultClips: "Common/BodyFall2.wav"),
+
+            // Run: feedback of the arena loop, 2D.
+            new(AudioKeys.Run.ARENA_START, FX, false, maxFrequency: 1f, defaultClips: "Common/Alarm3.wav"),
+            new(AudioKeys.Run.ARENA_CLEARED, FX, false, maxFrequency: 1f),
+            new(AudioKeys.Run.GATE_OPEN, FX, false, maxFrequency: 1f),
+            new(AudioKeys.Run.TRANSITION, FX, false, maxFrequency: 1f),
+            // Quiet and frequent: a streak of pickups climbs in pitch (run.xp_streak).
+            new(AudioKeys.Run.XP_PICKUP, FX, false, maxFrequency: 0.04f, volume: 0.5f),
+            new(AudioKeys.Run.ELITE_APPEAR, FX, false, maxFrequency: 2f, defaultClips: "Common/Alarm4.wav"),
+
+            // Crawler: one pack loop for all of them (crawler.alive), bites and deaths at their point.
+            new(AudioKeys.Crawler.PACK_LOOP, FX, false, loop: true),
+            new(AudioKeys.Crawler.BITE, FX, true, maxFrequency: 0.05f, defaultClips: ZOMBIE_ATTACK),
+            new(AudioKeys.Crawler.DEATH, FX, true, maxFrequency: 0.03f, defaultClips: ZOMBIE_DEATH),
+
+            // Spitter.
+            new(AudioKeys.Spitter.SPIT, FX, true, maxFrequency: 0.1f),
+            new(AudioKeys.Spitter.ACID_HIT, FX, true, maxFrequency: 0.1f),
+            new(AudioKeys.Spitter.DEATH, FX, true, maxFrequency: 0.03f, defaultClips: ZOMBIE_DEATH),
+
+            // Elite Regax.
+            new(AudioKeys.Elite.ROAR, FX, true, maxFrequency: 1f, defaultClips: "Zombie/ZombieAttack1.wav"),
+            new(AudioKeys.Elite.STEP, FX, true, maxFrequency: 0.2f, defaultClips: "Common/BodyFall1.wav"),
+            new(AudioKeys.Elite.DASH, FX, true, maxFrequency: 0.5f),
+            new(AudioKeys.Elite.JUMP, FX, true, maxFrequency: 0.5f),
+            new(AudioKeys.Elite.LAND, FX, true, maxFrequency: 0.3f, defaultClips: "Common/BodyFall2.wav"),
+            new(AudioKeys.Elite.CLAWS, FX, true, maxFrequency: 0.2f, defaultClips: "Common/MeleeDamage.wav"),
+            new(AudioKeys.Elite.TEAR, FX, true, maxFrequency: 0.5f),
+            new(AudioKeys.Elite.THROW, FX, true, maxFrequency: 0.5f),
+            new(AudioKeys.Elite.HURT, FX, true, maxFrequency: 0.3f, defaultClips: ZOMBIE_HIT),
+            new(AudioKeys.Elite.FINISHER, FX, true, maxFrequency: 1f, defaultClips: "Common/MeleeDamage.wav"),
+            new(AudioKeys.Elite.DEATH, FX, true, maxFrequency: 1f, defaultClips: "etfx_explosion_magic.wav"),
 
             // Horde: stubs until the AI team brings the horde.
             new(AudioKeys.Horde.CROWD_LOOP, FX, false, loop: true),
@@ -127,14 +163,18 @@ namespace Game.AudioEngine.Adapters
         {
             new(AudioKeys.Tank.RPM), new(AudioKeys.Tank.THROTTLE), new(AudioKeys.Tank.SPEED),
             new(AudioKeys.Tank.MUD), new(AudioKeys.Tank.SLIP), new(AudioKeys.Tank.TURRET),
-            new(AudioKeys.Tank.PLOUGH_STRENGTH),
+            new(AudioKeys.Tank.PLOUGH_STRENGTH), new(AudioKeys.Tank.CRUSH_STREAK_LEVEL),
             new(AudioKeys.Horde.DENSITY), new(AudioKeys.World.RAIN),
+            new(AudioKeys.Run.XP_STREAK), new(AudioKeys.Crawler.ALIVE),
         };
 
         public static readonly string[] UISounds =
         {
             AudioKeys.UI.HOVER, AudioKeys.UI.CLICK, AudioKeys.UI.BACK, AudioKeys.UI.OPEN,
-            AudioKeys.UI.PURCHASE, AudioKeys.UI.ERROR, AudioKeys.UI.VICTORY, AudioKeys.UI.DEFEAT
+            AudioKeys.UI.PURCHASE, AudioKeys.UI.ERROR, AudioKeys.UI.VICTORY, AudioKeys.UI.DEFEAT,
+            AudioKeys.UI.CLOSE, AudioKeys.UI.INSTALL, AudioKeys.UI.UPGRADE, AudioKeys.UI.MARKS_TICK,
+            AudioKeys.UI.SAMPLES_TICK, AudioKeys.UI.PAUSE_ON, AudioKeys.UI.PAUSE_OFF,
+            AudioKeys.UI.LEVEL_UP, AudioKeys.UI.SKILL_CHOICE, AudioKeys.UI.SKILL_TAKEN
         };
 
         private static Dictionary<string, Sound> s_byId;

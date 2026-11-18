@@ -43,6 +43,8 @@ MonoBehaviour:
     value: {fileID: 11400000, guid: 5afb1477ac5f16c43a9a982f6e2c7816, type: 2}
   - identifier: plough
     value: {fileID: 11400000, guid: caae21f47a9c5e34bb98891a0c8d125f, type: 2}
+  - identifier: crush_streak
+    value: {fileID: 11400000, guid: 05bb998a383851a41b4fab67b134cc63, type: 2}
   boolParameters: []
   intParameters: []
   floatParameters:
@@ -59,5 +61,7 @@ MonoBehaviour:
   - identifier: turret
     value: 0
   - identifier: plough_strength
+    value: 0
+  - identifier: crush_streak_level
     value: 0
   callbacks: []
