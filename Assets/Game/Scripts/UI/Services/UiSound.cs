@@ -10,6 +10,15 @@ namespace Game
         Purchase,
         Error,
         Victory,
-        Defeat
+        Defeat,
+        Close,
+        Install,
+        Upgrade,
+        MarksTick,
+        SamplesTick,
+        PauseOn,
+        PauseOff,
+        SkillChoice,
+        LevelUp
     }
 }
