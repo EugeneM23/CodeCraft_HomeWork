@@ -39,7 +39,6 @@ namespace Game.Horde
         private const int BATCH = 128;
         private const int MAX_AREAS = 64;
         private const int MAX_HITS = 512;
-        private const int MAX_COVER = 128;
         /// <summary>Height of the cull sphere's centre over the feet and its radius at render scale 1 (the Regax model).</summary>
         private static readonly float2 CullSphere = new(1.3f, 1.8f);
 
@@ -73,6 +72,7 @@ namespace Game.Horde
         private NativeArray<float> _damageScale;
         private NativeArray<float> _stateTime;
         private NativeArray<float> _cooldown;
+        private NativeArray<float> _maxHealth;
         private NativeArray<HordeKind> _kinds;
         private NativeArray<int> _free;
         private NativeArray<int> _cellStart;
@@ -95,7 +95,6 @@ namespace Game.Horde
         private NativeArray<int> _projectileCount;
         private NativeList<HordeInstance> _shotInstances;
         private NativeList<HordeShotEvent> _shotEvents;
-        private NativeList<float3> _cover;
 
         // Snapshot for queries while a step runs (main thread only).
         private NativeArray<float3> _snapPosition;
@@ -146,6 +145,7 @@ namespace Game.Horde
             _damageScale = new NativeArray<float>(capacity, Allocator.Persistent);
             _stateTime = new NativeArray<float>(capacity, Allocator.Persistent);
             _cooldown = new NativeArray<float>(capacity, Allocator.Persistent);
+            _maxHealth = new NativeArray<float>(capacity, Allocator.Persistent);
             _kinds = new NativeArray<HordeKind>(MAX_KINDS, Allocator.Persistent);
             _free = new NativeArray<int>(capacity, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
             _cellStart = new NativeArray<int>(hashCells + 1, Allocator.Persistent);
@@ -168,7 +168,6 @@ namespace Game.Horde
             _projectileCount = new NativeArray<int>(1, Allocator.Persistent);
             _shotInstances = new NativeList<HordeInstance>(MAX_PROJECTILES, Allocator.Persistent);
             _shotEvents = new NativeList<HordeShotEvent>(MAX_PROJECTILES * 2, Allocator.Persistent);
-            _cover = new NativeList<float3>(MAX_COVER, Allocator.Persistent);
             _snapPosition = new NativeArray<float3>(capacity, Allocator.Persistent);
             _snapLive = new NativeArray<bool>(capacity, Allocator.Persistent);
             _version = new NativeArray<int>(capacity, Allocator.Persistent);
@@ -253,22 +252,6 @@ namespace Game.Horde
             _kindSet[index] = true;
         }
 
-        /// <summary>
-        /// Cover spots of the arena (on the ground): a ranged monster walks to one in its band with the hull in sight
-        /// rather than search the grid. Null or empty: none. At most <see cref="MAX_COVER"/> are kept.
-        /// </summary>
-        public void SetCoverPoints(System.Collections.Generic.IReadOnlyList<Vector3> points)
-        {
-            ThrowIfRunning();
-            _cover.Clear();
-            if (points == null)
-                return;
-            for (int i = 0; i < points.Count && _cover.Length < MAX_COVER; i++)
-                _cover.Add(points[i]);
-        }
-
-        public int CoverCount => _cover.Length;
-
         public HordeKind GetKind(int index) => _kindSet[index] ? _kindTable[index] : HordeKind.FromSettings(Settings);
 
         /// <summary>Frustum planes (Unity's <c>GeometryUtility.CalculateFrustumPlanes</c> order and sign) for the cull; null turns culling off.</summary>
@@ -292,6 +275,9 @@ namespace Game.Horde
         public float3 GetPosition(int index) => _position[index];
 
         public float GetHealth(int index) => _health[index];
+
+        /// <summary>Health the monster had when it came (its kind × the spawn's health scale).</summary>
+        public float GetMaxHealth(int index) => _maxHealth[index];
 
         public float GetHeading(int index) => _heading[index];
 
@@ -318,6 +304,7 @@ namespace Game.Horde
             _velocity[i] = float2.zero;
             _heading[i] = heading;
             _health[i] = row.Health * healthScale;
+            _maxHealth[i] = _health[i];
             _state[i] = emerge ? HordeState.Emerging : HordeState.Walk;
             _stateTime[i] = emerge ? s.EmergeTime : 0f;
             _kind[i] = (byte)kind;
@@ -480,7 +467,6 @@ namespace Game.Horde
 
                 JobHandle steer = new HordeSteerJob
                 {
-                    Cover = _cover.AsArray(),
                     Position = _position,
                     State = _state,
                     SpeedScale = _speedScale,
@@ -509,6 +495,7 @@ namespace Game.Horde
                     Health = _health,
                     StateTime = _stateTime,
                     Cooldown = _cooldown,
+                    MaxHealth = _maxHealth,
                     AttackDamage = _attackDamage,
                     Heading = _heading,
                     Kind = _kind,
@@ -639,6 +626,7 @@ namespace Game.Horde
             if (_damageScale.IsCreated) _damageScale.Dispose();
             if (_stateTime.IsCreated) _stateTime.Dispose();
             if (_cooldown.IsCreated) _cooldown.Dispose();
+            if (_maxHealth.IsCreated) _maxHealth.Dispose();
             if (_kinds.IsCreated) _kinds.Dispose();
             if (_free.IsCreated) _free.Dispose();
             if (_cellStart.IsCreated) _cellStart.Dispose();
@@ -661,7 +649,6 @@ namespace Game.Horde
             if (_projectileCount.IsCreated) _projectileCount.Dispose();
             if (_shotInstances.IsCreated) _shotInstances.Dispose();
             if (_shotEvents.IsCreated) _shotEvents.Dispose();
-            if (_cover.IsCreated) _cover.Dispose();
             if (_snapPosition.IsCreated) _snapPosition.Dispose();
             if (_snapLive.IsCreated) _snapLive.Dispose();
             if (_version.IsCreated) _version.Dispose();

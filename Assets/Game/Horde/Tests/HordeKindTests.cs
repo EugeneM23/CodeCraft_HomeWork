@@ -10,6 +10,7 @@ namespace Game.Horde.Tests
         private const float DT = 0.05f;
         private const int CRAWLER = 0;
         private const int SPITTER = 1;
+        private const int BRUTE = 2;
         private static readonly float3 Half = new(1.5f, 0.8f, 3f);
 
         private static HordeTank Tank(float3 center, float3 velocity = default) => new()
@@ -26,6 +27,7 @@ namespace Game.Horde.Tests
             var sim = new HordeSimulation(capacity, grid, field, HordeSettings.Default);
             sim.SetKind(CRAWLER, HordeKind.Crawler);
             sim.SetKind(SPITTER, HordeKind.Spitter);
+            sim.SetKind(BRUTE, HordeKind.Brute);
             return sim;
         }
 
@@ -75,7 +77,7 @@ namespace Game.Horde.Tests
         }
 
         [Test]
-        public void Spitter_KeepsItsBand()
+        public void Spitter_WalksInWithTheCrowd_AndStopsInRange()
         {
             using HordeNavGrid grid = HordeTestGrids.Flat(80, 80);
             var center = new float3(40f, 0.8f, 40f);
@@ -86,11 +88,11 @@ namespace Game.Horde.Tests
             Step(sim, Tank(center), 15f);
 
             float d = math.distance(sim.GetPosition(far).xz, center.xz);
-            Assert.That(d, Is.InRange(15f, 25f), "came in to its band and stopped");
+            Assert.That(d, Is.InRange(9f, 20f), "came in to shooting range and stopped");
         }
 
         [Test]
-        public void Spitter_BacksOffWhenTheTankIsWithinTenMetres()
+        public void Spitter_BacksOffWhenTheTankIsTooClose()
         {
             using HordeNavGrid grid = HordeTestGrids.Flat(80, 80);
             var center = new float3(40f, 0.8f, 40f);
@@ -102,7 +104,7 @@ namespace Game.Horde.Tests
             Assert.Greater(sim.GetPosition(near).x, 47.5f, "walking away");
             Step(sim, Tank(center), 7f);
             float d = math.distance(sim.GetPosition(near).xz, center.xz);
-            Assert.That(d, Is.InRange(10f, 25f));
+            Assert.That(d, Is.InRange(9f, 20f));
         }
 
         [Test]
@@ -163,7 +165,7 @@ namespace Game.Horde.Tests
         public void Spitter_DoesNotShootWithoutLineOfSight()
         {
             using HordeNavGrid grid = HordeTestGrids.Flat(60, 60);
-            HordeTestGrids.Block(grid, new int2(20, 39), new int2(40, 40), 6f); // a wall between
+            HordeTestGrids.Block(grid, new int2(0, 39), new int2(59, 40), 6f); // a wall across the whole grid
             var center = new float3(30f, 0.8f, 30f);
             using HordeFlowField field = FieldTo(grid, center);
             using HordeSimulation sim = Make(grid, field);
@@ -236,6 +238,50 @@ namespace Game.Horde.Tests
             Assert.AreEqual(1, fast.Deaths.Length, "at the threshold: crushed");
             Assert.AreEqual(HordeDeathCause.Crushed, fast.Deaths[0].Cause);
             Assert.AreEqual(CRAWLER, fast.Deaths[0].Kind);
+        }
+
+        [Test]
+        public void Brute_HitsTheHullWithBlows()
+        {
+            using HordeNavGrid grid = HordeTestGrids.Flat(40, 40);
+            using var field = new HordeFlowField(grid);
+            using HordeSimulation sim = Make(grid, field);
+            var center = new float3(20f, 0.8f, 20f);
+            sim.Spawn(new float3(20f, 0f, 23.9f), 0f, BRUTE);
+
+            Step(sim, Tank(center), DT);
+            Assert.AreEqual(40f, sim.StepDamage, 1e-3f, "the first blow lands at contact");
+            float total = sim.StepDamage;
+            for (int i = 0; i < 25; i++)
+            {
+                Step(sim, Tank(center), DT);
+                total += sim.StepDamage;
+            }
+
+            Assert.AreEqual(80f, total, 1e-3f, "then one every 1.2 s");
+        }
+
+        [Test]
+        public void Brute_IsCrushedOnlyAtAQuarterOfItsHealth()
+        {
+            using HordeNavGrid grid = HordeTestGrids.Flat(40, 40);
+            using var field = new HordeFlowField(grid);
+            var center = new float3(20f, 0.8f, 20f);
+            HordeTank fast = Tank(center, new float3(0f, 0f, 5f));
+
+            using HordeSimulation healthy = Make(grid, field);
+            int a = healthy.Spawn(new float3(20.2f, 0f, 20.5f), 0f, BRUTE);
+            Assert.AreEqual(1800f, healthy.GetMaxHealth(a));
+            Step(healthy, fast, DT);
+            Assert.AreEqual(0, healthy.Deaths.Length, "the hull pushes it, it is not crushed");
+
+            using HordeSimulation beaten = Make(grid, field);
+            int b = beaten.Spawn(new float3(20.2f, 0f, 20.5f), 0f, BRUTE);
+            beaten.Damage(b, beaten.Version(b), 1400f); // 400 left: under a quarter of 1800
+            Step(beaten, fast, DT);
+            Assert.AreEqual(1, beaten.Deaths.Length);
+            Assert.AreEqual(HordeDeathCause.Crushed, beaten.Deaths[0].Cause);
+            Assert.AreEqual(BRUTE, beaten.Deaths[0].Kind);
         }
 
         [Test]

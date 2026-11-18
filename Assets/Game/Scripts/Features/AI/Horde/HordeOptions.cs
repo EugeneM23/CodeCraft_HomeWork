@@ -36,6 +36,12 @@ namespace Game.AIKit.Adapters
         [Tooltip("Kind row 1: the Spitter (GDD §5).")]
         public HordeKindOptions spitter = HordeKindOptions.From(HordeKind.Spitter);
 
+        [Tooltip("Kind row 2: the big Regax of arena 5 (EliteRegax).")]
+        public HordeKindOptions brute = HordeKindOptions.From(HordeKind.Brute);
+
+        [Tooltip("Neighbours closer than this push each other apart, m: small keeps the crowd a dense mass round the hull.")]
+        public float separation = 0.9f;
+
         [Tooltip("Scale of every monster's damage to the tank: bites and acid (0 makes the tank immune: benchmarks).")]
         public float tankDamageScale = 1f;
 
@@ -80,10 +86,11 @@ namespace Game.AIKit.Adapters
             s.AttackDps = crawlerKind.BiteDps;
             s.CrushSpeed = crushSpeed;
             s.EmergeTime = emergeTime;
+            s.SeparationRadius = separation;
             return s;
         }
 
         /// <summary>The kind table's row <paramref name="row"/> (<see cref="HordeKinds"/>).</summary>
-        public HordeKind Kind(int row) => (row == HordeKinds.SPITTER ? spitter : crawler).ToKind();
+        public HordeKind Kind(int row) => (row == HordeKinds.SPITTER ? spitter : row == HordeKinds.BRUTE ? brute : crawler).ToKind();
     }
 }

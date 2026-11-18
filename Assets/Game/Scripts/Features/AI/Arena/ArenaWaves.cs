@@ -19,9 +19,6 @@ namespace Game.AIKit.Adapters
         [Tooltip("The chapter's multiplier of enemy health and damage (×1 / ×1.6 / ×2.4); the arena adds 6 % per arena after the first.")]
         public float chapterMultiplier = 1f;
 
-        [Tooltip("The elite for EliteRegax entries (Regax_Elite.prefab).")]
-        public GameObject elitePrefab;
-
         /// <summary>Enemies of every wave.</summary>
         public int TotalCount
         {

@@ -30,4 +30,3 @@ MonoBehaviour:
       count: 10
   liveLimit: 40
   chapterMultiplier: 1
-  elitePrefab: {fileID: 0}

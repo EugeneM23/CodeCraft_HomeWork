@@ -13,14 +13,13 @@ namespace Game.AIKit.Adapters
     /// <list type="bullet">
     /// <item>a wave joins the queue when its delay (from the end of the lull) is up — <see cref="AIEvents.WaveStarted"/>;</item>
     /// <item>the queue empties while live enemies are under 70 % of the live limit, then refills up to the limit
-    /// (live: the horde's plus the elites not reported dead);</item>
+    /// (live: the horde's, the big one included);</item>
     /// <item>each monster comes out of the burrow farthest from the tank of those at least 15 m from it, never two
     /// emerging from one burrow at a time; the first monster of a burrow opens it (its crater, its sound);</item>
     /// <item>health and damage × <see cref="Strength"/>: the run's EnemyStrength, or the chapter's multiplier
     /// × (1 + 0.06·(arena − 1)) without a run;</item>
-    /// <item>EliteRegax entries spawn an elite (<see cref="IArenaEliteSpawner"/>), alive until an elite death arrives
-    /// (<see cref="IEnemyDeaths.Died"/>, or the stand-in <see cref="AIEvents.EnemyKilled"/> without the run's feed);</item>
-    /// <item>every wave out, nothing alive, no elite alive: the arena is cleared once — <c>IRunService.MarkArenaCleared</c>
+    /// <item>EliteRegax entries are the horde's big kind (<see cref="HordeKinds.BRUTE"/>): a monster like the others;</item>
+    /// <item>every wave out and nothing alive: the arena is cleared once — <c>IRunService.MarkArenaCleared</c>
     /// with a run, <see cref="AIEvents.ArenaCleared"/> without.</item>
     /// </list>
     /// While an arena runs it is the level's <see cref="IArenaReinforcements"/> (<see cref="AIAPI.ArenaReinforcements"/>):
@@ -56,10 +55,7 @@ namespace Game.AIKit.Adapters
         private IRunService _run;
         private IArenaService _arenaService;
         private ArenaServiceBurrows _serviceBurrows;
-        private IEnemyDeaths _deaths;
         private IArenaHorde _horde;
-        private IArenaEliteSpawner _eliteSpawner;
-        private ArenaEliteSpawner _prefabSpawner;
 
         private ArenaWaves _waves;
         private IArenaBurrows _burrows;
@@ -79,9 +75,9 @@ namespace Game.AIKit.Adapters
         private bool _refilling;
         private bool _running;
         private bool _cleared;
-        private int _elitesAlive;
         private bool _warnedNoWaves;
         private float _bindTimer;
+        private bool _arenaApplied;
 
         private struct SummonRequest
         {
@@ -101,14 +97,7 @@ namespace Game.AIKit.Adapters
             set => _horde = value;
         }
 
-        /// <summary>Makes the elites; null: from the waves' elite prefab.</summary>
-        public IArenaEliteSpawner EliteSpawner
-        {
-            get => _eliteSpawner;
-            set => _eliteSpawner = value;
-        }
-
-        /// <summary>Follows the run, the arena service and the deaths feed of the GameContext (off in tests without a scene).</summary>
+        /// <summary>Follows the run and the arena service of the GameContext (off in tests without a scene).</summary>
         public bool UseGameContext { get; set; } = true;
 
         public bool IsRunning => _running;
@@ -130,10 +119,8 @@ namespace Game.AIKit.Adapters
         /// <summary>Summoned monsters still waiting to come out.</summary>
         public int SummonsQueued => _summonCount;
 
-        public int ElitesAlive => _elitesAlive;
-
-        /// <summary>Live enemies as the limit counts them: the horde's and the elites.</summary>
-        public int Live => (Horde?.AliveCount ?? 0) + _elitesAlive;
+        /// <summary>Live enemies as the limit counts them.</summary>
+        public int Live => Horde?.AliveCount ?? 0;
 
         public bool IsCleared => _cleared;
 
@@ -142,13 +129,11 @@ namespace Game.AIKit.Adapters
         public void Init(IEntity entity)
         {
             _entity = entity;
-            AIEvents.EnemyKilled += OnStandInKilled;
             BindServices();
         }
 
         public void Dispose(IEntity entity)
         {
-            AIEvents.EnemyKilled -= OnStandInKilled;
             if (_run != null)
             {
                 _run.ArenaStarted -= OnRunArenaStarted;
@@ -157,11 +142,8 @@ namespace Game.AIKit.Adapters
 
             if (_arenaService != null)
                 _arenaService.Built -= OnArenaBuilt;
-            if (_deaths != null)
-                _deaths.Died -= OnDied;
             _run = null;
             _arenaService = null;
-            _deaths = null;
             End();
             _entity = null;
         }
@@ -182,7 +164,7 @@ namespace Game.AIKit.Adapters
 
         /// <summary>
         /// Stops the arena and clears the stage: the level grid is read again (moved over <paramref name="area"/> when
-        /// given), the horde loses every monster, shot and corpse, no elite is counted.
+        /// given), the horde loses every monster, shot and corpse.
         /// </summary>
         public void ResetForArena(Bounds? area = null)
         {
@@ -190,7 +172,6 @@ namespace Game.AIKit.Adapters
             if (_entity != null && _entity.TryGetLevelNavigation(out LevelNav nav) && nav != null)
                 nav.Rebuild(area);
             Horde?.ResetForArena();
-            _elitesAlive = 0;
         }
 
         /// <summary>Stops sending monsters (those out stay) and takes the reinforcements door off the level.</summary>
@@ -255,7 +236,7 @@ namespace Game.AIKit.Adapters
                 ReleaseSummons(horde, deltaTime);
                 ReleaseQueue(horde, hasTank, tank, deltaTime);
 
-                if (!_cleared && _nextWave >= waveCount && Queued == 0 && _summonCount == 0 && _elitesAlive == 0
+                if (!_cleared && _nextWave >= waveCount && Queued == 0 && _summonCount == 0
                     && (horde?.AliveCount ?? 0) == 0)
                 {
                     _cleared = true;
@@ -302,8 +283,6 @@ namespace Game.AIKit.Adapters
                 _busyUntil[i] = float.MinValue;
             }
 
-            _prefabSpawner = waves != null && waves.elitePrefab != null ? new ArenaEliteSpawner(waves.elitePrefab) : null;
-            Horde?.SetCover(burrows?.CoverPoints);
             if (waves == null && !_warnedNoWaves)
             {
                 _warnedNoWaves = true;
@@ -359,7 +338,7 @@ namespace Game.AIKit.Adapters
                 int burrow = PickFar(hasTank, tank);
                 if (burrow < 0)
                     break;
-                if (!Spawn(horde, kind, burrow, hasTank, tank, out bool unsupported) && !unsupported)
+                if (!Spawn(horde, kind, burrow, out bool unsupported) && !unsupported)
                     break; // the horde is full: try again next frame
                 _queueHead++;
                 if (unsupported)
@@ -376,14 +355,13 @@ namespace Game.AIKit.Adapters
         private void ReleaseSummons(IArenaHorde horde, float deltaTime)
         {
             _summonTimer -= deltaTime;
-            bool hasTank = TryGetTank(out Vector3 tank);
             while (_summonCount > 0 && _summonTimer <= 0f)
             {
                 SummonRequest s = _summons[_summonHead];
                 int burrow = PickNear(s.Near);
                 if (burrow < 0)
                     break;
-                if (!Spawn(horde, s.Kind, burrow, hasTank, tank, out bool unsupported) && !unsupported)
+                if (!Spawn(horde, s.Kind, burrow, out bool unsupported) && !unsupported)
                     break;
                 _summonHead = (_summonHead + 1) % MAX_SUMMONS;
                 _summonCount--;
@@ -394,42 +372,21 @@ namespace Game.AIKit.Adapters
                 _summonTimer = 0f;
         }
 
-        private bool Spawn(IArenaHorde horde, EnemyKind kind, int burrow, bool hasTank, Vector3 tank, out bool unsupported)
+        private bool Spawn(IArenaHorde horde, EnemyKind kind, int burrow, out bool unsupported)
         {
             unsupported = false;
-            IArenaEliteSpawner elites = _eliteSpawner ?? _prefabSpawner;
-            if (kind == EnemyKind.EliteRegax)
+            if (horde == null)
+                return false;
+            if (!HordeKinds.TryGetRow(kind, out _))
             {
-                if (elites == null)
-                {
-                    unsupported = true;
-                    return false;
-                }
-            }
-            else if (horde == null || !HordeKinds.TryGetRow(kind, out _))
-            {
-                unsupported = horde != null; // a kind the horde does not have (yet): dropped
+                unsupported = true; // a kind the horde does not have (yet): dropped
                 return false;
             }
 
             Vector3 at = Open(horde, burrow);
-            bool ok;
-            if (kind == EnemyKind.EliteRegax)
-            {
-                Vector3 facing = hasTank ? tank - at : -at;
-                ok = elites.SpawnElite(at, facing, Strength);
-                if (ok)
-                    _elitesAlive++;
-                else
-                    unsupported = true;
-            }
-            else
-            {
-                ok = horde.Spawn(kind, at, Strength, Strength);
-            }
-
+            bool ok = horde.Spawn(kind, at, Strength, Strength);
             if (ok)
-                _busyUntil[burrow] = _clock + (horde?.EmergeSeconds ?? 1f);
+                _busyUntil[burrow] = _clock + horde.EmergeSeconds;
             return ok;
         }
 
@@ -506,10 +463,10 @@ namespace Game.AIKit.Adapters
 
         // ------------------------------------------------------------------ the run, the arena, the deaths
 
-        /// <summary>Hooks up to the run, the arena service and the deaths feed as soon as the GameContext has them.</summary>
+        /// <summary>Hooks up to the run and the arena service as soon as the GameContext has them.</summary>
         private void BindServices()
         {
-            if (!UseGameContext || (_run != null && _arenaService != null && _deaths != null))
+            if (!UseGameContext || (_run != null && _arenaService != null))
                 return;
             // Looked for at most once a second until found (a scene search while the context is missing).
             if (_bindTimer > 0f)
@@ -532,20 +489,18 @@ namespace Game.AIKit.Adapters
                 _arenaService.Built += OnArenaBuilt;
             }
 
-            if (_deaths == null && context.TryGetEnemyDeaths(out IEnemyDeaths deaths) && deaths != null)
-            {
-                _deaths = deaths;
-                _deaths.Died += OnDied;
-            }
+            // Bound late, in the middle of a fight: join it.
+            if (_run != null && !_running && _run.State == RunState.Fight && _run.ArenaNumber > 0 && ArenaNumber != _run.ArenaNumber)
+                OnRunFightStarted(_run.ArenaNumber);
         }
 
         private void OnRunArenaStarted(int number)
         {
+            _arenaApplied = false;
             if (_arenaService != null)
             {
                 End();
                 Horde?.ResetForArena();
-                _elitesAlive = 0;
             }
             else
             {
@@ -553,10 +508,21 @@ namespace Game.AIKit.Adapters
             }
         }
 
-        private void OnArenaBuilt(ArenaPlan plan) => ResetForArena(_arenaService.Bounds);
+        private void OnArenaBuilt(ArenaPlan plan)
+        {
+            ResetForArena(_arenaService.Bounds);
+            _arenaApplied = true;
+        }
 
         private void OnRunFightStarted(int number)
         {
+            // The arena was built before this director heard of the service (its first arena): the grid moves over it now.
+            if (_arenaService != null && _arenaService.IsBuilt && !_arenaApplied)
+            {
+                ResetForArena(_arenaService.Bounds);
+                _arenaApplied = true;
+            }
+
             IArenaBurrows burrows = _serviceBurrows;
             if (burrows == null)
             {
@@ -576,18 +542,6 @@ namespace Game.AIKit.Adapters
                 Game.Horde.HordeNavGrid grid = nav.Grid;
                 ground = p => grid.HeightAt(p);
             }
-        }
-
-        private void OnDied(EnemyDeath death)
-        {
-            if (death.Elite && _elitesAlive > 0)
-                _elitesAlive--;
-        }
-
-        private void OnStandInKilled(EnemyKilledInfo info)
-        {
-            if (_deaths == null && info.Elite && _elitesAlive > 0)
-                _elitesAlive--;
         }
     }
 }

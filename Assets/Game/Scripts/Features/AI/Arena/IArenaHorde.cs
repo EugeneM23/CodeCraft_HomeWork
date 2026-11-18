@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Game.AIKit.Adapters
@@ -16,7 +15,7 @@ namespace Game.AIKit.Adapters
         float EmergeSeconds { get; }
 
         /// <summary>
-        /// A monster of <paramref name="kind"/> (Crawler or Spitter) climbing out at <paramref name="at"/> with its kind's
+        /// A monster of <paramref name="kind"/> (Crawler, Spitter or the big EliteRegax) climbing out at <paramref name="at"/> with its kind's
         /// health × <paramref name="healthScale"/> and damage × <paramref name="damageScale"/>. False: the horde has no
         /// such kind or no room.
         /// </summary>
@@ -24,9 +23,6 @@ namespace Game.AIKit.Adapters
 
         /// <summary>A monster starts climbing out of a burrow opened just now (its sound).</summary>
         void BurrowOpened(Vector3 at);
-
-        /// <summary>Cover spots of the arena for the ranged monsters (may be empty).</summary>
-        void SetCover(IReadOnlyList<Vector3> points);
 
         /// <summary>A wave came out (its sound).</summary>
         void WaveStarted();

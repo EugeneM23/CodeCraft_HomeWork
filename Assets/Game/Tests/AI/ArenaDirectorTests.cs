@@ -31,10 +31,6 @@ namespace Game.AIKit.Adapters.Tests
 
             public void BurrowOpened(Vector3 at) => Opened.Add(at);
 
-            public void SetCover(IReadOnlyList<Vector3> points)
-            {
-            }
-
             public void WaveStarted() => Waves++;
 
             public void ResetForArena()
@@ -44,22 +40,8 @@ namespace Game.AIKit.Adapters.Tests
             }
         }
 
-        private sealed class FakeElites : IArenaEliteSpawner
-        {
-            public int Spawned;
-            public float Strength;
-
-            public bool SpawnElite(Vector3 at, Vector3 facing, float strength)
-            {
-                Spawned++;
-                Strength = strength;
-                return true;
-            }
-        }
-
         private Entity _level;
         private FakeHorde _horde;
-        private FakeElites _elites;
         private ArenaDirector _director;
         private GameObject _tank;
         private readonly List<int> _wavesStarted = new();
@@ -77,8 +59,7 @@ namespace Game.AIKit.Adapters.Tests
             _level.AddPlayerVehicle(vehicle);
             _horde = new FakeHorde();
             _level.AddLevelHorde(_horde);
-            _elites = new FakeElites();
-            _director = new ArenaDirector { EliteSpawner = _elites, UseGameContext = false };
+            _director = new ArenaDirector { UseGameContext = false };
             _director.Init(_level);
             AIEvents.WaveStarted += OnWave;
             AIEvents.ArenaCleared += OnCleared;
@@ -225,22 +206,19 @@ namespace Game.AIKit.Adapters.Tests
         }
 
         [Test]
-        public void Elite_CountsAsAlive_UntilItsDeathArrives()
+        public void BigOne_IsAHordeMonster_CountedUntilItDies()
         {
             _director.Begin(5, Waves(40, Wave(0f, 0f, new ArenaWaveEntry(EnemyKind.EliteRegax, 1))), Layout());
             Run(3f);
-            Assert.AreEqual(1, _elites.Spawned);
-            Assert.AreEqual(1.24f, _elites.Strength, 1e-4f);
-            Assert.AreEqual(1, _director.ElitesAlive);
+            Assert.AreEqual(1, _horde.Spawns.Count);
+            Assert.AreEqual(EnemyKind.EliteRegax, _horde.Spawns[0].kind, "the horde's big kind");
+            Assert.AreEqual(1.24f, _horde.Spawns[0].health, 1e-4f);
             Assert.AreEqual(1, _director.Live);
-
-            AIEvents.RaiseEnemyKilled(new EnemyKilledInfo(AIEnemyKind.Crawler, Vector3.zero, false, false));
             Run(1f);
-            Assert.AreEqual(0, _cleared, "a crawler's death is not the elite's");
+            Assert.AreEqual(0, _cleared, "it lives");
 
-            AIEvents.RaiseEnemyKilled(new EnemyKilledInfo(AIEnemyKind.EliteRegax, Vector3.zero, false, true));
+            _horde.Alive = 0;
             Run(0.2f);
-            Assert.AreEqual(0, _director.ElitesAlive);
             Assert.AreEqual(1, _cleared);
         }
 

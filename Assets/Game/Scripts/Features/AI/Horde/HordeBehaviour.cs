@@ -30,6 +30,7 @@ namespace Game.AIKit.Adapters
         private const float AUDIO_INTERVAL = 0.25f;
         private const int SPAWN_TRIES = 8;
         private const int MAX_PENDING = 256;
+        private const float ELITE_REPORT_INTERVAL = 0.1f;
         /// <summary>Spawn cells higher than this over the lowest ground are roofs and rubble, not ground.</summary>
         private const float SPAWN_MAX_HEIGHT = 1f;
 
@@ -88,6 +89,10 @@ namespace Game.AIKit.Adapters
         private float _groundHeight;
         private int _queuedWave;
         private int _pendingCount;
+        private int _eliteSlot = -1;
+        private int _eliteVersion;
+        private float _eliteShare;
+        private float _eliteTimer;
 
         private struct Pending
         {
@@ -257,6 +262,7 @@ namespace Game.AIKit.Adapters
                 RegisterTargets();
                 bool hasTank = ReadTank(out HordeTank tank);
                 HandleDeaths();
+                ReportElite(deltaTime);
                 HandleShots(deltaTime);
                 DamageTank();
                 FlushPending(tank);
@@ -346,14 +352,6 @@ namespace Game.AIKit.Adapters
 
         void IArenaHorde.WaveStarted() => _audio.WaveStarted();
 
-        public void SetCover(System.Collections.Generic.IReadOnlyList<Vector3> points)
-        {
-            if (_simulation == null)
-                return;
-            CompleteFrame();
-            _simulation.SetCoverPoints(points);
-        }
-
         /// <summary>A burrow opened at <paramref name="at"/> (its sound).</summary>
         public void BurrowOpened(Vector3 at) => _audio.BurrowOpened(at);
 
@@ -373,6 +371,11 @@ namespace Game.AIKit.Adapters
             }
 
             _acidDrawn = 0;
+            if (_eliteSlot >= 0)
+            {
+                _eliteSlot = -1;
+                EliteStatus.ReportDied(); // gone with the old arena: the HUD drops its bar
+            }
             _pendingCount = 0;
             _queuedWave = 0;
             _damageOwed = 0f;
@@ -463,7 +466,14 @@ namespace Game.AIKit.Adapters
                 if (!float.IsNaN(h))
                     at.y = h;
                 float2 toTank = tank.Present ? tank.Center.xz - at.xz : new float2(0f, 1f);
-                _simulation.Spawn(at, math.atan2(toTank.x, toTank.y), p.Row, p.HealthScale, p.DamageScale, true);
+                int slot = _simulation.Spawn(at, math.atan2(toTank.x, toTank.y), p.Row, p.HealthScale, p.DamageScale, true);
+                if (slot >= 0 && HordeKinds.IsElite(p.Row))
+                {
+                    _eliteSlot = slot;
+                    _eliteVersion = _simulation.Version(slot);
+                    _eliteShare = 1f;
+                    EliteStatus.ReportAppeared(1f);
+                }
             }
 
             _pendingCount = 0;
@@ -570,6 +580,23 @@ namespace Game.AIKit.Adapters
             return true;
         }
 
+        /// <summary>The big one's health for the HUD (<see cref="EliteStatus"/>), at most 10 times a second, on a change.</summary>
+        private void ReportElite(float deltaTime)
+        {
+            if (_eliteSlot < 0)
+                return;
+            _eliteTimer += deltaTime;
+            if (_eliteTimer < ELITE_REPORT_INTERVAL || !_simulation.IsTargetAlive(_eliteSlot, _eliteVersion))
+                return;
+            _eliteTimer = 0f;
+            float max = _simulation.GetMaxHealth(_eliteSlot);
+            float share = max > 0f ? Mathf.Clamp01(_simulation.GetHealth(_eliteSlot) / max) : 0f;
+            if (Mathf.Abs(share - _eliteShare) < 0.001f)
+                return;
+            _eliteShare = share;
+            EliteStatus.ReportHealth(share);
+        }
+
         private void HandleDeaths()
         {
             NativeArray<HordeDeathEvent> deaths = _simulation.Deaths;
@@ -598,7 +625,12 @@ namespace Game.AIKit.Adapters
 
                     _killed.Invoke(at);
                     feed?.Report(new EnemyDeath(HordeKinds.ToEnemyKind(row), death.Position,
-                        death.Cause == HordeDeathCause.Crushed, false));
+                        death.Cause == HordeDeathCause.Crushed, HordeKinds.IsElite(row)));
+                    if (death.Index == _eliteSlot && HordeKinds.IsElite(row))
+                    {
+                        _eliteSlot = -1;
+                        EliteStatus.ReportDied();
+                    }
                 }
 
                 _kills.Value += deaths.Length;

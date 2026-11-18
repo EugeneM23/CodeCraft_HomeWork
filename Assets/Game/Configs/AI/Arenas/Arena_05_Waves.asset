@@ -18,16 +18,17 @@ MonoBehaviour:
     entries:
     - kind: 0
       count: 8
-  - delay: 6
+  - delay: 4
     spawnInterval: 0.5
     entries:
     - kind: 3
       count: 1
-  - delay: 20
+  - delay: 18
     spawnInterval: 0.35
     entries:
     - kind: 0
       count: 10
+    - kind: 1
+      count: 3
   liveLimit: 40
   chapterMultiplier: 1
-  elitePrefab: {fileID: 2730295840044760588, guid: 25548380150d50b4d8f2f99982896cee, type: 3}

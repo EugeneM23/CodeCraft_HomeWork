@@ -5,11 +5,21 @@ namespace Game.AIKit.Adapters
     {
         public const int CRAWLER = 0;
         public const int SPITTER = 1;
-        public const int COUNT = 2;
+        /// <summary>The big Regax of arena 5 (the game's EliteRegax): the crowd's logic at full size.</summary>
+        public const int BRUTE = 2;
+        public const int COUNT = 3;
 
-        public static EnemyKind ToEnemyKind(int row) => row == SPITTER ? EnemyKind.Spitter : EnemyKind.Crawler;
+        public static EnemyKind ToEnemyKind(int row) => row switch
+        {
+            SPITTER => EnemyKind.Spitter,
+            BRUTE => EnemyKind.EliteRegax,
+            _ => EnemyKind.Crawler
+        };
 
-        /// <summary>The row of a horde kind; false for kinds the horde does not have (the elite, the boss).</summary>
+        /// <summary>The row reports its death as an elite's (rewards, the HUD's elite bar).</summary>
+        public static bool IsElite(int row) => row == BRUTE;
+
+        /// <summary>The row of a horde kind; false for kinds the horde does not have (the exploder, the boss).</summary>
         public static bool TryGetRow(EnemyKind kind, out int row)
         {
             switch (kind)
@@ -19,6 +29,9 @@ namespace Game.AIKit.Adapters
                     return true;
                 case EnemyKind.Spitter:
                     row = SPITTER;
+                    return true;
+                case EnemyKind.EliteRegax:
+                    row = BRUTE;
                     return true;
                 default:
                     row = -1;

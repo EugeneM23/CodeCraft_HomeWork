@@ -20,6 +20,11 @@ namespace Game.AIKit.Adapters
         [Tooltip("Melee: damage per second at the hull.")]
         public float biteDps;
 
+        [Tooltip("Melee: damage of one blow at the hull and seconds between blows (0: no blows).")]
+        public float hitDamage;
+
+        public float hitInterval;
+
         [Tooltip("Ranged: damage of one acid shot, seconds between shots, range and the shot's horizontal speed.")]
         public float shotDamage;
 
@@ -27,12 +32,14 @@ namespace Game.AIKit.Adapters
         public float shotRange;
         public float shotSpeed;
 
-        [Tooltip("Ranged: the band it keeps from the tank, m, and the distance under which it backs off.")]
-        public float keepMin;
+        [Tooltip("Ranged: it stops this close to the tank when the hull is in sight, m, and backs off under the second distance.")]
+        public float stopDistance;
 
-        public float keepMax;
         public float backOff;
         public bool crushable = true;
+
+        [Tooltip("Crushed only at or below this share of its full health (0: always).")]
+        public float crushBelowHealth;
 
         public static HordeKindOptions From(in HordeKind kind) => new()
         {
@@ -42,14 +49,16 @@ namespace Game.AIKit.Adapters
             renderScale = kind.RenderScale,
             tactic = kind.Tactic,
             biteDps = kind.BiteDps,
+            hitDamage = kind.HitDamage,
+            hitInterval = kind.HitInterval,
             shotDamage = kind.ShotDamage,
             shotInterval = kind.ShotInterval,
             shotRange = kind.ShotRange,
             shotSpeed = kind.ShotSpeed,
-            keepMin = kind.KeepMin,
-            keepMax = kind.KeepMax,
+            stopDistance = kind.StopDistance,
             backOff = kind.BackOff,
-            crushable = kind.Crushable
+            crushable = kind.Crushable,
+            crushBelowHealth = kind.CrushBelowHealth
         };
 
         public HordeKind ToKind() => new()
@@ -61,14 +70,16 @@ namespace Game.AIKit.Adapters
             EmergeDepth = 2.7f * renderScale,
             Tactic = tactic,
             BiteDps = biteDps,
+            HitDamage = hitDamage,
+            HitInterval = hitInterval,
             ShotDamage = shotDamage,
             ShotInterval = shotInterval,
             ShotRange = shotRange,
             ShotSpeed = shotSpeed,
-            KeepMin = keepMin,
-            KeepMax = keepMax,
+            StopDistance = stopDistance,
             BackOff = backOff,
-            Crushable = crushable
+            Crushable = crushable,
+            CrushBelowHealth = crushBelowHealth
         };
     }
 }

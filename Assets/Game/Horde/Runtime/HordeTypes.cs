@@ -29,9 +29,9 @@ namespace Game.Horde
     /// <summary>How a kind fights: at the hull, or from a distance with shots.</summary>
     public enum HordeTactic : byte
     {
-        /// <summary>To the tank over the flow field, claws the hull.</summary>
+        /// <summary>To the tank over the flow field with the crowd, claws the hull.</summary>
         Melee = 0,
-        /// <summary>Keeps a distance band, prefers cover, shoots with line of sight, backs off when the tank closes in.</summary>
+        /// <summary>Walks with the crowd until the hull is in range and in sight, stands and shoots; backs off when the tank closes in.</summary>
         Ranged = 1
     }
 
@@ -51,23 +51,27 @@ namespace Game.Horde
         /// <summary>The model starts this far under the ground when it emerges.</summary>
         public float EmergeDepth;
         public HordeTactic Tactic;
-        /// <summary>Damage per second at the hull (melee).</summary>
+        /// <summary>Melee: damage per second at the hull (a steady bite).</summary>
         public float BiteDps;
-        /// <summary>Damage of one shot (ranged).</summary>
+        /// <summary>Melee: damage of one blow at the hull, every <see cref="HitInterval"/> s (on top of the bite).</summary>
+        public float HitDamage;
+        public float HitInterval;
+        /// <summary>Ranged: damage of one shot.</summary>
         public float ShotDamage;
-        /// <summary>Seconds between shots.</summary>
+        /// <summary>Ranged: seconds between shots.</summary>
         public float ShotInterval;
-        /// <summary>Farthest shot, m (from the tank's centre).</summary>
+        /// <summary>Ranged: farthest shot, m (from the tank's centre).</summary>
         public float ShotRange;
-        /// <summary>Horizontal speed of a shot, m/s (the arc's height follows from it).</summary>
+        /// <summary>Ranged: horizontal speed of a shot, m/s (the arc's height follows from it).</summary>
         public float ShotSpeed;
-        /// <summary>Ranged: the band it keeps from the tank's centre.</summary>
-        public float KeepMin;
-        public float KeepMax;
+        /// <summary>Ranged: it stops this close to the tank's centre when the hull is in sight.</summary>
+        public float StopDistance;
         /// <summary>Ranged: closer than this it walks away from the tank.</summary>
         public float BackOff;
         /// <summary>The tank's hull crushes it.</summary>
         public bool Crushable;
+        /// <summary>Crushed only at or below this share of its full health (0: always; the big one: 0.25).</summary>
+        public float CrushBelowHealth;
 
         /// <summary>The young Regax (GDD §5): small, fast, bites.</summary>
         public static HordeKind Crawler => new()
@@ -82,7 +86,7 @@ namespace Game.Horde
             Crushable = true
         };
 
-        /// <summary>The spitter (GDD §5): keeps 15–25 m, acid 15 every 3 s up to 20 m.</summary>
+        /// <summary>The spitter (GDD §5): a shooter in the crowd, acid 15 every 3 s up to 20 m.</summary>
         public static HordeKind Spitter => new()
         {
             Speed = 3.5f,
@@ -95,10 +99,24 @@ namespace Game.Horde
             ShotInterval = 3f,
             ShotRange = 20f,
             ShotSpeed = 14f,
-            KeepMin = 15f,
-            KeepMax = 25f,
-            BackOff = 10f,
+            StopDistance = 17f,
+            BackOff = 9f,
             Crushable = true
+        };
+
+        /// <summary>The big Regax of arena 5: the crowd's logic at full size, heavy blows, crushed only when beaten down to a quarter.</summary>
+        public static HordeKind Brute => new()
+        {
+            Speed = 6f,
+            Radius = 1.2f,
+            Health = 1800f,
+            RenderScale = 1f,
+            EmergeDepth = 2.7f,
+            Tactic = HordeTactic.Melee,
+            HitDamage = 40f,
+            HitInterval = 1.2f,
+            Crushable = true,
+            CrushBelowHealth = 0.25f
         };
 
         /// <summary>A melee kind with the speed, radius, health and bite of <paramref name="settings"/>.</summary>
@@ -161,8 +179,6 @@ namespace Game.Horde
         public float RunClipSpeed;
         /// <summary>Seconds a monster spawned with <c>emerge</c> rises out of the ground before it walks.</summary>
         public float EmergeTime;
-        /// <summary>A grid cell this much higher than a ranged monster's own counts as cover next to it.</summary>
-        public float CoverHeight;
 
         public static HordeSettings Default => new HordeSettings
         {
@@ -181,8 +197,7 @@ namespace Game.Horde
             Health = 100f,
             NearRadius = 15f,
             RunClipSpeed = 5f,
-            EmergeTime = 1f,
-            CoverHeight = 1.5f
+            EmergeTime = 1f
         };
     }
 

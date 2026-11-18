@@ -17,8 +17,6 @@ namespace Game.AIKit.Adapters
 
         public IReadOnlyList<Vector3> BurrowPoints => Service.BurrowPoints ?? None;
 
-        public IReadOnlyList<Vector3> CoverPoints => Service.CoverPoints ?? None;
-
         public Vector3 OpenBurrow(int index) => Service.OpenBurrow(index);
     }
 }

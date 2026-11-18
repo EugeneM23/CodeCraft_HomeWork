@@ -5,12 +5,11 @@ namespace Game.AIKit.Adapters
 {
     /// <summary>
     /// A stand-in arena for the sandbox, tests and the bench: <c>count</c> burrows spaced evenly along the edge of a
-    /// rectangle, on the ground (the level grid's height when there is one, else the rectangle's floor), no craters,
-    /// no cover spots. The game uses the Arenas team's service (<see cref="ArenaServiceBurrows"/>).
+    /// rectangle, on the ground (the level grid's height when there is one, else the rectangle's floor), no craters.
+    /// The game uses the Arenas team's service (<see cref="ArenaServiceBurrows"/>).
     /// </summary>
     public sealed class EdgeBurrowsLayout : IArenaBurrows
     {
-        private static readonly Vector3[] NoCover = new Vector3[0];
         private readonly Vector3[] _burrows;
         private readonly bool[] _open;
 
@@ -62,8 +61,6 @@ namespace Game.AIKit.Adapters
         public Bounds Bounds { get; }
 
         public IReadOnlyList<Vector3> BurrowPoints => _burrows;
-
-        public IReadOnlyList<Vector3> CoverPoints => NoCover;
 
         /// <summary>Burrows opened so far.</summary>
         public int OpenedCount

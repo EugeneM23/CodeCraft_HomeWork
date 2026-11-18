@@ -780,26 +780,6 @@ namespace Game.Horde
             return true;
         }
 
-        /// <summary>A neighbour cell of the one under <paramref name="xz"/> is at least <paramref name="height"/> higher (a wall to hide by).</summary>
-        public bool NextToCover(float2 xz, float height)
-        {
-            int2 cell = CellOf(xz);
-            if (!InBounds(cell))
-                return false;
-            float own = HeightOf(cell);
-            if (math.isnan(own))
-                return false;
-            for (int dz = -1; dz <= 1; dz++)
-            for (int dx = -1; dx <= 1; dx++)
-            {
-                int2 c = cell + new int2(dx, dz);
-                if ((dx != 0 || dz != 0) && InBounds(c) && HeightOf(c) >= own + height)
-                    return true;
-            }
-
-            return false;
-        }
-
         private float Sample(int2 cell, float h0)
         {
             if (!InBounds(cell))
@@ -884,9 +864,8 @@ namespace Game.Horde
     /// eases toward it, the heading turns at a bounded rate. The move obeys the grid step rule (sliding along a blocked
     /// axis), and the feet go to the surface height. Writes <c>NextPosition</c>.
     /// Melee wish: the flow field toward the tank, straight at it when close, slower near the hull. Ranged wish: away
-    /// from the tank inside <see cref="HordeKind.BackOff"/>; inside the band a short probe in 8 directions toward a
-    /// better spot (in the band, in range, next to cover), standing when none is better; beyond it the flow field. An
-    /// arena's cover spot (<c>Cover</c>) in the band, in sight of the hull and near enough, wins over the probe.
+    /// from the tank inside <see cref="HordeKind.BackOff"/>; standing within <see cref="HordeKind.StopDistance"/> with the hull
+    /// in sight; else in with the crowd over the flow field.
     /// Emerging monsters stand.
     /// </summary>
     [BurstCompile(CompileSynchronously = true)]
@@ -895,20 +874,9 @@ namespace Game.Horde
         private const float DIRECT_RANGE = 3f;
         private const float GOLDEN_ANGLE = 2.39996323f;
         private const float ANIM_WRAP = 600f;
-        /// <summary>Ranged: how far ahead a spot is tried, m.</summary>
-        private const float PROBE = 2f;
-        /// <summary>Ranged: a spot must be this much better (score) to walk there.</summary>
-        private const float PROBE_GAIN = 0.25f;
-        /// <summary>Ranged: the score a cover spot gains.</summary>
-        private const float COVER_BONUS = 1f;
-        /// <summary>Ranged: beyond KeepMax + this the probe is not trusted, the flow field leads in.</summary>
-        private const float FAR_MARGIN = 3f;
-        /// <summary>Ranged: cover spots farther than this are not sought, m.</summary>
-        private const float COVER_SEARCH = 12f;
-        /// <summary>Ranged: this close to its cover spot it stands, m.</summary>
-        private const float COVER_REACHED = 0.75f;
+        /// <summary>Mouth height over the feet at render scale 1 (the line of sight starts there).</summary>
+        private const float MOUTH = 2f;
 
-        [ReadOnly] public NativeArray<float3> Cover;
         [ReadOnly] public NativeArray<float3> Position;
         [ReadOnly] public NativeArray<HordeState> State;
         [ReadOnly] public NativeArray<float> SpeedScale;
@@ -967,7 +935,7 @@ namespace Game.Horde
                     toTank = Tank.Center.xz - xz;
                     float speed = kind.Speed * SpeedScale[i];
                     if (kind.Tactic == HordeTactic.Ranged)
-                        wish = RangedWish(xz, cell, toTank, kind, speed);
+                        wish = RangedWish(p, cell, toTank, kind, speed);
                     else
                     {
                         float hull = HordeHull.Distance(Tank, HordeHull.ToLocal(Tank, inverse, p));
@@ -1072,75 +1040,20 @@ namespace Game.Horde
             Marker.End();
         }
 
-        private float2 RangedWish(float2 xz, int2 cell, float2 toTank, in HordeKind kind, float speed)
+        private float2 RangedWish(float3 p, int2 cell, float2 toTank, in HordeKind kind, float speed)
         {
             float d = math.length(toTank);
             if (d < 1e-3f)
                 return float2.zero;
             if (d < kind.BackOff)
                 return -toTank / d * speed;
-
-            if (d > kind.KeepMax + FAR_MARGIN)
-            {
-                float2 dir = Grid.FlowOf(cell);
-                if (math.lengthsq(dir) < 0.25f)
-                    dir = toTank / d;
-                return dir * speed;
-            }
-
-            // A cover spot of the arena in the band, with the hull in sight, near enough: walk to it, stand on it.
-            float far = math.min(kind.KeepMax, kind.ShotRange > 0f ? kind.ShotRange : kind.KeepMax);
-            float bestCover = COVER_SEARCH * COVER_SEARCH;
-            float2 cover = float2.zero;
-            bool hasCover = false;
-            for (int c = 0; c < Cover.Length; c++)
-            {
-                float3 spot = Cover[c];
-                float toSpot = math.distancesq(spot.xz, xz);
-                if (toSpot >= bestCover)
-                    continue;
-                float fromTank = math.distance(spot.xz, Tank.Center.xz);
-                if (fromTank < kind.KeepMin || fromTank > far)
-                    continue;
-                if (!Grid.LineOfSight(spot + new float3(0f, 2f * kind.RenderScale, 0f), Tank.Center))
-                    continue;
-                bestCover = toSpot;
-                cover = spot.xz;
-                hasCover = true;
-            }
-
-            if (hasCover)
-                return bestCover > COVER_REACHED * COVER_REACHED ? math.normalize(cover - xz) * speed : float2.zero;
-
-            float best = Score(xz, kind);
-            float2 bestDir = float2.zero;
-            for (int k = 0; k < 8; k++)
-            {
-                math.sincos(k * (math.PI * 0.25f), out float s, out float c);
-                var dir = new float2(c, s);
-                float2 probe = xz + dir * PROBE;
-                if (!Grid.CanTravel(xz, probe))
-                    continue;
-                float score = Score(probe, kind);
-                if (score < best - PROBE_GAIN)
-                {
-                    best = score;
-                    bestDir = dir;
-                }
-            }
-
-            return bestDir * speed;
-        }
-
-        /// <summary>Lower is better: outside the band (and out of range) costs per metre, cover next to the spot pays.</summary>
-        private float Score(float2 xz, in HordeKind kind)
-        {
-            float d = math.distance(xz, Tank.Center.xz);
-            float far = math.min(kind.KeepMax, kind.ShotRange > 0f ? kind.ShotRange : kind.KeepMax);
-            float score = math.max(0f, kind.KeepMin - d) * 2f + math.max(0f, d - far) + math.max(0f, d - kind.KeepMax) * 2f;
-            if (Grid.NextToCover(xz, Settings.CoverHeight))
-                score -= COVER_BONUS;
-            return score;
+            // In range and the hull in sight: it stands and shoots. Otherwise it walks in with the crowd.
+            if (d <= kind.StopDistance && Grid.LineOfSight(p + new float3(0f, MOUTH * kind.RenderScale, 0f), Tank.Center))
+                return float2.zero;
+            float2 dir = Grid.FlowOf(cell);
+            if (math.lengthsq(dir) < 0.25f)
+                dir = toTank / d;
+            return dir * speed;
         }
     }
 
@@ -1161,11 +1074,13 @@ namespace Game.Horde
         /// <summary>Mouth height over the feet at render scale 1 (the shot starts there).</summary>
         private const float MOUTH = 2f;
 
+
         public NativeArray<float3> Position;
         public NativeArray<HordeState> State;
         public NativeArray<float> Health;
         public NativeArray<float> StateTime;
         public NativeArray<float> Cooldown;
+        [ReadOnly] public NativeArray<float> MaxHealth;
         [WriteOnly] public NativeArray<float> AttackDamage;
         [ReadOnly] public NativeArray<float> Heading;
         [ReadOnly] public NativeArray<byte> Kind;
@@ -1258,7 +1173,8 @@ namespace Game.Horde
                     float3 local = HordeHull.ToLocal(Tank, inverse, p);
                     float2 q = math.abs(local.xz) - Tank.HalfExtents.xz;
                     bool level = local.y < Tank.HalfExtents.y && local.y > -Tank.HalfExtents.y - BELOW_HULL;
-                    if (level && crushing && kind.Crushable && InCrushZone(local.xz, q, sweep, localVelocity, r, Tank.HalfExtents.xz))
+                    bool crushable = kind.Crushable && (kind.CrushBelowHealth <= 0f || hp <= kind.CrushBelowHealth * MaxHealth[i]);
+                    if (level && crushing && crushable && InCrushZone(local.xz, q, sweep, localVelocity, r, Tank.HalfExtents.xz))
                     {
                         Die(i, p, HordeDeathCause.Crushed);
                         continue;
@@ -1319,8 +1235,21 @@ namespace Game.Horde
                 }
 
                 State[i] = state;
-                if (state == HordeState.Attack)
-                    AttackDamage[i] = kind.BiteDps * DamageScale[i] * DeltaTime;
+                float damage = state == HordeState.Attack ? kind.BiteDps * DeltaTime : 0f;
+                if (kind.Tactic == HordeTactic.Melee && kind.HitInterval > 0f)
+                {
+                    // Blows: the first one lands at contact, then one every HitInterval while it stays at the hull.
+                    float cd = math.max(Cooldown[i] - DeltaTime, 0f);
+                    if (state == HordeState.Attack && cd <= 0f)
+                    {
+                        damage += kind.HitDamage;
+                        cd = kind.HitInterval;
+                    }
+
+                    Cooldown[i] = cd;
+                }
+
+                AttackDamage[i] = damage * DamageScale[i];
             }
 
             Marker.End();
