@@ -582,6 +582,25 @@ namespace Game.Voxels
             return applied;
         }
 
+        /// <summary>A body going back to a pool (VoxelBody.Recycle): its remeshes still running are waited for and dropped.</summary>
+        internal static void DropJobsOf(VoxelBody body)
+        {
+            s_splits.Remove(body);
+            UnqueueStructure(body);
+            if (s_instance == null)
+                return;
+
+            List<VoxelBody.ChunkJob> jobs = s_instance._asyncJobs;
+            for (int i = jobs.Count - 1; i >= 0; i--)
+            {
+                if (jobs[i].Body != body)
+                    continue;
+                jobs[i].Handle.Complete();
+                jobs[i].Dispose();
+                jobs.RemoveAt(i);
+            }
+        }
+
         private void OnApplicationQuit() => s_quitting = true;
 
         private void OnDestroy()

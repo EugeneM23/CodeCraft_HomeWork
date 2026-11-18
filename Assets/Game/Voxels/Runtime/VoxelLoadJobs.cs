@@ -854,6 +854,19 @@ namespace Game.Voxels
         }
     }
 
+    /// <summary>Zeroes a byte array (a recycled body's voxels, VoxelBody.TakeVoxels).</summary>
+    [BurstCompile(CompileSynchronously = true, DisableSafetyChecks = true)]
+    public struct ClearBytesJob : IJob
+    {
+        public NativeArray<byte> Bytes;
+
+        public void Execute()
+        {
+            for (int i = 0; i < Bytes.Length; i++)
+                Bytes[i] = 0;
+        }
+    }
+
     /// <summary>The mass of a body with a strength table: every voxel by its material's density.</summary>
     [BurstCompile(CompileSynchronously = true, DisableSafetyChecks = true)]
     public struct BodyMassJob : IJob

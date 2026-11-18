@@ -76,6 +76,14 @@ namespace Game.Voxels
             Arm();
         }
 
+        /// <summary>A body going back to a pool (VoxelBody.Recycle): it may break again when it is used.</summary>
+        internal void ResetForReuse()
+        {
+            _broken = false;
+            _rigidbody = null;
+            Arm();
+        }
+
         /// <summary>Holds off breaking for the arm delay: the piece is new, or was just woken where it lay.</summary>
         internal void Arm() => _armedAt = VoxelTicks.Time + _armDelay;
 

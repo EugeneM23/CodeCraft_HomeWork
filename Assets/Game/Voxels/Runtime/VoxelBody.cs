@@ -247,8 +247,17 @@ namespace Game.Voxels
         /// </summary>
         public void Init(int3 size, NativeArray<byte> voxels, NativeArray<Color32> palette, VoxelBodySettings settings)
         {
-            if (_voxels.IsCreated)
+            // A recycled body (Recycle) keeps its chunks and the arrays handed back (TakeVoxels).
+            Chunk[] keep = _recycled ? _chunks : null;
+            if (_recycled)
+                ReleaseRecycled(voxels, palette);
+            else if (_voxels.IsCreated)
+            {
                 Release();
+                DestroyChunks();
+            }
+
+            _recycled = false;
 
             Size = size;
             _voxels = voxels;
@@ -267,10 +276,23 @@ namespace Game.Voxels
             _chunk = _settings.ChunkSize > 0 ? _settings.ChunkSize : CHUNK;
             _chunkCount = (size + _chunk - 1) / _chunk;
             int chunks = _chunkCount.x * _chunkCount.y * _chunkCount.z;
-            _chunks = new Chunk[chunks];
-            _dirty = new bool[chunks];
-            _shapeDirty = new bool[chunks];
-            _busy = new bool[chunks];
+            // The same chunk layout: the recycled chunks (meshes, renderers, colliders) are taken by index.
+            if (keep != null && keep.Length == chunks && _dirty != null && _dirty.Length == chunks)
+            {
+                _chunks = keep;
+                System.Array.Clear(_dirty, 0, chunks);
+                System.Array.Clear(_shapeDirty, 0, chunks);
+                System.Array.Clear(_busy, 0, chunks);
+            }
+            else
+            {
+                if (keep != null)
+                    DestroyChunks(keep);
+                _chunks = new Chunk[chunks];
+                _dirty = new bool[chunks];
+                _shapeDirty = new bool[chunks];
+                _busy = new bool[chunks];
+            }
             _dirtyCount = 0;
             _built = false;
             _looseCount = 0;
@@ -993,6 +1015,13 @@ namespace Game.Voxels
             return direction * (force * speedShare * Random.Range(0.35f, 0.7f));
         }
 
+        /// <summary>Spare boxes a standing building's chunk gets on its first build, at least (see ApplyBoxes).</summary>
+        private const int STATIC_SPARE_BOXES = 8;
+
+        private static readonly Unity.Profiling.ProfilerMarker ApplyChunkMarker = new("Voxels.ApplyChunk");
+        private static readonly Unity.Profiling.ProfilerMarker BoxesMarker = new("Voxels.ApplyBoxes");
+        private static readonly Unity.Profiling.ProfilerMarker CreateChunkMarker = new("Voxels.CreateChunk");
+
         private const string PIECE_NAME = "VoxelPiece";
         private const string CHUNK_NAME = "Chunk";
 
@@ -1198,7 +1227,10 @@ namespace Game.Voxels
             // A piece leaves: the rest's colliders must be right before the piece moves (RebuildsAsync).
             RebuildNow();
             int3 size = piece.Max - piece.Min + 1;
-            var grid = new NativeArray<byte>(size.x * size.y * size.z, Allocator.Persistent);
+            // A pooled body (PieceFactory) if the game keeps one: its chunks and arrays are reused.
+            VoxelBody body = PieceFactory?.Invoke();
+            var grid = body != null ? body.TakeVoxels(size.x * size.y * size.z)
+                : new NativeArray<byte>(size.x * size.y * size.z, Allocator.Persistent);
 
             new ExtractComponentJob
             {
@@ -1214,7 +1246,10 @@ namespace Game.Voxels
             SolidCount -= piece.Count;
 
             // Fixed names: a name built from the parent's grew a string per piece ("House_Piece_Piece…").
-            var go = new GameObject(PIECE_NAME) { layer = VoxelWorld.PieceLayer };
+            GameObject go = body != null ? body.gameObject : new GameObject(PIECE_NAME);
+            go.layer = VoxelWorld.PieceLayer;
+            if (!go.activeSelf)
+                go.SetActive(true);
             go.transform.SetPositionAndRotation(transform.position, transform.rotation);
             go.transform.localScale = transform.lossyScale;
 
@@ -1229,8 +1264,11 @@ namespace Game.Voxels
                 settings.ColliderCell = math.max(settings.ColliderCell, PIECE_COLLIDER_CELL);
             settings.Material = _material;
 
-            VoxelBody body = go.AddComponent<VoxelBody>();
-            body.Init(size, grid, new NativeArray<Color32>(_palette, Allocator.Persistent), settings);
+            if (body == null)
+                body = go.AddComponent<VoxelBody>();
+            NativeArray<Color32> palette = body.TakePalette(_palette.Length);
+            palette.CopyFrom(_palette);
+            body.Init(size, grid, palette, settings);
             if (HasStrength)
                 body.SetStrength(CopyStrength());
             body.Generation = Generation + 1;
@@ -1813,6 +1851,7 @@ namespace Game.Voxels
 
         internal void ApplyChunk(in ChunkJob job)
         {
+            using var marker = ApplyChunkMarker.Auto();
             if (job.Async)
                 _busy[job.Chunk] = false;
 
@@ -1927,6 +1966,17 @@ namespace Game.Voxels
 
         private void ApplyBoxes(Chunk chunk, NativeList<VoxelBox> boxes, int3 offset)
         {
+            using var marker = BoxesMarker.Auto();
+            // A standing building's chunk gets spare (disabled) boxes on its first build: holes shot in it later
+            // need a few more boxes than the whole wall had, and a component made then is garbage in the fight.
+            int want = chunk.Boxes.Count == 0 && IsStatic ? boxes.Length + math.max(STATIC_SPARE_BOXES, boxes.Length / 2) : boxes.Length;
+            while (chunk.Boxes.Count < want)
+            {
+                BoxCollider spare = chunk.GameObject.AddComponent<BoxCollider>();
+                spare.enabled = false;
+                chunk.Boxes.Add(spare);
+            }
+
             for (int i = 0; i < boxes.Length; i++)
             {
                 BoxCollider collider;
@@ -2003,6 +2053,7 @@ namespace Game.Voxels
 
         private Chunk CreateChunk(int index)
         {
+            using var marker = CreateChunkMarker.Auto();
             var go = new GameObject(CHUNK_NAME) { layer = _settings.Layer };
             go.transform.SetParent(transform, false);
 
