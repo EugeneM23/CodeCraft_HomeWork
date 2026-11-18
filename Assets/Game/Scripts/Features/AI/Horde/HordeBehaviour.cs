@@ -10,20 +10,26 @@ using UnityEngine;
 namespace Game.AIKit.Adapters
 {
     /// <summary>
-    /// The horde as one Atomic entity: owns the flow field to the tank, the crowd simulation, its
-    /// renderer and the corpses; walks the level's shared navigation grid (<see cref="LevelNav"/>,
-    /// owned by the level AI entity, which keeps it up to date with the digging). Frame:
-    /// <see cref="CompleteFrame"/> (start of the frame, <see cref="LevelAIEarlyUpdate"/>, before the
-    /// grid takes in its new heights) takes the step of the last frame; <see cref="Tick"/> reads the
-    /// tank, hands out the deaths (corpses, budgeted blood, kills, sound), damages the tank, keeps the
-    /// population, draws, and schedules the field and the next step.
-    /// Listens to <see cref="ExplosionEvents.Exploded"/> (area damage). No managed allocations per frame.
+    /// The horde as one Atomic entity: owns the flow field to the tank, the crowd simulation with its kinds (Crawler,
+    /// Spitter: <see cref="HordeKinds"/>), one renderer and one corpse ring per kind, and the acid in flight; walks the
+    /// level's shared navigation grid (<see cref="LevelNav"/>, owned by the level AI entity, which keeps it up to date
+    /// with the digging). Frame: <see cref="CompleteFrame"/> (start of the frame, <see cref="LevelAIEarlyUpdate"/>, before
+    /// the grid takes in its new heights) takes the step of the last frame; <see cref="Tick"/> reads the tank, hands out
+    /// the deaths (corpses, budgeted blood, kills, <see cref="IEnemyDeaths"/>, sound), the shots (sound, splashes),
+    /// damages the tank, spawns what was asked, draws, and schedules the field and the next step.
+    /// <para>
+    /// For the arena director it is the level's <see cref="IArenaHorde"/> (<see cref="HordeAPI.LevelHorde"/> on the level
+    /// AI entity); for combat an <see cref="IEnemyTargetSource"/> (<see cref="Targets"/>, registered in the level's
+    /// <see cref="IEnemyTargets"/> once there is one). Blasts (<see cref="ExplosionEvents.Exploded"/>) only shove: blast
+    /// damage comes from the weapons through the target source. No managed allocations per frame.
+    /// </para>
     /// </summary>
-    public sealed class HordeBehaviour : IEntityInit, IEntityDispose, IEntityTick
+    public sealed class HordeBehaviour : IEntityInit, IEntityDispose, IEntityTick, IArenaHorde
     {
         private const float FLOW_INTERVAL = 0.2f;
         private const float AUDIO_INTERVAL = 0.25f;
         private const int SPAWN_TRIES = 8;
+        private const int MAX_PENDING = 256;
         /// <summary>Spawn cells higher than this over the lowest ground are roofs and rubble, not ground.</summary>
         private const float SPAWN_MAX_HEIGHT = 1f;
 
@@ -33,14 +39,21 @@ namespace Game.AIKit.Adapters
         private readonly HordeArtConfig _art;
         private readonly HordeOptions _options;
         private readonly Plane[] _planes = new Plane[6];
+        private readonly HordeRenderer[] _renderers = new HordeRenderer[HordeKinds.COUNT];
+        private readonly HordeCorpses[] _corpses = new HordeCorpses[HordeKinds.COUNT];
+        private readonly int[] _drawnCounts = new int[HordeKinds.COUNT];
+        private readonly Pending[] _pending = new Pending[MAX_PENDING];
+        private readonly HordeTargetSource _targets = new();
 
+        private LevelNav _nav;
+        private int _gridGeneration;
         private HordeNavGrid _grid;
         private HordeFlowField _flow;
         private HordeSimulation _simulation;
-        private HordeRenderer _renderer;
-        private HordeCorpses _corpses;
+        private HordeRenderer _acid;
 
         private IEntity _entity;
+        private IEntity _level;
         private IReactiveVariable<int> _alive;
         private IReactiveVariable<int> _kills;
         private IReactiveVariable<int> _population;
@@ -50,6 +63,9 @@ namespace Game.AIKit.Adapters
         private TakeDamageArgs _damageArgs;
         private Color32[] _blood;
         private float _bloodSize;
+        private Color32[] _acidDrops;
+        private IEnemyTargets _registeredTargets;
+        private int _targetsId = -1;
 
         private IEntity _tank;
         private Transform _tankTransform;
@@ -64,9 +80,22 @@ namespace Game.AIKit.Adapters
         private float _flowTimer;
         private int2 _flowCell = new(int.MinValue, int.MinValue);
         private float _audioTimer;
-        private int _drawnCount;
+        private float _biteTimer;
+        private float _acidHitTimer;
+        private float _aliveTimer;
+        private int _aliveHeard = -1;
+        private int _acidDrawn;
         private float _groundHeight;
         private int _queuedWave;
+        private int _pendingCount;
+
+        private struct Pending
+        {
+            public Vector3 Position;
+            public int Row;
+            public float HealthScale;
+            public float DamageScale;
+        }
 
         public HordeBehaviour(HordeArtConfig art, HordeOptions options)
         {
@@ -77,31 +106,36 @@ namespace Game.AIKit.Adapters
         public HordeSimulation Simulation => _simulation;
         public HordeNavGrid Grid => _grid;
         public HordeFlowField FlowField => _flow;
-        public HordeCorpses Corpses => _corpses;
+
+        /// <summary>Corpses of the kind row <paramref name="row"/>.</summary>
+        public HordeCorpses CorpsesOf(int row) => _corpses[row];
+
+        /// <summary>The horde for combat's targeting (valid before Init too: an empty horde).</summary>
+        public HordeTargetSource Targets => _targets;
 
         /// <summary>Crowd shadows (measured separately: off by default).</summary>
         public bool CastShadows
         {
-            get => _renderer != null && _renderer.CastShadows;
+            get => _renderers[0] != null && _renderers[0].CastShadows;
             set
             {
                 _options.castShadows = value;
-                if (_renderer != null)
-                    _renderer.CastShadows = value;
+                for (int k = 0; k < _renderers.Length; k++)
+                    if (_renderers[k] != null)
+                        _renderers[k].CastShadows = value;
             }
         }
 
-        /// <summary>Damage per second of one attacking monster (0: the tank is immune).</summary>
-        public float AttackDps
+        /// <summary>Scale of the monsters' damage to the tank (0: immune).</summary>
+        public float TankDamageScale
         {
-            get => _options.attackDps;
-            set
-            {
-                _options.attackDps = value;
-                if (_simulation != null)
-                    _simulation.Settings = _options.ToSettings();
-            }
+            get => _options.tankDamageScale;
+            set => _options.tankDamageScale = value;
         }
+
+        public int AliveCount => (_simulation?.AliveCount ?? 0) + _pendingCount;
+
+        public float EmergeSeconds => _options.emergeTime;
 
         public void Init(IEntity entity)
         {
@@ -116,6 +150,7 @@ namespace Game.AIKit.Adapters
             var look = new BloodLook();
             _blood = look.ToVoxels();
             _bloodSize = look.dropSize;
+            _acidDrops = new Color32[] { _art.acidColor, Color.Lerp(_art.acidColor, Color.black, 0.4f) };
             _random = new Unity.Mathematics.Random(0x5EED1234u);
 
             // The level's one grid: made here (from the horde's map) only if the level has no AI entity yet.
@@ -126,20 +161,26 @@ namespace Game.AIKit.Adapters
                 rayTop = _options.rayTop,
                 rayLength = _options.rayLength
             };
-            _grid = LevelAI.Ensure(navOptions).GetLevelNavigation().Grid;
-            _groundHeight = LowestGround();
-            _flow = new HordeFlowField(_grid);
+            _level = LevelAI.Ensure(navOptions);
+            _nav = _level.GetLevelNavigation();
+            BindGrid();
 
-            _simulation = new HordeSimulation(_options.capacity, _grid, _flow, _options.ToSettings());
-            _simulation.SetClips(_art.run, _art.attack, _art.idle);
-            _renderer = new HordeRenderer(_art.mesh, _art.material, _options.capacity) { CastShadows = _options.castShadows };
-            _corpses = new HordeCorpses(_art.corpseMesh, _art.material, _options.corpseCapacity, _options.corpseLie, _options.corpseSink);
+            for (int row = 0; row < HordeKinds.COUNT; row++)
+            {
+                float scale = _options.Kind(row).RenderScale;
+                _renderers[row] = new HordeRenderer(_art.mesh, _art.material, _options.capacity) { CastShadows = _options.castShadows };
+                _renderers[row].SetLook(scale, _art.TintOf(row), _art.EmissionOf(row));
+                _corpses[row] = new HordeCorpses(_art.corpseMesh, _art.material, _options.corpseCapacity, _options.corpseLie,
+                    _options.corpseSink, 1.2f * scale);
+                _corpses[row].SetLook(scale, _art.TintOf(row), _art.EmissionOf(row));
+            }
 
-            float2 min = _options.mapMin;
-            float2 max = _options.mapMax;
-            _worldBounds = new Bounds(new Vector3((min.x + max.x) * 0.5f, 0f, (min.y + max.y) * 0.5f),
-                new Vector3(max.x - min.x + 4f, 2f * _options.rayTop, max.y - min.y + 4f));
+            // Acid: the corpse path of the same shader (a static mesh at a position), a sphere tinted green.
+            Mesh acidMesh = _art.acidMesh != null ? _art.acidMesh : Resources.GetBuiltinResource<Mesh>("Sphere.fbx");
+            _acid = new HordeRenderer(acidMesh, _art.material, HordeSimulation.MAX_PROJECTILES, true);
+            _acid.SetLook(_art.acidSize, _art.acidColor, _art.acidEmission);
 
+            _level.SetLevelHorde(this);
             ExplosionEvents.Exploded += OnExploded;
             LevelAIEarlyUpdate.Add(this);
         }
@@ -148,27 +189,47 @@ namespace Game.AIKit.Adapters
         {
             ExplosionEvents.Exploded -= OnExploded;
             LevelAIEarlyUpdate.Remove(this);
+            if (_registeredTargets != null)
+                _registeredTargets.Unregister(_targetsId);
+            _registeredTargets = null;
+            _targetsId = -1;
+            if (_level != null && _level.TryGetLevelHorde(out IArenaHorde current) && ReferenceEquals(current, this))
+                _level.DelLevelHorde();
+            _level = null;
+            _targets.Simulation = null;
             _simulation?.Dispose();
             _flow?.Dispose();
-            _renderer?.Dispose();
-            _corpses?.Dispose();
+            for (int k = 0; k < _renderers.Length; k++)
+            {
+                _renderers[k]?.Dispose();
+                _corpses[k]?.Dispose();
+                _renderers[k] = null;
+                _corpses[k] = null;
+            }
+
+            _acid?.Dispose();
+            _acid = null;
             _simulation = null;
             _flow = null;
             _grid = null;
-            _renderer = null;
-            _corpses = null;
         }
 
         /// <summary>
         /// The game is paused: the loop does not tick the horde, so nothing would draw it. Draws the crowd as it stood
-        /// (the instance buffer keeps the last upload) and the corpses, without moving anything.
+        /// (the instance buffers keep the last upload), the corpses and the acid, without moving anything.
         /// </summary>
         public void DrawPaused()
         {
             if (_simulation == null)
                 return;
-            _corpses.Draw(_worldBounds, GameTicks.Time);
-            _renderer.Draw(_drawnCount, _worldBounds);
+            float time = GameTicks.Time;
+            for (int k = 0; k < HordeKinds.COUNT; k++)
+            {
+                _corpses[k].Draw(_worldBounds, time);
+                _renderers[k].Draw(_drawnCounts[k], _worldBounds);
+            }
+
+            _acid.Draw(_acidDrawn, _worldBounds);
         }
 
         /// <summary>
@@ -191,9 +252,14 @@ namespace Game.AIKit.Adapters
             using (TickMarker.Auto())
             {
                 CompleteFrame(); // no-op when the early hook already ran
+                if (_nav.Generation != _gridGeneration || !ReferenceEquals(_nav.Grid, _grid))
+                    ResetForArena(); // the level grid was rebuilt for a new arena
+                RegisterTargets();
                 bool hasTank = ReadTank(out HordeTank tank);
                 HandleDeaths();
+                HandleShots(deltaTime);
                 DamageTank();
+                FlushPending(tank);
                 if (_queuedWave > 0)
                 {
                     int wave = _queuedWave;
@@ -203,23 +269,33 @@ namespace Game.AIKit.Adapters
 
                 KeepPopulation(tank);
 
-                if (_alive.Value != _simulation.AliveCount)
-                    _alive.Value = _simulation.AliveCount;
+                int alive = _simulation.AliveCount;
+                if (_alive.Value != alive)
+                    _alive.Value = alive;
 
                 _audioTimer += deltaTime;
                 if (_audioTimer >= AUDIO_INTERVAL)
                 {
                     _audioTimer = 0f;
-                    _audio.SetDensity(_simulation.AliveCount > 0 ? (float)_simulation.NearCount / _simulation.AliveCount : 0f);
+                    _audio.SetDensity(alive > 0 ? (float)_simulation.NearCount / alive : 0f);
                 }
 
-                float time = GameTicks.Time;
-                _corpses.Update(time);
-                _corpses.Draw(_worldBounds, time);
-                NativeArray<HordeInstance> visible = _simulation.Visible;
-                _renderer.Upload(visible, 0, 0, visible.Length);
-                _drawnCount = visible.Length;
-                _renderer.Draw(_drawnCount, _worldBounds);
+                _aliveTimer += deltaTime;
+                if (alive != _aliveHeard && _aliveTimer >= AUDIO_INTERVAL)
+                {
+                    _aliveTimer = 0f;
+                    _aliveHeard = alive;
+                    _audio.SetAlive(alive);
+                }
+
+                _biteTimer += deltaTime;
+                if (_simulation.BiterCount > 0 && _biteTimer >= AUDIO_INTERVAL)
+                {
+                    _biteTimer = 0f;
+                    _audio.CrawlerBite(_simulation.BiterPosition);
+                }
+
+                Draw();
 
                 _flowTimer += deltaTime;
                 if (hasTank && _flowTimer >= FLOW_INTERVAL)
@@ -250,8 +326,64 @@ namespace Game.AIKit.Adapters
             }
         }
 
+        // ------------------------------------------------------------------ arena
+
+        public bool Spawn(EnemyKind kind, Vector3 at, float healthScale, float damageScale)
+        {
+            if (_simulation == null || !HordeKinds.TryGetRow(kind, out int row) || _pendingCount >= MAX_PENDING)
+                return false;
+            if (AliveCount >= _simulation.Capacity)
+                return false;
+            _pending[_pendingCount++] = new Pending { Position = at, Row = row, HealthScale = healthScale, DamageScale = damageScale };
+            if (!_simulation.IsRunning)
+            {
+                ReadTank(out HordeTank tank);
+                FlushPending(tank);
+            }
+
+            return true;
+        }
+
+        void IArenaHorde.WaveStarted() => _audio.WaveStarted();
+
+        public void SetCover(System.Collections.Generic.IReadOnlyList<Vector3> points)
+        {
+            if (_simulation == null)
+                return;
+            CompleteFrame();
+            _simulation.SetCoverPoints(points);
+        }
+
+        /// <summary>A burrow opened at <paramref name="at"/> (its sound).</summary>
+        public void BurrowOpened(Vector3 at) => _audio.BurrowOpened(at);
+
+        public void ResetForArena()
+        {
+            if (_simulation == null)
+                return;
+            CompleteFrame();
+            if (_nav != null && (!ReferenceEquals(_nav.Grid, _grid) || _nav.Generation != _gridGeneration))
+                BindGrid(); // a new grid (a new arena elsewhere): a fresh flow field and simulation
+            else
+                _simulation.Clear();
+            for (int k = 0; k < HordeKinds.COUNT; k++)
+            {
+                _corpses[k].Clear();
+                _drawnCounts[k] = 0;
+            }
+
+            _acidDrawn = 0;
+            _pendingCount = 0;
+            _queuedWave = 0;
+            _damageOwed = 0f;
+            _flowCell = new int2(int.MinValue, int.MinValue);
+            _groundHeight = LowestGround();
+            if (_alive.Value != 0)
+                _alive.Value = 0;
+        }
+
         /// <summary>
-        /// Releases <paramref name="count"/> monsters on walkable ground at least
+        /// Releases <paramref name="count"/> crawlers on walkable ground at least
         /// <see cref="HordeOptions.spawnDistance"/> from the tank (as a wave: the audio hears it).
         /// Returns how many found room. While the step runs on the workers the wave is queued for the next tick (and 0
         /// is returned).
@@ -284,6 +416,78 @@ namespace Game.AIKit.Adapters
         }
 
         // ------------------------------------------------------------------ steps
+
+        /// <summary>
+        /// (Re)makes what walks the level's grid: the flow field and the simulation (its hash covers the grid), and the
+        /// draw bounds. At Init, and when the grid was replaced for a new arena (behind the curtain; it allocates).
+        /// </summary>
+        private void BindGrid()
+        {
+            _simulation?.Dispose();
+            _flow?.Dispose();
+            _grid = _nav.Grid;
+            _gridGeneration = _nav.Generation;
+            _groundHeight = LowestGround();
+            _flow = new HordeFlowField(_grid);
+            _simulation = new HordeSimulation(_options.capacity, _grid, _flow, _options.ToSettings());
+            for (int row = 0; row < HordeKinds.COUNT; row++)
+                _simulation.SetKind(row, _options.Kind(row));
+            _simulation.SetClips(_art.run, _art.attack, _art.idle);
+            _targets.Simulation = _simulation;
+
+            HordeNavGridSettings g = _grid.Settings;
+            float2 min = g.Origin;
+            float2 max = g.Origin + (float2)g.Size * g.CellSize;
+            _worldBounds = new Bounds(new Vector3((min.x + max.x) * 0.5f, g.RayTop - g.RayLength * 0.5f, (min.y + max.y) * 0.5f),
+                new Vector3(max.x - min.x + 4f, g.RayLength + 4f, max.y - min.y + 4f));
+        }
+
+        private void RegisterTargets()
+        {
+            if (_registeredTargets != null)
+                return;
+            if (GameContext.TryGetInstance(out GameContext context) && context.TryGetEnemyTargets(out IEnemyTargets targets) && targets != null)
+            {
+                _registeredTargets = targets;
+                _targetsId = targets.Register(_targets);
+            }
+        }
+
+        private void FlushPending(in HordeTank tank)
+        {
+            for (int n = 0; n < _pendingCount; n++)
+            {
+                Pending p = _pending[n];
+                float3 at = p.Position;
+                float h = _grid.HeightAt(at);
+                if (!float.IsNaN(h))
+                    at.y = h;
+                float2 toTank = tank.Present ? tank.Center.xz - at.xz : new float2(0f, 1f);
+                _simulation.Spawn(at, math.atan2(toTank.x, toTank.y), p.Row, p.HealthScale, p.DamageScale, true);
+            }
+
+            _pendingCount = 0;
+        }
+
+        private void Draw()
+        {
+            float time = GameTicks.Time;
+            NativeArray<HordeInstance> visible = _simulation.Visible;
+            for (int k = 0; k < HordeKinds.COUNT; k++)
+            {
+                _corpses[k].Update(time);
+                _corpses[k].Draw(_worldBounds, time);
+                _simulation.GetVisibleRange(k, out int start, out int count);
+                _renderers[k].Upload(visible, start, 0, count);
+                _drawnCounts[k] = count;
+                _renderers[k].Draw(count, _worldBounds);
+            }
+
+            NativeArray<HordeInstance> shots = _simulation.ShotInstances;
+            _acid.Upload(shots, 0, 0, shots.Length);
+            _acidDrawn = shots.Length;
+            _acid.Draw(_acidDrawn, _worldBounds);
+        }
 
         private bool ReadTank(out HordeTank tank)
         {
@@ -374,12 +578,17 @@ namespace Game.AIKit.Adapters
 
             using (DeathsMarker.Auto())
             {
+                GameContext.TryGetInstance(out GameContext context);
+                IEnemyDeaths feed = null;
+                if (context != null)
+                    context.TryGetEnemyDeaths(out feed);
                 float time = GameTicks.Time;
                 int sprays = 0;
                 for (int i = 0; i < deaths.Length; i++)
                 {
                     HordeDeathEvent death = deaths[i];
-                    _corpses.Add(death.Position, death.Heading, time);
+                    int row = math.clamp(death.Kind, 0, HordeKinds.COUNT - 1);
+                    _corpses[row].Add(death.Position, death.Heading, time);
                     Vector3 at = (Vector3)death.Position + Vector3.up * 0.6f;
                     if (sprays < _options.bloodPerFrame)
                     {
@@ -388,6 +597,8 @@ namespace Game.AIKit.Adapters
                     }
 
                     _killed.Invoke(at);
+                    feed?.Report(new EnemyDeath(HordeKinds.ToEnemyKind(row), death.Position,
+                        death.Cause == HordeDeathCause.Crushed, false));
                 }
 
                 _kills.Value += deaths.Length;
@@ -395,10 +606,40 @@ namespace Game.AIKit.Adapters
             }
         }
 
-        /// <summary>The attack damage of the step goes into the tank's health by whole points, one hit a frame at most.</summary>
+        /// <summary>Shots fired and ended in the last step: spit and hit sounds (hits throttled), splashes on the ground (budgeted).</summary>
+        private void HandleShots(float deltaTime)
+        {
+            _acidHitTimer += deltaTime;
+            NativeArray<HordeShotEvent> events = _simulation.ShotEvents;
+            int splashes = 0;
+            for (int i = 0; i < events.Length; i++)
+            {
+                HordeShotEvent e = events[i];
+                if (e.Type == HordeShotEventType.Fired)
+                {
+                    _audio.Spit(e.Position);
+                    continue;
+                }
+
+                if (_acidHitTimer >= AUDIO_INTERVAL)
+                {
+                    _acidHitTimer = 0f;
+                    _audio.AcidHit(e.Position);
+                }
+
+                if (e.Type == HordeShotEventType.HitGround && splashes < _options.acidSplashPerFrame)
+                {
+                    VoxelSpray.Burst((Vector3)e.Position + Vector3.up * 0.1f, Vector3.up, _options.acidSplashDrops, 1.5f, 3f, 0.8f,
+                        _acidDrops, _bloodSize);
+                    splashes++;
+                }
+            }
+        }
+
+        /// <summary>The bite and acid damage of the step goes into the tank's health by whole points, one hit a frame at most.</summary>
         private void DamageTank()
         {
-            _damageOwed += _simulation.StepDamage;
+            _damageOwed += _simulation.StepDamage * _options.tankDamageScale;
             if (_damageOwed < 1f || _tank == null)
             {
                 if (_tank == null)
@@ -441,7 +682,7 @@ namespace Game.AIKit.Adapters
                     if (tank.Present && math.distancesq(p.xz, tank.Center.xz) < minSq)
                         continue;
                     float2 toTank = tank.Present ? tank.Center.xz - p.xz : new float2(0f, 1f);
-                    if (_simulation.Spawn(p, math.atan2(toTank.x, toTank.y)) < 0)
+                    if (_simulation.Spawn(p, math.atan2(toTank.x, toTank.y), HordeKinds.CRAWLER) < 0)
                         return spawned;
                     spawned++;
                     break;
@@ -467,6 +708,6 @@ namespace Game.AIKit.Adapters
         }
 
         private void OnExploded(Vector3 point, float radius) =>
-            _simulation?.AddAreaDamage(point, radius, _options.explosionDamage);
+            _simulation?.AddKnockback(point, radius, _options.explosionPush);
     }
 }

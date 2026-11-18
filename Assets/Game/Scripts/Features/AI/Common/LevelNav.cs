@@ -88,6 +88,54 @@ namespace Game.AIKit.Adapters
             _hooked = true;
         }
 
+        /// <summary>How many times the grid was rebuilt (a holder of the old <see cref="Grid"/> compares this).</summary>
+        public int Generation { get; private set; }
+
+        /// <summary>
+        /// The ground was rebuilt (a new arena): the grid is read again from the colliders, waited for (load time,
+        /// behind the curtain). With <paramref name="area"/> the grid first moves to cover it (XZ, plus
+        /// <paramref name="margin"/>; the rays from its top) — a new grid object, so holders of the old one re-read
+        /// <see cref="Grid"/> (<see cref="Generation"/> changes either way). The hordes' steps are completed first.
+        /// A grid made elsewhere (tests, tools) is left as it is.
+        /// </summary>
+        public void Rebuild(Bounds? area = null, float margin = 4f)
+        {
+            if (_disposed || !_ownsGrid)
+                return;
+
+            LevelAIEarlyUpdate.CompleteHordes();
+            _rereadCount = 0;
+            _rereadHead = 0;
+            if (area.HasValue)
+            {
+                Bounds b = area.Value;
+                var min = new Vector2(b.min.x - margin, b.min.z - margin);
+                var max = new Vector2(b.max.x + margin, b.max.z + margin);
+                float top = b.max.y + 5f;
+                float length = b.size.y + 30f;
+                bool moved = min != _options.mapMin || max != _options.mapMax || !Mathf.Approximately(top, _options.rayTop)
+                             || !Mathf.Approximately(length, _options.rayLength);
+                _options.mapMin = min;
+                _options.mapMax = max;
+                _options.rayTop = top;
+                _options.rayLength = length;
+                if (moved && _grid != null)
+                {
+                    _paths?.Dispose();
+                    _paths = null;
+                    _grid.Dispose();
+                    _grid = new HordeNavGrid(_options.ToSettings());
+                    _paths = new LevelPathService(_grid);
+                }
+            }
+
+            if (_grid == null)
+                EnsureBuilt();
+            else
+                _grid.BuildAll();
+            Generation++;
+        }
+
         /// <summary>
         /// Once a frame: queues the second reads that are due, then schedules rays over the cells dug since the last
         /// call (a no-op while rays are in flight).
