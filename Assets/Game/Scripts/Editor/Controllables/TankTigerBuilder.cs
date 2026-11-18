@@ -31,6 +31,19 @@ namespace Game.EditorTools
         /// <summary>Edge of a voxel: Tank_01's VoxelizedModel voxel (3 cm).</summary>
         private const float VOXEL = 0.03f;
 
+        /// <summary>
+        /// Hull and turret are pre-voxelized at twice the voxel (each cell a 2×2×2 block of voxels): fewer, plainer
+        /// steps on the curves and no detail under 12 cm.
+        /// </summary>
+        private const float COARSE = 0.06f;
+
+        /// <summary>Inner edge of the tracks (HullVisual x): the hull beyond it is the fender/sponson, made straight.</summary>
+        private const float TRACK_INNER_X = 0.58f;
+
+        /// <summary>Muzzle brake (HullVisual metres): two baffles on the barrel end, the front one at the muzzle.</summary>
+        private static readonly Vector3 BrakeBaffle = new(0.3f, 0.24f, 0.09f);
+        private const float BRAKE_LENGTH = 0.24f;
+
         /// <summary>The old sand paint (MT_Tank_Body), under the camouflage.</summary>
         private const string SAND = "Assets/Game/Materials/MT_Tank_Body.mat";
         private static readonly Vector3 Offset = new(0f, 0.651f, 0f);
@@ -42,7 +55,11 @@ namespace Game.EditorTools
         private static readonly Vector3 Idler = new(1.45f, -0.68f, -1.975f);
         private const float BARREL_Y = 0.96f;
         private const float BARREL_START_Z = 2.2f;
-        private const float BARREL_TIP_Z = 4.33f;
+        /// <summary>The muzzle: the pack's barrel (start to 4.33) made 25% longer.</summary>
+        private const float BARREL_TIP_Z = BARREL_START_Z + (4.33f - BARREL_START_Z) * 1.25f;
+
+        /// <summary>The gun pitches about its trunnion: barrel height, at the back of the mantlet (model space).</summary>
+        private const float TRUNNION_Z = 1.75f;
         private const float REAR_Z = -2.747f;
         private const float EXHAUST_Y = 0.45f;
 
@@ -98,6 +115,8 @@ namespace Game.EditorTools
                 AssetDatabase.SaveAssetIfDirty(body);
             }
             Material wheel = FlatMaterial("MT_TigerI_Wheel", "T_TigerI_Wheel");
+            if (sand != null)
+                Tint(wheel, sand.color);
             Material belt = FlatMaterial("MT_TigerI_TrackBelt", "T_TigerI_TrackBelt");
 
             GameObject root = PrefabUtility.LoadPrefabContents(TANK);
@@ -129,7 +148,7 @@ namespace Game.EditorTools
                 ClearChildren(gun);
 
                 // ---------------------------------------------------------------- hull, belts, running gear
-                Blocks(hull, Place(hull, "Body", meshes["Body"], body, Vector3.zero), "Body");
+                Blocks(hull, Place(hull, "Body", meshes["Body"], body, Vector3.zero), "Body", COARSE, true);
 
                 // The tracks: a loop of plain links a side that TankTrackView runs round the sprocket, the top,
                 // the idler and under the wheels (the pack's belt is one still mesh and could not move).
@@ -198,14 +217,17 @@ namespace Game.EditorTools
                 turret.localPosition = turretAt;
                 float roof = Model(new Vector3(0f, ROOF_Y, 0f)).y - turretAt.y;
 
-                Blocks(turret, Place(turret, "Turret", meshes["Turret"], body, -turretAt), "Turret");
-                gun.localPosition = Vector3.zero;
-                Blocks(gun, Place(gun, "Cannon", meshes["Cannon"], body, -turretAt), "Cannon");
+                Blocks(turret, Place(turret, "Turret", meshes["Turret"], body, -turretAt), "Turret", COARSE, false);
+
+                // The gun group turns about the trunnion (TankGunSwayBehaviour pitches it), so its pivot is there.
+                Vector3 gunAt = Model(new Vector3(0f, BARREL_Y, TRUNNION_Z)) - turretAt;
+                gun.SetLocalPositionAndRotation(gunAt, Quaternion.identity);
+                Blocks(gun, Place(gun, "Cannon", meshes["Cannon"], body, -turretAt - gunAt), "Cannon", VOXEL, false);
 
                 // The pack's barrel is a hollow tube; voxelized it comes out as loose strips. A solid cylinder
                 // from the mantlet to the muzzle instead (round parts are cylinders in our voxel style).
-                Vector3 breech = Model(new Vector3(0f, BARREL_Y, BARREL_START_Z)) - turretAt;
-                Vector3 muzzle = Model(new Vector3(0f, BARREL_Y, BARREL_TIP_Z)) - turretAt;
+                Vector3 breech = Model(new Vector3(0f, BARREL_Y, BARREL_START_Z)) - turretAt - gunAt;
+                Vector3 muzzle = Model(new Vector3(0f, BARREL_Y, BARREL_TIP_Z)) - turretAt - gunAt + Vector3.forward * BRAKE_LENGTH;
                 GameObject barrel = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
                 barrel.name = "Barrel";
                 Object.DestroyImmediate(barrel.GetComponent<Collider>());
@@ -214,6 +236,20 @@ namespace Game.EditorTools
                 barrel.transform.SetLocalPositionAndRotation((breech + muzzle) * 0.5f, Quaternion.Euler(90f, 0f, 0f));
                 barrel.transform.localScale = new Vector3(BARREL_DIAMETER, (muzzle - breech).magnitude * 0.5f, BARREL_DIAMETER);
                 barrel.GetComponent<MeshRenderer>().sharedMaterial = body;
+
+                // Muzzle brake: two square baffles round the barrel end, a gap between them.
+                for (int k = 0; k < 2; k++)
+                {
+                    GameObject baffle = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                    baffle.name = k == 0 ? "BrakeFront" : "BrakeRear";
+                    Object.DestroyImmediate(baffle.GetComponent<Collider>());
+                    baffle.layer = gun.gameObject.layer;
+                    baffle.transform.SetParent(gun, false);
+                    float back = k == 0 ? BrakeBaffle.z * 0.5f : BRAKE_LENGTH - BrakeBaffle.z * 0.5f;
+                    baffle.transform.localPosition = muzzle - Vector3.forward * back;
+                    baffle.transform.localScale = BrakeBaffle;
+                    baffle.GetComponent<MeshRenderer>().sharedMaterial = body;
+                }
 
                 // Machine gun: the entity's fire point and the old small gun's meshes stand on the new roof.
                 foreach (Transform t in turret)
@@ -229,7 +265,7 @@ namespace Game.EditorTools
 
                 // The cannon's fire point to the muzzle, the casing point over the turret.
                 Transform cannon = root.transform.Find("TurretPivot/Cannon");
-                cannon.Find("FirePoint").localPosition = Model(new Vector3(0f, BARREL_Y, BARREL_TIP_Z));
+                cannon.Find("FirePoint").localPosition = Model(new Vector3(0f, BARREL_Y, BARREL_TIP_Z)) + Vector3.forward * BRAKE_LENGTH;
                 Transform casing = cannon.Find("CasingPoint");
                 if (casing != null)
                     casing.localPosition = new Vector3(casing.localPosition.x, turretAt.y + CASING_OVER_TURRET, casing.localPosition.z);
@@ -292,13 +328,18 @@ namespace Game.EditorTools
         /// VoxelizedModel, filling closed meshes by parity at the same voxel size, gets exactly those voxels in
         /// the game — no holes where the pack's mesh is open, no specks of small detail.
         /// </summary>
-        private static void Blocks(Transform part, Transform child, string name)
+        private static void Blocks(Transform part, Transform child, string name, float cellSize, bool straightSides)
         {
             MeshRenderer renderer = child.GetComponent<MeshRenderer>();
             using VoxelizerTriangles triangles = VoxelizerSource.Collect(part, new List<Renderer> { renderer });
-            VoxelizerStraighten.SnapPlanes(triangles, VOXEL);
-            using VoxelizerPartGrid grid = VoxelizerSurface.Sample(triangles, VOXEL, name);
+            VoxelizerStraighten.SnapPlanes(triangles, cellSize);
+            using VoxelizerPartGrid grid = VoxelizerSurface.Sample(triangles, cellSize, name);
             VoxelizerSurface.Fill(grid);
+            if (straightSides)
+            {
+                StraightSide(grid, -1);
+                StraightSide(grid, 1);
+            }
             VoxelizerStraighten.Open(grid, 2);
 
             var vertices = new List<Vector3>();
@@ -320,12 +361,12 @@ namespace Game.EditorTools
                     Vector3 n = new(d.x, d.y, d.z);
                     Vector3 a = d.x != 0 ? Vector3.up : Vector3.right;
                     Vector3 b = Vector3.Cross(n, a);
-                    Vector3 c = (Vector3)(float3)grid.Origin + (new Vector3(x, y, z) + Vector3.one * 0.5f + n * 0.5f) * VOXEL;
+                    Vector3 c = (Vector3)(float3)grid.Origin + (new Vector3(x, y, z) + Vector3.one * 0.5f + n * 0.5f) * cellSize;
                     int s = vertices.Count;
-                    vertices.Add(c + (-a - b) * 0.5f * VOXEL);
-                    vertices.Add(c + (a - b) * 0.5f * VOXEL);
-                    vertices.Add(c + (a + b) * 0.5f * VOXEL);
-                    vertices.Add(c + (-a + b) * 0.5f * VOXEL);
+                    vertices.Add(c + (-a - b) * 0.5f * cellSize);
+                    vertices.Add(c + (a - b) * 0.5f * cellSize);
+                    vertices.Add(c + (a + b) * 0.5f * cellSize);
+                    vertices.Add(c + (-a + b) * 0.5f * cellSize);
                     indices.Add(s); indices.Add(s + 1); indices.Add(s + 2);
                     indices.Add(s); indices.Add(s + 2); indices.Add(s + 3);
                 }
@@ -354,6 +395,103 @@ namespace Game.EditorTools
             child.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
             child.localScale = Vector3.one;
             child.GetComponent<MeshFilter>().sharedMesh = mesh;
+        }
+
+        /// <summary>
+        /// The hull over one track as plain lines along it: every row of cells (one x, one y) beyond the track's
+        /// inner edge is filled solid from its first cell to its last; rows much shorter than the longest (brackets,
+        /// boxes, mudguard bends) go; row ends close to the common end line up on it. A lone row gets the cell row
+        /// under it too, so the opening after this keeps the fender.
+        /// </summary>
+        private static void StraightSide(VoxelizerPartGrid grid, int side)
+        {
+            int3 size = grid.Size;
+            float cell = grid.VoxelSize;
+            int Index(int x, int y, int z) => x + size.x * (y + size.y * z);
+            bool Beyond(int x) => side * (grid.Origin.x + (x + 0.5f) * cell) > TRACK_INNER_X;
+
+            var first = new int[size.x, size.y];
+            var last = new int[size.x, size.y];
+            var count = new int[size.x, size.y];
+            var colour = new Color32[size.x, size.y];
+            int longest = 0;
+            for (int x = 0; x < size.x; x++)
+            {
+                if (!Beyond(x))
+                    continue;
+                for (int y = 0; y < size.y; y++)
+                {
+                    first[x, y] = -1;
+                    for (int z = 0; z < size.z; z++)
+                    {
+                        Color32 c = grid.Cells[Index(x, y, z)];
+                        if (c.a == 0)
+                            continue;
+                        if (first[x, y] < 0)
+                        {
+                            first[x, y] = z;
+                            colour[x, y] = c;
+                        }
+                        last[x, y] = z;
+                        count[x, y]++;
+                    }
+                    longest = Mathf.Max(longest, count[x, y]);
+                }
+            }
+
+            if (longest == 0)
+                return;
+
+            var keep = new bool[size.x, size.y];
+            var starts = new Dictionary<int, int>();
+            var ends = new Dictionary<int, int>();
+            for (int x = 0; x < size.x; x++)
+            for (int y = 0; y < size.y; y++)
+            {
+                keep[x, y] = Beyond(x) && count[x, y] * 2 >= longest;
+                if (!keep[x, y])
+                    continue;
+                starts.TryGetValue(first[x, y], out int a);
+                starts[first[x, y]] = a + 1;
+                ends.TryGetValue(last[x, y], out int b);
+                ends[last[x, y]] = b + 1;
+            }
+
+            int start = Mode(starts), end = Mode(ends);
+            for (int x = 0; x < size.x; x++)
+            for (int y = 1; y < size.y; y++)
+                if (keep[x, y] && (y + 1 >= size.y || !keep[x, y + 1]) && !keep[x, y - 1])
+                {
+                    keep[x, y - 1] = true;
+                    first[x, y - 1] = first[x, y];
+                    last[x, y - 1] = last[x, y];
+                    colour[x, y - 1] = colour[x, y];
+                }
+
+            for (int x = 0; x < size.x; x++)
+            {
+                if (!Beyond(x))
+                    continue;
+                for (int y = 0; y < size.y; y++)
+                {
+                    int from = Mathf.Abs(first[x, y] - start) <= 3 ? start : first[x, y];
+                    int to = Mathf.Abs(last[x, y] - end) <= 3 ? end : last[x, y];
+                    for (int z = 0; z < size.z; z++)
+                        grid.Cells[Index(x, y, z)] = keep[x, y] && z >= from && z <= to ? colour[x, y] : default;
+                }
+            }
+        }
+
+        private static int Mode(Dictionary<int, int> counts)
+        {
+            int best = 0, most = -1;
+            foreach (KeyValuePair<int, int> e in counts)
+                if (e.Value > most)
+                {
+                    best = e.Key;
+                    most = e.Value;
+                }
+            return best;
         }
 
         /// <summary>
@@ -463,6 +601,15 @@ namespace Game.EditorTools
             EditorUtility.SetDirty(m);
             AssetDatabase.SaveAssetIfDirty(m);
             return m;
+        }
+
+        private static void Tint(Material m, Color colour)
+        {
+            m.SetColor("_BaseColor", colour);
+            if (m.HasProperty("_Color"))
+                m.SetColor("_Color", colour);
+            EditorUtility.SetDirty(m);
+            AssetDatabase.SaveAssetIfDirty(m);
         }
 
         /// <summary>The most common bright colour of the texture (the atlas has dark gaps); a dark texture keeps its mean.</summary>
