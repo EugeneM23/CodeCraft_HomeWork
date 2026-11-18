@@ -64,7 +64,7 @@ if (n > 0)
 {
     if (art == null) return "ERROR no Assets/Game/Horde/Art/RegaxHordeArtConfig.asset (Tools/Horde/Bake Regax VAT)";
     foreach (var old in UnityEngine.Object.FindObjectsByType<Game.AIKit.Adapters.HordeInstaller>(FindObjectsSortMode.None)) UnityEngine.Object.Destroy(old.gameObject);
-    var options = new Game.AIKit.Adapters.HordeOptions { capacity = n, population = n, attackDps = 0f, castShadows = shadows };
+    var options = new Game.AIKit.Adapters.HordeOptions { capacity = n, population = n, tankDamageScale = 0f, castShadows = shadows };
     var installer = Game.AIKit.Adapters.HordeSpawn.CreateInScene(art, options);
     horde = installer.Behaviour;
     hordeObject = installer.gameObject;
