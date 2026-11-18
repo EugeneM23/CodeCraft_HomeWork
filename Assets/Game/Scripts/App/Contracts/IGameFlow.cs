@@ -23,7 +23,19 @@ namespace Game
         /// <summary>The screen the main menu should open on after ReturnToMenu(screen); null — its root screen.</summary>
         string RequestedMenuScreen { get; }
 
+        /// <summary>
+        /// The chapter being played (GDD §3, §10); none outside a level or in a level opened without a chapter.
+        /// Default: none, for flows without chapters (UI stubs).
+        /// </summary>
+        ChapterId CurrentChapter => default;
+
         bool StartLevel(string levelId);
+
+        /// <summary>
+        /// Plays the chapter: its level from the game catalog, behind the loading screen. False when it is not taken
+        /// (unknown chapter, no level, busy). Default: refused, for flows without chapters (UI stubs).
+        /// </summary>
+        bool StartChapter(ChapterId chapter) => false;
 
         bool RestartLevel();
 
