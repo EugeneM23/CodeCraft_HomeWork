@@ -71,6 +71,8 @@ namespace Game
                 NativeArray<bool> hollow = hull || turret ? Hollow(grid) : default;
                 if (turret)
                     OpenTurretFloor(grid, hollow);
+                if (hull)
+                    OpenHullRoof(part.Root, grid, hollow);
 
                 var go = new GameObject("Voxels") { layer = gameObject.layer };
                 go.transform.SetParent(part.Root, false);
@@ -299,6 +301,40 @@ namespace Game
         {
             if (_hasCommander)
                 SpawnCrewman(turret, grid, hollow, _commanderSeat, null);
+        }
+
+        /// <summary>
+        /// Opens the hull's roof under the turret (a ring of the turret's size round its pivot), so the turret
+        /// and the hull are one space and the commander sits over the crew.
+        /// </summary>
+        private void OpenHullRoof(Transform hull, MeshVoxelizer.Result grid, NativeArray<bool> hollow)
+        {
+            Transform turret = hull.Find("TurretVisual");
+            if (turret == null)
+                return;
+            int3 s = grid.Size;
+            Vector3 pivot = hull.InverseTransformPoint(turret.position);
+            float radius = 0.75f; // m: the turret ring, inside the turret's own armour
+            for (int z = 0; z < s.z; z++)
+            for (int x = 0; x < s.x; x++)
+            {
+                float3 local = grid.Origin + new float3(x + 0.5f, 0f, z + 0.5f) * _cell;
+                if ((local.x - pivot.x) * (local.x - pivot.x) + (local.z - pivot.z) * (local.z - pivot.z) > radius * radius)
+                    continue;
+                int top = -1;
+                for (int y = s.y - 1; y >= 0 && top < 0; y--)
+                    if (hollow[x + s.x * (y + s.y * z)])
+                        top = y;
+                if (top < 0)
+                    continue;
+                // Everything over the column's hollow goes, up to the top of the grid.
+                for (int y = top + 1; y < s.y; y++)
+                {
+                    int i = x + s.x * (y + s.y * z);
+                    grid.Voxels[i] = 0;
+                    hollow[i] = true;
+                }
+            }
         }
 
         /// <summary>Opens the turret's floor under its hollow (before its body is made) and finds the commander's seat.</summary>
