@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: 67086af0661747e2bb169f20f6b97755
-timeCreated: 1453268834
+guid: 40d4256ecf4c48daac11e9f354091d2d
+timeCreated: 1453175326
 licenseType: Store
 NativeFormatImporter:
   userData: 
@@ -11,5 +11,5 @@ AssetOrigin:
   productId: 54604
   packageName: '"Kawaii Tanks Project" Free version 2.0'
   packageVersion: 2.0
-  assetPath: Assets/Kawaii_Tanks_Project (Free)/Meshes/SD_Firefly/Materials/SD_Firefly_TrackBelt.mat
+  assetPath: Assets/Kawaii_Tanks_Project (Free)/Meshes/SD_Tiger-I/Materials/SD_Tiger-I_TrackBelt.mat
   uploadId: 498042
