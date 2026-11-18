@@ -112,6 +112,7 @@ namespace Game
         public event Action<int> ArenaLeft;
         public event Action<bool> ShutterChanged;
         public event Action<int> LevelUp;
+        public event Action<IReadOnlyList<SkillId>> SkillOffered;
         public event Action<SkillId, int> SkillChanged;
         public event Action LootChanged;
         public event Action<RunState> StateChanged;
@@ -540,21 +541,35 @@ namespace Game
 
         // ---------- Skills ----------
 
-        // The next pending level-up with something to offer: the offer, the pause, LevelUp. Nothing to offer — the
-        // level-up is used up silently.
+        // The next pending level-up with something to offer. A skill screen listening: the pause, LevelUp, the offer, and
+        // the wait for its ChooseSkill. Nobody listening (the sandbox has no skill screen): LevelUp, then the first
+        // card of the shuffled offer is taken at once — the game must not stand waiting for a choice nobody can make.
+        // Nothing to offer — the level-up is used up silently.
         private void OfferNext()
         {
-            while (PendingLevelUps > 0)
+            while (PendingLevelUps > 0 && IsRunning)
             {
                 BuildOffer();
-                if (_offer.Count > 0)
+                if (_offer.Count == 0)
                 {
-                    HoldPause();
-                    LevelUp?.Invoke(Level - PendingLevelUps + 1);
+                    PendingLevelUps--;
+                    continue;
+                }
+
+                int level = Level - PendingLevelUps + 1;
+                if (SkillOffered == null)
+                {
+                    LevelUp?.Invoke(level);
+                    // ChooseSkill offers the next pending level-up itself
+                    if (_offer.Count > 0)
+                        ChooseSkill(_offer[0]);
                     return;
                 }
 
-                PendingLevelUps--;
+                HoldPause();
+                LevelUp?.Invoke(level);
+                SkillOffered?.Invoke(_offer);
+                return;
             }
 
             LetPauseGo();
