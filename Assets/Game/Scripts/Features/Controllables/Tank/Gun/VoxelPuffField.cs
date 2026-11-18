@@ -23,7 +23,7 @@ namespace Game
         private const float SKIN = 0.08f;
 
         /// <summary>Speed (m/s) a cube is thrown out of a tunnel or a hull with.</summary>
-        private const float CUT_PUSH = 6f;
+        private const float CUT_PUSH = 0.8f; // a hole, not a shove: only the cubes in the tunnel move, and just to its rim
         private const float HULL_PUSH = 1.5f;
         private const float BLAST_PUSH = 9f;
 

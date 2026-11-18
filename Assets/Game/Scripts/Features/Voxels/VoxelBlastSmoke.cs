@@ -14,7 +14,7 @@ namespace Game
         private const int BATCH = 1023;
         private const float LIFETIME = 9f;
         private const float DRAG = 1.8f;
-        private const float RISE = 1.1f;
+        private const float RISE = 0.3f;
         private const float GRID = 0.1f;
 
         private static readonly int InstanceColorId = Shader.PropertyToID("_InstColor");
@@ -53,7 +53,7 @@ namespace Game
                 bool column = i % 3 == 0;
                 // A third goes up as the column, the rest out low and wide as the skirt.
                 Vector3 v = column
-                    ? new Vector3(dir.x * 1.5f, Random.Range(6f, 13f), dir.z * 1.5f)
+                    ? new Vector3(dir.x * 1.5f, Random.Range(2.5f, 5f), dir.z * 1.5f)
                     : new Vector3(dir.x, dir.y * 0.5f, dir.z).normalized * Random.Range(4f, 11f) * radius / 3f;
                 _position[i] = point + Random.insideUnitSphere * radius * 0.25f + Vector3.up * 0.3f;
                 _velocity[i] = v;

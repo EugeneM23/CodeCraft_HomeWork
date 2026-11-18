@@ -28,8 +28,8 @@ namespace Game
         private const float SHELL_SMOKE_TUNNEL = 1f;
 
         /// <summary>Radius (m) and push (m/s) of a bullet's tunnel through the small voxel clouds (muzzle smoke).</summary>
-        private const float BULLET_PUFF_TUNNEL = 0.8f;
-        private const float BULLET_PUFF_PUSH = 10f;
+        private const float BULLET_PUFF_TUNNEL = 0.6f;
+        private const float BULLET_PUFF_PUSH = 0.8f;
 
         /// <summary>Radius (m) of the ball a bullet is taken for against horde monsters.</summary>
         private const float ENEMY_HIT_RADIUS = 0.3f;
