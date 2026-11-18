@@ -45,5 +45,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _tank: {fileID: 5749456093836625901, guid: 9aa26aeb48dd5dd4f906bfe34d5f0ba9, type: 3}
-  _armour: 0.15
+  _armour: 0.06
   _crew: 4

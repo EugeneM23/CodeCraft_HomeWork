@@ -21,7 +21,7 @@ namespace Game
         [SerializeField] private GameObject _tank;
 
         [Tooltip("Armour left round the hollow, m.")]
-        [SerializeField] private float _armour = 0.15f;
+        [SerializeField] private float _armour = 0.06f;
 
         [SerializeField] private int _crew = 4;
 
@@ -69,6 +69,8 @@ namespace Game
                 // The turret is a shell of armour too (it was solid steel: bullets only chipped it).
                 bool turret = part.Root.name == "TurretVisual";
                 NativeArray<bool> hollow = hull || turret ? Hollow(grid) : default;
+                if (turret)
+                    OpenTurretFloor(grid, hollow);
 
                 var go = new GameObject("Voxels") { layer = gameObject.layer };
                 go.transform.SetParent(part.Root, false);
@@ -87,6 +89,8 @@ namespace Game
 
                 if (hull)
                     Furnish(part.Root, grid, hollow);
+                else if (turret)
+                    SeatCommander(part.Root, grid, hollow);
                 if (hollow.IsCreated)
                     hollow.Dispose();
             }
@@ -282,6 +286,52 @@ namespace Game
             VoxelBody inside = Spawn(hull, "Inside", size, voxels, Palette(), min);
             for (int i = 0; i < seats.Count && i < _crew; i++)
                 SpawnCrewman(hull, grid, hollow, min + (float3)(seats[i] + new int3(0, 4, 0)) * VOXEL, inside);
+        }
+
+        /// <summary>
+        /// The turret: its floor is opened under the hollow (it sits over the hull, nothing between), and the
+        /// commander sits in it, in the middle, on that open floor.
+        /// </summary>
+        private float3 _commanderSeat;
+        private bool _hasCommander;
+
+        private void SeatCommander(Transform turret, MeshVoxelizer.Result grid, NativeArray<bool> hollow)
+        {
+            if (_hasCommander)
+                SpawnCrewman(turret, grid, hollow, _commanderSeat, null);
+        }
+
+        /// <summary>Opens the turret's floor under its hollow (before its body is made) and finds the commander's seat.</summary>
+        private void OpenTurretFloor(MeshVoxelizer.Result grid, NativeArray<bool> hollow)
+        {
+            _hasCommander = false;
+            int3 s = grid.Size;
+            int3 lo = new int3(int.MaxValue);
+            int3 hi = new int3(int.MinValue);
+            for (int z = 0; z < s.z; z++)
+            for (int x = 0; x < s.x; x++)
+            {
+                int bottom = -1;
+                for (int y = 0; y < s.y && bottom < 0; y++)
+                    if (hollow[x + s.x * (y + s.y * z)])
+                        bottom = y;
+                if (bottom < 0)
+                    continue;
+                // Everything under the column's hollow goes: the turret has no floor.
+                for (int y = 0; y < bottom; y++)
+                {
+                    int i = x + s.x * (y + s.y * z);
+                    grid.Voxels[i] = 0;
+                    hollow[i] = true;
+                }
+                lo = math.min(lo, new int3(x, 0, z));
+                hi = math.max(hi, new int3(x, bottom, z));
+            }
+
+            if (lo.x > hi.x)
+                return;
+            _commanderSeat = grid.Origin + new float3((lo.x + hi.x) * 0.5f, 0f, (lo.z + hi.z) * 0.5f) * _cell;
+            _hasCommander = true;
         }
 
         /// <summary>Whether a point in the hull's local space lies in the hollow.</summary>
