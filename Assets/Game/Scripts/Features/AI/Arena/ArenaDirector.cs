@@ -24,9 +24,10 @@ namespace Game.AIKit.Adapters
     /// While an arena runs it is the level's <see cref="IArenaReinforcements"/> (<see cref="AIAPI.ArenaReinforcements"/>):
     /// summoned monsters come out of the burrows nearest the given point, over the limit if need be.
     /// <para>
-    /// With a run in the GameContext it follows it: ArenaStarted clears the horde (and rebuilds the level grid when no
-    /// arena service will), the arena service's Built rebuilds the grid over the new arena and clears the horde,
-    /// FightStarted starts the waves of that arena from <see cref="Table"/> (the run's lull is the lull). Without a run
+    /// With a run in the GameContext it follows it, in the contract's order: the arena service's Built (inside Build)
+    /// rebuilds the grid over the new arena and clears the horde, ArenaStarted clears the horde, FightStarted starts the
+    /// waves of that arena from <see cref="Table"/> (the run's lull is the lull) — rebuilding the grid only for an arena
+    /// whose Built was missed, or over a stand-in arena round the tank when there is no arena service. Without a run
     /// (sandbox, tests, bench) <see cref="Begin"/> does all of it with a lull of its own.
     /// </para>
     /// No managed allocations per frame (an arena's start allocates its queue).
@@ -76,7 +77,10 @@ namespace Game.AIKit.Adapters
         private bool _cleared;
         private bool _warnedNoWaves;
         private float _bindTimer;
-        private bool _arenaApplied;
+        /// <summary>The arena plan the grid was last rebuilt over (null: none yet).</summary>
+        private ArenaPlan _appliedPlan;
+        /// <summary>Bumped by every arena start: a wave's listeners may start another arena or stop this one.</summary>
+        private int _arenaSerial;
 
         private struct SummonRequest
         {
@@ -211,8 +215,13 @@ namespace Game.AIKit.Adapters
                 float fight = _clock - _lull;
                 ArenaWave[] waves = _waves != null ? _waves.waves : null;
                 int waveCount = waves?.Length ?? 0;
+                int serial = _arenaSerial;
                 while (_nextWave < waveCount && fight >= (waves[_nextWave]?.delay ?? 0f))
+                {
                     StartWave(waves[_nextWave], _nextWave++);
+                    if (!_running || serial != _arenaSerial)
+                        return; // a listener of the wave stopped this arena or started another
+                }
 
                 IArenaHorde horde = Horde;
                 bool hasTank = TryGetTank(out Vector3 tank);
@@ -237,6 +246,7 @@ namespace Game.AIKit.Adapters
         private void StartArena(int arenaIndex, ArenaWaves waves, IArenaBurrows burrows, float lull, float strength)
         {
             End();
+            _arenaSerial++;
             ArenaNumber = arenaIndex;
             Strength = strength;
             _waves = waves;
@@ -366,24 +376,19 @@ namespace Game.AIKit.Adapters
                 return false;
             }
 
-            Vector3 at = Open(horde, burrow);
-            bool ok = horde.Spawn(kind, at, Strength, Strength);
-            if (ok)
-                _busyUntil[burrow] = _clock + horde.EmergeSeconds;
-            return ok;
-        }
-
-        /// <summary>The burrow's point; the first time, it is opened (crater) and heard.</summary>
-        private Vector3 Open(IArenaHorde horde, int burrow)
-        {
-            Vector3 at = _burrows.OpenBurrow(burrow);
+            // An open burrow just gives its point again; a closed one is torn open (crater, sound) only once a monster
+            // really comes out of it, so a failed spawn leaves it closed and silent.
+            Vector3 at = _opened[burrow] ? _burrows.OpenBurrow(burrow) : _burrows.BurrowPoints[burrow];
+            if (!horde.Spawn(kind, at, Strength, Strength))
+                return false;
+            _busyUntil[burrow] = _clock + horde.EmergeSeconds;
             if (!_opened[burrow])
             {
                 _opened[burrow] = true;
-                horde?.BurrowOpened(at);
+                horde.BurrowOpened(_burrows.OpenBurrow(burrow));
             }
 
-            return at;
+            return true;
         }
 
         /// <summary>The free burrow farthest from the tank among those at least <see cref="MIN_BURROW_DISTANCE"/> from it; -1 if none.</summary>
@@ -458,14 +463,25 @@ namespace Game.AIKit.Adapters
             if (!GameContext.TryGetInstance(out GameContext context) || context == null)
                 return;
 
-            if (_run == null && context.TryGetRun(out IRunService run) && run != null)
+            context.TryGetRun(out IRunService run);
+            context.TryGetArena(out IArenaService arena);
+            Bind(run, arena);
+        }
+
+        /// <summary>
+        /// Hooks up to <paramref name="run"/> and <paramref name="arena"/> (either may be null; one already bound is kept).
+        /// The GameContext's are found by the tick; tests and tools pass their own.
+        /// </summary>
+        public void Bind(IRunService run, IArenaService arena)
+        {
+            if (_run == null && run != null)
             {
                 _run = run;
                 _run.ArenaStarted += OnRunArenaStarted;
                 _run.FightStarted += OnRunFightStarted;
             }
 
-            if (_arenaService == null && context.TryGetArena(out IArenaService arena) && arena != null)
+            if (_arenaService == null && arena != null)
             {
                 _arenaService = arena;
                 _serviceBurrows = new ArenaServiceBurrows(arena);
@@ -477,41 +493,43 @@ namespace Game.AIKit.Adapters
                 OnRunFightStarted(_run.ArenaNumber);
         }
 
+        /// <summary>
+        /// The contract's order is Built (inside the arena's Build) → ArenaStarted → FightStarted: the grid was rebuilt
+        /// over the new arena already, so this only stops the old arena and clears the horde. Without an arena service
+        /// the grid is rebuilt at FightStarted, over the stand-in arena round the tank.
+        /// </summary>
         private void OnRunArenaStarted(int number)
         {
-            _arenaApplied = false;
-            if (_arenaService != null)
-            {
-                End();
-                Horde?.ResetForArena();
-            }
-            else
-            {
-                ResetForArena();
-            }
+            End();
+            Horde?.ResetForArena();
         }
 
         private void OnArenaBuilt(ArenaPlan plan)
         {
             ResetForArena(_arenaService.Bounds);
-            _arenaApplied = true;
+            _appliedPlan = plan;
         }
 
         private void OnRunFightStarted(int number)
         {
-            // The arena was built before this director heard of the service (its first arena): the grid moves over it now.
-            if (_arenaService != null && _arenaService.IsBuilt && !_arenaApplied)
+            // The arena was built before this director heard of the service (its first arena): the grid moves over it
+            // now. An arena whose Built was heard is not rebuilt again (a sync rebuild is a hitch at the fight's start).
+            if (_arenaService != null && _arenaService.IsBuilt && !ReferenceEquals(_appliedPlan, _arenaService.Plan))
             {
                 ResetForArena(_arenaService.Bounds);
-                _arenaApplied = true;
+                _appliedPlan = _arenaService.Plan;
             }
 
             IArenaBurrows burrows = _serviceBurrows;
             if (burrows == null)
             {
+                // No arena service: a stand-in arena round the tank, the grid rebuilt over it first (its burrows stand
+                // on the new grid's ground).
                 TryGetTank(out Vector3 tank);
+                Bounds area = EdgeBurrowsLayout.Around(tank, FALLBACK_SIZE, 1).Bounds;
+                ResetForArena(area);
                 GroundOf(out Func<Vector3, float> ground);
-                burrows = EdgeBurrowsLayout.Around(tank, FALLBACK_SIZE, FALLBACK_BURROWS, ground);
+                burrows = new EdgeBurrowsLayout(area, FALLBACK_BURROWS, ground);
             }
 
             StartArena(number, Table != null ? Table.For(number) : null, burrows, 0f, _run.EnemyStrength);

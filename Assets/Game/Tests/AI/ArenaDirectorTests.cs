@@ -18,12 +18,15 @@ namespace Game.AIKit.Adapters.Tests
             public int Waves;
             public int Resets;
             public float Clock;
+            public bool Refuse;
 
             public int AliveCount => Alive;
             public float EmergeSeconds => 1f;
 
             public bool Spawn(EnemyKind kind, Vector3 at, float healthScale, float damageScale)
             {
+                if (Refuse)
+                    return false;
                 Spawns.Add((kind, at, healthScale, damageScale, Clock));
                 Alive++;
                 return true;
@@ -162,6 +165,45 @@ namespace Game.AIKit.Adapters.Tests
             }
 
             Assert.AreEqual(layout.OpenedCount, _horde.Opened.Count, "each opened burrow is heard once");
+        }
+
+        [Test]
+        public void Burrow_IsOpenedAndHeardOnlyWhenAMonsterReallyComesOut()
+        {
+            EdgeBurrowsLayout layout = Layout();
+            _horde.Refuse = true; // the horde is full
+            _director.Begin(1, Waves(40, Wave(0f, 0f, new ArenaWaveEntry(EnemyKind.Crawler, 5))), layout);
+            Run(3f);
+            Assert.AreEqual(0, layout.OpenedCount, "no crater for a monster that did not come");
+            Assert.AreEqual(0, _horde.Opened.Count, "and no sound");
+
+            _horde.Refuse = false;
+            Run(4f);
+            Assert.AreEqual(5, _horde.Spawns.Count);
+            Assert.Greater(layout.OpenedCount, 0);
+            Assert.AreEqual(layout.OpenedCount, _horde.Opened.Count, "each opened burrow heard once");
+        }
+
+        [Test]
+        public void Waves_AListenerThatStopsTheArena_StopsTheWaveLoop()
+        {
+            void Stop(int wave) => _director.End();
+            AIEvents.WaveStarted += Stop;
+            try
+            {
+                _director.Begin(1, Waves(40,
+                    Wave(0f, 0f, new ArenaWaveEntry(EnemyKind.Crawler, 3)),
+                    Wave(0f, 0f, new ArenaWaveEntry(EnemyKind.Crawler, 3))), Layout());
+                Run(3f);
+            }
+            finally
+            {
+                AIEvents.WaveStarted -= Stop;
+            }
+
+            CollectionAssert.AreEqual(new[] { 0 }, _wavesStarted, "the second wave does not start after the stop");
+            Assert.AreEqual(0, _horde.Spawns.Count, "nothing comes out of a stopped arena");
+            Assert.IsFalse(_director.IsRunning);
         }
 
         [Test]
