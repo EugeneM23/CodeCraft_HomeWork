@@ -51,6 +51,12 @@ namespace Game.AIKit.Adapters
         /// <summary>The player's vehicle as the AI sees it: its transform and its hull.</summary>
         public static readonly ValueKey<IEntity, PlayerTank> PlayerVehicle = new(nameof(PlayerVehicle));
 
+        /// <summary>
+        /// The arena director's door for monsters outside the waves (the elite's roar). Set by the director on the
+        /// level's AI entity while an arena runs; absent outside arenas (the sandbox without a director).
+        /// </summary>
+        public static readonly ValueKey<IEntity, IArenaReinforcements> ArenaReinforcements = new(nameof(ArenaReinforcements));
+
         #endregion
 
         #region Elite Regax
