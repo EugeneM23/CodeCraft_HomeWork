@@ -66,12 +66,124 @@ namespace Game.Voxels
             }
         }
 
-        private struct Segment
+        internal struct Segment
         {
             public float3 A;
             public float3 B;
             public int Part;
             public int Side;
+        }
+
+        /// <summary>
+        /// The bone segments of a body's parts, found once (a body is not looked up again at its death): a bone
+        /// reaches to each child that is in its part too; a bone with none is a point. Only their positions are
+        /// read at the death.
+        /// </summary>
+        public sealed class Skeleton
+        {
+            internal readonly Transform[] From;
+            internal readonly Transform[] To;
+            internal readonly int[] Part;
+            internal readonly int[] Side;
+
+            private Skeleton(List<(Transform from, Transform to, int part, int side)> segments)
+            {
+                int count = segments.Count;
+                From = new Transform[count];
+                To = new Transform[count];
+                Part = new int[count];
+                Side = new int[count];
+                for (int i = 0; i < count; i++)
+                    (From[i], To[i], Part[i], Side[i]) = segments[i];
+            }
+
+            public int Count => From.Length;
+
+            /// <summary>In the order the parts and their bones are listed: on a tie the first segment wins, as it always did.</summary>
+            public static Skeleton Of(IReadOnlyList<Part> parts)
+            {
+                var list = new List<(Transform, Transform, int, int)>();
+                for (int p = 0; parts != null && p < parts.Count; p++)
+                {
+                    Transform[] bones = parts[p].Bones;
+                    if (bones == null)
+                        continue;
+
+                    var own = new HashSet<Transform>(bones);
+                    foreach (Transform bone in bones)
+                    {
+                        if (bone == null)
+                            continue;
+
+                        bool reached = false;
+                        foreach (Transform child in bone)
+                        {
+                            if (!own.Contains(child))
+                                continue;
+                            list.Add((bone, child, p, parts[p].Side));
+                            reached = true;
+                        }
+
+                        if (!reached)
+                            list.Add((bone, null, p, parts[p].Side));
+                    }
+                }
+
+                return new Skeleton(list);
+            }
+        }
+
+        /// <summary>
+        /// A voxelization under way: the pose is read and the jobs that fill and colour the grid are scheduled
+        /// (<see cref="Begin"/>); <see cref="Complete"/> waits for them - the frame after, normally, when they
+        /// are long done. Reusable: one per death in flight, kept by the caller.
+        /// </summary>
+        public sealed class Pending
+        {
+            internal JobHandle Handle;
+            internal NativeArray<float3> Triangles;
+            internal NativeArray<Segment> Segments;
+            internal NativeArray<int> Start;
+            internal NativeList<int> Items;
+            internal NativeArray<byte> Solid;
+            internal Result Grid;
+
+            /// <summary>Scheduled and neither completed nor cancelled.</summary>
+            public bool Running { get; internal set; }
+
+            /// <summary>Waits for the jobs and hands over the grid: the caller owns and disposes it.</summary>
+            public Result Complete()
+            {
+                if (!Running)
+                    return default;
+                Handle.Complete();
+                DisposeScratch();
+                Running = false;
+                Result grid = Grid;
+                Grid = default;
+                return grid;
+            }
+
+            /// <summary>Drops the voxelization: waits for its jobs and frees everything.</summary>
+            public void Cancel()
+            {
+                if (!Running)
+                    return;
+                Handle.Complete();
+                DisposeScratch();
+                Grid.Dispose();
+                Grid = default;
+                Running = false;
+            }
+
+            private void DisposeScratch()
+            {
+                if (Triangles.IsCreated) Triangles.Dispose();
+                if (Segments.IsCreated) Segments.Dispose();
+                if (Start.IsCreated) Start.Dispose();
+                if (Items.IsCreated) Items.Dispose();
+                if (Solid.IsCreated) Solid.Dispose();
+            }
         }
 
         private static Mesh s_baked;
@@ -80,8 +192,27 @@ namespace Game.Voxels
             in FleshPalette palette, uint seed, out Result result)
         {
             result = default;
-            if (skin == null || skin.sharedMesh == null || parts == null || parts.Count == 0 ||
-                parts.Count >= NO_PART || voxelSize <= 0f)
+            if (parts == null || parts.Count == 0 || parts.Count >= NO_PART)
+                return false;
+
+            var pending = new Pending();
+            if (!Begin(skin, Skeleton.Of(parts), parts.Count, midPlane, voxelSize, palette, seed, pending))
+                return false;
+            result = pending.Complete();
+            return true;
+        }
+
+        /// <summary>
+        /// Reads the pose the body stands in now and schedules its voxelization into <paramref name="into"/>:
+        /// the reading is done before this returns (the pose may change after), the filling and colouring run on
+        /// workers until <see cref="Pending.Complete"/>. Allocates no managed memory: native buffers only.
+        /// </summary>
+        /// <param name="partCount">How many parts the skeleton's segments are numbered over (below NO_PART).</param>
+        public static bool Begin(SkinnedMeshRenderer skin, Skeleton skeleton, int partCount, Plane midPlane, float voxelSize,
+            in FleshPalette palette, uint seed, Pending into)
+        {
+            if (into == null || into.Running || skin == null || skin.sharedMesh == null || skeleton == null ||
+                skeleton.Count == 0 || partCount <= 0 || partCount >= NO_PART || voxelSize <= 0f)
                 return false;
 
             if (s_baked == null)
@@ -89,11 +220,14 @@ namespace Game.Voxels
             // With useScale the vertices carry the renderer's scale: the grid only takes its position and rotation.
             skin.BakeMesh(s_baked, true);
 
-            using Mesh.MeshDataArray meshes = Mesh.AcquireReadOnlyMeshData(s_baked);
+            Mesh.MeshDataArray meshes = Mesh.AcquireReadOnlyMeshData(s_baked);
             int vertexCount = meshes[0].vertexCount;
             int indexCount = TriangleIndexCount(meshes[0]);
             if (vertexCount == 0 || indexCount < 3)
+            {
+                meshes.Dispose();
                 return false;
+            }
 
             Transform space = skin.transform;
             Vector3 position = space.position;
@@ -113,6 +247,7 @@ namespace Game.Voxels
             if (!math.all(math.isfinite(span)) || math.any(span > MAX_SIZE))
             {
                 vertices.Dispose();
+                meshes.Dispose();
                 Debug.LogWarning($"[SkinnedVoxelizer] {skin.name}: the pose spans {max - min} m, over " +
                                  $"{MAX_SIZE} voxels of {voxelSize} m a side; not voxelized.");
                 return false;
@@ -122,27 +257,39 @@ namespace Game.Voxels
             int columns = size.x * size.y;
             int cells = columns * size.z;
 
-            float3 ToGrid(Vector3 world) => ((float3)(inverse * (world - position)) - origin) / voxelSize;
+            // The pose is copied out now (cheap, in Burst) so the baked mesh is free for the next death at once:
+            // the jobs below read native copies only. Persistent: a death may wait a few frames in its queue.
+            var triangles = new NativeArray<float3>(indexCount, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
+            new ExpandTrianglesJob
+            {
+                Meshes = meshes, Vertices = vertices, Origin = origin, VoxelSize = voxelSize, Triangles = triangles
+            }.Run();
+            vertices.Dispose();
+            meshes.Dispose();
 
-            var triangles = new NativeArray<float3>(indexCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory);
-            NativeArray<Segment> segments = BuildSegments(parts, ToGrid);
+            var segments = new NativeArray<Segment>(skeleton.Count, Allocator.Persistent);
+            for (int i = 0; i < skeleton.Count; i++)
+            {
+                Transform from = skeleton.From[i];
+                Transform to = skeleton.To[i];
+                float3 a = ToGrid(from != null ? from.position : position, position, inverse, origin, voxelSize);
+                float3 b = to != null ? ToGrid(to.position, position, inverse, origin, voxelSize) : a;
+                segments[i] = new Segment { A = a, B = b, Part = skeleton.Part[i], Side = skeleton.Side[i] };
+            }
+
             float3 normal = (float3)(inverse * midPlane.normal);
-            float3 onPlane = ToGrid(midPlane.ClosestPointOnPlane(position));
+            float3 onPlane = ToGrid(midPlane.ClosestPointOnPlane(position), position, inverse, origin, voxelSize);
 
-            var start = new NativeArray<int>(columns + 1, Allocator.TempJob);
-            var items = new NativeList<int>(indexCount, Allocator.TempJob);
-            var solid = new NativeArray<byte>(cells, Allocator.TempJob);
+            var start = new NativeArray<int>(columns + 1, Allocator.Persistent);
+            var items = new NativeList<int>(indexCount, Allocator.Persistent);
+            var solid = new NativeArray<byte>(cells, Allocator.Persistent);
             var voxels = new NativeArray<byte>(cells, Allocator.Persistent);
             var partOf = new NativeArray<byte>(cells, Allocator.Persistent);
 
-            JobHandle handle = new ExpandTrianglesJob
-            {
-                Meshes = meshes, Vertices = vertices, Origin = origin, VoxelSize = voxelSize, Triangles = triangles
-            }.Schedule();
-            handle = new BinTrianglesJob
+            JobHandle handle = new BinTrianglesJob
             {
                 Triangles = triangles, Columns = size.xy, Start = start, Items = items
-            }.Schedule(handle);
+            }.Schedule();
             handle = new FillColumnsJob
             {
                 Triangles = triangles, Start = start, Items = items.AsDeferredJobArray(), Size = size, Solid = solid
@@ -159,16 +306,15 @@ namespace Game.Voxels
                 Voxels = voxels,
                 Parts = partOf
             }.Schedule(cells, 256, handle);
-            handle.Complete();
+            JobHandle.ScheduleBatchedJobs();
 
-            vertices.Dispose();
-            triangles.Dispose();
-            segments.Dispose();
-            start.Dispose();
-            items.Dispose();
-            solid.Dispose();
-
-            result = new Result
+            into.Handle = handle;
+            into.Triangles = triangles;
+            into.Segments = segments;
+            into.Start = start;
+            into.Items = items;
+            into.Solid = solid;
+            into.Grid = new Result
             {
                 Size = size,
                 Origin = origin,
@@ -179,44 +325,12 @@ namespace Game.Voxels
                 Parts = partOf,
                 Palette = palette.BuildPalette(Allocator.Persistent)
             };
+            into.Running = true;
             return true;
         }
 
-        private static NativeArray<Segment> BuildSegments(IReadOnlyList<Part> parts, Func<Vector3, float3> toGrid)
-        {
-            var list = new List<Segment>();
-            for (int p = 0; p < parts.Count; p++)
-            {
-                Transform[] bones = parts[p].Bones;
-                if (bones == null)
-                    continue;
-
-                var own = new HashSet<Transform>(bones);
-                foreach (Transform bone in bones)
-                {
-                    if (bone == null)
-                        continue;
-
-                    float3 a = toGrid(bone.position);
-                    bool reached = false;
-                    foreach (Transform child in bone)
-                    {
-                        if (!own.Contains(child))
-                            continue;
-                        list.Add(new Segment { A = a, B = toGrid(child.position), Part = p, Side = parts[p].Side });
-                        reached = true;
-                    }
-
-                    if (!reached)
-                        list.Add(new Segment { A = a, B = a, Part = p, Side = parts[p].Side });
-                }
-            }
-
-            var array = new NativeArray<Segment>(list.Count, Allocator.TempJob);
-            for (int i = 0; i < list.Count; i++)
-                array[i] = list[i];
-            return array;
-        }
+        private static float3 ToGrid(Vector3 world, Vector3 position, Quaternion inverse, float3 origin, float voxelSize) =>
+            ((float3)(inverse * (world - position)) - origin) / voxelSize;
 
         /// <summary>Indices in the mesh's triangle submeshes (a skin has no other kind, but it is not assumed).</summary>
         private static int TriangleIndexCount(Mesh.MeshData mesh)
