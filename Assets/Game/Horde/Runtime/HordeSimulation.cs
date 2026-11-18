@@ -37,7 +37,10 @@ namespace Game.Horde
         public const float SHOT_HIT_PAD = 0.15f;
 
         private const int BATCH = 128;
+        /// <summary>Blasts with damage queued for one step at most (more are dropped and counted in <see cref="DroppedAreas"/>).</summary>
         private const int MAX_AREAS = 64;
+        /// <summary>Shoves queued for one step at most: a budget of their own, so they never crowd out blast damage.</summary>
+        private const int MAX_KNOCKBACKS = 64;
         private const int MAX_HITS = 512;
         /// <summary>Height of the cull sphere's centre over the feet and its radius at render scale 1 (the Regax model).</summary>
         private static readonly float2 CullSphere = new(1.3f, 1.8f);
@@ -101,6 +104,8 @@ namespace Game.Horde
         private NativeArray<bool> _snapLive;
         private NativeArray<int> _version;
         private int _highWater;
+        private int _areaDamageCount;
+        private int _knockbackCount;
 
         private Unity.Mathematics.Random _random;
         private JobHandle _handle;
@@ -118,7 +123,12 @@ namespace Game.Horde
         private HordeClip _attackClip;
         private HordeClip _idleClip;
 
-        public HordeSimulation(int capacity, HordeNavGrid grid, HordeFlowField flow, in HordeSettings settings, uint seed = 1)
+        /// <param name="versionBase">
+        /// First generation of every slot. A simulation that replaces another under the same target source starts above
+        /// the old one's <see cref="MaxVersion"/>, so a handle from the old one never matches a monster of the new one.
+        /// </param>
+        public HordeSimulation(int capacity, HordeNavGrid grid, HordeFlowField flow, in HordeSettings settings, uint seed = 1,
+            int versionBase = 0)
         {
             if (capacity <= 0)
                 throw new ArgumentException("HordeSimulation needs a positive capacity.");
@@ -171,6 +181,8 @@ namespace Game.Horde
             _snapPosition = new NativeArray<float3>(capacity, Allocator.Persistent);
             _snapLive = new NativeArray<bool>(capacity, Allocator.Persistent);
             _version = new NativeArray<int>(capacity, Allocator.Persistent);
+            for (int i = 0; i < capacity; i++)
+                _version[i] = versionBase;
 
             // Slot 0 comes out first.
             for (int i = 0; i < capacity; i++)
@@ -187,6 +199,15 @@ namespace Game.Horde
 
         /// <summary>Monsters walking, attacking or emerging (the dying of a running step included).</summary>
         public int AliveCount => _alive;
+
+        /// <summary>
+        /// <see cref="AliveCount"/> plus the deaths freed but not yet taken by the owner (<see cref="Deaths"/>): a monster
+        /// leaves this count only once its death has been handed out.
+        /// </summary>
+        public int AliveOrUnreported => _alive + _deaths.Length;
+
+        /// <summary>Blasts and shoves dropped because a step's budget was full (a debug counter, never reset).</summary>
+        public int DroppedAreas { get; private set; }
 
         /// <summary>A step is on the workers.</summary>
         public bool IsRunning => _running;
@@ -363,6 +384,8 @@ namespace Game.Horde
             _shotQueue.Clear();
             _hits.Clear();
             _areas.Clear();
+            _areaDamageCount = 0;
+            _knockbackCount = 0;
             _deaths.Clear();
         }
 
@@ -372,16 +395,30 @@ namespace Game.Horde
         /// </summary>
         public void AddAreaDamage(float3 center, float radius, float damage, float minFactor = 0.5f)
         {
-            if (_areas.Length >= MAX_AREAS || radius <= 0f || damage <= 0f)
+            if (radius <= 0f || damage <= 0f)
                 return;
+            if (_areaDamageCount >= MAX_AREAS)
+            {
+                DroppedAreas++;
+                return;
+            }
+
+            _areaDamageCount++;
             _areas.Add(new HordeAreaDamage { Center = center, Radius = radius, Damage = damage, MinFactor = minFactor });
         }
 
         /// <summary>A shove for the next step: live monsters in the sphere move up to <paramref name="push"/> m out from its centre (no damage).</summary>
         public void AddKnockback(float3 center, float radius, float push)
         {
-            if (_areas.Length >= MAX_AREAS || radius <= 0f || push <= 0f)
+            if (radius <= 0f || push <= 0f)
                 return;
+            if (_knockbackCount >= MAX_KNOCKBACKS)
+            {
+                DroppedAreas++;
+                return;
+            }
+
+            _knockbackCount++;
             _areas.Add(new HordeAreaDamage { Center = center, Radius = radius, MinFactor = 1f, Push = push });
         }
 
@@ -392,6 +429,15 @@ namespace Game.Horde
 
         /// <summary>Generation of a slot: bumped whenever its monster dies or is cleared, so an old (index, version) goes stale.</summary>
         public int Version(int index) => _version[index];
+
+        /// <summary>Highest generation of any slot (a replacing simulation starts above it: see the constructor).</summary>
+        public int MaxVersion()
+        {
+            int max = 0;
+            for (int i = 0; i < Capacity; i++)
+                max = math.max(max, _version[i]);
+            return max;
+        }
 
         /// <summary>The slot holds a live monster of this generation (as of the last completed step).</summary>
         public bool IsTargetAlive(int index, int version) =>
@@ -411,7 +457,7 @@ namespace Game.Horde
         {
             if (damage <= 0f || !IsTargetAlive(index, version) || _hits.Length >= MAX_HITS)
                 return;
-            _hits.Add(new HordeHit { Index = index, Damage = damage });
+            _hits.Add(new HordeHit { Index = index, Version = version, Damage = damage });
         }
 
         // ------------------------------------------------------------------ step
@@ -430,12 +476,15 @@ namespace Game.Horde
                 _visibleAll.Clear();
                 (_areas, _areasRunning) = (_areasRunning, _areas);
                 _areas.Clear();
+                _areaDamageCount = 0;
+                _knockbackCount = 0;
                 for (int k = 0; k < MAX_KINDS; k++)
                     _kinds[k] = GetKind(k);
                 for (int h = 0; h < _hits.Length; h++)
                 {
                     HordeHit hit = _hits[h];
-                    if (HordeStates.IsLive(_state[hit.Index]))
+                    // The slot may have been freed and given to a new monster since the hit was queued.
+                    if (_version[hit.Index] == hit.Version && HordeStates.IsLive(_state[hit.Index]))
                         _health[hit.Index] -= hit.Damage;
                 }
 

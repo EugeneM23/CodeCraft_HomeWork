@@ -238,6 +238,8 @@ namespace Game.Horde
     public struct HordeHit
     {
         public int Index;
+        /// <summary>Generation of the slot when the hit was queued: a hit on a slot reused since is dropped.</summary>
+        public int Version;
         public float Damage;
     }
 
