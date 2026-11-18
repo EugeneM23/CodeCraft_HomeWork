@@ -17,5 +17,6 @@ namespace Game
         public static readonly ValueKey<IAppContext, PlayerProgress> Progress = new(nameof(Progress));
         public static readonly ValueKey<IAppContext, PauseService> PauseService = new(nameof(PauseService));
         public static readonly ValueKey<IAppContext, GameCatalog> GameCatalog = new(nameof(GameCatalog));
+        public static readonly ValueKey<IAppContext, IMetaProgress> MetaProgress = new(nameof(MetaProgress));
     }
 }
