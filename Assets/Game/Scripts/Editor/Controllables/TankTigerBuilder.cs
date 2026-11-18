@@ -38,6 +38,15 @@ namespace Game.EditorTools
         private const float REAR_Z = -2.747f;
         private const float EXHAUST_Y = 0.45f;
 
+        /// <summary>Sprocket (teeth) and idler radii, model space: they turn as fast as the track runs.</summary>
+        private const float SPROCKET_RADIUS = 0.427f;
+        private const float IDLER_RADIUS = 0.35f;
+        private const float ROAD_WHEEL_RADIUS = 0.42f;
+
+        /// <summary>Links a side, and one link's size (m): the pack's track width, a 5 cm plate, gaps between links.</summary>
+        private const int TREADS = 64;
+        private static readonly Vector3 TreadSize = new(0.41f, 0.05f, 0.075f);
+
         /// <summary>Barrel diameter in HullVisual metres: six 3 cm voxels.</summary>
         private const float BARREL_DIAMETER = 0.18f;
 
@@ -104,8 +113,39 @@ namespace Game.EditorTools
 
                 // ---------------------------------------------------------------- hull, belts, running gear
                 Place(hull, "Body", meshes["Body"], body, Vector3.zero);
-                Place(hull, "TrackL_Belt", meshes["TrackBelt_L"], belt, Vector3.zero);
-                Place(hull, "TrackR_Belt", meshes["TrackBelt_R"], belt, Vector3.zero);
+
+                // The tracks: a loop of plain links a side that TankTrackView runs round the sprocket, the top,
+                // the idler and under the wheels (the pack's belt is one still mesh and could not move).
+                var installer = new SerializedObject(root.GetComponent<TankInstaller>());
+                for (int s = -1; s <= 1; s += 2)
+                {
+                    string side = s < 0 ? "L" : "R";
+                    var treads = new Transform[TREADS];
+                    for (int i = 0; i < TREADS; i++)
+                    {
+                        GameObject link = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                        link.name = $"Track{side}_Tread{i:00}";
+                        Object.DestroyImmediate(link.GetComponent<Collider>());
+                        link.layer = hull.gameObject.layer;
+                        link.transform.SetParent(hull, false);
+                        link.transform.localPosition = Model(new Vector3(s * Sprocket.x, Sprocket.y, Sprocket.z));
+                        link.transform.localScale = TreadSize;
+                        link.GetComponent<MeshRenderer>().sharedMaterial = belt;
+                        treads[i] = link.transform;
+                    }
+
+                    LayAtRest(hull, side, treads);
+
+                    SerializedProperty rig = installer.FindProperty(s < 0 ? "_leftTrack" : "_rightTrack");
+                    rig.FindPropertyRelative("FrontRadius").floatValue = SPROCKET_RADIUS * SCALE;
+                    rig.FindPropertyRelative("RearRadius").floatValue = IDLER_RADIUS * SCALE;
+                    SerializedProperty list = rig.FindPropertyRelative("Treads");
+                    list.arraySize = TREADS;
+                    for (int i = 0; i < TREADS; i++)
+                        list.GetArrayElementAtIndex(i).objectReferenceValue = treads[i];
+                }
+
+                installer.ApplyModifiedPropertiesWithoutUndo();
 
                 for (int s = -1; s <= 1; s += 2)
                 {
@@ -143,7 +183,7 @@ namespace Game.EditorTools
                     Child(rear, "Idler", meshes["IdlerWheel"], wheel, Vector3.zero, axle, SCALE);
                 }
 
-                // The belts draw the whole track; the lower-run links still move (TankTrackView) but are not shown.
+                // The treads draw the whole track; the lower-run links still move (TankTrackView) but are not shown.
                 foreach (Transform t in hull)
                     if (t.name.StartsWith("TrackL_Link") || t.name.StartsWith("TrackR_Link"))
                         foreach (Renderer r in t.GetComponentsInChildren<Renderer>(true))
@@ -203,7 +243,7 @@ namespace Game.EditorTools
                 // ---------------------------------------------------------------- voxel skin: plain paint for now
                 VoxelizedModel skin = root.GetComponent<VoxelizedModel>();
                 var so = new SerializedObject(skin);
-                skin.Configure(new[] { "HullVisual/Track?_Link*", "HullVisual/TurretVisual/MachineGun*" },
+                skin.Configure(new[] { "HullVisual/Track?_Link*", "HullVisual/Track?_Tread*", "HullVisual/TurretVisual/MachineGun*" },
                     so.FindProperty("_voxelSize").floatValue, so.FindProperty("_colorNoise").floatValue,
                     default, System.Array.Empty<VoxelizedModel.Decal>());
 
@@ -213,6 +253,62 @@ namespace Game.EditorTools
             finally
             {
                 PrefabUtility.UnloadPrefabContents(root);
+            }
+        }
+
+        /// <summary>
+        /// The links laid round the loop as the tank stands (TankTrackView relays them every frame in the game; a
+        /// copy without it — the target dummy — keeps this): sprocket top, back over the top, round the idler, under
+        /// the wheels where they rest, round the sprocket.
+        /// </summary>
+        private static void LayAtRest(Transform hull, string side, Transform[] treads)
+        {
+            int s = side == "L" ? -1 : 1;
+            float half = TreadSize.y * 0.5f;
+            Vector3 front = Model(new Vector3(s * Sprocket.x, Sprocket.y, Sprocket.z));
+            Vector3 rear = Model(new Vector3(s * Idler.x, Idler.y, Idler.z));
+            float frontR = SPROCKET_RADIUS * SCALE + half;
+            float rearR = IDLER_RADIUS * SCALE + half;
+            const int arc = 8;
+            var points = new List<Vector3> { front + Vector3.up * frontR };
+            for (int k = 0; k <= arc; k++)
+            {
+                float a = Mathf.PI * k / arc;
+                points.Add(rear + new Vector3(0f, Mathf.Cos(a), -Mathf.Sin(a)) * rearR);
+            }
+
+            var wheels = new List<Transform>();
+            foreach (Transform t in hull)
+                if (t.name.StartsWith($"Wheel_{side}"))
+                    wheels.Add(t);
+            wheels.Sort((a, b) => a.localPosition.z.CompareTo(b.localPosition.z));
+            foreach (Transform w in wheels)
+                points.Add(w.localPosition + Vector3.down * (ROAD_WHEEL_RADIUS * SCALE - half));
+            for (int k = 0; k < arc; k++)
+            {
+                float a = Mathf.PI * k / arc;
+                points.Add(front + new Vector3(0f, -Mathf.Cos(a), Mathf.Sin(a)) * frontR);
+            }
+
+            float length = 0f;
+            var along = new float[points.Count];
+            for (int i = 0; i < points.Count; i++)
+            {
+                along[i] = length;
+                length += Vector3.Distance(points[i], points[(i + 1) % points.Count]);
+            }
+
+            for (int i = 0; i < treads.Length; i++)
+            {
+                float d = length * i / treads.Length;
+                int seg = points.Count - 1;
+                for (int k = 0; k < points.Count - 1; k++)
+                    if (d < along[k + 1]) { seg = k; break; }
+                Vector3 a = points[seg], b = points[(seg + 1) % points.Count];
+                float span = (seg + 1 < points.Count ? along[seg + 1] : length) - along[seg];
+                Vector3 tangent = (b - a).normalized;
+                treads[i].SetLocalPositionAndRotation(Vector3.Lerp(a, b, span > 1e-5f ? (d - along[seg]) / span : 0f),
+                    Quaternion.LookRotation(tangent, Vector3.Cross(Vector3.right, tangent)));
             }
         }
 
