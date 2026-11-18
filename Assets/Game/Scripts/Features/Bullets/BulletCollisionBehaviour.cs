@@ -12,8 +12,11 @@ namespace Game
         /// <summary>How deep (m) a bullet's tunnel through a wall goes; bites every this much / 3.</summary>
         private const float WALL_TUNNEL_DEPTH = 0.9f;
 
-        /// <summary>Radius (m) of the hole a plain bullet bores through a wall.</summary>
-        private const float WALL_HOLE_RADIUS = 0.3f;
+        /// <summary>Radius (m) of the hole a plain bullet bores through a wall (tough walls, armour, shrink it).</summary>
+        private const float WALL_HOLE_RADIUS = 0.5f;
+
+        /// <summary>Most chips one bullet bite throws: a hole, not a cloud of crumbs.</summary>
+        private const int BULLET_DEBRIS = 40;
 
         /// <summary>How hard (m/s) a plain bullet's hit flings the chips it knocks out.</summary>
         private const float CHIP_FORCE = 9f;
@@ -140,9 +143,8 @@ namespace Game
             ContactPoint contact = collision.GetContact(0);
             Vector3 direction = _bullet.GetMoveDirection().Value;
             Vector3 along = direction.sqrMagnitude > 1e-6f ? direction.normalized : -contact.normal;
-            for (int i = 0; i < 3; i++)
-                VoxelDamage.Impact(contact.point + along * (WALL_TUNNEL_DEPTH * i / 3f), along, WALL_HOLE_RADIUS,
-                    CHIP_FORCE);
+            // One round hole at the entry (three bites along the path read as three small holes).
+            VoxelDamage.Impact(contact.point, along, WALL_HOLE_RADIUS, CHIP_FORCE, BULLET_DEBRIS);
             Sparks(contact.point, contact.normal);
 
             if (_own != null)
@@ -209,7 +211,8 @@ namespace Game
         /// <summary>A bullet bites a small hole out of a voxel wall, or out of a vehicle's voxel skin.</summary>
         private void ChipVoxels(Collision collision) =>
             VoxelDamage.Impact(collision.GetContact(0).point, _bullet.GetMoveDirection().Value, VOXEL_CHIP_RADIUS,
-                ExplosionUseCase.IsExplosive(_bullet) ? 2.5f : CHIP_FORCE);
+                ExplosionUseCase.IsExplosive(_bullet) ? 2.5f : CHIP_FORCE,
+                ExplosionUseCase.IsExplosive(_bullet) ? VoxelDamage.BLAST_DEBRIS : BULLET_DEBRIS);
 
         /// <summary>True when the bullet flies on: it bounced off the surface, or already flies away from it.</summary>
         private bool TryRicochet(Collision collision)

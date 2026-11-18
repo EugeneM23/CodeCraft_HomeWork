@@ -22,7 +22,11 @@ namespace Game.Voxels
         /// <returns>How many voxels were taken out.</returns>
         /// <param name="ignore">Bodies under this transform are spared (a vehicle ramming with its own skin).</param>
         /// <param name="terrain">False: the ground is spared (a ram bites walls, not the earth under them).</param>
-        public static int Blast(Vector3 point, float radius, float force, Transform ignore = null, bool terrain = true)
+        public static int Blast(Vector3 point, float radius, float force, Transform ignore = null, bool terrain = true) =>
+            Blast(point, radius, force, ignore, terrain, BLAST_DEBRIS);
+
+        /// <param name="debris">Most debris cubes the bite throws, shared by the bodies it reaches.</param>
+        public static int Blast(Vector3 point, float radius, float force, Transform ignore, bool terrain, int debris)
         {
             IReadOnlyList<VoxelBody> bodies = VoxelWorld.Bodies;
             if (bodies.Count == 0 || radius <= 0f)
@@ -46,7 +50,7 @@ namespace Game.Voxels
             if (Hit.Count == 0)
                 return 0;
 
-            int budget = BLAST_DEBRIS / Hit.Count;
+            int budget = debris / Hit.Count;
             int total = 0;
             foreach (VoxelBody body in Hit)
                 if (body != null)
@@ -129,10 +133,11 @@ namespace Game.Voxels
         /// <summary>
         /// A bullet chips a small bite just under the surface it struck.
         /// </summary>
-        public static int Impact(Vector3 point, Vector3 direction, float radius, float force = 2.5f)
+        public static int Impact(Vector3 point, Vector3 direction, float radius, float force = 2.5f,
+            int debris = BLAST_DEBRIS)
         {
             Vector3 inward = direction.sqrMagnitude > 0.0001f ? direction.normalized : Vector3.zero;
-            return Blast(point + inward * (radius * 0.5f), radius, force);
+            return Blast(point + inward * (radius * 0.5f), radius, force, null, true, debris);
         }
     }
 }

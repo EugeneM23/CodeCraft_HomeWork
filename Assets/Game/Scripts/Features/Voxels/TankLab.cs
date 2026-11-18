@@ -46,6 +46,7 @@ namespace Game
         private float _tunnel = 0.9f;
         private float _chipForce = 9f;
         private int _pierces = 3;
+        private int _debris = 40;
         private float _craterShare = 0.32f;
         private float _blastSpeed = 9f;
         private float _smokeShare = 0.7f;
@@ -87,6 +88,7 @@ namespace Game
             _tunnel = Const(bullet, "WALL_TUNNEL_DEPTH", _tunnel);
             _chipForce = Const(bullet, "CHIP_FORCE", _chipForce);
             _pierces = Const(bullet, "MAX_WALL_PIERCES", _pierces);
+            _debris = Const(bullet, "BULLET_DEBRIS", _debris);
             System.Type blast = typeof(ExplosionUseCase);
             _craterShare = Const(blast, "VOXEL_CRATER_SHARE", _craterShare);
             _blastSpeed = Const(blast, "VOXEL_BLAST_SPEED", _blastSpeed);
@@ -209,15 +211,14 @@ namespace Game
                     if (body != null && !body.IsTerrain && b.Pierced < _pierces)
                     {
                         b.Pierced++;
-                        for (int k = 0; k < 3; k++)
-                            VoxelDamage.Impact(hit.point + b.Direction * (_tunnel * k / 3f), b.Direction, _holeRadius, _chipForce);
+                        VoxelDamage.Impact(hit.point, b.Direction, _holeRadius, _chipForce, _debris);
                         b.Last = hit.collider;
                         step -= hit.distance;
                         start = hit.point + b.Direction * 0.01f;
                         continue;
                     }
 
-                    VoxelDamage.Impact(hit.point, b.Direction, _chipRadius, _chipForce);
+                    VoxelDamage.Impact(hit.point, b.Direction, _chipRadius, _chipForce, _debris);
                     alive = false;
                 }
 
