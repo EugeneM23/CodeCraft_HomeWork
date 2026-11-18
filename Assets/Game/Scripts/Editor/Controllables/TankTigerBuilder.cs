@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using Game.Voxels;
+using Game.Voxels.EditorTools;
+using Unity.Mathematics;
 using UnityEditor;
 using UnityEngine;
 
@@ -25,6 +27,12 @@ namespace Game.EditorTools
         private const string MESH = "SD_Tiger-I_";
 
         private const float SCALE = 0.543f;
+
+        /// <summary>Edge of a voxel: Tank_01's VoxelizedModel voxel (3 cm).</summary>
+        private const float VOXEL = 0.03f;
+
+        /// <summary>The old sand paint (MT_Tank_Body), under the camouflage.</summary>
+        private const string SAND = "Assets/Game/Materials/MT_Tank_Body.mat";
         private static readonly Vector3 Offset = new(0f, 0.651f, 0f);
 
         // Pack pivots, model space (from its SD_Tiger-I_2.0 prefab).
@@ -80,6 +88,15 @@ namespace Game.EditorTools
                     meshes[m.name.Replace(MESH, "")] = m;
 
             Material body = FlatMaterial("MT_TigerI_Base", "T_TigerI_Base");
+            Material sand = AssetDatabase.LoadAssetAtPath<Material>(SAND);
+            if (sand != null)
+            {
+                body.SetColor("_BaseColor", sand.color);
+                if (body.HasProperty("_Color"))
+                    body.SetColor("_Color", sand.color);
+                EditorUtility.SetDirty(body);
+                AssetDatabase.SaveAssetIfDirty(body);
+            }
             Material wheel = FlatMaterial("MT_TigerI_Wheel", "T_TigerI_Wheel");
             Material belt = FlatMaterial("MT_TigerI_TrackBelt", "T_TigerI_TrackBelt");
 
@@ -112,7 +129,7 @@ namespace Game.EditorTools
                 ClearChildren(gun);
 
                 // ---------------------------------------------------------------- hull, belts, running gear
-                Place(hull, "Body", meshes["Body"], body, Vector3.zero);
+                Blocks(hull, Place(hull, "Body", meshes["Body"], body, Vector3.zero), "Body");
 
                 // The tracks: a loop of plain links a side that TankTrackView runs round the sprocket, the top,
                 // the idler and under the wheels (the pack's belt is one still mesh and could not move).
@@ -151,19 +168,6 @@ namespace Game.EditorTools
                 {
                     string side = s < 0 ? "L" : "R";
                     Quaternion axle = Quaternion.Euler(0f, 0f, s < 0 ? 90f : 270f);
-                    Quaternion parent = Quaternion.Euler(0f, 0f, 90f);
-
-                    // Suspension arms and idler arm, as the pack lays them.
-                    Matrix4x4 Arm(Vector3 parentAt, float along, float spread, Vector3 euler) =>
-                        Matrix4x4.TRS(parentAt, parent, Vector3.one) *
-                        Matrix4x4.TRS(new Vector3(0f, -s * spread, along), Quaternion.Euler(euler), Vector3.one);
-                    for (int k = 0; k < 3; k++)
-                    {
-                        PlaceModel(hull, $"ArmIn{side}_{k + 1}", meshes[$"Sus_{side}"], wheel, Arm(new Vector3(0f, -0.66f, 1.175f), -1.05f * k, 1.0f, new Vector3(0f, 18f, 270f)));
-                        PlaceModel(hull, $"ArmOut{side}_{k + 1}", meshes[$"Sus_{side}"], wheel, Arm(new Vector3(0f, -0.66f, 1.7f), -1.05f * k, 1.0f, new Vector3(0f, 18f, 270f)));
-                    }
-
-                    PlaceModel(hull, $"IdlerArm{side}", meshes[$"Idler_Arm_{side}"], wheel, Arm(new Vector3(0f, -0.55f, -1.9f), 0f, 1.1f, new Vector3(0f, 60f, 270f)));
 
                     // Interleaved road wheels on our eight wheel visuals (the suspension moves and spins those; the
                     // mesh carries the axle turn): outer row on the odd ones, inner row on the even ones.
@@ -194,9 +198,9 @@ namespace Game.EditorTools
                 turret.localPosition = turretAt;
                 float roof = Model(new Vector3(0f, ROOF_Y, 0f)).y - turretAt.y;
 
-                Place(turret, "Turret", meshes["Turret"], body, -turretAt);
+                Blocks(turret, Place(turret, "Turret", meshes["Turret"], body, -turretAt), "Turret");
                 gun.localPosition = Vector3.zero;
-                Place(gun, "Cannon", meshes["Cannon"], body, -turretAt);
+                Blocks(gun, Place(gun, "Cannon", meshes["Cannon"], body, -turretAt), "Cannon");
 
                 // The pack's barrel is a hollow tube; voxelized it comes out as loose strips. A solid cylinder
                 // from the mantlet to the muzzle instead (round parts are cylinders in our voxel style).
@@ -240,12 +244,21 @@ namespace Game.EditorTools
                     t.localPosition = new Vector3(x, Model(new Vector3(0f, EXHAUST_Y, 0f)).y, z);
                 }
 
-                // ---------------------------------------------------------------- voxel skin: plain paint for now
+                // ---------------------------------------------------------------- voxel skin: the old paint
+                // Sand with grey patches, the number and the cross on both turret sides — as the tank wore it.
                 VoxelizedModel skin = root.GetComponent<VoxelizedModel>();
                 var so = new SerializedObject(skin);
+                var camouflage = new VoxelizedModel.Camouflage
+                {
+                    Paint = body,
+                    Patch = new Color(0.46f, 0.45f, 0.43f),
+                    Dark = new Color(0.36f, 0.355f, 0.345f),
+                    Light = new Color(0.8f, 0.66f, 0.42f),
+                    Frequency = 1.5f,
+                    Threshold = 0.2f
+                };
                 skin.Configure(new[] { "HullVisual/Track?_Link*", "HullVisual/Track?_Tread*", "HullVisual/TurretVisual/MachineGun*" },
-                    so.FindProperty("_voxelSize").floatValue, so.FindProperty("_colorNoise").floatValue,
-                    default, System.Array.Empty<VoxelizedModel.Decal>());
+                    VOXEL, so.FindProperty("_colorNoise").floatValue, camouflage, Decals());
 
                 PrefabUtility.SaveAsPrefabAsset(root, TANK);
                 Debug.Log("[TankTigerBuilder] Tank_01 now wears the Kawaii Tiger I.");
@@ -254,6 +267,93 @@ namespace Game.EditorTools
             {
                 PrefabUtility.UnloadPrefabContents(root);
             }
+        }
+
+        /// <summary>The number «131» and the cross, white on black, on each turret side (as on the tank before).</summary>
+        private static VoxelizedModel.Decal[] Decals()
+        {
+            string[] number = { ".#.####..#", "##....#.##", ".#....#..#", ".#..###..#", ".#....#..#", ".#....#..#", ".#.####..#" };
+            string[] cross = { "...WKKW...", "...WKKW...", "...WKKW...", "WWWWKKWWWW", "KKKKKKKKKK", "KKKKKKKKKK", "WWWWKKWWWW", "...WKKW...", "...WKKW...", "...WKKW..." };
+            var white = new Color(0.93f, 0.93f, 0.9f);
+            var black = new Color(0.05f, 0.05f, 0.055f);
+            var decals = new List<VoxelizedModel.Decal>();
+            for (int side = -1; side <= 1; side += 2)
+            {
+                decals.Add(new VoxelizedModel.Decal { Part = "HullVisual/TurretVisual", Side = side, Center = new Vector2(-0.06f, 0.225f), Rows = number, Keys = "#", Colors = new[] { white } });
+                decals.Add(new VoxelizedModel.Decal { Part = "HullVisual/TurretVisual", Side = side, Center = new Vector2(-0.42f, 0.24f), Rows = cross, Keys = "WK", Colors = new[] { white, black } });
+            }
+
+            return decals.ToArray();
+        }
+
+        /// <summary>
+        /// Swaps a pack mesh for its voxels as a closed block mesh, in the part's own space: the new voxelizer
+        /// (straight faces on the grid, fill from outside, details under two voxels cut) gives the shape, and
+        /// VoxelizedModel, filling closed meshes by parity at the same voxel size, gets exactly those voxels in
+        /// the game — no holes where the pack's mesh is open, no specks of small detail.
+        /// </summary>
+        private static void Blocks(Transform part, Transform child, string name)
+        {
+            MeshRenderer renderer = child.GetComponent<MeshRenderer>();
+            using VoxelizerTriangles triangles = VoxelizerSource.Collect(part, new List<Renderer> { renderer });
+            VoxelizerStraighten.SnapPlanes(triangles, VOXEL);
+            using VoxelizerPartGrid grid = VoxelizerSurface.Sample(triangles, VOXEL, name);
+            VoxelizerSurface.Fill(grid);
+            VoxelizerStraighten.Open(grid, 2);
+
+            var vertices = new List<Vector3>();
+            var indices = new List<int>();
+            int3 size = grid.Size;
+            int3[] dirs = { new(1, 0, 0), new(-1, 0, 0), new(0, 1, 0), new(0, -1, 0), new(0, 0, 1), new(0, 0, -1) };
+            bool Solid(int3 c) => math.all(c >= 0) && math.all(c < size) && grid.Cells[c.x + size.x * (c.y + size.y * c.z)].a != 0;
+            for (int z = 0; z < size.z; z++)
+            for (int y = 0; y < size.y; y++)
+            for (int x = 0; x < size.x; x++)
+            {
+                var cell = new int3(x, y, z);
+                if (!Solid(cell))
+                    continue;
+                foreach (int3 d in dirs)
+                {
+                    if (Solid(cell + d))
+                        continue;
+                    Vector3 n = new(d.x, d.y, d.z);
+                    Vector3 a = d.x != 0 ? Vector3.up : Vector3.right;
+                    Vector3 b = Vector3.Cross(n, a);
+                    Vector3 c = (Vector3)(float3)grid.Origin + (new Vector3(x, y, z) + Vector3.one * 0.5f + n * 0.5f) * VOXEL;
+                    int s = vertices.Count;
+                    vertices.Add(c + (-a - b) * 0.5f * VOXEL);
+                    vertices.Add(c + (a - b) * 0.5f * VOXEL);
+                    vertices.Add(c + (a + b) * 0.5f * VOXEL);
+                    vertices.Add(c + (-a + b) * 0.5f * VOXEL);
+                    indices.Add(s); indices.Add(s + 1); indices.Add(s + 2);
+                    indices.Add(s); indices.Add(s + 2); indices.Add(s + 3);
+                }
+            }
+
+            string path = ART + "Blocks/SM_TigerI_" + name + "_Blocks.asset";
+            var mesh = AssetDatabase.LoadAssetAtPath<Mesh>(path);
+            bool created = mesh == null;
+            if (created)
+                mesh = new Mesh { name = "SM_TigerI_" + name + "_Blocks" };
+            mesh.Clear();
+            mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
+            mesh.SetVertices(vertices);
+            mesh.SetTriangles(indices, 0);
+            mesh.RecalculateNormals();
+            mesh.RecalculateBounds();
+            if (created)
+            {
+                if (!AssetDatabase.IsValidFolder(ART + "Blocks"))
+                    AssetDatabase.CreateFolder(ART.TrimEnd('/'), "Blocks");
+                AssetDatabase.CreateAsset(mesh, path);
+            }
+            else
+                EditorUtility.SetDirty(mesh);
+
+            child.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
+            child.localScale = Vector3.one;
+            child.GetComponent<MeshFilter>().sharedMesh = mesh;
         }
 
         /// <summary>
@@ -328,14 +428,14 @@ namespace Game.EditorTools
         }
 
         /// <summary>A mesh modelled in pack model space, placed so its points land where <see cref="Model"/> puts them.</summary>
-        private static void Place(Transform parent, string name, Mesh mesh, Material material, Vector3 shift) =>
+        private static Transform Place(Transform parent, string name, Mesh mesh, Material material, Vector3 shift) =>
             Child(parent, name, mesh, material, Offset + shift, Quaternion.identity, SCALE);
 
         /// <summary>A mesh with its own pivot, at model-space transform <paramref name="m"/>.</summary>
-        private static void PlaceModel(Transform parent, string name, Mesh mesh, Material material, Matrix4x4 m) =>
+        private static Transform PlaceModel(Transform parent, string name, Mesh mesh, Material material, Matrix4x4 m) =>
             Child(parent, name, mesh, material, Model(m.GetColumn(3)), m.rotation, SCALE);
 
-        private static void Child(Transform parent, string name, Mesh mesh, Material material, Vector3 position, Quaternion rotation, float scale)
+        private static Transform Child(Transform parent, string name, Mesh mesh, Material material, Vector3 position, Quaternion rotation, float scale)
         {
             var go = new GameObject(name) { layer = parent.gameObject.layer };
             go.transform.SetParent(parent, false);
@@ -343,6 +443,7 @@ namespace Game.EditorTools
             go.transform.localScale = Vector3.one * scale;
             go.AddComponent<MeshFilter>().sharedMesh = mesh;
             go.AddComponent<MeshRenderer>().sharedMaterial = material;
+            return go.transform;
         }
 
         /// <summary>
