@@ -37,6 +37,7 @@ namespace Game
         private GameObject _current;
         private float _nextShot;
         private float _pitch = 18f;
+        private float _yaw;
         private float _distance = 8f;
 
         // The game's bullet and blast numbers (private consts), read once.
@@ -113,10 +114,12 @@ namespace Game
             if (mouse == null)
                 return;
 
+            // The camera flies round the tank instead of the table turning it: knocked-off armour, crumbs and
+            // debris lie in the world, so turning only the tank left them hanging in front of it.
             if (mouse.rightButton.isPressed)
             {
                 Vector2 delta = mouse.delta.ReadValue();
-                _table.Rotate(0f, -delta.x * 0.3f, 0f, Space.World);
+                _yaw += delta.x * 0.3f;
                 _pitch = Mathf.Clamp(_pitch - delta.y * 0.15f, -5f, 70f);
             }
 
@@ -146,7 +149,7 @@ namespace Game
         /// <summary>The camera on its orbit round the focus: fixed yaw, the pitch and distance the mouse set.</summary>
         private void Place()
         {
-            Quaternion look = Quaternion.Euler(_pitch, 0f, 0f);
+            Quaternion look = Quaternion.Euler(_pitch, _yaw, 0f);
             _camera.transform.position = _focus.position + look * new Vector3(0f, 0f, -_distance);
             _camera.transform.rotation = look;
         }
@@ -245,7 +248,7 @@ namespace Game
         private void OnGUI()
         {
             GUI.Label(new Rect(16, 16, 520, 120),
-                "ЛКМ — пулемёт   Space — снаряд пушки   R — новая мишень\nПКМ + мышь — крутить стол и наклон   колесо — ближе/дальше");
+                "ЛКМ — пулемёт   Space — снаряд пушки   R — новая мишень\nПКМ + мышь — облёт камерой вокруг танка   колесо — ближе/дальше");
         }
     }
 }
