@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Game.Arenas
+namespace Game
 {
     /// <summary>
     /// The arena the tank fights on: builds it, gives the AI director its burrows and bounds, opens

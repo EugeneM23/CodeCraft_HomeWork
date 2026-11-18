@@ -1,31 +1,7 @@
-using System;
 using UnityEngine;
 
-namespace Game.Arenas
+namespace Game
 {
-    /// <summary>How the houses of an arena stand against the line from the entry to the gate.</summary>
-    public enum ArenaLayout
-    {
-        /// <summary>Houses anywhere off the entry and the gate.</summary>
-        Scattered,
-
-        /// <summary>A house between the tank and the far burrows: Spitters hide behind it (arena 3).</summary>
-        CoverForSpitters,
-
-        /// <summary>A house in the middle, on the line from the entry to the gate (arena 4).</summary>
-        HouseBlocksGate
-    }
-
-    /// <summary>Hints the HUD shows on an arena (the menu team draws them).</summary>
-    [Flags]
-    public enum ArenaHint
-    {
-        None = 0,
-        Controls = 1,
-        Crush = 2,
-        DestroyCover = 4
-    }
-
     /// <summary>
     /// One arena of a chapter: what the generator puts on it. The waves are the AI's (its director
     /// reads <see cref="Id"/>); here is only the ground and what stands on it.

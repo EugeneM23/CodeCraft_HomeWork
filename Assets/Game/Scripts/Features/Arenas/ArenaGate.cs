@@ -2,7 +2,7 @@ using System;
 using Game.Voxels;
 using UnityEngine;
 
-namespace Game.Arenas
+namespace Game
 {
     /// <summary>
     /// The way out of an arena: a brick wall across a gap in the far edge. Until the arena is

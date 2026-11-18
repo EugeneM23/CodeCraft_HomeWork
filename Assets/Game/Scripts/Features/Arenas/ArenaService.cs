@@ -4,7 +4,7 @@ using Game.Voxels;
 using Unity.Profiling;
 using UnityEngine;
 
-namespace Game.Arenas
+namespace Game
 {
     /// <summary>
     /// The arena of the chapter scene: builds one from its definition and the run's seed, takes the
@@ -90,7 +90,9 @@ namespace Game.Arenas
             // the tank is moved to the arena after that, or the camera would stay hundreds of metres off.
             yield return null;
             yield return null;
-            if (!IsBuilt)
+            // The run may have come into the context meanwhile: then the core builds.
+            HookRun();
+            if (_run == null && !IsBuilt)
                 Build(_chapter.At(1), _seed != 0 ? _seed : Environment.TickCount & 0x7FFFFFFF);
         }
 

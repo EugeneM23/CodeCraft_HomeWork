@@ -3,7 +3,7 @@ using Game.Voxels;
 using Unity.Mathematics;
 using UnityEngine;
 
-namespace Game.Arenas
+namespace Game
 {
     /// <summary>
     /// Works out an arena from its definition and the run's seed: where it stands in the world, the
@@ -41,7 +41,11 @@ namespace Game.Arenas
         private static readonly Vector3Int VICTORIAN_TALL = new(64, 106, 54);
         private static readonly Vector3Int HOUSE = new(60, 44, 50);
         private const float HOUSE_EDGE = 3f;
-        private const float HOUSE_GAP = 4f;
+        /// <summary>
+        /// Between footprints: a pad blends into the hills for PAD_BLEND (4 m) past its radius, which
+        /// is itself 1-2 m past the walls; nearer, one house's blend would tilt the ground at the other.
+        /// </summary>
+        private const float HOUSE_GAP = 6.5f;
         private const float HOUSE_FROM_ENTRY = 7f;
         private const float HOUSE_FROM_GATE = 6f;
         private const int HOUSE_TRIES = 64;
@@ -213,6 +217,7 @@ namespace Game.Arenas
                     continue;
                 }
 
+                bool placed = false;
                 for (int attempt = 0; attempt < HOUSE_TRIES; attempt++)
                 {
                     Vector2 at;
@@ -234,8 +239,18 @@ namespace Game.Arenas
                     if (HouseFits(plan, Footprint(at, extent), entry, gate, !special))
                     {
                         AddHouse(plan, shape, size, at, extent, houseSeed);
+                        placed = true;
                         break;
                     }
+                }
+
+                // Arena 3 must have its cover house: the first house, so nothing stands in the way yet.
+                if (!placed && special)
+                {
+                    float z = centre.y + 6f;
+                    float lineX = Mathf.Lerp(entry.x, gate.x, (z - entry.y) / (gate.y - entry.y));
+                    float side = lineX <= centre.x ? 1f : -1f;
+                    AddHouse(plan, shape, size, new Vector2(lineX + side * 7f, z), extent, houseSeed);
                 }
             }
         }

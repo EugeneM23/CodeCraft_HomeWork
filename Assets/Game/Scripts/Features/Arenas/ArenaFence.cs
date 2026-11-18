@@ -3,7 +3,7 @@ using Unity.Collections;
 using Unity.Mathematics;
 using UnityEngine;
 
-namespace Game.Arenas
+namespace Game
 {
     /// <summary>
     /// A straight run of a village wooden picket fence, built of voxels and breakable: posts sunk in

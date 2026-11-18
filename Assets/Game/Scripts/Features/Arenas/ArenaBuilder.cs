@@ -3,7 +3,7 @@ using Game.Voxels;
 using Unity.Profiling;
 using UnityEngine;
 
-namespace Game.Arenas
+namespace Game
 {
     /// <summary>
     /// Puts an <see cref="ArenaPlan"/> into the scene under one root: the voxel ground (rolling, with
@@ -186,15 +186,31 @@ namespace Game.Arenas
             box.excludeLayers = ArenaGate.PassThrough;
         }
 
-        /// <summary>Flat ground to the horizon round the voxel tile, just under its lowest level.</summary>
+        /// <summary>
+        /// Flat ground to the horizon round the voxel tile, just under its lowest level: a ring of
+        /// four quads, so nothing shows through a crater dug in the tile itself.
+        /// </summary>
         private static void AddBackdrop(ArenaPlan plan, Transform root, Material material)
         {
-            var go = GameObject.CreatePrimitive(PrimitiveType.Plane);
+            const float far = 400f;
+            float inner = ArenaPlan.SIZE * 0.5f + ArenaPlan.MARGIN;
+            float band = far - inner;
+            Vector3 c = plan.Centre + Vector3.down * 0.05f;
+
+            AddQuad(root, material, c + new Vector3(0f, 0f, inner + band * 0.5f), new Vector2(far * 2f, band));
+            AddQuad(root, material, c - new Vector3(0f, 0f, inner + band * 0.5f), new Vector2(far * 2f, band));
+            AddQuad(root, material, c + new Vector3(inner + band * 0.5f, 0f, 0f), new Vector2(band, inner * 2f));
+            AddQuad(root, material, c - new Vector3(inner + band * 0.5f, 0f, 0f), new Vector2(band, inner * 2f));
+        }
+
+        private static void AddQuad(Transform root, Material material, Vector3 centre, Vector2 size)
+        {
+            var go = GameObject.CreatePrimitive(PrimitiveType.Quad);
             go.name = "Backdrop";
             Object.Destroy(go.GetComponent<Collider>());
             go.transform.SetParent(root, false);
-            go.transform.position = plan.Centre + Vector3.down * 0.05f;
-            go.transform.localScale = new Vector3(40f, 1f, 40f);
+            go.transform.SetPositionAndRotation(centre, Quaternion.Euler(90f, 0f, 0f));
+            go.transform.localScale = new Vector3(size.x, size.y, 1f);
             var renderer = go.GetComponent<MeshRenderer>();
             renderer.sharedMaterial = material;
             renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;

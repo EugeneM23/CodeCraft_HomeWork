@@ -1,12 +1,11 @@
 using System.Collections.Generic;
 using System.IO;
-using Game.Arenas;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace Game.EditorTools.Arenas
+namespace Game.EditorTools
 {
     /// <summary>
     /// Makes chapter 1 «Outskirts» for milestone 1: the five arena definitions (GDD §10), the
@@ -18,7 +17,7 @@ namespace Game.EditorTools.Arenas
     {
         public const string CONFIG_FOLDER = "Assets/Game/Configs/Arenas/Chapter1";
         public const string CHAPTER_PATH = CONFIG_FOLDER + "/Chapter1_Arenas.asset";
-        public const string MATERIAL_PATH = "Assets/Game/Materials/Arenas/M_ArenaBackdrop.mat";
+        public const string MATERIAL_PATH = "Assets/Game/Materials/Arenas/MT_ArenaBackdrop.mat";
         public const string SCENE_PATH = "Assets/Game/Scenes/Levels/Chapter1/Chapter1_Arena.unity";
         public const string LEVEL_PATH = "Assets/Game/Configs/Levels/Chapter1LevelConfig.asset";
 

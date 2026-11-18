@@ -224,13 +224,33 @@ namespace Game.Voxels
                 pending[i] = structures[i] != null ? structures[i].BeginBuild() : null;
             JobHandle.ScheduleBatchedJobs();
 
-            for (int i = 0; i < structures.Count; i++)
+            try
             {
-                if (pending[i] == null)
-                    continue;
+                for (int i = 0; i < structures.Count; i++)
+                {
+                    PendingBuild build = pending[i];
+                    if (build == null)
+                        continue;
 
-                pending[i].Handle.Complete();
-                structures[i].FinishBuild(pending[i]);
+                    pending[i] = null;
+                    build.Handle.Complete();
+                    structures[i].FinishBuild(build);
+                }
+            }
+            finally
+            {
+                // One threw: the jobs still running are waited for and their grids let go.
+                foreach (PendingBuild build in pending)
+                {
+                    if (build == null)
+                        continue;
+
+                    build.Handle.Complete();
+                    build.Pads.Dispose();
+                    build.Streets.Dispose();
+                    build.Voxels.Dispose();
+                    build.Palette.Dispose();
+                }
             }
         }
 

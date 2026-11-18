@@ -1,9 +1,8 @@
-using Game.Arenas;
 using NUnit.Framework;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace Game.Tests.Arenas
+namespace Game.Tests
 {
     /// <summary>The arena plan: same seed, same arena; houses, burrows and the gate where the rules put them.</summary>
     public sealed class ArenaPlannerTests

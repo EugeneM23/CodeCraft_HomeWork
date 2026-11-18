@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Game.Arenas
+namespace Game
 {
     /// <summary>The arenas of one chapter, in the order a run goes through them.</summary>
     [CreateAssetMenu(fileName = "ArenaChapter", menuName = "Game/Arenas/Chapter")]
