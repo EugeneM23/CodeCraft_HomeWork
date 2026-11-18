@@ -28,7 +28,8 @@ namespace Game
         private const float SHELL_SMOKE_TUNNEL = 1f;
 
         /// <summary>Radius (m) and push (m/s) of a bullet's tunnel through the small voxel clouds (muzzle smoke).</summary>
-        private const float BULLET_PUFF_TUNNEL = 0.6f;
+        private const float BULLET_PUFF_TUNNEL = 1.2f;
+        private const float SHELL_PUFF_TUNNEL = 2f;
         private const float BULLET_PUFF_PUSH = 0.8f;
 
         /// <summary>Radius (m) of the ball a bullet is taken for against horde monsters.</summary>
@@ -113,7 +114,7 @@ namespace Game
             // A plain bullet (the machine gun) shoves the smoke harder and wider than its tunnel through a smoke screen.
             object weapon = entity.TryGetBulletWeapon(out IVariable<IEntity> holder) ? holder.Value : null;
             bool plain = _smokeTunnel < SHELL_SMOKE_TUNNEL;
-            VoxelPuffField.Cut(from, to, plain ? BULLET_PUFF_TUNNEL : _smokeTunnel, weapon, plain ? BULLET_PUFF_PUSH : 0f);
+            VoxelPuffField.Cut(from, to, plain ? BULLET_PUFF_TUNNEL : SHELL_PUFF_TUNNEL, weapon, plain ? BULLET_PUFF_PUSH : 0f);
         }
 
         /// <summary>True when the bullet was spent on a monster (already back in the pool).</summary>
