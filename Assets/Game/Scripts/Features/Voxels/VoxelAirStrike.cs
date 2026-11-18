@@ -307,6 +307,8 @@ namespace Game
             VoxelSmoke.Blast(point, _blastRadius * 2.5f);
 
             SpawnFireballs(point);
+            // The smoke is voxel cubes; the fireballs' particle smoke is stopped (SpawnFireballs).
+            VoxelBlastSmoke.Spawn(point, _blastRadius);
 
             _flash.transform.position = point + Vector3.up * 3f;
             _flash.range = _flashRange;
@@ -339,6 +341,12 @@ namespace Game
                 // again on its next use (ExplosionFlash.OnEnable).
                 if (i > 0 && fireball.GetComponentInChildren<Light>() is { } light)
                     light.enabled = false;
+
+                // The bomb's smoke is voxel (VoxelBlastSmoke): this pooled effect's own particle smoke is
+                // stopped here; it plays again on its next use (play on awake), the cannon shell's included.
+                Transform smoke = fireball.Find("Smoke");
+                if (smoke != null && smoke.TryGetComponent(out ParticleSystem particles))
+                    particles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
             }
         }
 
