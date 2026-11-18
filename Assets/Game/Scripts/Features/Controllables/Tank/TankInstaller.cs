@@ -202,11 +202,11 @@ namespace Game
             entity.AddBehaviour<TankSuspensionBehaviour>();
             entity.AddBehaviour(new TankDriveBehaviour(_acceleration, _braking, _turnAcceleration, _pitchLean,
                 _boostMultiplier, engine, _driftSpeed, _sideGrip));
-            // After the drive: the nose ploughs into ground it is about to hit, and the hull's speed
-            // after the hit is set here, over the drive's push.
+            // After the drive: the nose rips a chunk out of ground it is about to hit, and the hull's
+            // bounce off it is set here, over the drive's push.
             if (_hullCollider != null && PloughPreset != null)
             {
-                _plough = new TankPloughBehaviour(_hullCollider, PloughPreset, new DigEarthThrow());
+                _plough = new TankPloughBehaviour(_hullCollider, PloughPreset, new DebrisEarthThrow());
                 entity.AddBehaviour(_plough);
             }
             if (_contacts != null)

@@ -19,22 +19,19 @@ MonoBehaviour:
   LookAhead: 0.1
   BiteRadiusMin: 0.8
   BiteRadiusMax: 1.4
-  BiteInterval: 0.05
-  ThrowScale: 1.3
-  ThrowLift: 0.8
-  ThrowVolume: 1
-  SpreadMin: 0.3
-  SpreadMax: 1
-  BiteDebris: 300
   BiteDepth: 0.8
-  PloughTime: 0.28
-  DigSpring: 0.3
+  BiteInterval: 0.05
+  ThrowScale: 1
+  ThrowLift: 0.8
+  ThrowVolume: 0.25
+  SpreadMin: 0
+  SpreadMax: 0.15
   SpeedLoss: 0.25
-  MaxRamp: 21
-  Deflect: 0.1
-  Hop: 0
-  PitchKick: 1.0
-  RisePitch: 22
+  MaxRamp: 22
+  Deflect: 0
+  Hop: 1.6
+  PitchKick: 0.7
+  ClimbTime: 0.6
   ImpactCooldown: 0.3
   ImpactScale: 1
   ShakeStrength: 1
