@@ -167,6 +167,20 @@ namespace Game.Voxels
 
         private void Start() => Build();
 
+        /// <summary>
+        /// What to build, set from code before <see cref="Build"/> (a generated arena adds the
+        /// component and builds it at once). Does nothing once built.
+        /// </summary>
+        public void Configure(Shape shape, Vector3Int size, int seed)
+        {
+            if (_body != null)
+                return;
+
+            _shape = shape;
+            _size = size;
+            _seed = seed;
+        }
+
         /// <summary>How wet a material looks (0..1): wet mud glistens, dry mud and muddy grass are damp.</summary>
         private static float Wetness(Material material) => material switch
         {
@@ -176,10 +190,75 @@ namespace Game.Voxels
             _ => 0f
         };
 
+        /// <summary>A build whose voxel job is running on a worker: <see cref="FinishBuild"/> makes the body.</summary>
+        private sealed class PendingBuild
+        {
+            public JobHandle Handle;
+            public NativeArray<byte> Voxels;
+            public NativeArray<Color32> Palette;
+            public NativeArray<float4> Pads;
+            public NativeArray<float4> Streets;
+            public int3 Size;
+            public int Materials;
+            public VoxelTerrainSettings Terrain;
+        }
+
         public void Build()
         {
-            if (_body != null)
+            PendingBuild pending = BeginBuild();
+            if (pending == null)
                 return;
+
+            pending.Handle.Complete();
+            FinishBuild(pending);
+        }
+
+        /// <summary>
+        /// Builds several structures at once: their voxel jobs run side by side on the workers (a
+        /// generated arena: ground tiles, houses, trees), then each gets its body here, in order.
+        /// </summary>
+        public static void BuildAll(System.Collections.Generic.IReadOnlyList<VoxelStructure> structures)
+        {
+            var pending = new PendingBuild[structures.Count];
+            for (int i = 0; i < structures.Count; i++)
+                pending[i] = structures[i] != null ? structures[i].BeginBuild() : null;
+            JobHandle.ScheduleBatchedJobs();
+
+            try
+            {
+                for (int i = 0; i < structures.Count; i++)
+                {
+                    PendingBuild build = pending[i];
+                    if (build == null)
+                        continue;
+
+                    pending[i] = null;
+                    build.Handle.Complete();
+                    structures[i].FinishBuild(build);
+                }
+            }
+            finally
+            {
+                // One threw: the jobs still running are waited for and their grids let go.
+                foreach (PendingBuild build in pending)
+                {
+                    if (build == null)
+                        continue;
+
+                    build.Handle.Complete();
+                    build.Pads.Dispose();
+                    build.Streets.Dispose();
+                    build.Voxels.Dispose();
+                    build.Palette.Dispose();
+                }
+            }
+        }
+
+        /// <summary>The palette and the voxel job, scheduled; null once built.</summary>
+        private PendingBuild BeginBuild()
+        {
+            if (_body != null)
+                return null;
 
             int3 size = math.max(new int3(_size.x, _size.y, _size.z), 1);
             var voxels = new NativeArray<byte>(size.x * size.y * size.z, Allocator.Persistent);
@@ -213,7 +292,7 @@ namespace Game.Voxels
             for (int i = 0; padList != null && i < padList.Length; i++)
                 pads[i] = padList[i];
 
-            new BuildVoxelsJob
+            JobHandle handle = new BuildVoxelsJob
             {
                 Voxels = voxels,
                 Size = size,
@@ -230,9 +309,30 @@ namespace Game.Voxels
                 Verge = terrain != null ? terrain.VergeWidth : 0f,
                 VoxelSize = _voxelSize,
                 WorldMin = (float3)transform.position + new float3(-size.x * 0.5f, 0f, -size.z * 0.5f) * _voxelSize
-            }.Run();
-            pads.Dispose();
-            streets.Dispose();
+            }.Schedule();
+
+            return new PendingBuild
+            {
+                Handle = handle,
+                Voxels = voxels,
+                Palette = palette,
+                Pads = pads,
+                Streets = streets,
+                Size = size,
+                Materials = colors.Length,
+                Terrain = terrain
+            };
+        }
+
+        /// <summary>The job is done: the body of voxels, its settings and (for buildings) its strength.</summary>
+        private void FinishBuild(PendingBuild pending)
+        {
+            pending.Pads.Dispose();
+            pending.Streets.Dispose();
+            int3 size = pending.Size;
+            NativeArray<byte> voxels = pending.Voxels;
+            NativeArray<Color32> palette = pending.Palette;
+            VoxelTerrainSettings terrain = pending.Terrain;
 
             var go = new GameObject("Voxels") { layer = gameObject.layer };
             go.transform.SetParent(transform, false);
@@ -266,7 +366,7 @@ namespace Game.Voxels
             // Buildings bear their own weight (VoxelBody.SolveStructure): the ground and trees do not.
             if (_shape is Shape.Wall or Shape.House or Shape.Tower or Shape.Victorian)
             {
-                _body.SetStrength(BuildStrength(colors.Length));
+                _body.SetStrength(BuildStrength(pending.Materials));
                 _body.DesignStructure();
             }
         }
