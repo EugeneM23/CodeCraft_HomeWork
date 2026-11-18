@@ -18810,6 +18810,7 @@ MonoBehaviour:
   - HullVisual/Track?_Rear
   _keep:
   - HullVisual/Track?_Link*
+  - HullVisual/TurretVisual/MachineGun?*
   _voxelSize: 0.03
   _colorNoise: 0.06
   _toughness: 0.45

@@ -40,12 +40,16 @@ namespace Game
         private GameFactory _factory;
         private ReactiveInt _damage;
         private int _shown;
+        private Rigidbody _body;
 
         public TurretsBehaviour(IEnemyTargets targets, WeaponSettings settings)
         {
             _targets = targets;
             _settings = settings;
         }
+
+        /// <summary>Where the turrets throw their casings (experiment); null throws none. Set before the tank inits it.</summary>
+        public CasingField Casings { get; set; }
 
         public void Init(IEntity tank)
         {
@@ -70,6 +74,7 @@ namespace Game
             Material material = HullMaterial(tank, root);
             for (int i = 0; i < MAX_TURRETS; i++)
                 _turrets[i] = Build(i, root, parent, turretVisual, bounds, material, bullet, hull);
+            tank.TryGetRiggedBody(out _body);
 
             _onModifiersChanged = Apply;
             _modifiers.Changed += _onModifiersChanged;
@@ -118,6 +123,14 @@ namespace Game
 
                 turret.NextShot = now + _settings.turretInterval;
                 BulletShotUseCase.Fire(turret.Weapon, _factory, turret.Muzzle);
+
+                // Experiment: a casing out of the box's right side, behind the muzzle.
+                if (Casings != null)
+                {
+                    Transform mount = turret.Mount.transform;
+                    Vector3 at = mount.position + mount.right * (_settings.turretSize.x * 0.5f + 0.02f);
+                    Casings.Eject(at, mount.rotation, _body != null ? _body.linearVelocity : Vector3.zero);
+                }
             }
         }
 
