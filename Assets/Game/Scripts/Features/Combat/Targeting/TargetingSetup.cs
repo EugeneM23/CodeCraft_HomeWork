@@ -18,6 +18,9 @@ namespace Game
         /// <summary>The hull colliders given to the machine gun at attach, taken back at detach.</summary>
         private static Collider[] s_mgShooterColliders;
 
+        /// <summary>The big machine gun built at attach (experiment), taken down at detach.</summary>
+        private static MachineGunRig s_mgRig;
+
         public static void InstallContext(GameContext context, CombatConfig config)
         {
             var targets = new EnemyTargets();
@@ -34,6 +37,11 @@ namespace Game
             ShellBounceUseCase.Range = config.Weapons.ricochetRange;
             CombatFocus.Enabled = false;
             CombatFocus.Clear();
+
+            // Experiment: the guns' voxel casings. A context restarted in the same scene keeps the field it was given
+            // the first time (as XpOrbField).
+            if (config.Weapons.casingsOn && !context.TryGetBehaviour(out CasingField _))
+                context.AddBehaviour(new CasingField(config.Weapons));
         }
 
         public static void UninstallContext(GameContext context)
@@ -61,10 +69,22 @@ namespace Game
             if (tank.TryGetWeapon(out IReactiveVariable<IEntity> cannon) && cannon.Value != null)
                 cannon.Value.SetWeaponOwner(tank);
 
+            context.TryGetBehaviour(out CasingField casings);
+
             if (tank.TryGetSecondaryWeapon(out IReactiveVariable<IEntity> mg) && mg.Value != null)
             {
                 mg.Value.SetWeaponOwner(tank);
-                mg.Value.AddBehaviour(new AutoGunBehaviour(tank, targets, settings));
+
+                // Experiment: the big machine gun that turns to its target; the fire point moves to its muzzle.
+                s_mgRig?.Dispose();
+                s_mgRig = null;
+                if (settings.mgBigModel && mg.Value.TryGetFirePoint(out Transform firePoint) && firePoint != null)
+                {
+                    tank.TryGetTurretVisual(out Transform turretVisual);
+                    s_mgRig = MachineGunRig.Build(firePoint, turretVisual, settings);
+                }
+
+                mg.Value.AddBehaviour(new AutoGunBehaviour(tank, targets, settings, s_mgRig, casings));
 
                 // The auto gun turns to targets on every side: its bullets fly through the tank's own hull, as the
                 // turrets' do. The cannon has none: it fires along its barrel, from a muzzle outside the hull.
@@ -82,7 +102,7 @@ namespace Game
             }
 
             tank.AddBehaviour(new CannonFiredSignalBehaviour());
-            tank.AddBehaviour(new TurretsBehaviour(targets, settings));
+            tank.AddBehaviour(new TurretsBehaviour(targets, settings) { Casings = casings });
             // Found once here, not in a tick: the sandbox's air strike, absent in other levels.
             tank.AddBehaviour(new AirStrikeSkillBehaviour(targets, settings,
                 Object.FindFirstObjectByType<VoxelAirStrike>())); // perf-ok: once on tank attach, not in a tick
@@ -92,6 +112,9 @@ namespace Game
         {
             CombatFocus.Enabled = false;
             CombatFocus.Clear();
+
+            s_mgRig?.Dispose();
+            s_mgRig = null;
 
             if (tank == null)
                 return;
