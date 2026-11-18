@@ -23,7 +23,7 @@ namespace Game.Voxels.Tests
                 if (go != null)
                     Object.Destroy(go);
             _spawned.Clear();
-            foreach (VoxelBody body in Object.FindObjectsByType<VoxelBody>(FindObjectsSortMode.None))
+            foreach (VoxelBody body in Object.FindObjectsByType<VoxelBody>(FindObjectsInactive.Include, FindObjectsSortMode.None))
                 Object.Destroy(body.gameObject);
         }
 
@@ -126,6 +126,104 @@ namespace Game.Voxels.Tests
             }
 
             return count;
+        }
+
+        [Test]
+        public void PooledBuild_GivesTheSameBodiesAsTheOneOff_SwitchedOff_AndReusesItsPieces()
+        {
+            using SkinnedVoxelizer.Result grid = Grid();
+            List<VoxelCarcass.Piece> oneOff = VoxelCarcass.Build(grid, new[] { 0, 1 }, Settings(), "Flesh");
+            var pooled = new List<VoxelCarcass.Piece>();
+            VoxelCarcass.Build(grid, new[] { 0, 1 }, Settings(), new[] { "Flesh_0", "Flesh_1" }, true, pooled);
+
+            Assert.AreEqual(oneOff.Count, pooled.Count);
+            for (int i = 0; i < pooled.Count; i++)
+            {
+                VoxelCarcass.Piece a = oneOff[i];
+                VoxelCarcass.Piece b = pooled[i];
+                Assert.AreEqual(a.Body.name, b.Body.name);
+                Assert.IsTrue(a.Body.gameObject.activeSelf);
+                Assert.IsFalse(b.Body.gameObject.activeSelf, "made switched off, to show later");
+                Assert.AreEqual(a.Cluster, b.Cluster);
+                Assert.AreEqual(a.Parts, b.Parts);
+                Assert.AreEqual(a.Body.Size, b.Body.Size);
+                Assert.AreEqual(a.Body.Origin, b.Body.Origin);
+                Assert.AreEqual(a.Body.SolidCount, b.Body.SolidCount);
+                Assert.AreEqual(a.Torn.Length, b.TornCount);
+                for (int f = 0; f < b.TornCount; f++)
+                {
+                    Assert.AreEqual(a.Torn[f].Point, b.Torn[f].Point);
+                    Assert.AreEqual(a.Torn[f].Normal, b.Torn[f].Normal);
+                }
+
+                // The same colours voxel by voxel, sampled through the bodies' bounds.
+                Bounds bounds = a.Body.WorldBounds;
+                for (float x = bounds.min.x; x < bounds.max.x; x += 0.05f)
+                for (float y = bounds.min.y; y < bounds.max.y; y += 0.05f)
+                for (float z = bounds.min.z; z < bounds.max.z; z += 0.05f)
+                {
+                    var p = new Vector3(x + 0.025f, y + 0.025f, z + 0.025f);
+                    bool inA = a.Body.TryGetColor(p, out Color32 ca);
+                    bool inB = b.Body.TryGetColor(p, out Color32 cb);
+                    Assert.AreEqual(inA, inB, $"voxel at {p}");
+                    if (inA)
+                        Assert.AreEqual(ca, cb, $"colour at {p}");
+                }
+            }
+
+            VoxelCarcass.Piece first = pooled[0];
+            VoxelCarcass.Release(pooled);
+            Assert.IsEmpty(pooled);
+            Assert.IsNull(first.Body, "a released piece lets go of its body");
+
+            VoxelCarcass.Build(grid, new[] { 0, 1 }, Settings(), new[] { "Flesh_0", "Flesh_1" }, true, pooled);
+            Assert.That(pooled, Has.Some.SameAs(first), "the next death takes the released pieces");
+            VoxelCarcass.Release(pooled);
+        }
+
+        [Test]
+        public void SpareBodies_AreTakenByTheNextPieces_WithWhatALoosePieceCarries()
+        {
+            using SkinnedVoxelizer.Result grid = Grid();
+            int before = VoxelCarcass.SpareBodyCount;
+            VoxelCarcass.AddSpareBodies(2, true);
+            Assert.AreEqual(before + 2, VoxelCarcass.SpareBodyCount);
+
+            var pooled = new List<VoxelCarcass.Piece>();
+            VoxelCarcass.Build(grid, new[] { 0, 1 }, Settings(), new[] { "Flesh_0", "Flesh_1" }, true, pooled);
+
+            Assert.AreEqual(before, VoxelCarcass.SpareBodyCount, "both pieces took a spare");
+            foreach (VoxelCarcass.Piece piece in pooled)
+            {
+                Assert.AreEqual("Flesh_" + piece.Cluster, piece.Body.name);
+                Assert.AreEqual(VoxelWorld.PieceLayer, piece.Body.gameObject.layer);
+                Assert.IsFalse(piece.Body.gameObject.activeSelf);
+                Assert.That(piece.Body.SolidCount, Is.GreaterThan(0));
+                Assert.IsNotNull(piece.Body.GetComponent<VoxelSettle>());
+                Assert.IsNotNull(piece.Body.GetComponent<VoxelImpactFracture>());
+            }
+
+            VoxelCarcass.Release(pooled);
+        }
+        [UnityTest]
+        public IEnumerator PooledDrip_DropsWhileItLasts_ThenGoesBackToThePool()
+        {
+            Floor();
+            var go = new GameObject("Piece");
+            _spawned.Add(go);
+            go.transform.position = Vector3.up * 2f;
+            VoxelDebris debris = VoxelWorld.Instance.Debris;
+            int before = debris.Count + debris.LyingCount;
+            int running = VoxelDrip.Running;
+
+            var faces = new[] { new VoxelCarcass.TornFace { Point = go.transform.position, Normal = Vector3.up } };
+            VoxelDrip.Start(go.transform, faces, faces.Length, Green, 0.025f, 0.3f, 30f);
+            Assert.AreEqual(running + 1, VoxelDrip.Running);
+            Assert.IsNull(go.GetComponent<VoxelDrip>(), "no component on the piece");
+            yield return new WaitForSeconds(0.5f);
+
+            Assert.AreEqual(running, VoxelDrip.Running, "it goes when its time is up");
+            Assert.That(debris.Count + debris.LyingCount - before, Is.GreaterThanOrEqualTo(5));
         }
 
         [UnityTest]

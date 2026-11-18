@@ -143,19 +143,28 @@ namespace Game
         /// </summary>
         public static int[] RollClusters(int pieces, IReadOnlyList<SeamLink> seams, Func<float> roll, List<int> held)
         {
+            int[] cluster = new int[pieces];
+            RollClusters(seams, roll, held, cluster);
+            return cluster;
+        }
+
+        /// <summary>
+        /// <see cref="RollClusters(int, IReadOnlyList{SeamLink}, Func{float}, List{int})"/> into
+        /// <paramref name="cluster"/> (one entry per piece): the same rolls, nothing allocated.
+        /// </summary>
+        public static void RollClusters(IReadOnlyList<SeamLink> seams, Func<float> roll, List<int> held, int[] cluster)
+        {
             held.Clear();
             for (int i = 0; i < seams.Count; i++)
                 if (roll() < seams[i].Hold)
                     held.Add(i);
 
-            int[] cluster = Clusters(pieces, seams, held);
+            Clusters(cluster, seams, held);
             while (held.Count > 0 && Distinct(cluster) < 2)
             {
                 held.RemoveAt(Random.Range(0, held.Count));
-                cluster = Clusters(pieces, seams, held);
+                Clusters(cluster, seams, held);
             }
-
-            return cluster;
         }
 
         public static void Throw(GibSpeeds speeds, in KillingHit hit, out float speed, out float lift, out float spin)
@@ -184,27 +193,42 @@ namespace Game
         public static Vector3 ClusterSpin(float spin, float weight) =>
             Random.insideUnitSphere * (spin / Mathf.Sqrt(weight + 0.5f));
 
-        private static int[] Clusters(int count, IReadOnlyList<SeamLink> seams, List<int> held)
+        private static void Clusters(int[] parent, IReadOnlyList<SeamLink> seams, List<int> held)
         {
-            int[] parent = new int[count];
+            int count = parent.Length;
             for (int i = 0; i < count; i++)
                 parent[i] = i;
 
-            int Find(int i)
+            for (int k = 0; k < held.Count; k++)
             {
-                while (parent[i] != i)
-                    i = parent[i] = parent[parent[i]];
-                return i;
+                int s = held[k];
+                parent[Find(parent, seams[s].A)] = Find(parent, seams[s].B);
             }
 
-            foreach (int s in held)
-                parent[Find(seams[s].A)] = Find(seams[s].B);
-
             for (int i = 0; i < count; i++)
-                parent[i] = Find(i);
-            return parent;
+                parent[i] = Find(parent, i);
         }
 
-        private static int Distinct(int[] cluster) => new HashSet<int>(cluster).Count;
+        private static int Find(int[] parent, int i)
+        {
+            while (parent[i] != i)
+                i = parent[i] = parent[parent[i]];
+            return i;
+        }
+
+        private static int Distinct(int[] cluster)
+        {
+            int distinct = 0;
+            for (int i = 0; i < cluster.Length; i++)
+            {
+                bool seen = false;
+                for (int j = 0; j < i && !seen; j++)
+                    seen = cluster[j] == cluster[i];
+                if (!seen)
+                    distinct++;
+            }
+
+            return distinct;
+        }
     }
 }
