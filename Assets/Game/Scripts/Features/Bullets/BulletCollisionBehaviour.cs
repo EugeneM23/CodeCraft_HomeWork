@@ -18,6 +18,9 @@ namespace Game
         /// <summary>Most chips one bullet bite throws: a hole, not a cloud of crumbs.</summary>
         private const int BULLET_DEBRIS = 40;
 
+        /// <summary>Voxel bodies tougher than this (lower toughness: armour) are not bored through.</summary>
+        private const float ARMOUR_TOUGHNESS = 0.7f;
+
         /// <summary>How hard (m/s) a plain bullet's hit flings the chips it knocks out.</summary>
         private const float CHIP_FORCE = 9f;
 
@@ -136,7 +139,8 @@ namespace Game
                 return false;
 
             VoxelBody body = collision.collider.GetComponentInParent<VoxelBody>();
-            if (body == null || body.IsTerrain)
+            // Not the ground, and not armour: a tank's steel (toughness well under brick's 1) stops the bullet.
+            if (body == null || body.IsTerrain || body.Toughness < ARMOUR_TOUGHNESS)
                 return false;
 
             _wallPierces++;

@@ -47,6 +47,7 @@ namespace Game
         private float _chipForce = 9f;
         private int _pierces = 3;
         private int _debris = 40;
+        private float _armour = 0.7f;
         private float _craterShare = 0.32f;
         private float _blastSpeed = 9f;
         private float _smokeShare = 0.7f;
@@ -89,6 +90,7 @@ namespace Game
             _chipForce = Const(bullet, "CHIP_FORCE", _chipForce);
             _pierces = Const(bullet, "MAX_WALL_PIERCES", _pierces);
             _debris = Const(bullet, "BULLET_DEBRIS", _debris);
+            _armour = Const(bullet, "ARMOUR_TOUGHNESS", _armour);
             System.Type blast = typeof(ExplosionUseCase);
             _craterShare = Const(blast, "VOXEL_CRATER_SHARE", _craterShare);
             _blastSpeed = Const(blast, "VOXEL_BLAST_SPEED", _blastSpeed);
@@ -208,7 +210,7 @@ namespace Game
 
                     RaycastHit hit = _hits[best];
                     VoxelBody body = hit.collider.GetComponentInParent<VoxelBody>();
-                    if (body != null && !body.IsTerrain && b.Pierced < _pierces)
+                    if (body != null && !body.IsTerrain && body.Toughness >= _armour && b.Pierced < _pierces)
                     {
                         b.Pierced++;
                         VoxelDamage.Impact(hit.point, b.Direction, _holeRadius, _chipForce, _debris);

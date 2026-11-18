@@ -136,8 +136,10 @@ namespace Game.Voxels
         public static int Impact(Vector3 point, Vector3 direction, float radius, float force = 2.5f,
             int debris = BLAST_DEBRIS)
         {
+            // Centred just under the surface it struck: half the radius in put a big bite behind thin armour, so
+            // the hole opened past where the bullet hit.
             Vector3 inward = direction.sqrMagnitude > 0.0001f ? direction.normalized : Vector3.zero;
-            return Blast(point + inward * (radius * 0.5f), radius, force, null, true, debris);
+            return Blast(point + inward * Mathf.Min(radius * 0.5f, 0.04f), radius, force, null, true, debris);
         }
     }
 }
