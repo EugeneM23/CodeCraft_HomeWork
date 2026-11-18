@@ -486,6 +486,98 @@ MonoBehaviour:
   initialTagCapacity: 1
   initialValueCapacity: 1
   initialBehaviourCapacity: 0
+--- !u!1 &466819696
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 466819699}
+  - component: {fileID: 466819698}
+  - component: {fileID: 466819697}
+  m_Layer: 0
+  m_Name: '[LevelAI]'
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &466819697
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 466819696}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57845fb8ca290df4da8076c739b27152, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game.AIKit.Adapters::Game.AIKit.Adapters.LevelAIInstaller
+  _navigation:
+    mapMin: {x: -40, y: -40}
+    mapMax: {x: 40, y: 40}
+    rayTop: 20
+    rayLength: 30
+  _seed: 1
+  _arenaWaves: {fileID: 11400000, guid: 92ab8f55c9704a24982c53e4c673d6fe, type: 2}
+--- !u!114 &466819698
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 466819696}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 966952600}
+  m_Name: 
+  m_EditorClassIdentifier: Atomic.Entities::Atomic.Entities.MonoEntity
+  useUnityLifecycle: 1
+  disposeValues: 1
+  installOnAwake: 1
+  uninstallOnDestroy: 1
+  scriptableInstallers: []
+  sceneInstallers:
+  - {fileID: 466819697}
+  onlySelectedGizmos: 0
+  onlyEditModeGizmos: 0
+  autoCompile: 0
+  initialTagCapacity: 1
+  initialValueCapacity: 1
+  initialBehaviourCapacity: 0
+--- !u!4 &466819699
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 466819696}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!115 &966952600
+MonoScript:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  serializedVersion: 7
+  m_DefaultReferences: {}
+  m_Icon: {fileID: 0}
+  m_Type: 0
+  m_ExecutionOrder: 0
+  m_ClassName: MonoEntity
+  m_Namespace: Atomic.Entities
+  m_AssemblyName: Atomic.Entities
 --- !u!1 &1225762018
 GameObject:
   m_ObjectHideFlags: 0
@@ -1087,3 +1179,4 @@ SceneRoots:
   - {fileID: 1313511856}
   - {fileID: 2021585012}
   - {fileID: 164051948}
+  - {fileID: 466819699}
