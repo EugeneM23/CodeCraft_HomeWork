@@ -18,7 +18,7 @@ MonoBehaviour:
   spartialBlend: 1
   output: {fileID: 3749125731345324096, guid: fcf45067a59444e45a07f67b96ef76a5, type: 2}
   clip:
-    rid: 4166356712695005448
+    rid: 4166356744050049298
   pitch:
     rid: 4166356712695005445
   volume:
@@ -74,7 +74,8 @@ MonoBehaviour:
       type: {class: FloatConst, ns: AudioEngine, asm: AudioEngine}
       data:
         value: 80
-    - rid: 4166356712695005448
-      type: {class: ClipConst, ns: AudioEngine, asm: AudioEngine}
+    - rid: 4166356744050049298
+      type: {class: ClipRandomNonRepeat, ns: AudioEngine, asm: AudioEngine}
       data:
-        clip: {fileID: 8300000, guid: 398a1fb5003893a43887592a798b7e3f, type: 3}
+        clips:
+        - {fileID: 8300000, guid: 0fa39519f125aec4792f92f8d6a78ca1, type: 3}
