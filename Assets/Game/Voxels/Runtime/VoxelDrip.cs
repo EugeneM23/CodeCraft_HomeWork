@@ -77,6 +77,22 @@ namespace Game.Voxels
             Live.Add(stream);
         }
 
+        /// <summary>The pooled drips of this body end now (it goes back to a pool, VoxelCorpses).</summary>
+        public static void Stop(Transform body)
+        {
+            for (int i = Live.Count - 1; i >= 0; i--)
+            {
+                Stream stream = Live[i];
+                if (!ReferenceEquals(stream.Body, body))
+                    continue;
+                stream.Body = null;
+                stream.Rigidbody = null;
+                stream.Colors = null;
+                Live.RemoveAt(i);
+                Free.Push(stream);
+            }
+        }
+
         /// <param name="worldPoints">Where the drops come from, now; they ride with this object from here on.</param>
         public void Begin(IReadOnlyList<Vector3> worldPoints, Color32[] colors, float size, float duration, float rate)
         {

@@ -36,19 +36,10 @@ namespace Game
             _damageTakenEvent.Subscribe(_onDamageTaken);
             _deathTakenEvent.Subscribe(_onDeath);
 
-            // The first body of the session to come in (at level load) plays a death through once, so the first
-            // death of a fight does not compile its code mid-frame (VoxelGibs.WarmUp).
-            if (!s_warmedUp && UnityEngine.Application.isPlaying)
-            {
-                s_warmedUp = true;
-                VoxelGibs.WarmUp(_rig, _config);
-            }
+            // The first body of a level to come in (at level load) has the level's corpse bodies made, and the first of
+            // the session plays a death through once, so the first death of a fight compiles nothing (VoxelGibs.Prepare).
+            VoxelGibs.Prepare(_rig, _config);
         }
-
-        private static bool s_warmedUp;
-
-        [UnityEngine.RuntimeInitializeOnLoadMethod(UnityEngine.RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void ResetStatics() => s_warmedUp = false;
 
         // Null when disposed without having been initialised.
         public void Dispose(IEntity entity)

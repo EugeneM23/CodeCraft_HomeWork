@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using Game.Voxels;
+using Unity.Mathematics;
 using Unity.Profiling;
 using UnityEngine;
 using UnityEngine.LowLevel;
+using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
 
@@ -13,7 +15,8 @@ namespace Game
     /// A body dies into voxels: its skin is hidden, the pose it died in becomes voxels (skin, meat,
     /// veins of blood), cut into clusters of parts by the same seam rules the Maya gibs use, each
     /// cluster a rigid VoxelBody thrown away from the killing hit. Torn seams and the wound spray
-    /// blood drops, and torn pieces drip as they fly. Pieces, crumbs and drops lie all game.
+    /// blood drops, and torn pieces drip as they fly. Crumbs and drops lie all game; the last
+    /// <see cref="Corpses"/> corpses lie, their bodies reused for the next deaths (VoxelCorpses).
     /// </summary>
     /// <remarks>
     /// <para>A shell's blast also bites into the fresh pieces: ExplosionUseCase kills (DamageInRadius)
@@ -44,16 +47,31 @@ namespace Game
         public const int RESERVED_DEATHS = 8;
 
         /// <summary>
-        /// Deaths whose piece bodies are made ahead at level load (VoxelCarcass.AddSpareBodies, a few a frame), so those
-        /// deaths make no GameObject or component of their own. Bodies are not recycled (corpses lie all game): past this
-        /// many deaths in a level the pieces are made at the death again. One Regax piece body is ~2 KB.
+        /// Corpses that lie at once (VoxelCorpses): a death past it takes the oldest corpse's bodies, which goes.
+        /// Read when a level is made ready (<see cref="Prepare"/>).
         /// </summary>
-        public static int SpareDeaths = 20;
+        public static int Corpses = 20;
 
-        /// <summary>Spare bodies made a frame while filling: well under the 2 ms a frame a level load may take.</summary>
-        private const int SPARES_PER_FRAME = 12;
+        /// <summary>
+        /// Bodies made ahead per corpse at level load: a Regax comes apart in 1-7 pieces (4 or so most often) and a
+        /// scrap or two split off them. Fewer than a death needs, and the oldest corpse goes early.
+        /// </summary>
+        public static int BodiesPerCorpse = 7;
 
-        private static int s_sparesToMake;
+        /// <summary>
+        /// The chunk layouts (32-voxel chunks along x, y, z) the bodies made ahead are filled with, in turn: a body's
+        /// chunks are reused by a piece cut into as many (VoxelBody.Init), so the spares follow the pieces' sizes: in
+        /// VoxelSandbox 80% of the pieces and the scraps took one chunk, 17% two, 3% four.
+        /// </summary>
+        public static int3[] SpareLayouts = { new(1, 1, 1), new(1, 1, 1), new(1, 1, 1), new(1, 1, 1), new(1, 1, 1), new(1, 2, 1), new(1, 2, 2) };
+
+        /// <summary>Box colliders each chunk of a spare is given: a Regax piece's chunk took 20 (median), 64 (p99), 77 at most (10 cm cells).</summary>
+        public static int SpareBoxes = 80;
+
+        /// <summary>Bodies made and filled a frame at level load: well under the 2 ms a frame a level load may take.</summary>
+        private const int PRIME_PER_FRAME = 4;
+
+        private static bool s_warmedUp;
 
         // Steps of a death, to find where its time goes (perf debt, Docs/Reports/2026-11-17-perf-baseline.md).
         private static readonly ProfilerMarker VoxelizeMarker = new("Death.Voxelize");
@@ -62,7 +80,6 @@ namespace Game
         private static readonly ProfilerMarker BloodMarker = new("Death.Blood");
         private static readonly ProfilerMarker WarmUpMarker = new("Death.WarmUp");
         private static readonly ProfilerMarker StepMarker = new("Death.Step");
-        private static readonly ProfilerMarker SparesMarker = new("Death.Spares");
 
         private static readonly List<int> Held = new();
         private static readonly Func<float> Roll = () => Random.value;
@@ -81,6 +98,9 @@ namespace Game
             public int[] Cluster = Array.Empty<int>();
             public VoxelGibsRig Rig;
             public VoxelGibsConfig Config;
+
+            /// <summary>The bodies it takes (VoxelCorpses), from the build on.</summary>
+            public VoxelCorpses.Corpse Corpse;
             public KillingHit Hit;
             public Bounds Body;
             public bool Built;
@@ -101,8 +121,9 @@ namespace Game
             Queue.Clear();
             Spare.Clear();
             DeathsPerFrame = 2;
-            SpareDeaths = 20;
-            s_sparesToMake = 0;
+            Corpses = 20;
+            BodiesPerCorpse = 7;
+            s_warmedUp = false;
             s_quitHooked = false;
             SetHook(false);
         }
@@ -161,7 +182,7 @@ namespace Game
 
             using (WarmUpMarker.Auto())
             {
-                Reserve(config);
+                PrepareLevel(config);
 
                 IReadOnlyList<VoxelBody> bodies = VoxelWorld.Bodies;
                 int before = bodies.Count;
@@ -171,14 +192,62 @@ namespace Game
                 {
                     Build(death);
                     Show(death, true);
+                    // Its bodies were never built: the pool fills them before a death takes them.
+                    VoxelCorpses.Abandon(death.Corpse, true);
                     Return(death);
                 }
 
-                // Everything made since: the pieces and what split off them (registered at the end of the list).
+                // Anything else made since (registered at the end of the list): the corpse's bodies are put away already.
                 for (int i = bodies.Count - 1; i >= before; i--)
                     if (bodies[i] != null)
                         Object.DestroyImmediate(bodies[i].gameObject);
             }
+        }
+
+        /// <summary>
+        /// A body of this kind comes into the level (its behaviour's Init): the level's corpse bodies are made ready
+        /// over the next frames if they are not yet (every level: they go with its scene), and the first body of the
+        /// session plays a death through (<see cref="WarmUp"/>), so the first death of a fight compiles nothing.
+        /// </summary>
+        public static void Prepare(VoxelGibsRig rig, VoxelGibsConfig config)
+        {
+            if (config == null || !Application.isPlaying)
+                return;
+            PrepareLevel(config);
+            if (s_warmedUp)
+                return;
+            s_warmedUp = true;
+            WarmUp(rig, config);
+        }
+
+        /// <summary>The settings every piece of flesh is made with.</summary>
+        private static VoxelBodySettings PieceSettings(VoxelGibsConfig config)
+        {
+            VoxelBodySettings settings = VoxelBodySettings.Default(config.voxelSize);
+            settings.Anchor = VoxelAnchor.Largest;
+            settings.Colliders = true;
+            // 10 cm collision cells, not one per 5 cm voxel: ragged flesh came to hundreds of boxes a
+            // piece, the bulk of the kill frame, of the first physics steps and of a long game's growth.
+            settings.ColliderCell = config.colliderCell;
+            settings.Layer = VoxelWorld.PieceLayer;
+            settings.Toughness = config.toughness;
+            settings.Density = config.density;
+            settings.ChunkSize = 32;
+            settings.Settle = true;
+            settings.KeepDebris = true;
+            settings.FractureSpeed = config.fractureSpeed;
+            return settings;
+        }
+
+        /// <summary>The pools of the death (once) and the corpse bodies of the active scene (once a level).</summary>
+        private static void PrepareLevel(VoxelGibsConfig config)
+        {
+            Reserve(config);
+            Scene scene = SceneManager.GetActiveScene();
+            if (VoxelCorpses.IsPreparedFor(scene))
+                return;
+            // Made over the next frames by the step (Prime), while no death waits.
+            VoxelCorpses.Prepare(scene, Corpses, Corpses * BodiesPerCorpse, PieceSettings(config), SpareLayouts, SpareBoxes);
         }
 
         /// <summary>The pools a death takes from, made for <see cref="RESERVED_DEATHS"/> deaths at once.</summary>
@@ -200,9 +269,6 @@ namespace Game
                 Held.Capacity = config.seams.Length;
             BloodOf(config);
             LinksOf(config);
-            // Made over the next frames by the step, once a session (a body is used once).
-            if (s_sparesToMake == 0 && VoxelCarcass.SpareBodyCount == 0)
-                s_sparesToMake = SpareDeaths * parts;
             // The step goes into the player loop now: putting it in builds a new loop (garbage), not for a death to do.
             SetHook(true);
         }
@@ -255,26 +321,15 @@ namespace Game
         /// <summary>Step 2: the voxels are taken and cut into pieces, made switched off; the world builds them at the end of the frame.</summary>
         private static void Build(Death death)
         {
-            VoxelGibsConfig config = death.Config;
-            VoxelBodySettings settings = VoxelBodySettings.Default(config.voxelSize);
-            settings.Anchor = VoxelAnchor.Largest;
-            settings.Colliders = true;
-            // 10 cm collision cells, not one per 5 cm voxel: ragged flesh came to hundreds of boxes a
-            // piece, the bulk of the kill frame, of the first physics steps and of a long game's growth.
-            settings.ColliderCell = config.colliderCell;
-            settings.Layer = VoxelWorld.PieceLayer;
-            settings.Toughness = config.toughness;
-            settings.Density = config.density;
-            settings.ChunkSize = 32;
-            settings.Settle = true;
-            settings.KeepDebris = true;
-            settings.FractureSpeed = config.fractureSpeed;
+            VoxelBodySettings settings = PieceSettings(death.Config);
 
             CarcassMarker.Begin();
             SkinnedVoxelizer.Result grid = death.Voxels.Complete();
             try
             {
-                VoxelCarcass.Build(grid, death.Cluster, settings, death.Rig.PieceNames, true, death.Pieces);
+                // The corpse's bodies come from the pool: free ones, or the oldest corpse's.
+                death.Corpse = VoxelCorpses.Begin();
+                VoxelCarcass.Build(grid, death.Cluster, settings, death.Rig.PieceNames, true, death.Pieces, death.Corpse);
             }
             finally
             {
@@ -313,6 +368,8 @@ namespace Game
             for (int p = 0; p < pieces.Count; p++)
                 torn += pieces[p].TornCount;
 
+            // What splits off the pieces (SplitLoose) is this corpse's too, from the pool.
+            using VoxelCorpses.Scope serving = VoxelCorpses.Serve(death.Corpse);
             for (int p = 0; p < pieces.Count; p++)
             {
                 VoxelCarcass.Piece piece = pieces[p];
@@ -354,13 +411,11 @@ namespace Game
             BloodMarker.End();
         }
 
-        /// <summary>A death that cannot go on (its body went away): what was made of it goes too.</summary>
+        /// <summary>A death that cannot go on (its body went away): what was made of it goes back to the pool.</summary>
         private static void Cancel(Death death)
         {
             death.Voxels.Cancel();
-            for (int i = 0; i < death.Pieces.Count; i++)
-                if (death.Pieces[i].Body != null)
-                    Object.Destroy(death.Pieces[i].Body.gameObject);
+            VoxelCorpses.Abandon(death.Corpse);
             Return(death);
         }
 
@@ -368,6 +423,9 @@ namespace Game
         {
             death.Voxels.Cancel();
             VoxelCarcass.Release(death.Pieces);
+            // Shown: the corpse lies until it is the oldest of too many.
+            VoxelCorpses.Seal(death.Corpse);
+            death.Corpse = null;
             death.Rig = null;
             death.Config = null;
             death.Built = false;
@@ -377,20 +435,15 @@ namespace Game
         /// <summary>
         /// The start of every frame (EarlyUpdate): takes the deaths a step on, oldest first, at most
         /// <see cref="DeathsPerFrame"/> builds and as many shows; never two steps of one death in a frame.
-        /// While no death waits, it makes the spare piece bodies of the level load, <see cref="SPARES_PER_FRAME"/> a frame.
+        /// While no death waits, it makes and fills the level's corpse bodies, <see cref="PRIME_PER_FRAME"/> a frame.
         /// </summary>
         private static void Step()
         {
-            if (s_sparesToMake > 0 && Queue.Count == 0)
-            {
-                int make = Math.Min(SPARES_PER_FRAME, s_sparesToMake);
-                s_sparesToMake -= make;
-                using (SparesMarker.Auto())
-                    VoxelCarcass.AddSpareBodies(make, true);
-            }
-
             if (Queue.Count == 0)
+            {
+                VoxelCorpses.Prime(PRIME_PER_FRAME);
                 return;
+            }
 
             using (StepMarker.Auto())
             {

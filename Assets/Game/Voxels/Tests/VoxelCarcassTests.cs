@@ -182,19 +182,19 @@ namespace Game.Voxels.Tests
         }
 
         [Test]
-        public void SpareBodies_AreTakenByTheNextPieces_WithWhatALoosePieceCarries()
+        public void ACorpsesPieces_TakeBodiesWithWhatALoosePieceCarries()
         {
             using SkinnedVoxelizer.Result grid = Grid();
-            int before = VoxelCarcass.SpareBodyCount;
-            VoxelCarcass.AddSpareBodies(2, true);
-            Assert.AreEqual(before + 2, VoxelCarcass.SpareBodyCount);
+            VoxelCorpses.Clear();
+            VoxelCorpses.Corpse corpse = VoxelCorpses.Begin();
 
             var pooled = new List<VoxelCarcass.Piece>();
-            VoxelCarcass.Build(grid, new[] { 0, 1 }, Settings(), new[] { "Flesh_0", "Flesh_1" }, true, pooled);
+            VoxelCarcass.Build(grid, new[] { 0, 1 }, Settings(), new[] { "Flesh_0", "Flesh_1" }, true, pooled, corpse);
 
-            Assert.AreEqual(before, VoxelCarcass.SpareBodyCount, "both pieces took a spare");
+            Assert.AreEqual(2, corpse.BodyCount, "both pieces are the corpse's");
             foreach (VoxelCarcass.Piece piece in pooled)
             {
+                Assert.IsTrue(corpse.Holds(piece.Body));
                 Assert.AreEqual("Flesh_" + piece.Cluster, piece.Body.name);
                 Assert.AreEqual(VoxelWorld.PieceLayer, piece.Body.gameObject.layer);
                 Assert.IsFalse(piece.Body.gameObject.activeSelf);
@@ -204,7 +204,9 @@ namespace Game.Voxels.Tests
             }
 
             VoxelCarcass.Release(pooled);
+            VoxelCorpses.Clear();
         }
+
         [UnityTest]
         public IEnumerator PooledDrip_DropsWhileItLasts_ThenGoesBackToThePool()
         {
