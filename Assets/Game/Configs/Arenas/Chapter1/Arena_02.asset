@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6bf534ad0c5a58d4db82757d8e8fa8bb, type: 3}
+  m_Name: Arena_02
+  m_EditorClassIdentifier: Game::Game.Arenas.ArenaDefinition
+  _id:
+    _value: outskirts_02
+  _number: 2
+  _layout: 0
+  _houses: {x: 1, y: 2}
+  _trees: {x: 4, y: 6}
+  _fences: {x: 1, y: 2}
+  _relief: 0.8
+  _mud: 0.3
+  _burrows: 10
+  _hints: 2
+  _elite: 0
