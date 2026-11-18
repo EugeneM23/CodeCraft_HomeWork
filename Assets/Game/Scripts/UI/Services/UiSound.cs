@@ -19,6 +19,7 @@ namespace Game
         PauseOn,
         PauseOff,
         SkillChoice,
-        LevelUp
+        LevelUp,
+        SkillTaken
     }
 }
