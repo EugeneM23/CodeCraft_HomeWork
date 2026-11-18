@@ -60,6 +60,23 @@ namespace Game.Voxels
         public const float SEAM_FRACTURE_COST = 8f;
 
         public static int3 Blocks(int3 size) => (size + BLOCK - 1) / BLOCK;
+
+        /// <summary>
+        /// kg per cubic metre of a material group (the z of a strength entry): a building weighs
+        /// what it is made of, and its pieces fall with it — a slate roof heavy, a floor of boards light.
+        /// </summary>
+        public static float GroupDensity(float group) => (int)group switch
+        {
+            0 => 2400f, // concrete
+            1 => 2500f, // stone
+            2 => 1800f, // brick
+            3 => 1600f, // plaster, trim, paper
+            4 => 600f, // wood
+            5 => 2000f, // slate on its battens
+            6 => 700f, // furniture, cloth
+            7 => 2500f, // glass
+            _ => 1800f
+        };
     }
 
     /// <summary>
@@ -76,8 +93,8 @@ namespace Game.Voxels
         /// <summary>Per palette entry, see <see cref="VoxelLoad"/>.</summary>
         [ReadOnly] public NativeArray<float3> Strength;
 
-        /// <summary>kg of one voxel.</summary>
-        public float VoxelMass;
+        /// <summary>Cubic metres of one voxel: its mass is this times its material's density.</summary>
+        public float VoxelVolume;
 
         public int3 Blocks;
 
@@ -109,7 +126,7 @@ namespace Game.Voxels
 
                 int3 b = new int3(x, y, z) / VoxelLoad.BLOCK;
                 int block = b.x + Blocks.x * (b.y + Blocks.y * b.z);
-                Mass[block] += VoxelMass;
+                Mass[block] += VoxelVolume * VoxelLoad.GroupDensity(Strength[v].z);
                 if (y == 0)
                     Bottom[b.x + Blocks.x * b.z] = 1;
 
@@ -621,6 +638,69 @@ namespace Game.Voxels
             }
 
             return top;
+        }
+    }
+
+    /// <summary>
+    /// Takes out a share of the voxels lining the cracks between fracture cells (a voxel with a
+    /// neighbour in another cell): they go as crumbs, the pieces part with ragged edges.
+    /// </summary>
+    [BurstCompile(CompileSynchronously = true, DisableSafetyChecks = true)]
+    public struct SeamCrumbsJob : IJob
+    {
+        public NativeArray<byte> Voxels;
+        public int3 Size;
+        [ReadOnly] public NativeArray<int> Cells;
+        public float Share;
+        public uint Seed;
+        public NativeList<RemovedVoxel> Removed;
+
+        public void Execute()
+        {
+            int sx = Size.x;
+            int sxy = Size.x * Size.y;
+            for (int z = 0; z < Size.z; z++)
+            for (int y = 0; y < Size.y; y++)
+            for (int x = 0; x < Size.x; x++)
+            {
+                int i = x + sx * y + sxy * z;
+                byte v = Voxels[i];
+                if (v == 0)
+                    continue;
+
+                int cell = Cells[i];
+                bool seam = (x + 1 < Size.x && Voxels[i + 1] != 0 && Cells[i + 1] != cell) ||
+                            (y + 1 < Size.y && Voxels[i + sx] != 0 && Cells[i + sx] != cell) ||
+                            (z + 1 < Size.z && Voxels[i + sxy] != 0 && Cells[i + sxy] != cell);
+                if (!seam || VoxelMath.Hash01(new int3(x, y, z), Seed) >= Share)
+                    continue;
+
+                Removed.Add(new RemovedVoxel { Position = new int3(x, y, z), Material = v });
+                Voxels[i] = 0;
+            }
+        }
+    }
+
+    /// <summary>The mass of a body with a strength table: every voxel by its material's density.</summary>
+    [BurstCompile(CompileSynchronously = true, DisableSafetyChecks = true)]
+    public struct BodyMassJob : IJob
+    {
+        [ReadOnly] public NativeArray<byte> Voxels;
+        [ReadOnly] public NativeArray<float3> Strength;
+        public float VoxelVolume;
+        public NativeReference<float> Mass;
+
+        public void Execute()
+        {
+            float mass = 0f;
+            for (int i = 0; i < Voxels.Length; i++)
+            {
+                byte v = Voxels[i];
+                if (v != 0)
+                    mass += VoxelLoad.GroupDensity(Strength[v].z);
+            }
+
+            Mass.Value = mass * VoxelVolume;
         }
     }
 
