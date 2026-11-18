@@ -123,8 +123,11 @@ namespace Game.Voxels
         private float _roostClodDebt;
         private float _spinDigDebt;
 
-        /// <summary>Speed scale of the rooster tail: √3, so the earth flies three times as far.</summary>
-        private const float ROOST_REACH = 1.732f;
+        /// <summary>Speed scale of the rooster tail: √1.8, so the earth flies 80 % farther.</summary>
+        private const float ROOST_REACH = 1.342f;
+
+        /// <summary>Share of the rooster tail's clods that are big lumps (3–4 voxels across).</summary>
+        private const float BIG_CLOD_SHARE = 0.2f;
 
         /// <summary>Slowest the tracks run (m/s) and still churn mud up.</summary>
         private const float MIN_TRACK_SPEED = 0.4f;
@@ -553,7 +556,9 @@ namespace Game.Voxels
             while (_roostClodDebt >= 1f)
             {
                 _roostClodDebt -= 1f;
-                if (!debris.HasRoom(8))
+                // Now and then a big lump among the small clods.
+                bool big = Random.value < BIG_CLOD_SHARE;
+                if (!debris.HasRoom(big ? 64 : 8))
                 {
                     _roostClodDebt = 0f;
                     break;
@@ -566,7 +571,9 @@ namespace Game.Voxels
                 if (clod < 0)
                     break;
 
-                var size = new Vector3Int(Random.Range(1, 3), Random.Range(1, 3), Random.Range(1, 3));
+                var size = big
+                    ? new Vector3Int(Random.Range(3, 5), Random.Range(2, 4), Random.Range(3, 5))
+                    : new Vector3Int(Random.Range(1, 3), Random.Range(1, 3), Random.Range(1, 3));
                 Color32 colour = Shade(onGrass >= 0.5f && Random.value < 0.3f ? _grassColour : earth);
                 for (int x = 0; x < size.x; x++)
                 for (int y = 0; y < size.y; y++)
