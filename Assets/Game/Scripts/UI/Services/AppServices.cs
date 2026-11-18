@@ -19,6 +19,8 @@ namespace Game
         private static IAudioVolumes s_audio;
         private static IUiSounds s_uiSounds;
         private static IGameInput s_input;
+        private static IRunHudSource s_runHud;
+        private static IHangarSource s_hangar;
 
         // Made on first use when there is no app
         private static SceneGameFlow s_stubFlow;
@@ -84,6 +86,12 @@ namespace Game
             set => s_input = value;
         }
 
+        /// <summary>The run as the battle UI sees it. Stub until the adapter over the core's IRunService.</summary>
+        public static IRunHudSource RunHud { get => s_runHud ??= new StubRunHudSource(); set => s_runHud = value; }
+
+        /// <summary>The progress as the menus see it. Stub until the adapter over the core's save and catalogs.</summary>
+        public static IHangarSource Hangar { get => s_hangar ??= new StubHangarSource(); set => s_hangar = value; }
+
         public static IAudioVolumes Audio { get => s_audio ??= new ListenerAudioVolumes(); set => s_audio = value; }
         public static IUiSounds UiSounds { get => s_uiSounds ??= new SilentUiSounds(); set => s_uiSounds = value; }
 
@@ -133,6 +141,8 @@ namespace Game
             s_audio = null;
             s_uiSounds = null;
             s_input = null;
+            s_runHud = null;
+            s_hangar = null;
             s_stubFlow = null;
             s_stubPause = null;
             s_stubSettings = null;
