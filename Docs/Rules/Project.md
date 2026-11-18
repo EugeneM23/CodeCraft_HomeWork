@@ -89,6 +89,7 @@ Tools/<Инструмент>/          скрипты вне Unity (Maya, PerfCh
 | `Game.AIKit.Adapters.Editor` | `Game/Scripts/Features/AI/Editor` | `Game.AIKit.Adapters.EditorTools` | Editor |
 | `Game.AIKit.Adapters.Tests` | `Game/Tests/AI` | `Game.AIKit.Adapters.Tests` | Editor (EditMode) |
 | `Game.AIKit.Adapters.SceneTests` | `Game/Tests/AI/Scene` | `Game.AIKit.Adapters.Tests` | Editor (PlayMode-тесты сцены) |
+| `Game.Combat.SceneTests` | `Game/Tests/Features/Combat/Scene` | `Game.Tests` | Editor (PlayMode-тесты сцены боя) |
 | `Game.GameLoop.Adapters` (и другие модули ядра) | `Game/Scripts/Adapters/<Модуль>` | `Game.<Модуль>.Adapters` | все |
 | `Game.UI.Adapters` | `Game/Scripts/UI/Adapters` | `Game.UI.Adapters` | все (мост меню к звуку: `Game` не видит `Game.AudioEngine.Adapters`, который ссылается на него) |
 | `Game.App.SceneTests` | `Game/Tests/App/PlayMode` | `Game.Tests` | все (PlayMode-тесты потока игры) |
