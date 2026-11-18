@@ -24,5 +24,6 @@ namespace Game
         public bool ResetLookPressed => Tank.ResetCamera.WasPressedThisFrame();
         public bool FreeCursorPressed => Tank.Pause.WasPressedThisFrame();
         public bool HoldCursorPressed => Tank.FireMain.WasPressedThisFrame() || Tank.FireSecondary.WasPressedThisFrame();
+        public bool SpecialPressed => Tank.Special.WasPressedThisFrame();
     }
 }

@@ -183,6 +183,16 @@ namespace Game
                     ""interactions"": """",
                     ""initialStateCheck"": false,
                     ""priority"": 0
+                },
+                {
+                    ""name"": ""Special"",
+                    ""type"": ""Button"",
+                    ""id"": ""6a1d0000-0000-4000-8000-00000000010a"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
                 }
             ],
             ""bindings"": [
@@ -392,6 +402,17 @@ namespace Game
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""ToggleDebug"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""6a1d0000-0000-4000-8000-00000000101a"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Special"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -723,6 +744,7 @@ namespace Game
             m_Tank_Pause = m_Tank.FindAction("Pause", throwIfNotFound: true);
             m_Tank_ToggleHints = m_Tank.FindAction("ToggleHints", throwIfNotFound: true);
             m_Tank_ToggleDebug = m_Tank.FindAction("ToggleDebug", throwIfNotFound: true);
+            m_Tank_Special = m_Tank.FindAction("Special", throwIfNotFound: true);
             // UI
             m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
             m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -830,6 +852,7 @@ namespace Game
         private readonly InputAction m_Tank_Pause;
         private readonly InputAction m_Tank_ToggleHints;
         private readonly InputAction m_Tank_ToggleDebug;
+        private readonly InputAction m_Tank_Special;
         /// <summary>
         /// Provides access to input actions defined in input action map "Tank".
         /// </summary>
@@ -877,6 +900,10 @@ namespace Game
             /// Provides access to the underlying input action "Tank/ToggleDebug".
             /// </summary>
             public InputAction @ToggleDebug => m_Wrapper.m_Tank_ToggleDebug;
+            /// <summary>
+            /// Provides access to the underlying input action "Tank/Special".
+            /// </summary>
+            public InputAction @Special => m_Wrapper.m_Tank_Special;
             /// <summary>
             /// Provides access to the underlying input action map instance.
             /// </summary>
@@ -930,6 +957,9 @@ namespace Game
                 @ToggleDebug.started += instance.OnToggleDebug;
                 @ToggleDebug.performed += instance.OnToggleDebug;
                 @ToggleDebug.canceled += instance.OnToggleDebug;
+                @Special.started += instance.OnSpecial;
+                @Special.performed += instance.OnSpecial;
+                @Special.canceled += instance.OnSpecial;
             }
 
             /// <summary>
@@ -968,6 +998,9 @@ namespace Game
                 @ToggleDebug.started -= instance.OnToggleDebug;
                 @ToggleDebug.performed -= instance.OnToggleDebug;
                 @ToggleDebug.canceled -= instance.OnToggleDebug;
+                @Special.started -= instance.OnSpecial;
+                @Special.performed -= instance.OnSpecial;
+                @Special.canceled -= instance.OnSpecial;
             }
 
             /// <summary>
@@ -1373,6 +1406,13 @@ namespace Game
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnToggleDebug(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "Special" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnSpecial(InputAction.CallbackContext context);
         }
         /// <summary>
         /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "UI" which allows adding and removing callbacks.
