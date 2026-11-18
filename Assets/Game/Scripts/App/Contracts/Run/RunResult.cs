@@ -28,5 +28,11 @@ namespace Game
         public bool firstCompletion;
 
         public int levelReached;
+
+        /// <summary>The chapter's best arena before this run (0 — never played).</summary>
+        public int previousBestArena;
+
+        /// <summary>This run went further than any before it in the chapter.</summary>
+        public bool newRecord;
     }
 }

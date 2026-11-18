@@ -24,6 +24,8 @@ namespace Game
         [SerializeField, Min(0)] private int _firstCompletionSamples = 10;
         [Tooltip("Opens when this chapter is completed; none: open from the start")]
         [SerializeField] private ChapterConfig _requiredChapter;
+        [Tooltip("The tank the chapter select recommends")]
+        [SerializeField] private TankId _recommendedTank;
 
         public ChapterId Id => _id;
         public string DisplayName => _displayName;
@@ -36,6 +38,7 @@ namespace Game
         public int FirstCompletionMarks => _firstCompletionMarks;
         public int FirstCompletionSamples => _firstCompletionSamples;
         public ChapterConfig RequiredChapter => _requiredChapter;
+        public TankId RecommendedTank => _recommendedTank;
 
         /// <summary>The arena by its 1-based number; null outside the chapter.</summary>
         public ArenaConfig ArenaAt(int number) =>
