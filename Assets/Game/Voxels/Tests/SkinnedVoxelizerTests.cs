@@ -137,5 +137,47 @@ namespace Game.Voxels.Tests
             Assert.AreEqual(1, At(r, r.Parts, new Vector3(1f, 0.75f, 0f), SkinnedVoxelizer.NO_PART));
             Assert.AreEqual(0, At(r, r.Voxels, new Vector3(0f, 0.75f, 0f), 0), "nothing left where it stands");
         }
+
+        [Test]
+        public void Begin_ThenComplete_GivesTheGridVoxelizeGives_InThePoseOfTheBegin()
+        {
+            SkinnedMeshRenderer skin = SkinnedColumn.Create(Vector3.zero, out _root, out Transform lower, out Transform upper);
+            SkinnedVoxelizer.Part[] parts = ByBone(lower, upper);
+            var plane = new Plane(Vector3.right, 0f);
+            using SkinnedVoxelizer.Result whole = Voxelize(parts, plane, skin);
+
+            var pending = new SkinnedVoxelizer.Pending();
+            Assert.IsTrue(SkinnedVoxelizer.Begin(skin, SkinnedVoxelizer.Skeleton.Of(parts), parts.Length, plane, 0.05f,
+                Palette(), 1, pending));
+            Assert.IsTrue(pending.Running);
+            upper.position += Vector3.right; // the pose was read: moving now changes nothing
+            using SkinnedVoxelizer.Result later = pending.Complete();
+
+            Assert.IsFalse(pending.Running);
+            Assert.AreEqual(whole.Size, later.Size);
+            Assert.AreEqual(whole.Origin, later.Origin);
+            CollectionAssert.AreEqual(whole.Voxels.ToArray(), later.Voxels.ToArray(), "the same voxels for the same seed");
+            CollectionAssert.AreEqual(whole.Parts.ToArray(), later.Parts.ToArray());
+            CollectionAssert.AreEqual(whole.Palette.ToArray(), later.Palette.ToArray());
+        }
+
+        [Test]
+        public void Cancel_FreesAVoxelizationUnderWay()
+        {
+            SkinnedMeshRenderer skin = SkinnedColumn.Create(Vector3.zero, out _root, out Transform lower, out Transform upper);
+            SkinnedVoxelizer.Part[] parts = ByBone(lower, upper);
+            var pending = new SkinnedVoxelizer.Pending();
+            Assert.IsTrue(SkinnedVoxelizer.Begin(skin, SkinnedVoxelizer.Skeleton.Of(parts), parts.Length,
+                new Plane(Vector3.right, 0f), 0.05f, Palette(), 1, pending));
+
+            pending.Cancel();
+
+            Assert.IsFalse(pending.Running);
+            Assert.IsFalse(pending.Complete().Voxels.IsCreated, "nothing left to hand over");
+            // And it takes the next body.
+            Assert.IsTrue(SkinnedVoxelizer.Begin(skin, SkinnedVoxelizer.Skeleton.Of(parts), parts.Length,
+                new Plane(Vector3.right, 0f), 0.05f, Palette(), 1, pending));
+            pending.Complete().Dispose();
+        }
     }
 }

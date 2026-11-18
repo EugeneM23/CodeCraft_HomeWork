@@ -15,6 +15,9 @@ namespace Game.Voxels.Tests
         private readonly List<GameObject> _created = new();
         private SkinnedMeshRenderer _skin;
         private Transform _upper;
+        private Animator _animator;
+        private VoxelGibsConfig _config;
+        private VoxelGibsRig _rig;
         private IEntity _character;
 
         [SetUp]
@@ -27,35 +30,40 @@ namespace Game.Voxels.Tests
 
             _skin = SkinnedColumn.Create(new Vector3(0f, 0.05f, 0f), out Transform root, out _, out _upper);
             _created.Add(root.gameObject);
+            // What poses a real body; the column has no clips, it only shows the death holds it still.
+            _animator = root.gameObject.AddComponent<Animator>();
 
-            var config = new VoxelGibsConfig
-            {
-                parts = new[]
-                {
-                    new VoxelGibsConfig.PartSpec { name = "Bottom", bones = new[] { "Lower" } },
-                    new VoxelGibsConfig.PartSpec { name = "Top", bones = new[] { "Upper" } }
-                },
-                seams = new[] { new VoxelGibsConfig.SeamSpec { a = 0, b = 1, hold = 0f } },
-                spineFrom = "Lower",
-                spineTo = "Upper",
-                leftMarker = ""
-            };
-
+            _config = Config();
             _character = new Entity();
             _character.AddDamageTakenEvent(new Event<TakeDamageArgs>());
             _character.AddDeathTakenEvent(new Event<TakeDamageArgs>());
-            var rig = VoxelGibsRig.Resolve(_skin, root, new Renderer[] { _skin }, config);
-            new VoxelGibsOnDeathBehaviour(rig, config).Init(_character);
+            _rig = VoxelGibsRig.Resolve(_skin, root, new Renderer[] { _skin }, _config);
+            new VoxelGibsOnDeathBehaviour(_rig, _config).Init(_character);
         }
+
+        private static VoxelGibsConfig Config() => new()
+        {
+            parts = new[]
+            {
+                new VoxelGibsConfig.PartSpec { name = "Bottom", bones = new[] { "Lower" } },
+                new VoxelGibsConfig.PartSpec { name = "Top", bones = new[] { "Upper" } }
+            },
+            seams = new[] { new VoxelGibsConfig.SeamSpec { a = 0, b = 1, hold = 0f } },
+            spineFrom = "Lower",
+            spineTo = "Upper",
+            leftMarker = ""
+        };
 
         [TearDown]
         public void TearDown()
         {
+            VoxelGibs.Flush();
+            VoxelGibs.DeathsPerFrame = 2;
             foreach (GameObject go in _created)
                 if (go != null)
                     Object.Destroy(go);
             _created.Clear();
-            foreach (VoxelBody body in Object.FindObjectsByType<VoxelBody>(FindObjectsSortMode.None))
+            foreach (VoxelBody body in Object.FindObjectsByType<VoxelBody>(FindObjectsInactive.Include, FindObjectsSortMode.None))
                 Object.Destroy(body.gameObject);
         }
 
@@ -72,8 +80,9 @@ namespace Game.Voxels.Tests
             _character.GetDeathTakenEvent().Invoke(new TakeDamageArgs(_character));
         }
 
-        private static VoxelBody[] Flesh() =>
-            Object.FindObjectsByType<VoxelBody>(FindObjectsSortMode.None).Where(b => b.name.Contains(VoxelGibs.NAME)).ToArray();
+        private static VoxelBody[] Flesh(bool inactiveToo = false) =>
+            Object.FindObjectsByType<VoxelBody>(inactiveToo ? FindObjectsInactive.Include : FindObjectsInactive.Exclude, FindObjectsSortMode.None)
+                .Where(b => b.name.Contains(VoxelGibs.NAME)).ToArray();
 
         private static int Drops() => VoxelWorld.Instance.Debris.Count + VoxelWorld.Instance.Debris.LyingCount;
 
@@ -82,6 +91,8 @@ namespace Game.Voxels.Tests
         {
             int before = Drops();
             KilledFrom(new Vector3(0f, 0.5f, -5f));
+            yield return null;
+            yield return null;
 
             Assert.IsFalse(_skin.enabled);
             Assert.AreEqual(2, Flesh().Length, "the seam never holds: two pieces");
@@ -98,6 +109,72 @@ namespace Game.Voxels.Tests
             }
         }
 
+        [UnityTest]
+        public IEnumerator Death_TheSkinHoldsItsPose_UntilTheFleshIsBuilt_ThenTheyTradePlaces()
+        {
+            yield return null; // the last test's flesh goes at the end of its frame
+            KilledFrom(new Vector3(0f, 0.5f, -5f));
+
+            Assert.IsTrue(_skin.enabled, "the death frame: still the skin");
+            Assert.IsFalse(_animator.enabled, "held in the pose that was voxelized");
+            Assert.AreEqual(0, Flesh(true).Length, "no flesh yet, only its jobs");
+
+            yield return null;
+            Assert.IsTrue(_skin.enabled, "a frame on: still the skin");
+            Assert.AreEqual(0, Flesh().Length, "the flesh is made but not shown");
+            Assert.AreEqual(2, Flesh(true).Length);
+
+            yield return null;
+            Assert.IsFalse(_skin.enabled, "two frames on: the flesh in its place");
+            Assert.AreEqual(2, Flesh().Length);
+            Assert.AreEqual(0, VoxelGibs.Pending);
+        }
+
+        [UnityTest]
+        public IEnumerator DeathsOfOneFrame_TakeTurns_WithinTheFrameBudget()
+        {
+            yield return null; // the last test's flesh goes at the end of its frame
+            SkinnedMeshRenderer second = SkinnedColumn.Create(new Vector3(2f, 0.05f, 0f), out Transform root, out _, out _);
+            _created.Add(root.gameObject);
+            VoxelGibsRig rig = VoxelGibsRig.Resolve(second, root, new Renderer[] { second }, _config);
+            VoxelGibs.DeathsPerFrame = 1;
+            var hit = new KillingHit(new Vector3(0f, 0.5f, -5f), 50f, false, 0f);
+
+            Assert.IsTrue(VoxelGibs.Burst(_rig, _config, hit));
+            Assert.IsTrue(VoxelGibs.Burst(rig, _config, hit));
+            Assert.AreEqual(2, VoxelGibs.Pending);
+
+            yield return null; // the first built
+            Assert.AreEqual(2, VoxelGibs.Pending);
+            Assert.IsTrue(_skin.enabled && second.enabled);
+            yield return null; // the first shown, the second built
+            Assert.AreEqual(1, VoxelGibs.Pending);
+            Assert.IsFalse(_skin.enabled);
+            Assert.IsTrue(second.enabled, "its turn has not come: it still stands");
+            yield return null; // the second shown
+            Assert.AreEqual(0, VoxelGibs.Pending);
+            Assert.IsFalse(second.enabled);
+            Assert.AreEqual(4, Flesh().Length);
+        }
+
+        [Test]
+        public void TheDeathFrame_AfterTheWarmUp_AllocatesNothing()
+        {
+            VoxelGibs.WarmUp(_rig, _config);
+            var hit = new KillingHit(new Vector3(0f, 0.5f, -5f), 50f, false, 0f);
+            // Once through, so the test's own first calls (the profiler of the GC count, the marker) are paid.
+            Assert.IsTrue(VoxelGibs.Burst(_rig, _config, hit));
+            VoxelGibs.Flush();
+            _skin.enabled = true;
+
+            long before = System.GC.GetAllocatedBytesForCurrentThread();
+            bool burst = VoxelGibs.Burst(_rig, _config, hit);
+            long allocated = System.GC.GetAllocatedBytesForCurrentThread() - before;
+
+            Assert.IsTrue(burst);
+            Assert.AreEqual(0, allocated, "the death itself: the pose read and the voxels scheduled, no garbage");
+        }
+
         [Test]
         public void APoseThatCannotBeVoxelized_LeavesTheBodyAsItIs()
         {
@@ -105,12 +182,14 @@ namespace Game.Voxels.Tests
             _upper.position += Vector3.right * 9f;
             LogAssert.Expect(LogType.Warning, new Regex("not voxelized"));
             LogAssert.Expect(LogType.Warning, new Regex(@"\[VOXEL GIBS\].*stays as it is"));
-            int before = Flesh().Length; // the last test's flesh goes only at the end of the frame
+            int before = Flesh(true).Length; // the last test's flesh goes only at the end of the frame
 
             KilledFrom(new Vector3(0f, 0.5f, -5f));
 
             Assert.IsTrue(_skin.enabled, "no flesh to take its place: the body stays seen");
-            Assert.AreEqual(before, Flesh().Length, "and no flesh");
+            Assert.IsTrue(_animator.enabled, "and keeps moving: its death plays as it would");
+            Assert.AreEqual(0, VoxelGibs.Pending);
+            Assert.AreEqual(before, Flesh(true).Length, "and no flesh");
         }
 
         [Test]
