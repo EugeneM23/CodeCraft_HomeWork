@@ -67,6 +67,24 @@ namespace Game
             localFromHullCentre.z > 0f && localFromHullCentre.y < 0f &&
             Vector3.Dot(normal, forward) < NOSE_FACING && closing >= minClosing;
 
+        /// <summary>
+        /// The face stands across the hull's way: seen from above, its normal is within 45° of straight back
+        /// against the way the hull goes (cos 45° = FACES_TRAVEL). A rut's wall or a crater's side the hull
+        /// brushes along is not. A face with no way it faces (level ground under a hull landing nose down) or a
+        /// hull going straight up or down counts.
+        /// </summary>
+        public static bool FacesTravel(Vector3 normal, Vector3 velocity)
+        {
+            var face = new Vector3(normal.x, 0f, normal.z);
+            var way = new Vector3(velocity.x, 0f, velocity.z);
+            if (face.sqrMagnitude < 1e-4f || way.sqrMagnitude < 1e-4f)
+                return true;
+            return Vector3.Dot(face.normalized, way.normalized) <= -FACES_TRAVEL;
+        }
+
+        /// <summary>Cos 45°: how squarely a face must stand against the hull's way (FacesTravel).</summary>
+        public const float FACES_TRAVEL = 0.7071f;
+
         /// <summary>Speed after a hit: even a light one costs half the loss, a full one all of it.</summary>
         public static float SpeedAfter(float speed, float strength, float speedLoss) =>
             speed * (1f - speedLoss * Mathf.Max(strength, 0.5f));

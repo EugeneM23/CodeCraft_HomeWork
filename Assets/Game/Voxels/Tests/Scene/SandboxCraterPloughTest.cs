@@ -40,6 +40,8 @@ namespace Game.Voxels.Tests
         private const float WATCH_AFTER_RIM = 1.5f;
         // Deepest (m) a hull corner may be below the ground under it: the solver's give, no more.
         private const float MAX_HULL_DEPTH = 0.15f;
+        // Real seconds any one wait may take before the test fails instead of hanging (the [Timeout]s stay).
+        private const float REAL_LIMIT = 90f;
         // Spacing (m) of the ground heights the notch is measured against.
         private const float PROFILE_STEP = 0.25f;
 
@@ -56,7 +58,7 @@ namespace Game.Voxels.Tests
             // The deepest any bottom corner of the hull went below the ground under it, m (negative: never touched it).
             public float HullDepth = float.MinValue;
             public string HullDepthAt = "";
-            public int Ploughed, SolidBefore, SolidAfter, Thrown, Steps;
+            public int Ploughed, SolidBefore, SolidAfter, Thrown, Throws, Steps;
             // The hardest strength01 the Ploughed event gave in this run.
             public float MaxStrength;
             public bool Untouched = true;
@@ -126,8 +128,12 @@ namespace Game.Voxels.Tests
             Assert.IsTrue(TryFindRunway(out Vector3 start, out Vector3 forward), "open ground for a run-up and a crater");
             Vector3 crater = start + forward * (RUN_UP + RIM);
             VoxelDamage.AirBlast(crater, RIM, 32f, 24f, 0, 0.85f, 24f);
+            float wait = Deadline();
             for (int i = 0; i < 10; i++)
+            {
+                Within(wait, "frames after the bomb");
                 yield return null; // the crater's collider is rebuilt a frame or two later
+            }
 
             yield return PlaceTank(start, forward);
             // The tank at rest on the runway: the far rim is at this height, give or take a voxel.
@@ -144,6 +150,7 @@ namespace Game.Voxels.Tests
             // What the plough must never touch.
             TankPloughBehaviour plough = installer.Plough;
             int thrownBefore = plough.ThrownCubes;
+            int throwsBefore = plough.Throws;
             TankSuspension suspension = _tank.GetSuspension();
             int excludeBefore = _body.excludeLayers.value;
             float stiffnessBefore = suspension.Stiffness;
@@ -208,10 +215,12 @@ namespace Game.Voxels.Tests
 
                 float exitTime = -1f;
                 float until = Time.time + 8f;
+                float deadline = Deadline();
                 int shot = 0;
                 bool done = false;
                 while (Time.time < until && !done)
                 {
+                    Within(deadline, $"{run.Preset}: the crater run");
                     yield return null;
 
                     // Distance along the run from the crater's centre: -RIM at the near rim, +RIM at the far one.
@@ -243,6 +252,7 @@ namespace Game.Voxels.Tests
                     run.Took = exitTime - entryTime;
                 run.SolidAfter = farGround.SolidCount;
                 run.Thrown = plough.ThrownCubes - thrownBefore;
+                run.Throws = plough.Throws - throwsBefore;
 
                 // The notch: how far the ground along the run's centre line on the far slope went down.
                 float[] after = Profile(crater, forward);
@@ -258,7 +268,7 @@ namespace Game.Voxels.Tests
                           $"out in {run.Took:F2} s, nose up over the far rim {run.MaxNoseUp:F1}°, " +
                           $"apex {run.Apex:F2} m above the runway rest height (the rim), notch {run.Notch:F2} m deep, " +
                           $"hull worst {run.HullDepth:F2} m below the ground ({run.HullDepthAt}; {run.Steps} steps), " +
-                          $"ThrowEarth cubes {run.Thrown}, impacts {plough.Impacts}, max impact {run.MaxStrength:F2}, " +
+                          $"ThrowEarth cubes {run.Thrown} in {run.Throws} calls, impacts {plough.Impacts}, max impact {run.MaxStrength:F2}, " +
                           $"untouched {run.Untouched}");
             }
             finally
@@ -273,6 +283,7 @@ namespace Game.Voxels.Tests
         public IEnumerator Sandbox_TankDrivesFlatGroundAtSpeed_NeverPloughs()
         {
             LogAssert.ignoreFailingMessages = true;
+            FixedStepProbe probe = null;
             try
             {
                 yield return LoadSandbox();
@@ -287,15 +298,15 @@ namespace Game.Voxels.Tests
                 // The engine cranks first (TankEngine); then the whole runway, flat out.
                 float topSpeed = 0f;
                 float until = Time.time + 8f;
-                var probe = new GameObject("FlatDriveProbe").AddComponent<FixedStepProbe>();
+                float deadline = Deadline();
+                probe = new GameObject("FlatDriveProbe").AddComponent<FixedStepProbe>();
                 probe.Step = () => Hold(drive, boost);
                 while (Time.time < until && Vector3.Dot(_body.position - start, forward) < 26f)
                 {
+                    Within(deadline, "the flat run");
                     yield return null;
                     topSpeed = Mathf.Max(topSpeed, Vector3.Dot(_body.linearVelocity, forward));
                 }
-
-                Object.Destroy(probe.gameObject);
 
                 Debug.Log($"[FlatDrive] top speed {topSpeed:F2} m/s, plough impacts {plough.Impacts}");
                 Assert.That(topSpeed, Is.GreaterThan(6f), "the tank got going");
@@ -303,6 +314,8 @@ namespace Game.Voxels.Tests
             }
             finally
             {
+                if (probe != null)
+                    Object.Destroy(probe.gameObject);
                 LogAssert.ignoreFailingMessages = false;
             }
         }
@@ -322,14 +335,44 @@ namespace Game.Voxels.Tests
             if (!sandbox.IsValid() || !sandbox.isLoaded)
                 yield break;
             SceneManager.SetActiveScene(SceneManager.CreateScene("AfterCraterPlough"));
-            yield return SceneManager.UnloadSceneAsync(sandbox);
+            AsyncOperation unload = SceneManager.UnloadSceneAsync(sandbox);
+            float deadline = Deadline();
+            while (unload != null && !unload.isDone)
+            {
+                Within(deadline, "unloading the sandbox");
+                yield return null;
+            }
+        }
+
+        /// <summary>When a wait that started now has taken too long in real time.</summary>
+        private static float Deadline() => Time.realtimeSinceStartup + REAL_LIMIT;
+
+        /// <summary>
+        /// Fails the test, rather than letting it hang, once a wait has gone past <paramref name="deadline"/>
+        /// in real time: in batchmode a frame or a physics step that never comes would hang the run.
+        /// </summary>
+        private static void Within(float deadline, string what)
+        {
+            if (Time.realtimeSinceStartup > deadline)
+                Assert.Fail($"{what}: still waiting after {REAL_LIMIT} s of real time (frames or physics steps stopped coming)");
         }
 
         private IEnumerator LoadSandbox()
         {
-            yield return EditorSceneManager.LoadSceneAsyncInPlayMode(SCENE, new LoadSceneParameters(LoadSceneMode.Single));
+            AsyncOperation load = EditorSceneManager.LoadSceneAsyncInPlayMode(SCENE, new LoadSceneParameters(LoadSceneMode.Single));
+            float deadline = Deadline();
+            while (!load.isDone)
+            {
+                Within(deadline, "loading the sandbox");
+                yield return null;
+            }
+
+            deadline = Deadline();
             for (int i = 0; i < 90; i++)
+            {
+                Within(deadline, "physics steps after loading the sandbox");
                 yield return new WaitForFixedUpdate();
+            }
 
             // No bombs but ours.
             FieldInfo on = typeof(VoxelAirStrike).GetField("_on", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -349,8 +392,12 @@ namespace Game.Voxels.Tests
             _body.position = start + Vector3.up * 0.4f;
             _body.rotation = Quaternion.LookRotation(forward);
             _tankObject.transform.SetPositionAndRotation(_body.position, _body.rotation);
+            float deadline = Deadline();
             for (int i = 0; i < 40; i++)
+            {
+                Within(deadline, "the tank settling on the runway");
                 yield return new WaitForFixedUpdate();
+            }
         }
 
         /// <summary>Ground height along the run's centre line, every PROFILE_STEP m from the near rim to 2 m past the far one.</summary>

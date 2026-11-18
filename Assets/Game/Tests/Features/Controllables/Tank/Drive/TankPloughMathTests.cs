@@ -54,6 +54,34 @@ namespace Game.Tests
         }
 
         [Test]
+        public void GlancingARutWallAt12Degrees_PassesIsNoseHit_ButDoesNotFaceTravel()
+        {
+            // A wall along the way, turned 12° into it: the nose brushes it at 13 m/s.
+            var v = new Vector3(0f, 0f, 13f);
+            Vector3 wall = Quaternion.Euler(0f, -12f, 0f) * Vector3.left;
+            float closing = -Vector3.Dot(v, wall);
+            Assert.IsTrue(TankPloughMath.IsNoseHit(new Vector3(0.9f, -0.15f, 1.3f), wall, Vector3.forward, closing, 2f),
+                "on its own the nose test lets it through");
+            Assert.IsFalse(TankPloughMath.FacesTravel(wall, v), "but the face does not stand across the way");
+        }
+
+        [Test]
+        public void FacesTravel_AStepHeadOnOrTurnedUpTo45Degrees()
+        {
+            var v = new Vector3(0f, -2f, 13f);
+            Assert.IsTrue(TankPloughMath.FacesTravel(new Vector3(0f, 0.05f, -1f).normalized, v), "head on");
+            Assert.IsTrue(TankPloughMath.FacesTravel(Quaternion.Euler(0f, 40f, 0f) * new Vector3(0f, 0.2f, -1f).normalized, v), "40° aside");
+            Assert.IsFalse(TankPloughMath.FacesTravel(Quaternion.Euler(0f, 50f, 0f) * new Vector3(0f, 0.2f, -1f).normalized, v), "50° aside");
+        }
+
+        [Test]
+        public void FacesTravel_LevelGroundOrAVerticalFall_Counts()
+        {
+            Assert.IsTrue(TankPloughMath.FacesTravel(Vector3.up, new Vector3(0f, -5f, 6f)), "landing nose down on level ground");
+            Assert.IsTrue(TankPloughMath.FacesTravel(new Vector3(0f, 0.5f, -1f).normalized, Vector3.down), "falling straight down");
+        }
+
+        [Test]
         public void HitBehindTheMiddle_IsNotANoseHit()
         {
             var v = new Vector3(0f, 0f, 8f);

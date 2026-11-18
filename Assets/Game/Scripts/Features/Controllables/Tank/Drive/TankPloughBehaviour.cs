@@ -24,10 +24,10 @@ namespace Game
     /// lost much of the speed: it is answered after the fact, from the speed before it.
     ///
     /// The first plough of a session makes one empty dig above the ground at level load (WarmUp), so the
-    /// first chunk does not pay for the carve job's first run mid-drive. The throw is not warmed: it would
-    /// show debris.
+    /// first chunk does not pay for the carve job's first run mid-drive, and one throw of no earth, which
+    /// JIT-compiles ThrowEarth and shows nothing.
     /// </summary>
-    public sealed class TankPloughBehaviour : IEntityInit, IEntityFixedTick
+    public sealed class TankPloughBehaviour : IEntityInit, IEntityFixedTick, IEntityDisable
     {
         private const int GROUND_MASK = 1 << PhysicsLayers.Ground;
         private const float SHRINK = 0.02f;
@@ -68,9 +68,14 @@ namespace Game
         private float _nextResponse;
         private Vector3 _lastVelocity;
         private bool _hasLast;
-        // After a bounce: the most the hull may climb at (m/s), until when.
+        // After a bounce: the most the hull may climb at (m/s), until when, and whether it has been off the
+        // ground since (once it lands again the jump is over, and the cap with it).
         private float _climb;
         private float _climbUntil;
+        private bool _climbAirborne;
+        private TankSuspension _suspension;
+        // Voxels the last chunk dug out: a hit that dug nothing bounces nothing.
+        private int _lastDug;
 
         /// <summary>The preset in use.</summary>
         public TankPloughConfig Config { get; set; }
@@ -80,6 +85,9 @@ namespace Game
 
         /// <summary>Debris cubes the chunks threw (VoxelDebris.ThrowEarth). For tests.</summary>
         public int ThrownCubes { get; private set; }
+
+        /// <summary>Chunks thrown (ThrowEarth calls). For tests.</summary>
+        public int Throws { get; private set; }
 
         public TankPloughBehaviour(BoxCollider hull, TankPloughConfig config, IEarthThrow earth)
         {
@@ -92,7 +100,11 @@ namespace Game
         {
             _body = entity.GetRiggedBody();
             _driver = entity.TryGetDriver(out IReactiveVariable<IEntity> driver) ? driver : null;
+            _suspension = entity.TryGetSuspension(out TankSuspension suspension) ? suspension : null;
         }
+
+        /// <summary>A dead or disabled tank comes back with no climb cap left over.</summary>
+        public void Disable(IEntity entity) => _climbUntil = 0f;
 
         public void FixedTick(IEntity entity, float deltaTime)
         {
@@ -167,6 +179,10 @@ namespace Game
             if (!TankPloughMath.IsNoseHit(local, normal, hull.forward, closing, config.MinClosing))
                 return;
 
+            // Brushing a rut's wall or a crater's side is no nose hit: the face must stand across the way the hull goes.
+            if (!TankPloughMath.FacesTravel(normal, velocity))
+                return;
+
             VoxelBody ground = FindGround(hit.point);
             if (ground == null)
                 return;
@@ -183,10 +199,11 @@ namespace Game
             if (_time >= _nextBite)
             {
                 _nextBite = _time + config.BiteInterval;
-                RipChunk(ground, hit.point, normal, velocity, ramp, strength, config);
+                _lastDug = RipChunk(ground, hit.point, normal, velocity, ramp, strength, config);
             }
 
-            if (_time < _nextResponse)
+            // Nothing ripped out (bedrock, a sliver of ground): nothing to push off, no bounce, no sound.
+            if (_lastDug <= 0 || _time < _nextResponse)
                 return;
             _nextResponse = _time + config.ImpactCooldown;
             Impacts++;
@@ -220,16 +237,37 @@ namespace Game
             _body.AddForceAtPosition(Vector3.up * (config.Hop * strength * _body.mass), bow, ForceMode.Impulse);
             // The jump is the bounce's: riding up the rest of a steeper slope, the hull would be thrown
             // off its rim as off a ski jump, as high as the slope happens to be steep there.
-            _climb = _body.linearVelocity.y + config.Hop * strength;
-            _climbUntil = _time + config.ClimbTime;
+            // Never below the hop itself: a steep, slow landing nose down would turn the cap into a push down.
+            // A hit while a cap is on only raises it; it does not make it last longer.
+            float climb = Mathf.Max(_body.linearVelocity.y + config.Hop * strength, config.Hop * strength);
+            if (_time < _climbUntil)
+                _climb = Mathf.Max(_climb, climb);
+            else
+            {
+                _climb = climb;
+                _climbUntil = _time + config.ClimbTime;
+                _climbAirborne = false;
+            }
         }
 
         /// <summary>
-        /// The hull climbs no faster than the bounce sent it. Only the climb is cut: the ground still
-        /// stops it, so where the slope is steeper it gives up speed along it rather than going up faster.
+        /// The hull climbs no faster than the bounce sent it, until it has been off the ground and landed again
+        /// (or ClimbTime is up). Only the climb is cut: the ground still stops it, so where the slope is
+        /// steeper it gives up speed along it rather than going up faster.
         /// </summary>
         private void CapClimb()
         {
+            if (_suspension != null)
+            {
+                if (_suspension.GroundedCount == 0)
+                    _climbAirborne = true;
+                else if (_climbAirborne)
+                {
+                    _climbUntil = 0f;
+                    return;
+                }
+            }
+
             Vector3 velocity = _body.linearVelocity;
             if (velocity.y > _climb)
                 _body.linearVelocity = new Vector3(velocity.x, _climb, velocity.z);
@@ -239,7 +277,8 @@ namespace Game
         /// The nose rips a chunk out where it hit: three digs across it, ahead and down into the slope
         /// (the notch is there before the hull is), and the earth they took flies up and ahead.
         /// </summary>
-        private void RipChunk(VoxelBody ground, Vector3 point, Vector3 hitNormal, Vector3 velocity, Vector3 normal, float strength,
+        /// <returns>Voxels dug out.</returns>
+        private int RipChunk(VoxelBody ground, Vector3 point, Vector3 hitNormal, Vector3 velocity, Vector3 normal, float strength,
             TankPloughConfig config)
         {
             using (BiteMarker.Auto())
@@ -263,7 +302,7 @@ namespace Game
 
                 float volume = TankPloughMath.ChunkVolume(dug, voxel, config.ThrowVolume);
                 if (volume <= 0f)
-                    return;
+                    return dug;
                 var earth = new EarthThrow
                 {
                     Point = point + normal * THROW_OFF,
@@ -274,6 +313,8 @@ namespace Game
                     Body = body
                 };
                 ThrownCubes += _earth.Throw(earth);
+                Throws++;
+                return dug;
             }
         }
 
@@ -298,8 +339,8 @@ namespace Game
         /// IEarthThrow well above the ground, where there is nothing to take. It removes nothing and rebuilds
         /// nothing, but the carve job runs for the first time here and not in the first chunk mid-drive: its
         /// first schedule (job reflection data and, in the editor, Burst's options and compile) and the dig
-        /// code's JIT. The throw is not warmed: ThrowEarth throws nothing for no volume, and any volume
-        /// would put debris in the world.
+        /// code's JIT. Then a throw of no earth: ThrowEarth returns at once and throws nothing, but its own
+        /// code is JIT-compiled here (not what it calls, which only a real throw reaches).
         /// </summary>
         private void WarmUp()
         {
@@ -314,7 +355,11 @@ namespace Game
                 Bounds bounds = body.WorldBounds;
                 var above = new Vector3(bounds.center.x, bounds.max.y + WARM_UP_ABOVE, bounds.center.z);
                 using (WarmUpMarker.Auto())
+                {
                     _earth.Dig(body, above, Config != null ? Config.BiteRadiusMax : 1f);
+                    _earth.Throw(new EarthThrow { Point = above });
+                }
+
                 return;
             }
         }
