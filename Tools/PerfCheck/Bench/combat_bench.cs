@@ -4,9 +4,9 @@
 // AppDomain data (optional, set before the call):
 //   "combatbench_n"       int   monsters kept alive (GDD chapter 1: 30-60)                default 60
 //   "combatbench_skill"   int   level every one of the 6 milestone skills is taken to      default 3
-//   "combatbench_dps"     float horde bite damage per second (0 keeps the tank alive)     default 0
+//   "combatbench_dps"     float > 0: the horde bites the tank (tankDamageScale 1); 0 keeps it alive   default 0
 //   "combatbench_shadows" bool  crowd casts shadows                                        default false
-// Crawlers per GDD §5 (20 health, 6.5 m/s). During warm-up it feeds experience to the run and picks skills from
+// Crawlers with the horde's own kind numbers (HordeKindOptions). During warm-up it feeds experience to the run and picks skills from
 // each offer (lowest level first) until all six reach the target; level-ups during the run are picked the same
 // way, so the level-up pause never stalls it. Then the tank drives forward/back (gas 1, flip every 3 s) for 8 s
 // while it records, as horde_bench.cs. Read the result with combat_bench_read.cs. Leaving Play aborts the run.
@@ -68,7 +68,7 @@ if (n > 0)
 {
     if (art == null) return "ERROR no Assets/Game/Horde/Art/RegaxHordeArtConfig.asset (Tools/Horde/Bake Regax VAT)";
     foreach (var old in UnityEngine.Object.FindObjectsByType<Game.AIKit.Adapters.HordeInstaller>(FindObjectsSortMode.None)) UnityEngine.Object.Destroy(old.gameObject);
-    var options = new Game.AIKit.Adapters.HordeOptions { capacity = Math.Max(n, 64), population = n, attackDps = hordeDps, health = 20f, speed = 6.5f, castShadows = shadows };
+    var options = new Game.AIKit.Adapters.HordeOptions { capacity = Math.Max(n, 64), population = n, tankDamageScale = hordeDps > 0f ? 1f : 0f, castShadows = shadows };
     var installer = Game.AIKit.Adapters.HordeSpawn.CreateInScene(art, options);
     horde = installer.Behaviour;
     hordeObject = installer.gameObject;
