@@ -66,6 +66,7 @@
   - бюджеты: 60 FPS, PlayerLoop ≤ 5 мс в среднем, без мусора (GC) в кадре;
   - мерить только при загрузке CPU ниже 25 % (стенд `Tools/PerfCheck/Bench`, сценарии `idle, drive, airstrike, crush, house, crater, mg`, а также `combat_bench`, `horde_arena_bench`, `death_bench`, `arena_bench`);
   - перед влитием ветки — `/perf-check`.
+- **Тесты «без мусора»** — только через `Is.Not.AllocatingGCMemory()`: `GC.GetAllocatedBytesForCurrentThread` в редакторе всегда 0.
 - **Модели и пропсы.** Воксельные модели — прямые формы по сетке, без наклонных примитивов. Игровые пропсы (рампы и т. п.) — простые боксы.
 - **ИИ монстров** — «рой мяса», без умного поведения. Умный ИИ пользователь сделает сам позже.
 

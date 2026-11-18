@@ -163,3 +163,7 @@
 
 - **Unity 6.3, Built-in, после чистки, звука и ядра** (`2faa7b274`): `Docs/Reports/2026-11-17-perf-baseline-6.3.md`. Действующая точка отсчёта. С ней сравниваются ветки команд и переход на URP.
 - Unity 6000.0.38f1, Built-in, до чистки (`b136fb616`): `Docs/Reports/2026-11-17-perf-baseline.md`. Историческая; в ней авиаудар занижен — взрыв вызывался вне PlayerLoop.
+
+## Тесты «без мусора» (2026-11-18)
+
+`GC.GetAllocatedBytesForCurrentThread()` в редакторе Unity 6.3 у нас всегда возвращает 0: тест на нём ничего не доказывает. Проверять ограничением Unity `Is.Not.AllocatingGCMemory()` (или `AllocatingGCMemoryConstraint`) и держать рядом контрольный тест, что ограничение видит заведомую аллокацию. Старые тесты на `GetAllocatedBytesForCurrentThread` перепроверить.
