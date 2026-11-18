@@ -31,6 +31,20 @@ namespace Game
         // Metres the camera is raised over a house, eased.
         private float _rise;
 
+        // A snap asked for by RequestSnap: the camera jumps to the target instead of easing there
+        private static int s_snapRequests;
+        private int _snapsSeen;
+
+        /// <summary>
+        /// Every follow camera jumps to its target on its next LateTick instead of easing there: the tank was moved
+        /// far in one go (the run rebuilds the arena and places the tank under the closed shutter). A counter, not a
+        /// search: costs one compare a frame.
+        /// </summary>
+        public static void RequestSnap() => s_snapRequests++;
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetStatics() => s_snapRequests = 0;
+
         public void Init(IPlayerContext context)
         {
             _offset = context.GetCameraOffset();
@@ -51,6 +65,7 @@ namespace Game
                 _cameraRest = cameraTransform.localRotation;
             }
 
+            _snapsSeen = s_snapRequests;
             _characterSource = context.GetCharacter();
             _characterSubscription = _characterSource.Observe(OnCharacterChanged);
         }
@@ -80,6 +95,13 @@ namespace Game
             Vector3 offset = _look != null && _lookSettings != null
                 ? CameraLookUseCase.Offset(_offset.Value, _distance, _look.Value, _lookSettings)
                 : _offset.Value * _distance;
+
+            if (_snapsSeen != s_snapRequests)
+            {
+                _snapsSeen = s_snapRequests;
+                Snap(offset);
+                return;
+            }
 
             if (_collision == null || !_collision.Enabled)
             {
@@ -136,6 +158,17 @@ namespace Game
 
             // Tilt the view down by as much as the camera rose, so the tank stays where it was on screen.
             Tilt(Quaternion.FromToRotation(direction, raisedDirection));
+        }
+
+        // Straight onto the target, nothing eased and no rise kept: the next frames follow from here
+        private void Snap(Vector3 offset)
+        {
+            Vector3 position = _cameraPoint.position + offset;
+            _cameraRoot.position = position;
+            _followPosition = position;
+            _hasFollowPosition = _collision != null && _collision.Enabled;
+            _rise = 0f;
+            Tilt(Quaternion.identity);
         }
 
         // Applies a world-space swing to the camera under the root, on top of the camera's own turn

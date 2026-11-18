@@ -7,7 +7,8 @@ using UnityEngine;
 namespace Game
 {
     /// <summary>
-    /// Installs the app's flow services: the ticker, the level catalog and loader, the loading screen, the pause
+    /// Installs the app's flow services: the ticker, the level catalog and loader, the game catalog (tanks, modules,
+    /// skills, chapters), the loading screen, the pause
     /// service and the game flow (ticked by the ticker on real time). On the App prefab after GameLoopInstaller: the
     /// game loop is taken from the context when it is there (without it there is no pause service and no resume after
     /// transitions). Play Mode only — installers also run in Edit Mode.
@@ -16,6 +17,8 @@ namespace Game
     {
         [Tooltip("The menu scene, the levels and the level layer")]
         [SerializeField] private LevelCatalog _catalog;
+        [Tooltip("Tanks, modules, skills and chapters (Assets/Game/Configs/Run/GameCatalogConfig.asset, made by Tools/Game/Rebuild Game Catalog); empty: no chapters")]
+        [SerializeField] private GameCatalog _gameCatalog;
         [Tooltip("The core's loading screen on the App prefab; may be empty (transitions run uncovered)")]
         [SerializeField] private LoadingScreen _loadingScreen;
         [Tooltip("The AppTicker on the App prefab")]
@@ -45,8 +48,15 @@ namespace Game
             IGameLoop loop = context.TryGetGameLoop(out IGameLoop found) ? found : null;
             var loader = new LevelLoader();
 
+            // A missing game catalog is Unity-null: the flow gets a real null and runs without chapters
+            GameCatalog gameCatalog = _gameCatalog != null ? _gameCatalog : null;
+            if (gameCatalog == null)
+                Debug.LogError($"{nameof(AppInstaller)}: the game catalog is not set, chapters are off", this);
+
             context.AddAppTicker(_ticker);
             context.AddLevelCatalog(_catalog);
+            if (gameCatalog != null)
+                context.AddGameCatalog(gameCatalog);
             context.AddLevelLoader(loader);
             if (screen != null)
                 context.AddLoadingScreen(screen);
@@ -57,7 +67,7 @@ namespace Game
                 context.AddPauseService(_pause);
             }
 
-            _flow = new GameFlow(_catalog, loader, screen, loop, _warmUpCode ? WarmUpAssemblies() : null);
+            _flow = new GameFlow(_catalog, loader, screen, loop, _warmUpCode ? WarmUpAssemblies() : null, gameCatalog);
             context.AddGameFlow(_flow);
             _ticker.Add(_flow);
         }
@@ -100,6 +110,7 @@ namespace Game
             context.DelPauseService();
             context.DelLoadingScreen();
             context.DelLevelLoader();
+            context.DelGameCatalog();
             context.DelLevelCatalog();
             context.DelAppTicker();
 

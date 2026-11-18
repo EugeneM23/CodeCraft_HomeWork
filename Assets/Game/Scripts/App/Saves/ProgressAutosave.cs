@@ -12,7 +12,7 @@ namespace Game
     {
         private const float MAX_WAIT_FACTOR = 10f;
 
-        private readonly PlayerProgress _progress;
+        private readonly MetaProgress _progress;
         private readonly GameFlow _flow;
         private readonly float _delaySeconds;
 
@@ -21,7 +21,7 @@ namespace Game
         private bool _pending;
 
         /// <param name="flow">May be null: then only the delay saves.</param>
-        public ProgressAutosave(PlayerProgress progress, GameFlow flow, float delaySeconds)
+        public ProgressAutosave(MetaProgress progress, GameFlow flow, float delaySeconds)
         {
             _progress = progress ?? throw new ArgumentNullException(nameof(progress));
             _flow = flow;

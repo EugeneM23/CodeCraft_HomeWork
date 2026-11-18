@@ -6,14 +6,14 @@ namespace Game.Tests
     public sealed class ProgressAutosaveTests
     {
         private InMemorySaveStorage _storage;
-        private PlayerProgress _progress;
+        private MetaProgress _progress;
         private ProgressAutosave _autosave;
 
         [SetUp]
         public void SetUp()
         {
             _storage = new InMemorySaveStorage();
-            _progress = new PlayerProgress(_storage, "1.0");
+            _progress = new MetaProgress(_storage, "1.0", null);
             _progress.Load();
             _autosave = new ProgressAutosave(_progress, flow: null, delaySeconds: 3f);
         }
@@ -67,9 +67,21 @@ namespace Game.Tests
         }
 
         [Test]
+        public void MetaChange_IsWrittenAtOnce_AndLeavesNothingPending()
+        {
+            _progress.SetTutorialFlag("hangar");
+
+            Assert.IsTrue(Written);
+            Assert.IsFalse(_progress.IsDirty);
+            _storage.DeleteSlot(MetaProgress.SLOT);
+            _autosave.Tick(10f);
+            Assert.IsFalse(Written);
+        }
+
+        [Test]
         public void SaveNow_WritesADirtyProgressAtOnce()
         {
-            _progress.UnlockLevel("level_01");
+            _progress.UnlockLevel("level_01"); // a legacy change: dirty, not written
 
             _autosave.SaveNow();
 
