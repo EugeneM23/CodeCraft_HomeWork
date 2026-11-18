@@ -61,7 +61,7 @@ namespace Game.AudioEngine.Adapters
         public void Finished(Vector3 point) => GameAudio.Play(AudioKeys.Elite.FINISHER, point);
 
         /// <summary>Its death cry and the burst into pieces (the death report with the Elite flag).</summary>
-        public void Died(Vector3 point) => GameAudio.Play(AudioKeys.Elite.DEATH, point);
+        internal void Died(Vector3 point) => GameAudio.Play(AudioKeys.Elite.DEATH, point);
 
         /// <summary>The level is gone: no elite left, the elite music ends with the battle music.</summary>
         internal void Reset() => _present = false;

@@ -75,14 +75,15 @@ namespace Game.AudioEngine.Adapters
 
         public void CrawlerBite(Vector3 point) => GameAudio.Play(AudioKeys.Crawler.BITE, point);
 
-        public void CrawlerDied(Vector3 point) => GameAudio.Play(AudioKeys.Crawler.DEATH, point);
+        // Deaths come from the core's death report (RunEventAudio), not from AI's calls: one sound per death.
+        internal void CrawlerDied(Vector3 point) => GameAudio.Play(AudioKeys.Crawler.DEATH, point);
 
         public void Spit(Vector3 from) => GameAudio.Play(AudioKeys.Spitter.SPIT, from);
 
         /// <summary>Acid landed and hisses: on the tank, the ground, a wall.</summary>
         public void AcidHit(Vector3 point) => GameAudio.Play(AudioKeys.Spitter.ACID_HIT, point);
 
-        public void SpitterDied(Vector3 point) => GameAudio.Play(AudioKeys.Spitter.DEATH, point);
+        internal void SpitterDied(Vector3 point) => GameAudio.Play(AudioKeys.Spitter.DEATH, point);
 
         /// <summary>The level is gone: forget the loops, its AudioSystem took them along.</summary>
         internal void Reset()

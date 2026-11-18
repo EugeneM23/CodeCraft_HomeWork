@@ -50,6 +50,9 @@ namespace Game.AudioEngine.Adapters
                 _deaths.Died += _onDied;
         }
 
+        /// <summary>The level reports deaths: they are heard from here.</summary>
+        public bool HasDeaths => _deaths != null;
+
         public void Dispose()
         {
             if (_run != null)
@@ -65,7 +68,13 @@ namespace Game.AudioEngine.Adapters
                 _deaths.Died -= _onDied;
         }
 
-        private static void OnFightStarted(int arena) => GameAudio.Run.ArenaStarted();
+        // The battle music too: a run restarted in the same scene stopped it at RunEnded. Idempotent while it plays.
+        private static void OnFightStarted(int arena)
+        {
+            GameAudio.Run.ArenaStarted();
+            if (AppAudio.Instance != null)
+                AppAudio.Instance.PlayBattleMusic();
+        }
 
         private static void OnArenaCleared(int arena) => GameAudio.Run.ArenaCleared();
 
@@ -93,7 +102,7 @@ namespace Game.AudioEngine.Adapters
             if (death.Crushed)
                 GameAudio.Run.Crushed(death.Point);
 
-            if (death.Elite || death.Kind == EnemyKind.Elite)
+            if (death.Elite || death.Kind == EnemyKind.EliteRegax)
             {
                 GameAudio.Elite.Died(death.Point);
                 return;

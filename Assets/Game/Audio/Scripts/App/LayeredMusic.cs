@@ -19,7 +19,8 @@ namespace Game.AudioEngine.Adapters
         private const int LAYERS = 3;
 
         /// <summary>Seconds between asking the layers to start and their shared start, so all three make it.</summary>
-        private const double START_DELAY = 0.1;
+        /// <summary>Lead time of the scheduled start: room for three streamed clips to buffer before they play together.</summary>
+        private const double START_DELAY = 0.3;
 
         private enum Fade { None, In, Out }
 
@@ -145,6 +146,8 @@ namespace Game.AudioEngine.Adapters
                 if (clip == null)
                     continue;
 
+                if (clip.loadState is AudioDataLoadState.Unloaded or AudioDataLoadState.Failed)
+                    clip.LoadAudioData();
                 source.clip = clip;
                 source.volume = 0f;
                 source.PlayScheduled(start);

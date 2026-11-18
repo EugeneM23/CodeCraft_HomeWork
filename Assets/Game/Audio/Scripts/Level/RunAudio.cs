@@ -18,18 +18,12 @@ namespace Game.AudioEngine.Adapters
         /// <summary>An octave: run.xp_streak 1 is pitch ×2 (AudioParameterCurves).</summary>
         public const int XP_STEPS = 12;
 
-        public const float CRUSH_WINDOW = 1.5f;
+        /// <summary>The core's «Давка ×N» window (IRunService.CrushStreak): the sound climbs with the HUD's count.</summary>
+        public const float CRUSH_WINDOW = 2f;
         public const int CRUSH_STEPS = 8;
 
         private readonly AudioStreak _xp = new(XP_WINDOW, XP_STEPS);
         private readonly AudioStreak _crush = new(CRUSH_WINDOW, CRUSH_STEPS);
-
-        /// <summary>A crush reported again this close (m², s) is the same crush.</summary>
-        private const float SAME_CRUSH_SQR = 1f;
-        private const float SAME_CRUSH_TIME = 0.1f;
-
-        private float _lastCrushTime = float.NegativeInfinity;
-        private Vector3 _lastCrushPoint;
 
         public AudioStreak XpStreak => _xp;
 
@@ -61,12 +55,6 @@ namespace Game.AudioEngine.Adapters
 
         public void Crushed(Vector3 point, float time)
         {
-            // An entity's crush is heard twice: the tank's GameSignals.Crushed and AI's death report, same moment and place.
-            if (time - _lastCrushTime < SAME_CRUSH_TIME && (point - _lastCrushPoint).sqrMagnitude < SAME_CRUSH_SQR)
-                return;
-
-            _lastCrushTime = time;
-            _lastCrushPoint = point;
             GameAudio.Play(AudioKeys.Monsters.CRUSHED, point);
             if (_crush.Register(time) == 0)
                 return;
@@ -80,7 +68,6 @@ namespace Game.AudioEngine.Adapters
         {
             _xp.Reset();
             _crush.Reset();
-            _lastCrushTime = float.NegativeInfinity;
         }
     }
 }

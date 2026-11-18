@@ -62,5 +62,20 @@ namespace Game.AudioEngine.Adapters.Tests
             Assert.AreEqual(1, run.XpStreak.Steps);
             Assert.AreEqual(1, run.CrushStreak.Steps);
         }
+
+        [Test]
+        public void TwoCrawlersCrushedTogether_AreTwoCrushes()
+        {
+            var run = new RunAudio();
+            run.Crushed(UnityEngine.Vector3.zero, 5f);
+            run.Crushed(new UnityEngine.Vector3(0.3f, 0f, 0f), 5f);
+            Assert.AreEqual(1, run.CrushStreak.Steps);
+        }
+
+        [Test]
+        public void CrushWindow_MatchesTheHudCounter()
+        {
+            Assert.AreEqual(2f, RunAudio.CRUSH_WINDOW);
+        }
     }
 }

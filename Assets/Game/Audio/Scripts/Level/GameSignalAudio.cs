@@ -91,8 +91,6 @@ namespace Game.AudioEngine.Adapters
             GameSignals.XpPicked += _onXpPicked;
             EliteStatus.Appeared += _onEliteAppeared;
             EliteStatus.Died += _onEliteGone;
-            if (EliteStatus.IsAlive)
-                GameAudio.Elite.Appeared();
         }
 
         public void Unsubscribe()
@@ -170,7 +168,12 @@ namespace Game.AudioEngine.Adapters
             GameAudio.Play(AudioKeys.Destruction.MUD_SPLASH, point);
 
         // The crunch, and the streak sound over it from the second crush in quick succession.
-        private static void OnCrushed(Vector3 point, float speed) => GameAudio.Run.Crushed(point);
+        // Where the level reports deaths, the crush is heard from the report (RunEventAudio); this is the sandbox's.
+        private static void OnCrushed(Vector3 point, float speed)
+        {
+            if (!GameAudio.DeathsReported)
+                GameAudio.Run.Crushed(point);
+        }
 
         private static void OnAirStrikeCalled() => GameAudio.Play(AudioKeys.Weapons.AIRSTRIKE_CALL);
 

@@ -60,6 +60,12 @@ namespace Game.AudioEngine.Adapters
         /// <summary>Sounds of the run: arenas, gates, experience, levels, skills, crushes.</summary>
         public static RunAudio Run => s_run;
 
+        /// <summary>
+        /// The level reports enemy deaths (IEnemyDeaths): death cries and crushes are played from the report, not by
+        /// MonsterAudioBehaviour or GameSignals.Crushed, so each death sounds once.
+        /// </summary>
+        public static bool DeathsReported => s_instance != null && s_instance._runEvents != null && s_instance._runEvents.HasDeaths;
+
         public AudioSystem System => _system;
 
         public bool IsPaused => _paused;
@@ -301,6 +307,7 @@ namespace Game.AudioEngine.Adapters
             s_instance = null;
             s_prefab = null;
             s_missingPrefabWarned = false;
+            EntityAudioDirector.HasOwnSounds = null;
             ResetFacades();
         }
 
