@@ -6,6 +6,7 @@ using Atomic.Elements;
 using Atomic.Entities;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 
 namespace Game.Voxels.Tests
@@ -173,6 +174,76 @@ namespace Game.Voxels.Tests
 
             Assert.IsTrue(burst);
             Assert.AreEqual(0, allocated, "the death itself: the pose read and the voxels scheduled, no garbage");
+        }
+
+        [UnityTest]
+        public IEnumerator APooledDeath_AfterTheWarmUp_AllocatesNothing()
+        {
+            // A level whose pool keeps one corpse: the second death takes the first one's bodies.
+            VoxelCorpses.Clear();
+            VoxelGibs.Corpses = 1;
+            VoxelGibs.BodiesPerCorpse = 3;
+            try
+            {
+                VoxelGibs.Prepare(_rig, _config);
+                for (int frame = 0; VoxelCorpses.ToPrime > 0 && frame < 60; frame++)
+                    yield return null;
+                Assert.AreEqual(0, VoxelCorpses.ToPrime, "the level's bodies are made");
+
+                var hit = new KillingHit(new Vector3(0f, 0.5f, -5f), 50f, false, 0f);
+                // Twice through: the code compiled, the lists grown, the corpse's bodies used once (the second takes the
+                // first one's), and the debris' lying cell under the drops made (VoxelDebris bakes a mesh per 8 m cell
+                // the first time drops lie in it: its own one-off garbage, not the death's).
+                Die(hit);
+                yield return null;
+                Die(hit);
+                yield return null;
+
+                Assert.That(() => Die(hit),
+                    UnityEngine.TestTools.Constraints.ConstraintExtensions.AllocatingGCMemory(UnityEngine.TestTools.Constraints.Is.Not),
+                    "the whole death: the pose read, the pieces built from the pool, shown, split, bled and built by the world");
+                Assert.AreEqual(1, VoxelCorpses.CorpseCount, "the first corpse went to make the second");
+                Assert.AreEqual(2, Flesh().Length);
+            }
+            finally
+            {
+                VoxelGibs.Corpses = 20;
+                VoxelGibs.BodiesPerCorpse = 7;
+                VoxelCorpses.Clear();
+            }
+        }
+
+        /// <summary>A death played through in one go, the same voxels each time; the skin shown again for the next.</summary>
+        private void Die(in KillingHit hit)
+        {
+            _skin.enabled = true;
+            Random.InitState(5);
+            VoxelGibs.Burst(_rig, _config, hit);
+            VoxelGibs.Flush();
+            VoxelWorld.Instance.VoxelLateUpdate(0f);
+        }
+
+        [UnityTest]
+        public IEnumerator EveryLevel_HasItsCorpseBodiesMade()
+        {
+            Scene test = SceneManager.GetActiveScene();
+            Assert.IsTrue(VoxelCorpses.IsPreparedFor(test), "the first body that came in (SetUp) made this level ready");
+
+            Scene level = SceneManager.CreateScene("GibsLevel");
+            SceneManager.SetActiveScene(level);
+            IEntity other = new Entity();
+            other.AddDamageTakenEvent(new Event<TakeDamageArgs>());
+            other.AddDeathTakenEvent(new Event<TakeDamageArgs>());
+            new VoxelGibsOnDeathBehaviour(_rig, _config).Init(other);
+
+            Assert.IsTrue(VoxelCorpses.IsPreparedFor(level), "a new level: its own bodies");
+            Assert.AreEqual(VoxelGibs.Corpses * VoxelGibs.BodiesPerCorpse, VoxelCorpses.ToPrime);
+            yield return null;
+            yield return null;
+            Assert.That(VoxelCorpses.ToPrime, Is.LessThan(VoxelGibs.Corpses * VoxelGibs.BodiesPerCorpse), "made a few a frame");
+
+            SceneManager.SetActiveScene(test);
+            yield return SceneManager.UnloadSceneAsync(level);
         }
 
         [Test]

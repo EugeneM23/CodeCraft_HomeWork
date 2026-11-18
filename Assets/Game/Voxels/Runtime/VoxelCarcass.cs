@@ -50,74 +50,32 @@ namespace Game.Voxels
         /// <summary>Pieces handed back by the game once their bodies are on their way (<see cref="Release"/>), with their torn-face buffers.</summary>
         private static readonly Stack<Piece> PiecePool = new();
 
-        /// <summary>
-        /// Bodies made ahead (<see cref="AddSpareBodies"/>): a switched-off GameObject with a VoxelBody never
-        /// initialised, and the impact fracture and settle a loose piece takes (VoxelBody.MakeDynamic finds them
-        /// instead of adding them). A piece takes one instead of making its GameObject and components. Used once:
-        /// a body cannot be emptied and filled again (see the remarks of <see cref="AddSpareBodies"/>).
-        /// </summary>
-        private static readonly Stack<VoxelBody> SpareBodies = new();
-        private static bool s_spareSettle;
-
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void ResetStatics()
+        private static void ResetStatics() => PiecePool.Clear();
+
+        /// <summary>A body of its own for a piece (no corpse pool): on a switched-off GameObject if <paramref name="inactive"/>.</summary>
+        private static VoxelBody NewBody(string name, in VoxelBodySettings settings, bool inactive)
         {
-            PiecePool.Clear();
-            SpareBodies.Clear();
-        }
-
-        /// <summary>Bodies made ahead and not taken yet (some may have gone with their scene).</summary>
-        public static int SpareBodyCount => SpareBodies.Count;
-
-        /// <summary>
-        /// Makes <paramref name="count"/> bodies ahead, in the active scene, switched off. Meant for level load,
-        /// a few a frame: a death then makes no GameObject, VoxelBody, VoxelImpactFracture or VoxelSettle of its own.
-        /// </summary>
-        /// <param name="settle">Whether they carry a VoxelSettle: they are only taken for settings with the same Settle.</param>
-        /// <remarks>
-        /// The bodies are not recycled: the flesh of a death lies all game, and a VoxelBody cannot yet be filled
-        /// again (its chunks and colliders would be left behind). Once the spares run out, pieces are made as before.
-        /// </remarks>
-        public static void AddSpareBodies(int count, bool settle)
-        {
-            if (SpareBodies.Count > 0 && settle != s_spareSettle)
-                return;
-            s_spareSettle = settle;
-            for (int i = 0; i < count; i++)
-            {
-                var go = new GameObject(SPARE_NAME);
-                go.SetActive(false);
-                VoxelBody body = go.AddComponent<VoxelBody>();
-                go.AddComponent<VoxelImpactFracture>();
-                if (settle)
-                    go.AddComponent<VoxelSettle>();
-                SpareBodies.Push(body);
-            }
-        }
-
-        private const string SPARE_NAME = "Flesh (spare)";
-
-        /// <summary>A spare body for these settings, or a new one: on a switched-off GameObject if <paramref name="inactive"/>.</summary>
-        private static VoxelBody TakeBody(string name, in VoxelBodySettings settings, bool inactive)
-        {
-            while (SpareBodies.Count > 0 && settings.Settle == s_spareSettle)
-            {
-                VoxelBody spare = SpareBodies.Pop();
-                if (spare == null)
-                    continue; // gone with its scene
-
-                GameObject spareObject = spare.gameObject;
-                spareObject.name = name;
-                spareObject.layer = settings.Layer;
-                if (!inactive)
-                    spareObject.SetActive(true);
-                return spare;
-            }
-
             var go = new GameObject(name) { layer = settings.Layer };
             if (inactive)
                 go.SetActive(false);
             return go.AddComponent<VoxelBody>();
+        }
+
+        /// <summary>
+        /// A corpse's body for a piece of this size (VoxelCorpses.Take: a free one with as many chunks if it can), named,
+        /// on the piece layer, switched on unless <paramref name="inactive"/>.
+        /// </summary>
+        private static VoxelBody TakeBody(VoxelCorpses.Corpse corpse, int3 size, string name, in VoxelBodySettings settings,
+            bool inactive)
+        {
+            VoxelBody body = VoxelCorpses.Take(corpse, VoxelCorpses.ChunksOf(size, settings.ChunkSize), settings.Settle);
+            GameObject go = body.gameObject;
+            go.name = name;
+            go.layer = settings.Layer;
+            if (!inactive)
+                go.SetActive(true);
+            return body;
         }
 
         /// <summary>Makes <paramref name="count"/> pooled pieces ahead (level load), so a death takes them without allocating.</summary>
@@ -127,7 +85,7 @@ namespace Game.Voxels
                 PiecePool.Push(new Piece { Torn = new TornFace[MAX_TORN] });
         }
 
-        /// <summary>Hands pieces from <see cref="Build(in SkinnedVoxelizer.Result, IReadOnlyList{int}, VoxelBodySettings, IReadOnlyList{string}, bool, List{Piece})"/> back for the next death; the list is cleared.</summary>
+        /// <summary>Hands pieces from <see cref="Build(in SkinnedVoxelizer.Result, IReadOnlyList{int}, VoxelBodySettings, IReadOnlyList{string}, bool, List{Piece}, VoxelCorpses.Corpse)"/> back for the next death; the list is cleared.</summary>
         public static void Release(List<Piece> pieces)
         {
             for (int i = 0; i < pieces.Count; i++)
@@ -169,13 +127,16 @@ namespace Game.Voxels
 
         /// <summary>
         /// The pieces of a body, one per cluster, added to <paramref name="into"/> (pooled: hand them back with
-        /// <see cref="Release"/>). Allocates nothing of its own beyond what each new VoxelBody does.
+        /// <see cref="Release"/>). Allocates nothing of its own beyond what each new VoxelBody does; with a
+        /// <paramref name="corpse"/> the bodies are the pool's (VoxelCorpses), and nothing at all once it is filled.
         /// </summary>
         /// <param name="names">Name of the piece of each cluster, by cluster id (made once by the caller).</param>
         /// <param name="inactive">The pieces are made switched off: their meshes and colliders are built at the end of
         /// the frame all the same, and they show when the caller switches them on (and launches them).</param>
+        /// <param name="corpse">The corpse the bodies are taken for (VoxelCorpses.Begin); null — new bodies.</param>
         public static void Build(in SkinnedVoxelizer.Result grid, IReadOnlyList<int> clusterOfPart,
-            VoxelBodySettings settings, IReadOnlyList<string> names, bool inactive, List<Piece> into)
+            VoxelBodySettings settings, IReadOnlyList<string> names, bool inactive, List<Piece> into,
+            VoxelCorpses.Corpse corpse = null)
         {
             if (!grid.Voxels.IsCreated || clusterOfPart == null || clusterOfPart.Count == 0)
                 return;
@@ -199,7 +160,21 @@ namespace Game.Voxels
                     continue;
 
                 int3 size = hi[c] - lo[c] + 1;
-                var target = new NativeArray<byte>(size.x * size.y * size.z, Allocator.Persistent);
+                string name = c < names.Count ? names[c] : NAME_FALLBACK;
+                // A corpse's body brings its own arrays when they are the right length (VoxelBody.TakeVoxels, cleared).
+                VoxelBody body = corpse != null ? TakeBody(corpse, size, name, settings, inactive) : NewBody(name, settings, inactive);
+                NativeArray<byte> target = corpse != null
+                    ? body.TakeVoxels(size.x * size.y * size.z)
+                    : new NativeArray<byte>(size.x * size.y * size.z, Allocator.Persistent);
+                NativeArray<Color32> palette;
+                if (corpse != null)
+                {
+                    palette = body.TakePalette(grid.Palette.Length);
+                    palette.CopyFrom(grid.Palette);
+                }
+                else
+                    palette = new NativeArray<Color32>(grid.Palette, Allocator.Persistent);
+
                 torn.Clear();
                 new ExtractClusterJob
                 {
@@ -207,7 +182,6 @@ namespace Game.Voxels
                     Cluster = c, Min = lo[c], TargetSize = size, Target = target, Torn = torn
                 }.Run();
 
-                VoxelBody body = TakeBody(c < names.Count ? names[c] : NAME_FALLBACK, settings, inactive);
                 Transform space = body.transform;
                 space.SetPositionAndRotation(grid.Position, grid.Rotation);
 
@@ -215,7 +189,7 @@ namespace Game.Voxels
                 own.VoxelSize = grid.VoxelSize;
                 own.Origin = grid.Origin + (float3)lo[c] * grid.VoxelSize;
 
-                body.Init(size, target, new NativeArray<Color32>(grid.Palette, Allocator.Persistent), own);
+                body.Init(size, target, palette, own);
 
                 Piece piece = PiecePool.Count > 0 ? PiecePool.Pop() : new Piece { Torn = new TornFace[MAX_TORN] };
                 piece.Body = body;
