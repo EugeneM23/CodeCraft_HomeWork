@@ -25,6 +25,8 @@ namespace Game.AudioEngine.Adapters
         private const string RESOURCE = "GameAudio";
 
         private static readonly HordeAudio s_horde = new();
+        private static readonly EliteAudio s_elite = new();
+        private static readonly RunAudio s_run = new();
         private static GameAudio s_instance;
         private static GameAudio s_prefab;
         private static bool s_missingPrefabWarned;
@@ -41,6 +43,7 @@ namespace Game.AudioEngine.Adapters
         private EntityAudioDirector _director;
         private GameContext _context;
         private WorldAmbienceAudioBehaviour _ambience;
+        private RunEventAudio _runEvents;
 
         /// <summary>The level's GameAudio, null when there is none.</summary>
         public static GameAudio Instance => s_instance;
@@ -48,8 +51,14 @@ namespace Game.AudioEngine.Adapters
         /// <summary>There is a GameAudio and it takes sounds.</summary>
         public static bool IsReady => s_instance != null && s_instance.isActiveAndEnabled;
 
-        /// <summary>Horde sounds for the AI team: density of the crowd and the wave start.</summary>
+        /// <summary>Horde sounds for the AI team: crowd, pack, waves, burrows, bites, spits, deaths.</summary>
         public static HordeAudio Horde => s_horde;
+
+        /// <summary>The elite Regax's sounds for the AI team.</summary>
+        public static EliteAudio Elite => s_elite;
+
+        /// <summary>Sounds of the run: arenas, gates, experience, levels, skills, crushes.</summary>
+        public static RunAudio Run => s_run;
 
         public AudioSystem System => _system;
 
@@ -218,6 +227,12 @@ namespace Game.AudioEngine.Adapters
 
             _ambience = new WorldAmbienceAudioBehaviour();
             _context.AddBehaviour(_ambience);
+
+            // The run and the deaths are absent in the sandbox: whatever the level has is listened to.
+            _context.TryGetRun(out IRunService run);
+            _context.TryGetEnemyDeaths(out IEnemyDeaths deaths);
+            if (run != null || deaths != null)
+                _runEvents = new RunEventAudio(run, deaths);
         }
 
         // Polls the pause source while the game is paused: Atomic ticks may stop with the pause, this must not.
@@ -239,6 +254,9 @@ namespace Game.AudioEngine.Adapters
             _director?.Dispose();
             _director = null;
 
+            _runEvents?.Dispose();
+            _runEvents = null;
+
             if (_context != null && _ambience != null)
                 _context.DelBehaviour(_ambience);
             _ambience = null;
@@ -251,7 +269,7 @@ namespace Game.AudioEngine.Adapters
             (_pauseSource as IDisposable)?.Dispose();
             _pauseSource = null;
 
-            s_horde.Reset();
+            ResetFacades();
             s_instance = null;
         }
 
@@ -283,7 +301,14 @@ namespace Game.AudioEngine.Adapters
             s_instance = null;
             s_prefab = null;
             s_missingPrefabWarned = false;
+            ResetFacades();
+        }
+
+        private static void ResetFacades()
+        {
             s_horde.Reset();
+            s_elite.Reset();
+            s_run.Reset();
         }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]

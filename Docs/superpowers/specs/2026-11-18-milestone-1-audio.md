@@ -14,13 +14,13 @@
 
 | Банк | Ключи | Параметры |
 |---|---|---|
-| `run` | `arena_start`, `wave`, `arena_cleared`, `gate_open`, `transition` (проезд и шторка), `xp_pickup`, `level_up`, `skill_choice`, `skill_taken`, `elite_appear` | `xp_streak` 0..1: высота опыта по серии |
+| `run` | `arena_start`, `arena_cleared`, `gate_open`, `transition` (проезд и шторка), `xp_pickup`, `elite_appear` | `xp_streak` 0..1: высота опыта по серии |
 | `monsters` | плюс `burrow_open` (нора открылась, земля рвётся, монстры лезут) | — |
 | `crawler` | `pack_loop` (петля), `bite`, `death` | `alive` 0..1: громкость стаи по числу живых |
 | `spitter` | `spit`, `acid_hit`, `death` | — |
 | `elite` | `roar`, `step`, `dash`, `jump`, `land`, `claws`, `tear` (вырывает кусок дома), `throw`, `hurt`, `finisher`, `death` | — |
-| `tank` | плюс `crush_streak` | `crush_streak` 0..1: высота и громкость по длине серии |
-| UI-каталог | плюс `close`, `install`, `upgrade`, `marks_tick`, `samples_tick`, `pause_on`, `pause_off` | — |
+| `tank` | плюс `crush_streak` | `crush_streak_level` 0..1: высота и громкость по длине серии |
+| UI-каталог | плюс `close`, `install`, `upgrade`, `marks_tick`, `samples_tick`, `pause_on`, `pause_off`, `level_up`, `skill_choice`, `skill_taken` | — |
 
 Высота опыта и серии давки считается у звука:
 - подбор в пределах 0.6 с от прошлого поднимает серию на шаг, шаг — полутон, не выше 12 шагов;
@@ -53,8 +53,8 @@
 | гибель врага (вид, точка, раздавлен, элита) | AI, событие ядра | смерть по виду; давка и серия давки |
 | волна, число живых и ближних, нора | AI, `IHordeAudio` | интерфейс расширяется: `BurrowOpened(point)`, `CrawlerBite(point)`, `Spit(point)`, `AcidHit(point)`, `SetAlive(crawlers01, total01)` |
 | действия элиты | AI, новый `IEliteAudio` по тому же образцу | `Roar`, `Dash`, `Jump`, `Land`, `Claws`, `Tear`, `Throw`, `Hurt`, `Finisher(point)` |
-| подбор опыта, навык взят | боевые системы | `GameSignals.XpPicked(point)`, `GameSignals.SkillTaken()` — две строки в моём файле сигналов |
-| выбор навыка, экономика, пауза | меню | `IUiSounds.Play(UiSound.…)`, перечисление `UiSound` пополняется 9 значениями |
+| подбор опыта | боевые системы | `GameSignals.XpPicked(point)` — строка в моём файле сигналов |
+| новый уровень, выбор навыка, навык взят, экономика, пауза | меню | `IUiSounds.Play(UiSound.…)`, перечисление `UiSound` пополняется 10 значениями. Уровень и навыки — звуки интерфейса: выбор навыка ставит бой на паузу, а пауза замораживает звуки уровня |
 
 Звук сам делает обе реализации: `GameHordeAudio` и `GameEliteAudio` пишутся по образцу нынешнего `GameHordeAudio`, а сигналы и значения `UiSound` добавляются строками в чужие файлы отдельным коммитом «Audio signals». Командам остаётся вызвать готовые методы в своём коде.
 

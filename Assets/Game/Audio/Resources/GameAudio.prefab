@@ -55,6 +55,10 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 3e6f8d10f674d104797c8d117aa07c50, type: 2}
   - {fileID: 11400000, guid: 769811968fa5a6e4b8ee2e7d4ac31f56, type: 2}
   - {fileID: 11400000, guid: 412e8faf6097b0c4489101d1c61ba831, type: 2}
+  - {fileID: 11400000, guid: 32c7d3872d7a74d42880c58252cdf0e9, type: 2}
+  - {fileID: 11400000, guid: 672d25606bb38044298ccbc2944346d3, type: 2}
+  - {fileID: 11400000, guid: e83e1f00f7f793b4897bef2247ce47fc, type: 2}
+  - {fileID: 11400000, guid: 1a94b7a433044d2439a748b9f3d6506f, type: 2}
 --- !u!114 &8873754589639595830
 MonoBehaviour:
   m_ObjectHideFlags: 0

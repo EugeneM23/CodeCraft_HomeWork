@@ -19,6 +19,11 @@ namespace Game.AudioEngine.Adapters.EditorTools
         public const string UI_CATALOG = UI + "/UISounds.asset";
         public const string MENU_MUSIC = MUSIC + "/MenuMusic.asset";
         public const string BATTLE_MUSIC = MUSIC + "/BattleMusic.asset";
+        public const string HANGAR_MUSIC = MUSIC + "/HangarMusic.asset";
+        public const string BATTLE_CALM = MUSIC + "/BattleCalm.asset";
+        public const string BATTLE_HORDE = MUSIC + "/BattleHorde.asset";
+        public const string BATTLE_PEAK = MUSIC + "/BattlePeak.asset";
+        public const string ELITE_MUSIC = MUSIC + "/EliteMusic.asset";
         public const string FALLBACK_MUSIC = MUSIC + "/Music.wav";
         public const string RESOURCES = ROOT + "/Resources";
         public const string GAME_AUDIO_PREFAB = RESOURCES + "/GameAudio.prefab";
@@ -27,6 +32,11 @@ namespace Game.AudioEngine.Adapters.EditorTools
         public const string UI_CLIPS = CLIPS + "/ui";
         public const string MENU_MUSIC_CLIPS = CLIPS + "/music/menu";
         public const string BATTLE_MUSIC_CLIPS = CLIPS + "/music/battle";
+        public const string HANGAR_MUSIC_CLIPS = CLIPS + "/music/hangar";
+        public const string BATTLE_CALM_CLIPS = CLIPS + "/music/battle_calm";
+        public const string BATTLE_HORDE_CLIPS = CLIPS + "/music/battle_horde";
+        public const string BATTLE_PEAK_CLIPS = CLIPS + "/music/battle_peak";
+        public const string ELITE_MUSIC_CLIPS = CLIPS + "/music/elite";
 
         public const string README_NAME = "README.txt";
 
