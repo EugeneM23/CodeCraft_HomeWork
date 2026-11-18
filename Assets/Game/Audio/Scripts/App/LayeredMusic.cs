@@ -18,7 +18,6 @@ namespace Game.AudioEngine.Adapters
         private const int PEAK = 2;
         private const int LAYERS = 3;
 
-        /// <summary>Seconds between asking the layers to start and their shared start, so all three make it.</summary>
         /// <summary>Lead time of the scheduled start: room for three streamed clips to buffer before they play together.</summary>
         private const double START_DELAY = 0.3;
 
