@@ -89,8 +89,11 @@ namespace Game.AIKit.Adapters
         private float _groundHeight;
         private int _queuedWave;
         private int _pendingCount;
+        /// <summary>The big one the HUD bar follows (-1: none); a second one alive at the same time is not shown.</summary>
         private int _eliteSlot = -1;
         private int _eliteVersion;
+        /// <summary>Big ones alive: the HUD hears Appeared for the first and Died when the last one dies.</summary>
+        private int _eliteCount;
         private float _eliteShare;
         private float _eliteTimer;
 
@@ -138,7 +141,30 @@ namespace Game.AIKit.Adapters
             set => _options.tankDamageScale = value;
         }
 
-        public int AliveCount => (_simulation?.AliveCount ?? 0) + _pendingCount;
+        /// <summary>
+        /// Horizontal tank speed from which the hull crushes the monsters under it, m/s (default 1.5): a parameter, the
+        /// tank's own value can be plugged in here. Takes effect from the next step.
+        /// </summary>
+        public float CrushSpeed
+        {
+            get => _options.crushSpeed;
+            set
+            {
+                _options.crushSpeed = value;
+                if (_simulation == null)
+                    return;
+                HordeSettings settings = _simulation.Settings;
+                settings.CrushSpeed = value;
+                _simulation.Settings = settings;
+            }
+        }
+
+        /// <summary>
+        /// Live monsters, the asked-for ones not yet in the crowd and the dead whose deaths are not handed out yet
+        /// (the step frees them at the start of the frame, <see cref="HandleDeaths"/> reports them in the tick): an arena
+        /// is not cleared before its last deaths are reported.
+        /// </summary>
+        public int AliveCount => (_simulation?.AliveOrUnreported ?? 0) + _pendingCount;
 
         public float EmergeSeconds => _options.emergeTime;
 
@@ -376,6 +402,8 @@ namespace Game.AIKit.Adapters
                 _eliteSlot = -1;
                 EliteStatus.ReportDied(); // gone with the old arena: the HUD drops its bar
             }
+
+            _eliteCount = 0;
             _pendingCount = 0;
             _queuedWave = 0;
             _damageOwed = 0f;
@@ -426,13 +454,16 @@ namespace Game.AIKit.Adapters
         /// </summary>
         private void BindGrid()
         {
+            // Versions stay monotonic across simulations: the target source stays registered with combat, so a handle
+            // taken from the old simulation must not match a monster of the new one.
+            int versionBase = _simulation != null ? _simulation.MaxVersion() + 1 : 0;
             _simulation?.Dispose();
             _flow?.Dispose();
             _grid = _nav.Grid;
             _gridGeneration = _nav.Generation;
             _groundHeight = LowestGround();
             _flow = new HordeFlowField(_grid);
-            _simulation = new HordeSimulation(_options.capacity, _grid, _flow, _options.ToSettings());
+            _simulation = new HordeSimulation(_options.capacity, _grid, _flow, _options.ToSettings(), 1, versionBase);
             for (int row = 0; row < HordeKinds.COUNT; row++)
                 _simulation.SetKind(row, _options.Kind(row));
             _simulation.SetClips(_art.run, _art.attack, _art.idle);
@@ -469,10 +500,15 @@ namespace Game.AIKit.Adapters
                 int slot = _simulation.Spawn(at, math.atan2(toTank.x, toTank.y), p.Row, p.HealthScale, p.DamageScale, true);
                 if (slot >= 0 && HordeKinds.IsElite(p.Row))
                 {
-                    _eliteSlot = slot;
-                    _eliteVersion = _simulation.Version(slot);
-                    _eliteShare = 1f;
-                    EliteStatus.ReportAppeared(1f);
+                    _eliteCount++;
+                    if (_eliteSlot < 0)
+                    {
+                        // The bar follows the first; one that comes while it lives is not announced again.
+                        _eliteSlot = slot;
+                        _eliteVersion = _simulation.Version(slot);
+                        _eliteShare = 1f;
+                        EliteStatus.ReportAppeared(1f);
+                    }
                 }
             }
 
@@ -597,6 +633,39 @@ namespace Game.AIKit.Adapters
             EliteStatus.ReportHealth(share);
         }
 
+        /// <summary>
+        /// A big one died. While others live the bar moves on to one of them (no new Appeared); the last one's death is
+        /// the HUD's Died.
+        /// </summary>
+        private void EliteDied(int slot)
+        {
+            if (_eliteCount > 0)
+                _eliteCount--;
+            if (slot != _eliteSlot)
+                return;
+            _eliteSlot = -1;
+            if (_eliteCount == 0)
+            {
+                EliteStatus.ReportDied();
+                return;
+            }
+
+            int n = _simulation.HighWater;
+            for (int i = 0; i < n; i++)
+            {
+                if (!_simulation.IsSlotLive(i) || !HordeKinds.IsElite(_simulation.GetKindOf(i)))
+                    continue;
+                _eliteSlot = i;
+                _eliteVersion = _simulation.Version(i);
+                _eliteShare = -1f; // the next report sends its health
+                return;
+            }
+
+            // Counted but not found (should not happen): the HUD still hears the end.
+            _eliteCount = 0;
+            EliteStatus.ReportDied();
+        }
+
         private void HandleDeaths()
         {
             NativeArray<HordeDeathEvent> deaths = _simulation.Deaths;
@@ -626,11 +695,8 @@ namespace Game.AIKit.Adapters
                     _killed.Invoke(at);
                     feed?.Report(new EnemyDeath(HordeKinds.ToEnemyKind(row), death.Position,
                         death.Cause == HordeDeathCause.Crushed, HordeKinds.IsElite(row)));
-                    if (death.Index == _eliteSlot && HordeKinds.IsElite(row))
-                    {
-                        _eliteSlot = -1;
-                        EliteStatus.ReportDied();
-                    }
+                    if (HordeKinds.IsElite(row))
+                        EliteDied(death.Index);
                 }
 
                 _kills.Value += deaths.Length;
