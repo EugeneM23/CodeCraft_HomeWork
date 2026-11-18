@@ -138,11 +138,21 @@ namespace Game.Voxels
         /// chips are thrown away from that centre — in, along the shot, through the hole — and the hole opens
         /// right where it struck.
         /// </summary>
-        public static int Punch(Vector3 point, Vector3 direction, float radius, float force, int debris)
+        /// <param name="body">Only this body is bitten (what the bullet struck): a crewman behind intact armour is
+        /// not hurt by a bite that reaches him through it. Null — every body in reach, as a blast.</param>
+        public static int Punch(Vector3 point, Vector3 direction, float radius, float force, int debris,
+            VoxelBody body = null)
         {
             Vector3 along = direction.sqrMagnitude > 0.0001f ? direction.normalized : Vector3.zero;
             // 5 cm out: tough armour shrinks the bite to about half its radius, which still reaches well through.
-            return Blast(point - along * Mathf.Min(radius * 0.3f, 0.05f), radius, force, null, true, debris);
+            Vector3 centre = point - along * Mathf.Min(radius * 0.3f, 0.05f);
+            if (body == null)
+                return Blast(centre, radius, force, null, true, debris);
+            if (!body.IsCreated || body.SolidCount == 0)
+                return 0;
+            int taken = body.CarveSphere(centre, radius, force, debris);
+            VoxelSignals.RaiseCarved(centre, radius, taken);
+            return taken;
         }
 
         public static int Impact(Vector3 point, Vector3 direction, float radius, float force = 2.5f,

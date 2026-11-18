@@ -148,7 +148,7 @@ namespace Game
             Vector3 direction = _bullet.GetMoveDirection().Value;
             Vector3 along = direction.sqrMagnitude > 1e-6f ? direction.normalized : -contact.normal;
             // One round hole at the entry (three bites along the path read as three small holes).
-            VoxelDamage.Punch(contact.point, along, WALL_HOLE_RADIUS, CHIP_FORCE, BULLET_DEBRIS);
+            VoxelDamage.Punch(contact.point, along, WALL_HOLE_RADIUS, CHIP_FORCE, BULLET_DEBRIS, body);
             Sparks(contact.point, contact.normal);
 
             if (_own != null)
@@ -227,7 +227,7 @@ namespace Game
             // chips flying in through it; on the ground it only chips.
             VoxelBody body = collision.collider.GetComponentInParent<VoxelBody>();
             if (body != null && !body.IsTerrain)
-                VoxelDamage.Punch(point, direction, WALL_HOLE_RADIUS, CHIP_FORCE, BULLET_DEBRIS);
+                VoxelDamage.Punch(point, direction, WALL_HOLE_RADIUS, CHIP_FORCE, BULLET_DEBRIS, body);
             else
                 VoxelDamage.Impact(point, direction, VOXEL_CHIP_RADIUS, CHIP_FORCE, BULLET_DEBRIS);
         }
