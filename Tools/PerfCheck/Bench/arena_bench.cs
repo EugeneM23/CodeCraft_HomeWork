@@ -2,7 +2,7 @@
 // Run in Play, in VoxelSandbox, right after entering Play (a fresh Play per run), with one call:
 //   unity cmd --project-path <worktree> script eval --file Tools/PerfCheck/Bench/arena_bench.cs
 // Optional AppDomain data set before the call (e.g. with a one-line script eval):
-//   "arenabench_n"       int     live limit of the synthetic waves (Crawlers + 1 Spitter in 10)   default 60
+//   "arenabench_n"       int     live monsters on average (Crawlers + 1 Spitter in 10)             default 60
 //   "arenabench_elite"   bool    the big Regax (the horde's EliteRegax kind) among them                 default true
 //   "arenabench_waves"   string  asset path of an ArenaWaves to run instead of the synthetic one   default none
 //   "arenabench_shadows" bool    crowd casts shadows                                              default false
@@ -85,18 +85,21 @@ if (!string.IsNullOrEmpty(wavesPath))
 else
 {
     waves = ScriptableObject.CreateInstance<Game.AIKit.Adapters.ArenaWaves>();
-    waves.liveLimit = n + (withElite ? 1 : 0);
+    Game.AIKit.Adapters.ArenaWaveEntry C() => new Game.AIKit.Adapters.ArenaWaveEntry(Game.EnemyKind.Crawler, 300);
+    // The director refills below 70 % of the limit: a limit of n / 0.85 keeps about n alive on average.
+    waves.liveLimit = Mathf.RoundToInt(n / 0.85f) + (withElite ? 1 : 0);
     var main = new Game.AIKit.Adapters.ArenaWave
     {
-        delay = 0f, spawnInterval = 0.03f,
-        entries = new[] { new Game.AIKit.Adapters.ArenaWaveEntry(Game.EnemyKind.Crawler, 3000), new Game.AIKit.Adapters.ArenaWaveEntry(Game.EnemyKind.Spitter, 300) }
+        delay = 0.5f, spawnInterval = 0.03f,
+        // The queue interleaves entries round-robin: nine Crawler entries and one Spitter entry come out 9 : 1.
+        entries = new[] { C(), C(), C(), C(), C(), C(), C(), C(), C(), new Game.AIKit.Adapters.ArenaWaveEntry(Game.EnemyKind.Spitter, 300) }
     };
     var elite = new Game.AIKit.Adapters.ArenaWave
     {
-        delay = 1f, spawnInterval = 0.5f,
+        delay = 0f, spawnInterval = 0.5f,
         entries = new[] { new Game.AIKit.Adapters.ArenaWaveEntry(Game.EnemyKind.EliteRegax, 1) }
     };
-    waves.waves = withElite ? new[] { main, elite } : new[] { main };
+    waves.waves = withElite ? new[] { elite, main } : new[] { main };
 }
 Game.AIKit.Adapters.ArenaDirector director = null;
 Game.AIKit.Adapters.EdgeBurrowsLayout layout = null;
