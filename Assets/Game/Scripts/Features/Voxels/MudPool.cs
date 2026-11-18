@@ -105,17 +105,41 @@ namespace Game
             _level = hit.point.y - 0.12f;
             transform.position = new Vector3(centre.x, _level, centre.z);
 
+            // The bowl's colliders are rebuilt at the end of the frame: wait, then keep only the cells over the dug
+            // ground (the bowl is shallow at its rim; a cell there would stick out over the grass).
+            yield return null;
+            yield return null;
             for (int z = 0; z < N; z++)
             for (int x = 0; x < N; x++)
             {
                 Vector2 p = CellOffset(x, z);
-                _inside[x + N * z] = p.magnitude <= RADIUS;
+                int i = x + N * z;
+                _inside[i] = false;
+                if (p.magnitude > RADIUS)
+                    continue;
+                Vector3 at = new(centre.x + p.x, _level + 3f, centre.z + p.y);
+                if (!TerrainBelow(at, out float groundY))
+                    continue;
+                _inside[i] = groundY < _level - SURFACE_CLEARANCE;
             }
 
             if (_tank != null)
                 _hullLocal = HullBounds(_tank);
             CreateLook();
             _ready = true;
+        }
+
+        /// <summary>How far (m) the dug ground under a cell must lie below the surface for the cell to be mud.</summary>
+        private const float SURFACE_CLEARANCE = 0.12f;
+
+        private static bool TerrainBelow(Vector3 from, out float y)
+        {
+            y = float.MinValue;
+            int n = Physics.RaycastNonAlloc(from, Vector3.down, s_hits, 10f, ~0, QueryTriggerInteraction.Ignore);
+            for (int i = 0; i < n; i++)
+                if (s_hits[i].collider.GetComponentInParent<VoxelBody>() is { IsTerrain: true } && s_hits[i].point.y > y)
+                    y = s_hits[i].point.y;
+            return y > float.MinValue;
         }
 
         private static readonly RaycastHit[] s_hits = new RaycastHit[16];
