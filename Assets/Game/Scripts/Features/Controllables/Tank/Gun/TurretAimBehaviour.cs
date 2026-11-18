@@ -46,8 +46,11 @@ namespace Game
             if (asleep && _settled && direction.Equals(_settledAim))
                 return;
 
-            bool onAim = true;
-            if (direction.sqrMagnitude > 1e-4f)
+            // Stunned (the elite's leap): the turret stands where it is, turning only with the hull, and
+            // counts as off its aim, so it turns again once the stun is over.
+            bool stunned = TankStunUseCase.IsStunned(entity);
+            bool onAim = !stunned;
+            if (direction.sqrMagnitude > 1e-4f && !stunned)
             {
                 Quaternion target = Quaternion.LookRotation(direction, Vector3.up);
                 Quaternion current = _pivot.rotation;

@@ -36,5 +36,8 @@ namespace Game
 
         /// <summary>Pressed this frame: a let-go cursor is taken back.</summary>
         bool HoldCursorPressed { get; }
+
+        /// <summary>Pressed this frame: the special module (E).</summary>
+        bool SpecialPressed { get; }
     }
 }

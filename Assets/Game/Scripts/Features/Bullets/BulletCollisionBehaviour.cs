@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Game
 {
-    public class BulletCollisionBehaviour : IEntityInit, IEntityDispose
+    public class BulletCollisionBehaviour : IEntityInit, IEntityEnable, IEntityDispose
     {
         /// <summary>Radius (m) of the bite a bullet takes out of voxels: one or two 10 cm voxels.</summary>
         private const float VOXEL_CHIP_RADIUS = 0.13f;
@@ -12,6 +12,11 @@ namespace Game
         private CollisionEventReceiver _collisionEventReceiver;
         private IEntity _bullet;
         private GameFactory _gameFactory;
+        private Collider _own;
+        private Rigidbody _body;
+
+        /// <summary>The enemy a piercing shell last went through: its other colliders let the shell by for free.</summary>
+        private IEntity _pierced;
 
         public void Init(IEntity entity)
         {
@@ -19,7 +24,14 @@ namespace Game
             _collisionEventReceiver = entity.GetCollisionReceiver();
             _bullet = entity;
             _collisionEventReceiver.OnEntered += OnCollision;
+
+            GameObject go = entity.GetGameObject();
+            _own = go.GetComponent<Collider>();
+            _body = go.GetComponent<Rigidbody>();
         }
+
+        /// <summary>Rented from the pool: a new shot has pierced nothing yet.</summary>
+        public void Enable(IEntity entity) => _pierced = null;
 
         public void Dispose(IEntity entity) => _collisionEventReceiver.OnEntered -= OnCollision;
 
@@ -32,6 +44,10 @@ namespace Game
                 return;
 
             collision.gameObject.TryGetComponent(out IEntity target);
+
+            // The armour-piercing shell goes through enemies while it has pierce left, dealing its damage.
+            if (target != null && TryPierce(target, collision.collider))
+                return;
 
             // Mud swallows a hit: nothing bounces off it, it only gets a dent.
             bool mud = MudImpactUseCase.IsMud(collision.collider);
@@ -71,6 +87,38 @@ namespace Game
             }
 
             SpawnUseCase.UnSpawnEntity(_gameFactory, _bullet);
+        }
+
+        /// <summary>
+        /// True when the shell flies on through <paramref name="target"/>: an enemy, and the shell either has a pierce
+        /// left (used up here, with the hit) or just went through this same enemy (another of its colliders). The
+        /// pair is ignored from now on, so the sweep and the solver let the shell by; the pool's deactivation
+        /// forgets the pair again.
+        /// </summary>
+        private bool TryPierce(IEntity target, Collider collider)
+        {
+            if (!target.HasEnemyTag() || !target.HasDamageableTag())
+                return false;
+
+            if (!ReferenceEquals(target, _pierced))
+            {
+                if (!BulletShotUseCase.TryPierce(_bullet))
+                    return false;
+                _pierced = target;
+                DamageUseCase.TakeDamage(target, new TakeDamageArgs(_bullet));
+            }
+
+            if (_own != null && collider != null)
+                Physics.IgnoreCollision(_own, collider, true);
+
+            // The solver has already pushed the dynamic body off the enemy: the shell flies by its transform.
+            if (_body != null && !_body.isKinematic)
+            {
+                _body.linearVelocity = Vector3.zero;
+                _body.angularVelocity = Vector3.zero;
+            }
+
+            return true;
         }
 
         /// <summary>A bullet bites a small hole out of a voxel wall, or out of a vehicle's voxel skin.</summary>

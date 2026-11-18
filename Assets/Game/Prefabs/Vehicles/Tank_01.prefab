@@ -18708,7 +18708,7 @@ MonoBehaviour:
   - {fileID: 1318404244205830584}
   - {fileID: 1833940125436180484}
   - {fileID: 9101425552358879428}
-  _health: 400
+  _health: 1000
   _wheelMounts:
   - {fileID: 7484934974487718714}
   - {fileID: 3273694375640380444}

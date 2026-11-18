@@ -74,7 +74,7 @@ namespace Game
         [SerializeField] private Transform _cameraPoint;
         [Tooltip("Camera offset multiplier while driving: 1.1 sits the camera a tenth further out.")]
         [SerializeField] private float _cameraDistance = 1.1f;
-        [SerializeField] private int _health = 400;
+        [SerializeField] private int _health = 1000;
 
         [Header("Suspension")]
         [Tooltip("Where each road wheel's spring hangs from, on the hull. The ray starts here.")]
@@ -166,7 +166,8 @@ namespace Game
             entity.AddTurretPivot(_turretPivot);
             if (_turretVisual != null)
                 entity.AddTurretVisual(_turretVisual);
-            entity.AddTurretRotationSpeed(new Const<float>(_turretSpeed));
+            // A variable, not a constant: the loadout (LoadoutApplyUseCase) sets it.
+            entity.AddTurretRotationSpeed(new ReactiveFloat(_turretSpeed));
 
             // Combat: the cannon is a weapon entity of its own; the tank fires it only while
             // somebody drives it and the hull is intact.
