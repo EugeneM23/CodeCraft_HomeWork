@@ -20,12 +20,17 @@ namespace Game.AIKit.Adapters
         [SerializeField, Tooltip("Seed of the AIKit world: agents with seed 0 take theirs from it, so a level replays.")]
         private int _seed = 1;
 
+        [SerializeField, Tooltip("Waves of the run's arenas by number for the arena director (Assets/Game/Configs/AI/Arenas/ArenaWavesTable).")]
+        private ArenaWavesTable _arenaWaves;
+
         public LevelNavOptions Navigation => _navigation;
 
         /// <summary>Sets the grid's options before <see cref="Install"/> (a level AI made from code).</summary>
-        public void Configure(LevelNavOptions navigation)
+        public void Configure(LevelNavOptions navigation, ArenaWavesTable arenaWaves = null)
         {
             _navigation = navigation ?? new LevelNavOptions();
+            if (arenaWaves != null)
+                _arenaWaves = arenaWaves;
         }
 
         public override void Install(IEntity entity)
@@ -38,6 +43,9 @@ namespace Game.AIKit.Adapters
             entity.AddPlayerVehicle(new PlayerTank());
             entity.AddBehaviour(new LevelNavBehaviour());
             entity.AddBehaviour(new AIWorldBehaviour());
+            var director = new ArenaDirector(_arenaWaves);
+            entity.AddLevelArenaDirector(director);
+            entity.AddBehaviour(director);
             if (entity is MonoEntity mono)
                 LevelAI.Register(mono);
         }

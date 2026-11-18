@@ -21,6 +21,9 @@ namespace Game.Horde
         private static readonly int RingCapacityId = Shader.PropertyToID("_HordeRingCapacity");
         private static readonly int TimeId = Shader.PropertyToID("_HordeTime");
         private static readonly int CorpseTimesId = Shader.PropertyToID("_HordeCorpseTimes");
+        private static readonly int ScaleId = Shader.PropertyToID("_HordeScale");
+        private static readonly int ColorId = Shader.PropertyToID("_Color");
+        private static readonly int EmissionId = Shader.PropertyToID("_EmissionColor");
 
         private readonly Mesh _mesh;
         private readonly Material _material;
@@ -65,6 +68,21 @@ namespace Game.Horde
                 return;
             using (RenderMarker.Auto())
                 _instances.SetData(data, sourceStart, start, count);
+        }
+
+        /// <summary>
+        /// Per-draw look over the material: model scale (× the material's own <c>_HordeScale</c>) and, when
+        /// <paramref name="tint"/> has alpha, its colour and emission in place of the material's.
+        /// </summary>
+        public void SetLook(float scale, Color tint, Color emission)
+        {
+            float baseScale = _material.HasProperty(ScaleId) ? _material.GetFloat(ScaleId) : 1f;
+            _props.SetFloat(ScaleId, baseScale * scale);
+            if (tint.a > 0f)
+            {
+                _props.SetColor(ColorId, tint);
+                _props.SetColor(EmissionId, emission);
+            }
         }
 
         /// <summary>Corpse timing for the shader: lie <paramref name="lie"/> s, then sink <paramref name="depth"/> m over <paramref name="sink"/> s.</summary>

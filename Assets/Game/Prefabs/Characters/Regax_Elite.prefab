@@ -70,10 +70,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5920280592693971880, guid: e2c73aa53d2f90a4db53ae5a58c42d97, type: 3}
       propertyPath: sceneInstallers.Array.size
-      value: 8
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 5920280592693971880, guid: e2c73aa53d2f90a4db53ae5a58c42d97, type: 3}
-      propertyPath: 'sceneInstallers.Array.data[7]'
+      propertyPath: 'sceneInstallers.Array.data[5]'
       value: 
       objectReference: {fileID: 1398070959049792654}
     m_RemovedComponents: []
