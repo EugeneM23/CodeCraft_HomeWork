@@ -46,7 +46,7 @@ namespace Game.Voxels
         private const float SUPPORT_ABOVE = 0.3f;
 
         /// <summary>A fallen piece's hit counts as its impulse spread over this long (s).</summary>
-        public const float IMPACT_TIME = 0.5f;
+        public const float IMPACT_TIME = 0.2f;
 
         /// <summary>Hits lighter than this (kg of load) are not worth a solve.</summary>
         public const float MIN_IMPACT_LOAD = 1000f;
@@ -117,7 +117,7 @@ namespace Game.Voxels
         /// <summary>A piece fell on the body: its hit presses there in the next solve.</summary>
         internal void AddImpactLoad(Vector3 worldPoint, float kg)
         {
-            if (!HasStrength || !IsStatic || kg < MIN_IMPACT_LOAD)
+            if (!HasStrength || !IsStatic || kg <= 0f)
                 return;
 
             float3 p = ((float3)transform.InverseTransformPoint(worldPoint) - Origin) / VoxelSize;
@@ -189,7 +189,7 @@ namespace Game.Voxels
             var bottom = new NativeArray<byte>(columns, Allocator.TempJob);
             new BuildBlocksJob
             {
-                Voxels = _voxels, Size = Size, Strength = _strength, VoxelMass = edge * edge * edge * _settings.Density,
+                Voxels = _voxels, Size = Size, Strength = _strength, VoxelVolume = edge * edge * edge,
                 Blocks = blocks, Mass = mass, BondX = bondX, BondY = bondY, BondZ = bondZ, Bottom = bottom
             }.ScheduleParallel(blocks.z, 1, default).Complete();
 
@@ -425,6 +425,31 @@ namespace Game.Voxels
             return -1;
         }
 
+        /// <summary>Share of the voxels lining a building piece's cracks that go as crumbs when it breaks.</summary>
+        private const float SEAM_CRUMBS = 0.6f;
+
+        /// <summary>Most crumbs one break throws (the rest is dust).</summary>
+        private const int SEAM_CRUMB_DEBRIS = 500;
+
+        /// <summary>A building's piece breaking: a share of the voxels along its cracks go as crumbs.</summary>
+        private void CrumbleSeams(NativeArray<int> cells, Vector3 worldPoint, float spread)
+        {
+            var removed = new NativeList<RemovedVoxel>(1024, Allocator.TempJob);
+            new SeamCrumbsJob
+            {
+                Voxels = _voxels, Size = Size, Cells = cells, Share = SEAM_CRUMBS, Seed = _seed++, Removed = removed
+            }.Run();
+
+            if (removed.Length > 0)
+            {
+                SolidCount -= removed.Length;
+                MarkDirty(int3.zero, Size - 1);
+                ThrowDebris(removed, worldPoint, math.max(1f, spread * 2f), Vector3.zero, SEAM_CRUMB_DEBRIS);
+            }
+
+            removed.Dispose();
+        }
+
         /// <summary>Most clods one crushed piece goes to; the rest is dust.</summary>
         private const int CRUSH_DEBRIS = 600;
 
@@ -472,7 +497,7 @@ namespace Game.Voxels
             var bottom = new NativeArray<byte>(blocks.x * blocks.z, Allocator.TempJob);
             new BuildBlocksJob
             {
-                Voxels = _voxels, Size = Size, Strength = _strength, VoxelMass = edge * edge * edge * _settings.Density,
+                Voxels = _voxels, Size = Size, Strength = _strength, VoxelVolume = edge * edge * edge,
                 Blocks = blocks, Mass = mass, BondX = bondX, BondY = bondY, BondZ = bondZ, Bottom = bottom
             }.ScheduleParallel(blocks.z, 1, default).Complete();
 

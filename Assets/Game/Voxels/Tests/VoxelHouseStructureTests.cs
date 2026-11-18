@@ -162,6 +162,61 @@ namespace Game.Voxels.Tests
             Assert.That(house.SolidCount, Is.GreaterThan(before * 0.7f), "one ram does not bring the house down");
         }
 
+        /// <summary>
+        /// A three-storey house loses its middle storey but for two corners: the top storey and the
+        /// roof come down on the ground floor, press it in and break up — no heap of whole storeys.
+        /// </summary>
+        [UnityTest]
+        public IEnumerator UpperStoreysFall_CrushTheOneBelow()
+        {
+            SpawnFlatGround();
+            VoxelBody house = SpawnHouse(new Vector3Int(64, 134, 54), Vector3.zero);
+            yield return null;
+
+            Bounds b = house.WorldBounds;
+            Vector3 a = new Vector3(b.min.x + 0.6f, 0f, b.min.z + 0.9f);
+            Vector3 c = new Vector3(b.max.x - 0.5f, 0f, b.max.z - 0.5f);
+            // The first floor, from its floor to the second, but for two corners.
+            DigBox(house, new Vector3(b.min.x - 0.2f, 3.35f, b.min.z - 0.2f), new Vector3(b.max.x + 0.2f, 6.0f, b.max.z + 0.2f),
+                p => Near(p, a, 0.45f) || Near(p, c, 0.45f));
+            for (int i = 0; i < 6; i++)
+                yield return null;
+            int ground = house.SolidCount;
+
+            float end = Time.time + 5f;
+            while (Time.time < end)
+                yield return null;
+
+            List<Rigidbody> pieces = Pieces();
+            float biggest = pieces.Count > 0 ? pieces.Max(r => r.mass) : 0f;
+            Debug.Log($"[Structure] upper: ground floor {ground} -> {(house != null ? house.SolidCount : 0)}, pieces {pieces.Count} biggest {biggest:F0}");
+            Assert.That(house == null || house.SolidCount < ground * 0.8f, "the falling storeys pressed the ground floor in");
+            Assert.That(biggest, Is.LessThan(12000f), "the storeys broke up as they landed");
+        }
+
+        /// <summary>A building's piece falls at twice g: from 5 m it is down in well under the second it would take.</summary>
+        [UnityTest]
+        public IEnumerator BuildingPiece_FallsHeavy()
+        {
+            SpawnFlatGround();
+            VoxelBody block = SpawnBlock(new Vector3(0f, 5.3f, 0f), new int3(10, 6, 8));
+            var strength = new NativeArray<float3>(256, Allocator.Persistent);
+            strength[1] = new float3(2500f, 40f, 2f);
+            block.SetStrength(strength);
+            block.Launch(Vector3.zero, Vector3.zero);
+            yield return null;
+
+            float start = Time.time;
+            Rigidbody rigidbody = block.GetComponent<Rigidbody>();
+            while (rigidbody != null && rigidbody.worldCenterOfMass.y > 0.6f && Time.time - start < 2f)
+                yield return new WaitForFixedUpdate();
+
+            float took = Time.time - start;
+            Debug.Log($"[Structure] heavy fall: {took:F2} s, mass {(rigidbody != null ? rigidbody.mass : 0f):F0}");
+            Assert.That(took, Is.LessThan(0.85f), "it falls heavy, not like cardboard");
+            Assert.That(rigidbody.mass, Is.InRange(800f, 1000f), "480 brick voxels weigh 864 kg");
+        }
+
         [UnityTest]
         public IEnumerator GroundFloorGone_HouseFolds()
         {
