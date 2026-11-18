@@ -220,6 +220,7 @@ namespace Game
                         continue;
                     }
 
+                    VoxelSparks.Emit(hit.point, hit.normal, b.Direction);
                     // Stopped by armour (or the ground): armour still gets a hole, chips flying in through it.
                     if (body != null && !body.IsTerrain)
                         VoxelDamage.Punch(hit.point, b.Direction, _holeRadius, _chipForce, _debris, body);

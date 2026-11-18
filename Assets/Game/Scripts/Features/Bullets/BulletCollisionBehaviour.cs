@@ -112,7 +112,8 @@ namespace Game
                 // A person shows the hit with blood; a tank's armour showed nothing at all.
                 if (BulletHitUseCase.ShowsHitOnTarget(target))
                 {
-                    SpawnUseCase.SpawnCollisionHit(collision, _gameFactory, _bullet);
+                    // On a vehicle's steel: sparks, not the particle burst.
+                    Sparks(collision.GetContact(0).point, collision.GetContact(0).normal);
                     ChipVoxels(collision);
                 }
             }
@@ -162,23 +163,9 @@ namespace Game
             return true;
         }
 
-        /// <summary>A small fan of hot voxel sparks off the surface.</summary>
-        private static void Sparks(Vector3 point, Vector3 normal)
-        {
-            VoxelWorld world = VoxelWorld.Instance;
-            VoxelDebris debris = world != null ? world.Debris : null;
-            if (debris == null)
-                return;
-
-            Vector3 at = point + normal * 0.03f;
-            for (int i = 0; i < SPARKS; i++)
-            {
-                Vector3 heading = (normal + Random.insideUnitSphere * 0.9f + Vector3.up * 0.3f).normalized;
-                Color32 color = SparkColors[Random.Range(0, SparkColors.Length)];
-                if (debris.Spawn(at, heading * Random.Range(5f, 14f), color, 0.04f * Random.Range(0.7f, 1.3f)) < 0)
-                    break;
-            }
-        }
+        /// <summary>A juicy spray of glowing voxel sparks and a flash of light (VoxelSparks).</summary>
+        private void Sparks(Vector3 point, Vector3 normal) =>
+            VoxelSparks.Emit(point, normal, _bullet.GetMoveDirection().Value);
 
         /// <summary>
         /// True when the shell flies on through <paramref name="target"/>: an enemy, and the shell either has a pierce
