@@ -78,7 +78,7 @@ try
 }
 catch { }
 
-var killMarker = new ProfilerMarker("DeathBench.Kill");
+var killMarkers = new Dictionary<string, ProfilerMarker> { ["shot"] = new ProfilerMarker("DeathBench.Kill.shot"), ["blast"] = new ProfilerMarker("DeathBench.Kill.blast"), ["crush"] = new ProfilerMarker("DeathBench.Kill.crush") };
 
 // ---------- Victims ----------
 var victims = new List<GameObject>();
@@ -111,6 +111,7 @@ PlayerLoopSystem.UpdateFunction step = () =>
     Vector3 at = victim.transform.position + Vector3.up * 1f;
     Vector3 toward = tank.position - victim.transform.position; toward.y = 0;
     toward = toward.sqrMagnitude > 1e-4f ? toward.normalized : Vector3.forward;
+    ProfilerMarker killMarker = killMarkers.TryGetValue(kind, out var km) ? km : killMarkers["shot"];
     killMarker.Begin();
     try
     {
@@ -150,9 +151,9 @@ PlayerLoopSystem.UpdateFunction step = () =>
 bool IsEditorOnly(string n) => n.Contains("Burst.Compiler") || n.Contains("JitCompilerService");
 bool IsDebugHud(string n) => n == "GUI.Repaint" || n.Contains("VoxelDemoHud") || n.Contains("VoxelSandboxOrbit.OnGUI");
 bool Interesting(string n) => n.StartsWith("Death.") || n.StartsWith("Crush.") || n == "VoxelWorld.LateUpdate()" || n.StartsWith("VoxelDebris") ||
-                              n == "FixedUpdate.PhysicsFixedUpdate" || n == "Physics.Simulate" || n.StartsWith("VoxelDeaths") || n == "DeathBench.Kill" ||
+                              n == "FixedUpdate.PhysicsFixedUpdate" || n == "Physics.Simulate" || n.StartsWith("VoxelDeaths") || n.StartsWith("DeathBench.Kill") ||
                               n.Contains("Combat.XpOrbs") || n == "PostLateUpdate.FinishFrameRendering" || n.StartsWith("Physics.") && n.Contains("Bake");
-var frames = new List<(int index, double pl, double gc, bool kill, Dictionary<string, double> markers)>();
+var frames = new List<(int index, double pl, double gc, bool kill, string kind, Dictionary<string, double> markers)>();
 var gcSources = new Dictionary<string, double[]>(); // key -> bytes, count
 var skip = new HashSet<int>();
 int readUpTo = ProfilerDriver.lastFrameIndex;
@@ -183,7 +184,7 @@ void ReadFrames(int upTo)
         if (skip.Contains(f)) continue;
         using var v = ProfilerDriver.GetRawFrameDataView(f, 0);
         if (v == null || !v.valid) continue;
-        double pl = 0, gc = 0; bool kill = false;
+        double pl = 0, gc = 0; bool kill = false; string kindSeen = null;
         var markers = new Dictionary<string, double>();
         var gcLocal = new List<(string key, double bytes)>();
         // Depth-first: a stack of (name, last sample index inside it).
@@ -196,8 +197,10 @@ void ReadFrames(int upTo)
             int last = i + CountDescendants(v, i);
             bool inPl = plEnd >= i;
             if (n == "PlayerLoop" && !inPl) { pl += v.GetSampleTimeMs(i); plEnd = last; inPl = true; }
-            if (n == "DeathBench.Kill") kill = true;
-            if (inPl && Interesting(n) && !names.Contains(n)) { markers.TryGetValue(n, out double t); markers[n] = t + v.GetSampleTimeMs(i); }
+            if (n.StartsWith("DeathBench.Kill")) { kill = true; kindSeen = n.Substring(16); }
+            // The marked steps at any depth, and the coarse phases of the frame (depth 2-4 under PlayerLoop, 0.3 ms or more).
+            bool coarse = inPl && n != "PlayerLoop" && names.Count >= 1 && names.Count <= 4 && v.GetSampleTimeMs(i) >= 0.3;
+            if (inPl && (Interesting(n) || coarse) && !names.Contains(n)) { markers.TryGetValue(n, out double t); markers[n] = t + v.GetSampleTimeMs(i); }
             if (inPl && n == "GC.Alloc")
             {
                 bool excluded = false;
@@ -222,7 +225,7 @@ void ReadFrames(int upTo)
             }
             names.Add(n); ends.Add(last);
         }
-        frames.Add((f, pl, gc, kill, markers));
+        frames.Add((f, pl, gc, kill, kindSeen, markers));
         foreach (var (key, bytes) in gcLocal)
         {
             if (!gcSources.TryGetValue(key, out var a)) gcSources[key] = a = new double[2];
@@ -280,9 +283,23 @@ void Finish(string status)
             foreach (var kv in fr.markers) if (kv.Value >= 0.05) ms.Add($"\"{kv.Key}\":{F(kv.Value)}");
             rows.Add($"{{\"d\":{k},\"pl\":{F(fr.pl)},\"gc\":{F(fr.gc, "F0")},\"m\":{{{string.Join(",", ms)}}}}}");
         }
-        string kind = killNo < killLog.Count ? killLog[killNo] : "?";
+        string kind = frames[i].kind ?? "?";
         perKill.Add($"{{\"kind\":\"{kind}\",\"frames\":[{string.Join(",", rows)}]}}");
         killNo++;
+    }
+    // The three worst frames of the window, with what took them (0.5 ms or more), and how far each is from the last kill.
+    var order = new List<int>();
+    for (int i = 0; i < frames.Count; i++) order.Add(i);
+    order.Sort((a, b) => frames[b].pl.CompareTo(frames[a].pl));
+    var worstOut = new List<string>();
+    for (int w = 0; w < 3 && w < order.Count; w++)
+    {
+        int i = order[w];
+        int since = -1;
+        for (int k = i; k >= 0; k--) if (frames[k].kill) { since = i - k; break; }
+        var ms = new List<string>();
+        foreach (var kv in frames[i].markers) if (kv.Value >= 0.5) ms.Add(kv.Key + " " + F(kv.Value));
+        worstOut.Add($"\"{F(frames[i].pl)} ms, {since} frames after a kill: {string.Join(", ", ms).Replace("\"", "'")}\"");
     }
     var src = new List<KeyValuePair<string, double[]>>(gcSources);
     src.Sort((a, b) => b.Value[0].CompareTo(a.Value[0]));
@@ -292,7 +309,7 @@ void Finish(string status)
         srcOut.Add($"\"{F(src[i].Value[0], "F0")}B x{src[i].Value[1]}: {src[i].Key.Replace("\"", "'").Replace("\\", "/")}\"");
     domain.SetData("deathbench_result",
         $"{{\"status\":\"{status}\",\"date\":\"{DateTime.Now:yyyy-MM-dd HH:mm}\",\"burst\":{(Unity.Burst.BurstCompiler.IsEnabled ? "true" : "false")},\"kills\":{killLog.Count},\"log\":\"{string.Join(",", killLog)}\"," +
-        $"\"window\":{window},\"gcTotal\":{F(gcTotal, "F0")},\"perKill\":[{string.Join(",", perKill)}],\"gcSources\":[{string.Join(",", srcOut)}]}}");
+        $"\"window\":{window},\"worst\":[{string.Join(",", worstOut)}],\"gcTotal\":{F(gcTotal, "F0")},\"perKill\":[{string.Join(",", perKill)}],\"gcSources\":[{string.Join(",", srcOut)}]}}");
     domain.SetData("deathbench_status", status);
 }
 
