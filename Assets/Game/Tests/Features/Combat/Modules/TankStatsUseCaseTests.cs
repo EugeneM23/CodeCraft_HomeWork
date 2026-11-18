@@ -119,9 +119,9 @@ namespace Game.Tests
             Assert.That(Stats(M(ModuleIds.ArmorStandard, level)).Health, Is.EqualTo(health).Within(EPS));
         }
 
-        [TestCase(1, 0.4f, 0.16f)]
-        [TestCase(2, 0.4f * G, 0.16f / G)]
-        [TestCase(3, 0.4f * G * G, 0.16f / (G * G))]
+        [TestCase(1, 0.4f, 0.08f)]
+        [TestCase(2, 0.4f * G, 0.08f / G)]
+        [TestCase(3, 0.4f * G * G, 0.08f / (G * G))]
         public void Screens_AddHealthAndTakeSpeed_LevelsGrowTheBonusAndShrinkThePenalty(int level, float bonus,
             float penalty)
         {
