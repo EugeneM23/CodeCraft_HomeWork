@@ -7,18 +7,20 @@ using UnityEngine;
 namespace Game
 {
     /// <summary>
-    /// A standing voxel target tank (prototype): Tank_01's look, voxelized as Tank_01's skin is, but
-    /// with colliders and hollowed out, and a crew, seats, levers, a panel, the engine and an ammo rack
-    /// inside in their own colours. No control, no AI, no installers: only the hull's meshes are taken.
-    /// Shells and machine-gun bullets break the armour (VoxelDamage, the bullet's wall piercing); a
-    /// crewman hit pops in blood (TankDummyCrew).
+    /// A standing voxel target tank (prototype). Outside it is Tank_01 as the game shows it: a copy of
+    /// the whole prefab with every behaviour, collider and body taken off before it wakes (no second
+    /// tank), voxelized by Tank_01's own VoxelizedModel — the same parts, camouflage, decals and number.
+    /// The voxels get box colliders (bullets hit and pierce them), and the hull is hollowed out only
+    /// deep inside: armour all round, roof and floor included. In the hollow, cut to fit it: seats,
+    /// levers, a lit panel, the engine in the stern, shells along a side, and four seated crewmen
+    /// who pop in blood when hit (TankDummyCrew).
     /// </summary>
     public sealed class TankDummy : MonoBehaviour
     {
-        [Tooltip("The tank whose look and voxel skin settings are taken (its HullVisual and VoxelizedModel).")]
+        [Tooltip("The tank whose look and voxel skin are taken (Tank_01).")]
         [SerializeField] private GameObject _tank;
 
-        [Tooltip("Armour left round the inside, m.")]
+        [Tooltip("Armour left round the hollow, m.")]
         [SerializeField] private float _armour = 0.15f;
 
         [SerializeField] private int _crew = 4;
@@ -26,45 +28,49 @@ namespace Game
         private const float VOXEL = 0.05f;
         private const string HULL = "HullVisual";
 
+        /// <summary>Two targets in the sandbox at load (off: the tank destruction lab has them now).</summary>
+        private static readonly bool SANDBOX_TARGETS = false;
+
+        private bool _built;
+
+        /// <summary>The tank's own voxel size (its VoxelizedModel's): the hull grid's cells.</summary>
+        private float _cell = VOXEL;
+
         private void Start() => Build();
 
         private void Build()
         {
-            if (_tank == null || transform.Find(HULL) != null)
+            if (_built || _tank == null)
                 return;
+            _built = true;
 
-            Transform source = _tank.transform.Find(HULL);
-            var template = _tank.GetComponent<VoxelizedModel>();
-            if (source == null || template == null)
-                return;
-
-            // Under a switched-off holder: the copy's behaviours must not wake (no second tank).
+            // The whole tank, under a switched-off holder: nothing in it wakes.
             var holder = new GameObject("Holder");
             holder.SetActive(false);
-            GameObject hull = Instantiate(source.gameObject, holder.transform, false);
-            hull.name = HULL;
-            Strip(hull);
-            hull.transform.SetParent(transform, false);
+            GameObject copy = Instantiate(_tank, holder.transform, false);
+            copy.name = "Tank";
+            Strip(copy);
+            SetLayer(copy.transform, gameObject.layer);
+            copy.transform.SetParent(transform, false);
             Destroy(holder);
-            SetLayer(hull.transform, gameObject.layer);
 
-            // Tank_01's voxel skin settings, on a throwaway VoxelizedModel that only voxelizes.
-            var model = gameObject.AddComponent<VoxelizedModel>();
-            JsonUtility.FromJsonOverwrite(JsonUtility.ToJson(template), model);
+            // Its own VoxelizedModel voxelizes it as the game does; the bodies are made here (with colliders).
+            var model = copy.GetComponent<VoxelizedModel>();
+            if (model == null)
+                return;
+            _cell = (float)(typeof(VoxelizedModel).GetField("_voxelSize", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)?.GetValue(model) ?? VOXEL);
             List<VoxelizedModel.Part> parts = model.Voxelize();
             DestroyImmediate(model);
 
             foreach (VoxelizedModel.Part part in parts)
             {
                 MeshVoxelizer.Result grid = part.Grid;
-                bool hullPart = part.Root.name == HULL;
-                bool turret = part.Root.name == "TurretVisual";
-                if (hullPart || turret)
-                    Hollow(grid, turret ? 0.6f : 0.3f);
+                bool hull = part.Root.name == HULL;
+                NativeArray<bool> hollow = hull ? Hollow(grid) : default;
 
                 var go = new GameObject("Voxels") { layer = gameObject.layer };
                 go.transform.SetParent(part.Root, false);
-                VoxelBodySettings settings = VoxelBodySettings.Default(VOXEL);
+                VoxelBodySettings settings = VoxelBodySettings.Default(_cell);
                 settings.Origin = grid.Origin;
                 settings.Anchor = VoxelAnchor.Largest;
                 settings.Colliders = true;
@@ -77,17 +83,30 @@ namespace Game
                 foreach (MeshRenderer renderer in part.Renderers)
                     renderer.enabled = false;
 
-                if (hullPart)
-                    Furnish(part.Root, grid);
+                if (hull)
+                {
+                    Furnish(part.Root, grid, hollow);
+                    hollow.Dispose();
+                }
             }
         }
 
-        /// <summary>The hull's meshes only: every behaviour, collider and body of the copy goes.</summary>
+        /// <summary>Meshes only: every behaviour, collider and body of the copy goes (dependents first).</summary>
         private static void Strip(GameObject root)
         {
-            foreach (Component component in root.GetComponentsInChildren<Component>(true))
-                if (component is MonoBehaviour or Collider or Rigidbody or Joint or AudioSource or ParticleSystem or Light)
-                    DestroyImmediate(component);
+            for (int pass = 0; pass < 4; pass++)
+            {
+                Component[] all = root.GetComponentsInChildren<Component>(true);
+                for (int i = all.Length - 1; i >= 0; i--)
+                {
+                    Component c = all[i];
+                    if (c == null || c is Transform || c is MeshFilter || c is MeshRenderer || c is VoxelizedModel)
+                        continue;
+                    if (c is MonoBehaviour or Collider or Rigidbody or Joint or AudioSource or ParticleSystem or Light or
+                        ParticleSystemRenderer or LineRenderer or TrailRenderer or Animator)
+                        DestroyImmediate(c);
+                }
+            }
         }
 
         private static void SetLayer(Transform t, int layer)
@@ -97,23 +116,74 @@ namespace Game
                 SetLayer(child, layer);
         }
 
-        /// <summary>The cabin: the grid's inside, all but the armour, and the hull's bottom share <paramref name="floor"/> of its height.</summary>
-        private int3 _cabinLo;
-        private int3 _cabinHi;
-
-        /// <summary>Empties the inside of a grid, leaving its armour, from <paramref name="floor"/> of its height up.</summary>
-        private void Hollow(MeshVoxelizer.Result grid, float floor)
+        /// <summary>
+        /// Empties the hull only deep inside: a voxel goes when every voxel within the armour's
+        /// thickness along each axis is solid too. Returns the hollow (what was taken, plus what was
+        /// empty already and shut in), where the inside is put.
+        /// </summary>
+        private NativeArray<bool> Hollow(MeshVoxelizer.Result grid)
         {
             int3 s = grid.Size;
-            int wall = math.max(2, Mathf.RoundToInt(_armour / VOXEL));
-            int3 lo = new int3((int)(s.x * 0.22f), math.max(wall, (int)(s.y * floor * 0.5f)), wall + 2);
-            int3 hi = new int3(s.x - 1 - (int)(s.x * 0.22f), s.y - 1 - wall, s.z - 1 - wall - 2);
-            _cabinLo = lo;
-            _cabinHi = hi;
-            for (int z = lo.z; z <= hi.z; z++)
-            for (int y = lo.y; y <= hi.y; y++)
-            for (int x = lo.x; x <= hi.x; x++)
-                grid.Voxels[x + s.x * (y + s.y * z)] = 0;
+            int wall = math.max(2, Mathf.RoundToInt(_armour / _cell));
+            int count = s.x * s.y * s.z;
+            var hollow = new NativeArray<bool>(count, Allocator.Persistent);
+            NativeArray<byte> v = grid.Voxels;
+            int Index(int x, int y, int z) => x + s.x * (y + s.y * z);
+            bool Solid(int x, int y, int z) =>
+                x >= 0 && y >= 0 && z >= 0 && x < s.x && y < s.y && z < s.z && v[Index(x, y, z)] != 0;
+
+            for (int z = 0; z < s.z; z++)
+            for (int y = 0; y < s.y; y++)
+            for (int x = 0; x < s.x; x++)
+            {
+                if (!Solid(x, y, z))
+                    continue;
+                bool deep = true;
+                for (int d = 1; d <= wall && deep; d++)
+                    deep = Solid(x + d, y, z) && Solid(x - d, y, z) && Solid(x, y + d, z) && Solid(x, y - d, z) &&
+                           Solid(x, y, z + d) && Solid(x, y, z - d);
+                if (deep)
+                    hollow[Index(x, y, z)] = true;
+            }
+
+            for (int i = 0; i < count; i++)
+                if (hollow[i])
+                    v[i] = 0;
+
+            // Empty cells shut in by the hull (a voxelizer that leaves meshes hollow) are hollow too.
+            var outside = new NativeArray<bool>(count, Allocator.Temp);
+            var queue = new Queue<int3>();
+            for (int z = 0; z < s.z; z++)
+            for (int y = 0; y < s.y; y++)
+            for (int x = 0; x < s.x; x++)
+            {
+                if (x != 0 && y != 0 && z != 0 && x != s.x - 1 && y != s.y - 1 && z != s.z - 1)
+                    continue;
+                if (Solid(x, y, z))
+                    continue;
+                outside[Index(x, y, z)] = true;
+                queue.Enqueue(new int3(x, y, z));
+            }
+
+            while (queue.Count > 0)
+            {
+                int3 p = queue.Dequeue();
+                for (int k = 0; k < 6; k++)
+                {
+                    int3 n = p;
+                    n[k >> 1] += (k & 1) == 0 ? 1 : -1;
+                    if (math.any(n < 0) || math.any(n >= s) || Solid(n.x, n.y, n.z) || outside[Index(n.x, n.y, n.z)])
+                        continue;
+                    outside[Index(n.x, n.y, n.z)] = true;
+                    queue.Enqueue(n);
+                }
+            }
+
+            for (int i = 0; i < count; i++)
+                if (v[i] == 0 && !outside[i])
+                    hollow[i] = true;
+            outside.Dispose();
+            return hollow;
         }
 
         // ---------- The inside ----------
@@ -136,25 +206,41 @@ namespace Game
             new(40, 40, 40, 255), // 13 eyes
         };
 
-        /// <summary>Seats, levers and the panel in front, the engine in the stern, shells along a side, and the crew.</summary>
-        private void Furnish(Transform hull, MeshVoxelizer.Result grid)
+        /// <summary>The inside, laid out in the hollow's box and cut to the hollow itself.</summary>
+        private void Furnish(Transform hull, MeshVoxelizer.Result grid, NativeArray<bool> hollow)
         {
-            int3 lo = _cabinLo;
-            int3 hi = _cabinHi;
-            int3 size = hi - lo + 1;
-            if (math.any(size < new int3(12, 10, 24)))
+            int3 s = grid.Size;
+            int3 lo = new int3(int.MaxValue);
+            int3 hi = new int3(int.MinValue);
+            for (int z = 0; z < s.z; z++)
+            for (int y = 0; y < s.y; y++)
+            for (int x = 0; x < s.x; x++)
+                if (hollow[x + s.x * (y + s.y * z)])
+                {
+                    lo = math.min(lo, new int3(x, y, z));
+                    hi = math.max(hi, new int3(x, y, z));
+                }
+
+            // The inside has its own (coarser) grid over the hollow's box, in the hull's local space.
+            float3 min = grid.Origin + (float3)lo * _cell;
+            int3 size = (int3)math.floor((float3)(hi - lo + 1) * _cell / VOXEL);
+            if (math.any(size < new int3(10, 8, 20)))
                 return;
 
-            float3 origin = grid.Origin + (float3)lo * VOXEL;
             var voxels = new NativeArray<byte>(size.x * size.y * size.z, Allocator.Persistent);
+            bool Inside(int3 p) =>
+                math.all(p >= 0) && math.all(p < size) && InHollow(grid, hollow, min + ((float3)p + 0.5f) * VOXEL);
+
             void Box(int3 a, int3 b, byte m)
             {
-                a = math.clamp(a, 0, size - 1);
-                b = math.clamp(b, 0, size - 1);
                 for (int z = a.z; z <= b.z; z++)
                 for (int y = a.y; y <= b.y; y++)
                 for (int x = a.x; x <= b.x; x++)
-                    voxels[x + size.x * (y + size.y * z)] = m;
+                {
+                    var p = new int3(x, y, z);
+                    if (Inside(p))
+                        voxels[x + size.x * (y + size.y * z)] = m;
+                }
             }
 
             int engine = size.z * 3 / 10;
@@ -192,26 +278,45 @@ namespace Game
                 Box(seat + new int3(-3, 4, -4), seat + new int3(3, 12, -3), 6);
             }
 
+            VoxelBody inside = Spawn(hull, "Inside", size, voxels, Palette(), min);
+            for (int i = 0; i < seats.Count && i < _crew; i++)
+                SpawnCrewman(hull, grid, hollow, min + (float3)(seats[i] + new int3(0, 4, 0)) * VOXEL, inside);
+        }
+
+        /// <summary>Whether a point in the hull's local space lies in the hollow.</summary>
+        private bool InHollow(MeshVoxelizer.Result grid, NativeArray<bool> hollow, float3 local)
+        {
+            int3 s = grid.Size;
+            var g = (int3)math.floor((local - grid.Origin) / _cell);
+            return math.all(g >= 0) && math.all(g < s) && hollow[g.x + s.x * (g.y + s.y * g.z)];
+        }
+
+        private static NativeArray<Color32> Palette()
+        {
             var palette = new NativeArray<Color32>(256, Allocator.Persistent);
             for (int i = 0; i < Colours.Length; i++)
                 palette[i] = Colours[i];
-            VoxelBody inside = Spawn(hull, "Inside", size, voxels, palette, origin);
-
-            for (int i = 0; i < seats.Count && i < _crew; i++)
-                SpawnCrewman(hull, origin + ((float3)seats[i] + new float3(0f, 4f, 0f)) * VOXEL, inside);
+            return palette;
         }
 
-        /// <summary>A seated crewman, in khaki with a helmet: his own body, so a hit pops him (TankDummyCrew).</summary>
-        private void SpawnCrewman(Transform hull, float3 seat, VoxelBody inside)
+        /// <summary>A seated crewman, in khaki with a helmet, cut to the hollow: his own body, so a hit pops him.</summary>
+        private void SpawnCrewman(Transform hull, MeshVoxelizer.Result grid, NativeArray<bool> hollow, float3 seat, VoxelBody inside)
         {
             var size = new int3(8, 16, 12);
+            float3 at = seat - new float3(size.x / 2, 0, 3) * VOXEL;
             var voxels = new NativeArray<byte>(size.x * size.y * size.z, Allocator.Persistent);
+            int solid = 0;
             void Box(int3 a, int3 b, byte m)
             {
                 for (int z = a.z; z <= b.z; z++)
                 for (int y = a.y; y <= b.y; y++)
                 for (int x = a.x; x <= b.x; x++)
+                {
+                    if (!InHollow(grid, hollow, at + (new float3(x, y, z) + 0.5f) * VOXEL))
+                        continue;
                     voxels[x + size.x * (y + size.y * z)] = m;
+                    solid++;
+                }
             }
 
             Box(new int3(1, 0, 3), new int3(6, 2, 10), 2); // thighs, forward
@@ -220,15 +325,16 @@ namespace Game
             Box(new int3(0, 6, 3), new int3(0, 9, 7), 1); // arms
             Box(new int3(7, 6, 3), new int3(7, 9, 7), 1);
             Box(new int3(2, 10, 2), new int3(5, 13, 5), 3); // head
-            Box(new int3(2, 12, 6 - 1), new int3(2, 12, 6 - 1), 13); // eyes
-            Box(new int3(5, 12, 6 - 1), new int3(5, 12, 6 - 1), 13);
+            Box(new int3(2, 12, 6), new int3(2, 12, 6), 13); // eyes
+            Box(new int3(5, 12, 6), new int3(5, 12, 6), 13);
             Box(new int3(1, 14, 1), new int3(6, 15, 6), 4); // helmet
+            if (solid < 60)
+            {
+                voxels.Dispose();
+                return;
+            }
 
-            var palette = new NativeArray<Color32>(256, Allocator.Persistent);
-            for (int i = 0; i < Colours.Length; i++)
-                palette[i] = Colours[i];
-            float3 origin = seat - new float3(size.x * 0.5f, 0f, size.z * 0.3f) * VOXEL;
-            VoxelBody body = Spawn(hull, "Crewman", size, voxels, palette, origin);
+            VoxelBody body = Spawn(hull, "Crewman", size, voxels, Palette(), at);
             body.gameObject.AddComponent<TankDummyCrew>().Watch(body, inside);
         }
 
@@ -247,6 +353,7 @@ namespace Game
             body.Init(size, voxels, palette, settings);
             return body;
         }
+
 
         // ---------- Placing in the sandbox ----------
 
@@ -269,6 +376,8 @@ namespace Game
 
         private static void SpawnInSandbox()
         {
+            if (!SANDBOX_TARGETS)
+                return;
             var start = FindFirstObjectByType<VoxelSandboxStart>();
             if (start == null || FindFirstObjectByType<TankDummy>() != null)
                 return;
