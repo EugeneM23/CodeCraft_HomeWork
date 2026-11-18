@@ -33,7 +33,7 @@ namespace Game
         {
             context.TryGetPlayerInput(out _input);
             _characterSubscription = context.GetCharacter().Observe(OnCharacterChanged);
-            _camera = Camera.main;
+            _camera = Camera.main; // perf-ok: cached in Init, not in a tick
         }
 
         public void Dispose(IPlayerContext context)
@@ -89,7 +89,7 @@ namespace Game
             if (_camera == null)
             {
                 // The camera can be destroyed on scene teardown; looked up again only once it is gone.
-                _camera = Camera.main;
+                _camera = Camera.main; // perf-ok: re-lookup only after the cached camera is destroyed
                 if (_camera == null)
                 {
                     CombatFocus.Clear();

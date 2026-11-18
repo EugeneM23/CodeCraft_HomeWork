@@ -85,7 +85,7 @@ namespace Game
             tank.AddBehaviour(new TurretsBehaviour(targets, settings));
             // Found once here, not in a tick: the sandbox's air strike, absent in other levels.
             tank.AddBehaviour(new AirStrikeSkillBehaviour(targets, settings,
-                Object.FindFirstObjectByType<VoxelAirStrike>()));
+                Object.FindFirstObjectByType<VoxelAirStrike>())); // perf-ok: once on tank attach, not in a tick
         }
 
         public static void DetachTank(GameContext context, IEntity tank)

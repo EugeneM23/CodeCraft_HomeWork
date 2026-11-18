@@ -29,6 +29,9 @@ namespace Game
         private static readonly ProfilerMarker s_marker = new("Combat.XpOrbs");
         private static readonly int s_baseColor = Shader.PropertyToID("_BaseColor");
         private static readonly int s_emissionColor = Shader.PropertyToID("_EmissionColor");
+        private static readonly int s_color = Shader.PropertyToID("_Color");
+        private static readonly int s_smoothness = Shader.PropertyToID("_Smoothness");
+        private static readonly int s_metallic = Shader.PropertyToID("_Metallic");
 
         private readonly XpSettings _settings;
         private readonly XpOrbBuffer _buffer;
@@ -173,8 +176,14 @@ namespace Game
             Color color = _settings.color;
             _material = new Material(shader) { name = "XpOrb (runtime)", enableInstancing = true };
             _material.SetColor(s_baseColor, color);
+            _material.SetColor(s_color, color);
+            // Matte: URP Lit's default smoothness puts a white highlight on the cubes.
+            _material.SetFloat(s_smoothness, 0.1f);
+            _material.SetFloat(s_metallic, 0f);
             _material.EnableKeyword("_EMISSION");
-            _material.SetColor(s_emissionColor, color * _settings.emissionIntensity);
+            Color glow = _settings.emissionColor * Mathf.Max(0f, _settings.emissionIntensity);
+            glow.a = 1f;
+            _material.SetColor(s_emissionColor, glow);
             _material.globalIlluminationFlags = MaterialGlobalIlluminationFlags.None;
 
             _renderParams = new RenderParams(_material)

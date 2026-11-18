@@ -1,5 +1,6 @@
 using Atomic.Elements;
 using Atomic.Entities;
+using Unity.Profiling;
 using UnityEngine;
 
 namespace Game
@@ -15,6 +16,8 @@ namespace Game
     /// </summary>
     public sealed class AutoGunBehaviour : IEntityInit, IEntityTick
     {
+        private static readonly ProfilerMarker AutoGunMarker = new("Combat.AutoGun");
+
         private readonly IEntity _tank;
         private readonly AutoTargetTracker _tracker;
         private readonly float _maxPitch;
@@ -51,6 +54,12 @@ namespace Game
             if (_firePoint == null || _fire == null || TankStunUseCase.IsStunned(_tank))
                 return;
 
+            using (AutoGunMarker.Auto())
+                Aim(deltaTime);
+        }
+
+        private void Aim(float deltaTime)
+        {
             if (_range != null && _range.Value > 0f)
                 _tracker.Range = _range.Value;
 

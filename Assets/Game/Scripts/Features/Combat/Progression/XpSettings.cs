@@ -39,10 +39,14 @@ namespace Game
         [Tooltip("Edge of the orb's cube, m")]
         public float orbSize = 0.22f;
 
-        public Color color = new(1f, 0.55f, 0.1f, 1f);
+        [Tooltip("Base (albedo) colour of the orb's cube")]
+        public Color color = new(1f, 0.5f, 0.05f, 1f);
 
-        [Tooltip("Emission = colour × this")]
-        public float emissionIntensity = 4f;
+        [Tooltip("Glow colour; deeper than the base, so the glow stays orange under bloom and tonemapping")]
+        public Color emissionColor = new(1f, 0.36f, 0.02f, 1f);
+
+        [Tooltip("Emission = emission colour × this. Above ~1.5 the bloom and the tonemapper wash the orange to pale yellow")]
+        public float emissionIntensity = 1.3f;
 
         [Tooltip("How high (m) a lying orb bobs up and down")]
         public float bobHeight = 0.06f;

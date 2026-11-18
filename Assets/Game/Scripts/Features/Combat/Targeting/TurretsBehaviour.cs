@@ -64,10 +64,12 @@ namespace Game
             _damage = new ReactiveInt(0);
 
             Collider[] hull = HullColliders(root);
-            Bounds bounds = HullBounds(tank, root);
+            Bounds bounds = HullBounds(root);
+            Transform parent = tank.TryGetHullVisual(out Transform hullVisual) && hullVisual != null ? hullVisual : root;
+            tank.TryGetTurretVisual(out Transform turretVisual);
             Material material = HullMaterial(tank, root);
             for (int i = 0; i < MAX_TURRETS; i++)
-                _turrets[i] = Build(i, root, bounds, material, bullet, hull);
+                _turrets[i] = Build(i, root, parent, turretVisual, bounds, material, bullet, hull);
 
             _onModifiersChanged = Apply;
             _modifiers.Changed += _onModifiersChanged;
@@ -140,22 +142,26 @@ namespace Game
             _shown = count;
         }
 
-        private Turret Build(int i, Transform root, Bounds hull, Material material, MonoEntity bullet,
-            Collider[] hullColliders)
+        private Turret Build(int i, Transform root, Transform parent, Transform turretVisual, Bounds hull,
+            Material material, MonoEntity bullet, Collider[] hullColliders)
         {
             Vector3 size = _settings.turretSize;
-            float top = hull.max.y + size.y * 0.5f;
-            Vector3 local = i switch
+            // On the engine deck behind the main turret: the side boxes against the hull's edges (clear of the
+            // antenna and the turret's sweep), the centre one against the rear edge.
+            float rearZ = hull.min.z + size.z * 0.5f + 0.05f;
+            Vector3 footprint = i switch
             {
-                0 => new Vector3(hull.min.x + size.x * 0.7f, top, hull.min.z + size.z * 0.8f), // rear left
-                1 => new Vector3(hull.max.x - size.x * 0.7f, top, hull.min.z + size.z * 0.8f), // rear right
-                _ => new Vector3(hull.center.x, top, hull.min.z + hull.size.z * 0.22f) // roof rear
+                0 => new Vector3(hull.min.x + size.x * 0.5f + 0.02f, 0f, rearZ + 0.1f), // rear left
+                1 => new Vector3(hull.max.x - size.x * 0.5f - 0.02f, 0f, rearZ + 0.1f), // rear right
+                _ => new Vector3(hull.center.x, 0f, rearZ) // roof rear, centre
             };
+            float deck = DeckTop(root, parent, turretVisual, hull.max.y, footprint, size);
+            Vector3 local = new Vector3(footprint.x, deck + size.y * 0.5f, footprint.z);
 
             var mount = new GameObject($"CombatTurret_{i}");
-            mount.transform.SetParent(root, false);
-            mount.transform.localPosition = local;
-            mount.transform.localRotation = Quaternion.identity;
+            mount.transform.SetParent(parent, false);
+            mount.transform.position = root.TransformPoint(local);
+            mount.transform.rotation = root.rotation;
 
             GameObject box = GameObject.CreatePrimitive(PrimitiveType.Cube);
             box.name = "Box";
@@ -219,37 +225,76 @@ namespace Game
             return result.ToArray();
         }
 
-        /// <summary>The hull's box in the tank's space: its visual's renderers, else a Tiger-sized default.</summary>
-        private static Bounds HullBounds(IEntity tank, Transform root)
+        /// <summary>
+        /// The hull's box in the tank's local space: the largest solid BoxCollider of the tank's body (the hull; the
+        /// smaller one is the turret), else the Tiger's hull. Not the renderers: under the hull visual sit the main
+        /// turret and its gun, the antenna, the exhaust smoke (a world-space particle system whose bounds follow the
+        /// trail), the skirts and the voxel skin, and their union is far bigger than the deck.
+        /// </summary>
+        internal static Bounds HullBounds(Transform root)
         {
-            var local = new Bounds(Vector3.up, new Vector3(3.5f, 2f, 6.5f));
-            if (!tank.TryGetHullVisual(out Transform hull) || hull == null)
-                return local;
-
-            bool any = false;
-            foreach (Renderer renderer in hull.GetComponentsInChildren<Renderer>())
+            var best = new Bounds(new Vector3(0f, 0.645f, 0f), new Vector3(2.025f, 0.39f, 2.775f));
+            float bestVolume = 0f;
+            Rigidbody body = root.GetComponentInParent<Rigidbody>();
+            foreach (BoxCollider box in root.GetComponentsInChildren<BoxCollider>())
             {
-                Bounds b = renderer.localBounds;
-                Vector3 c = b.center;
-                Vector3 e = b.extents;
-                for (int k = 0; k < 8; k++)
-                {
-                    var corner = new Vector3((k & 1) == 0 ? -e.x : e.x, (k & 2) == 0 ? -e.y : e.y,
-                        (k & 4) == 0 ? -e.z : e.z);
-                    Vector3 p = root.InverseTransformPoint(renderer.transform.TransformPoint(c + corner));
-                    if (!any)
-                    {
-                        local = new Bounds(p, Vector3.zero);
-                        any = true;
-                    }
-                    else
-                    {
-                        local.Encapsulate(p);
-                    }
-                }
+                if (box.isTrigger || !box.enabled || (body != null && box.attachedRigidbody != body))
+                    continue;
+                Bounds local = ToRootSpace(root, box.transform, new Bounds(box.center, box.size));
+                float volume = local.size.x * local.size.y * local.size.z;
+                if (volume <= bestVolume)
+                    continue;
+                best = local;
+                bestVolume = volume;
             }
 
-            return local;
+            return best;
+        }
+
+        /// <summary>
+        /// The top of the deck under a box at <paramref name="footprint"/> (x, z in the tank's space): the hull's top,
+        /// raised by low deck details lying on it (grilles, fans, hatches), so the box sits flush on them; tall thin
+        /// parts (the antenna) and the main turret are left out.
+        /// </summary>
+        private static float DeckTop(Transform root, Transform hullVisual, Transform turretVisual, float hullTop,
+            Vector3 footprint, Vector3 size)
+        {
+            const float LIE_TOLERANCE = 0.05f;
+            const float MAX_DETAIL = 0.15f;
+
+            float top = hullTop;
+            float minX = footprint.x - size.x * 0.5f, maxX = footprint.x + size.x * 0.5f;
+            float minZ = footprint.z - size.z * 0.5f, maxZ = footprint.z + size.z * 0.5f;
+            foreach (MeshFilter filter in hullVisual.GetComponentsInChildren<MeshFilter>(true))
+            {
+                if (filter.sharedMesh == null || filter.GetComponent<MeshRenderer>() == null)
+                    continue;
+                if (turretVisual != null && filter.transform.IsChildOf(turretVisual))
+                    continue;
+                Bounds b = ToRootSpace(root, filter.transform, filter.sharedMesh.bounds);
+                if (b.max.x <= minX || b.min.x >= maxX || b.max.z <= minZ || b.min.z >= maxZ)
+                    continue;
+                if (Mathf.Abs(b.min.y - hullTop) > LIE_TOLERANCE || b.max.y > hullTop + MAX_DETAIL)
+                    continue;
+                top = Mathf.Max(top, b.max.y);
+            }
+
+            return top;
+        }
+
+        private static Bounds ToRootSpace(Transform root, Transform from, Bounds bounds)
+        {
+            Vector3 c = bounds.center;
+            Vector3 e = bounds.extents;
+            var result = new Bounds(root.InverseTransformPoint(from.TransformPoint(c - e)), Vector3.zero);
+            for (int k = 1; k < 8; k++)
+            {
+                var corner = new Vector3((k & 1) == 0 ? -e.x : e.x, (k & 2) == 0 ? -e.y : e.y,
+                    (k & 4) == 0 ? -e.z : e.z);
+                result.Encapsulate(root.InverseTransformPoint(from.TransformPoint(c + corner)));
+            }
+
+            return result;
         }
 
         /// <summary>A material of the hull (or of any renderer on the tank), so the boxes match it.</summary>

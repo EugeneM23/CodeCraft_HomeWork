@@ -223,10 +223,15 @@ namespace Game
 
         // ---------- Debug view ----------
 
-        /// <summary>The IMGUI skill cards and XP line, until the menu's skill screen. Play mode only.</summary>
+        /// <summary>
+        /// The IMGUI skill cards and XP line, until the menu's skill screen. Play mode only, and only in the editor or
+        /// a development build: IMGUI allocates every frame.
+        /// </summary>
         public void ShowDebugView()
         {
             if (_view != null || _disposed || !Application.isPlaying)
+                return;
+            if (!Application.isEditor && !Debug.isDebugBuild)
                 return;
 
             var host = new GameObject(nameof(SkillOfferDebugView));
