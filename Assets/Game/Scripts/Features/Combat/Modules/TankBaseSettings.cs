@@ -36,7 +36,7 @@ namespace Game
         [Min(0f)] public float MgDamage = 10f;
 
         [Tooltip("Seconds between shots.")]
-        [Min(0.01f)] public float MgInterval = 0.08f;
+        [Min(0.01f)] public float MgInterval = 0.16f;
 
         [Tooltip("Degrees to either side.")]
         [Min(0f)] public float MgSpread = 2f;

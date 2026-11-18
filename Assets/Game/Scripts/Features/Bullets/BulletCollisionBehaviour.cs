@@ -9,6 +9,27 @@ namespace Game
         /// <summary>Radius (m) of the bite a bullet takes out of voxels: one or two 10 cm voxels.</summary>
         private const float VOXEL_CHIP_RADIUS = 0.13f;
 
+        /// <summary>How deep (m) a bullet's tunnel through a wall goes; bites every this much / 3.</summary>
+        private const float WALL_TUNNEL_DEPTH = 0.9f;
+
+        /// <summary>Radius (m) of the hole a plain bullet bores through a wall.</summary>
+        private const float WALL_HOLE_RADIUS = 0.3f;
+
+        /// <summary>How hard (m/s) a plain bullet's hit flings the chips it knocks out.</summary>
+        private const float CHIP_FORCE = 9f;
+
+        private const int SPARKS = 0;
+
+        /// <summary>Walls one bullet goes through before it stops in the next.</summary>
+        private const int MAX_WALL_PIERCES = 3;
+
+        private static readonly Color32[] SparkColors =
+        {
+            new(255, 214, 90, 255), new(255, 160, 40, 255), new(255, 240, 170, 255)
+        };
+
+        private int _wallPierces;
+
         private CollisionEventReceiver _collisionEventReceiver;
         private IEntity _bullet;
         private GameFactory _gameFactory;
@@ -31,7 +52,11 @@ namespace Game
         }
 
         /// <summary>Rented from the pool: a new shot has pierced nothing yet.</summary>
-        public void Enable(IEntity entity) => _pierced = null;
+        public void Enable(IEntity entity)
+        {
+            _pierced = null;
+            _wallPierces = 0;
+        }
 
         public void Dispose(IEntity entity) => _collisionEventReceiver.OnEntered -= OnCollision;
 
@@ -58,6 +83,11 @@ namespace Game
             // Voxels take every hit: a shell digs into voxel ground or brick instead of skipping
             // off it, the way it went off on the ground the cursor pointed at.
             bool voxel = VoxelDamage.IsVoxel(collision.collider);
+            bool explosive = ExplosionUseCase.IsExplosive(_bullet);
+
+            // A plain bullet (the machine gun, the turrets) goes through voxel walls: it tunnels on, chips flying.
+            if (voxel && !explosive && TryPierceWall(collision))
+                return;
 
             if (!mud && !voxel && BulletHitUseCase.ShouldTryRicochet(_bullet, target) && TryRicochet(collision))
                 return;
@@ -82,11 +112,66 @@ namespace Game
             }
             else
             {
-                SpawnUseCase.SpawnCollisionHit(collision, _gameFactory, _bullet);
+                // A plain bullet's hit is voxel: sparks and chips, no particle burst.
+                if (explosive)
+                    SpawnUseCase.SpawnCollisionHit(collision, _gameFactory, _bullet);
+                else
+                    Sparks(collision.GetContact(0).point, collision.GetContact(0).normal);
                 ChipVoxels(collision);
             }
 
             SpawnUseCase.UnSpawnEntity(_gameFactory, _bullet);
+        }
+
+        /// <summary>
+        /// The bullet bores through a voxel wall (not the ground) and flies on: bites along its path, sparks at the
+        /// hole, the wall's collider let by. False when it has gone through its last wall or this is the ground.
+        /// </summary>
+        private bool TryPierceWall(Collision collision)
+        {
+            if (_wallPierces >= MAX_WALL_PIERCES)
+                return false;
+
+            VoxelBody body = collision.collider.GetComponentInParent<VoxelBody>();
+            if (body == null || body.IsTerrain)
+                return false;
+
+            _wallPierces++;
+            ContactPoint contact = collision.GetContact(0);
+            Vector3 direction = _bullet.GetMoveDirection().Value;
+            Vector3 along = direction.sqrMagnitude > 1e-6f ? direction.normalized : -contact.normal;
+            for (int i = 0; i < 3; i++)
+                VoxelDamage.Impact(contact.point + along * (WALL_TUNNEL_DEPTH * i / 3f), along, WALL_HOLE_RADIUS,
+                    CHIP_FORCE);
+            Sparks(contact.point, contact.normal);
+
+            if (_own != null)
+                Physics.IgnoreCollision(_own, collision.collider, true);
+            if (_body != null && !_body.isKinematic)
+            {
+                _body.linearVelocity = Vector3.zero;
+                _body.angularVelocity = Vector3.zero;
+            }
+
+            return true;
+        }
+
+        /// <summary>A small fan of hot voxel sparks off the surface.</summary>
+        private static void Sparks(Vector3 point, Vector3 normal)
+        {
+            VoxelWorld world = VoxelWorld.Instance;
+            VoxelDebris debris = world != null ? world.Debris : null;
+            if (debris == null)
+                return;
+
+            Vector3 at = point + normal * 0.03f;
+            for (int i = 0; i < SPARKS; i++)
+            {
+                Vector3 heading = (normal + Random.insideUnitSphere * 0.9f + Vector3.up * 0.3f).normalized;
+                Color32 color = SparkColors[Random.Range(0, SparkColors.Length)];
+                if (debris.Spawn(at, heading * Random.Range(5f, 14f), color, 0.04f * Random.Range(0.7f, 1.3f)) < 0)
+                    break;
+            }
         }
 
         /// <summary>
@@ -123,7 +208,8 @@ namespace Game
 
         /// <summary>A bullet bites a small hole out of a voxel wall, or out of a vehicle's voxel skin.</summary>
         private void ChipVoxels(Collision collision) =>
-            VoxelDamage.Impact(collision.GetContact(0).point, _bullet.GetMoveDirection().Value, VOXEL_CHIP_RADIUS);
+            VoxelDamage.Impact(collision.GetContact(0).point, _bullet.GetMoveDirection().Value, VOXEL_CHIP_RADIUS,
+                ExplosionUseCase.IsExplosive(_bullet) ? 2.5f : CHIP_FORCE);
 
         /// <summary>True when the bullet flies on: it bounced off the surface, or already flies away from it.</summary>
         private bool TryRicochet(Collision collision)

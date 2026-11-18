@@ -36,6 +36,8 @@ namespace Game
         private readonly float[] _extend = new float[MAX];
         // 0...1: how much this cube bursts (weak at the muzzle, full at the far end).
         private readonly float[] _burst = new float[MAX];
+        // Which shot made the cube: the latest shot's own shell flies through its smoke without parting it.
+        private readonly int[] _shot = new int[MAX];
         private readonly Matrix4x4[] _matrices = new Matrix4x4[MAX];
         private readonly Vector4[] _colors = new Vector4[MAX];
         private readonly Matrix4x4[] _batchMatrices = new Matrix4x4[BATCH];
@@ -44,6 +46,8 @@ namespace Game
         private int _count;
 
         private Transform _firePoint;
+        private IEntity _weapon;
+        private int _shotNumber;
         private IEvent _fireEvent;
         private float _wispLeft;
         private float _wispCarry;
@@ -58,6 +62,7 @@ namespace Game
             if (!entity.TryGetWeapon(out IReactiveVariable<IEntity> weapon) || weapon.Value == null)
                 return;
 
+            _weapon = weapon.Value;
             weapon.Value.TryGetFirePoint(out _firePoint);
             if (weapon.Value.TryGetFireEvent(out _fireEvent))
                 _fireEvent.Subscribe(OnFire);
@@ -67,6 +72,7 @@ namespace Game
         {
             _fireEvent?.Unsubscribe(OnFire);
             _fireEvent = null;
+            _weapon = null;
             _count = 0;
         }
 
@@ -80,6 +86,7 @@ namespace Game
             Vector3 right = _firePoint.right;
             Vector3 up = _firePoint.up;
             VoxelMuzzleSmokeSettings s = _settings;
+            _shotNumber++;
 
             float length = Mathf.Max(0.1f, s.JetLength);
             float tipRadius = Mathf.Max(0.01f, s.RadiusEnd);
@@ -160,6 +167,7 @@ namespace Game
             _size[i] = size;
             _extend[i] = 0f;
             _burst[i] = 0f;
+            _shot[i] = _shotNumber; // The wisp after a shot belongs to that shot too.
             return i;
         }
 
@@ -186,7 +194,8 @@ namespace Game
                 return;
 
             if (s.ReactToWorld || s.ReactToTanks)
-                VoxelPuffField.Apply(_position, _velocity, _size, _count, deltaTime, s.ReactToWorld, s.ReactToTanks, _extend);
+                VoxelPuffField.Apply(_position, _velocity, _size, _count, deltaTime, s.ReactToWorld, s.ReactToTanks, _extend,
+                    _weapon, _shot, _shotNumber);
 
             float damp = Mathf.Exp(-s.Drag * deltaTime);
             Vector3 rise = Vector3.up * (s.Rise * deltaTime);
@@ -208,6 +217,7 @@ namespace Game
                     _offset[i] = _offset[_count];
                     _extend[i] = _extend[_count];
                     _burst[i] = _burst[_count];
+                    _shot[i] = _shot[_count];
                     i--;
                     continue;
                 }

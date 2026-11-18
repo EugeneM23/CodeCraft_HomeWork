@@ -28,6 +28,7 @@ namespace Game
         private IAction _mainAction;
         private IExpression<bool> _secondaryCondition;
         private IAction _secondaryAction;
+        private Transform _cannonFirePoint;
 
         public void Init(IPlayerContext context)
         {
@@ -50,6 +51,7 @@ namespace Game
             _mainAction = null;
             _secondaryCondition = null;
             _secondaryAction = null;
+            _cannonFirePoint = null;
             CombatFocus.Clear();
 
             if (character == null || !character.HasVehicleTag())
@@ -61,6 +63,8 @@ namespace Game
             character.TryGetFireAction(out _mainAction);
             character.TryGetSecondaryFireCondition(out _secondaryCondition);
             character.TryGetSecondaryFireAction(out _secondaryAction);
+            if (character.TryGetWeapon(out IReactiveVariable<IEntity> cannon) && cannon.Value != null)
+                cannon.Value.TryGetFirePoint(out _cannonFirePoint);
         }
 
         public void LateTick(IPlayerContext context, float deltaTime)
@@ -77,12 +81,24 @@ namespace Game
                 Fire(_secondaryCondition, _secondaryAction);
         }
 
-        /// <summary>Held: the auto guns aim at the cursor point on the ground, at the vehicle's height.</summary>
+        /// <summary>How far (m) along the cannon's barrel the auto guns aim while the right button is held.</summary>
+        private const float CANNON_AIM_DISTANCE = 18f;
+
+        /// <summary>
+        /// Held: the auto guns aim where the cannon aims — a point along its barrel. Without a cannon, at the cursor
+        /// point on the ground, at the vehicle's height.
+        /// </summary>
         private void Focus(bool held)
         {
             if (!held || _characterTransform == null)
             {
                 CombatFocus.Clear();
+                return;
+            }
+
+            if (_cannonFirePoint != null)
+            {
+                CombatFocus.Set(_cannonFirePoint.position + _cannonFirePoint.forward * CANNON_AIM_DISTANCE);
                 return;
             }
 

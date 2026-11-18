@@ -76,6 +76,8 @@ namespace Game
             root.SetParent(space, false);
             root.localPosition = settings.mgMount;
             root.localRotation = Quaternion.identity;
+            float scale = Mathf.Max(0.05f, settings.mgScale);
+            root.localScale = Vector3.one * scale;
 
             // The yaw part: a plate on the roof and a post.
             Box("Base", root, new Vector3(0f, BASE_HEIGHT * 0.5f, 0f), new Vector3(0.36f, BASE_HEIGHT, 0.36f), material, layer);
@@ -117,7 +119,7 @@ namespace Game
             ejector.localPosition = new Vector3(body.x * 0.5f + 0.03f, body.y * 0.15f, bodyMid + body.z * 0.1f);
             ejector.localRotation = Quaternion.identity;
 
-            var rig = new MachineGunRig(root, pitch, ejector, space, pivotHeight, firePoint, firePoint.parent,
+            var rig = new MachineGunRig(root, pitch, ejector, space, pivotHeight * scale, firePoint, firePoint.parent,
                 firePoint.localPosition, firePoint.localRotation);
 
             firePoint.SetParent(pitch, false);
@@ -171,10 +173,20 @@ namespace Game
                 Object.Destroy(_root.gameObject);
         }
 
+        /// <summary>Seconds the gun takes to settle on a new direction: it eases in and out instead of snapping.</summary>
+        private const float SMOOTH_TIME = 0.12f;
+
+        private float _yawVelocity;
+        private float _pitchVelocity;
+
         private void Step(float yaw, float pitch, float deltaTime, float yawSpeed, float pitchSpeed)
         {
-            _yaw = Mathf.MoveTowardsAngle(_yaw, yaw, yawSpeed * deltaTime);
-            _pitchAngle = Mathf.MoveTowards(_pitchAngle, pitch, pitchSpeed * deltaTime);
+            if (deltaTime <= 0f)
+                return;
+
+            // Damped, capped at the turn rates: a new target or a jump of the aim point no longer jerks the gun.
+            _yaw = Mathf.SmoothDampAngle(_yaw, yaw, ref _yawVelocity, SMOOTH_TIME, yawSpeed, deltaTime);
+            _pitchAngle = Mathf.SmoothDamp(_pitchAngle, pitch, ref _pitchVelocity, SMOOTH_TIME, pitchSpeed, deltaTime);
             _root.localRotation = Quaternion.Euler(0f, _yaw, 0f);
             _pitch.localRotation = Quaternion.Euler(_pitchAngle, 0f, 0f);
         }

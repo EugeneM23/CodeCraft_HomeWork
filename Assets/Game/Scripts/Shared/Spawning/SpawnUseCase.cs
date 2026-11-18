@@ -30,6 +30,14 @@ namespace Game
             bulletTransform.SetPositionAndRotation(firePoint.position, GetSpreadRotation(weapon, firePoint));
             bullet.GetMoveDirection().Value = bulletTransform.forward;
 
+            // The body too: an interpolated body is drawn from its own pose, so a re-rented bullet showed up for a
+            // frame where its last flight ended and streaked its trail from there, not from the muzzle.
+            if (bullet.TryGetRiggedBody(out Rigidbody body) && body != null)
+            {
+                body.position = bulletTransform.position;
+                body.rotation = bulletTransform.rotation;
+            }
+
             // A pooled bullet keeps the bounces of its previous flight.
             if (bullet.HasRicochetCount())
                 bullet.SetRicochetCount(0);

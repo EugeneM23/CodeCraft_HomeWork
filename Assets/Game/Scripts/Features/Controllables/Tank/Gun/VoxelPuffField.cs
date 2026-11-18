@@ -22,7 +22,7 @@ namespace Game
         private const float SKIN = 0.08f;
 
         /// <summary>Speed (m/s) a cube is thrown out of a tunnel or a hull with.</summary>
-        private const float CUT_PUSH = 3f;
+        private const float CUT_PUSH = 6f;
         private const float HULL_PUSH = 1.5f;
         private const float BLAST_PUSH = 9f;
 
@@ -38,6 +38,8 @@ namespace Game
             public Vector3 To;
             public float Radius;
             public int Frame;
+            public object Source;
+            public float Push;
         }
 
         private static readonly List<Hull> s_hulls = new();
@@ -57,11 +59,19 @@ namespace Game
                     s_hulls.RemoveAt(i);
         }
 
-        /// <summary>A shot flew from <paramref name="from"/> to <paramref name="to"/>: the smoke parts round it.</summary>
-        public static void Cut(Vector3 from, Vector3 to, float radius)
+        /// <summary>
+        /// A shot flew from <paramref name="from"/> to <paramref name="to"/>: the smoke parts round it.
+        /// <paramref name="source"/> is the weapon that fired it: the smoke of that very shot lets it through.
+        /// </summary>
+        /// <param name="push">Speed (m/s) the smoke is thrown out of the tunnel with; 0 — the default.</param>
+        public static void Cut(Vector3 from, Vector3 to, float radius, object source = null, float push = 0f)
         {
             Prune();
-            s_cuts.Add(new Segment { From = from, To = to, Radius = radius, Frame = Time.frameCount });
+            s_cuts.Add(new Segment
+            {
+                From = from, To = to, Radius = radius, Frame = Time.frameCount, Source = source,
+                Push = push > 0f ? push : CUT_PUSH
+            });
         }
 
         /// <summary>A blast: the smoke within <paramref name="radius"/> is blown away from it.</summary>
@@ -85,9 +95,11 @@ namespace Game
         /// <summary>
         /// Moves and redirects the cubes [0, count) by what is round them: hulls, walls, cuts, blasts.
         /// A cube whose <paramref name="busy"/> entry is above 0 moves on its own and is left alone.
+        /// A cube whose <paramref name="shot"/> entry equals <paramref name="ownShot"/> is the smoke of
+        /// <paramref name="source"/>'s latest shot: that weapon's own shell flies through it without parting it.
         /// </summary>
         public static void Apply(Vector3[] position, Vector3[] velocity, float[] size, int count, float deltaTime,
-            bool walls, bool hulls, float[] busy = null)
+            bool walls, bool hulls, float[] busy = null, object source = null, int[] shot = null, int ownShot = 0)
         {
             if (count == 0 || deltaTime <= 0f)
                 return;
@@ -113,8 +125,12 @@ namespace Game
 
                 if (events)
                 {
+                    bool own = source != null && shot != null && shot[i] == ownShot;
                     foreach (Segment cut in s_cuts)
                     {
+                        if (own && ReferenceEquals(cut.Source, source))
+                            continue;
+
                         Vector3 closest = Closest(cut.From, cut.To, p);
                         Vector3 away = p - closest;
                         float d = away.magnitude;
@@ -122,7 +138,7 @@ namespace Game
                         {
                             Vector3 dir = d > 1e-4f ? away / d : Random.onUnitSphere;
                             p = closest + dir * cut.Radius;
-                            v += dir * CUT_PUSH;
+                            v += dir * cut.Push;
                         }
                     }
 

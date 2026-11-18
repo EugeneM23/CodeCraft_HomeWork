@@ -24,6 +24,9 @@ namespace Game
         [Tooltip("Builds the big machine gun on the turret roof at attach (MachineGunRig): it turns to its target. Off: the old small gun, only the fire point turns.")]
         public bool mgBigModel = true;
 
+        [Tooltip("Scale of the whole big gun (1 the sizes below as they are).")]
+        public float mgScale = 0.5f;
+
         [Tooltip("Degrees per second the gun's body turns about the turret's up.")]
         public float mgYawSpeed = 360f;
 
@@ -50,12 +53,12 @@ namespace Game
         public int casingCapacity = 256;
 
         [Tooltip("Size (m) of a casing: width, height, length.")]
-        public Vector3 casingSize = new(0.03f, 0.03f, 0.09f);
+        public Vector3 casingSize = new(0.06f, 0.06f, 0.18f);
 
         public Color casingColor = new(0.85f, 0.62f, 0.22f, 1f);
 
         [Tooltip("m/s a casing leaves at: x to the gun's right, y up, z along the barrel (+ the tank's own velocity).")]
-        public Vector3 casingEjectSpeed = new(2.6f, 2.8f, -0.3f);
+        public Vector3 casingEjectSpeed = new(2.6f, 3.96f, -0.3f); // up √2 × 2.8: twice as high
 
         [Tooltip("What a casing lands on. Not the tank's layer (9): the casings fall past the hull to the ground.")]
         public LayerMask casingGroundMask = (1 << 0) | (1 << 3) | (1 << 10) | (1 << 14) | (1 << 16);
