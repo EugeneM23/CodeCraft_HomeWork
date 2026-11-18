@@ -43,6 +43,18 @@ namespace Game
         /// <summary>Deaths the pools are made for at level load (pieces, drips, buffers): beyond it they grow.</summary>
         public const int RESERVED_DEATHS = 8;
 
+        /// <summary>
+        /// Deaths whose piece bodies are made ahead at level load (VoxelCarcass.AddSpareBodies, a few a frame), so those
+        /// deaths make no GameObject or component of their own. Bodies are not recycled (corpses lie all game): past this
+        /// many deaths in a level the pieces are made at the death again. One Regax piece body is ~2 KB.
+        /// </summary>
+        public static int SpareDeaths = 20;
+
+        /// <summary>Spare bodies made a frame while filling: well under the 2 ms a frame a level load may take.</summary>
+        private const int SPARES_PER_FRAME = 12;
+
+        private static int s_sparesToMake;
+
         // Steps of a death, to find where its time goes (perf debt, Docs/Reports/2026-11-17-perf-baseline.md).
         private static readonly ProfilerMarker VoxelizeMarker = new("Death.Voxelize");
         private static readonly ProfilerMarker CarcassMarker = new("Death.Carcass");
@@ -50,6 +62,7 @@ namespace Game
         private static readonly ProfilerMarker BloodMarker = new("Death.Blood");
         private static readonly ProfilerMarker WarmUpMarker = new("Death.WarmUp");
         private static readonly ProfilerMarker StepMarker = new("Death.Step");
+        private static readonly ProfilerMarker SparesMarker = new("Death.Spares");
 
         private static readonly List<int> Held = new();
         private static readonly Func<float> Roll = () => Random.value;
@@ -88,6 +101,8 @@ namespace Game
             Queue.Clear();
             Spare.Clear();
             DeathsPerFrame = 2;
+            SpareDeaths = 20;
+            s_sparesToMake = 0;
             s_quitHooked = false;
             SetHook(false);
         }
@@ -185,6 +200,9 @@ namespace Game
                 Held.Capacity = config.seams.Length;
             BloodOf(config);
             LinksOf(config);
+            // Made over the next frames by the step, once a session (a body is used once).
+            if (s_sparesToMake == 0 && VoxelCarcass.SpareBodyCount == 0)
+                s_sparesToMake = SpareDeaths * parts;
             // The step goes into the player loop now: putting it in builds a new loop (garbage), not for a death to do.
             SetHook(true);
         }
@@ -359,9 +377,18 @@ namespace Game
         /// <summary>
         /// The start of every frame (EarlyUpdate): takes the deaths a step on, oldest first, at most
         /// <see cref="DeathsPerFrame"/> builds and as many shows; never two steps of one death in a frame.
+        /// While no death waits, it makes the spare piece bodies of the level load, <see cref="SPARES_PER_FRAME"/> a frame.
         /// </summary>
         private static void Step()
         {
+            if (s_sparesToMake > 0 && Queue.Count == 0)
+            {
+                int make = Math.Min(SPARES_PER_FRAME, s_sparesToMake);
+                s_sparesToMake -= make;
+                using (SparesMarker.Auto())
+                    VoxelCarcass.AddSpareBodies(make, true);
+            }
+
             if (Queue.Count == 0)
                 return;
 

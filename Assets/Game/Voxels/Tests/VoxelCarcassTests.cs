@@ -23,7 +23,7 @@ namespace Game.Voxels.Tests
                 if (go != null)
                     Object.Destroy(go);
             _spawned.Clear();
-            foreach (VoxelBody body in Object.FindObjectsByType<VoxelBody>(FindObjectsSortMode.None))
+            foreach (VoxelBody body in Object.FindObjectsByType<VoxelBody>(FindObjectsInactive.Include, FindObjectsSortMode.None))
                 Object.Destroy(body.gameObject);
         }
 
@@ -181,6 +181,30 @@ namespace Game.Voxels.Tests
             VoxelCarcass.Release(pooled);
         }
 
+        [Test]
+        public void SpareBodies_AreTakenByTheNextPieces_WithWhatALoosePieceCarries()
+        {
+            using SkinnedVoxelizer.Result grid = Grid();
+            int before = VoxelCarcass.SpareBodyCount;
+            VoxelCarcass.AddSpareBodies(2, true);
+            Assert.AreEqual(before + 2, VoxelCarcass.SpareBodyCount);
+
+            var pooled = new List<VoxelCarcass.Piece>();
+            VoxelCarcass.Build(grid, new[] { 0, 1 }, Settings(), new[] { "Flesh_0", "Flesh_1" }, true, pooled);
+
+            Assert.AreEqual(before, VoxelCarcass.SpareBodyCount, "both pieces took a spare");
+            foreach (VoxelCarcass.Piece piece in pooled)
+            {
+                Assert.AreEqual("Flesh_" + piece.Cluster, piece.Body.name);
+                Assert.AreEqual(VoxelWorld.PieceLayer, piece.Body.gameObject.layer);
+                Assert.IsFalse(piece.Body.gameObject.activeSelf);
+                Assert.That(piece.Body.SolidCount, Is.GreaterThan(0));
+                Assert.IsNotNull(piece.Body.GetComponent<VoxelSettle>());
+                Assert.IsNotNull(piece.Body.GetComponent<VoxelImpactFracture>());
+            }
+
+            VoxelCarcass.Release(pooled);
+        }
         [UnityTest]
         public IEnumerator PooledDrip_DropsWhileItLasts_ThenGoesBackToThePool()
         {
