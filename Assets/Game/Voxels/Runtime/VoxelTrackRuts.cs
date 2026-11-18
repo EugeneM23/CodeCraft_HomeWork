@@ -123,6 +123,9 @@ namespace Game.Voxels
         private float _roostClodDebt;
         private float _spinDigDebt;
 
+        /// <summary>Speed scale of the rooster tail: √3, so the earth flies three times as far.</summary>
+        private const float ROOST_REACH = 1.732f;
+
         /// <summary>Slowest the tracks run (m/s) and still churn mud up.</summary>
         private const float MIN_TRACK_SPEED = 0.4f;
 
@@ -536,9 +539,9 @@ namespace Game.Voxels
                 }
 
                 Vector3 from = RoostPoint(direction, out Vector3 outward);
-                Vector3 velocity = carried + back * Random.Range(_roostBack.x, _roostBack.y) * WheelSpin +
+                Vector3 velocity = (carried + back * Random.Range(_roostBack.x, _roostBack.y) * WheelSpin +
                                    Vector3.up * Random.Range(_roostUp.x, _roostUp.y) * Mathf.Lerp(0.5f, 1f, WheelSpin) +
-                                   outward * Random.Range(-1f, 3f) + Random.insideUnitSphere * 1.2f;
+                                   outward * Random.Range(-1f, 3f) + Random.insideUnitSphere * 1.2f) * ROOST_REACH;
 
                 // On grass the tracks tear up turf: green bits among the earth.
                 Color32 colour = onGrass >= 0.5f && Random.value < 0.4f ? _grassColour : earth;
@@ -557,8 +560,8 @@ namespace Game.Voxels
                 }
 
                 Vector3 from = RoostPoint(direction, out Vector3 outward);
-                Vector3 velocity = carried + back * Random.Range(_roostBack.x, _roostBack.y) * 0.8f * WheelSpin +
-                                   Vector3.up * Random.Range(_roostUp.x, _roostUp.y) * 0.8f + outward * Random.Range(0f, 1.2f);
+                Vector3 velocity = (carried + back * Random.Range(_roostBack.x, _roostBack.y) * 0.8f * WheelSpin +
+                                   Vector3.up * Random.Range(_roostUp.x, _roostUp.y) * 0.8f + outward * Random.Range(0f, 1.2f)) * ROOST_REACH;
                 int clod = debris.BeginCluster(from, velocity, 8f);
                 if (clod < 0)
                     break;
