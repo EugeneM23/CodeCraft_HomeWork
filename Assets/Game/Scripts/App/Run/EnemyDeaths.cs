@@ -1,36 +1,74 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Game
 {
-    /// <summary>The level's feed of enemy deaths (see IEnemyDeaths). A throwing listener is logged; the others still hear the death.</summary>
+    /// <summary>
+    /// The level's feed of enemy deaths (see IEnemyDeaths). Listeners are kept in a list and called one by one by
+    /// index: no allocation per death (a mass crush reports dozens in a frame), and a throwing listener is logged
+    /// while the others still hear the death. A listener removed during a report is skipped from then on; one added
+    /// during a report hears the next death.
+    /// </summary>
     public sealed class EnemyDeaths : IEnemyDeaths
     {
-        private Action<EnemyDeath> _died;
+        private readonly List<Action<EnemyDeath>> _listeners = new();
+        private int _reporting;
+        private bool _hasHoles;
 
         public event Action<EnemyDeath> Died
         {
-            add => _died += value;
-            remove => _died -= value;
+            add
+            {
+                if (value != null)
+                    _listeners.Add(value);
+            }
+            remove
+            {
+                int index = _listeners.LastIndexOf(value);
+                if (index < 0)
+                    return;
+
+                if (_reporting > 0)
+                {
+                    _listeners[index] = null;
+                    _hasHoles = true;
+                }
+                else
+                {
+                    _listeners.RemoveAt(index);
+                }
+            }
         }
 
         public void Report(in EnemyDeath death)
         {
-            Action<EnemyDeath> died = _died;
-            if (died == null)
-                return;
-
-            // One by one: a broken listener (a HUD gone with its scene) must not cost the others the death
-            Delegate[] listeners = died.GetInvocationList();
-            for (int i = 0; i < listeners.Length; i++)
+            _reporting++;
+            try
             {
-                try
+                int count = _listeners.Count;
+                for (int i = 0; i < count; i++)
                 {
-                    ((Action<EnemyDeath>)listeners[i])(death);
+                    Action<EnemyDeath> listener = _listeners[i];
+                    if (listener == null)
+                        continue;
+
+                    try
+                    {
+                        listener(death);
+                    }
+                    catch (Exception exception)
+                    {
+                        Debug.LogException(exception);
+                    }
                 }
-                catch (Exception exception)
+            }
+            finally
+            {
+                if (--_reporting == 0 && _hasHoles)
                 {
-                    Debug.LogException(exception);
+                    _listeners.RemoveAll(static listener => listener == null);
+                    _hasHoles = false;
                 }
             }
         }

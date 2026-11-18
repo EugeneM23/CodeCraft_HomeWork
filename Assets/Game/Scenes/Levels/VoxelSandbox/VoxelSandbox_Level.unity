@@ -130,6 +130,7 @@ GameObject:
   - component: {fileID: 614416426}
   - component: {fileID: 614416425}
   - component: {fileID: 614416424}
+  - component: {fileID: 614416427}
   m_Layer: 0
   m_Name: '[LevelRun]'
   m_TagString: Untagged
@@ -161,6 +162,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 113faf16ee50f8c40ae9c44851060869, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Game::Game.PauseHotkey
+--- !u!114 &614416427
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 614416423}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eabcdaaa7ab71fa4a9b087b81249bf71, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game::Game.RunBootstrap
+  _timings:
+    readyTimeoutSec: 5
+    shutterSec: 0.5
+    lullSec: 2
+    orbPullSec: 0.5
+    victoryDelaySec: 1.5
+    crushStreakSec: 2
 --- !u!4 &614416426
 Transform:
   m_ObjectHideFlags: 0
