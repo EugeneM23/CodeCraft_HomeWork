@@ -205,6 +205,7 @@ namespace Game.Voxels
 
             using (PrimeMarker.Auto())
             {
+                bool filled = Filling.Count > 0;
                 for (int i = Filling.Count - 1; i >= 0; i--)
                 {
                     VoxelBody body = Filling[i];
@@ -212,6 +213,12 @@ namespace Game.Voxels
                         continue; // not built yet (a frame the world skipped)
                     Filling.RemoveAt(i);
                     Put(body, Free);
+                }
+
+                if (filled && Filling.Count == 0 && Refill.Count == 0 && s_toMake == 0)
+                {
+                    WakeAll();
+                    return;
                 }
 
                 int left = perFrame;
@@ -235,6 +242,20 @@ namespace Game.Voxels
                     Fill(NewBody(s_settings.Settle));
                 }
             }
+        }
+
+        /// <summary>
+        /// The last step of the filling: every free body switched on and off again at once. Their components wake
+        /// (Awake) now, and the voxel tick lists (VoxelTicks) grow to hold them all, not a little at each death.
+        /// </summary>
+        private static void WakeAll()
+        {
+            for (int i = 0; i < Free.Count; i++)
+                if (Free[i] != null)
+                    Free[i].gameObject.SetActive(true);
+            for (int i = 0; i < Free.Count; i++)
+                if (Free[i] != null)
+                    Free[i].gameObject.SetActive(false);
         }
 
         /// <summary>A body filled with the next planned layout: the world builds its chunks and boxes this frame.</summary>

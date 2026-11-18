@@ -60,12 +60,13 @@ namespace Game
 
         /// <summary>
         /// The chunk layouts (32-voxel chunks along x, y, z) the bodies made ahead are filled with, in turn: a body's
-        /// chunks are reused by a piece cut into as many (VoxelBody.Init), so the spares follow the pieces' sizes.
+        /// chunks are reused by a piece cut into as many (VoxelBody.Init), so the spares follow the pieces' sizes: in
+        /// VoxelSandbox 80% of the pieces and the scraps took one chunk, 17% two, 3% four.
         /// </summary>
-        public static int3[] SpareLayouts = { new(1, 1, 1), new(1, 1, 1), new(1, 1, 1), new(1, 1, 1), new(2, 1, 1), new(1, 2, 1), new(2, 2, 1) };
+        public static int3[] SpareLayouts = { new(1, 1, 1), new(1, 1, 1), new(1, 1, 1), new(1, 1, 1), new(1, 1, 1), new(1, 2, 1), new(1, 2, 2) };
 
-        /// <summary>Box colliders each chunk of a spare is given: a piece's chunk takes up to about this many (10 cm cells).</summary>
-        public static int SpareBoxes = 64;
+        /// <summary>Box colliders each chunk of a spare is given: a Regax piece's chunk took 20 (median), 64 (p99), 77 at most (10 cm cells).</summary>
+        public static int SpareBoxes = 80;
 
         /// <summary>Bodies made and filled a frame at level load: well under the 2 ms a frame a level load may take.</summary>
         private const int PRIME_PER_FRAME = 4;
