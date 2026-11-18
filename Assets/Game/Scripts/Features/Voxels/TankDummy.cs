@@ -66,7 +66,9 @@ namespace Game
             {
                 MeshVoxelizer.Result grid = part.Grid;
                 bool hull = part.Root.name == HULL;
-                NativeArray<bool> hollow = hull ? Hollow(grid) : default;
+                // The turret is a shell of armour too (it was solid steel: bullets only chipped it).
+                bool turret = part.Root.name == "TurretVisual";
+                NativeArray<bool> hollow = hull || turret ? Hollow(grid) : default;
 
                 var go = new GameObject("Voxels") { layer = gameObject.layer };
                 go.transform.SetParent(part.Root, false);
@@ -84,10 +86,9 @@ namespace Game
                     renderer.enabled = false;
 
                 if (hull)
-                {
                     Furnish(part.Root, grid, hollow);
+                if (hollow.IsCreated)
                     hollow.Dispose();
-                }
             }
         }
 

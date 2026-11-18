@@ -213,14 +213,18 @@ namespace Game
                     if (body != null && !body.IsTerrain && body.Toughness >= _armour && b.Pierced < _pierces)
                     {
                         b.Pierced++;
-                        VoxelDamage.Impact(hit.point, b.Direction, _holeRadius, _chipForce, _debris);
+                        VoxelDamage.Punch(hit.point, b.Direction, _holeRadius, _chipForce, _debris);
                         b.Last = hit.collider;
                         step -= hit.distance;
                         start = hit.point + b.Direction * 0.01f;
                         continue;
                     }
 
-                    VoxelDamage.Impact(hit.point, b.Direction, _chipRadius, _chipForce, _debris);
+                    // Stopped by armour (or the ground): armour still gets a hole, chips flying in through it.
+                    if (body != null && !body.IsTerrain)
+                        VoxelDamage.Punch(hit.point, b.Direction, _holeRadius, _chipForce, _debris);
+                    else
+                        VoxelDamage.Impact(hit.point, b.Direction, _chipRadius, _chipForce, _debris);
                     alive = false;
                 }
 

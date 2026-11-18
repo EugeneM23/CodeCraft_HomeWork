@@ -133,6 +133,18 @@ namespace Game.Voxels
         /// <summary>
         /// A bullet chips a small bite just under the surface it struck.
         /// </summary>
+        /// <summary>
+        /// A bullet punches through a plate: the bite is centred a little in front of the surface, so its
+        /// chips are thrown away from that centre — in, along the shot, through the hole — and the hole opens
+        /// right where it struck.
+        /// </summary>
+        public static int Punch(Vector3 point, Vector3 direction, float radius, float force, int debris)
+        {
+            Vector3 along = direction.sqrMagnitude > 0.0001f ? direction.normalized : Vector3.zero;
+            // 5 cm out: tough armour shrinks the bite to about half its radius, which still reaches well through.
+            return Blast(point - along * Mathf.Min(radius * 0.3f, 0.05f), radius, force, null, true, debris);
+        }
+
         public static int Impact(Vector3 point, Vector3 direction, float radius, float force = 2.5f,
             int debris = BLAST_DEBRIS)
         {

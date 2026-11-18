@@ -13,7 +13,7 @@ namespace Game
         private const float WALL_TUNNEL_DEPTH = 0.9f;
 
         /// <summary>Radius (m) of the hole a plain bullet bores through a wall (tough walls, armour, shrink it).</summary>
-        private const float WALL_HOLE_RADIUS = 0.5f;
+        private const float WALL_HOLE_RADIUS = 0.6f;
 
         /// <summary>Most chips one bullet bite throws: a hole, not a cloud of crumbs.</summary>
         private const int BULLET_DEBRIS = 40;
@@ -22,7 +22,7 @@ namespace Game
         private const float ARMOUR_TOUGHNESS = 0.7f;
 
         /// <summary>How hard (m/s) a plain bullet's hit flings the chips it knocks out.</summary>
-        private const float CHIP_FORCE = 9f;
+        private const float CHIP_FORCE = 14f;
 
         private const int SPARKS = 0;
 
@@ -148,7 +148,7 @@ namespace Game
             Vector3 direction = _bullet.GetMoveDirection().Value;
             Vector3 along = direction.sqrMagnitude > 1e-6f ? direction.normalized : -contact.normal;
             // One round hole at the entry (three bites along the path read as three small holes).
-            VoxelDamage.Impact(contact.point, along, WALL_HOLE_RADIUS, CHIP_FORCE, BULLET_DEBRIS);
+            VoxelDamage.Punch(contact.point, along, WALL_HOLE_RADIUS, CHIP_FORCE, BULLET_DEBRIS);
             Sparks(contact.point, contact.normal);
 
             if (_own != null)
@@ -213,10 +213,24 @@ namespace Game
         }
 
         /// <summary>A bullet bites a small hole out of a voxel wall, or out of a vehicle's voxel skin.</summary>
-        private void ChipVoxels(Collision collision) =>
-            VoxelDamage.Impact(collision.GetContact(0).point, _bullet.GetMoveDirection().Value, VOXEL_CHIP_RADIUS,
-                ExplosionUseCase.IsExplosive(_bullet) ? 2.5f : CHIP_FORCE,
-                ExplosionUseCase.IsExplosive(_bullet) ? VoxelDamage.BLAST_DEBRIS : BULLET_DEBRIS);
+        private void ChipVoxels(Collision collision)
+        {
+            Vector3 point = collision.GetContact(0).point;
+            Vector3 direction = _bullet.GetMoveDirection().Value;
+            if (ExplosionUseCase.IsExplosive(_bullet))
+            {
+                VoxelDamage.Impact(point, direction, VOXEL_CHIP_RADIUS, 2.5f, VoxelDamage.BLAST_DEBRIS);
+                return;
+            }
+
+            // A plain bullet stopped by armour still punches a hole the size of the one it bores through a wall,
+            // chips flying in through it; on the ground it only chips.
+            VoxelBody body = collision.collider.GetComponentInParent<VoxelBody>();
+            if (body != null && !body.IsTerrain)
+                VoxelDamage.Punch(point, direction, WALL_HOLE_RADIUS, CHIP_FORCE, BULLET_DEBRIS);
+            else
+                VoxelDamage.Impact(point, direction, VOXEL_CHIP_RADIUS, CHIP_FORCE, BULLET_DEBRIS);
+        }
 
         /// <summary>True when the bullet flies on: it bounced off the surface, or already flies away from it.</summary>
         private bool TryRicochet(Collision collision)
