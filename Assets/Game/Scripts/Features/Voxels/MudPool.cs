@@ -57,8 +57,13 @@ namespace Game
         private static void OnSceneLoaded(UnityEngine.SceneManagement.Scene scene, UnityEngine.SceneManagement.LoadSceneMode mode) =>
             SpawnInSandbox();
 
+        /// <summary>Put aside by the user (2026-11-18): the pool is not spawned until this is turned back on.</summary>
+        private const bool ENABLED = false;
+
         private static void SpawnInSandbox()
         {
+            if (!ENABLED)
+                return;
             var start = FindFirstObjectByType<VoxelSandboxStart>();
             if (start == null || FindFirstObjectByType<MudPool>() != null)
                 return;
