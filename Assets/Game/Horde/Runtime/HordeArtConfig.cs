@@ -41,5 +41,27 @@ namespace Game.Horde
 
         [Tooltip("Mesh LOD level of the source the crowd mesh was cut from (0 = full mesh).")]
         public int meshLod;
+
+        [Header("Kinds")]
+        [Tooltip("Tint per kind row (0 Crawler, 1 Spitter...); alpha 0 or a missing row keeps the material's colour. The scale comes from the kind table.")]
+        public Color[] kindTints = { new(0f, 0f, 0f, 0f), new(0.32f, 0.3f, 0.04f, 1f) };
+
+        [Tooltip("Emission per kind row (used with its tint).")]
+        public Color[] kindEmission = { Color.black, new(0.08f, 0.12f, 0f, 1f) };
+
+        [Header("Acid")]
+        [Tooltip("Mesh of a shot in flight; empty: Unity's built-in sphere.")]
+        public Mesh acidMesh;
+
+        [Tooltip("Size of a shot, m.")]
+        public float acidSize = 0.35f;
+
+        public Color acidColor = new(0.35f, 0.9f, 0.05f, 1f);
+
+        public Color acidEmission = new(0.25f, 0.6f, 0f, 1f);
+
+        public Color TintOf(int kind) => kindTints != null && kind < kindTints.Length ? kindTints[kind] : default;
+
+        public Color EmissionOf(int kind) => kindEmission != null && kind < kindEmission.Length ? kindEmission[kind] : Color.black;
     }
 }

@@ -14,7 +14,105 @@ namespace Game.Horde
         /// <summary>At the hull, clawing it.</summary>
         Attack = 2,
         /// <summary>Killed this step; freed when the step is completed.</summary>
-        Dying = 3
+        Dying = 3,
+        /// <summary>Rising out of a burrow: stands, can be crushed and hurt, walks when its time is up.</summary>
+        Emerging = 4
+    }
+
+    /// <summary>Which states are a live monster (walking, attacking or emerging).</summary>
+    public static class HordeStates
+    {
+        public static bool IsLive(HordeState state) =>
+            state == HordeState.Walk || state == HordeState.Attack || state == HordeState.Emerging;
+    }
+
+    /// <summary>How a kind fights: at the hull, or from a distance with shots.</summary>
+    public enum HordeTactic : byte
+    {
+        /// <summary>To the tank over the flow field, claws the hull.</summary>
+        Melee = 0,
+        /// <summary>Keeps a distance band, prefers cover, shoots with line of sight, backs off when the tank closes in.</summary>
+        Ranged = 1
+    }
+
+    /// <summary>
+    /// One kind of monster (a row of the simulation's kind table): body, health, look scale and attack. Speeds in m/s,
+    /// distances in m, damage in health points (before the per-monster damage scale).
+    /// </summary>
+    public struct HordeKind
+    {
+        public float Speed;
+        /// <summary>Body radius: the hull reach and the crush box are padded by it.</summary>
+        public float Radius;
+        /// <summary>Health of a fresh monster (before the spawn's health scale).</summary>
+        public float Health;
+        /// <summary>Scale of the model (the culling sphere, the mouth height and the emerging depth follow it).</summary>
+        public float RenderScale;
+        /// <summary>The model starts this far under the ground when it emerges.</summary>
+        public float EmergeDepth;
+        public HordeTactic Tactic;
+        /// <summary>Damage per second at the hull (melee).</summary>
+        public float BiteDps;
+        /// <summary>Damage of one shot (ranged).</summary>
+        public float ShotDamage;
+        /// <summary>Seconds between shots.</summary>
+        public float ShotInterval;
+        /// <summary>Farthest shot, m (from the tank's centre).</summary>
+        public float ShotRange;
+        /// <summary>Horizontal speed of a shot, m/s (the arc's height follows from it).</summary>
+        public float ShotSpeed;
+        /// <summary>Ranged: the band it keeps from the tank's centre.</summary>
+        public float KeepMin;
+        public float KeepMax;
+        /// <summary>Ranged: closer than this it walks away from the tank.</summary>
+        public float BackOff;
+        /// <summary>The tank's hull crushes it.</summary>
+        public bool Crushable;
+
+        /// <summary>The young Regax (GDD §5): small, fast, bites.</summary>
+        public static HordeKind Crawler => new()
+        {
+            Speed = 6.5f,
+            Radius = 0.35f,
+            Health = 20f,
+            RenderScale = 0.4f,
+            EmergeDepth = 1.1f,
+            Tactic = HordeTactic.Melee,
+            BiteDps = 6f,
+            Crushable = true
+        };
+
+        /// <summary>The spitter (GDD §5): keeps 15–25 m, acid 15 every 3 s up to 20 m.</summary>
+        public static HordeKind Spitter => new()
+        {
+            Speed = 3.5f,
+            Radius = 0.5f,
+            Health = 50f,
+            RenderScale = 0.7f,
+            EmergeDepth = 1.9f,
+            Tactic = HordeTactic.Ranged,
+            ShotDamage = 15f,
+            ShotInterval = 3f,
+            ShotRange = 20f,
+            ShotSpeed = 14f,
+            KeepMin = 15f,
+            KeepMax = 25f,
+            BackOff = 10f,
+            Crushable = true
+        };
+
+        /// <summary>A melee kind with the speed, radius, health and bite of <paramref name="settings"/>.</summary>
+        public static HordeKind FromSettings(in HordeSettings settings) => new()
+        {
+            Speed = settings.Speed,
+            Radius = settings.Radius,
+            Health = settings.Health,
+            RenderScale = 1f,
+            EmergeDepth = 2.6f,
+            Tactic = HordeTactic.Melee,
+            BiteDps = settings.AttackDps,
+            Crushable = true
+        };
     }
 
     /// <summary>Why a monster died.</summary>
@@ -23,7 +121,9 @@ namespace Game.Horde
         Crushed = 1,
         Explosion = 2,
         /// <summary>Killed through <see cref="HordeSimulation.Kill"/>.</summary>
-        Killed = 3
+        Killed = 3,
+        /// <summary>Health used up by direct hits (<see cref="HordeSimulation.Damage"/>).</summary>
+        Damaged = 4
     }
 
     /// <summary>Tuning of the horde. Speeds in m/s, angles in radians, damage in health points.</summary>
@@ -59,6 +159,10 @@ namespace Game.Horde
         public float NearRadius;
         /// <summary>Walking speed the run clip was authored for: the clip plays at speed / this.</summary>
         public float RunClipSpeed;
+        /// <summary>Seconds a monster spawned with <c>emerge</c> rises out of the ground before it walks.</summary>
+        public float EmergeTime;
+        /// <summary>A grid cell this much higher than a ranged monster's own counts as cover next to it.</summary>
+        public float CoverHeight;
 
         public static HordeSettings Default => new HordeSettings
         {
@@ -76,7 +180,9 @@ namespace Game.Horde
             CrushSpeed = 1.5f,
             Health = 100f,
             NearRadius = 15f,
-            RunClipSpeed = 5f
+            RunClipSpeed = 5f,
+            EmergeTime = 1f,
+            CoverHeight = 1.5f
         };
     }
 
@@ -91,12 +197,15 @@ namespace Game.Horde
         public float3 Velocity;
     }
 
-    /// <summary>A blast: monsters within <see cref="Radius"/> take <see cref="Damage"/>, half at the edge.</summary>
+    /// <summary>A blast: monsters within <see cref="Radius"/> take <see cref="Damage"/> at the centre, falling to Damage × <see cref="MinFactor"/> at the edge.</summary>
     public struct HordeAreaDamage
     {
         public float3 Center;
         public float Radius;
         public float Damage;
+        public float MinFactor;
+        /// <summary>Knockback: monsters are shoved this far out from the centre (less toward the edge), where the grid lets them.</summary>
+        public float Push;
     }
 
     /// <summary>One death, for the game side (corpses, blood, rewards, sound).</summary>
@@ -106,13 +215,54 @@ namespace Game.Horde
         public float3 Position;
         public float Heading;
         public HordeDeathCause Cause;
+        /// <summary>Row of the kind table.</summary>
+        public byte Kind;
+    }
+
+    /// <summary>Damage to one monster, for the next step (a weapon's hit).</summary>
+    public struct HordeHit
+    {
+        public int Index;
+        public float Damage;
+    }
+
+    /// <summary>A shot a ranged monster fired this step: from the mouth toward the hull's centre.</summary>
+    public struct HordeShot
+    {
+        public float3 Origin;
+        public float3 Target;
+        public float Damage;
+        public float Speed;
+    }
+
+    /// <summary>A shot in flight (ballistic).</summary>
+    public struct HordeProjectile
+    {
+        public float3 Position;
+        public float3 Velocity;
+        public float Damage;
+        public float Age;
+    }
+
+    public enum HordeShotEventType : byte
+    {
+        Fired = 0,
+        HitTank = 1,
+        HitGround = 2
+    }
+
+    /// <summary>What happened to the shots in a step (sound, splashes).</summary>
+    public struct HordeShotEvent
+    {
+        public float3 Position;
+        public HordeShotEventType Type;
     }
 
     /// <summary>
     /// Per-instance data of the crowd draw (32 bytes; the shader's <c>HordeInstance</c>).
     /// <c>PositionHeading</c>: feet position and yaw (0 faces +Z).
-    /// <c>Animation</c>: VAT rows of the two frames to blend, the blend, and a free slot
-    /// (the corpse birth time for corpses).
+    /// <c>Animation</c>: VAT rows of the two frames to blend, the blend, and the kind (not read by the shader);
+    /// for corpses the birth time.
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     public struct HordeInstance

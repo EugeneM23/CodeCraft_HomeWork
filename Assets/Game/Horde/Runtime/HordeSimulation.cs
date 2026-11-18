@@ -8,15 +8,18 @@ using UnityEngine;
 namespace Game.Horde
 {
     /// <summary>
-    /// The crowd: a fixed number of monster slots in <see cref="NativeArray{T}"/>s (position, velocity,
-    /// heading, health, state, animation time, speed jitter) with a free list, and the frame step as a
-    /// chain of Burst jobs: spatial hash, steering over the <see cref="HordeFlowField"/>, contacts
-    /// with the tank and blasts, totals, and render prep (frustum cull into <see cref="Visible"/>).
+    /// The crowd: a fixed number of monster slots in <see cref="NativeArray{T}"/>s (position, velocity, heading, health,
+    /// state, kind, animation time, speed jitter, damage scale, emerge and shot timers) with a free list, a kind table
+    /// (<see cref="HordeKind"/>, up to <see cref="MAX_KINDS"/> rows), the ranged monsters' shots in flight, and the frame
+    /// step as a chain of Burst jobs: spatial hash, steering over the <see cref="HordeFlowField"/>, contacts with the
+    /// tank, blasts and hits, shots, totals, and render prep (frustum cull, sorted by kind into <see cref="Visible"/>).
     /// <para>
-    /// Frame contract: <see cref="Schedule"/> in the frame, <see cref="Complete"/> at the start of the
-    /// next (it frees the dead into <see cref="Deaths"/>). Everything else (spawn, kill, reads) only
-    /// while no step runs. The grid heights and the flow field's readable buffer are read by the step,
-    /// so the owner completes the step before it updates the grid or swaps the flow field.
+    /// Frame contract: <see cref="Schedule"/> in the frame, <see cref="Complete"/> at the start of the next (it frees the
+    /// dead into <see cref="Deaths"/>). Spawn, kill and clear only while no step runs. Damage (<see cref="Damage"/>,
+    /// <see cref="AddAreaDamage"/>) may be queued at any time: it lands in the next step. The query side
+    /// (<see cref="IsTargetAlive"/>, <see cref="GetTargetPosition"/>, <see cref="Version"/>...) reads a snapshot taken at
+    /// <see cref="Complete"/>, valid while a step runs. The grid heights and the flow field's readable buffer are read by
+    /// the step, so the owner completes the step before it updates the grid or swaps the flow field.
     /// </para>
     /// No managed allocations after construction.
     /// </summary>
@@ -26,21 +29,36 @@ namespace Game.Horde
         public const float MAX_DELTA_TIME = 0.05f;
         /// <summary>Spatial hash cell, metres: not below <see cref="HordeSettings.SeparationRadius"/>, so one ring of cells holds every neighbour (a bigger radius scans more rings).</summary>
         public const float HASH_CELL = 1.5f;
+        /// <summary>Rows of the kind table.</summary>
+        public const int MAX_KINDS = 4;
+        /// <summary>Shots in flight at most (more are dropped).</summary>
+        public const int MAX_PROJECTILES = 256;
+        /// <summary>A shot hits the hull box padded by this, m.</summary>
+        public const float SHOT_HIT_PAD = 0.15f;
 
         private const int BATCH = 128;
         private const int MAX_AREAS = 64;
+        private const int MAX_HITS = 512;
+        private const int MAX_COVER = 128;
+        /// <summary>Height of the cull sphere's centre over the feet and its radius at render scale 1 (the Regax model).</summary>
+        private static readonly float2 CullSphere = new(1.3f, 1.8f);
 
         private static readonly ProfilerMarker SimulateMarker = new("Horde.Simulate");
         private static readonly ProfilerMarker CompleteMarker = new("Horde.Complete");
         private static readonly ProfilerMarker HashMarker = new("Horde.Job.Hash");
         private static readonly ProfilerMarker SteerMarker = new("Horde.Job.Steer");
         private static readonly ProfilerMarker ContactMarker = new("Horde.Job.Contact");
+        private static readonly ProfilerMarker ShotsMarker = new("Horde.Job.Shots");
         private static readonly ProfilerMarker RenderMarker = new("Horde.Job.Render");
 
         private readonly HordeNavGrid _grid;
         private readonly HordeFlowField _flow;
         private readonly int2 _hashSize;
         private readonly float2 _hashOrigin;
+        private readonly HordeKind[] _kindTable = new HordeKind[MAX_KINDS];
+        private readonly bool[] _kindSet = new bool[MAX_KINDS];
+        private readonly int[] _visibleStart = new int[MAX_KINDS];
+        private readonly int[] _visibleCount = new int[MAX_KINDS];
 
         private NativeArray<float3> _position;
         private NativeArray<float3> _nextPosition;
@@ -51,6 +69,11 @@ namespace Game.Horde
         private NativeArray<float> _animTime;
         private NativeArray<float> _speedScale;
         private NativeArray<float> _attackDamage;
+        private NativeArray<byte> _kind;
+        private NativeArray<float> _damageScale;
+        private NativeArray<float> _stateTime;
+        private NativeArray<float> _cooldown;
+        private NativeArray<HordeKind> _kinds;
         private NativeArray<int> _free;
         private NativeArray<int> _cellStart;
         private NativeArray<int> _cursor;
@@ -60,9 +83,25 @@ namespace Game.Horde
         private NativeArray<float4> _planes;
         private NativeList<HordeAreaDamage> _areas;
         private NativeList<HordeAreaDamage> _areasRunning;
+        private NativeList<HordeHit> _hits;
         private NativeQueue<HordeDeathEvent> _deathQueue;
         private NativeList<HordeDeathEvent> _deaths;
+        private NativeList<HordeInstance> _visibleAll;
         private NativeList<HordeInstance> _visible;
+        private NativeArray<int> _kindStarts;
+        private NativeArray<int> _kindCounts;
+        private NativeQueue<HordeShot> _shotQueue;
+        private NativeArray<HordeProjectile> _projectiles;
+        private NativeArray<int> _projectileCount;
+        private NativeList<HordeInstance> _shotInstances;
+        private NativeList<HordeShotEvent> _shotEvents;
+        private NativeList<float3> _cover;
+
+        // Snapshot for queries while a step runs (main thread only).
+        private NativeArray<float3> _snapPosition;
+        private NativeArray<bool> _snapLive;
+        private NativeArray<int> _version;
+        private int _highWater;
 
         private Unity.Mathematics.Random _random;
         private JobHandle _handle;
@@ -71,8 +110,11 @@ namespace Game.Horde
         private int _freeCount;
         private int _alive;
         private float _stepDamage;
+        private float _stepShotDamage;
         private int _near;
-        private int _visibleCount;
+        private int _biters;
+        private float3 _biterPosition;
+        private int _visibleTotal;
         private HordeClip _runClip;
         private HordeClip _attackClip;
         private HordeClip _idleClip;
@@ -100,18 +142,36 @@ namespace Game.Horde
             _animTime = new NativeArray<float>(capacity, Allocator.Persistent);
             _speedScale = new NativeArray<float>(capacity, Allocator.Persistent);
             _attackDamage = new NativeArray<float>(capacity, Allocator.Persistent);
+            _kind = new NativeArray<byte>(capacity, Allocator.Persistent);
+            _damageScale = new NativeArray<float>(capacity, Allocator.Persistent);
+            _stateTime = new NativeArray<float>(capacity, Allocator.Persistent);
+            _cooldown = new NativeArray<float>(capacity, Allocator.Persistent);
+            _kinds = new NativeArray<HordeKind>(MAX_KINDS, Allocator.Persistent);
             _free = new NativeArray<int>(capacity, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
             _cellStart = new NativeArray<int>(hashCells + 1, Allocator.Persistent);
             _cursor = new NativeArray<int>(hashCells, Allocator.Persistent);
             _cellIndex = new NativeArray<int>(capacity, Allocator.Persistent);
             _sorted = new NativeArray<int>(capacity, Allocator.Persistent);
-            _totals = new NativeArray<float>(2, Allocator.Persistent);
+            _totals = new NativeArray<float>(8, Allocator.Persistent);
             _planes = new NativeArray<float4>(6, Allocator.Persistent);
             _areas = new NativeList<HordeAreaDamage>(8, Allocator.Persistent);
             _areasRunning = new NativeList<HordeAreaDamage>(8, Allocator.Persistent);
+            _hits = new NativeList<HordeHit>(64, Allocator.Persistent);
             _deathQueue = new NativeQueue<HordeDeathEvent>(Allocator.Persistent);
             _deaths = new NativeList<HordeDeathEvent>(64, Allocator.Persistent);
+            _visibleAll = new NativeList<HordeInstance>(capacity, Allocator.Persistent);
             _visible = new NativeList<HordeInstance>(capacity, Allocator.Persistent);
+            _kindStarts = new NativeArray<int>(MAX_KINDS, Allocator.Persistent);
+            _kindCounts = new NativeArray<int>(MAX_KINDS, Allocator.Persistent);
+            _shotQueue = new NativeQueue<HordeShot>(Allocator.Persistent);
+            _projectiles = new NativeArray<HordeProjectile>(MAX_PROJECTILES, Allocator.Persistent);
+            _projectileCount = new NativeArray<int>(1, Allocator.Persistent);
+            _shotInstances = new NativeList<HordeInstance>(MAX_PROJECTILES, Allocator.Persistent);
+            _shotEvents = new NativeList<HordeShotEvent>(MAX_PROJECTILES * 2, Allocator.Persistent);
+            _cover = new NativeList<float3>(MAX_COVER, Allocator.Persistent);
+            _snapPosition = new NativeArray<float3>(capacity, Allocator.Persistent);
+            _snapLive = new NativeArray<bool>(capacity, Allocator.Persistent);
+            _version = new NativeArray<int>(capacity, Allocator.Persistent);
 
             // Slot 0 comes out first.
             for (int i = 0; i < capacity; i++)
@@ -126,17 +186,25 @@ namespace Game.Horde
 
         public int Capacity { get; }
 
-        /// <summary>Monsters walking or attacking (the dying of a running step included).</summary>
+        /// <summary>Monsters walking, attacking or emerging (the dying of a running step included).</summary>
         public int AliveCount => _alive;
 
         /// <summary>A step is on the workers.</summary>
         public bool IsRunning => _running;
 
-        /// <summary>Damage the attacking monsters dealt in the last completed step.</summary>
+        /// <summary>Damage the monsters dealt to the tank in the last completed step: bites and shots.</summary>
         public float StepDamage => _stepDamage;
+
+        /// <summary>Of <see cref="StepDamage"/>, what the shots dealt.</summary>
+        public float StepShotDamage => _stepShotDamage;
 
         /// <summary>Live monsters within <see cref="HordeSettings.NearRadius"/> of the tank in the last completed step.</summary>
         public int NearCount => _near;
+
+        /// <summary>Monsters that bit the hull in the last completed step, and where the one nearest the hull's centre stands.</summary>
+        public int BiterCount => _biters;
+
+        public float3 BiterPosition => _biterPosition;
 
         /// <summary>
         /// Deaths of the completed steps and of <see cref="Kill"/>, oldest first. The owner reads them
@@ -144,11 +212,29 @@ namespace Game.Horde
         /// </summary>
         public NativeArray<HordeDeathEvent> Deaths => _deaths.AsArray();
 
-        /// <summary>Instances of the monsters the last completed step saw in the frustum (until the next <see cref="Schedule"/>).</summary>
+        /// <summary>
+        /// Instances of the monsters the last completed step saw in the frustum, sorted by kind (see
+        /// <see cref="GetVisibleRange"/>), until the next <see cref="Schedule"/>.
+        /// </summary>
         public NativeArray<HordeInstance> Visible => _visible.AsArray();
 
         /// <summary>Length of <see cref="Visible"/> after the last completed step (readable while a step runs).</summary>
-        public int VisibleCount => _visibleCount;
+        public int VisibleCount => _visibleTotal;
+
+        /// <summary>Shots in flight after the last completed step (instances: position and yaw), until the next <see cref="Schedule"/>.</summary>
+        public NativeArray<HordeInstance> ShotInstances => _shotInstances.AsArray();
+
+        /// <summary>Shots fired and ended in the last completed step.</summary>
+        public NativeArray<HordeShotEvent> ShotEvents => _shotEvents.AsArray();
+
+        public int ProjectileCount => _shotInstances.Length;
+
+        /// <summary>The slice of <see cref="Visible"/> holding kind <paramref name="kind"/>.</summary>
+        public void GetVisibleRange(int kind, out int start, out int count)
+        {
+            start = _visibleStart[kind];
+            count = _visibleCount[kind];
+        }
 
         public void ClearDeaths() => _deaths.Clear();
 
@@ -159,6 +245,31 @@ namespace Game.Horde
             _attackClip = attack;
             _idleClip = idle;
         }
+
+        /// <summary>Sets row <paramref name="index"/> of the kind table. A row never set follows <see cref="Settings"/> (<see cref="HordeKind.FromSettings"/>).</summary>
+        public void SetKind(int index, in HordeKind kind)
+        {
+            _kindTable[index] = kind;
+            _kindSet[index] = true;
+        }
+
+        /// <summary>
+        /// Cover spots of the arena (on the ground): a ranged monster walks to one in its band with the hull in sight
+        /// rather than search the grid. Null or empty: none. At most <see cref="MAX_COVER"/> are kept.
+        /// </summary>
+        public void SetCoverPoints(System.Collections.Generic.IReadOnlyList<Vector3> points)
+        {
+            ThrowIfRunning();
+            _cover.Clear();
+            if (points == null)
+                return;
+            for (int i = 0; i < points.Count && _cover.Length < MAX_COVER; i++)
+                _cover.Add(points[i]);
+        }
+
+        public int CoverCount => _cover.Length;
+
+        public HordeKind GetKind(int index) => _kindSet[index] ? _kindTable[index] : HordeKind.FromSettings(Settings);
 
         /// <summary>Frustum planes (Unity's <c>GeometryUtility.CalculateFrustumPlanes</c> order and sign) for the cull; null turns culling off.</summary>
         public void SetCullingPlanes(Plane[] planes)
@@ -184,27 +295,40 @@ namespace Game.Horde
 
         public float GetHeading(int index) => _heading[index];
 
+        public int GetKindOf(int index) => _kind[index];
+
         /// <summary>
-        /// A new monster at <paramref name="position"/> (the feet), facing <paramref name="heading"/>
-        /// (radians, 0 faces +Z). Returns its slot, or -1 when the horde is full.
+        /// A new monster of row <paramref name="kind"/> at <paramref name="position"/> (the feet), facing
+        /// <paramref name="heading"/> (radians, 0 faces +Z), with its kind's health × <paramref name="healthScale"/> and
+        /// damage × <paramref name="damageScale"/>. <paramref name="emerge"/>: it rises out of the ground for
+        /// <see cref="HordeSettings.EmergeTime"/> s first. Returns its slot, or -1 when the horde is full.
         /// </summary>
-        public int Spawn(float3 position, float heading)
+        public int Spawn(float3 position, float heading, int kind = 0, float healthScale = 1f, float damageScale = 1f, bool emerge = false)
         {
             ThrowIfRunning();
             if (_freeCount == 0)
                 return -1;
 
+            kind = math.clamp(kind, 0, MAX_KINDS - 1);
+            HordeKind row = GetKind(kind);
             int i = _free[--_freeCount];
             HordeSettings s = Settings;
             _position[i] = position;
             _nextPosition[i] = position;
             _velocity[i] = float2.zero;
             _heading[i] = heading;
-            _health[i] = s.Health;
-            _state[i] = HordeState.Walk;
+            _health[i] = row.Health * healthScale;
+            _state[i] = emerge ? HordeState.Emerging : HordeState.Walk;
+            _stateTime[i] = emerge ? s.EmergeTime : 0f;
+            _kind[i] = (byte)kind;
+            _damageScale[i] = damageScale;
+            _cooldown[i] = row.ShotInterval * _random.NextFloat(0.3f, 1f);
             _animTime[i] = _random.NextFloat(0f, 10f);
             _speedScale[i] = 1f + _random.NextFloat(-s.SpeedJitter, s.SpeedJitter);
             _attackDamage[i] = 0f;
+            _snapPosition[i] = position;
+            _snapLive[i] = true;
+            _highWater = math.max(_highWater, i + 1);
             _alive++;
             return i;
         }
@@ -213,37 +337,94 @@ namespace Game.Horde
         public bool Kill(int index)
         {
             ThrowIfRunning();
-            HordeState s = _state[index];
-            if (s != HordeState.Walk && s != HordeState.Attack)
+            if (!HordeStates.IsLive(_state[index]))
                 return false;
             _deaths.Add(new HordeDeathEvent
             {
-                Index = index, Position = _position[index], Heading = _heading[index], Cause = HordeDeathCause.Killed
+                Index = index, Position = _position[index], Heading = _heading[index], Cause = HordeDeathCause.Killed,
+                Kind = _kind[index]
             });
             Release(index);
             return true;
         }
 
-        /// <summary>Frees every slot without death events.</summary>
+        /// <summary>Frees every slot and every shot in flight, without death events.</summary>
         public void Clear()
         {
             ThrowIfRunning();
             for (int i = 0; i < Capacity; i++)
+            {
+                if (_state[i] != HordeState.Free)
+                    _version[i]++;
                 _state[i] = HordeState.Free;
+                _snapLive[i] = false;
+            }
+
             for (int i = 0; i < Capacity; i++)
                 _free[i] = Capacity - 1 - i;
             _freeCount = Capacity;
             _alive = 0;
+            _highWater = 0;
             _visible.Clear();
-            _visibleCount = 0;
+            _visibleAll.Clear();
+            _visibleTotal = 0;
+            for (int k = 0; k < MAX_KINDS; k++)
+                _visibleStart[k] = _visibleCount[k] = 0;
+            _projectileCount[0] = 0;
+            _shotInstances.Clear();
+            _shotEvents.Clear();
+            _shotQueue.Clear();
+            _hits.Clear();
+            _areas.Clear();
+            _deaths.Clear();
         }
 
-        /// <summary>A blast for the next step: live monsters in the sphere take damage (full at the centre, half at the edge).</summary>
-        public void AddAreaDamage(float3 center, float radius, float damage)
+        /// <summary>
+        /// A blast for the next step: live monsters whose body reaches into the sphere take
+        /// <paramref name="damage"/> at the centre, falling to damage × <paramref name="minFactor"/> at the edge.
+        /// </summary>
+        public void AddAreaDamage(float3 center, float radius, float damage, float minFactor = 0.5f)
         {
             if (_areas.Length >= MAX_AREAS || radius <= 0f || damage <= 0f)
                 return;
-            _areas.Add(new HordeAreaDamage { Center = center, Radius = radius, Damage = damage });
+            _areas.Add(new HordeAreaDamage { Center = center, Radius = radius, Damage = damage, MinFactor = minFactor });
+        }
+
+        /// <summary>A shove for the next step: live monsters in the sphere move up to <paramref name="push"/> m out from its centre (no damage).</summary>
+        public void AddKnockback(float3 center, float radius, float push)
+        {
+            if (_areas.Length >= MAX_AREAS || radius <= 0f || push <= 0f)
+                return;
+            _areas.Add(new HordeAreaDamage { Center = center, Radius = radius, MinFactor = 1f, Push = push });
+        }
+
+        // ------------------------------------------------------------------ queries (snapshot)
+
+        /// <summary>Highest slot ever used + 1: the queries scan slots below it.</summary>
+        public int HighWater => _highWater;
+
+        /// <summary>Generation of a slot: bumped whenever its monster dies or is cleared, so an old (index, version) goes stale.</summary>
+        public int Version(int index) => _version[index];
+
+        /// <summary>The slot holds a live monster of this generation (as of the last completed step).</summary>
+        public bool IsTargetAlive(int index, int version) =>
+            index >= 0 && index < Capacity && _snapLive[index] && _version[index] == version;
+
+        /// <summary>Feet position of a slot as of the last completed step.</summary>
+        public float3 GetTargetPosition(int index) => _snapPosition[index];
+
+        /// <summary>Live as of the last completed step (no generation check).</summary>
+        public bool IsSlotLive(int index) => _snapLive[index];
+
+        /// <summary>
+        /// Direct damage to one monster, landing in the next step (a death of <see cref="HordeDeathCause.Damaged"/>
+        /// when its health runs out). Ignored when the slot's generation is no longer <paramref name="version"/>.
+        /// </summary>
+        public void Damage(int index, int version, float damage)
+        {
+            if (damage <= 0f || !IsTargetAlive(index, version) || _hits.Length >= MAX_HITS)
+                return;
+            _hits.Add(new HordeHit { Index = index, Damage = damage });
         }
 
         // ------------------------------------------------------------------ step
@@ -259,9 +440,19 @@ namespace Game.Horde
             {
                 float dt = math.clamp(deltaTime, 0f, MAX_DELTA_TIME);
                 HordeSettings settings = Settings;
-                _visible.Clear();
+                _visibleAll.Clear();
                 (_areas, _areasRunning) = (_areasRunning, _areas);
                 _areas.Clear();
+                for (int k = 0; k < MAX_KINDS; k++)
+                    _kinds[k] = GetKind(k);
+                for (int h = 0; h < _hits.Length; h++)
+                {
+                    HordeHit hit = _hits[h];
+                    if (HordeStates.IsLive(_state[hit.Index]))
+                        _health[hit.Index] -= hit.Damage;
+                }
+
+                _hits.Clear();
 
                 var grid = new HordeGridView
                 {
@@ -289,9 +480,12 @@ namespace Game.Horde
 
                 JobHandle steer = new HordeSteerJob
                 {
+                    Cover = _cover.AsArray(),
                     Position = _position,
                     State = _state,
                     SpeedScale = _speedScale,
+                    Kind = _kind,
+                    Kinds = _kinds,
                     CellStart = _cellStart,
                     Sorted = _sorted,
                     NextPosition = _nextPosition,
@@ -313,16 +507,37 @@ namespace Game.Horde
                     Position = _nextPosition,
                     State = _state,
                     Health = _health,
+                    StateTime = _stateTime,
+                    Cooldown = _cooldown,
                     AttackDamage = _attackDamage,
                     Heading = _heading,
+                    Kind = _kind,
+                    DamageScale = _damageScale,
+                    Kinds = _kinds,
                     Areas = _areasRunning.AsArray(),
                     Deaths = _deathQueue.AsParallelWriter(),
+                    Shots = _shotQueue.AsParallelWriter(),
                     Grid = grid,
                     Settings = settings,
                     Tank = tank,
                     DeltaTime = dt,
                     Marker = ContactMarker
                 }.ScheduleBatch(Capacity, BATCH, steer);
+
+                JobHandle shots = new HordeProjectileJob
+                {
+                    Projectiles = _projectiles,
+                    Count = _projectileCount,
+                    Fired = _shotQueue,
+                    Instances = _shotInstances,
+                    Events = _shotEvents,
+                    Totals = _totals,
+                    Grid = grid,
+                    Tank = tank,
+                    HitPad = SHOT_HIT_PAD,
+                    DeltaTime = dt,
+                    Marker = ShotsMarker
+                }.Schedule(contact);
 
                 JobHandle totals = new HordeTotalsJob
                 {
@@ -332,7 +547,7 @@ namespace Game.Horde
                     Totals = _totals,
                     Tank = tank,
                     NearRadius = settings.NearRadius
-                }.Schedule(contact);
+                }.Schedule(shots);
 
                 JobHandle render = new HordeRenderJob
                 {
@@ -341,17 +556,29 @@ namespace Game.Horde
                     Heading = _heading,
                     AnimTime = _animTime,
                     Velocity = _velocity,
+                    StateTime = _stateTime,
+                    Kind = _kind,
+                    Kinds = _kinds,
                     Planes = _planes,
-                    Instances = _visible.AsParallelWriter(),
+                    Instances = _visibleAll.AsParallelWriter(),
                     Run = _runClip,
                     Attack = _attackClip,
                     Idle = _idleClip,
                     Cull = _cull,
-                    CullSphere = new float2(1f, 1.6f),
+                    EmergeTime = settings.EmergeTime,
+                    CullSphere = CullSphere,
                     Marker = RenderMarker
                 }.ScheduleBatch(Capacity, BATCH, contact);
 
-                _handle = JobHandle.CombineDependencies(totals, render);
+                JobHandle partition = new HordePartitionJob
+                {
+                    Unsorted = _visibleAll,
+                    Sorted = _visible,
+                    Starts = _kindStarts,
+                    Counts = _kindCounts
+                }.Schedule(render);
+
+                _handle = JobHandle.CombineDependencies(totals, partition);
                 JobHandle.ScheduleBatchedJobs();
                 _running = true;
                 return _handle;
@@ -369,9 +596,18 @@ namespace Game.Horde
                 _handle.Complete();
                 _running = false;
                 (_position, _nextPosition) = (_nextPosition, _position);
-                _stepDamage = _totals[0];
+                _stepShotDamage = _totals[2];
+                _stepDamage = _totals[0] + _stepShotDamage;
                 _near = (int)_totals[1];
-                _visibleCount = _visible.Length;
+                _biters = (int)_totals[3];
+                _biterPosition = new float3(_totals[4], _totals[5], _totals[6]);
+                _visibleTotal = _visible.Length;
+                for (int k = 0; k < MAX_KINDS; k++)
+                {
+                    _visibleStart[k] = _kindStarts[k];
+                    _visibleCount[k] = _kindCounts[k];
+                }
+
                 _areasRunning.Clear();
 
                 while (_deathQueue.TryDequeue(out HordeDeathEvent death))
@@ -380,6 +616,8 @@ namespace Game.Horde
                     Release(death.Index);
                 }
 
+                if (_highWater > 0)
+                    NativeArray<float3>.Copy(_position, _snapPosition, _highWater);
                 return true;
             }
         }
@@ -397,6 +635,11 @@ namespace Game.Horde
             if (_animTime.IsCreated) _animTime.Dispose();
             if (_speedScale.IsCreated) _speedScale.Dispose();
             if (_attackDamage.IsCreated) _attackDamage.Dispose();
+            if (_kind.IsCreated) _kind.Dispose();
+            if (_damageScale.IsCreated) _damageScale.Dispose();
+            if (_stateTime.IsCreated) _stateTime.Dispose();
+            if (_cooldown.IsCreated) _cooldown.Dispose();
+            if (_kinds.IsCreated) _kinds.Dispose();
             if (_free.IsCreated) _free.Dispose();
             if (_cellStart.IsCreated) _cellStart.Dispose();
             if (_cursor.IsCreated) _cursor.Dispose();
@@ -406,15 +649,30 @@ namespace Game.Horde
             if (_planes.IsCreated) _planes.Dispose();
             if (_areas.IsCreated) _areas.Dispose();
             if (_areasRunning.IsCreated) _areasRunning.Dispose();
+            if (_hits.IsCreated) _hits.Dispose();
             if (_deathQueue.IsCreated) _deathQueue.Dispose();
             if (_deaths.IsCreated) _deaths.Dispose();
+            if (_visibleAll.IsCreated) _visibleAll.Dispose();
             if (_visible.IsCreated) _visible.Dispose();
+            if (_kindStarts.IsCreated) _kindStarts.Dispose();
+            if (_kindCounts.IsCreated) _kindCounts.Dispose();
+            if (_shotQueue.IsCreated) _shotQueue.Dispose();
+            if (_projectiles.IsCreated) _projectiles.Dispose();
+            if (_projectileCount.IsCreated) _projectileCount.Dispose();
+            if (_shotInstances.IsCreated) _shotInstances.Dispose();
+            if (_shotEvents.IsCreated) _shotEvents.Dispose();
+            if (_cover.IsCreated) _cover.Dispose();
+            if (_snapPosition.IsCreated) _snapPosition.Dispose();
+            if (_snapLive.IsCreated) _snapLive.Dispose();
+            if (_version.IsCreated) _version.Dispose();
         }
 
         private void Release(int index)
         {
             _state[index] = HordeState.Free;
             _velocity[index] = float2.zero;
+            _snapLive[index] = false;
+            _version[index]++;
             _free[_freeCount++] = index;
             _alive--;
         }
