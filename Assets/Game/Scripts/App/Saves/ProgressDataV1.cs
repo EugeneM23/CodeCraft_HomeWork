@@ -5,12 +5,11 @@ using Newtonsoft.Json.Linq;
 namespace Game
 {
     /// <summary>
-    /// The "progress" save section. Everything is keyed by string ids from the game's configs; no design numbers here.
-    /// The section version lives in the save file (ProgressSerializer). <see cref="extensions"/> holds the teams' own
-    /// data, each under its key as a JSON value.
+    /// The "progress" section as version 1 wrote it (the old PlayerProgress), kept only to read old saves:
+    /// <see cref="ProgressMigration"/> turns it into a <see cref="SaveData"/>. Do not write it any more.
     /// </summary>
     [Serializable]
-    public sealed class ProgressData
+    public sealed class ProgressDataV1
     {
         public Dictionary<string, int> currencies = new();
         public Dictionary<string, int> modules = new();             // module id -> level, 1 and up when bought
