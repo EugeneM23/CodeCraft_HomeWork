@@ -67,6 +67,9 @@ namespace Game.EditorTools
             disc.transform.SetParent(table, false);
             disc.transform.localPosition = new Vector3(0f, 0.15f, 0f);
             disc.transform.localScale = new Vector3(8f, 0.15f, 8f);
+            // A cylinder's capsule collider cannot be flat: scaled it became a 4 m ball over the tank and caught every shot.
+            Object.DestroyImmediate(disc.GetComponent<Collider>());
+            disc.AddComponent<BoxCollider>();
             var dark = new Material(Shader.Find("Universal Render Pipeline/Lit")) { color = new Color(0.22f, 0.22f, 0.23f) };
             AssetDatabase.CreateAsset(dark, "Assets/Game/Scenes/Labs/LabTable.mat");
             disc.GetComponent<Renderer>().sharedMaterial = dark;
