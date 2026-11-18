@@ -1,5 +1,4 @@
 using Atomic.Entities;
-using Game.Arenas;
 
 namespace Game
 {

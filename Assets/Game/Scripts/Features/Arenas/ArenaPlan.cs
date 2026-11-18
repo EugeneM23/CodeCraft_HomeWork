@@ -2,62 +2,8 @@ using System.Collections.Generic;
 using Game.Voxels;
 using UnityEngine;
 
-namespace Game.Arenas
+namespace Game
 {
-    /// <summary>A house to build: a <see cref="VoxelStructure"/> standing on a flat pad.</summary>
-    public struct HousePlan
-    {
-        public VoxelStructure.Shape Shape;
-
-        /// <summary>Grid size in voxels (X width, Y height, Z depth); the front faces -Z, toward the entry.</summary>
-        public Vector3Int Size;
-
-        /// <summary>Middle of the footprint, on the ground (world).</summary>
-        public Vector3 Position;
-
-        public int Seed;
-
-        /// <summary>The footprint on the ground (world X/Z), for spacing and burrows.</summary>
-        public Rect Footprint;
-    }
-
-    /// <summary>A tree: a <see cref="VoxelStructure"/> of shape Tree.</summary>
-    public struct TreePlan
-    {
-        public Vector3 Position;
-        public Vector3Int Size;
-        public int Seed;
-
-        /// <summary>Outside the playable square: scenery round the edge.</summary>
-        public bool Outside;
-    }
-
-    /// <summary>A straight run of wooden fence along X or Z.</summary>
-    public struct FencePlan
-    {
-        /// <summary>One end of the run, on the ground (world).</summary>
-        public Vector3 Start;
-
-        /// <summary>Length (m) along +X, or along +Z when <see cref="AlongZ"/>.</summary>
-        public float Length;
-
-        public bool AlongZ;
-        public int Seed;
-    }
-
-    /// <summary>The gate: a wall across a gap in the far edge, and the way out behind it.</summary>
-    public struct GatePlan
-    {
-        /// <summary>Middle of the wall's footprint, on the ground (world).</summary>
-        public Vector3 Position;
-
-        /// <summary>Wall grid size in voxels, along X.</summary>
-        public Vector3Int Size;
-
-        /// <summary>Where the tank counts as gone through: a little past the wall, outside the arena.</summary>
-        public Vector3 Exit;
-    }
-
     /// <summary>
     /// Everything one arena is made of, worked out from its definition and the run's seed by
     /// <see cref="ArenaPlanner"/>. Positions are in the world: the arena's middle is moved about
