@@ -195,22 +195,6 @@ namespace Game.AIKit.Adapters
             }
         }
 
-        void IArenaReinforcements.Summon(AIEnemyKind kind, int count, Vector3 near)
-        {
-            switch (kind)
-            {
-                case AIEnemyKind.Crawler:
-                    Summon(EnemyKind.Crawler, count, near);
-                    break;
-                case AIEnemyKind.Spitter:
-                    Summon(EnemyKind.Spitter, count, near);
-                    break;
-                case AIEnemyKind.Exploder:
-                    Summon(EnemyKind.Exploder, count, near);
-                    break;
-            }
-        }
-
         public void Tick(IEntity entity, float deltaTime)
         {
             using (TickMarker.Auto())

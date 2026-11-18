@@ -232,7 +232,7 @@ namespace Game.AIKit.Adapters.Tests
 
             var near = new Vector3(20f, 0f, 20f);
             IArenaReinforcements door = _level.GetArenaReinforcements();
-            door.Summon(AIEnemyKind.Crawler, 5, near);
+            door.Summon(EnemyKind.Crawler, 5, near);
             Run(3f);
 
             Assert.AreEqual(7, _horde.Alive, "summoned over the limit");
