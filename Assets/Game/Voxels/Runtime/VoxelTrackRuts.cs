@@ -192,6 +192,7 @@ namespace Game.Voxels
 
         public void VoxelLateUpdate(float deltaTime)
         {
+            using var marker = RutsMarker.Auto();
             // As soon as the skin exists (one flag check after that).
             ReserveStains();
             Vector3 velocity = _body.linearVelocity;
@@ -424,11 +425,13 @@ namespace Game.Voxels
             }
         }
 
+        private static readonly Unity.Profiling.ProfilerMarker RutsMarker = new("Voxels.Ruts");
+
         private bool _stainsReserved;
 
         /// <summary>
-        /// The skin's stain buffers (VoxelBody.ReserveStains), made once the skin is built — at the start,
-        /// before a fight — not in the frame of the first splash (24 KB of garbage there).
+        /// The skin's stain buffers (VoxelBody.ReserveStains) and the running gear (FindRunningGear),
+        /// made once the skin is built — at the start, before a fight — not in the frame of the first mud.
         /// </summary>
         private void ReserveStains()
         {
@@ -439,6 +442,11 @@ namespace Game.Voxels
             for (int i = 0; i < bodies.Count; i++)
                 if (bodies[i] != null)
                     bodies[i].ReserveStains();
+
+            // The running gear and its colour block too: found at the first mud they were ~24 KB of
+            // garbage in that frame (every renderer of the tank, a name string for each).
+            _block ??= new MaterialPropertyBlock();
+            FindRunningGear();
         }
 
         /// <summary>Mud splashed onto the lower hull and the wheels.</summary>
