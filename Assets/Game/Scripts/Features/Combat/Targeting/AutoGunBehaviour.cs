@@ -83,7 +83,9 @@ namespace Game
                 _tracker.Range = _range.Value;
 
             Vector3 from = _rig != null ? _rig.Pivot.position : _firePoint.position;
-            if (!_tracker.TryGetAimPoint(from, deltaTime, out Vector3 aim))
+            // No auto fire (the user's call): the gun shoots only while the right button is held, where the cannon
+            // aims (CombatFocus); otherwise it rests facing forward.
+            if (!CombatFocus.Active || !_tracker.TryGetAimPoint(from, deltaTime, out Vector3 aim))
             {
                 _rig?.Rest(deltaTime, _yawSpeed, _pitchSpeed);
                 return;

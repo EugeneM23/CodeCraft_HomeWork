@@ -11533,7 +11533,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _moveSpeed: 6
   _turnSpeed: 78
-  _acceleration: 6
+  _acceleration: 3
   _braking: 12
   _turnAcceleration: 360
   _pitchLean: 2
