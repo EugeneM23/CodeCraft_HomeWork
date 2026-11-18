@@ -24,7 +24,9 @@ namespace Game
 
         string SelectedTankId { get; }
 
-        /// <summary>The six slot ids in the hangar's order: gun, machine gun, armor, engine, tracks, special.</summary>
+        /// <summary>
+        /// The six slot ids in the hangar's order, ModuleSlot names: Gun, MachineGun, Armor, Engine, Tracks, Special.
+        /// </summary>
         IReadOnlyList<string> Slots { get; }
 
         /// <summary>Module installed in the slot of the selected tank; null when empty.</summary>
@@ -36,11 +38,20 @@ namespace Game
         HangarModule Module(string moduleId);
 
         /// <summary>The selected tank's numbers; with replacement, as if it were installed in its slot.</summary>
-        TankStats Stats(string replacementModuleId = null);
+        HangarTankStats Stats(string replacementModuleId = null);
 
-        bool TryBuy(string moduleId);
-        bool TryInstall(string moduleId);
-        bool TryUpgrade(string moduleId);
+        /// <summary>Whether TryBuy would go through now, and why not (the shop shows it on the button).</summary>
+        PurchaseResult CanBuy(string moduleId);
+
+        /// <summary>Whether TryUpgrade would go through now, and why not (the upgrade screen shows it).</summary>
+        PurchaseResult CanUpgrade(string moduleId);
+
+        PurchaseResult TryBuy(string moduleId);
+
+        /// <summary>Installing is free: Done, or NotOwned / Unknown.</summary>
+        PurchaseResult TryInstall(string moduleId);
+
+        PurchaseResult TryUpgrade(string moduleId);
 
         IReadOnlyList<HangarChapter> Chapters { get; }
 

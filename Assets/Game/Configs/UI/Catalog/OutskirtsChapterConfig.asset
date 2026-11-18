@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 45b3b8a3e8fe5104b9855f592a1c546f, type: 3}
+  m_Name: OutskirtsChapterConfig
+  m_EditorClassIdentifier: Game::Game.ChapterConfig
+  _id:
+    _value: outskirts
+  _displayName: 
+  _description: 
+  _level: {fileID: 11400000, guid: 76594bcf15ce96740b83de265f64c86a, type: 2}
+  _arenas:
+  - {fileID: 11400000, guid: be1188ad17b29e54db4a575c69a16326, type: 2}
+  - {fileID: 11400000, guid: efdc93d9db9be534b82b76f78b89e0f8, type: 2}
+  - {fileID: 11400000, guid: c1f456d8151a18b4387e7021eec9757f, type: 2}
+  - {fileID: 11400000, guid: 93595c4132c4f574fa652f7c62db5715, type: 2}
+  - {fileID: 11400000, guid: 17529e247cbe0d446ba6796706f82a40, type: 2}
+  _enemyMultiplier: 1
+  _rewardMultiplier: 1
+  _firstCompletionMarks: 1000
+  _firstCompletionSamples: 10
+  _requiredChapter: {fileID: 0}
+  _recommendedTank:
+    _value: 

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Game.Arenas;
 using UnityEngine;
 
 namespace Game
@@ -23,6 +24,9 @@ namespace Game
         /// <summary>1-based arena of the run, and how many there are (5 in milestone 1).</summary>
         int ArenaIndex { get; }
         int ArenaCount { get; }
+
+        /// <summary>The hints of the current arena (the HUD shows them for a while when the arena starts).</summary>
+        ArenaHint ArenaHints { get; }
 
         int Level { get; }
         int Xp { get; }

@@ -1,117 +1,72 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 using ScreenNavigation;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Game
 {
     /// <summary>
-    /// The shop: a tab per tank slot, a grid of module cards (name, key stats, price, Buy / Bought) and the details
-    /// of the selected card. Buy only raises BuyClicked: MenuFlow asks for confirmation and buys. Cards are cloned
-    /// from a switched-off template child and reused; texts are rebuilt on a tab switch or a progress change only.
+    /// The shop: tabs Guns / Armor / Engine and tracks / Special / Tanks; module cards with the name, description,
+    /// what the module changes against the current tank, the price in marks and samples and the lock condition.
+    /// Buy only raises BuyClicked: MenuFlow asks for confirmation and buys. The Tanks tab shows placeholder cards
+    /// built by the menu builder ("soon"). Cards are cloned from a switched-off template and reused; texts are
+    /// rebuilt on a tab switch or a progress change only.
     /// </summary>
     public sealed class ShopScreen : UIScreen
     {
-        // Children of the card template, by name (Shop part of MenuUiBuilder)
-        public const string CARD_MARKER = "Marker";
-        public const string CARD_NAME = "Name";
-        public const string CARD_STATS = "Stats";
-        public const string CARD_PRICE = "Price";
-        public const string CARD_BUY = "Buy";
+        public const int TANKS_TAB = 4;
 
-        private const int CARD_STAT_LINES = 3;
+        /// <summary>UiStrings keys of the tab labels, by tab.</summary>
+        public static readonly string[] TabKeys =
+            { "hangar.shop.tab_guns", "hangar.shop.tab_armor", "hangar.shop.tab_mobility", "hangar.shop.tab_special", "hangar.shop.tab_tanks" };
 
-        /// <summary>UiStrings keys of the stat names, by TankStats index.</summary>
-        public static readonly string[] StatNameKeys =
-            { "stat.health", "stat.armor", "stat.speed", "stat.damage", "stat.reload", "stat.fire_rate" };
+        // The slots each tab sells, by tab; the Tanks tab has none
+        private static readonly ModuleSlot[][] TabSlots =
+        {
+            new[] { ModuleSlot.Gun, ModuleSlot.MachineGun },
+            new[] { ModuleSlot.Armor },
+            new[] { ModuleSlot.Engine, ModuleSlot.Tracks },
+            new[] { ModuleSlot.Special },
+            Array.Empty<ModuleSlot>()
+        };
 
-        // UiStrings keys of the stat units, by TankStats index; null: no unit
-        private static readonly string[] StatUnitKeys = { null, null, null, null, "stat.unit_seconds", "stat.unit_per_second" };
+        // UiStrings keys of the stat names, by HangarTankStats index
+        private static readonly string[] StatKeys =
+            { "hangar.stat.health", "hangar.stat.speed", "hangar.stat.damage", "hangar.stat.reload" };
 
-        public event Action<TankModuleConfig> BuyClicked;
+        public event Action<string> BuyClicked;
         public event Action BackClicked;
 
-        [Tooltip("Tab buttons by (int)TankSlot")]
-        [SerializeField] private Button[] _tabs = new Button[6];
-        [Tooltip("Active-tab markers by (int)TankSlot")]
-        [SerializeField] private GameObject[] _tabMarkers = new GameObject[6];
-        [Tooltip("Switched-off card (children Marker, Name, Stats, Price, Buy); cloned as needed")]
-        [SerializeField] private Button _cardTemplate;
-        [SerializeField] private TMP_Text _detailName;
-        [SerializeField] private TMP_Text _detailDescription;
-        [SerializeField] private TMP_Text _detailStats;
-        [SerializeField] private TMP_Text _detailPrice;
-        [SerializeField] private Button _detailBuy;
-        [SerializeField] private TMP_Text _detailBuyLabel;
+        [Tooltip("Tab buttons in TabKeys order")]
+        [SerializeField] private Button[] _tabs = new Button[5];
+        [Tooltip("Active-tab markers in the same order")]
+        [SerializeField] private GameObject[] _tabMarkers = new GameObject[5];
+        [Tooltip("Switched-off module card (Title, Info, Extra, Price, Action); cloned as needed")]
+        [SerializeField] private HangarItemView _cardTemplate;
+        [Tooltip("The module grid; hidden on the Tanks tab")]
+        [SerializeField] private GameObject _modulesPanel;
+        [Tooltip("Placeholder tank cards; shown on the Tanks tab")]
+        [SerializeField] private GameObject _tanksPanel;
         [SerializeField] private Button _back;
 
-        private readonly List<Card> _cards = new();
-        private readonly List<TankModuleConfig> _slotModules = new();
+        private readonly List<HangarItemView> _cards = new();
+        private readonly List<string> _ids = new();
         private readonly StringBuilder _text = new();
         private UnityEngine.Events.UnityAction[] _tabHandlers;
-
-        private ShopCatalogConfig _catalog;
-        private IPlayerProgress _progress;
-        private TankSlot _slot;
-        private int _selected;
-
-        // Texts from UiStrings, fetched once in Awake
-        private readonly string[] _statNames = new string[TankStats.COUNT];
-        private readonly string[] _statUnits = new string[TankStats.COUNT];
-        private string _cardPriceFormat;
-        private string _cardBuy;
-        private string _cardBought;
-        private string _empty;
-        private string _levelHeaderFormat;
-        private string _noBonuses;
-        private string _priceFormat;
-        private string _buy;
-        private string _bought;
-
-        /// <summary>Called by MenuFlow before the screen is first shown.</summary>
-        public void Init(ShopCatalogConfig catalog)
-        {
-            _catalog = catalog;
-            _progress = AppServices.Progress;
-        }
-
-        /// <summary>The tab the shop shows next (the hangar opens the shop on its selected slot).</summary>
-        public void ShowSlot(TankSlot slot)
-        {
-            if (_slot == slot)
-                return;
-
-            _slot = slot;
-            _selected = 0;
-            if (isActiveAndEnabled)
-                Rebuild();
-        }
+        private IHangarSource _source;
+        private int _tab;
 
         private void Awake()
         {
-            for (int i = 0; i < TankStats.COUNT; i++)
-            {
-                _statNames[i] = UiStrings.Get(StatNameKeys[i]);
-                _statUnits[i] = StatUnitKeys[i] != null ? UiStrings.Get(StatUnitKeys[i]) : string.Empty;
-            }
-            _cardPriceFormat = UiStrings.Get("shop.card_price_format");
-            _cardBuy = UiStrings.Get("shop.card_buy");
-            _cardBought = UiStrings.Get("shop.card_bought");
-            _empty = UiStrings.Get("shop.empty");
-            _levelHeaderFormat = UiStrings.Get("shop.level_header_format");
-            _noBonuses = UiStrings.Get("shop.no_bonuses");
-            _priceFormat = UiStrings.Get("shop.price_format");
-            _buy = UiStrings.Get("shop.buy");
-            _bought = UiStrings.Get("shop.bought");
-
+            _source = AppServices.Hangar;
             _tabHandlers = new UnityEngine.Events.UnityAction[_tabs.Length];
             for (int i = 0; i < _tabs.Length; i++)
             {
-                TankSlot slot = (TankSlot)i;
-                _tabHandlers[i] = () => ShowSlot(slot);
+                int tab = i;
+                _tabHandlers[i] = () => ShowTab(tab);
             }
         }
 
@@ -119,183 +74,118 @@ namespace Game
         {
             for (int i = 0; i < _tabs.Length; i++)
                 _tabs[i].onClick.AddListener(_tabHandlers[i]);
-            _detailBuy.onClick.AddListener(HandleDetailBuy);
             _back.onClick.AddListener(HandleBack);
-            _progress.Changed += Refresh;
-
-            Rebuild();
+            _source.Changed += Refresh;
+            Refresh();
         }
 
         private void OnDisable()
         {
             for (int i = 0; i < _tabs.Length; i++)
                 _tabs[i].onClick.RemoveListener(_tabHandlers[i]);
-            _detailBuy.onClick.RemoveListener(HandleDetailBuy);
             _back.onClick.RemoveListener(HandleBack);
-            _progress.Changed -= Refresh;
+            _source.Changed -= Refresh;
         }
 
-        // A tab switch: the slot's modules into the cards, then the states
-        private void Rebuild()
+        private void ShowTab(int tab)
         {
-            for (int i = 0; i < _tabMarkers.Length; i++)
-                _tabMarkers[i].SetActive(i == (int)_slot);
+            if (tab == _tab)
+                return;
 
-            _slotModules.Clear();
-            for (int i = 0; i < _catalog.modules.Count; i++)
-            {
-                TankModuleConfig module = _catalog.modules[i];
-                if (module != null && module.slot == _slot)
-                    _slotModules.Add(module);
-            }
-
-            while (_cards.Count < _slotModules.Count)
-                _cards.Add(CreateCard(_cards.Count));
-
-            for (int i = 0; i < _cards.Count; i++)
-            {
-                Card card = _cards[i];
-                bool used = i < _slotModules.Count;
-                card.Root.gameObject.SetActive(used);
-                if (!used)
-                    continue;
-
-                TankModuleConfig module = _slotModules[i];
-                card.Name.text = module.displayName;
-                card.Stats.text = StatsText(module.StatsAt(1), CARD_STAT_LINES);
-            }
-
-            if (_selected >= _slotModules.Count)
-                _selected = 0;
+            _tab = tab;
             Refresh();
         }
 
-        // Credits or ownership changed: prices, buy buttons, the details
         private void Refresh()
         {
-            for (int i = 0; i < _slotModules.Count; i++)
+            for (int i = 0; i < _tabMarkers.Length; i++)
+                _tabMarkers[i].SetActive(i == _tab);
+            _tanksPanel.SetActive(_tab == TANKS_TAB);
+            _modulesPanel.SetActive(_tab != TANKS_TAB);
+
+            _ids.Clear();
+            ModuleSlot[] slots = _tab >= 0 && _tab < TabSlots.Length ? TabSlots[_tab] : Array.Empty<ModuleSlot>();
+            for (int s = 0; s < slots.Length; s++)
             {
-                Card card = _cards[i];
-                TankModuleConfig module = _slotModules[i];
-                bool owned = ShopUseCase.IsOwned(_progress, module);
-                bool canBuy = ShopUseCase.CanBuy(_progress, module);
-                card.Marker.SetActive(i == _selected);
-                card.Price.SetText(_cardPriceFormat, module.price);
-                card.Price.color = owned || canBuy ? UiStyle.Text : UiStyle.Bad;
-                card.Buy.interactable = canBuy;
-                card.BuyLabel.text = owned ? _cardBought : _cardBuy;
+                IReadOnlyList<HangarModule> modules = _source.ModulesFor(HangarSlots.Id(slots[s]));
+                for (int i = 0; i < modules.Count; i++)
+                    _ids.Add(modules[i].Id);
             }
 
-            RefreshDetails();
+            while (_cards.Count < _ids.Count)
+            {
+                int index = _cards.Count;
+                HangarItemView card = _cardTemplate.Clone("Card_" + index);
+                card.Action.onClick.AddListener(() => HandleBuy(index)); // once per card, at creation
+                _cards.Add(card);
+            }
+
+            HangarTankStats current = _source.Stats();
+            for (int i = 0; i < _cards.Count; i++)
+            {
+                HangarItemView card = _cards[i];
+                bool used = i < _ids.Count;
+                card.gameObject.SetActive(used);
+                if (used)
+                    Draw(card, _source.Module(_ids[i]), current);
+            }
         }
 
-        private void RefreshDetails()
+        private void Draw(HangarItemView card, HangarModule module, HangarTankStats current)
         {
-            bool any = _selected < _slotModules.Count;
-            _detailBuy.gameObject.SetActive(any);
-            if (!any)
+            card.SetIcon(module.SlotId);
+            card.Title.text = HangarLook.ModuleName(module.Id);
+            card.Info.text = HangarLook.ModuleDescription(module.Id);
+            card.Extra.text = StatsText(current, _source.Stats(module.Id));
+
+            PurchaseResult result = _source.CanBuy(module.Id);
+            card.Action.gameObject.SetActive(!module.Owned && !module.Locked);
+            if (module.Owned)
             {
-                _detailName.text = _empty;
-                _detailDescription.text = string.Empty;
-                _detailStats.text = string.Empty;
-                _detailPrice.text = string.Empty;
+                card.Price.text = UiStrings.Get("hangar.shop.owned");
+                card.Price.color = UiStyle.Good;
                 return;
             }
 
-            TankModuleConfig module = _slotModules[_selected];
-            bool owned = ShopUseCase.IsOwned(_progress, module);
-            bool canBuy = ShopUseCase.CanBuy(_progress, module);
-            _detailName.text = module.displayName;
-            _detailDescription.text = module.description;
+            if (module.Locked)
+            {
+                card.Price.text = UiStrings.Get(module.LockReasonKey);
+                card.Price.color = UiStyle.Bad;
+                return;
+            }
+
+            HangarLook.SetPrice(card.Price, module.PriceMarks, module.PriceSamples);
+            card.Price.color = result == PurchaseResult.Done ? UiStyle.Text : UiStyle.Bad;
+            card.Action.interactable = result == PurchaseResult.Done;
+            card.ActionLabel.text = result == PurchaseResult.Done ? UiStrings.Get("hangar.shop.buy") : HangarLook.Result(result);
+        }
+
+        // "Урон 150 → 250" per changed stat (built on a tab switch or a change, not per frame)
+        private string StatsText(HangarTankStats current, HangarTankStats with)
+        {
             _text.Clear();
-            _text.AppendFormat(_levelHeaderFormat, 1).Append('\n').Append(StatsText(module.StatsAt(1), TankStats.COUNT));
-            if (module.MaxLevel > 1)
-                _text.Append("\n\n").AppendFormat(_levelHeaderFormat, module.MaxLevel).Append('\n')
-                    .Append(StatsText(module.StatsAt(module.MaxLevel), TankStats.COUNT));
-            _detailStats.text = _text.ToString();
-            _detailPrice.SetText(_priceFormat, module.price);
-            _detailPrice.color = owned || canBuy ? UiStyle.Text : UiStyle.Bad;
-            _detailBuy.interactable = canBuy;
-            _detailBuyLabel.text = owned ? _bought : _buy;
-        }
-
-        private Card CreateCard(int index)
-        {
-            _cardTemplate.gameObject.SetActive(false);
-            Button root = Instantiate(_cardTemplate, _cardTemplate.transform.parent);
-            root.name = "Card_" + index;
-            root.gameObject.SetActive(true);
-            Transform cardRoot = root.transform;
-            Button buy = cardRoot.Find(CARD_BUY).GetComponent<Button>();
-            Card card = new()
+            for (int i = 0; i < HangarTankStats.COUNT; i++)
             {
-                Root = root,
-                Marker = cardRoot.Find(CARD_MARKER).gameObject,
-                Name = cardRoot.Find(CARD_NAME).GetComponent<TMP_Text>(),
-                Stats = cardRoot.Find(CARD_STATS).GetComponent<TMP_Text>(),
-                Price = cardRoot.Find(CARD_PRICE).GetComponent<TMP_Text>(),
-                Buy = buy,
-                BuyLabel = buy.GetComponentInChildren<TMP_Text>(true)
-            };
-            // once per card, at creation
-            root.onClick.AddListener(() => Select(index));
-            buy.onClick.AddListener(() => HandleBuy(index));
-            return card;
-        }
+                if (Mathf.Abs(with[i] - current[i]) < 0.01f)
+                    continue;
 
-        private void Select(int index)
-        {
-            if (index >= _slotModules.Count)
-                return;
+                if (_text.Length > 0)
+                    _text.Append('\n');
+                string format = i == HangarTankStats.SPEED || i == HangarTankStats.CANNON_RELOAD ? "0.0" : "0";
+                _text.Append(UiStrings.Get(StatKeys[i])).Append(' ')
+                    .Append(current[i].ToString(format, CultureInfo.InvariantCulture)).Append(" → ")
+                    .Append(with[i].ToString(format, CultureInfo.InvariantCulture));
+            }
 
-            _selected = index;
-            for (int i = 0; i < _slotModules.Count; i++)
-                _cards[i].Marker.SetActive(i == index);
-            RefreshDetails();
+            return _text.Length > 0 ? _text.ToString() : UiStrings.Get("hangar.shop.no_change");
         }
 
         private void HandleBuy(int index)
         {
-            Select(index);
-            HandleDetailBuy();
-        }
-
-        private void HandleDetailBuy()
-        {
-            if (_selected < _slotModules.Count && ShopUseCase.CanBuy(_progress, _slotModules[_selected]))
-                BuyClicked?.Invoke(_slotModules[_selected]);
+            if (index < _ids.Count && _source.CanBuy(_ids[index]) == PurchaseResult.Done)
+                BuyClicked?.Invoke(_ids[index]);
         }
 
         private void HandleBack() => BackClicked?.Invoke();
-
-        // Nonzero stats, one per line, at most maxLines (built on a tab switch or a click, not per frame)
-        private string StatsText(TankStats stats, int maxLines)
-        {
-            StringBuilder text = new();
-            int lines = 0;
-            for (int i = 0; i < TankStats.COUNT && lines < maxLines; i++)
-            {
-                float value = stats[i];
-                if (Mathf.Abs(value) < 0.001f)
-                    continue;
-
-                if (lines > 0)
-                    text.Append('\n');
-                text.Append(_statNames[i]).Append(' ').Append(value.ToString("+0.#;-0.#")).Append(_statUnits[i]);
-                lines++;
-            }
-            return lines > 0 ? text.ToString() : _noBonuses;
-        }
-
-        private sealed class Card
-        {
-            public Button Root;
-            public GameObject Marker;
-            public TMP_Text Name;
-            public TMP_Text Stats;
-            public TMP_Text Price;
-            public Button Buy;
-            public TMP_Text BuyLabel;
-        }
     }
 }
