@@ -217,6 +217,8 @@ namespace Game.Voxels
             public NativeList<VoxelVertex> Vertices;
             public NativeList<int> Indices;
             public NativeList<VoxelBox> Boxes;
+            /// <summary>Where an async job's region starts: its boxes are in region voxels, this far from the grid's.</summary>
+            public int3 BoxOffset;
             /// <summary>An over-several-frames remesh's own copies of the voxels and palette it reads.</summary>
             public NativeArray<byte> Region;
             public NativeArray<Color32> Palette;
@@ -891,9 +893,12 @@ namespace Game.Voxels
                 // once for every bite this frame: Split labels the whole grid (1.3-1.6 ms on a house), and a
                 // machine-gun bullet bit 3 times a wall, up to 3 walls.
                 if (taken <= DEFER_SPLIT_MAX && SolidCount > 0)
-                    DeferSplit(blastCenter, force);
+                    DeferSplit(blastCenter, force, center, reach);
                 else
+                {
+                    RebuildNow();
                     Split(blastCenter, force);
+                }
             }
             else if (SolidCount <= 0)
                 Destroy(gameObject);
@@ -988,6 +993,12 @@ namespace Game.Voxels
             return direction * (force * speedShare * Random.Range(0.35f, 0.7f));
         }
 
+        private const string PIECE_NAME = "VoxelPiece";
+        private const string CHUNK_NAME = "Chunk";
+
+        /// <summary>Collision cell (voxels) of a building's pieces, at least.</summary>
+        private const int PIECE_COLLIDER_CELL = 3;
+
         /// <summary>Carves that took at most this many voxels split at the end of the frame (see DeferSplit).</summary>
         private const int DEFER_SPLIT_MAX = 600;
 
@@ -999,8 +1010,16 @@ namespace Game.Voxels
         /// Asks for a Split at the end of this frame (VoxelWorld, before the load solve and the rebuild):
         /// what broke off still goes in this frame, but one labelling serves every bite the frame took.
         /// </summary>
-        private void DeferSplit(Vector3 blastCenter, float force)
+        private void DeferSplit(Vector3 blastCenter, float force, float3 center, float3 reach)
         {
+            // Where the bites were: a standing building looks round them only (LocalSplit).
+            if (_splitRegions < SPLIT_REGIONS)
+            {
+                _splitLo[_splitRegions] = (int3)math.floor(center - reach) - 1;
+                _splitHi[_splitRegions] = (int3)math.ceil(center + reach) + 1;
+            }
+
+            _splitRegions++;
             if (!_splitPending || force >= _splitForce)
             {
                 _splitCenter = blastCenter;
@@ -1019,9 +1038,79 @@ namespace Game.Voxels
             if (!_splitPending)
                 return;
             _splitPending = false;
+            int regions = _splitRegions;
+            _splitRegions = 0;
             if (_voxels.IsCreated && SolidCount > 0)
-                Split(_splitCenter, _splitForce);
+            {
+                if (IsStatic && regions <= SPLIT_REGIONS)
+                    LocalSplit(regions, _splitCenter, _splitForce);
+                else
+                    Split(_splitCenter, _splitForce);
+            }
+
             _splitForce = 0f;
+        }
+
+        /// <summary>Bites a frame a building looks round on its own (LocalSplit); more, and it labels the whole grid.</summary>
+        private const int SPLIT_REGIONS = 16;
+
+        private readonly int3[] _splitLo = new int3[SPLIT_REGIONS];
+        private readonly int3[] _splitHi = new int3[SPLIT_REGIONS];
+        private int _splitRegions;
+
+        /// <summary>A search from a bite that gets this big holds on (the load solve finds a bigger piece that does not).</summary>
+        private const int LOCAL_SPLIT_BUDGET = 200000;
+
+        /// <summary>
+        /// Split for a standing building's small bites: a flood from the voxels round each bite,
+        /// stopped as soon as it reaches the bottom layer or grows past LOCAL_SPLIT_BUDGET (it holds
+        /// on). What closes off before either is a scrap the bites cut loose: it goes as in Split.
+        /// A bullet's hole costs a few thousand voxels' search, not the house's whole grid.
+        /// </summary>
+        private void LocalSplit(int regions, Vector3 blastCenter, float force)
+        {
+            var lo = new NativeArray<int3>(regions, Allocator.TempJob);
+            var hi = new NativeArray<int3>(regions, Allocator.TempJob);
+            for (int i = 0; i < regions; i++)
+            {
+                lo[i] = math.max(_splitLo[i], 0);
+                hi[i] = math.min(_splitHi[i], Size - 1);
+            }
+
+            var labels = new NativeArray<int>(_voxels.Length, Allocator.TempJob);
+            var queue = new NativeList<int>(4096, Allocator.TempJob);
+            var components = new NativeList<VoxelComponent>(8, Allocator.TempJob);
+            new LocalSplitJob
+            {
+                Voxels = _voxels, Size = Size, Lo = lo, Hi = hi, Budget = LOCAL_SPLIT_BUDGET, Labels = labels, Queue = queue,
+                Components = components
+            }.Run();
+
+            bool any = false;
+            for (int i = 0; i < components.Length; i++)
+            {
+                VoxelComponent piece = components[i];
+                if (piece.Grounded)
+                    continue;
+                any = true;
+                if (piece.Count <= CRUMBLE_MAX)
+                    Crumble(labels, i + 1, piece, blastCenter, force);
+                else
+                    Detach(labels, i + 1, piece, blastCenter, force);
+                MarkDirty(piece.Min, piece.Max);
+            }
+
+            if (any)
+                RebuildNow();
+
+            lo.Dispose();
+            hi.Dispose();
+            labels.Dispose();
+            queue.Dispose();
+            components.Dispose();
+
+            if (SolidCount <= 0)
+                Destroy(gameObject);
         }
 
         /// <summary>
@@ -1106,6 +1195,8 @@ namespace Game.Voxels
         /// </summary>
         private void Detach(NativeArray<int> labels, int label, VoxelComponent piece, Vector3 blastCenter, float force)
         {
+            // A piece leaves: the rest's colliders must be right before the piece moves (RebuildsAsync).
+            RebuildNow();
             int3 size = piece.Max - piece.Min + 1;
             var grid = new NativeArray<byte>(size.x * size.y * size.z, Allocator.Persistent);
 
@@ -1122,7 +1213,8 @@ namespace Game.Voxels
 
             SolidCount -= piece.Count;
 
-            var go = new GameObject($"{name}_Piece") { layer = VoxelWorld.PieceLayer };
+            // Fixed names: a name built from the parent's grew a string per piece ("House_Piece_Piece…").
+            var go = new GameObject(PIECE_NAME) { layer = VoxelWorld.PieceLayer };
             go.transform.SetPositionAndRotation(transform.position, transform.rotation);
             go.transform.localScale = transform.lossyScale;
 
@@ -1131,6 +1223,10 @@ namespace Game.Voxels
             settings.Anchor = VoxelAnchor.Largest;
             settings.Colliders = true;
             settings.Layer = VoxelWorld.PieceLayer;
+            // A building's rubble collides in 30 cm cells at least: a third of the boxes (and their
+            // components) of 20 cm ones, which a falling storey made by the hundred in one frame.
+            if (HasStrength)
+                settings.ColliderCell = math.max(settings.ColliderCell, PIECE_COLLIDER_CELL);
             settings.Material = _material;
 
             VoxelBody body = go.AddComponent<VoxelBody>();
@@ -1486,7 +1582,17 @@ namespace Game.Voxels
         /// off while the hull still shows it.
         /// </summary>
         internal bool RebuildsAsync => _built &&
-                                       (_settings.Smooth || _settings.Terrain || (!_settings.Colliders && !HasShapeDirty()));
+                                       (_settings.Smooth || _settings.Terrain || (!_settings.Colliders && !HasShapeDirty()) ||
+                                        // A standing building nibbled (a bullet's hole) remeshes on workers, its collider a
+                                        // frame behind; after a blast or a piece breaking off it rebuilds in the frame, so
+                                        // the piece never starts inside the old collider.
+                                        (IsStatic && Time.frameCount > _rebuildNowFrame));
+
+        /// <summary>The last frame something big changed this body (a blast, a piece off): it rebuilds in that frame.</summary>
+        private int _rebuildNowFrame = -1;
+
+        /// <summary>This frame's change must be in the colliders by its end (see RebuildsAsync).</summary>
+        internal void RebuildNow() => _rebuildNowFrame = Time.frameCount;
 
         private bool HasShapeDirty()
         {
@@ -1591,6 +1697,19 @@ namespace Game.Voxels
                         Vertices = job.Vertices,
                         Indices = job.Indices
                     }.Schedule();
+
+                // A building's boxes from the same copy (a bullet's hole: the wall's collider follows a frame later).
+                if (!smooth && _settings.Colliders && !_settings.Terrain && job.Shape)
+                {
+                    job.Boxes = new NativeList<VoxelBox>(16, Allocator.Persistent);
+                    job.BoxOffset = offset;
+                    JobHandle boxes = new BoxDecomposeJob
+                    {
+                        Voxels = job.Region, Size = dims, Min = min - offset, Max = max - offset, Cell = _settings.ColliderCell,
+                        Boxes = job.Boxes
+                    }.Schedule();
+                    job.Handle = JobHandle.CombineDependencies(job.Handle, boxes);
+                }
 
                 _dirty[index] = false;
                 _shapeDirty[index] = false;
@@ -1724,7 +1843,7 @@ namespace Game.Voxels
             mesh.bounds = ChunkBounds(job.Chunk);
 
             if (job.Boxes.IsCreated)
-                ApplyBoxes(chunk, job.Boxes);
+                ApplyBoxes(chunk, job.Boxes, job.BoxOffset);
             else if ((_settings.Smooth || _settings.Terrain) && _settings.Colliders &&
                      (job.Shape || chunk.Collider == null || chunk.Collider.sharedMesh == null))
                 WriteCollision(chunk, job);
@@ -1788,8 +1907,8 @@ namespace Game.Voxels
             if (chunk.Cooking && VoxelWorld.Instance != null)
                 VoxelWorld.Instance.FinishBakes(true);
 
-            chunk.CollisionA ??= new Mesh { name = chunk.GameObject.name + "_CollisionA" };
-            chunk.CollisionB ??= new Mesh { name = chunk.GameObject.name + "_CollisionB" };
+            chunk.CollisionA ??= new Mesh { name = "ChunkCollisionA" };
+            chunk.CollisionB ??= new Mesh { name = "ChunkCollisionB" };
             Mesh spare = chunk.Collider.sharedMesh == chunk.CollisionA ? chunk.CollisionB : chunk.CollisionA;
 
             int indexCount = job.Indices.Length;
@@ -1806,7 +1925,7 @@ namespace Game.Voxels
             VoxelWorld.QueueBake(spare, chunk);
         }
 
-        private void ApplyBoxes(Chunk chunk, NativeList<VoxelBox> boxes)
+        private void ApplyBoxes(Chunk chunk, NativeList<VoxelBox> boxes, int3 offset)
         {
             for (int i = 0; i < boxes.Length; i++)
             {
@@ -1820,7 +1939,7 @@ namespace Game.Voxels
                 }
 
                 VoxelBox box = boxes[i];
-                collider.center = (Vector3)(Origin + (float3)(box.Min + box.Max) * 0.5f * VoxelSize);
+                collider.center = (Vector3)(Origin + ((float3)(box.Min + box.Max) * 0.5f + offset) * VoxelSize);
                 collider.size = (Vector3)((float3)(box.Max - box.Min) * VoxelSize);
                 collider.enabled = true;
             }
@@ -1884,10 +2003,10 @@ namespace Game.Voxels
 
         private Chunk CreateChunk(int index)
         {
-            var go = new GameObject($"Chunk_{index}") { layer = _settings.Layer };
+            var go = new GameObject(CHUNK_NAME) { layer = _settings.Layer };
             go.transform.SetParent(transform, false);
 
-            var mesh = new Mesh { name = go.name };
+            var mesh = new Mesh { name = CHUNK_NAME };
             mesh.MarkDynamic();
             go.AddComponent<MeshFilter>().sharedMesh = mesh;
 

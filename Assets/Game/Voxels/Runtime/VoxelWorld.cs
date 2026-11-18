@@ -385,7 +385,9 @@ namespace Game.Voxels
             {
                 VoxelBody body = s_bodies[i];
                 if (body != null && body.HasStrength && body.IsStatic && body.WorldBounds.SqrDistance(point) <= reach * reach)
+                {
                     body.MarkStructureDirty(point, reach, delay);
+                }
             }
         }
 
