@@ -82,18 +82,31 @@ namespace Game.Voxels
         /// round a point. Joints break only within <see cref="VoxelLoad.ZONE_MARGIN"/> blocks of the
         /// damage: further off it spreads only by what falls (see AddImpactLoad).
         /// </summary>
-        public void MarkStructureDirty(Vector3 worldCenter, float worldRadius)
+        public void MarkStructureDirty(Vector3 worldCenter, float worldRadius, float delay = 0f)
         {
             if (!_voxels.IsCreated)
                 return;
             float3 center = ((float3)transform.InverseTransformPoint(worldCenter) - Origin) / VoxelSize;
             float radius = worldRadius / (VoxelSize * Mathf.Abs(transform.lossyScale.x));
-            MarkStructureDirtyAt(center, new float3(radius), false);
+            MarkStructureDirtyAt(center, new float3(radius), false, delay);
         }
+
+        /// <summary>
+        /// A small bite (a machine-gun bullet's hole) waits this long (s) for its solve: every bullet of a burst
+        /// meets in one solve (5-9 ms on a house) rather than one a frame. Anything bigger is solved at once.
+        /// </summary>
+        public const float MINOR_SOLVE_DELAY = 0.5f;
+
+        /// <summary>Not solved before this Time.time (see MINOR_SOLVE_DELAY).</summary>
+        private float _solveNotBefore;
+
+        /// <summary>Whether the queued solve may run now (VoxelWorld).</summary>
+        internal bool StructureSolveDue => Time.time >= _solveNotBefore;
 
         /// <param name="center">In voxels.</param>
         /// <param name="reach">Half extent, in voxels; with <paramref name="whole"/> the box from 0 to it.</param>
-        internal void MarkStructureDirtyAt(float3 center, float3 reach, bool whole = false)
+        /// <param name="delay">Seconds the solve may wait (MINOR_SOLVE_DELAY for a small bite); 0 — at once.</param>
+        internal void MarkStructureDirtyAt(float3 center, float3 reach, bool whole = false, float delay = 0f)
         {
             if (!HasStrength || !IsStatic || !_voxels.IsCreated)
                 return;
@@ -103,6 +116,10 @@ namespace Game.Voxels
             _zoneLo = _hasZone ? math.min(_zoneLo, lo) : lo;
             _zoneHi = _hasZone ? math.max(_zoneHi, hi) : hi;
             _hasZone = true;
+
+            // The earliest asked for wins: a blast after a burst's bullets is solved at once.
+            float due = Time.time + delay;
+            _solveNotBefore = _structureDirty ? Mathf.Min(_solveNotBefore, due) : due;
             Queue();
         }
 
@@ -164,7 +181,10 @@ namespace Game.Voxels
             // Joints still overloaded after the last round: go on next frame (the cracks so far
             // are kept, and the zone) — a collapse spreads over a few frames rather than in one.
             if (unsettled)
+            {
+                _solveNotBefore = 0f;
                 Queue();
+            }
             else
                 _hasZone = false;
         }

@@ -1,6 +1,7 @@
 using Atomic.Elements;
 using Atomic.Entities;
 using Game.Voxels;
+using Unity.Profiling;
 using UnityEngine;
 
 namespace Game
@@ -83,11 +84,19 @@ namespace Game
             _noContextThisFlight = false;
         }
 
+        private static readonly ProfilerMarker MoveMarker = new("Bullet.Move");
+
         public void FixedTick(IEntity entity, float deltaTime)
         {
             if (_condition != null && !_condition.Value)
                 return;
 
+            using (MoveMarker.Auto())
+                Move(entity, deltaTime);
+        }
+
+        private void Move(IEntity entity, float deltaTime)
+        {
             Vector3 from = _transform.position;
             MoveUseCase.MoveSwept(_transform, _body, _own, _direction.Value * _speed.Value * deltaTime);
             Vector3 to = _transform.position;

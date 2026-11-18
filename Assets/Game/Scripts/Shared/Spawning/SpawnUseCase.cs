@@ -38,8 +38,9 @@ namespace Game
                 body.rotation = bulletTransform.rotation;
             }
 
-            // A pooled bullet keeps the bounces of its previous flight.
-            if (bullet.HasRicochetCount())
+            // A pooled bullet keeps the bounces of its previous flight. RicochetCount is a plain int key: every
+            // write boxes a new one (20 B a shot), so it is reset only when the last flight bounced.
+            if (bullet.HasRicochetCount() && bullet.GetRicochetCount() != 0)
                 bullet.SetRicochetCount(0);
 
             PassThroughShooter(bullet, weapon);

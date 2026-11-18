@@ -1,5 +1,6 @@
 using Atomic.Elements;
 using Atomic.Entities;
+using Unity.Profiling;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -171,7 +172,15 @@ namespace Game
             return i;
         }
 
+        private static readonly ProfilerMarker LateTickMarker = new("Smoke.Muzzle");
+
         public void LateTick(IEntity entity, float deltaTime)
+        {
+            using (LateTickMarker.Auto())
+                Step(deltaTime);
+        }
+
+        private void Step(float deltaTime)
         {
             VoxelMuzzleSmokeSettings s = _settings;
 
@@ -266,7 +275,8 @@ namespace Game
                 if (grid > 0.001f)
                     p = new Vector3(Mathf.Round(p.x / grid) * grid, Mathf.Round(p.y / grid) * grid,
                         Mathf.Round(p.z / grid) * grid);
-                _matrices[i] = Matrix4x4.TRS(p, Quaternion.identity, new Vector3(edge, edge, edge));
+                // TRS with no turn and an even scale, filled in directly: TRS costs more per cube.
+                _matrices[i] = new Matrix4x4 { m00 = edge, m11 = edge, m22 = edge, m03 = p.x, m13 = p.y, m23 = p.z, m33 = 1f };
 
                 Color c;
                 if (_age[i] < s.HotTime)
