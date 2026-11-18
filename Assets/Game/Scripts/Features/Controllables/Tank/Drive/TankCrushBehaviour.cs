@@ -90,6 +90,9 @@ namespace Game
         private readonly TankCrushConfig _config;
 
         private IEntity _crusher;
+
+        /// <summary>The crusher's blow, one for every crush: the same source and factor each time, so none is made per kill.</summary>
+        private TakeDamageArgs _crush;
         private Color32[] _blood;
         private VoxelizedModel _skin;
         private IValue<Vector2> _input;
@@ -132,6 +135,7 @@ namespace Game
             _crusher = new Entity();
             _crusher.AddTransform(_body.transform);
             _crusher.AddDamage(new ReactiveInt(CRUSH_DAMAGE));
+            _crush = new TakeDamageArgs(_crusher);
 
             _blood = _config.blood.ToVoxels();
             _skin = _body.GetComponent<VoxelizedModel>();
@@ -268,7 +272,7 @@ namespace Game
         private void Crush(IEntity victim, Vector3 point, float speed)
         {
             KillMarker.Begin();
-            DamageUseCase.TakeDamage(victim, new TakeDamageArgs(_crusher));
+            DamageUseCase.TakeDamage(victim, _crush);
             KillMarker.End();
             if (IsAlive(victim))
                 return;

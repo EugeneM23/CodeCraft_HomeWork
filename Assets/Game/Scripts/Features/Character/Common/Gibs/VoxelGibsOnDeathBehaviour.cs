@@ -4,8 +4,9 @@ using Atomic.Entities;
 namespace Game
 {
     /// <summary>
-    /// On death the body becomes voxel flesh (VoxelGibs), thrown from the killing hit. The killer
-    /// is remembered from the last damage event (see GibRules.ReadHit).
+    /// On death the body becomes voxel flesh (VoxelGibs), thrown from the killing hit: the pose is
+    /// read at once, the flesh takes the body's place two frames on. The killer is remembered from
+    /// the last damage event (see GibRules.ReadHit).
     /// </summary>
     public sealed class VoxelGibsOnDeathBehaviour : IEntityInit, IEntityDispose
     {
