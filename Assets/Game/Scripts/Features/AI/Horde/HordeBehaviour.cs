@@ -44,7 +44,7 @@ namespace Game.AIKit.Adapters
         private readonly HordeCorpses[] _corpses = new HordeCorpses[HordeKinds.COUNT];
         private readonly int[] _drawnCounts = new int[HordeKinds.COUNT];
         private readonly Pending[] _pending = new Pending[MAX_PENDING];
-        private readonly HordeTargetSource _targets = new();
+        private readonly HordeTargets _targets = new();
 
         private LevelNav _nav;
         private int _gridGeneration;
@@ -116,7 +116,7 @@ namespace Game.AIKit.Adapters
         public HordeCorpses CorpsesOf(int row) => _corpses[row];
 
         /// <summary>The horde for combat's targeting (valid before Init too: an empty horde).</summary>
-        public HordeTargetSource Targets => _targets;
+        public HordeTargets Targets => _targets;
 
         /// <summary>Crowd shadows (measured separately: off by default).</summary>
         public bool CastShadows

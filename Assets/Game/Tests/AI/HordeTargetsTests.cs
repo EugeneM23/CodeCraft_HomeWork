@@ -7,12 +7,12 @@ using UnityEngine;
 namespace Game.AIKit.Adapters.Tests
 {
     /// <summary>The horde as combat's target source: nearest, ray, versions, area damage, no allocations.</summary>
-    public sealed class HordeTargetSourceTests
+    public sealed class HordeTargetsTests
     {
         private HordeNavGrid _grid;
         private HordeFlowField _field;
         private HordeSimulation _sim;
-        private HordeTargetSource _source;
+        private HordeTargets _source;
 
         [SetUp]
         public void SetUp()
@@ -27,7 +27,7 @@ namespace Game.AIKit.Adapters.Tests
             HordeKind crawler = HordeKind.Crawler;
             crawler.Speed = 0f;
             _sim.SetKind(HordeKinds.CRAWLER, crawler);
-            _source = new HordeTargetSource(_sim);
+            _source = new HordeTargets(_sim);
         }
 
         [TearDown]

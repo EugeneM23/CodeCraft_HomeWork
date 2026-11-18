@@ -12,14 +12,14 @@ namespace Game.AIKit.Adapters
     /// <see cref="IsAlive"/> until then, and its death (corpse, events) comes with that step. Positions are aim points,
     /// the middle of the body. Linear scans over the used slots, no allocations.
     /// </summary>
-    public sealed class HordeTargetSource : IEnemyTargetSource
+    public sealed class HordeTargets : IEnemyTargetSource
     {
         /// <summary>Middle of the body over the feet at render scale 1 (the Regax model), m.</summary>
         public const float BODY_HEIGHT = 1.3f;
 
         private HordeSimulation _simulation;
 
-        public HordeTargetSource(HordeSimulation simulation = null) => _simulation = simulation;
+        public HordeTargets(HordeSimulation simulation = null) => _simulation = simulation;
 
         /// <summary>The simulation answered for (null: an empty horde).</summary>
         public HordeSimulation Simulation
