@@ -3065,7 +3065,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 921101997765551036, guid: 9aa26aeb48dd5dd4f906bfe34d5f0ba9, type: 3}
       propertyPath: _voxelMuzzleSmoke.Opacity
-      value: 0.02
+      value: 0.023
       objectReference: {fileID: 0}
     - target: {fileID: 921101997765551036, guid: 9aa26aeb48dd5dd4f906bfe34d5f0ba9, type: 3}
       propertyPath: _voxelExhaust.LightColor.b
