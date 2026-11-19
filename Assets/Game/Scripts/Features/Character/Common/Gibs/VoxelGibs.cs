@@ -97,6 +97,9 @@ namespace Game
         /// Pieces of flesh still in their first flight: damped while they rise (a sluggish, sticky lift that hangs at
         /// the top), let go once they come down (a heavy drop). Taken out when they fall, settle or after a while.
         /// </summary>
+        /// <summary>Skin colours of a torn body's chunks (filled per death).</summary>
+        private static readonly Color32[] s_skin = new Color32[2];
+
         private static readonly List<Rigidbody> Flying = new(64);
         private static readonly List<float> FlyingSince = new(64);
 
@@ -335,7 +338,32 @@ namespace Game
             if (death.Cluster.Length != config.parts.Length)
                 death.Cluster = new int[config.parts.Length];
             GibRules.RollClusters(LinksOf(config), Roll, Held, death.Cluster);
+            if (config.shellTearsLimbs && death.Hit.Blast)
+                TearLimbs(config, death.Cluster);
             return death;
+        }
+
+        /// <summary>
+        /// A shell's kill: every part its own piece, but parts named alike before the '_' (Torso_L, Torso_R) stay one: the
+        /// body comes apart into head, arms, legs and torso (VoxelGibsConfig.shellTearsLimbs).
+        /// </summary>
+        private static void TearLimbs(VoxelGibsConfig config, int[] cluster)
+        {
+            for (int i = 0; i < cluster.Length; i++)
+                cluster[i] = i;
+            for (int i = 0; i < cluster.Length; i++)
+            {
+                string a = config.parts[i].name ?? "";
+                int cut = a.IndexOf('_');
+                if (cut <= 0)
+                    continue;
+                for (int j = i + 1; j < cluster.Length; j++)
+                {
+                    string b = config.parts[j].name ?? "";
+                    if (b.Length > cut && b[cut] == '_' && string.CompareOrdinal(a, 0, b, 0, cut) == 0)
+                        cluster[j] = cluster[i];
+                }
+            }
         }
 
         /// <summary>Step 2: the voxels are taken and cut into pieces, made switched off; the world builds them at the end of the frame.</summary>
@@ -448,6 +476,17 @@ namespace Game
             VoxelSpray.Goo(wound, Vector3.up * 1.6f + away * 0.5f, config.hitDrops, config.gooSpeed, 0.4f, GooOf(config),
                 config.blood.dropSize, default, Mathf.Min(0.35f, death.Body.extents.x));
             BloodMarker.End();
+
+            // A shell's kill tears the body into big pieces (the user): head, torso, arms and legs as clumps of flesh. The
+            // voxelized skin of a thin, open low-poly body (the zombie) is too sparse to give them by itself.
+            if (config.shellTearsLimbs && death.Hit.Blast)
+            {
+                Vector3 feet = new(death.Body.center.x, death.Body.min.y, death.Body.center.z);
+                Vector3 thrown = new(away.x, 0f, away.z);
+                s_skin[0] = config.skinColor.a > 0f ? config.skinColor : rig.SkinColor;
+                s_skin[1] = Color.Lerp(s_skin[0], Color.black, 0.2f);
+                VoxelSpray.Chunks(feet, death.Body.size.y, thrown.sqrMagnitude > 1e-4f ? thrown.normalized : Vector3.zero, s_skin, GooOf(config));
+            }
         }
 
         /// <summary>Drops in a strand of goo out of a torn seam.</summary>

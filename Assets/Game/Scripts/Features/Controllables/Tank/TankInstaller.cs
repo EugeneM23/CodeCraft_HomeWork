@@ -231,6 +231,8 @@ namespace Game
             entity.AddBehaviour(new PassThroughLoosePiecesBehaviour());
             // Voxel flesh the tracks run over bursts into goo (TankSquashBehaviour).
             entity.AddBehaviour(new TankSquashBehaviour(_rigidbody));
+            // Death goo and burst body parts bloody the skin where they hit (TankBloodBehaviour).
+            entity.AddBehaviour(new TankBloodBehaviour(_rigidbody));
             entity.AddBehaviour<TurretAimBehaviour>();
             entity.AddBehaviour(new TankRecoilBehaviour(_recoilImpulse));
             if (_gunVisual != null)

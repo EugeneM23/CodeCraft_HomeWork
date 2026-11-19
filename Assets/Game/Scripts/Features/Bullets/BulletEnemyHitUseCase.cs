@@ -24,7 +24,17 @@ namespace Game
             }
 
             if (ExplosionUseCase.IsExplosive(bullet))
+            {
+                // No area damage (WeaponSettings.shellAreaDamage off): the monster hit takes the shell's damage, and
+                // if that kills it, it is torn apart rather than falling whole.
+                if (!ExplosionUseCase.AreaDamage)
+                {
+                    targets.Tear(target);
+                    targets.Damage(target, damage, point);
+                }
+
                 ExplosionUseCase.Explode(bullet, point, null, factory);
+            }
             else
                 targets.Damage(target, damage, point);
 

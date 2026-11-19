@@ -77,6 +77,10 @@ namespace Game
         [Tooltip("Size (m) of a turret's box: width, height, length.")]
         public Vector3 turretSize = new(0.35f, 0.25f, 0.5f);
 
+        [Header("Tank shell")]
+        [Tooltip("The cannon shell damages everything in its blast (falloff to the edge). Off (the user, for now): it damages only the enemy it hits; the blast still digs, pushes, flashes and shakes, and the ricochet still bounces on. The air strike's bombs keep their area damage either way.")]
+        public bool shellAreaDamage;
+
         [Header("Ricochet (skill)")]
         [Tooltip("A cannon shell bounces after its blast to the nearest enemy within this range (m), outside the blast.")]
         public float ricochetRange = 15f;

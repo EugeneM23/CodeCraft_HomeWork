@@ -107,6 +107,14 @@ namespace Game.Voxels
         private NativeArray<float4x4> _matrices;
         private NativeArray<float4> _colors;
         private NativeReference<int> _alive;
+
+        /// <summary>Goo that flew into the stain box (<see cref="SetStainBox"/>): where it hit, read with <see cref="TakeStainHits"/>.</summary>
+        private NativeQueue<float3> _stainHits;
+        private readonly System.Collections.Generic.List<Vector3> _stainReady = new(64);
+        private bool _stainOn;
+        private float3 _stainCenter;
+        private quaternion _stainRotation;
+        private float3 _stainHalf;
         private NativeArray<LyingCube> _lyingCubes;
         /// <summary>Per slot, as drawn when drawn instanced (a sinking cube shrunk).</summary>
         private NativeArray<float4x4> _lyingMatrices;
@@ -239,7 +247,7 @@ namespace Game.Voxels
         /// <summary>A drop of blood: one cube that flies, spreads into a tile where it lands and lies there for good. -1 when full.</summary>
         public int Drop(Vector3 position, Vector3 velocity, Color32 color, float size)
         {
-            int cluster = BeginCluster(position, velocity, 0f);
+            int cluster = BeginGoreCluster(position, velocity, 0f);
             if (cluster < 0)
                 return -1;
 
@@ -249,6 +257,34 @@ namespace Game.Voxels
             _clusters[cluster] = c;
             AddCube(cluster, position, size, color);
             return cluster;
+        }
+
+        /// <summary>
+        /// A box (world centre, rotation, half extents) that catches flying goo (<see cref="GooDrop"/>, <see cref="SetGoo"/>):
+        /// a goo clump that comes into it is gone, and where it was goes to the stain hits (<see cref="TakeStainHits"/>).
+        /// The tank sets its hull here each step (TankBloodBehaviour): goo does not collide with the tank, it stains it.
+        /// One box test per flying goo clump in the step's job.
+        /// </summary>
+        public void SetStainBox(Vector3 center, Quaternion rotation, Vector3 halfExtents)
+        {
+            _stainOn = true;
+            _stainCenter = center;
+            _stainRotation = rotation;
+            _stainHalf = halfExtents;
+        }
+
+        public void ClearStainBox() => _stainOn = false;
+
+        /// <summary>
+        /// Where goo came into the stain box in the steps completed since the last call, into <paramref name="into"/>. It never
+        /// waits for the running step (that would stall the main thread on the workers): what it caught comes the next time.
+        /// </summary>
+        public int TakeStainHits(System.Collections.Generic.List<Vector3> into)
+        {
+            int count = _stainReady.Count;
+            into.AddRange(_stainReady);
+            _stainReady.Clear();
+            return count;
         }
 
         /// <summary>A drop of goo: rises slowly, falls heavily, stretched in flight, a tile where it lands. -1 when full.</summary>
@@ -292,6 +328,10 @@ namespace Game.Voxels
             _stepping = false;
             using (s_completeMarker.Auto())
                 _step.Complete();
+
+            // The step is done: the goo it caught is handed over now, so readers never wait on a running step.
+            while (_stainHits.IsCreated && _stainHits.TryDequeue(out float3 hit))
+                _stainReady.Add(hit);
         }
 
         public VoxelDebris(Material material, int capacity, int lyingCapacity = LYING_DEFAULT, int cellCapacity = MAX_CELLS)
@@ -307,6 +347,7 @@ namespace Game.Voxels
             _matrices = new NativeArray<float4x4>(capacity, Allocator.Persistent);
             _colors = new NativeArray<float4>(capacity, Allocator.Persistent);
             _alive = new NativeReference<int>(Allocator.Persistent);
+            _stainHits = new NativeQueue<float3>(Allocator.Persistent);
 
             int lying = math.max(1, lyingCapacity);
             _lyingCubes = new NativeArray<LyingCube>(lying, Allocator.Persistent);
@@ -328,18 +369,50 @@ namespace Game.Voxels
             CreateCells(material, cellCapacity);
         }
 
+        /// <summary>
+        /// Share of the flying store that dirt (anything but gore: earth, crumbs, dust, rubble) may fill; gore (blood drops,
+        /// goo: <see cref="Drop"/>, <see cref="GooDrop"/>, <see cref="BeginGoreCluster"/>) may fill all of it, so the mud a
+        /// tank churns up can never crowd the blood out. 1 (the default) makes no difference between them.
+        /// </summary>
+        public float DirtShare { get; set; } = 1f;
+
+        /// <summary>Clumps of gore and of dirt refused for want of room since the store was made (benchmarks, the debug panel).</summary>
+        public int RefusedGore { get; private set; }
+        public int RefusedDirt { get; private set; }
+
+        private int DirtCapacity => (int)(_capacity * math.saturate(DirtShare));
+
+        /// <summary>Room for this many more cubes of dirt (within <see cref="DirtShare"/>).</summary>
         public bool HasRoom(int cubes)
+        {
+            Complete();
+            return _cubes.IsCreated && _cubes.Length + cubes <= DirtCapacity;
+        }
+
+        /// <summary>Room for this many more cubes of gore (the whole store).</summary>
+        public bool HasGoreRoom(int cubes)
         {
             Complete();
             return _cubes.IsCreated && _cubes.Length + cubes <= _capacity;
         }
 
-        /// <summary>Starts a clump flying; cubes are added to it with <see cref="AddCube"/>. -1 when full.</summary>
-        public int BeginCluster(Vector3 center, Vector3 velocity, float spin = 4f)
+        /// <summary>Starts a clump of dirt flying; cubes are added to it with <see cref="AddCube"/>. -1 when full (past <see cref="DirtShare"/>).</summary>
+        public int BeginCluster(Vector3 center, Vector3 velocity, float spin = 4f) => Begin(center, velocity, spin, false);
+
+        /// <summary>Starts a clump of gore (goo, blood) flying: it may take the share of the store dirt may not. -1 when full.</summary>
+        public int BeginGoreCluster(Vector3 center, Vector3 velocity, float spin = 4f) => Begin(center, velocity, spin, true);
+
+        private int Begin(Vector3 center, Vector3 velocity, float spin, bool gore)
         {
             Complete();
-            if (!_clusters.IsCreated || _clusters.Length >= _capacity || _cubes.Length >= _capacity)
+            if (!_clusters.IsCreated || _clusters.Length >= _capacity || _cubes.Length >= (gore ? _capacity : DirtCapacity))
+            {
+                if (gore)
+                    RefusedGore++;
+                else
+                    RefusedDirt++;
                 return -1;
+            }
 
             _clusters.Add(new Cluster
             {
@@ -464,7 +537,12 @@ namespace Game.Voxels
                 Hits = _hits,
                 DeltaTime = dt,
                 Gravity = (float3)Physics.gravity * GRAVITY_SCALE,
-                Seed = _seed
+                Seed = _seed,
+                StainOn = _stainOn,
+                StainCenter = _stainCenter,
+                StainInverse = math.inverse(_stainRotation),
+                StainHalf = _stainHalf,
+                StainHits = _stainHits.AsParallelWriter()
             }.Schedule(clusters, 128, handle);
 
             handle = new ShatterJob
@@ -573,6 +651,7 @@ namespace Game.Voxels
             if (_matrices.IsCreated) _matrices.Dispose();
             if (_colors.IsCreated) _colors.Dispose();
             if (_alive.IsCreated) _alive.Dispose();
+            if (_stainHits.IsCreated) _stainHits.Dispose();
             if (_lyingCubes.IsCreated) _lyingCubes.Dispose();
             if (_lyingMatrices.IsCreated) _lyingMatrices.Dispose();
             if (_lyingColors.IsCreated) _lyingColors.Dispose();

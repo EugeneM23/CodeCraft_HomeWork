@@ -68,7 +68,7 @@ namespace Game.Voxels
             }
 
             int dust = volume > DUST_VOLUME ? MIN_DUST + (int)math.round(spread * MIN_DUST) : 0;
-            if (!HasRoom(total + dust) || _clusters.Length + k + crumbs + dust > _capacity)
+            if (!HasRoom(total + dust) || _clusters.Length + k + crumbs + dust > DirtCapacity)
                 return 0;
 
             float speed = earth.Velocity.magnitude;

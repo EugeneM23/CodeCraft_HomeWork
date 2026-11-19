@@ -22,6 +22,9 @@ namespace Game.Voxels
     [DefaultExecutionOrder(10000)]
     public sealed class VoxelWorld : MonoBehaviour, IVoxelLateUpdate
     {
+        /// <summary>Share of the flying debris store dirt may fill (VoxelDebris.DirtShare): the rest is kept for gore.</summary>
+        public const float DIRT_SHARE = 0.6f;
+
         /// <summary>Layer for pieces that broke off. Rubble collides with itself (Debris does not).</summary>
         public const int PieceLayer = 16;
 
@@ -286,6 +289,8 @@ namespace Game.Voxels
             s_instance = this;
             ChunkMaterial = LoadMaterial(CHUNK_MATERIAL, false);
             Debris = new VoxelDebris(LoadMaterial(DEBRIS_MATERIAL, true), 24000, VoxelDebris.LYING_DEFAULT);
+            // Mud, crumbs and dust may fill 60 % of the flying store at most: 40 % is always there for blood and goo.
+            Debris.DirtShare = DIRT_SHARE;
             VoxelBody.Prewarm();
             SetEarlyHook(true);
         }

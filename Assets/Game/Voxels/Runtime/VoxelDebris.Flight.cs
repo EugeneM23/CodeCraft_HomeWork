@@ -80,16 +80,38 @@ namespace Game.Voxels
         [BurstCompile]
         private struct IntegrateJob : IJobParallelFor
         {
+            /// <summary>Seconds a goo clump flies before the stain box can catch it.</summary>
+            private const float STAIN_AFTER = 0.1f;
+
             public NativeArray<Cluster> Clusters;
             [ReadOnly] public NativeArray<RaycastHit> Hits;
             public float DeltaTime;
             public float3 Gravity;
             public uint Seed;
+            /// <summary>The stain box (SetStainBox): flying goo inside it is caught.</summary>
+            public bool StainOn;
+            public float3 StainCenter;
+            public quaternion StainInverse;
+            public float3 StainHalf;
+            public NativeQueue<float3>.ParallelWriter StainHits;
 
             public void Execute(int i)
             {
                 Cluster cluster = Clusters[i];
                 cluster.Life -= DeltaTime;
+
+                // Not in its first tenth of a second: goo burst out from under the tank flies out first (what it meets
+                // on the way out still stains the side).
+                if (StainOn && (cluster.Flags & GOO) != 0 && cluster.Resting == 0 && cluster.Flight > STAIN_AFTER &&
+                    math.all(math.abs(math.mul(StainInverse, cluster.Position - StainCenter)) <= StainHalf))
+                {
+                    // Goo on the tank: it stains the skin there (TankBloodBehaviour) and is gone from the air.
+                    StainHits.Enqueue(cluster.Position);
+                    cluster.Life = 0f;
+                    cluster.Flags &= ~KEEP;
+                    Clusters[i] = cluster;
+                    return;
+                }
                 bool dust = (cluster.Flags & DUST) != 0;
                 float3 gravity = dust ? Gravity * DUST_GRAVITY : Gravity;
 
@@ -353,8 +375,23 @@ namespace Game.Voxels
                     slot = state.Count++;
                 else
                 {
+                    // Dirt goes before gore: a few slots ahead are looked at for dirt to overwrite.
                     slot = state.Overwrite;
-                    state.Overwrite = (state.Overwrite + 1) % capacity;
+                    if ((Lying[slot].Flags & GORE) != 0 && (settledCluster.Flags & (GOO | SPLAT)) == 0)
+                    {
+                        for (int probe = 1; probe < GORE_PROBE; probe++)
+                        {
+                            int next = (state.Overwrite + probe) % capacity;
+                            if ((Lying[next].Flags & GORE) == 0)
+                            {
+                                slot = next;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (slot == state.Overwrite)
+                        state.Overwrite = (state.Overwrite + 1) % capacity;
 
                     // The cube overwritten may have been sinking: it is not any more, and no longer counts.
                     LyingCube old = Lying[slot];
@@ -382,7 +419,7 @@ namespace Game.Voxels
                     Group = group,
                     Born = Time,
                     SinkTime = SINK_TIME,
-                    Flags = (settledCluster.Flags & LAID) | PENDING,
+                    Flags = (settledCluster.Flags & LAID) | PENDING | ((settledCluster.Flags & (GOO | SPLAT)) != 0 ? GORE : 0),
                     Anchor = anchor,
                     Cell = cell
                 };

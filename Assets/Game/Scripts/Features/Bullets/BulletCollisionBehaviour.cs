@@ -104,7 +104,12 @@ namespace Game
                     _bullet.GetMoveDirection().Value);
 
             if (ExplosionUseCase.IsExplosive(_bullet))
+            {
+                // No area damage (WeaponSettings.shellAreaDamage off): the enemy hit takes the shell's damage itself.
+                if (!ExplosionUseCase.AreaDamage && target != null && target.HasDamageableTag())
+                    DamageUseCase.TakeDamage(target, new TakeDamageArgs(_bullet));
                 ExplosionUseCase.Explode(_bullet, collision.GetContact(0).point, collision.collider, _gameFactory);
+            }
             else if (target != null && target.HasDamageableTag())
             {
                 DamageUseCase.TakeDamage(target, new TakeDamageArgs(_bullet));

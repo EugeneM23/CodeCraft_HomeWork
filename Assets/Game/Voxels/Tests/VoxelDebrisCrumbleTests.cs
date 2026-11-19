@@ -47,7 +47,7 @@ namespace Game.Voxels.Tests
             _debris.GetClusterSizes(sizes);
             Assert.That(sizes.Count, Is.GreaterThan(1), "it hit at 12 m/s and broke");
             // A hit harder than DUST_SPEED adds one puff of 6-12 dust cubes; none of the clump's own is lost.
-            Assert.That(Sum(sizes) + _debris.LyingCount, Is.InRange(125 + 6, 125 + 12), "no cube lost, only a puff of dust added");
+            Assert.That(Sum(sizes) + _debris.LyingCount, Is.InRange(125 + 3, 125 + 5), "no cube lost, only a puff of dust added (3-5 cubes)");
         }
 
         [TestCase(300, 15f, 8)]
@@ -74,7 +74,7 @@ namespace Game.Voxels.Tests
             int dust = cubes + _debris.LyingCount - 343;
             Assert.That(pieces, Is.InRange(6, 8), "pieces");
             Assert.That(crumbs - dust, Is.InRange(343 * 10 / 100, 343 * 30 / 100), "crumbs: 15-20% of the clump, give or take");
-            Assert.That(dust, Is.InRange(6, 12), "one puff of dust (dust cubes are extra, not taken from the clump)");
+            Assert.That(dust, Is.InRange(3, 5), "one small puff of dust (extra, not taken from the clump; cut to 3-5 to leave room for blood)");
         }
 
         [Test]
