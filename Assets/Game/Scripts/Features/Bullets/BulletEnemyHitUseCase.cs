@@ -38,14 +38,29 @@ namespace Game
             }
             else
             {
+                // A plain bullet (the machine gun) goes clean through: the monster takes its damage, blood bursts out
+                // along the shot, and the bullet flies on to the next one.
                 targets.Damage(target, damage, point);
-                // A plain bullet's hot point cools where it struck the monster, as on any other hit.
-                Vector3 back = bullet.TryGetMoveDirection(out var direction) ? -direction.Value : Vector3.up;
-                BulletHotSpots.Emit(point, back);
+                Vector3 shot = bullet.TryGetMoveDirection(out var direction) ? direction.Value : Vector3.forward;
+                SprayThrough(point, shot);
+                return false;
             }
 
             SpawnUseCase.UnSpawnEntity(factory, bullet);
             return true;
         }
+
+        private const int THROUGH_DROPS = 14;
+        private const float THROUGH_SPEED = 5f;
+        private const float THROUGH_DROP_SIZE = 0.07f;
+
+        private static readonly Color32[] Blood =
+        {
+            Voxels.VoxelBlood.Colour(0, 0), Voxels.VoxelBlood.Colour(1, 0), Voxels.VoxelBlood.Colour(2, 0)
+        };
+
+        /// <summary>A bullet through a monster: an exit-wound jet of blood along the shot, a little up and aside.</summary>
+        public static void SprayThrough(Vector3 point, Vector3 shot) =>
+            Voxels.VoxelSpray.ShotGoo(point, shot, THROUGH_DROPS, THROUGH_SPEED, 0.5f, Blood, THROUGH_DROP_SIZE, default, 0.15f);
     }
 }

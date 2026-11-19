@@ -216,10 +216,16 @@ namespace Game
 
             if (!ReferenceEquals(target, _pierced))
             {
-                if (!BulletShotUseCase.TryPierce(_bullet))
+                // A plain bullet (the machine gun) always goes through a monster, blood bursting out along the shot;
+                // a shell only as far as its pierce count lets it.
+                bool plain = !ExplosionUseCase.IsExplosive(_bullet) && !AmmoUseCase.IsShell(_bullet);
+                if (!plain && !BulletShotUseCase.TryPierce(_bullet))
                     return false;
                 _pierced = target;
                 DamageUseCase.TakeDamage(target, new TakeDamageArgs(_bullet));
+                if (plain)
+                    BulletEnemyHitUseCase.SprayThrough(collider != null ? collider.ClosestPoint(_bullet.GetTransform().position)
+                        : _bullet.GetTransform().position, _bullet.GetMoveDirection().Value);
             }
 
             if (_own != null && collider != null)
