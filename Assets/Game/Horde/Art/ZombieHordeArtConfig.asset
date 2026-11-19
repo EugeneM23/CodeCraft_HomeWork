@@ -1,0 +1,54 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d219057b3ef49f4cb2fc27cd64c6bb6, type: 3}
+  m_Name: ZombieHordeArtConfig
+  m_EditorClassIdentifier: Game.Horde::Game.Horde.HordeArtConfig
+  mesh: {fileID: 4300000, guid: 7df96b0e1d0f5fd4ab926136ba247f07, type: 2}
+  corpseMesh: {fileID: 4300000, guid: 7eb950f3e77cf7d47a14417227a5a906, type: 2}
+  material: {fileID: 2100000, guid: e9a0140496c3d264d97c5b3f6edee997, type: 2}
+  vat: {fileID: 2800000, guid: 6b0538583366f8b4d90c1e7b9d5d86f0, type: 2}
+  vertexCount: 3957
+  frameCount: 257
+  run:
+    start: 0
+    count: 121
+    frameRate: 30
+    loop: 1
+  attack:
+    start: 121
+    count: 75
+    frameRate: 30
+    loop: 1
+  idle:
+    start: 196
+    count: 61
+    frameRate: 30
+    loop: 1
+  bounds:
+    m_Center: {x: 0.31518245, y: 2.4268835, z: 0.9871408}
+    m_Extent: {x: 2.3476648, y: 2.6748314, z: 2.5485513}
+  triangles: 1862
+  sourceTriangles: 1862
+  meshLod: 0
+  bodyScale: 1.8269231
+  runClipSpeed: 4.5
+  kindTints:
+  - {r: 0, g: 0, b: 0, a: 0}
+  - {r: 0.62, g: 0.85, b: 0.3, a: 1}
+  kindEmission:
+  - {r: 0, g: 0, b: 0, a: 1}
+  - {r: 0.05, g: 0.1, b: 0, a: 1}
+  acidMesh: {fileID: 0}
+  acidMaterial: {fileID: 2100000, guid: 4f7a4293015da414aad97f2a7dc5bb7e, type: 2}
+  acidSize: 0.35
+  acidColor: {r: 0.35, g: 0.9, b: 0.05, a: 1}
+  acidEmission: {r: 0.25, g: 0.6, b: 0, a: 1}

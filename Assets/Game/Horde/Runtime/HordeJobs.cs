@@ -1048,7 +1048,7 @@ namespace Game.Horde
             if (d < kind.BackOff)
                 return -toTank / d * speed;
             // In range and the hull in sight: it stands and shoots. Otherwise it walks in with the crowd.
-            if (d <= kind.StopDistance && Grid.LineOfSight(p + new float3(0f, MOUTH * kind.RenderScale, 0f), Tank.Center))
+            if (d <= kind.StopDistance && Grid.LineOfSight(p + new float3(0f, MOUTH * kind.RenderScale * Settings.BodyScale, 0f), Tank.Center))
                 return float2.zero;
             float2 dir = Grid.FlowOf(cell);
             if (math.lengthsq(dir) < 0.25f)
@@ -1125,7 +1125,7 @@ namespace Game.Horde
                 for (int a = 0; a < Areas.Length; a++)
                 {
                     HordeAreaDamage area = Areas[a];
-                    float dist = math.distance(p + new float3(0f, CHEST * kind.RenderScale, 0f), area.Center);
+                    float dist = math.distance(p + new float3(0f, CHEST * kind.RenderScale * Settings.BodyScale, 0f), area.Center);
                     if (dist >= area.Radius + r)
                         continue;
                     float edge = math.saturate(dist / area.Radius);
@@ -1219,7 +1219,7 @@ namespace Game.Horde
                     if (cd <= 0f)
                     {
                         cd = 0f;
-                        float3 mouth = p + new float3(0f, MOUTH * kind.RenderScale, 0f);
+                        float3 mouth = p + new float3(0f, MOUTH * kind.RenderScale * Settings.BodyScale, 0f);
                         if (Tank.Present && math.distance(mouth.xz, Tank.Center.xz) <= kind.ShotRange
                             && Grid.LineOfSight(mouth, Tank.Center))
                         {
@@ -1469,6 +1469,8 @@ namespace Game.Horde
         public float EmergeTime;
         /// <summary>Height of the bounding sphere centre over the feet, and its radius (at render scale 1).</summary>
         public float2 CullSphere;
+        /// <summary>Model height over the Regax's at the same render scale (<see cref="HordeSettings.BodyScale"/>).</summary>
+        public float BodyScale;
         public ProfilerMarker Marker;
 
         public void Execute(int startIndex, int count)
@@ -1486,8 +1488,8 @@ namespace Game.Horde
                 float3 p = Position[i];
                 if (Cull)
                 {
-                    float3 c = p + new float3(0f, CullSphere.x * kind.RenderScale, 0f);
-                    float radius = CullSphere.y * kind.RenderScale;
+                    float3 c = p + new float3(0f, CullSphere.x * kind.RenderScale * BodyScale, 0f);
+                    float radius = CullSphere.y * kind.RenderScale * BodyScale;
                     bool visible = true;
                     for (int k = 0; k < Planes.Length; k++)
                     {
@@ -1504,7 +1506,7 @@ namespace Game.Horde
                 }
 
                 if (state == HordeState.Emerging)
-                    p.y -= kind.EmergeDepth * math.saturate(StateTime[i] / math.max(EmergeTime, 0.01f));
+                    p.y -= kind.EmergeDepth * BodyScale * math.saturate(StateTime[i] / math.max(EmergeTime, 0.01f));
 
                 HordeClip clip = state == HordeState.Attack ? Attack
                     : state == HordeState.Emerging || math.lengthsq(Velocity[i]) < IDLE_SPEED_SQ ? Idle : Run;

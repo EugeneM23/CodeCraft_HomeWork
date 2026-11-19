@@ -6,6 +6,7 @@
 //   "arenabench_elite"   bool    the big Regax (the horde's EliteRegax kind) among them                 default true
 //   "arenabench_waves"   string  asset path of an ArenaWaves to run instead of the synthetic one   default none
 //   "arenabench_shadows" bool    crowd casts shadows                                              default false
+//   "arenabench_art"     string  asset path of the HordeArtConfig      default Assets/Game/Horde/Art/ZombieHordeArtConfig.asset
 // It returns at once: builds the horde (HordeSpawn.CreateInScene, no damage to the tank) and, once it is up, the
 // arena director on a 40 x 40 m EdgeBurrowsLayout round the tank (16 burrows; Begin rebuilds the level grid over it),
 // waits for >= 10 s of Play and the live count near the limit, then drives the tank forward/back (gas 1, flip every
@@ -64,8 +65,9 @@ for (int i = 0; i < strikes.Length; i++) { strikeWasOn[i] = (bool)onField.GetVal
 // ---------- Horde ----------
 Game.AIKit.Adapters.HordeBehaviour horde = null;
 GameObject hordeObject = null;
-var art = AssetDatabase.LoadAssetAtPath<Game.Horde.HordeArtConfig>("Assets/Game/Horde/Art/RegaxHordeArtConfig.asset");
-if (art == null) return "ERROR no Assets/Game/Horde/Art/RegaxHordeArtConfig.asset (Tools/Horde/Bake Regax VAT)";
+string artPath = domain.GetData("arenabench_art") as string ?? "Assets/Game/Horde/Art/ZombieHordeArtConfig.asset";
+var art = AssetDatabase.LoadAssetAtPath<Game.Horde.HordeArtConfig>(artPath);
+if (art == null) return "ERROR no " + artPath + " (Tools/Horde/Bake Zombie VAT or Bake Regax VAT)";
 foreach (var old in UnityEngine.Object.FindObjectsByType<Game.AIKit.Adapters.HordeInstaller>(FindObjectsSortMode.None)) UnityEngine.Object.Destroy(old.gameObject);
 {
     var options = new Game.AIKit.Adapters.HordeOptions { capacity = 512, population = 0, tankDamageScale = 0f, castShadows = shadows };

@@ -22,7 +22,7 @@ namespace Game.Tests
     public sealed class CombatSandboxTests
     {
         private const string SCENE = "Assets/Game/Voxels/Scenes/VoxelSandbox.unity";
-        private const string HORDE_ART = "Assets/Game/Horde/Art/RegaxHordeArtConfig.asset";
+        private const string HORDE_ART = "Assets/Game/Horde/Art/ZombieHordeArtConfig.asset";
         private const int SKILL_TARGET = 3;
         private const int MAX_PICKS = 40;
         private const int SHOT_WIDTH = 1600;
@@ -151,7 +151,7 @@ namespace Game.Tests
         private HordeBehaviour CreateHorde(int population)
         {
             var art = AssetDatabase.LoadAssetAtPath<HordeArtConfig>(HORDE_ART);
-            Assert.That(art, Is.Not.Null, HORDE_ART + " (Tools/Horde/Bake Regax VAT)");
+            Assert.That(art, Is.Not.Null, HORDE_ART + " (Tools/Horde/Bake Zombie VAT)");
 
             foreach (HordeInstaller old in Object.FindObjectsByType<HordeInstaller>(FindObjectsSortMode.None))
                 Object.Destroy(old.gameObject);

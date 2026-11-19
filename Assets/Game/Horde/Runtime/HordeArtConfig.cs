@@ -3,7 +3,7 @@ using UnityEngine;
 namespace Game.Horde
 {
     /// <summary>
-    /// Baked art of a horde monster (written by <c>Tools/Horde/Bake Regax VAT</c>): the low-poly
+    /// Baked art of a horde monster (written by <c>Tools/Horde/Bake Regax VAT</c> or <c>Bake Zombie VAT</c>): the low-poly
     /// crowd mesh with the vertex id in UV1, its vertex animation texture (positions, then normals,
     /// one row per frame), the corpse mesh in the death pose, the material and the clip rows.
     /// </summary>
@@ -42,6 +42,13 @@ namespace Game.Horde
         [Tooltip("Mesh LOD level of the source the crowd mesh was cut from (0 = full mesh).")]
         public int meshLod;
 
+        [Header("Size")]
+        [Tooltip("Height of the model over the Regax's (2.6 m) at the same render scale: the simulation's mouth, chest, aim point, culling sphere and emerging depth follow it. Regax: 1.")]
+        public float bodyScale = 1f;
+
+        [Tooltip("Walking speed the run clip was authored for at render scale 1, m/s; 0 keeps the horde options' own (5).")]
+        public float runClipSpeed;
+
         [Header("Kinds")]
         [Tooltip("Tint per kind row (0 Crawler, 1 Spitter...); alpha 0 or a missing row keeps the material's colour. The scale comes from the kind table.")]
         public Color[] kindTints = { new(0f, 0f, 0f, 0f), new(0.32f, 0.3f, 0.04f, 1f) };
@@ -52,6 +59,9 @@ namespace Game.Horde
         [Header("Acid")]
         [Tooltip("Mesh of a shot in flight; empty: Unity's built-in sphere.")]
         public Mesh acidMesh;
+
+        [Tooltip("Material of a shot in flight (Game/HordeVAT, no albedo texture); empty: the crowd's material.")]
+        public Material acidMaterial;
 
         [Tooltip("Size of a shot, m.")]
         public float acidSize = 0.35f;

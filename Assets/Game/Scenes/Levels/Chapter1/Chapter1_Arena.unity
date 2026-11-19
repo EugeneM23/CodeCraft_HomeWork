@@ -593,7 +593,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13ab3a59f68c07a4393296d8e1685968, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Game.AIKit.Adapters::Game.AIKit.Adapters.HordeInstaller
-  _art: {fileID: 11400000, guid: 3bf69d197f76fb64b8d433a2064a2ff3, type: 2}
+  _art: {fileID: 11400000, guid: a2122e43eab4ee74bb8bd2bdb2a716e2, type: 2}
   _options:
     capacity: 8192
     population: 0
