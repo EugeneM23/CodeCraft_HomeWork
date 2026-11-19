@@ -55,8 +55,10 @@ namespace Game.Voxels.Tests
             yield return new WaitForFixedUpdate();
             Assert.IsNull(standing.GetComponent<Rigidbody>(), "the post still holds the house up");
 
-            // A shell (9 m/s) or a bomb's push (24 m/s) takes the post: the whole house is loose now.
-            VoxelDamage.Blast(post + Vector3.up * 0.3f, 0.6f, force);
+            // A shell (9 m/s) or a bomb's push (24 m/s) takes the post: the whole house is loose now. This is about
+            // how the loose house falls, not about its skeleton: the post's hardness is taken off, the bite is whole.
+            standing.SetHardness(default);
+            standing.CarveSphere(post + Vector3.up * 0.3f, 0.6f, force, VoxelDamage.BLAST_DEBRIS, true);
             yield return null;
 
             // The house is by far the heaviest piece; it stays that body even when it breaks on landing.

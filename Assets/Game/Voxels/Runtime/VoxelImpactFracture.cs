@@ -33,14 +33,14 @@ namespace Game.Voxels
         private const int MAX_STRUCTURE_PIECES = 16;
 
         /// <summary>A building's pieces break again this many times over (rubble ends as clods and crumbs).</summary>
-        private const int STRUCTURE_MAX_GENERATION = 3;
+        private const int STRUCTURE_MAX_GENERATION = 4;
 
         /// <summary>A building's piece landing faster than this (m/s, a fall of about a storey at 2 g) breaks up evenly.</summary>
         private const float HARD_LANDING = 6f;
 
         /// <summary>...into one piece per this many voxels, up to HARD_MAX_PIECES.</summary>
-        private const int HARD_PIECE_VOXELS = 250;
-        private const int HARD_MAX_PIECES = 32;
+        private const int HARD_PIECE_VOXELS = 120;
+        private const int HARD_MAX_PIECES = 48;
 
         /// <summary>
         /// Most voxels breaking up in one frame: a falling house's pieces that land together break
@@ -81,6 +81,7 @@ namespace Game.Voxels
         {
             _broken = false;
             _rigidbody = null;
+            _still = 0f;
             Arm();
         }
 
@@ -112,7 +113,39 @@ namespace Game.Voxels
             // storey drifts down like cardboard.
             if (_body != null && _body.HasStrength && _body.IsLoose && (_rigidbody != null || TryGetComponent(out _rigidbody)) &&
                 !_rigidbody.isKinematic)
+            {
                 _rigidbody.AddForce(Physics.gravity * STRUCTURE_EXTRA_GRAVITY, ForceMode.Acceleration);
+                Rest(deltaTime);
+            }
+        }
+
+        /// <summary>A building's piece lying this long (s) still goes to crumbs, or breaks up (VoxelBody.BreakUpRubble).</summary>
+        private const float RUBBLE_REST = 0.8f;
+
+        private const float STILL_SPEED = 0.25f;
+        private const float STILL_SPIN = 0.5f;
+
+        private float _still;
+
+        /// <summary>A building's piece that has come to rest breaks up: no lumps of house lie about (user, 2026-11-19).</summary>
+        private void Rest(float deltaTime)
+        {
+            // A whole storey or house that came down lies as it fell (VoxelBody.RUBBLE_BREAK_MAX).
+            if (_body.SolidCount > VoxelBody.RUBBLE_BREAK_MAX)
+            {
+                _still = 0f;
+                return;
+            }
+
+            bool still = _rigidbody.IsSleeping() ||
+                         (_rigidbody.linearVelocity.sqrMagnitude < STILL_SPEED * STILL_SPEED &&
+                          _rigidbody.angularVelocity.sqrMagnitude < STILL_SPIN * STILL_SPIN);
+            _still = still ? _still + deltaTime : 0f;
+            if (_still < RUBBLE_REST)
+                return;
+
+            // Its own frame had no room: it tries again a little later.
+            _still = _body.BreakUpRubble() ? 0f : RUBBLE_REST * 0.5f;
         }
 
         /// <summary>Gravity a building's piece gets on top of the world's: it falls at twice g.</summary>
@@ -258,9 +291,10 @@ namespace Game.Voxels
             float radius = Mathf.Min(CRUSH_MAX_RADIUS, CRUSH_PER_ENERGY * Mathf.Pow(energy / spots, 1f / 3f));
             for (int k = 0; k < spots && s_crushSpots < FRAME_CRUSH_SPOTS; k++, s_crushSpots++)
             {
-                target.CarveSphere(Spots[k], radius, 2f, CRUSH_DEBRIS);
+                // A storey's weight, not a shell: the whole bite (only the skeleton's hardness holds it back).
+                target.CarveSphere(Spots[k], radius, 2f, CRUSH_DEBRIS, true);
                 if (_body != null && _body.IsCreated)
-                    _body.CarveSphere(Spots[k], radius * 0.7f, 2f, CRUSH_DEBRIS / 2);
+                    _body.CarveSphere(Spots[k], radius * 0.7f, 2f, CRUSH_DEBRIS / 2, true);
             }
         }
     }

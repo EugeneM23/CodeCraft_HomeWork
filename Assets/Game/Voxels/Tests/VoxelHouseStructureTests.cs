@@ -190,9 +190,10 @@ namespace Game.Voxels.Tests
             List<Rigidbody> pieces = Pieces();
             float biggest = pieces.Count > 0 ? pieces.Max(r => r.mass) : 0f;
             Debug.Log($"[Structure] upper: ground floor {ground} -> {(house != null ? house.SolidCount : 0)}, pieces {pieces.Count} biggest {biggest:F0}");
-            // PhysX lands them a little differently each run: 20–29 % of the ground floor goes, the
-            // biggest piece is 2–12 t of the ~50 t that fell.
-            Assert.That(house == null || house.SolidCount < ground * 0.85f, "the falling storeys pressed the ground floor in");
+            // PhysX lands them a little differently each run: 11–24 % of the ground floor goes (20–29 % before the
+            // skeleton: its ring beam and floor edges take part of the crush, VoxelStructure), the biggest piece is
+            // 2–12 t of the ~50 t that fell.
+            Assert.That(house == null || house.SolidCount < ground * 0.92f, "the falling storeys pressed the ground floor in");
             Assert.That(biggest, Is.LessThan(15000f), "the storeys broke up as they landed");
         }
 
@@ -285,19 +286,23 @@ namespace Game.Voxels.Tests
             yield return null;
             Assert.AreEqual(0, house.LastSolveIslands, "on whole ground the house stands");
 
-            // The ground under the back-right corner goes 2.5 × 2.5 m, a metre deep.
+            // The ground under the back-right corner goes 3.5 × 3.5 m, a metre deep: an air bomb's crater (4 m round)
+            // at the corner. The skeleton's piers and beams (VoxelStructure) hold a corner over a smaller hole.
             Bounds b = house.WorldBounds;
-            for (float x = b.max.x - 2.5f; x <= b.max.x + 0.4f; x += 0.2f)
-            for (float zz = b.max.z - 2.5f; zz <= b.max.z + 0.4f; zz += 0.2f)
+            int standing = house.SolidCount;
+            for (float x = b.max.x - 3.5f; x <= b.max.x + 0.4f; x += 0.2f)
+            for (float zz = b.max.z - 3.5f; zz <= b.max.z + 0.4f; zz += 0.2f)
             for (float y = -0.9f; y <= -0.05f; y += 0.2f)
                 ground.Dig(new Vector3(x, y, zz), 0.2f, Vector3.zero, 0);
-            house.MarkStructureDirty(new Vector3(b.max.x - 1.2f, 0f, b.max.z - 1.2f), 2.5f);
+            house.MarkStructureDirty(new Vector3(b.max.x - 1.7f, 0f, b.max.z - 1.7f), 3.5f);
             for (int i = 0; i < 20; i++)
                 yield return null;
 
             List<Rigidbody> pieces = Pieces();
-            Debug.Log($"[Structure] crater: pieces {string.Join(",", pieces.Select(r => r.mass.ToString("F0")))}");
-            Assert.That(pieces.Any(r => r.mass > 150f), "the corner over the crater fell");
+            int lost = standing - (house != null ? house.SolidCount : 0);
+            Debug.Log($"[Structure] crater: pieces {string.Join(",", pieces.Select(r => r.mass.ToString("F0")))} lost {lost}");
+            // It falls as a piece, or (a scrap under VoxelBody.RUBBLE_BODY_MIN voxels) as crumbs where it was.
+            Assert.That(pieces.Any(r => r.mass > 150f) || lost > 100, "the corner over the crater fell");
         }
 
         [UnityTest]
