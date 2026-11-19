@@ -129,8 +129,11 @@ namespace Game
         /// <summary>The main gun. For CombatPoolPrewarm: the muzzle smoke comes as often as it fires.</summary>
         public MonoEntity Cannon => _cannon;
 
-        /// <summary>Pooled burst put at the muzzle on every shot of the cannon. For CombatPoolPrewarm.</summary>
-        public MonoEntity MuzzleSmoke => _muzzleSmoke;
+        /// <summary>
+        /// Pooled particle burst put at the muzzle on every shot of the cannon, or null while it is switched off
+        /// (Muzzle Smoke (voxel) → Particle Burst; the voxel fire and smoke replace it). For CombatPoolPrewarm.
+        /// </summary>
+        public MonoEntity MuzzleSmoke => _voxelMuzzleSmoke == null || _voxelMuzzleSmoke.ParticleBurst ? _muzzleSmoke : null;
 
         /// <summary>Pooled blast the tank goes up in. For CombatPoolPrewarm.</summary>
         public MonoEntity ExplosionVfx => _explosionVfx;
@@ -248,6 +251,8 @@ namespace Game
             }
             entity.AddBehaviour(new TankMuzzleSmokeBehaviour(gameContext, _muzzleSmoke, _muzzleWisp, _voxelMuzzleSmoke));
             entity.AddBehaviour(new TankVoxelMuzzleSmokeBehaviour(_voxelMuzzleSmoke));
+            // Voxel flame, sparks and a flash at the muzzle on every shot, in front of the voxel smoke.
+            entity.AddBehaviour(new MuzzleFireBehaviour(true));
             if (_hullCollider != null)
                 entity.AddBehaviour(new TankSmokeHullBehaviour(_hullCollider, _rigidbody));
             // Shift on the gas: the tracks spin and throw earth back; full gas rams harder.

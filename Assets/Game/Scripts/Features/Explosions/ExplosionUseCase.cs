@@ -34,7 +34,9 @@ namespace Game
         /// </summary>
         public static bool AreaDamage => CombatConfig.Load().Weapons.shellAreaDamage;
 
-        public static void Explode(IEntity projectile, Vector3 point, Collider hit, GameFactory factory)
+        /// <param name="normal">The struck surface's normal where known (zero: up); the HE spark burst fans out of it.</param>
+        public static void Explode(IEntity projectile, Vector3 point, Collider hit, GameFactory factory,
+            Vector3 normal = default)
         {
             float radius = projectile.GetExplosionRadius();
 
@@ -46,6 +48,10 @@ namespace Game
             // The shell's own blast sound (weapons.shell_hit); the generic one for this Exploded is skipped then.
             GameSignals.RaiseShellExploded(point);
             ExplosionEvents.Raise(point, radius);
+
+            // An HE shell: a big spray of sparks and a hot point, like a bullet's hit only more.
+            if (ShellHitSparksUseCase.IsHighExplosive(projectile))
+                ShellHitSparksUseCase.Emit(point, normal);
 
             // A crater in anything made of voxels: walls, buildings, the tank's skin.
             VoxelDamage.Blast(point, radius * VOXEL_CRATER_SHARE, VOXEL_BLAST_SPEED);
