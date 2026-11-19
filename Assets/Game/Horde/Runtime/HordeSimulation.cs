@@ -23,7 +23,7 @@ namespace Game.Horde
     /// </para>
     /// No managed allocations after construction.
     /// </summary>
-    public sealed class HordeSimulation : IDisposable
+    public sealed partial class HordeSimulation : IDisposable
     {
         /// <summary>A step never integrates more than this (a hitch must not teleport the crowd through walls).</summary>
         public const float MAX_DELTA_TIME = 0.05f;

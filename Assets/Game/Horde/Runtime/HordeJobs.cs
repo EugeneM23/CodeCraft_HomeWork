@@ -828,7 +828,8 @@ namespace Game.Horde
 
             for (int i = 0; i < Position.Length; i++)
             {
-                if (!HordeStates.IsLive(State[i]))
+                // Riders are up on the tank: the crowd neither pushes them nor is pushed by them.
+                if (!HordeStates.IsLive(State[i]) || State[i] == HordeState.Riding)
                 {
                     CellIndex[i] = -1;
                     continue;
@@ -915,7 +916,7 @@ namespace Game.Horde
                 if (state != HordeState.Walk && state != HordeState.Attack)
                 {
                     NextPosition[i] = p;
-                    if (state == HordeState.Emerging)
+                    if (state == HordeState.Emerging || state == HordeState.Riding)
                     {
                         Velocity[i] = float2.zero;
                         AnimTime[i] += DeltaTime;
@@ -1134,7 +1135,7 @@ namespace Game.Horde
                         shove += math.normalizesafe(p.xz - area.Center.xz, new float2(0f, 1f)) * (area.Push * (1f - edge));
                 }
 
-                if (math.lengthsq(shove) > 1e-4f)
+                if (state != HordeState.Riding && math.lengthsq(shove) > 1e-4f)
                 {
                     float2 to = p.xz + shove;
                     if (Grid.CanTravel(p.xz, to))
@@ -1151,6 +1152,10 @@ namespace Game.Horde
                     Die(i, p, HordeDeathCause.Explosion);
                     continue;
                 }
+
+                // A rider is placed from outside (HordeRiders): hits and blasts only, no crush, shove, bite or shot here.
+                if (state == HordeState.Riding)
+                    continue;
 
                 bool emerging = state == HordeState.Emerging;
                 if (emerging)
@@ -1480,7 +1485,8 @@ namespace Game.Horde
             for (int i = startIndex; i < startIndex + count; i++)
             {
                 HordeState state = State[i];
-                if (!HordeStates.IsLive(state))
+                // Riders are drawn by their owner at the tank's pose of this frame (HordeRiders), not a step late.
+                if (!HordeStates.IsLive(state) || state == HordeState.Riding)
                     continue;
 
                 byte kindIndex = Kind[i];

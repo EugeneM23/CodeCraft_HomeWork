@@ -16,14 +16,20 @@ namespace Game.Horde
         /// <summary>Killed this step; freed when the step is completed.</summary>
         Dying = 3,
         /// <summary>Rising out of a burrow: stands, can be crushed and hurt, walks when its time is up.</summary>
-        Emerging = 4
+        Emerging = 4,
+        /// <summary>
+        /// On the tank (leaping onto it, clinging, tearing at it, or falling off): placed every frame from outside
+        /// (<see cref="HordeSimulation.SetRidePose"/>), not steered, crushed, shoved or drawn by the step; takes hits and
+        /// blasts and dies as usual.
+        /// </summary>
+        Riding = 5
     }
 
-    /// <summary>Which states are a live monster (walking, attacking or emerging).</summary>
+    /// <summary>Which states are a live monster (walking, attacking, emerging or riding the tank).</summary>
     public static class HordeStates
     {
         public static bool IsLive(HordeState state) =>
-            state == HordeState.Walk || state == HordeState.Attack || state == HordeState.Emerging;
+            state == HordeState.Walk || state == HordeState.Attack || state == HordeState.Emerging || state == HordeState.Riding;
     }
 
     /// <summary>How a kind fights: at the hull, or from a distance with shots.</summary>
