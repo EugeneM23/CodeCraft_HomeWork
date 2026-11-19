@@ -146,6 +146,8 @@ namespace Game.Voxels
             internal NativeArray<int> Start;
             internal NativeList<int> Items;
             internal NativeArray<byte> Solid;
+            internal NativeArray<float2> TriangleUvs;
+            internal NativeArray<byte> SkinSlot;
             internal Result Grid;
 
             /// <summary>Scheduled and neither completed nor cancelled.</summary>
@@ -183,6 +185,8 @@ namespace Game.Voxels
                 if (Start.IsCreated) Start.Dispose();
                 if (Items.IsCreated) Items.Dispose();
                 if (Solid.IsCreated) Solid.Dispose();
+                if (TriangleUvs.IsCreated) TriangleUvs.Dispose();
+                if (SkinSlot.IsCreated) SkinSlot.Dispose();
             }
         }
 
@@ -259,11 +263,21 @@ namespace Game.Voxels
 
             // The pose is copied out now (cheap, in Burst) so the baked mesh is free for the next death at once:
             // the jobs below read native copies only. Persistent: a death may wait a few frames in its queue.
+            // A textured skin (SkinAtlas): each face's UVs go along, so the skin voxels take the texture's colours.
+            SkinAtlas atlas = palette.Atlas;
+            bool hasUv = atlas != null && atlas.Index.IsCreated &&
+                         meshes[0].HasVertexAttribute(UnityEngine.Rendering.VertexAttribute.TexCoord0);
+            var uvs = new NativeArray<Vector2>(hasUv ? vertexCount : 1, Allocator.TempJob);
+            if (hasUv)
+                meshes[0].GetUVs(0, uvs);
             var triangles = new NativeArray<float3>(indexCount, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
+            var triangleUvs = new NativeArray<float2>(hasUv ? indexCount : 1, Allocator.Persistent);
             new ExpandTrianglesJob
             {
-                Meshes = meshes, Vertices = vertices, Origin = origin, VoxelSize = voxelSize, Triangles = triangles
+                Meshes = meshes, Vertices = vertices, Origin = origin, VoxelSize = voxelSize, Triangles = triangles,
+                Uvs = uvs.Reinterpret<float2>(), TriangleUvs = triangleUvs, HasUv = hasUv
             }.Run();
+            uvs.Dispose();
             vertices.Dispose();
             meshes.Dispose();
 
@@ -290,10 +304,15 @@ namespace Game.Voxels
             {
                 Triangles = triangles, Columns = size.xy, Start = start, Items = items
             }.Schedule();
+            var skinSlot = new NativeArray<byte>(hasUv ? cells : 1, Allocator.Persistent);
+            var noAtlas = hasUv ? default : new NativeArray<byte>(1, Allocator.TempJob);
             handle = new FillColumnsJob
             {
-                Triangles = triangles, Start = start, Items = items.AsDeferredJobArray(), Size = size, Solid = solid
+                Triangles = triangles, Start = start, Items = items.AsDeferredJobArray(), Size = size, Solid = solid,
+                TriangleUvs = triangleUvs, AtlasIndex = hasUv ? atlas.Index : noAtlas, HasUv = hasUv, SkinSlot = skinSlot
             }.Schedule(columns, 16, handle);
+            if (!hasUv)
+                noAtlas.Dispose(handle);
             handle = new ClassifyJob
             {
                 Solid = solid,
@@ -303,6 +322,8 @@ namespace Game.Voxels
                 PlaneDistance = -math.dot(normal, onPlane),
                 Seed = seed,
                 BloodShare = palette.BloodShare,
+                SkinSlot = skinSlot,
+                HasUv = hasUv,
                 Voxels = voxels,
                 Parts = partOf
             }.Schedule(cells, 256, handle);
@@ -314,6 +335,8 @@ namespace Game.Voxels
             into.Start = start;
             into.Items = items;
             into.Solid = solid;
+            into.TriangleUvs = triangleUvs;
+            into.SkinSlot = skinSlot;
             into.Grid = new Result
             {
                 Size = size,
@@ -382,6 +405,10 @@ namespace Game.Voxels
             [ReadOnly] public NativeArray<float3> Vertices;
             public float3 Origin;
             public float VoxelSize;
+            /// <summary>Per vertex, and written per index alongside Triangles, when HasUv (a textured skin, SkinAtlas).</summary>
+            [ReadOnly] public NativeArray<float2> Uvs;
+            [WriteOnly] public NativeArray<float2> TriangleUvs;
+            public bool HasUv;
             [WriteOnly] public NativeArray<float3> Triangles;
 
             public void Execute()
@@ -401,15 +428,22 @@ namespace Game.Voxels
                     {
                         NativeArray<int> indices = mesh.GetIndexData<int>();
                         for (int i = sub.indexStart; i < end; i++)
-                            Triangles[written++] = ToGrid(sub.baseVertex + indices[i]);
+                            Write(ref written, sub.baseVertex + indices[i]);
                     }
                     else
                     {
                         NativeArray<ushort> indices = mesh.GetIndexData<ushort>();
                         for (int i = sub.indexStart; i < end; i++)
-                            Triangles[written++] = ToGrid(sub.baseVertex + indices[i]);
+                            Write(ref written, sub.baseVertex + indices[i]);
                     }
                 }
+            }
+
+            private void Write(ref int written, int vertex)
+            {
+                if (HasUv)
+                    TriangleUvs[written] = Uvs[vertex];
+                Triangles[written++] = ToGrid(vertex);
             }
 
             private float3 ToGrid(int vertex) => (Vertices[vertex] - Origin) / VoxelSize;
@@ -481,6 +515,12 @@ namespace Game.Voxels
 
             // Each column writes only its own cells.
             [NativeDisableParallelForRestriction] public NativeArray<byte> Solid;
+            /// <summary>With HasUv: per index the UV (TriangleUvs), the atlas texels' colour indices (SkinAtlas.Index).</summary>
+            [ReadOnly] public NativeArray<float2> TriangleUvs;
+            [ReadOnly] public NativeArray<byte> AtlasIndex;
+            public bool HasUv;
+            /// <summary>With HasUv: per cell, 1 + the atlas colour of the face its column crossed nearest to it; 0 none.</summary>
+            [NativeDisableParallelForRestriction] public NativeArray<byte> SkinSlot;
 
             public void Execute(int column)
             {
@@ -493,30 +533,73 @@ namespace Game.Voxels
                 int y = column / Size.x;
                 // Off-centre, as in MeshVoxelizer: never exactly along a shared edge.
                 float2 p = new float2(x + 0.50031f, y + 0.49973f);
-                var crossings = new NativeList<float>(16, Allocator.Temp);
+                var crossings = new NativeList<Crossing>(16, Allocator.Temp);
 
                 for (int k = first; k < last; k++)
                 {
                     int t = Items[k] * 3;
                     if (MeshVoxelizer.CrossZ(p, Triangles[t], Triangles[t + 1], Triangles[t + 2], out float z))
-                        crossings.Add(z);
+                        crossings.Add(new Crossing { Z = z, Triangle = t });
                 }
 
                 crossings.Sort();
+                // Solid from the first face to the last: a low-poly body is not closed (the zombie: open seams, layers of
+                // cloth), and filling between pairs of crossings left most of it hollow - 131 voxels for three bodies (the
+                // user: the torn pieces were scraps). Across the body (front to back) a column meets one body part as a rule.
+                if (crossings.Length > 2)
+                {
+                    Crossing near = crossings[0];
+                    Crossing far = crossings[crossings.Length - 1];
+                    crossings.Clear();
+                    crossings.Add(near);
+                    crossings.Add(far);
+                }
+
                 for (int k = 0; k + 1 < crossings.Length; k += 2)
                 {
-                    int from = (int)math.ceil(crossings[k] - 0.5f);
-                    int to = (int)math.floor(crossings[k + 1] - 0.5f);
+                    int from = (int)math.ceil(crossings[k].Z - 0.5f);
+                    int to = (int)math.floor(crossings[k + 1].Z - 0.5f);
                     // A claw thinner than a voxel still gets one.
                     if (to < from)
-                        from = to = (int)math.floor((crossings[k] + crossings[k + 1]) * 0.5f);
+                        from = to = (int)math.floor((crossings[k].Z + crossings[k + 1].Z) * 0.5f);
 
                     from = math.max(from, 0);
                     to = math.min(to, Size.z - 1);
                     for (int z = from; z <= to; z++)
                         Solid[x + Size.x * (y + Size.y * z)] = 1;
+
+                    if (!HasUv)
+                        continue;
+                    // The cells nearer the face it entered by take its colour, the rest the colour of the face it left by.
+                    byte enter = (byte)(1 + SkinAtlas.IndexAt(AtlasIndex, UvAt(crossings[k].Triangle, p)));
+                    byte leave = (byte)(1 + SkinAtlas.IndexAt(AtlasIndex, UvAt(crossings[k + 1].Triangle, p)));
+                    float middle = (crossings[k].Z + crossings[k + 1].Z) * 0.5f;
+                    for (int z = from; z <= to; z++)
+                        SkinSlot[x + Size.x * (y + Size.y * z)] = z + 0.5f <= middle ? enter : leave;
                 }
             }
+
+            /// <summary>The UV where the column through <paramref name="p"/> (grid XY) crosses triangle <paramref name="t"/> (its first index).</summary>
+            private float2 UvAt(int t, float2 p)
+            {
+                float2 a = Triangles[t].xy, b = Triangles[t + 1].xy, c = Triangles[t + 2].xy;
+                float2 v0 = b - a, v1 = c - a, v2 = p - a;
+                float den = v0.x * v1.y - v1.x * v0.y;
+                if (math.abs(den) < 1e-9f)
+                    return TriangleUvs[t];
+                float wb = (v2.x * v1.y - v1.x * v2.y) / den;
+                float wc = (v0.x * v2.y - v2.x * v0.y) / den;
+                float wa = 1f - wb - wc;
+                return TriangleUvs[t] * wa + TriangleUvs[t + 1] * wb + TriangleUvs[t + 2] * wc;
+            }
+        }
+
+        /// <summary>Where a column crosses a face: its height in the grid and the face (its first index).</summary>
+        private struct Crossing : System.IComparable<Crossing>
+        {
+            public float Z;
+            public int Triangle;
+            public int CompareTo(Crossing other) => Z.CompareTo(other.Z);
         }
 
         [BurstCompile]
@@ -529,6 +612,9 @@ namespace Game.Voxels
             public float PlaneDistance;
             public uint Seed;
             public float BloodShare;
+            /// <summary>With HasUv: per cell 1 + its atlas colour (FillColumnsJob); the skin takes it.</summary>
+            [ReadOnly] public NativeArray<byte> SkinSlot;
+            public bool HasUv;
             [WriteOnly] public NativeArray<byte> Voxels;
             [WriteOnly] public NativeArray<byte> Parts;
 
@@ -564,7 +650,9 @@ namespace Game.Voxels
 
                 float shade = VoxelMath.Hash01(cell, Seed);
                 if (IsSurface(cell))
-                    Voxels[index] = (byte)(FleshPalette.FIRST_SKIN + Slot(shade, MeshVoxelizer.VARIANTS));
+                    Voxels[index] = (byte)(FleshPalette.FIRST_SKIN + (HasUv && SkinSlot[index] != 0
+                        ? SkinSlot[index] - 1
+                        : Slot(shade, MeshVoxelizer.VARIANTS)));
                 else if (VoxelMath.Hash01(cell, Seed + 101u) < BloodShare)
                     Voxels[index] = (byte)(FleshPalette.FIRST_BLOOD + Slot(shade, FleshPalette.BLOOD_SLOTS));
                 else

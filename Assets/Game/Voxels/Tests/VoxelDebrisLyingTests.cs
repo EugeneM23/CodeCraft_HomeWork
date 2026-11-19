@@ -192,6 +192,31 @@ namespace Game.Voxels.Tests
         }
 
         [Test]
+        public void Crush_BurstsAPieceOfGoreWhole_AndHandsItOver()
+        {
+            // A body part lying as debris (VoxelSpray.Chunks): a wheel over one corner of it bursts all of it.
+            int part = _debris.BeginGoreCluster(new Vector3(0f, 0.3f, 0f), Vector3.zero, 0f);
+            for (int i = 0; i < 12; i++)
+                _debris.AddCube(part, new Vector3(i % 4 * 0.1f, 0.3f, i / 4 * 0.1f), 0.1f, new Color(0.5f, 0.6f, 0.3f));
+            _debris.SetGoo(part, true);
+            Run(2f);
+            Assert.AreEqual(12, _debris.LyingCount, "the part lies");
+
+            var bursts = new List<VoxelDebris.FleshBurst>();
+            _debris.TakeFleshBursts(bursts);
+            bursts.Clear();
+            _debris.Crush(new Vector3(0f, 0.2f, 0f), 0.12f, Vector3.forward);
+            Run(1f);
+            _debris.TakeFleshBursts(bursts);
+
+            Assert.AreEqual(1, bursts.Count, "one burst for the whole part");
+            Assert.AreEqual(12, bursts[0].Cubes);
+            Assert.That(bursts[0].Volume, Is.EqualTo(12 * 0.001f).Within(1e-4f));
+            Assert.That(Vector3.Distance(bursts[0].Center, new Vector3(0.15f, 0.2f, 0.1f)), Is.LessThan(0.3f), "at its middle");
+            Assert.AreEqual(0, _debris.LyingCount, "all of it went, not only the corner under the wheel");
+        }
+
+        [Test]
         public void Blow_ThrowsAPieceUpAsOneClump()
         {
             LayPiece(_debris, new Vector3(1f, 0.2f, 0f), 12, Color.gray);

@@ -109,10 +109,15 @@ namespace Game.Voxels
                 Cluster cluster = Clusters[i];
                 cluster.Life -= DeltaTime;
 
-                // Not in its first tenth of a second: goo burst out from under the tank flies out first (what it meets
-                // on the way out still stains the side).
-                if (StainOn && (cluster.Flags & GOO) != 0 && cluster.Resting == 0 && cluster.Flight > STAIN_AFTER &&
-                    math.all(math.abs(math.mul(StainInverse, cluster.Position - StainCenter)) <= StainHalf))
+                // Goo and blood that come down onto the tank stain it. A drop born in the box (a squash fountain from under
+                // the tracks) is not caught on its way up through the hull, or it stained the hull's inside: only once it has
+                // been out of the box, or as it falls; and not in its first tenth of a second.
+                bool inBox = StainOn && cluster.Resting == 0 &&
+                             ((cluster.Flags & GOO) != 0 || ((cluster.Flags & SPLAT) != 0 && VoxelBlood.IsBlood(cluster.Tint))) &&
+                             math.all(math.abs(math.mul(StainInverse, cluster.Position - StainCenter)) <= StainHalf);
+                if (StainOn && !inBox && (cluster.Flags & WAS_OUT) == 0)
+                    cluster.Flags |= WAS_OUT;
+                if (inBox && cluster.Flight > STAIN_AFTER && ((cluster.Flags & WAS_OUT) != 0 || cluster.Velocity.y <= 0f))
                 {
                     // Goo on the tank: it stains the skin there (TankBloodBehaviour) and is gone from the air.
                     StainHits.Enqueue(cluster.Position);

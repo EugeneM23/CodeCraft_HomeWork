@@ -381,6 +381,8 @@ namespace Game.Voxels
             [ReadOnly] public NativeArray<LyingQuery> Queries;
             public uint Seed;
             public float DeltaTime;
+            /// <summary>Pieces of gore a road wheel crushed this step (whole groups, see FleshBurst): read at Complete.</summary>
+            public NativeList<FleshBurst> Bursts;
 
             public void Execute()
             {
@@ -403,6 +405,7 @@ namespace Game.Voxels
                 var random = new Unity.Mathematics.Random(math.hash(new uint2(Seed, 0x5bd1e995u)) | 1u);
                 var groupCluster = new NativeParallelHashMap<int, int>(queried ? 256 : 1, Allocator.Temp);
                 var groupCrumbs = new NativeParallelHashMap<int, int>(queried ? 256 : 1, Allocator.Temp);
+                var burstGroups = new NativeParallelHashMap<int, int>(queried ? 64 : 1, Allocator.Temp);
 
                 int count = state.Count;
                 for (int i = count - 1; i >= 0; i--)
@@ -418,9 +421,14 @@ namespace Game.Voxels
                         cube.Flags &= ~HIT;
                         cube.Query = 0;
 
-                        bool gone = query.Kind == QUERY_CRUSH
+                        // A piece of gore under a road wheel bursts whole (the user: the pieces must pop under the tracks): its
+                        // group sinks at once below, and the burst goes out for the goo (TakeFleshBursts).
+                        bool burst = query.Kind == QUERY_CRUSH && (cube.Flags & (GORE | LAID)) == GORE;
+                        if (burst)
+                            burstGroups.TryAdd(cube.Group, 0);
+                        bool gone = !burst && (query.Kind == QUERY_CRUSH
                             ? Crumble(cube, query, ref groupCrumbs, ref random)
-                            : (cube.Flags & LAID) == 0 && Wake(cube, query, ref groupCluster, ref random);
+                            : (cube.Flags & LAID) == 0 && Wake(cube, query, ref groupCluster, ref random));
                         if (gone)
                         {
                             Remove(i, ref count, ref state);
@@ -450,12 +458,54 @@ namespace Game.Voxels
                     Lying[i] = cube;
                 }
 
+                if (!burstGroups.IsEmpty)
+                    BurstGroups(ref burstGroups, count, ref state);
+
                 Recentre(firstCluster, firstCube);
                 groupCluster.Dispose();
                 groupCrumbs.Dispose();
+                burstGroups.Dispose();
 
                 state.Count = count;
                 State.Value = state;
+            }
+
+            /// <summary>
+            /// Every cube of the burst groups sinks now (CRUSH_SINK_TIME), and each group goes to Bursts with its middle,
+            /// its cubes and their volume.
+            /// </summary>
+            private void BurstGroups(ref NativeParallelHashMap<int, int> groups, int count, ref LyingState state)
+            {
+                var sums = new NativeParallelHashMap<int, float4>(groups.Count(), Allocator.Temp);
+                var cubes = new NativeParallelHashMap<int, int>(groups.Count(), Allocator.Temp);
+                for (int i = 0; i < count; i++)
+                {
+                    LyingCube cube = Lying[i];
+                    if (!groups.ContainsKey(cube.Group))
+                        continue;
+                    float volume = cube.Size * cube.Size * cube.Size;
+                    sums.TryGetValue(cube.Group, out float4 sum);
+                    sums[cube.Group] = sum + new float4(cube.Position * volume, volume);
+                    cubes.TryGetValue(cube.Group, out int n);
+                    cubes[cube.Group] = n + 1;
+                    if (cube.Sinking > 0f)
+                        continue;
+                    cube.Sinking = 1e-4f;
+                    cube.SinkTime = CRUSH_SINK_TIME;
+                    state.Sinking++;
+                    LeaveMesh(Cells, cube.Cell);
+                    Lying[i] = cube;
+                }
+
+                foreach (var pair in sums)
+                {
+                    float4 sum = pair.Value;
+                    cubes.TryGetValue(pair.Key, out int n);
+                    Bursts.Add(new FleshBurst { Center = sum.xyz / math.max(sum.w, 1e-9f), Cubes = n, Volume = sum.w });
+                }
+
+                sums.Dispose();
+                cubes.Dispose();
             }
 
             /// <summary>

@@ -36,6 +36,107 @@ MonoBehaviour:
   bounds:
     m_Center: {x: 0.47277403, y: 3.640326, z: 1.4807112}
     m_Extent: {x: 3.5214977, y: 4.012248, z: 3.822827}
+  tornSkins:
+    head:
+    - serializedVersion: 2
+      rgba: 4279916125
+    - serializedVersion: 2
+      rgba: 4279916125
+    - serializedVersion: 2
+      rgba: 4279916125
+    - serializedVersion: 2
+      rgba: 4280038185
+    - serializedVersion: 2
+      rgba: 4280038185
+    - serializedVersion: 2
+      rgba: 4280038185
+    - serializedVersion: 2
+      rgba: 4280038185
+    - serializedVersion: 2
+      rgba: 4280038185
+    - serializedVersion: 2
+      rgba: 4279916125
+    - serializedVersion: 2
+      rgba: 4279916125
+    - serializedVersion: 2
+      rgba: 4279916125
+    - serializedVersion: 2
+      rgba: 4279916125
+    torso:
+    - serializedVersion: 2
+      rgba: 4279714887
+    - serializedVersion: 2
+      rgba: 4279380787
+    - serializedVersion: 2
+      rgba: 4279916125
+    - serializedVersion: 2
+      rgba: 4279916125
+    - serializedVersion: 2
+      rgba: 4279515708
+    - serializedVersion: 2
+      rgba: 4279380787
+    - serializedVersion: 2
+      rgba: 4279380787
+    - serializedVersion: 2
+      rgba: 4279515708
+    - serializedVersion: 2
+      rgba: 4279915093
+    - serializedVersion: 2
+      rgba: 4279915093
+    - serializedVersion: 2
+      rgba: 4279916125
+    - serializedVersion: 2
+      rgba: 4279714887
+    arms:
+    - serializedVersion: 2
+      rgba: 4279916125
+    - serializedVersion: 2
+      rgba: 4279916125
+    - serializedVersion: 2
+      rgba: 4279181097
+    - serializedVersion: 2
+      rgba: 4279181097
+    - serializedVersion: 2
+      rgba: 4279915093
+    - serializedVersion: 2
+      rgba: 4279714887
+    - serializedVersion: 2
+      rgba: 4279181097
+    - serializedVersion: 2
+      rgba: 4279915093
+    - serializedVersion: 2
+      rgba: 4279714887
+    - serializedVersion: 2
+      rgba: 4279714887
+    - serializedVersion: 2
+      rgba: 4279915093
+    - serializedVersion: 2
+      rgba: 4278716440
+    legs:
+    - serializedVersion: 2
+      rgba: 4279380787
+    - serializedVersion: 2
+      rgba: 4278723628
+    - serializedVersion: 2
+      rgba: 4283652197
+    - serializedVersion: 2
+      rgba: 4283652197
+    - serializedVersion: 2
+      rgba: 4278723628
+    - serializedVersion: 2
+      rgba: 4283652197
+    - serializedVersion: 2
+      rgba: 4283652197
+    - serializedVersion: 2
+      rgba: 4278723628
+    - serializedVersion: 2
+      rgba: 4278723628
+    - serializedVersion: 2
+      rgba: 4279516224
+    - serializedVersion: 2
+      rgba: 4279516224
+    - serializedVersion: 2
+      rgba: 4279380787
   triangles: 1862
   sourceTriangles: 1862
   meshLod: 0

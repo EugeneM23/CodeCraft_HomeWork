@@ -8,6 +8,7 @@
         "UnityEngine.UI",
         "Game.Voxels",
         "Game.Voxels.Editor",
+        "Game.Horde",
         "Unity.Collections",
         "Unity.Mathematics",
         "Unity.TextMeshPro",

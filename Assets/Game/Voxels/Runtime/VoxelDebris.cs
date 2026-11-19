@@ -84,6 +84,8 @@ namespace Game.Voxels
         /// (VoxelSpray.Chunks), or a drop laid back where the ground would not take it.
         /// </summary>
         private const int NOGROUND = 32;
+        /// <summary>Gore that has been outside the stain box (SetStainBox): coming back in, it is caught even on its way up.</summary>
+        private const int WAS_OUT = 64;
 
         /// <summary>Most landed drops waiting for the ground (<see cref="TakeGroundStains"/>); past it the newest are lost (a burst far past any fight).</summary>
         private const int MAX_GROUND_READY = 8192;
@@ -92,6 +94,18 @@ namespace Game.Voxels
         /// A drop of blood that landed on something facing up (<see cref="GroundStains"/>): gone from the store, it is
         /// for the ground to take as a stain (VoxelWorld paints it into the voxels there).
         /// </summary>
+        /// <summary>
+        /// A lying piece of gore (a body part, a blob of goo) a road wheel crushed (Crush): it sank at once, whole, and is
+        /// for the tank to burst into goo (TakeFleshBursts, TankSquashBehaviour).
+        /// </summary>
+        public struct FleshBurst
+        {
+            public float3 Center;
+            public int Cubes;
+            /// <summary>Volume (m³) of its cubes.</summary>
+            public float Volume;
+        }
+
         public struct GroundStain
         {
             public float3 Point;
@@ -134,6 +148,9 @@ namespace Game.Voxels
         private NativeQueue<float3> _stainHits;
         /// <summary>Blood that landed this step (<see cref="GroundStains"/>), handed to <see cref="_groundReady"/> at Complete.</summary>
         private NativeQueue<GroundStain> _groundHits;
+        /// <summary>Gore the running step burst under a wheel (FleshBurst), handed to <see cref="_burstsReady"/> at Complete.</summary>
+        private NativeList<FleshBurst> _bursts;
+        private readonly System.Collections.Generic.List<FleshBurst> _burstsReady = new(16);
         private readonly System.Collections.Generic.List<GroundStain> _groundReady = new(256);
         private readonly System.Collections.Generic.List<Vector3> _stainReady = new(64);
         private bool _stainOn;
@@ -359,6 +376,18 @@ namespace Game.Voxels
         /// Up to <paramref name="max"/> of the drops that landed (<see cref="GroundStains"/>), oldest first, into
         /// <paramref name="into"/>; the rest wait for the next call. Never waits for the running step.
         /// </summary>
+        /// <summary>
+        /// The pieces of gore crushed under a road wheel in the steps completed since the last call (FleshBurst), into
+        /// <paramref name="into"/>; never waits for the running step.
+        /// </summary>
+        public int TakeFleshBursts(System.Collections.Generic.List<FleshBurst> into)
+        {
+            int count = _burstsReady.Count;
+            into.AddRange(_burstsReady);
+            _burstsReady.Clear();
+            return count;
+        }
+
         public int TakeGroundStains(System.Collections.Generic.List<GroundStain> into, int max)
         {
             int count = math.min(max, _groundReady.Count);
@@ -402,6 +431,12 @@ namespace Game.Voxels
             while (_groundHits.IsCreated && _groundHits.TryDequeue(out GroundStain stain))
                 if (_groundReady.Count < MAX_GROUND_READY)
                     _groundReady.Add(stain);
+            if (_bursts.IsCreated && _bursts.Length > 0)
+            {
+                for (int i = 0; i < _bursts.Length; i++)
+                    _burstsReady.Add(_bursts[i]);
+                _bursts.Clear();
+            }
         }
 
         public VoxelDebris(Material material, int capacity, int lyingCapacity = LYING_DEFAULT, int cellCapacity = MAX_CELLS)
@@ -419,6 +454,7 @@ namespace Game.Voxels
             _alive = new NativeReference<int>(Allocator.Persistent);
             _stainHits = new NativeQueue<float3>(Allocator.Persistent);
             _groundHits = new NativeQueue<GroundStain>(Allocator.Persistent);
+            _bursts = new NativeList<FleshBurst>(16, Allocator.Persistent);
 
             int lying = math.max(1, lyingCapacity);
             _lyingCubes = new NativeArray<LyingCube>(lying, Allocator.Persistent);
@@ -693,7 +729,8 @@ namespace Game.Voxels
                 Queries = queries,
                 QueryHits = _queryHits,
                 Seed = _seed ^ math.asuint(_time),
-                DeltaTime = dt
+                DeltaTime = dt,
+                Bursts = _bursts
             }.Schedule(handle);
 
             // "seen" was read on the main thread right after Complete(), before any job of this step was scheduled.
@@ -741,6 +778,7 @@ namespace Game.Voxels
             if (_alive.IsCreated) _alive.Dispose();
             if (_stainHits.IsCreated) _stainHits.Dispose();
             if (_groundHits.IsCreated) _groundHits.Dispose();
+            if (_bursts.IsCreated) _bursts.Dispose();
             if (_lyingCubes.IsCreated) _lyingCubes.Dispose();
             if (_lyingMatrices.IsCreated) _lyingMatrices.Dispose();
             if (_lyingColors.IsCreated) _lyingColors.Dispose();

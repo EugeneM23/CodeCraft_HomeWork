@@ -130,7 +130,16 @@ namespace Game.Voxels
         /// <param name="at">The feet of the body.</param>
         /// <param name="away">Which way the hit threw it (horizontal; zero: no way in particular).</param>
         /// <returns>Chunks thrown.</returns>
-        public static int Chunks(Vector3 at, float height, Vector3 away, IReadOnlyList<Color32> skin, IReadOnlyList<Color32> meat)
+        public static int Chunks(Vector3 at, float height, Vector3 away, IReadOnlyList<Color32> skin, IReadOnlyList<Color32> meat) =>
+            Chunks(at, height, away, skin, meat, null);
+
+        /// <param name="partSkin">
+        /// The skin of each part, in the order of <see cref="Parts"/> (head, torso, arms, legs; SkinAtlas.ChunkSkins): the
+        /// zombie's own colours, its face on the head, its shirt on the torso, its trousers on the legs. A part with none
+        /// takes <paramref name="skin"/>.
+        /// </param>
+        public static int Chunks(Vector3 at, float height, Vector3 away, IReadOnlyList<Color32> skin, IReadOnlyList<Color32> meat,
+            IReadOnlyList<Color32>[] partSkin)
         {
             VoxelWorld world = VoxelWorld.Instance;
             VoxelDebris debris = world != null ? world.Debris : null;
@@ -143,6 +152,9 @@ namespace Game.Voxels
             for (int p = 0; p < Parts.Length; p++)
             {
                 (int x, int y, int z, float h, float s) = Parts[p];
+                IReadOnlyList<Color32> own = partSkin != null && p < partSkin.Length && partSkin[p] != null && partSkin[p].Count > 0
+                    ? partSkin[p]
+                    : skin;
                 if (!debris.HasGoreRoom(x * y * z))
                     break;
                 Vector3 middle = at + Vector3.up * (height * h) + side * (s * cube);
@@ -158,7 +170,7 @@ namespace Game.Voxels
                 for (int k = 0; k < z; k++)
                 {
                     bool surface = i == 0 || j == 0 || k == 0 || i == x - 1 || j == y - 1 || k == z - 1;
-                    Color32 colour = surface && Random.value > 0.2f ? skin[Random.Range(0, skin.Count)] : meat[Random.Range(0, meat.Count)];
+                    Color32 colour = surface && Random.value > 0.2f ? own[Random.Range(0, own.Count)] : meat[Random.Range(0, meat.Count)];
                     Vector3 offset = new Vector3(i - (x - 1) * 0.5f, j - (y - 1) * 0.5f, k - (z - 1) * 0.5f) * cube;
                     debris.AddCube(cluster, middle + offset, cube, colour);
                 }

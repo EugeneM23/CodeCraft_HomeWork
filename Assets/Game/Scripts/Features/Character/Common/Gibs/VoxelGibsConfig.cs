@@ -97,6 +97,9 @@ namespace Game
         [Tooltip("Colour of the skin voxels; alpha 0 takes the skin material's colour (a textured skin, like the zombie's atlas, has none worth taking).")]
         public Color skinColor = new(0f, 0f, 0f, 0f);
 
+        [Tooltip("The skin voxels take the colours of the skin material's texture (the zombie's atlas) at the UV they were cut at; off, or with no texture: skinColor.")]
+        public bool skinFromTexture = true;
+
         public BloodLook blood = new();
 
         [Header("Bleeding")]

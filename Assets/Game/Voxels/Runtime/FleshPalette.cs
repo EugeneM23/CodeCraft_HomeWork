@@ -12,10 +12,15 @@ namespace Game.Voxels
     public struct FleshPalette
     {
         public const int FIRST_SKIN = 1;
-        public const int FIRST_MEAT = FIRST_SKIN + MeshVoxelizer.VARIANTS;
+        /// <summary>Skin slots: a textured skin's colours (SkinAtlas.SLOTS), or VARIANTS shades of one colour.</summary>
+        public const int SKIN_SLOTS = SkinAtlas.SLOTS;
+        public const int FIRST_MEAT = FIRST_SKIN + SKIN_SLOTS;
         public const int MEAT_SLOTS = 4;
         public const int FIRST_BLOOD = FIRST_MEAT + MEAT_SLOTS;
         public const int BLOOD_SLOTS = 2;
+
+        /// <summary>The skin's texture as voxel colours: each skin voxel takes the colour at the UV it was cut at (SkinnedVoxelizer). Null: <see cref="Skin"/>.</summary>
+        [NonSerialized] public SkinAtlas Atlas;
 
         public Color Skin;
         [Range(0f, 0.3f)] public float SkinNoise;
@@ -30,7 +35,11 @@ namespace Game.Voxels
         public NativeArray<Color32> BuildPalette(Allocator allocator)
         {
             var palette = new NativeArray<Color32>(256, allocator);
-            MeshVoxelizer.FillShades(palette, FIRST_SKIN, Skin, SkinNoise);
+            if (Atlas != null)
+                for (int i = 0; i < Atlas.Colours.Length && i < SKIN_SLOTS; i++)
+                    palette[FIRST_SKIN + i] = MeshVoxelizer.ToVertexColor(Atlas.Colours[i]);
+            else
+                MeshVoxelizer.FillShades(palette, FIRST_SKIN, Skin, SkinNoise);
             for (int i = 0; i < MEAT_SLOTS; i++)
                 palette[FIRST_MEAT + i] = MeshVoxelizer.WithWetness(
                     MeshVoxelizer.ToVertexColor(Pick(Meat, i, new Color(0.5f, 0.1f, 0.1f))), MeatWetness);

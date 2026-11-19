@@ -209,6 +209,9 @@ namespace Game.AIKit.Adapters
             _bloodSize = look.dropSize;
             _goo = new Color32[] { _blood[0], _blood[_blood.Length - 1], _blood[0], new Color(0.55f, 0.12f, 0.12f), new Color(0.7f, 0.28f, 0.28f) };
             _acidDrops = new Color32[] { _art.acidColor, Color.Lerp(_art.acidColor, Color.black, 0.4f) };
+            // A torn body's parts in the zombie's own colours, sampled from its atlas in the editor (the user; the crowd mesh
+            // is not readable in play: Tools/Horde/Sample Torn Skins); TornSkin when the art has none.
+            _tornSkins = _art.tornSkins?.ForChunks();
             _random = new Unity.Mathematics.Random(0x5EED1234u);
 
             // The level's one grid: made here (from the horde's map) only if the level has no AI entity yet.
@@ -757,6 +760,9 @@ namespace Game.AIKit.Adapters
         }
 
         /// <summary>Skin of a torn body's chunks: the zombie's greens.</summary>
+        /// <summary>Skin of each part of a torn body (VoxelSpray.Chunks), from the zombie's atlas; null: TornSkin.</summary>
+        private Color32[][] _tornSkins;
+
         private static readonly Color32[] TornSkin =
         {
             new Color(0.46f, 0.6f, 0.28f), new Color(0.36f, 0.5f, 0.22f), new Color(0.55f, 0.62f, 0.3f)
@@ -772,7 +778,7 @@ namespace Game.AIKit.Adapters
             Vector3 at = position;
             Vector3 away = _tankTransform != null ? at - _tankTransform.position : Vector3.zero;
             away.y = 0f;
-            VoxelSpray.Chunks(at, height, away.sqrMagnitude > 1e-4f ? away.normalized : Vector3.zero, TornSkin, _goo);
+            VoxelSpray.Chunks(at, height, away.sqrMagnitude > 1e-4f ? away.normalized : Vector3.zero, TornSkin, _goo, _tornSkins);
         }
 
         /// <summary>Sticky goo lifts out of a body, hangs and drops: big drops (VoxelSpray.Goo).</summary>

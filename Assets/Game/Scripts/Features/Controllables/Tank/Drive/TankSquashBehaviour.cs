@@ -40,6 +40,10 @@ namespace Game
         private const float INHERIT = 0.25f;
 
         private static readonly List<Bounds> Squashed = new(16);
+        private static readonly List<VoxelDebris.FleshBurst> Bursts = new(16);
+
+        /// <summary>Fewest cubes of a crushed piece of gore (VoxelDebris.FleshBurst) that bursts into goo: a lone drop just goes.</summary>
+        private const int MIN_BURST_CUBES = 4;
 
         /// <summary>Blood, meat and a little green skin: what a burst body part is.</summary>
         private static readonly Color32[] Goo =
@@ -57,7 +61,22 @@ namespace Game
 
         public void FixedTick(IEntity entity, float deltaTime)
         {
-            if (_hull == null || !_hull.enabled || VoxelCorpses.CorpseCount == 0)
+            if (_hull == null || !_hull.enabled)
+                return;
+
+            // Body parts and blobs of goo lying as debris (a shell's torn body, VoxelSpray.Chunks): the road wheels crush
+            // them in the debris step (VoxelTrackRuts.CrushDebris), and each bursts here like a piece of flesh.
+            VoxelWorld world = VoxelWorld.Instance;
+            if (world != null && world.Debris != null && world.Debris.TakeFleshBursts(Bursts) > 0)
+            {
+                using (SquashMarker.Auto())
+                    for (int i = 0; i < Bursts.Count; i++)
+                        if (Bursts[i].Cubes >= MIN_BURST_CUBES)
+                            Burst(Bursts[i].Center, Bursts[i].Volume, Bursts[i].Cubes);
+                Bursts.Clear();
+            }
+
+            if (VoxelCorpses.CorpseCount == 0)
                 return;
             Vector3 velocity = _body.linearVelocity;
             if (velocity.sqrMagnitude < MIN_SPEED * MIN_SPEED)
@@ -90,6 +109,26 @@ namespace Game
                 }
             }
         }
+
+        /// <summary>
+        /// A piece of gore lying as debris that a road wheel crushed (VoxelDebris.FleshBurst): goo out to the side it was on,
+        /// and the blood on that track, as for a piece of flesh (FixedTick).
+        /// </summary>
+        private void Burst(Vector3 centre, float volume, int cubes)
+        {
+            Transform frame = _hull.transform;
+            Vector3 hull = frame.TransformPoint(_hull.center);
+            Vector3 side = frame.right * Mathf.Sign(Vector3.Dot(centre - hull, frame.right));
+            int drops = Mathf.Clamp(Mathf.RoundToInt(volume * DROPS_PER_VOLUME), MIN_DROPS, MAX_DROPS);
+            float reach = Mathf.Min(0.3f, Mathf.Pow(Mathf.Max(volume, 1e-6f), 1f / 3f) * 0.5f);
+            VoxelSpray.Goo(centre + Vector3.up * 0.1f, Vector3.up + side * 0.7f, drops, GOO_SPEED, 0.45f, Goo, GOO_SIZE,
+                _body.linearVelocity * INHERIT, reach);
+            TankBloodStains.Squash(centre - Vector3.up * reach, Mathf.Max(volume / HEAVY_VOLUME, 0.3f));
+            BurstCount++;
+        }
+
+        /// <summary>Pieces of gore lying as debris burst under the tracks since start (tests).</summary>
+        public int BurstCount { get; private set; }
 
         private static BoxCollider BiggestBox(Rigidbody body)
         {

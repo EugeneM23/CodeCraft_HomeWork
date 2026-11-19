@@ -257,9 +257,10 @@ namespace Game.EditorTools
             // A shell's kill tears it into head, arms, legs and torso (the user: bigger pieces).
             config.FindPropertyRelative("shellTearsLimbs").boolValue = true;
 
-            // Fewer, bigger voxels (the user): 10 cm instead of the Regax's 5 cm, boxes of two (20 cm); big drops, three
+            // 5 cm, as the Regax, boxes of two (10 cm): at 10 cm the low-poly body came to 75 voxels, its torn pieces scraps (the
+            // user: voxelize the zombie itself); 525 now, in the colours of its atlas (skinFromTexture). Big drops, three
             // times as many as at first (the user: the blood's budget x3; the debris store keeps 40 % for gore).
-            config.FindPropertyRelative("voxelSize").floatValue = 0.1f;
+            config.FindPropertyRelative("voxelSize").floatValue = 0.05f;
             config.FindPropertyRelative("colliderCell").intValue = 2;
             config.FindPropertyRelative("seamDrops").intValue = 180;
             config.FindPropertyRelative("hitDrops").intValue = 210;
