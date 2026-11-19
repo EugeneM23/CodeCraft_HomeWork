@@ -138,7 +138,7 @@ namespace Game.EditorTools
 
             // The pack's long menu buttons, no panel behind them
             RectTransform column = UiFactory.Rect("Buttons", screen.transform);
-            float height = 4 * MENU_BUTTON_HEIGHT + 3 * UiStyle.SPACING;
+            float height = 5 * MENU_BUTTON_HEIGHT + 4 * UiStyle.SPACING;
             UiFactory.Place(column, new Vector2(0f, 1f), new Vector2(UiStyle.PADDING * 2, -(UiStyle.PADDING * 2 + titleSize.y)),
                 new Vector2(MENU_COLUMN_WIDTH, height));
             UiFactory.Vertical(column, UiStyle.SPACING);
@@ -146,6 +146,7 @@ namespace Game.EditorTools
 
             Button resume = UiFactory.LocalizedMenuButton("Continue", column, "hangar.main.continue", MENU_BUTTON_HEIGHT);
             Button newGame = UiFactory.LocalizedMenuButton("NewGame", column, "hangar.main.new_game", MENU_BUTTON_HEIGHT);
+            Button sandbox = UiFactory.LocalizedMenuButton("Sandbox", column, "main.sandbox", MENU_BUTTON_HEIGHT);
             Button settings = UiFactory.LocalizedMenuButton("Settings", column, "main.settings", MENU_BUTTON_HEIGHT);
             Button quit = UiFactory.LocalizedMenuButton("Quit", column, "main.quit", MENU_BUTTON_HEIGHT);
 
@@ -157,6 +158,7 @@ namespace Game.EditorTools
 
             UiFactory.SetField(screen, "_continue", resume);
             UiFactory.SetField(screen, "_newGame", newGame);
+            UiFactory.SetField(screen, "_sandbox", sandbox);
             UiFactory.SetField(screen, "_settings", settings);
             UiFactory.SetField(screen, "_quit", quit);
             UiFactory.SetField(screen, "_version", version);

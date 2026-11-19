@@ -30,6 +30,8 @@ namespace Game
         [Tooltip("The core's level catalog: the stub game flow maps level ids to scenes with it")]
         [SerializeField] private LevelCatalog _levelCatalog;
 
+        private const string SANDBOX_LEVEL = "voxel_sandbox";
+
         private ScreenFlow _flow;
         private IGameFlow _gameFlow;
         private IHangarSource _source;
@@ -57,6 +59,7 @@ namespace Game
 
             _mainMenu.ContinueClicked += HandleContinue;
             _mainMenu.NewGameClicked += HandleNewGame;
+            _mainMenu.SandboxClicked += HandleSandbox;
             _mainMenu.SettingsClicked += HandleSettings;
             _mainMenu.QuitClicked += HandleQuit;
             _hangar.SlotClicked += HandleSlot;
@@ -92,6 +95,7 @@ namespace Game
 
             _mainMenu.ContinueClicked -= HandleContinue;
             _mainMenu.NewGameClicked -= HandleNewGame;
+            _mainMenu.SandboxClicked -= HandleSandbox;
             _mainMenu.SettingsClicked -= HandleSettings;
             _mainMenu.QuitClicked -= HandleQuit;
             _hangar.SlotClicked -= HandleSlot;
@@ -215,6 +219,13 @@ namespace Game
             _source.NewGame();
             _mainMenu.ShowContinue(_source.HasSave);
             Open(_hangar);
+        }
+
+        // The voxel sandbox: its own level (the level catalog's voxel_sandbox), straight from the main menu.
+        private void HandleSandbox()
+        {
+            if (!Busy)
+                _gameFlow.StartLevel(SANDBOX_LEVEL);
         }
 
         private void HandleSettings() => Open(_settings);

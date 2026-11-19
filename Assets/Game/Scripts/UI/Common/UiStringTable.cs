@@ -52,6 +52,7 @@ namespace Game
             ["main.play"] = "ИГРАТЬ",
             ["main.hangar"] = "Ангар",
             ["main.shop"] = "Магазин",
+            ["main.sandbox"] = "Песочница",
             ["main.settings"] = "Настройки",
             ["main.quit"] = "Выход",
             ["main.version_format"] = "Версия {0}",

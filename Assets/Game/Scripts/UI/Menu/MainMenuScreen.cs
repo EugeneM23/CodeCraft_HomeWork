@@ -14,11 +14,14 @@ namespace Game
     {
         public event Action ContinueClicked;
         public event Action NewGameClicked;
+        public event Action SandboxClicked;
         public event Action SettingsClicked;
         public event Action QuitClicked;
 
         [SerializeField] private Button _continue;
         [SerializeField] private Button _newGame;
+        [Tooltip("Opens the voxel sandbox level; may be empty on an older menu")]
+        [SerializeField] private Button _sandbox;
         [SerializeField] private Button _settings;
         [SerializeField] private Button _quit;
         [Tooltip("Shows the build version (Application.version)")]
@@ -37,6 +40,8 @@ namespace Game
         {
             _continue.onClick.AddListener(HandleContinue);
             _newGame.onClick.AddListener(HandleNewGame);
+            if (_sandbox != null)
+                _sandbox.onClick.AddListener(HandleSandbox);
             _settings.onClick.AddListener(HandleSettings);
             _quit.onClick.AddListener(HandleQuit);
         }
@@ -45,12 +50,15 @@ namespace Game
         {
             _continue.onClick.RemoveListener(HandleContinue);
             _newGame.onClick.RemoveListener(HandleNewGame);
+            if (_sandbox != null)
+                _sandbox.onClick.RemoveListener(HandleSandbox);
             _settings.onClick.RemoveListener(HandleSettings);
             _quit.onClick.RemoveListener(HandleQuit);
         }
 
         private void HandleContinue() => ContinueClicked?.Invoke();
         private void HandleNewGame() => NewGameClicked?.Invoke();
+        private void HandleSandbox() => SandboxClicked?.Invoke();
         private void HandleSettings() => SettingsClicked?.Invoke();
         private void HandleQuit() => QuitClicked?.Invoke();
     }
