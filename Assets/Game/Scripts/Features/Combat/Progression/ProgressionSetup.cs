@@ -15,7 +15,9 @@ namespace Game
             if (!context.HasEnemyDeaths())
                 context.AddEnemyDeaths(new EnemyDeaths());
 
-            if (!context.HasRun())
+            // The core's RunBootstrap puts the real run in on its own Awake, which can come after this: no stand-in
+            // then, or the level's systems would bind to it (perf-ok: once at the context's install).
+            if (!context.HasRun() && Object.FindFirstObjectByType<RunBootstrap>() == null)
             {
                 var run = new LocalRunService(context.GetEnemyDeaths());
                 context.AddRun(run);

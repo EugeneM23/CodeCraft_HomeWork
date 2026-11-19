@@ -532,7 +532,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 466819696}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 966952600}
+  m_Script: {fileID: 11500000, guid: 3142498ee69840069f3a93c11b1e1f75, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Atomic.Entities::Atomic.Entities.MonoEntity
   useUnityLifecycle: 1
@@ -563,21 +563,149 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!115 &966952600
-MonoScript:
+--- !u!1 &1192493435
+GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: 
-  serializedVersion: 7
-  m_DefaultReferences: {}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1192493438}
+  - component: {fileID: 1192493437}
+  - component: {fileID: 1192493436}
+  m_Layer: 0
+  m_Name: '[Horde]'
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
-  m_Type: 0
-  m_ExecutionOrder: 0
-  m_ClassName: MonoEntity
-  m_Namespace: Atomic.Entities
-  m_AssemblyName: Atomic.Entities
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1192493436
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1192493435}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 13ab3a59f68c07a4393296d8e1685968, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game.AIKit.Adapters::Game.AIKit.Adapters.HordeInstaller
+  _art: {fileID: 11400000, guid: 3bf69d197f76fb64b8d433a2064a2ff3, type: 2}
+  _options:
+    capacity: 8192
+    population: 0
+    spawnDistance: 15
+    spawnsPerFrame: 512
+    mapMin: {x: -40, y: -40}
+    mapMax: {x: 40, y: 40}
+    rayTop: 20
+    rayLength: 30
+    crawler:
+      speed: 6.5
+      radius: 0.35
+      health: 20
+      renderScale: 0.4
+      tactic: 0
+      biteDps: 6
+      hitDamage: 0
+      hitInterval: 0
+      shotDamage: 0
+      shotInterval: 0
+      shotRange: 0
+      shotSpeed: 0
+      stopDistance: 0
+      backOff: 0
+      crushable: 1
+      crushBelowHealth: 0
+    spitter:
+      speed: 3.5
+      radius: 0.5
+      health: 50
+      renderScale: 0.7
+      tactic: 1
+      biteDps: 0
+      hitDamage: 0
+      hitInterval: 0
+      shotDamage: 15
+      shotInterval: 3
+      shotRange: 20
+      shotSpeed: 14
+      stopDistance: 17
+      backOff: 9
+      crushable: 1
+      crushBelowHealth: 0
+    brute:
+      speed: 6
+      radius: 1.2
+      health: 1800
+      renderScale: 1
+      tactic: 0
+      biteDps: 0
+      hitDamage: 40
+      hitInterval: 1.2
+      shotDamage: 0
+      shotInterval: 0
+      shotRange: 0
+      shotSpeed: 0
+      stopDistance: 0
+      backOff: 0
+      crushable: 1
+      crushBelowHealth: 0.25
+    separation: 0.9
+    tankDamageScale: 1
+    emergeTime: 1
+    explosionPush: 1.5
+    castShadows: 0
+    corpseCapacity: 512
+    corpseLie: 6
+    corpseSink: 3
+    bloodPerFrame: 3
+    bloodDrops: 10
+    acidSplashPerFrame: 2
+    acidSplashDrops: 6
+--- !u!114 &1192493437
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1192493435}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3142498ee69840069f3a93c11b1e1f75, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Atomic.Entities::Atomic.Entities.MonoEntity
+  useUnityLifecycle: 1
+  disposeValues: 1
+  installOnAwake: 1
+  uninstallOnDestroy: 1
+  scriptableInstallers: []
+  sceneInstallers:
+  - {fileID: 1192493436}
+  onlySelectedGizmos: 0
+  onlyEditModeGizmos: 0
+  autoCompile: 0
+  initialTagCapacity: 1
+  initialValueCapacity: 1
+  initialBehaviourCapacity: 0
+--- !u!4 &1192493438
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1192493435}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1225762018
 GameObject:
   m_ObjectHideFlags: 0
@@ -1180,3 +1308,4 @@ SceneRoots:
   - {fileID: 2021585012}
   - {fileID: 164051948}
   - {fileID: 466819699}
+  - {fileID: 1192493438}

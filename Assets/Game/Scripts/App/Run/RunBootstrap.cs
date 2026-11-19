@@ -27,6 +27,7 @@ namespace Game
         private GameCatalog _catalog;
         private Action<RunResult> _onRunEnded;
         private bool _looped;
+        private bool _ownsDeaths;
 
         /// <summary>The run of this level; null without the GameContext or the catalog.</summary>
         public RunService Run => _run;
@@ -39,8 +40,18 @@ namespace Game
                 return;
             }
 
-            _deaths = new EnemyDeaths();
-            _context.AddEnemyDeaths(_deaths);
+            // Combat may have installed first: it adds the deaths feed and a stand-in run when the level has none.
+            // The feed is kept (its listeners are already on it); the stand-in gives way to the real run below.
+            if (_context.HasEnemyDeaths() && _context.GetEnemyDeaths() is EnemyDeaths existing)
+                _deaths = existing;
+            else
+            {
+                _deaths = new EnemyDeaths();
+                if (_context.HasEnemyDeaths())
+                    _context.DelEnemyDeaths();
+                _context.AddEnemyDeaths(_deaths);
+                _ownsDeaths = true;
+            }
 
             IGameLoop loop = null;
             if (AppContext.TryGet(out AppContext app))
@@ -78,6 +89,11 @@ namespace Game
                 bestArenaOf, leaveToHangar);
             _onRunEnded = OnRunEnded;
             _run.RunEnded += _onRunEnded;
+            if (_context.TryGetRun(out IRunService standIn))
+            {
+                (standIn as IDisposable)?.Dispose();
+                _context.DelRun();
+            }
             _context.AddRun(_run);
         }
 
@@ -128,7 +144,7 @@ namespace Game
             {
                 if (_run != null)
                     _context.DelRun();
-                if (_deaths != null)
+                if (_deaths != null && _ownsDeaths)
                     _context.DelEnemyDeaths();
             }
 
