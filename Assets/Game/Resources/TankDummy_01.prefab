@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1000000000000000002}
   - component: {fileID: 1000000000000000003}
+  - component: {fileID: 4325474949852579017}
   m_Layer: 0
   m_Name: TankDummy_01
   m_TagString: Untagged
@@ -47,3 +48,16 @@ MonoBehaviour:
   _tank: {fileID: 5749456093836625901, guid: 9aa26aeb48dd5dd4f906bfe34d5f0ba9, type: 3}
   _armour: 0.06
   _crew: 4
+--- !u!114 &4325474949852579017
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000000000000000001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 46a254289e16de14c9a7c123eb879dc0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game::Game.TankArmour
+  _config: {fileID: 11400000, guid: 72836f13abe5c6c44938ab8fbd6f0f8f, type: 2}
