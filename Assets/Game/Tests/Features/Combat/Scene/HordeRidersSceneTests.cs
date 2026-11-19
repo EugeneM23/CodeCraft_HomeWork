@@ -79,6 +79,9 @@ namespace Game.Tests
             Assert.That(art, Is.Not.Null, HORDE_ART);
             var options = new HordeOptions { capacity = 128, population = 0, tankDamageScale = 0.25f };
             options.crawler.health = 1e5f; // the tank's auto gun would mow them down before they reach it
+            foreach (HordeInstaller old in Object.FindObjectsByType<HordeInstaller>(FindObjectsSortMode.None))
+                Object.Destroy(old.gameObject); // the sandbox's own live horde (SandboxHorde)
+            yield return null;
             _horde = HordeSpawn.CreateInScene(art, options).Behaviour;
             for (int i = 0; i < 10; i++)
                 yield return null; // the horde initialises on Start

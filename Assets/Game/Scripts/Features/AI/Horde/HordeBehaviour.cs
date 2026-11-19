@@ -670,10 +670,18 @@ namespace Game.AIKit.Adapters
             _riders?.Bind(tank, _tankTransform, _tankBody, _hullCenter, _hullHalf);
         }
 
+        /// <summary>
+        /// A part farther than this from the tank's root is not part of the hull (m): at the sandbox's load a hull part
+        /// still stood at the world's origin for a frame, and the box stretched 35 m to it (the crowd clawed at the air).
+        /// </summary>
+        private const float HULL_REACH = 6f;
+
         private bool Encapsulate(ref Bounds local, bool any, Transform from, Bounds bounds)
         {
             Vector3 c = bounds.center;
             Vector3 e = bounds.extents;
+            if (_tankTransform.InverseTransformPoint(from.TransformPoint(c)).magnitude > HULL_REACH)
+                return false;
             for (int k = 0; k < 8; k++)
             {
                 var corner = new Vector3((k & 1) == 0 ? -e.x : e.x, (k & 2) == 0 ? -e.y : e.y, (k & 4) == 0 ? -e.z : e.z);
