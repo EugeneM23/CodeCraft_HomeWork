@@ -426,7 +426,7 @@ namespace Game
 
                 piece.Body.gameObject.SetActive(true);
                 Vector3 velocity = GibRules.ClusterVelocity(piece.Body.WorldBounds.center, death.Hit.Origin, speed, lift, config.speeds);
-                piece.Body.Launch(velocity, GibRules.ClusterSpin(spin, piece.Parts));
+                piece.Body.Launch(VoxelSpray.Lifted(velocity), GibRules.ClusterSpin(spin, piece.Parts));
                 piece.Body.SplitLoose();
                 if (piece.Body == null || piece.TornCount == 0)
                     continue;

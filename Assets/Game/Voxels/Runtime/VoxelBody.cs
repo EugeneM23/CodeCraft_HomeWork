@@ -88,6 +88,12 @@ namespace Game.Voxels
         /// <summary>Palette slots a track's print (Paint with a fixed pattern) has used.</summary>
         private readonly bool[] _print = new bool[256];
 
+        /// <summary>
+        /// Palette slots of blood soaked in (<see cref="PaintBlood"/>): 1 + shade x LEVELS + level of VoxelBlood, 0 none.
+        /// On ground nothing else paints over it (a print, mud): it stays until it is churned (<see cref="Churn"/>) or dug out.
+        /// </summary>
+        private readonly byte[] _blood = new byte[256];
+
         /// <summary>Under each stain (Paint) on a moving body: the material it covers; 0 unstained.</summary>
         private byte[] _beneath;
         private int _stained;
@@ -391,6 +397,9 @@ namespace Game.Voxels
                 // shade sampled afresh, and each repaint redrew the chunk for nothing.
                 if (fixedPattern && _print[_voxels[index]])
                     continue;
+                // Blood in the ground stays: a print or mud over it would wipe it out.
+                if (_blood[_voxels[index]] != 0 && IsStatic)
+                    continue;
                 // A fixed pattern goes by 2-voxel blocks: what stays unpainted is tufts, not single pixels.
                 if (math.distancesq((float3)p + 0.5f, center) > radius * radius ||
                     VoxelMath.Hash01(fixedPattern ? p / 2 : p, seed) > chance)
@@ -414,6 +423,146 @@ namespace Game.Voxels
             if (painted > 0)
                 MarkDirty(lo, hi, false);
             return painted;
+        }
+
+        /// <summary>
+        /// Soaks blood into the solid voxels in a sphere, each with the given chance (VoxelBlood: a shade, a step of
+        /// churning). It becomes part of the body for good: a crater throws it out with the earth, nothing paints over it
+        /// on the ground (<see cref="Paint"/>), only <see cref="Churn"/> mixes it toward the earth's brown. Blood there
+        /// already as fresh or fresher is left. Returns how many voxels took it (0 also when the palette is full).
+        /// </summary>
+        public int PaintBlood(Vector3 worldCenter, float worldRadius, int shade, int level, float chance)
+        {
+            if (!_voxels.IsCreated || SolidCount == 0)
+                return 0;
+
+            byte material = BloodSlot(shade, level);
+            if (material == 0)
+                return 0;
+
+            if (!SphereInGrid(worldCenter, worldRadius, out float3 center, out float radius, out int3 lo, out int3 hi))
+                return 0;
+            int code = _blood[material];
+            uint seed = _seed++;
+            int painted = 0;
+            for (int z = lo.z; z <= hi.z; z++)
+            for (int y = lo.y; y <= hi.y; y++)
+            for (int x = lo.x; x <= hi.x; x++)
+            {
+                int3 p = new int3(x, y, z);
+                int index = VoxelMath.Index(p, Size);
+                byte old = _voxels[index];
+                if (old == 0 || old == material)
+                    continue;
+                // As fresh or fresher there already (the level is the code's place within its shade's run).
+                if (_blood[old] != 0 && (_blood[old] - 1) % VoxelBlood.LEVELS <= (code - 1) % VoxelBlood.LEVELS)
+                    continue;
+                if (math.distancesq((float3)p + 0.5f, center) > radius * radius || VoxelMath.Hash01(p, seed) > chance)
+                    continue;
+                _voxels[index] = material;
+                painted++;
+            }
+
+            if (painted > 0)
+                MarkDirty(lo, hi, false);
+            return painted;
+        }
+
+        /// <summary>
+        /// Churns the blood in a sphere (a track rolling over it): each blood voxel, with the given chance, goes a step
+        /// toward the earth's brown; the last step stays red-brown. Returns how many blood voxels lie in the sphere (what
+        /// the track rolls in), churned or not; <paramref name="fresh"/> of them were fresh (level 0: a spill not yet churned, what a track
+        /// picks up; its own prints, churned already, it does not pick up again).
+        /// </summary>
+        public int Churn(Vector3 worldCenter, float worldRadius, float chance, out int fresh)
+        {
+            fresh = 0;
+            if (!_voxels.IsCreated || SolidCount == 0 || !_hasBlood)
+                return 0;
+            if (!SphereInGrid(worldCenter, worldRadius, out float3 center, out float radius, out int3 lo, out int3 hi))
+                return 0;
+
+            uint seed = _seed++;
+            int found = 0;
+            int churned = 0;
+            for (int z = lo.z; z <= hi.z; z++)
+            for (int y = lo.y; y <= hi.y; y++)
+            for (int x = lo.x; x <= hi.x; x++)
+            {
+                int3 p = new int3(x, y, z);
+                int index = VoxelMath.Index(p, Size);
+                int code = _blood[_voxels[index]];
+                if (code == 0 || math.distancesq((float3)p + 0.5f, center) > radius * radius)
+                    continue;
+                found++;
+                int level = (code - 1) % VoxelBlood.LEVELS;
+                if (level == 0)
+                    fresh++;
+                if (level >= VoxelBlood.LEVELS - 1 || VoxelMath.Hash01(p, seed) > chance)
+                    continue;
+                byte next = BloodSlot((code - 1) / VoxelBlood.LEVELS, level + 1);
+                if (next == 0)
+                    continue;
+                _voxels[index] = next;
+                churned++;
+            }
+
+            if (churned > 0)
+                MarkDirty(lo, hi, false);
+            return found;
+        }
+
+        /// <summary>The blood (VoxelBlood) at a point: the first solid voxel at or below it, a few voxels down. False when not blood.</summary>
+        public bool TryGetBlood(Vector3 worldPoint, out int shade, out int level)
+        {
+            shade = level = 0;
+            if (!_hasBlood || !_voxels.IsCreated)
+                return false;
+            int3 p = (int3)math.floor(((float3)transform.InverseTransformPoint(worldPoint) - Origin) / VoxelSize);
+            for (int i = 0; i < 4; i++, p.y--)
+            {
+                if (!VoxelMath.Inside(p, Size))
+                    continue;
+                byte material = _voxels[VoxelMath.Index(p, Size)];
+                if (material == 0)
+                    continue;
+                int code = _blood[material];
+                if (code == 0)
+                    return false;
+                shade = (code - 1) / VoxelBlood.LEVELS;
+                level = (code - 1) % VoxelBlood.LEVELS;
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>Whether blood was ever soaked into this body (<see cref="PaintBlood"/>): Churn need not look before.</summary>
+        private bool _hasBlood;
+
+        /// <summary>The palette slot of a blood colour, taken the first time; 0 when the palette is full.</summary>
+        private byte BloodSlot(int shade, int level)
+        {
+            byte slot = PaletteSlot(VoxelBlood.Colour(shade, level));
+            if (slot != 0)
+            {
+                _blood[slot] = (byte)(1 + math.clamp(shade, 0, VoxelBlood.SHADES - 1) * VoxelBlood.LEVELS +
+                                      math.clamp(level, 0, VoxelBlood.LEVELS - 1));
+                _hasBlood = true;
+            }
+
+            return slot;
+        }
+
+        /// <summary>A world sphere in grid space, clipped to the grid: false when it misses it.</summary>
+        private bool SphereInGrid(Vector3 worldCenter, float worldRadius, out float3 center, out float radius, out int3 lo, out int3 hi)
+        {
+            float scale = Mathf.Max(0.0001f, Mathf.Abs(transform.lossyScale.x));
+            center = ((float3)transform.InverseTransformPoint(worldCenter) - Origin) / VoxelSize;
+            radius = Mathf.Max(0.75f, worldRadius / (scale * VoxelSize));
+            lo = math.max(0, (int3)math.floor(center - radius));
+            hi = math.min(Size - 1, (int3)math.floor(center + radius));
+            return math.all(lo <= hi);
         }
 
         /// <summary>

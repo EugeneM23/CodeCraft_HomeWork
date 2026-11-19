@@ -32,6 +32,18 @@ namespace Game.Voxels
         public const int ASYNC_PER_FRAME = 12;
 
         /// <summary>
+        /// Most landed drops of blood soaked into the ground a frame (SoakBlood): a burst of deaths spreads its blood over a
+        /// few frames. A stain only recolours voxels; the chunks it touches are remeshed with the rest (ASYNC_PER_FRAME).
+        /// </summary>
+        public const int STAINS_PER_FRAME = 96;
+
+        /// <summary>Share of the voxels in a drop's splat that take the blood: a speckled stain, not a disc.</summary>
+        private const float SOAK_CHANCE = 0.8f;
+
+        private static readonly Unity.Profiling.ProfilerMarker s_soakMarker = new("Voxel.SoakBlood");
+        private readonly List<VoxelDebris.GroundStain> _stains = new(STAINS_PER_FRAME);
+
+        /// <summary>
         /// A/B switch for measuring: false remeshes the ground the old way, every chunk in the
         /// frame it was dug, the frame waiting for it and for its colliders.
         /// </summary>
@@ -291,6 +303,8 @@ namespace Game.Voxels
             Debris = new VoxelDebris(LoadMaterial(DEBRIS_MATERIAL, true), 24000, VoxelDebris.LYING_DEFAULT);
             // Mud, crumbs and dust may fill 60 % of the flying store at most: 40 % is always there for blood and goo.
             Debris.DirtShare = DIRT_SHARE;
+            // Blood soaks into the ground (the user): it is painted into the voxels where it lands (SoakBlood).
+            Debris.GroundStains = true;
             VoxelBody.Prewarm();
             SetEarlyHook(true);
         }
@@ -471,6 +485,7 @@ namespace Game.Voxels
         {
             RunSplits();
             SolveStructures();
+            SoakBlood();
             RebuildDirty();
             if (Debris != null)
             {
@@ -486,6 +501,47 @@ namespace Game.Voxels
                 Debris.ViewCamera = _viewCamera;
             }
             Debris?.Tick(deltaTime);
+        }
+
+        /// <summary>
+        /// The blood that landed (VoxelDebris.GroundStains) soaks into the voxels it fell on, STAINS_PER_FRAME a frame:
+        /// the ground, a cobbled street, a standing house's floor. Where nothing static and voxel lies under it (a ramp, a
+        /// loose piece) or the palette has no room, it is laid back as a tile of blood as before.
+        /// </summary>
+        private void SoakBlood()
+        {
+            if (Debris == null || Debris.GroundStainsWaiting == 0)
+                return;
+
+            using (s_soakMarker.Auto())
+            {
+                _stains.Clear();
+                Debris.TakeGroundStains(_stains, STAINS_PER_FRAME);
+                int mask = Debris.DropMask;
+                for (int i = 0; i < _stains.Count; i++)
+                {
+                    VoxelDebris.GroundStain stain = _stains[i];
+                    Vector3 point = stain.Point;
+                    Vector3 normal = stain.Normal;
+                    VoxelBody body = null;
+                    if (Physics.Raycast(point + normal * 0.15f, -normal, out RaycastHit hit, 0.4f, mask, QueryTriggerInteraction.Ignore))
+                    {
+                        body = hit.collider.GetComponentInParent<VoxelBody>();
+                        if (body != null && !body.IsStatic)
+                            body = null;
+                    }
+
+                    if (body != null)
+                    {
+                        // Into the voxels at the surface: the splat's middle a little under where the drop touched.
+                        if (body.PaintBlood(point - normal * (body.VoxelSize * 0.5f), stain.Radius, stain.Shade, 0, SOAK_CHANCE) > 0 ||
+                            body.TryGetBlood(point - normal * (body.VoxelSize * 0.5f), out _, out _))
+                            continue;
+                    }
+
+                    Debris.LayStain(stain);
+                }
+            }
         }
 
         private void RebuildDirty()

@@ -155,9 +155,24 @@ namespace Game.Voxels
         private readonly List<int> _beltSide = new();
         /// <summary>Blood on each track (0 left, 1 right): 1 fresh from a squash, worn to 0 over <see cref="_bloodWearDistance"/>.</summary>
         private readonly float[] _trackBlood = new float[2];
+        /// <summary>
+        /// Blood a track picked up from the ground (PickUpBlood) that is not on the ground side of the belt yet: the belt
+        /// under the rear wheel was laid at the front a contact length ago, so it prints only once the tank has run that far.
+        /// </summary>
+        private readonly float[] _pendingBlood = new float[2];
+        private readonly float[] _pendingRun = new float[2];
+        /// <summary>From the front road wheel to the rear one, m (FindWheels).</summary>
+        private float _contactLength;
         /// <summary>The rearmost road wheel of each side: it lays the bloody print (every wheel of a side runs the same line).</summary>
         private readonly int[] _printWheel = { -1, -1 };
-        private static readonly Color32[] BloodPrint = { new(72, 5, 4, 255), new(50, 3, 2, 255) };
+        /// <summary>
+        /// Blood in the ground under a road wheel (VoxelBlood, the user): each blood voxel in the bite goes a step toward the
+        /// earth's brown with this chance, and the track picks up BLOOD_PICKUP of blood per voxel there (BLOOD_PICKUP_MAX a
+        /// bite at most), which it then lays down further on as bloody prints.
+        /// </summary>
+        private const float CHURN_CHANCE = 0.35f;
+        private const float BLOOD_PICKUP = 0.02f;
+        private const float BLOOD_PICKUP_MAX = 0.35f;
         private static readonly Color BloodBelt = new(0.32f, 0.02f, 0.015f, 1f);
         private MaterialPropertyBlock _block;
         private float _gearDebt;
@@ -207,13 +222,18 @@ namespace Game.Voxels
                 _lastWheel.Add(child.position);
             }
 
+            float front = float.MinValue, back = float.MaxValue;
             for (int i = 0; i < _wheelList.Count; i++)
             {
                 Vector3 local = transform.InverseTransformPoint(_wheelList[i].position);
                 int side = local.x >= 0f ? 1 : 0;
+                front = Mathf.Max(front, local.z);
+                back = Mathf.Min(back, local.z);
                 if (_printWheel[side] < 0 || local.z < transform.InverseTransformPoint(_wheelList[_printWheel[side]].position).z)
                     _printWheel[side] = i;
             }
+
+            _contactLength = _wheelList.Count > 1 ? (front - back) * Mathf.Abs(transform.lossyScale.z) : 0f;
         }
 
         private void OnEnable() => VoxelTicks.Add(this);
@@ -274,6 +294,25 @@ namespace Game.Voxels
             // The wheels bob on the springs even standing still: that is not driving.
             if (travelled < MIN_TRACK_SPEED * deltaTime)
                 return;
+
+            // Blood picked up at the front reaches the ground under the rear wheel a contact length later.
+            for (int s = 0; s < 2; s++)
+            {
+                if (_pendingBlood[s] <= 0f)
+                    continue;
+                _pendingRun[s] -= travelled;
+                if (_pendingRun[s] > 0f)
+                    continue;
+                _trackBlood[s] = Mathf.Clamp01(_trackBlood[s] + _pendingBlood[s]);
+                _pendingBlood[s] = 0f;
+                if (_block == null)
+                {
+                    _block = new MaterialPropertyBlock();
+                    FindRunningGear();
+                }
+
+                TintBelt();
+            }
 
             // Blood on a track wears off as it runs: its prints fade with it.
             if (_trackBlood[0] > 0f || _trackBlood[1] > 0f)
@@ -392,7 +431,9 @@ namespace Game.Voxels
             if (side < 0 || _trackBlood[side] < 0.02f)
                 return;
             float chance = Mathf.Min(0.85f, _trackBlood[side] * 1.6f);
-            ground.Paint(point - Vector3.up * 0.04f, _bloodPrintRadius, BloodPrint[Random.Range(0, BloodPrint.Length)], chance);
+            // Soaked in like any blood (it stays, the tracks churn it further), a little churned already: the fresher the
+            // blood on the track, the redder the print.
+            ground.PaintBlood(point - Vector3.up * 0.04f, _bloodPrintRadius, Random.Range(0, 2), _trackBlood[side] > 0.5f ? 1 : 2, chance);
         }
 
         /// <summary>A bite under one wheel, once it has rolled far enough since the last.</summary>
@@ -438,6 +479,28 @@ namespace Game.Voxels
             if ((position - _lastBite[i]).sqrMagnitude < _spacing * _spacing)
                 return;
             _lastBite[i] = position;
+
+            // Blood in the ground: the track churns it into the earth and takes some along (the prints lay it further on); what
+            // the tracks throw from here (crumbs, the rooster tail) carries its red, and a rut dug here throws it with the clods.
+            int blood = ground.Churn(hit.point - Vector3.up * 0.04f, _dryBiteRadius, CHURN_CHANCE, out int fresh);
+            if (blood > 0)
+            {
+                if (fresh > 0)
+                {
+                    int track = transform.InverseTransformPoint(position).x >= 0f ? 1 : 0;
+                    if (_pendingBlood[track] <= 0f)
+                        _pendingRun[track] = _contactLength;
+                    _pendingBlood[track] = Mathf.Min(1f, _pendingBlood[track] + Mathf.Min(BLOOD_PICKUP_MAX, fresh * BLOOD_PICKUP));
+                }
+                if (ground.TryGetBlood(hit.point - Vector3.up * 0.04f, out int shade, out int level))
+                {
+                    Color32 churned = VoxelBlood.Colour(shade, level + 1);
+                    if (mud)
+                        _mud = churned;
+                    else
+                        _dust = churned;
+                }
+            }
 
             if (_trackBlood[0] > 0f || _trackBlood[1] > 0f)
                 PrintBlood(i, ground, hit.point);

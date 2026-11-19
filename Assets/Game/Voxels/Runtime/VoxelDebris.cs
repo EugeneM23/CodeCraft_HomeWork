@@ -79,6 +79,28 @@ namespace Game.Voxels
         /// sticks where it lands (no bounce, no break); a single drop stretches along its flight.
         /// </summary>
         private const int GOO = 16;
+        /// <summary>
+        /// Gore that lies where it lands as it is, never soaks into the ground (<see cref="GroundStains"/>): a body part
+        /// (VoxelSpray.Chunks), or a drop laid back where the ground would not take it.
+        /// </summary>
+        private const int NOGROUND = 32;
+
+        /// <summary>Most landed drops waiting for the ground (<see cref="TakeGroundStains"/>); past it the newest are lost (a burst far past any fight).</summary>
+        private const int MAX_GROUND_READY = 8192;
+
+        /// <summary>
+        /// A drop of blood that landed on something facing up (<see cref="GroundStains"/>): gone from the store, it is
+        /// for the ground to take as a stain (VoxelWorld paints it into the voxels there).
+        /// </summary>
+        public struct GroundStain
+        {
+            public float3 Point;
+            public float3 Normal;
+            /// <summary>Radius (m) of the splat it makes.</summary>
+            public float Radius;
+            /// <summary>Which shade of VoxelBlood it soaks in as.</summary>
+            public int Shade;
+        }
 
         /// <summary>Goo going up: velocity damped this much per second, gravity times this.</summary>
         private const float GOO_RISE_DRAG = 2.2f;
@@ -110,6 +132,9 @@ namespace Game.Voxels
 
         /// <summary>Goo that flew into the stain box (<see cref="SetStainBox"/>): where it hit, read with <see cref="TakeStainHits"/>.</summary>
         private NativeQueue<float3> _stainHits;
+        /// <summary>Blood that landed this step (<see cref="GroundStains"/>), handed to <see cref="_groundReady"/> at Complete.</summary>
+        private NativeQueue<GroundStain> _groundHits;
+        private readonly System.Collections.Generic.List<GroundStain> _groundReady = new(256);
         private readonly System.Collections.Generic.List<Vector3> _stainReady = new(64);
         private bool _stainOn;
         private float3 _stainCenter;
@@ -307,15 +332,55 @@ namespace Game.Voxels
         /// Marks a clump begun this frame as goo: it flies like <see cref="GooDrop"/> and sticks whole where it lands
         /// (it does not break or bounce), then lies for good.
         /// </summary>
-        public void SetGoo(int cluster)
+        /// <param name="flesh">A body part, not blood: it lies whole where it lands and never soaks into the ground.</param>
+        public void SetGoo(int cluster, bool flesh = false)
         {
             Complete();
             if (cluster < 0 || cluster >= _clusters.Length)
                 return;
             SetKeep(cluster);
             Cluster c = _clusters[cluster];
-            c.Flags |= GOO;
+            c.Flags |= GOO | (flesh ? NOGROUND : 0);
             c.Spin *= 0.25f;
+            _clusters[cluster] = c;
+        }
+
+        /// <summary>
+        /// Blood soaks into the ground: a drop or blob of gore whose colour is blood (VoxelBlood.IsBlood) that lands on
+        /// something facing up leaves the store at once and goes to <see cref="TakeGroundStains"/> (VoxelWorld paints it
+        /// into the voxels there; a crater then takes it with the dirt, nothing hangs in the air). Off: it lies as a tile.
+        /// </summary>
+        public bool GroundStains { get; set; }
+
+        /// <summary>Landed drops waiting for the ground (<see cref="GroundStains"/>).</summary>
+        public int GroundStainsWaiting => _groundReady.Count;
+
+        /// <summary>
+        /// Up to <paramref name="max"/> of the drops that landed (<see cref="GroundStains"/>), oldest first, into
+        /// <paramref name="into"/>; the rest wait for the next call. Never waits for the running step.
+        /// </summary>
+        public int TakeGroundStains(System.Collections.Generic.List<GroundStain> into, int max)
+        {
+            int count = math.min(max, _groundReady.Count);
+            for (int i = 0; i < count; i++)
+                into.Add(_groundReady[i]);
+            _groundReady.RemoveRange(0, count);
+            return count;
+        }
+
+        /// <summary>
+        /// A stain the ground would not take (no voxels there, or their palette full): laid back as a tile of blood that
+        /// lies for good, as it did before <see cref="GroundStains"/>.
+        /// </summary>
+        public void LayStain(in GroundStain stain)
+        {
+            float size = math.clamp(stain.Radius / SPLAT_WIDTH * 2f, 0.04f, 0.12f);
+            int cluster = Drop((Vector3)(stain.Point + stain.Normal * (size * 0.6f)), (Vector3)(-stain.Normal * 0.5f),
+                VoxelBlood.Colour(stain.Shade, 0), size);
+            if (cluster < 0)
+                return;
+            Cluster c = _clusters[cluster];
+            c.Flags |= NOGROUND;
             _clusters[cluster] = c;
         }
 
@@ -334,6 +399,9 @@ namespace Game.Voxels
             // The step is done: the goo it caught is handed over now, so readers never wait on a running step.
             while (_stainHits.IsCreated && _stainHits.TryDequeue(out float3 hit))
                 _stainReady.Add(hit);
+            while (_groundHits.IsCreated && _groundHits.TryDequeue(out GroundStain stain))
+                if (_groundReady.Count < MAX_GROUND_READY)
+                    _groundReady.Add(stain);
         }
 
         public VoxelDebris(Material material, int capacity, int lyingCapacity = LYING_DEFAULT, int cellCapacity = MAX_CELLS)
@@ -350,6 +418,7 @@ namespace Game.Voxels
             _colors = new NativeArray<float4>(capacity, Allocator.Persistent);
             _alive = new NativeReference<int>(Allocator.Persistent);
             _stainHits = new NativeQueue<float3>(Allocator.Persistent);
+            _groundHits = new NativeQueue<GroundStain>(Allocator.Persistent);
 
             int lying = math.max(1, lyingCapacity);
             _lyingCubes = new NativeArray<LyingCube>(lying, Allocator.Persistent);
@@ -438,6 +507,8 @@ namespace Game.Voxels
             float3 offset = (float3)position - owner.Position;
             owner.Count++;
             owner.Radius = math.max(owner.Radius, math.length(offset) + size * 0.5f);
+            if (owner.Tint.w == 0f)
+                owner.Tint = new float4(color.r, color.g, color.b, math.max((int)color.a, 1)) / 255f;
             _clusters[cluster] = owner;
 
             Color c = color;
@@ -544,7 +615,9 @@ namespace Game.Voxels
                 StainCenter = _stainCenter,
                 StainInverse = math.inverse(_stainRotation),
                 StainHalf = _stainHalf,
-                StainHits = _stainHits.AsParallelWriter()
+                StainHits = _stainHits.AsParallelWriter(),
+                GroundOn = GroundStains,
+                GroundHits = _groundHits.AsParallelWriter()
             }.Schedule(clusters, 128, handle);
 
             handle = new ShatterJob
@@ -667,6 +740,7 @@ namespace Game.Voxels
             if (_colors.IsCreated) _colors.Dispose();
             if (_alive.IsCreated) _alive.Dispose();
             if (_stainHits.IsCreated) _stainHits.Dispose();
+            if (_groundHits.IsCreated) _groundHits.Dispose();
             if (_lyingCubes.IsCreated) _lyingCubes.Dispose();
             if (_lyingMatrices.IsCreated) _lyingMatrices.Dispose();
             if (_lyingColors.IsCreated) _lyingColors.Dispose();

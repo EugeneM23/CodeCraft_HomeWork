@@ -31,6 +31,8 @@ namespace Game.Voxels
             public float3 HitNormal;
             /// <summary>How many breaks made this clump: 0 for a clump thrown as is, its pieces 1, theirs 2.</summary>
             public int Generation;
+            /// <summary>The colour of its first cube (AddCube): whether a drop of gore is blood that soaks into the ground.</summary>
+            public float4 Tint;
         }
 
         private struct Cube
@@ -82,6 +84,10 @@ namespace Game.Voxels
         {
             /// <summary>Seconds a goo clump flies before the stain box can catch it.</summary>
             private const float STAIN_AFTER = 0.1f;
+            /// <summary>Blood soaks into a surface facing up at least this much (y of its normal); on a wall it sticks as a tile.</summary>
+            private const float GROUND_NORMAL_Y = 0.35f;
+            /// <summary>How much wider than the drop the stain it soaks in as is (a tile spreads SPLAT_WIDTH).</summary>
+            private const float GROUND_SPREAD = 1.6f;
 
             public NativeArray<Cluster> Clusters;
             [ReadOnly] public NativeArray<RaycastHit> Hits;
@@ -94,6 +100,9 @@ namespace Game.Voxels
             public quaternion StainInverse;
             public float3 StainHalf;
             public NativeQueue<float3>.ParallelWriter StainHits;
+            /// <summary>Blood soaks into the ground (GroundStains): where a drop of it landed facing up.</summary>
+            public bool GroundOn;
+            public NativeQueue<GroundStain>.ParallelWriter GroundHits;
 
             public void Execute(int i)
             {
@@ -152,6 +161,21 @@ namespace Game.Voxels
                     else
                         cluster.Still += DeltaTime;
 
+                    Clusters[i] = cluster;
+                    return;
+                }
+
+                if (touched && GroundOn && (cluster.Flags & (GOO | SPLAT)) != 0 && (cluster.Flags & NOGROUND) == 0 &&
+                    normal.y > GROUND_NORMAL_Y && VoxelBlood.IsBlood(cluster.Tint))
+                {
+                    // Blood soaks into what it fell on: VoxelWorld paints it into the voxels there, and it is gone from here.
+                    GroundHits.Enqueue(new GroundStain
+                    {
+                        Point = hit.point, Normal = normal, Radius = math.max(cluster.Radius, 0.02f) * GROUND_SPREAD,
+                        Shade = VoxelBlood.ShadeOf(cluster.Tint)
+                    });
+                    cluster.Life = 0f;
+                    cluster.Flags &= ~KEEP;
                     Clusters[i] = cluster;
                     return;
                 }

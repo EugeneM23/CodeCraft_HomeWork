@@ -74,6 +74,8 @@ namespace Game.Voxels
             SolidCount = 0;
             Array.Clear(_loose, 0, _loose.Length);
             Array.Clear(_print, 0, _print.Length);
+            Array.Clear(_blood, 0, _blood.Length);
+            _hasBlood = false;
             _recycled = true;
         }
 
