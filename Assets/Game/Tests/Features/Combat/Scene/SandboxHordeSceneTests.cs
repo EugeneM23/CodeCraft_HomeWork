@@ -31,6 +31,7 @@ namespace Game.Tests
         public IEnumerator SandboxHasLiveZombies_ThatComeLeapOn_AndRespawn()
         {
             LogAssert.ignoreFailingMessages = true;
+            SandboxHorde.Enabled = true; // off by default in the game for now
             yield return EditorSceneManager.LoadSceneAsyncInPlayMode("Assets/Game/Voxels/Scenes/VoxelSandbox.unity",
                 new LoadSceneParameters(LoadSceneMode.Single));
             for (int i = 0; i < 60; i++)

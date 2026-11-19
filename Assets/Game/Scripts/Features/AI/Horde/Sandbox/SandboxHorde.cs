@@ -21,8 +21,9 @@ namespace Game.AIKit.Adapters
         private static bool s_registered;
         private static int s_groupSize;
 
-        /// <summary>Groups come (on by default). Off clears the sandbox horde without deaths.</summary>
-        public static bool Enabled { get; set; } = true;
+        /// <summary>Groups come. Off by default for now (the user parked the live sandbox horde); F2 «Враги» turns it on.
+        /// Off clears the sandbox horde without deaths.</summary>
+        public static bool Enabled { get; set; } = false;
 
         /// <summary>Crawlers in a group (the config's until set).</summary>
         public static int GroupSize
@@ -50,7 +51,7 @@ namespace Game.AIKit.Adapters
             s_config = null;
             s_groupSize = 0;
             s_registered = false;
-            Enabled = true;
+            Enabled = false;
         }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
