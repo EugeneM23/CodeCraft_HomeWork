@@ -24,7 +24,7 @@ namespace Game
             DebugPanelRegistry.AddInfo(CATEGORY, RunLine, -10);
             DebugPanelRegistry.AddButtons(CATEGORY, null, RunButtons, PressRun, -9);
             DebugPanelRegistry.AddButtons(CATEGORY, () => "Предложение (выбрать):", OfferButtons, PressOffer, -8, OfferText)
-                .Visible = () => TryGetRun(out IRunService run) && run.SkillOffer.Count > 0;
+                .Visible = OfferVisible;
         }
 
         /// <summary>The per-skill rows, once: needs the game catalog (the app).</summary>
@@ -84,6 +84,16 @@ namespace Game
             return $"{name}  <color={color}>{level}/{SkillConfig.MAX_LEVEL}</color>{note}";
         }
 
+        // An offer to pick; with the skill screen up, only once it takes clicks (it ignores them while fading in)
+        private static bool OfferVisible()
+        {
+            if (!TryGetRun(out IRunService run) || run.SkillOffer.Count == 0)
+                return false;
+
+            SkillChoiceScreen screen = UnityEngine.Object.FindFirstObjectByType<SkillChoiceScreen>();
+            return screen == null || !screen.isActiveAndEnabled || screen.IsInteractable;
+        }
+
         private static string OfferText(int index)
         {
             if (!TryGetRun(out IRunService run) || index >= run.SkillOffer.Count)
@@ -132,10 +142,26 @@ namespace Game
             }
         }
 
+        // With the battle UI's skill screen up, its card is clicked: the screen closes and the game resumes as after a
+        // player's pick (a ChooseSkill past it would leave the screen standing over a stopped game). Without one, the
+        // run is told directly.
         private static void PressOffer(int index)
         {
-            if (TryGetRun(out IRunService run) && index < run.SkillOffer.Count)
-                run.ChooseSkill(run.SkillOffer[index]);
+            if (!TryGetRun(out IRunService run) || index >= run.SkillOffer.Count)
+                return;
+
+            SkillChoiceScreen screen = UnityEngine.Object.FindFirstObjectByType<SkillChoiceScreen>();
+            if (screen != null && screen.isActiveAndEnabled)
+            {
+                SkillCardView[] cards = screen.GetComponentsInChildren<SkillCardView>(false);
+                if (index < cards.Length && cards[index].Button != null)
+                {
+                    cards[index].Button.onClick.Invoke();
+                    return;
+                }
+            }
+
+            run.ChooseSkill(run.SkillOffer[index]);
         }
 
         // ---------- Lookups ----------
