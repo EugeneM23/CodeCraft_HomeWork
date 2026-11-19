@@ -96,6 +96,10 @@ namespace Game
                 _context.DelRun();
             }
             _context.AddRun(_run);
+
+            // Combat may have attached the tank before the run was here: its defeat and skill effects bind now.
+            if (_context.TryGetBehaviour(out CombatBehaviour combat))
+                combat.RebindRun();
         }
 
         private void OnEnable() => _looped = GameTicks.TryAdd(this);

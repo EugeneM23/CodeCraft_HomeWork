@@ -68,6 +68,18 @@ namespace Game
             TargetingSetup.AttachTank(_context, _tank, _config);
         }
 
+        /// <summary>
+        /// The level's run came after the tank was attached (the core's RunBootstrap wakes after the context): the
+        /// tank's run-bound parts (skill effects, defeat on death) are made again with it.
+        /// </summary>
+        public void RebindRun()
+        {
+            if (_tank == null)
+                return;
+            ProgressionSetup.DetachTank(_context, _tank);
+            ProgressionSetup.AttachTank(_context, _tank, _config);
+        }
+
         private void Detach()
         {
             if (_tank == null)
