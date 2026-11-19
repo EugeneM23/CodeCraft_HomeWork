@@ -419,6 +419,77 @@ namespace Game.Tests
             Assert.AreEqual(1, _run.PendingLevelUps);
         }
 
+        // ---------- Debug: SetSkillLevel ----------
+
+        [Test]
+        public void SetSkillLevel_TakesTheSkillAtThatLevel_AndRaisesSkillChangedLikeAPick()
+        {
+            var changes = new List<string>();
+            _run.SkillChanged += (s, l) => changes.Add($"{s.Value}:{l}");
+            _run.StartRun(ChapterIds.Outskirts, TankIds.Tiger);
+
+            Assert.IsTrue(_run.SetSkillLevel(SkillIds.Ricochet, 3));
+            Assert.IsTrue(_run.SetSkillLevel(SkillIds.Ricochet, 2));
+            Assert.IsTrue(_run.SetSkillLevel(SkillIds.Ricochet, 0));
+
+            CollectionAssert.AreEqual(new[] { $"{SkillIds.Ricochet.Value}:3", $"{SkillIds.Ricochet.Value}:2",
+                $"{SkillIds.Ricochet.Value}:0" }, changes);
+            Assert.AreEqual(0, _run.GetSkillLevel(SkillIds.Ricochet));
+            Assert.IsFalse(Contains(_run.Skills, SkillIds.Ricochet));
+            Assert.AreEqual(0, _run.PendingLevelUps, "no level-up is spent");
+            Assert.AreEqual(1, _run.Level);
+            Assert.IsFalse(_loop.IsPaused, "no offer, no pause");
+        }
+
+        [Test]
+        public void SetSkillLevel_ClampsTheLevel_AndRejectsWhatDoesNotFit()
+        {
+            Assert.IsFalse(_run.SetSkillLevel(SkillIds.Ricochet, 1), "no run yet");
+
+            _run.StartRun(ChapterIds.Outskirts, TankIds.Tiger);
+            Assert.IsFalse(_run.SetSkillLevel(new SkillId("nope"), 1), "not in the catalog");
+            Assert.IsFalse(_run.SetSkillLevel(SkillIds.Ricochet, 0), "already 0");
+
+            Assert.IsTrue(_run.SetSkillLevel(SkillIds.Ricochet, 99));
+            Assert.AreEqual(SkillConfig.MAX_LEVEL, _run.GetSkillLevel(SkillIds.Ricochet));
+            Assert.IsFalse(_run.SetSkillLevel(SkillIds.Ricochet, SkillConfig.MAX_LEVEL), "same level");
+            CollectionAssert.AreEqual(new[] { SkillIds.Ricochet }, _run.Skills);
+
+            _run.EndRun(RunOutcome.Abandoned);
+            Assert.IsFalse(_run.SetSkillLevel(SkillIds.Turret, 1), "the run is over");
+        }
+
+        [Test]
+        public void SetSkillLevel_Zero_FreesTheSlot_ForTheNextOffer()
+        {
+            // Hound: one weapon slot, one upgrade slot
+            _run.StartRun(ChapterIds.Outskirts, TankIds.Hound);
+            _run.SetSkillLevel(SkillIds.Turret, 2);
+            _run.SetSkillLevel(SkillIds.Ricochet, 1);
+
+            _run.AddExperience(_run.ExperienceToNextLevel);
+            CollectionAssert.AreEquivalent(new[] { SkillIds.Turret, SkillIds.Ricochet }, _run.SkillOffer,
+                "both slots are taken: only the taken skills level up");
+            Assert.IsTrue(_run.ChooseSkill(SkillIds.Ricochet));
+
+            Assert.IsTrue(_run.SetSkillLevel(SkillIds.Turret, 0));
+            _run.AddExperience(_run.ExperienceToNextLevel);
+            CollectionAssert.AreEquivalent(new[] { SkillIds.Turret, SkillIds.AirStrike, SkillIds.Ricochet }, _run.SkillOffer,
+                "the weapon slot is free again");
+        }
+
+        [Test]
+        public void ChooseSkill_OfASkillMaxedMeanwhile_StaysAtMax()
+        {
+            _run.StartRun(ChapterIds.Outskirts, TankIds.Tiger);
+            _run.AddExperience(_run.ExperienceToNextLevel);
+            SkillId offered = _run.SkillOffer[0];
+
+            _run.SetSkillLevel(offered, SkillConfig.MAX_LEVEL);
+            Assert.IsTrue(_run.ChooseSkill(offered));
+            Assert.AreEqual(SkillConfig.MAX_LEVEL, _run.GetSkillLevel(offered));
+        }
+
         [Test]
         public void TwoLevelUpsAtOnce_OfferOneAfterTheOther_UnderOnePause()
         {
