@@ -107,6 +107,13 @@ namespace Game.Voxels
         private NativeArray<float4x4> _matrices;
         private NativeArray<float4> _colors;
         private NativeReference<int> _alive;
+
+        /// <summary>Goo that flew into the stain box (<see cref="SetStainBox"/>): where it hit, read with <see cref="TakeStainHits"/>.</summary>
+        private NativeQueue<float3> _stainHits;
+        private bool _stainOn;
+        private float3 _stainCenter;
+        private quaternion _stainRotation;
+        private float3 _stainHalf;
         private NativeArray<LyingCube> _lyingCubes;
         /// <summary>Per slot, as drawn when drawn instanced (a sinking cube shrunk).</summary>
         private NativeArray<float4x4> _lyingMatrices;
@@ -251,6 +258,38 @@ namespace Game.Voxels
             return cluster;
         }
 
+        /// <summary>
+        /// A box (world centre, rotation, half extents) that catches flying goo (<see cref="GooDrop"/>, <see cref="SetGoo"/>):
+        /// a goo clump that comes into it is gone, and where it was goes to the stain hits (<see cref="TakeStainHits"/>).
+        /// The tank sets its hull here each step (TankBloodBehaviour): goo does not collide with the tank, it stains it.
+        /// One box test per flying goo clump in the step's job.
+        /// </summary>
+        public void SetStainBox(Vector3 center, Quaternion rotation, Vector3 halfExtents)
+        {
+            _stainOn = true;
+            _stainCenter = center;
+            _stainRotation = rotation;
+            _stainHalf = halfExtents;
+        }
+
+        public void ClearStainBox() => _stainOn = false;
+
+        /// <summary>Where goo came into the stain box since the last call (the step before last at the latest), into <paramref name="into"/>.</summary>
+        public int TakeStainHits(System.Collections.Generic.List<Vector3> into)
+        {
+            Complete();
+            int count = 0;
+            if (!_stainHits.IsCreated)
+                return 0;
+            while (_stainHits.TryDequeue(out float3 hit))
+            {
+                into.Add(hit);
+                count++;
+            }
+
+            return count;
+        }
+
         /// <summary>A drop of goo: rises slowly, falls heavily, stretched in flight, a tile where it lands. -1 when full.</summary>
         public int GooDrop(Vector3 position, Vector3 velocity, Color32 color, float size)
         {
@@ -307,6 +346,7 @@ namespace Game.Voxels
             _matrices = new NativeArray<float4x4>(capacity, Allocator.Persistent);
             _colors = new NativeArray<float4>(capacity, Allocator.Persistent);
             _alive = new NativeReference<int>(Allocator.Persistent);
+            _stainHits = new NativeQueue<float3>(Allocator.Persistent);
 
             int lying = math.max(1, lyingCapacity);
             _lyingCubes = new NativeArray<LyingCube>(lying, Allocator.Persistent);
@@ -464,7 +504,12 @@ namespace Game.Voxels
                 Hits = _hits,
                 DeltaTime = dt,
                 Gravity = (float3)Physics.gravity * GRAVITY_SCALE,
-                Seed = _seed
+                Seed = _seed,
+                StainOn = _stainOn,
+                StainCenter = _stainCenter,
+                StainInverse = math.inverse(_stainRotation),
+                StainHalf = _stainHalf,
+                StainHits = _stainHits.AsParallelWriter()
             }.Schedule(clusters, 128, handle);
 
             handle = new ShatterJob
@@ -573,6 +618,7 @@ namespace Game.Voxels
             if (_matrices.IsCreated) _matrices.Dispose();
             if (_colors.IsCreated) _colors.Dispose();
             if (_alive.IsCreated) _alive.Dispose();
+            if (_stainHits.IsCreated) _stainHits.Dispose();
             if (_lyingCubes.IsCreated) _lyingCubes.Dispose();
             if (_lyingMatrices.IsCreated) _lyingMatrices.Dispose();
             if (_lyingColors.IsCreated) _lyingColors.Dispose();

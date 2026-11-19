@@ -747,6 +747,7 @@ namespace Game.AIKit.Adapters
                     Vector3 side = right * Mathf.Sign(Vector3.Dot(at - centre, right));
                     VoxelSpray.Goo(at, Vector3.up + side * 0.7f, SQUASH_DROPS, 5.5f, 0.45f, _goo, _bloodSize * GOO_SIZE,
                         velocity * 0.25f, 0.4f);
+                    TankBloodStains.Squash(_squashed[i], side, 0.8f);
                 }
             }
         }

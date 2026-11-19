@@ -33,6 +33,9 @@ namespace Game
         private const float GOO_SPEED = 6f;
         private const float GOO_SIZE = 0.1f;
 
+        /// <summary>Volume (m³) of a part that splatters the tank's side at the most.</summary>
+        private const float HEAVY_VOLUME = 0.25f;
+
         /// <summary>Share of the tank's velocity the goo carries.</summary>
         private const float INHERIT = 0.25f;
 
@@ -81,6 +84,9 @@ namespace Game
                     int drops = Mathf.Clamp(Mathf.RoundToInt(size.x * size.y * size.z * DROPS_PER_VOLUME), MIN_DROPS, MAX_DROPS);
                     VoxelSpray.Goo(piece.center, Vector3.up + side * 0.7f, drops, GOO_SPEED, 0.45f, Goo, GOO_SIZE,
                         velocity * INHERIT, Mathf.Min(0.3f, piece.extents.magnitude * 0.5f));
+                    // The track, road wheels and lower hull round it take the blood; a big part splatters up the side.
+                    TankBloodStains.Squash(new Vector3(piece.center.x, piece.min.y, piece.center.z), side,
+                        size.x * size.y * size.z / HEAVY_VOLUME);
                 }
             }
         }
