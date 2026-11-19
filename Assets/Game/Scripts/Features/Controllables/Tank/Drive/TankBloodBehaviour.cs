@@ -21,8 +21,11 @@ namespace Game
     {
         private static readonly Unity.Profiling.ProfilerMarker StainMarker = new("Crush.BloodStains");
 
-        /// <summary>Stains laid a physics step at most: a Paint costs a few hundredths of a ms, a Deposit more.</summary>
-        public const int STAINS_PER_STEP = 8;
+        /// <summary>
+        /// Stains laid a physics step at most. A Paint itself is cheap, but every skin chunk it touches is rebuilt that
+        /// frame: three keep a crush burst under the horde benchmark's p95; a squash's stains go on over a few tenths of a second.
+        /// </summary>
+        public const int STAINS_PER_STEP = 3;
 
         /// <summary>Size (m) of the splat a goo drop leaves.</summary>
         private const float GOO_SPLAT = 0.2f;

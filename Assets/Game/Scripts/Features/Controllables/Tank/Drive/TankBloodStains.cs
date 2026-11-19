@@ -47,7 +47,7 @@ namespace Game
         public static void Squash(Vector3 ground, Vector3 side, float heaviness)
         {
             heaviness = Mathf.Clamp01(heaviness);
-            int under = 3 + Mathf.RoundToInt(heaviness * 3f);
+            int under = 2 + Mathf.RoundToInt(heaviness * 2f);
             for (int i = 0; i < under; i++)
             {
                 Vector2 jitter = Random.insideUnitCircle * 0.5f;
@@ -55,7 +55,7 @@ namespace Game
                 Add(new Stain { Point = at, Radius = 0.45f, Clots = i == 0 });
             }
 
-            int up = Mathf.RoundToInt(heaviness * 3f);
+            int up = Mathf.RoundToInt(heaviness * 2f);
             for (int i = 0; i < up; i++)
             {
                 Vector3 at = ground + side * Random.Range(0.1f, 0.4f) + Vector3.up * Random.Range(0.5f, 0.6f + heaviness);
