@@ -410,8 +410,12 @@ namespace Game.Voxels
 
         private const float BEARING_BEND = 1f;
 
-        /// <summary>A bite is this many times smaller in a load-bearing voxel: about 1/27 of the volume.</summary>
-        private const float BEARING_HARDNESS = 3f;
+        /// <summary>
+        /// A bite is this many times smaller in a load-bearing voxel: about 1/8 of the volume. At 3 (1/27) the
+        /// skeleton outlasted everything (user, 2026-11-20: three times harder, not fifteen); at 2 it still stands
+        /// out of a bombing, and goes under sustained fire.
+        /// </summary>
+        private const float BEARING_HARDNESS = 2f;
 
         /// <summary>The k-th material that has a load-bearing copy.</summary>
         private static Material BearingMaterial(int k) => k switch

@@ -421,6 +421,60 @@ namespace Game.Voxels
     }
 
     /// <summary>
+    /// Takes an oriented box out of the grid: a vehicle's bow breaking through a wall (VoxelBody.RamBox), a hole
+    /// the bow's shape. Its faces wander in and out by <see cref="Roughness"/> voxel by voxel, so the hole is
+    /// ragged, not cut. A building's load-bearing voxels (<see cref="Hardness"/> above 1) are spared with
+    /// <see cref="SpareHard"/>. Every voxel taken is reported, for the debris it throws.
+    /// </summary>
+    [BurstCompile]
+    public struct CarveBoxJob : IJob
+    {
+        public NativeArray<byte> Voxels;
+        public int3 Size;
+
+        /// <summary>The box's centre, in grid units (the centre of voxel i is i + 0.5).</summary>
+        public float3 Center;
+
+        /// <summary>Turns an offset from the centre in grid space into the box's own axes.</summary>
+        public quaternion Inverse;
+
+        /// <summary>Half the box along its own axes, in grid units.</summary>
+        public float3 Half;
+
+        public float Roughness;
+        public uint Seed;
+        [ReadOnly] public NativeArray<float> Hardness;
+        public bool SpareHard;
+        public NativeList<RemovedVoxel> Removed;
+
+        public void Execute()
+        {
+            float reach = math.length(Half) + Roughness;
+            int3 lo = math.max(0, (int3)math.floor(Center - reach));
+            int3 hi = math.min(Size - 1, (int3)math.floor(Center + reach));
+
+            for (int z = lo.z; z <= hi.z; z++)
+            for (int y = lo.y; y <= hi.y; y++)
+            for (int x = lo.x; x <= hi.x; x++)
+            {
+                int3 p = new int3(x, y, z);
+                int index = VoxelMath.Index(p, Size);
+                byte material = Voxels[index];
+                if (material == 0 || (SpareHard && Hardness[material] > 1f))
+                    continue;
+
+                float3 q = math.abs(math.mul(Inverse, (float3)p + 0.5f - Center));
+                float3 half = Half + Roughness * (VoxelMath.Hash01(p, Seed) * 2f - 1f);
+                if (math.any(q > half))
+                    continue;
+
+                Voxels[index] = 0;
+                Removed.Add(new RemovedVoxel { Position = p, Material = material });
+            }
+        }
+    }
+
+    /// <summary>
     /// Takes a wide, shallow bowl out of the grid: an air bomb's crater that a vehicle can drive
     /// out of. Each column round the centre loses what lies within <c>half</c> of the centre's
     /// height, half = Depth · (1 + cos(π · d / rim)) / 2 at distance d. That is level in the middle,

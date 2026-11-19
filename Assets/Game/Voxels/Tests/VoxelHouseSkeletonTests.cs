@@ -62,8 +62,8 @@ namespace Game.Voxels.Tests
             VoxelBody house = SpawnHouse(TwoStoreys);
             yield return null;
 
-            // A tank shell's 1.6 m crater is under half that in a building; a bullet's hole is as it was.
-            Assert.That(house.BiteRadius(1.6f), Is.LessThan(0.8f));
+            // A tank shell's 1.6 m crater is about 1.15 m in a building; a bullet's hole is as it was.
+            Assert.That(house.BiteRadius(1.6f), Is.InRange(1.05f, 1.25f));
             Assert.That(house.BiteRadius(0.3f), Is.EqualTo(0.3f));
 
             // A 0.5 m bite at the wall beside the corner (first floor, u 4): the wall 30 cm over it goes, the corner
