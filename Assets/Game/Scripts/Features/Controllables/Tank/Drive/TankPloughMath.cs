@@ -13,9 +13,9 @@ namespace Game
 
         /// <summary>
         /// Speed (m/s) into the ground, against its real face, at or below which a hit makes no impact (sound, shake).
-        /// Kept equal to the presets' MinClosing (2): a nose hit needs at least MinClosing into the real face, so with
-        /// a preset MinClosing above this every hit has an impact; below it, the slowest hits would turn the hull
-        /// silently (TankPloughBehaviour raises nothing for impact 0).
+        /// Kept equal to the presets' MinClosing (2). The impact goes by ImpactClosing (against a slope of
+        /// IMPACT_RAMP), which can be less than the closing into the real face: the slowest such hits bounce
+        /// the hull silently (TankPloughBehaviour raises nothing for impact 0).
         /// </summary>
         public const float IMPACT_MIN_CLOSING = 2f;
 
@@ -36,6 +36,19 @@ namespace Game
         }
 
         /// <summary>
+        /// The slope (°) a hit's impact is measured against, the same for every preset: a voxel step's riser
+        /// and tread are the one slope they are steps of, so the same entry feels the same whichever facet the
+        /// nose meets first.
+        /// </summary>
+        public const float IMPACT_RAMP = 30f;
+
+        /// <summary>
+        /// Speed (m/s) into the ground a hit's impact goes by: against a slope of IMPACT_RAMP rising straight
+        /// ahead (RampAhead), the same for every preset and whatever facet was met.
+        /// </summary>
+        public static float ImpactClosing(Vector3 velocity) => -Vector3.Dot(velocity, RampAhead(velocity, IMPACT_RAMP));
+
+        /// <summary>
         /// How hard a hit felt, 0..1, for the sound and the camera: <paramref name="closing"/> m/s into the
         /// ground's real face on the scale every preset shares (IMPACT_MIN_CLOSING..IMPACT_FULL_CLOSING),
         /// times the preset's <paramref name="scale"/>. Not the response strength (Strength): that one is
@@ -54,6 +67,24 @@ namespace Game
             localFromHullCentre.z > 0f && localFromHullCentre.y < 0f &&
             Vector3.Dot(normal, forward) < NOSE_FACING && closing >= minClosing;
 
+        /// <summary>
+        /// The face stands across the hull's way: seen from above, its normal is within 45° of straight back
+        /// against the way the hull goes (cos 45° = FACES_TRAVEL). A rut's wall or a crater's side the hull
+        /// brushes along is not. A face with no way it faces (level ground under a hull landing nose down) or a
+        /// hull going straight up or down counts.
+        /// </summary>
+        public static bool FacesTravel(Vector3 normal, Vector3 velocity)
+        {
+            var face = new Vector3(normal.x, 0f, normal.z);
+            var way = new Vector3(velocity.x, 0f, velocity.z);
+            if (face.sqrMagnitude < 1e-4f || way.sqrMagnitude < 1e-4f)
+                return true;
+            return Vector3.Dot(face.normalized, way.normalized) <= -FACES_TRAVEL;
+        }
+
+        /// <summary>Cos 45°: how squarely a face must stand against the hull's way (FacesTravel).</summary>
+        public const float FACES_TRAVEL = 0.7071f;
+
         /// <summary>Speed after a hit: even a light one costs half the loss, a full one all of it.</summary>
         public static float SpeedAfter(float speed, float strength, float speedLoss) =>
             speed * (1f - speedLoss * Mathf.Max(strength, 0.5f));
@@ -71,20 +102,20 @@ namespace Game
         }
 
         /// <summary>
-        /// The slope the hull leaves a hit along: <paramref name="normal"/>, but tipped back toward up so the
-        /// ground it describes is no steeper than <paramref name="maxDegrees"/>. A voxel step's vertical face is
-        /// no wall to the nose that digs it out: the hull rides up the ramp the bite cuts, not up the face.
+        /// The slope the hull leaves a hit along: the normal of a ramp of exactly <paramref name="degrees"/>
+        /// rising straight ahead the way the hull goes (<paramref name="velocity"/>, level). The nose rips that
+        /// ramp out of whatever it hit: a voxel step's vertical face is no wall to it, and which facet of a
+        /// voxel staircase the hull's box met first (a riser, a tread, one turned aside) does not change the
+        /// bounce. Straight up for a hull going straight up or down.
         /// </summary>
-        /// <remarks>An overhang's underside (normal pointing down) is left as it is: there is no ramp to cut up it.</remarks>
-        public static Vector3 Ramp(Vector3 normal, float maxDegrees)
+        public static Vector3 RampAhead(Vector3 velocity, float degrees)
         {
-            Vector3 flat = new Vector3(normal.x, 0f, normal.z);
-            if (normal.y < 0f || flat.sqrMagnitude < 1e-8f || Vector3.Angle(normal, Vector3.up) <= maxDegrees)
-                return normal;
-            float rad = maxDegrees * Mathf.Deg2Rad;
-            return flat.normalized * Mathf.Sin(rad) + Vector3.up * Mathf.Cos(rad);
+            var flat = new Vector3(velocity.x, 0f, velocity.z);
+            if (flat.sqrMagnitude < 1e-6f)
+                return Vector3.up;
+            float rad = degrees * Mathf.Deg2Rad;
+            return -flat.normalized * Mathf.Sin(rad) + Vector3.up * Mathf.Cos(rad);
         }
-
         /// <summary>
         /// <paramref name="angular"/> with its nose-up spin (about -<paramref name="right"/>) at least
         /// <paramref name="minRate"/> rad/s: a nose-down spin is overridden, a faster nose-up one kept.
@@ -96,19 +127,27 @@ namespace Game
             return noseUp >= minRate ? angular : angular - right * (minRate - noseUp);
         }
 
-        /// <summary><paramref name="angular"/> without any nose-up spin (about -<paramref name="right"/>); a nose-down one is kept.</summary>
-        public static Vector3 NoNoseUpSpin(Vector3 angular, Vector3 right)
+        /// <summary>
+        /// Mean velocity of the chunk the nose rips out: ahead the way the hull goes (level, whatever its
+        /// pitch) and <paramref name="lift"/> of that up (1 is 45°), at the hull's speed × <paramref name="scale"/>.
+        /// Straight up when the hull goes straight up or down.
+        /// </summary>
+        public static Vector3 ChunkThrow(Vector3 velocity, float lift, float scale)
         {
-            float noseUp = -Vector3.Dot(angular, right);
-            return noseUp > 0f ? angular + right * noseUp : angular;
+            var flat = new Vector3(velocity.x, 0f, velocity.z);
+            Vector3 ahead = flat.sqrMagnitude > 1e-6f ? flat.normalized : Vector3.zero;
+            return (ahead + Vector3.up * lift) * (velocity.magnitude * scale);
         }
 
-        /// <summary>Mean velocity of the earth the nose throws: forward along the slope and up off it.</summary>
-        public static Vector3 Throw(Vector3 velocity, Vector3 normal, float lift, float scale)
+        /// <summary>
+        /// m³ of earth the chunk throws: <paramref name="voxels"/> dug out of ground whose voxels are
+        /// <paramref name="voxelSize"/> m across in the world, times <paramref name="share"/>. 0 when that is not
+        /// a finite number above 0.
+        /// </summary>
+        public static float ChunkVolume(int voxels, float voxelSize, float share)
         {
-            Vector3 along = Vector3.ProjectOnPlane(velocity, normal);
-            Vector3 heading = along.sqrMagnitude > 1e-6f ? along.normalized : Vector3.zero;
-            return (heading + normal * lift) * (velocity.magnitude * scale);
+            float volume = voxels * voxelSize * voxelSize * voxelSize * share;
+            return float.IsFinite(volume) && volume > 0f ? volume : 0f;
         }
     }
 }

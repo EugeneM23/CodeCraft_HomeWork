@@ -54,6 +54,34 @@ namespace Game.Tests
         }
 
         [Test]
+        public void GlancingARutWallAt12Degrees_PassesIsNoseHit_ButDoesNotFaceTravel()
+        {
+            // A wall along the way, turned 12° into it: the nose brushes it at 13 m/s.
+            var v = new Vector3(0f, 0f, 13f);
+            Vector3 wall = Quaternion.Euler(0f, -12f, 0f) * Vector3.left;
+            float closing = -Vector3.Dot(v, wall);
+            Assert.IsTrue(TankPloughMath.IsNoseHit(new Vector3(0.9f, -0.15f, 1.3f), wall, Vector3.forward, closing, 2f),
+                "on its own the nose test lets it through");
+            Assert.IsFalse(TankPloughMath.FacesTravel(wall, v), "but the face does not stand across the way");
+        }
+
+        [Test]
+        public void FacesTravel_AStepHeadOnOrTurnedUpTo45Degrees()
+        {
+            var v = new Vector3(0f, -2f, 13f);
+            Assert.IsTrue(TankPloughMath.FacesTravel(new Vector3(0f, 0.05f, -1f).normalized, v), "head on");
+            Assert.IsTrue(TankPloughMath.FacesTravel(Quaternion.Euler(0f, 40f, 0f) * new Vector3(0f, 0.2f, -1f).normalized, v), "40° aside");
+            Assert.IsFalse(TankPloughMath.FacesTravel(Quaternion.Euler(0f, 50f, 0f) * new Vector3(0f, 0.2f, -1f).normalized, v), "50° aside");
+        }
+
+        [Test]
+        public void FacesTravel_LevelGroundOrAVerticalFall_Counts()
+        {
+            Assert.IsTrue(TankPloughMath.FacesTravel(Vector3.up, new Vector3(0f, -5f, 6f)), "landing nose down on level ground");
+            Assert.IsTrue(TankPloughMath.FacesTravel(new Vector3(0f, 0.5f, -1f).normalized, Vector3.down), "falling straight down");
+        }
+
+        [Test]
         public void HitBehindTheMiddle_IsNotANoseHit()
         {
             var v = new Vector3(0f, 0f, 8f);
@@ -82,26 +110,35 @@ namespace Game.Tests
         }
 
         [Test]
-        public void Ramp_LeavesAGentleSlopeAsItIs()
+        public void RampAhead_RisesStraightAheadAtTheAngle()
         {
-            Assert.That(TankPloughMath.Ramp(Slope32, 35f), Is.EqualTo(Slope32).Using(Vector3EqualityComparer.Instance));
-        }
-
-        [Test]
-        public void Ramp_TipsAVerticalStepFaceBackToTheMaxSlope()
-        {
-            var face = new Vector3(0f, 0.07f, -1f).normalized;
-            Vector3 ramp = TankPloughMath.Ramp(face, 30f);
-            Assert.That(Vector3.Angle(ramp, Vector3.up), Is.EqualTo(30f).Within(1e-3f));
-            Assert.That(ramp.z, Is.LessThan(0f), "still faces the nose");
+            var v = new Vector3(0f, -3f, 12f);
+            Vector3 ramp = TankPloughMath.RampAhead(v, 18f);
+            Assert.That(Vector3.Angle(ramp, Vector3.up), Is.EqualTo(18f).Within(1e-3f));
+            Assert.That(ramp.x, Is.EqualTo(0f).Within(1e-6f), "no sideways");
+            Assert.That(ramp.z, Is.LessThan(0f), "faces the hull coming at it");
             Assert.That(ramp.magnitude, Is.EqualTo(1f).Within(1e-5f));
         }
 
         [Test]
-        public void Ramp_LeavesAnOverhangsUndersideAsItIs()
+        public void RampAhead_DoesNotCareHowTheHullDives()
         {
-            var underside = new Vector3(0f, -0.3f, -1f).normalized;
-            Assert.That(TankPloughMath.Ramp(underside, 30f), Is.EqualTo(underside).Using(Vector3EqualityComparer.Instance));
+            Assert.That(TankPloughMath.RampAhead(new Vector3(3f, -6f, 4f), 25f),
+                Is.EqualTo(TankPloughMath.RampAhead(new Vector3(3f, 1f, 4f), 25f)).Using(Vector3EqualityComparer.Instance));
+        }
+
+        [Test]
+        public void RampAhead_StraightDown_IsUp()
+        {
+            Assert.That(TankPloughMath.RampAhead(new Vector3(0f, -5f, 0f), 18f), Is.EqualTo(Vector3.up));
+        }
+
+        [Test]
+        public void Deflect_AlongRampAhead_ClimbsAtTheRamp()
+        {
+            var v = new Vector3(0f, -3f, 12f);
+            Vector3 after = TankPloughMath.Deflect(v, TankPloughMath.RampAhead(v, 18f), 1f, 0.3f, 0f);
+            Assert.That(Mathf.Atan2(after.y, after.z) * Mathf.Rad2Deg, Is.EqualTo(18f).Within(1e-3f));
         }
 
         [Test]
@@ -123,23 +160,66 @@ namespace Game.Tests
         }
 
         [Test]
-        public void NoNoseUpSpin_TakesOutANoseUpSpin_KeepsANoseDownOne()
+        public void ChunkThrow_GoesAheadAndUp_ScaledBySpeed()
         {
-            Assert.That(TankPloughMath.NoNoseUpSpin(new Vector3(-0.7f, 0.2f, 0.1f), Vector3.right),
-                Is.EqualTo(new Vector3(0f, 0.2f, 0.1f)).Using(Vector3EqualityComparer.Instance));
-            Assert.That(TankPloughMath.NoNoseUpSpin(new Vector3(0.4f, 0f, 0f), Vector3.right),
-                Is.EqualTo(new Vector3(0.4f, 0f, 0f)).Using(Vector3EqualityComparer.Instance));
+            var v = new Vector3(0f, 0f, 8f);
+            Vector3 thrown = TankPloughMath.ChunkThrow(v, 1.1f, 0.6f);
+            Assert.That(thrown, Is.EqualTo(new Vector3(0f, 1.1f, 1f) * (8f * 0.6f)).Using(Vector3EqualityComparer.Instance));
         }
 
         [Test]
-        public void Throw_GoesForwardAndUp_ScaledBySpeed()
+        public void ChunkThrow_NoseDown_StillGoesUpAndLevelAhead()
         {
-            var v = new Vector3(0f, 0f, 8f);
-            Vector3 thrown = TankPloughMath.Throw(v, Slope32, 0.8f, 0.9f);
-            Assert.That(thrown.y, Is.GreaterThan(0f));
-            Assert.That(thrown.z, Is.GreaterThan(0f));
-            Vector3 along = Vector3.ProjectOnPlane(v, Slope32).normalized;
-            Assert.That(thrown, Is.EqualTo((along + Slope32 * 0.8f) * (8f * 0.9f)).Using(Vector3EqualityComparer.Instance));
+            var v = new Vector3(3f, -6f, 4f); // falling into a crater
+            Vector3 thrown = TankPloughMath.ChunkThrow(v, 1f, 0.5f);
+            Assert.That(thrown.y, Is.GreaterThan(0f), "up, not down the way the hull falls");
+            Vector3 flat = new Vector3(thrown.x, 0f, thrown.z);
+            Assert.That(Vector3.Angle(flat, new Vector3(3f, 0f, 4f)), Is.LessThan(1e-3f), "ahead the way the hull goes");
+            Assert.That(thrown.y, Is.EqualTo(flat.magnitude).Within(1e-4f), "lift 1 is 45°");
+        }
+
+        [Test]
+        public void ChunkThrow_StraightDown_GoesStraightUp()
+        {
+            Vector3 thrown = TankPloughMath.ChunkThrow(new Vector3(0f, -5f, 0f), 1f, 1f);
+            Assert.That(thrown, Is.EqualTo(new Vector3(0f, 5f, 0f)).Using(Vector3EqualityComparer.Instance));
+        }
+
+        [Test]
+        public void ChunkVolume_IsVoxelsTimesVoxelVolumeTimesShare()
+        {
+            Assert.That(TankPloughMath.ChunkVolume(5000, 0.1f, 0.2f), Is.EqualTo(1f).Within(1e-4f));
+        }
+
+        [Test]
+        public void ChunkVolume_NothingDugOrNoShare_IsZero()
+        {
+            Assert.That(TankPloughMath.ChunkVolume(0, 0.1f, 0.5f), Is.EqualTo(0f));
+            Assert.That(TankPloughMath.ChunkVolume(100, 0.1f, 0f), Is.EqualTo(0f));
+            Assert.That(TankPloughMath.ChunkVolume(100, 0.1f, -1f), Is.EqualTo(0f));
+        }
+
+        [Test]
+        public void ChunkVolume_NotFinite_IsZero()
+        {
+            Assert.That(TankPloughMath.ChunkVolume(100, float.NaN, 0.5f), Is.EqualTo(0f));
+            Assert.That(TankPloughMath.ChunkVolume(100, float.PositiveInfinity, 0.5f), Is.EqualTo(0f));
+            Assert.That(TankPloughMath.ChunkVolume(int.MaxValue, 1e20f, 1f), Is.EqualTo(0f));
+        }
+
+        [Test]
+        public void ImpactClosing_IsAgainstA30DegreeRampAhead()
+        {
+            var v = new Vector3(0f, -2.5f, 13f);
+            var slope30 = new Vector3(0f, Mathf.Cos(30f * Mathf.Deg2Rad), -Mathf.Sin(30f * Mathf.Deg2Rad));
+            Assert.That(TankPloughMath.ImpactClosing(v), Is.EqualTo(-Vector3.Dot(v, slope30)).Within(1e-3f));
+        }
+
+        [Test]
+        public void ImpactClosing_GrowsWithSpeed()
+        {
+            Assert.That(TankPloughMath.ImpactClosing(new Vector3(0f, -2f, 8f)),
+                Is.LessThan(TankPloughMath.ImpactClosing(new Vector3(0f, -2f, 12f))));
         }
 
         [Test]
