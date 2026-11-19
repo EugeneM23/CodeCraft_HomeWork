@@ -127,6 +127,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2874031349234510491, guid: 1382792956563514c98219c8251399b1, type: 3}
+      propertyPath: _standStill
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8309438787605350671, guid: 1382792956563514c98219c8251399b1, type: 3}
       propertyPath: m_LocalPosition.x
       value: -22.727997
@@ -170,10 +174,6 @@ PrefabInstance:
     - target: {fileID: 8803739587559878161, guid: 1382792956563514c98219c8251399b1, type: 3}
       propertyPath: m_Name
       value: Zombie_19
-      objectReference: {fileID: 0}
-    - target: {fileID: 2874031349234510491, guid: 1382792956563514c98219c8251399b1, type: 3}
-      propertyPath: _standStill
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -470,6 +470,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2874031349234510491, guid: 1382792956563514c98219c8251399b1, type: 3}
+      propertyPath: _standStill
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8309438787605350671, guid: 1382792956563514c98219c8251399b1, type: 3}
       propertyPath: m_LocalPosition.x
       value: 14.363556
@@ -514,10 +518,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Zombie_03
       objectReference: {fileID: 0}
-    - target: {fileID: 2874031349234510491, guid: 1382792956563514c98219c8251399b1, type: 3}
-      propertyPath: _standStill
-      value: 1
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -531,6 +531,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2874031349234510491, guid: 1382792956563514c98219c8251399b1, type: 3}
+      propertyPath: _standStill
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8309438787605350671, guid: 1382792956563514c98219c8251399b1, type: 3}
       propertyPath: m_LocalPosition.x
       value: -13.455109
@@ -575,10 +579,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Zombie_15
       objectReference: {fileID: 0}
-    - target: {fileID: 2874031349234510491, guid: 1382792956563514c98219c8251399b1, type: 3}
-      propertyPath: _standStill
-      value: 1
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -592,6 +592,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2874031349234510491, guid: 1382792956563514c98219c8251399b1, type: 3}
+      propertyPath: _standStill
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8309438787605350671, guid: 1382792956563514c98219c8251399b1, type: 3}
       propertyPath: m_LocalPosition.x
       value: 9.727112
@@ -635,10 +639,6 @@ PrefabInstance:
     - target: {fileID: 8803739587559878161, guid: 1382792956563514c98219c8251399b1, type: 3}
       propertyPath: m_Name
       value: Zombie_05
-      objectReference: {fileID: 0}
-    - target: {fileID: 2874031349234510491, guid: 1382792956563514c98219c8251399b1, type: 3}
-      propertyPath: _standStill
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -685,6 +685,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2874031349234510491, guid: 1382792956563514c98219c8251399b1, type: 3}
+      propertyPath: _standStill
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8309438787605350671, guid: 1382792956563514c98219c8251399b1, type: 3}
       propertyPath: m_LocalPosition.x
       value: 16.681778
@@ -729,10 +733,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Zombie_02
       objectReference: {fileID: 0}
-    - target: {fileID: 2874031349234510491, guid: 1382792956563514c98219c8251399b1, type: 3}
-      propertyPath: _standStill
-      value: 1
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -746,6 +746,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2874031349234510491, guid: 1382792956563514c98219c8251399b1, type: 3}
+      propertyPath: _standStill
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8309438787605350671, guid: 1382792956563514c98219c8251399b1, type: 3}
       propertyPath: m_LocalPosition.x
       value: -15.773331
@@ -789,10 +793,6 @@ PrefabInstance:
     - target: {fileID: 8803739587559878161, guid: 1382792956563514c98219c8251399b1, type: 3}
       propertyPath: m_Name
       value: Zombie_16
-      objectReference: {fileID: 0}
-    - target: {fileID: 2874031349234510491, guid: 1382792956563514c98219c8251399b1, type: 3}
-      propertyPath: _standStill
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1366,6 +1366,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2874031349234510491, guid: 1382792956563514c98219c8251399b1, type: 3}
+      propertyPath: _standStill
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8309438787605350671, guid: 1382792956563514c98219c8251399b1, type: 3}
       propertyPath: m_LocalPosition.x
       value: -25.046219
@@ -1410,10 +1414,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Zombie_20
       objectReference: {fileID: 0}
-    - target: {fileID: 2874031349234510491, guid: 1382792956563514c98219c8251399b1, type: 3}
-      propertyPath: _standStill
-      value: 1
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1427,6 +1427,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2874031349234510491, guid: 1382792956563514c98219c8251399b1, type: 3}
+      propertyPath: _standStill
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8309438787605350671, guid: 1382792956563514c98219c8251399b1, type: 3}
       propertyPath: m_LocalPosition.x
       value: -11.136887
@@ -1471,10 +1475,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Zombie_14
       objectReference: {fileID: 0}
-    - target: {fileID: 2874031349234510491, guid: 1382792956563514c98219c8251399b1, type: 3}
-      propertyPath: _standStill
-      value: 1
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1488,6 +1488,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2874031349234510491, guid: 1382792956563514c98219c8251399b1, type: 3}
+      propertyPath: _standStill
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8309438787605350671, guid: 1382792956563514c98219c8251399b1, type: 3}
       propertyPath: m_LocalPosition.x
       value: -6.5004425
@@ -1531,10 +1535,6 @@ PrefabInstance:
     - target: {fileID: 8803739587559878161, guid: 1382792956563514c98219c8251399b1, type: 3}
       propertyPath: m_Name
       value: Zombie_12
-      objectReference: {fileID: 0}
-    - target: {fileID: 2874031349234510491, guid: 1382792956563514c98219c8251399b1, type: 3}
-      propertyPath: _standStill
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1957,6 +1957,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2874031349234510491, guid: 1382792956563514c98219c8251399b1, type: 3}
+      propertyPath: _standStill
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8309438787605350671, guid: 1382792956563514c98219c8251399b1, type: 3}
       propertyPath: m_LocalPosition.x
       value: -1.8639984
@@ -2001,10 +2005,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Zombie_10
       objectReference: {fileID: 0}
-    - target: {fileID: 2874031349234510491, guid: 1382792956563514c98219c8251399b1, type: 3}
-      propertyPath: _standStill
-      value: 1
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -2018,6 +2018,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2874031349234510491, guid: 1382792956563514c98219c8251399b1, type: 3}
+      propertyPath: _standStill
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8309438787605350671, guid: 1382792956563514c98219c8251399b1, type: 3}
       propertyPath: m_LocalPosition.x
       value: 7.40889
@@ -2061,10 +2065,6 @@ PrefabInstance:
     - target: {fileID: 8803739587559878161, guid: 1382792956563514c98219c8251399b1, type: 3}
       propertyPath: m_Name
       value: Zombie_06
-      objectReference: {fileID: 0}
-    - target: {fileID: 2874031349234510491, guid: 1382792956563514c98219c8251399b1, type: 3}
-      propertyPath: _standStill
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -2171,6 +2171,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2874031349234510491, guid: 1382792956563514c98219c8251399b1, type: 3}
+      propertyPath: _standStill
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8309438787605350671, guid: 1382792956563514c98219c8251399b1, type: 3}
       propertyPath: m_LocalPosition.x
       value: -20.409775
@@ -2214,10 +2218,6 @@ PrefabInstance:
     - target: {fileID: 8803739587559878161, guid: 1382792956563514c98219c8251399b1, type: 3}
       propertyPath: m_Name
       value: Zombie_18
-      objectReference: {fileID: 0}
-    - target: {fileID: 2874031349234510491, guid: 1382792956563514c98219c8251399b1, type: 3}
-      propertyPath: _standStill
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -2578,6 +2578,63 @@ MonoBehaviour:
   dontDestroyOnLoad: 0
   collectOnAwake: 1
   includeInactiveOnCollect: 1
+--- !u!1001 &1240368399
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 1000000000000000001, guid: 7a1d3c5e9b2f4a6c8d0e1f2a3b4c5d63, type: 3}
+      propertyPath: m_Name
+      value: TargetTank
+      objectReference: {fileID: 0}
+    - target: {fileID: 1000000000000000002, guid: 7a1d3c5e9b2f4a6c8d0e1f2a3b4c5d63, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -19
+      objectReference: {fileID: 0}
+    - target: {fileID: 1000000000000000002, guid: 7a1d3c5e9b2f4a6c8d0e1f2a3b4c5d63, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1000000000000000002, guid: 7a1d3c5e9b2f4a6c8d0e1f2a3b4c5d63, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1000000000000000002, guid: 7a1d3c5e9b2f4a6c8d0e1f2a3b4c5d63, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.9659259
+      objectReference: {fileID: 0}
+    - target: {fileID: 1000000000000000002, guid: 7a1d3c5e9b2f4a6c8d0e1f2a3b4c5d63, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1000000000000000002, guid: 7a1d3c5e9b2f4a6c8d0e1f2a3b4c5d63, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.25881907
+      objectReference: {fileID: 0}
+    - target: {fileID: 1000000000000000002, guid: 7a1d3c5e9b2f4a6c8d0e1f2a3b4c5d63, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1000000000000000002, guid: 7a1d3c5e9b2f4a6c8d0e1f2a3b4c5d63, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1000000000000000002, guid: 7a1d3c5e9b2f4a6c8d0e1f2a3b4c5d63, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1000000000000000002, guid: 7a1d3c5e9b2f4a6c8d0e1f2a3b4c5d63, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 7a1d3c5e9b2f4a6c8d0e1f2a3b4c5d63, type: 3}
 --- !u!1001 &1247584628
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2586,6 +2643,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2874031349234510491, guid: 1382792956563514c98219c8251399b1, type: 3}
+      propertyPath: _standStill
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8309438787605350671, guid: 1382792956563514c98219c8251399b1, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0.45422363
@@ -2630,10 +2691,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Zombie_09
       objectReference: {fileID: 0}
-    - target: {fileID: 2874031349234510491, guid: 1382792956563514c98219c8251399b1, type: 3}
-      propertyPath: _standStill
-      value: 1
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -2647,6 +2704,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2874031349234510491, guid: 1382792956563514c98219c8251399b1, type: 3}
+      propertyPath: _standStill
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8309438787605350671, guid: 1382792956563514c98219c8251399b1, type: 3}
       propertyPath: m_LocalPosition.x
       value: -18.091553
@@ -2690,10 +2751,6 @@ PrefabInstance:
     - target: {fileID: 8803739587559878161, guid: 1382792956563514c98219c8251399b1, type: 3}
       propertyPath: m_Name
       value: Zombie_17
-      objectReference: {fileID: 0}
-    - target: {fileID: 2874031349234510491, guid: 1382792956563514c98219c8251399b1, type: 3}
-      propertyPath: _standStill
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -2833,6 +2890,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2874031349234510491, guid: 1382792956563514c98219c8251399b1, type: 3}
+      propertyPath: _standStill
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8309438787605350671, guid: 1382792956563514c98219c8251399b1, type: 3}
       propertyPath: m_LocalPosition.x
       value: -4.1822205
@@ -2876,10 +2937,6 @@ PrefabInstance:
     - target: {fileID: 8803739587559878161, guid: 1382792956563514c98219c8251399b1, type: 3}
       propertyPath: m_Name
       value: Zombie_11
-      objectReference: {fileID: 0}
-    - target: {fileID: 2874031349234510491, guid: 1382792956563514c98219c8251399b1, type: 3}
-      propertyPath: _standStill
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -3137,6 +3194,8 @@ MonoBehaviour:
   _beltCleanDistance: 12
   _gearCleanDistance: 12
   _gearFling: 3.5
+  _bloodWearDistance: 15
+  _bloodPrintRadius: 0.24
   _shudderKick: 4.5
   _shudderTwist: 3
   _shudderClods: 700
@@ -3265,6 +3324,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2874031349234510491, guid: 1382792956563514c98219c8251399b1, type: 3}
+      propertyPath: _standStill
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8309438787605350671, guid: 1382792956563514c98219c8251399b1, type: 3}
       propertyPath: m_LocalPosition.x
       value: 2.7724457
@@ -3308,10 +3371,6 @@ PrefabInstance:
     - target: {fileID: 8803739587559878161, guid: 1382792956563514c98219c8251399b1, type: 3}
       propertyPath: m_Name
       value: Zombie_08
-      objectReference: {fileID: 0}
-    - target: {fileID: 2874031349234510491, guid: 1382792956563514c98219c8251399b1, type: 3}
-      propertyPath: _standStill
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -3438,6 +3497,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2874031349234510491, guid: 1382792956563514c98219c8251399b1, type: 3}
+      propertyPath: _standStill
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8309438787605350671, guid: 1382792956563514c98219c8251399b1, type: 3}
       propertyPath: m_LocalPosition.x
       value: 5.0906677
@@ -3482,10 +3545,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Zombie_07
       objectReference: {fileID: 0}
-    - target: {fileID: 2874031349234510491, guid: 1382792956563514c98219c8251399b1, type: 3}
-      propertyPath: _standStill
-      value: 1
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -3499,6 +3558,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2874031349234510491, guid: 1382792956563514c98219c8251399b1, type: 3}
+      propertyPath: _standStill
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8309438787605350671, guid: 1382792956563514c98219c8251399b1, type: 3}
       propertyPath: m_LocalPosition.x
       value: 19
@@ -3543,10 +3606,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Zombie_01
       objectReference: {fileID: 0}
-    - target: {fileID: 2874031349234510491, guid: 1382792956563514c98219c8251399b1, type: 3}
-      propertyPath: _standStill
-      value: 1
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -3560,6 +3619,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2874031349234510491, guid: 1382792956563514c98219c8251399b1, type: 3}
+      propertyPath: _standStill
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8309438787605350671, guid: 1382792956563514c98219c8251399b1, type: 3}
       propertyPath: m_LocalPosition.x
       value: 12.045334
@@ -3603,10 +3666,6 @@ PrefabInstance:
     - target: {fileID: 8803739587559878161, guid: 1382792956563514c98219c8251399b1, type: 3}
       propertyPath: m_Name
       value: Zombie_04
-      objectReference: {fileID: 0}
-    - target: {fileID: 2874031349234510491, guid: 1382792956563514c98219c8251399b1, type: 3}
-      propertyPath: _standStill
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -3948,6 +4007,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2874031349234510491, guid: 1382792956563514c98219c8251399b1, type: 3}
+      propertyPath: _standStill
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8309438787605350671, guid: 1382792956563514c98219c8251399b1, type: 3}
       propertyPath: m_LocalPosition.x
       value: -8.818665
@@ -3991,10 +4054,6 @@ PrefabInstance:
     - target: {fileID: 8803739587559878161, guid: 1382792956563514c98219c8251399b1, type: 3}
       propertyPath: m_Name
       value: Zombie_13
-      objectReference: {fileID: 0}
-    - target: {fileID: 2874031349234510491, guid: 1382792956563514c98219c8251399b1, type: 3}
-      propertyPath: _standStill
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -4219,3 +4278,4 @@ SceneRoots:
   - {fileID: 10530307}
   - {fileID: 637505971}
   - {fileID: 143304720}
+  - {fileID: 1240368399}
