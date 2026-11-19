@@ -45,9 +45,6 @@ namespace Game.AIKit.Adapters
         [Tooltip("Scale of every monster's damage to the tank: bites and acid (0 makes the tank immune: benchmarks).")]
         public float tankDamageScale = 1f;
 
-        [Tooltip("Horizontal tank speed from which the hull crushes the monsters under it, m/s (GDD §4).")]
-        public float crushSpeed = 1.5f;
-
         [Tooltip("Seconds a monster takes to climb out of its burrow.")]
         public float emergeTime = 1f;
 
@@ -75,7 +72,10 @@ namespace Game.AIKit.Adapters
 
         public int acidSplashDrops = 6;
 
-        /// <summary>Simulation tuning from these options (the kinds are set apart, <see cref="Kind"/>).</summary>
+        /// <summary>
+        /// Simulation tuning from these options (the kinds are set apart, <see cref="Kind"/>). No crush threshold: the
+        /// horde takes the player's vehicle's every frame (<see cref="HordeBehaviour.CrushSpeedOf"/>).
+        /// </summary>
         public HordeSettings ToSettings()
         {
             HordeSettings s = HordeSettings.Default;
@@ -84,7 +84,7 @@ namespace Game.AIKit.Adapters
             s.Health = crawlerKind.Health;
             s.Radius = crawlerKind.Radius;
             s.AttackDps = crawlerKind.BiteDps;
-            s.CrushSpeed = crushSpeed;
+            s.CrushSpeed = HordeBehaviour.NO_CRUSH;
             s.EmergeTime = emergeTime;
             s.SeparationRadius = separation;
             return s;
