@@ -109,6 +109,9 @@ namespace Game
             {
                 if (!mud && (target == null || !target.HasDamageableTag()) && TryShellRicochet(collision))
                     return;
+                // An armour-piercing shell goes on through a house's walls (ShellHouseUseCase).
+                if (voxel && !mud && TryShellThroughHouse(collision))
+                    return;
             }
             else if (!mud && !voxel && BulletHitUseCase.ShouldTryRicochet(_bullet, target) && TryRicochet(collision))
                 return;
@@ -286,6 +289,47 @@ namespace Game
                 default:
                     return false;
             }
+        }
+
+        /// <summary>
+        /// An armour-piercing shell through a house's wall: put just past its far face to fly on (true). False when it
+        /// is spent in this wall (its entry hole is punched; the small burst follows) or this is not a house.
+        /// </summary>
+        private bool TryShellThroughHouse(Collision collision)
+        {
+            ContactPoint contact = collision.GetContact(0);
+            switch (ShellHouseUseCase.Resolve(_bullet, collision.collider, contact.point, ref _armour.Penetration,
+                        out Vector3 exit))
+            {
+                case ShellHouseUseCase.Step.PassedThrough:
+                    PutPast(exit);
+                    return true;
+                case ShellHouseUseCase.Step.Hollow:
+                    // A hole's box the colliders have not caught up with, ahead: past its far face. One behind: nothing.
+                    Vector3 dir = _bullet.GetMoveDirection().Value.normalized;
+                    Transform shell = _bullet.GetTransform();
+                    var back = new Ray(contact.point + dir * 3f, -dir);
+                    if (Vector3.Dot(contact.point - shell.position, dir) > -0.15f &&
+                        collision.collider.Raycast(back, out RaycastHit far, 3f))
+                        PutPast(far.point);
+                    else
+                        StopSolverPush();
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        /// <summary>The shell put just past <paramref name="face"/> along its flight, to fly on from there.</summary>
+        private void PutPast(Vector3 face)
+        {
+            Vector3 dir = _bullet.GetMoveDirection().Value.normalized;
+            float skin = _own != null ? _own.bounds.extents.x + 0.05f : 0.1f;
+            Vector3 at = face + dir * skin;
+            _bullet.GetTransform().position = at;
+            if (_body != null)
+                _body.position = at;
+            StopSolverPush();
         }
 
         /// <summary>The shell flies by its transform: the solver's push off what it touched is dropped.</summary>

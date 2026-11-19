@@ -4,6 +4,7 @@
     "references": [
         "Game",
         "Game.Voxels",
+        "Unity.Mathematics",
         "Atomic.Elements",
         "Atomic.Entities",
         "UnityEngine.TestRunner",

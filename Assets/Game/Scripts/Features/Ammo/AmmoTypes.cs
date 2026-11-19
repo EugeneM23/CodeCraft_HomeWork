@@ -49,7 +49,31 @@ namespace Game
         [Tooltip("The shell's glow (ShellGlowView) and trail.")]
         public Color glow;
 
+        [Tooltip("Penetration (mm) a metre of a house's wall takes from the shell going through it; 0 — it never goes through a house.")]
+        public float wallCost;
+
+        [Tooltip("Share of its speed a shell loses per metre of a house's wall it goes through.")]
+        public float wallSlow;
+
+        [Tooltip("Radius (m) of the hole the shell punches in a house's wall, before a building's smaller bite (VoxelBody.BiteRadius).")]
+        public float houseHole;
+
         public bool CanRicochet => ricochetAngle > 0f && maxRicochets > 0;
+
+        /// <summary>
+        /// mm of penetration a metre of brick takes: a house's 20 cm outer wall costs 24 mm, so a fresh armour-piercing
+        /// shell (125 mm) goes through both outer walls and the inner ones and floors between them.
+        /// </summary>
+        public const float WALL_COST = 120f;
+
+        /// <summary>
+        /// The armour-piercing hole in a house: 0.55 m bitten as 0.5 m (BiteRadius), a quarter wider than the 0.4 m
+        /// its small burst dug before (user, 2026-11-19: «дырочку чуть-чуть шире»).
+        /// </summary>
+        public const float HOUSE_HOLE = 0.55f;
+
+        /// <summary>Whether the shell goes on through a house's walls (over-penetration) instead of bursting on the first.</summary>
+        public bool CanPassWalls => wallCost > 0f && houseHole > 0f;
 
         public static ShellAmmo DefaultHighExplosive => new()
         {
@@ -62,7 +86,7 @@ namespace Game
         {
             shortName = "ББ", fullName = "Бронебойный", penetration = 125f, calibre = 88f, damageFactor = 1.3f,
             radiusFactor = 0.25f, speed = 95f, ricochetAngle = 70f, maxRicochets = 2, ricochetSpeedKeep = 0.7f,
-            glow = new Color(0.6f, 0.85f, 1f)
+            glow = new Color(0.6f, 0.85f, 1f), wallCost = WALL_COST, wallSlow = 0.5f, houseHole = HOUSE_HOLE
         };
     }
 }
