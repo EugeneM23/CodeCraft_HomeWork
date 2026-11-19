@@ -289,7 +289,7 @@ namespace Game
 
             var palette = new FleshPalette
             {
-                Skin = rig.SkinColor,
+                Skin = config.skinColor.a > 0f ? config.skinColor : rig.SkinColor,
                 SkinNoise = config.skinNoise,
                 Meat = config.meat,
                 MeatWetness = config.meatWetness,
