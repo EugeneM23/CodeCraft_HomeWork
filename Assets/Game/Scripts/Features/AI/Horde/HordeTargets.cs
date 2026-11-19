@@ -159,14 +159,14 @@ namespace Game.AIKit.Adapters
 
         private float3 Center(int i)
         {
-            float scale = _simulation.GetKind(_simulation.GetKindOf(i)).RenderScale;
+            float scale = _simulation.GetKind(_simulation.GetKindOf(i)).RenderScale * _simulation.Settings.BodyScale;
             return _simulation.GetTargetPosition(i) + new float3(0f, BODY_HEIGHT * scale, 0f);
         }
 
         private float BodyRadius(int i)
         {
             HordeKind kind = _simulation.GetKind(_simulation.GetKindOf(i));
-            return math.max(kind.Radius, BODY_HEIGHT * 0.8f * kind.RenderScale);
+            return math.max(kind.Radius, BODY_HEIGHT * 0.8f * kind.RenderScale * _simulation.Settings.BodyScale);
         }
     }
 }

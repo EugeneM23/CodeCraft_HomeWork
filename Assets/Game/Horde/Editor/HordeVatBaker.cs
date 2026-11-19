@@ -12,36 +12,111 @@ using UnityEngine.SceneManagement;
 namespace Game.Horde.EditorTools
 {
     /// <summary>
-    /// Bakes the Regax (SK_Rapax) for the horde: a low-poly copy of the skin (Unity Mesh LOD
-    /// generation on a copy; the FBX import settings are not touched), its vertex animation texture
-    /// (Run, RightClawsAttack, IdleBreathe sampled at 30 fps with a PlayableGraph and
-    /// <see cref="SkinnedMeshRenderer.BakeMesh(Mesh, bool)"/>), the corpse mesh (last frame of Death),
-    /// the material and <see cref="HordeArtConfig"/>, all in <c>Assets/Game/Horde/Art/</c>.
-    /// Re-baking overwrites the assets in place (their GUIDs stay).
+    /// Bakes a skinned monster for the horde: a low-poly copy of the skin (Unity Mesh LOD generation on a copy; the FBX
+    /// import settings are not touched), its vertex animation texture (run, attack and idle sampled at 30 fps with a
+    /// PlayableGraph and <see cref="SkinnedMeshRenderer.BakeMesh(Mesh, bool)"/>), the corpse mesh (last frame of the
+    /// death clip), the material and <see cref="HordeArtConfig"/>, all in <c>Assets/Game/Horde/Art/</c>. Two sources:
+    /// the Regax (SK_Rapax) and the low-poly zombie (SM_Chr_Zombie_Male_01 of the PolygonApocalypse characters, its
+    /// humanoid clips in <c>Assets/Game/Animations/Zombie</c>). Re-baking overwrites the assets in place (their GUIDs stay).
     /// </summary>
     public static class HordeVatBaker
     {
         public const string OUTPUT_FOLDER = "Assets/Game/Horde/Art";
         public const string CONFIG_PATH = OUTPUT_FOLDER + "/RegaxHordeArtConfig.asset";
+        public const string ZOMBIE_CONFIG_PATH = OUTPUT_FOLDER + "/ZombieHordeArtConfig.asset";
 
-        private const string SOURCE_PATH = "Assets/3rdParty/Rapax/FBX Files/SK_Rapax.fbx";
-        private const string CLIP_PREFIX = "Assets/3rdParty/Rapax/FBX Files/Rapax@";
-        private const string SOURCE_MATERIAL_PATH = "Assets/3rdParty/Rapax/Materials/M_Rapax 1.mat";
         private const string SHADER_NAME = "Game/HordeVAT";
         private const float FRAME_RATE = 30f;
         private const int MAX_TRIANGLES = 2000;
         private const int MAX_LODS = 8;
 
-        [MenuItem("Tools/Horde/Bake Regax VAT")]
-        private static void BakeFromMenu() => Debug.Log(Bake());
+        /// <summary>Height of the Regax at render scale 1, m: the simulation's body constants were set for it.</summary>
+        private const float REGAX_HEIGHT = 2.6f;
 
-        /// <summary>Bakes everything; returns a short report.</summary>
-        public static string Bake()
+        private const string RAPAX_FOLDER = "Assets/3rdParty/Rapax/FBX Files/";
+        private const string ZOMBIE_CLIPS = "Assets/Game/Animations/Zombie/";
+
+        /// <summary>What to bake and where to.</summary>
+        private sealed class Source
         {
-            var report = new StringBuilder();
-            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(SOURCE_PATH);
+            public string Name;
+            public string ModelPath;
+            /// <summary>The skin to bake (a child of the model); empty: the first one.</summary>
+            public string SkinName;
+            public System.Func<AnimationClip> Run, Attack, Idle, Death;
+            public string ConfigPath;
+            /// <summary>Height of the baked model at render scale 1, m; 0: as authored.</summary>
+            public float Height;
+            /// <summary>Albedo of the material (the zombie's atlas); null: none.</summary>
+            public string AlbedoPath;
+            /// <summary>Colour over the albedo (the crowd shader lights more simply than URP Lit: a little over white).</summary>
+            public Color AlbedoColor = Color.white;
+            /// <summary>Material of the source skin: its colour and emission are copied (the Regax).</summary>
+            public string SourceMaterialPath;
+            /// <summary>
+            /// Walking speed the run clip is played for at render scale 1 (<see cref="HordeArtConfig.runClipSpeed"/>); 0 keeps
+            /// the horde options' own. The clip's measured root speed is reported beside it.
+            /// </summary>
+            public float RunClipSpeed;
+            /// <summary>Make a plain acid material apart from the textured crowd one.</summary>
+            public bool AcidMaterial;
+            public Color[] KindTints;
+            public Color[] KindEmission;
+        }
+
+        private static Source Regax => new()
+        {
+            Name = "Regax",
+            ModelPath = RAPAX_FOLDER + "SK_Rapax.fbx",
+            Run = () => LoadFbxClip(RAPAX_FOLDER + "Rapax@Run.fbx"),
+            Attack = () => LoadFbxClip(RAPAX_FOLDER + "Rapax@RightClawsAttack.fbx"),
+            Idle = () => LoadFbxClip(RAPAX_FOLDER + "Rapax@IdleBreathe.fbx"),
+            Death = () => LoadFbxClip(RAPAX_FOLDER + "Rapax@Death.fbx"),
+            ConfigPath = CONFIG_PATH,
+            SourceMaterialPath = "Assets/3rdParty/Rapax/Materials/M_Rapax 1.mat"
+        };
+
+        private static Source Zombie => new()
+        {
+            Name = "Zombie",
+            ModelPath = "Assets/Game/Models/Zombie/SK_Zombie_Characters.fbx",
+            SkinName = "SM_Chr_Zombie_Male_01",
+            Run = () => AssetDatabase.LoadAssetAtPath<AnimationClip>(ZOMBIE_CLIPS + "Zombie_Move.anim"),
+            Attack = () => AssetDatabase.LoadAssetAtPath<AnimationClip>(ZOMBIE_CLIPS + "Zombie_Attack.anim"),
+            Idle = () => AssetDatabase.LoadAssetAtPath<AnimationClip>(ZOMBIE_CLIPS + "Zombie_Idle.anim"),
+            Death = () => AssetDatabase.LoadAssetAtPath<AnimationClip>(ZOMBIE_CLIPS + "Zombie_Death_Handgun.anim"),
+            ConfigPath = ZOMBIE_CONFIG_PATH,
+            // The crawler's render scale is 0.4 in the levels: 0.4 × 4.75 = a 1.9 m zombie, readable from the tank's camera.
+            Height = 4.75f,
+            AlbedoPath = "Assets/Game/Textures/Zombie/T_Zombie_03_A.png",
+            AlbedoColor = new Color(1.3f, 1.3f, 1.3f, 1f),
+            // The walk is a slow shamble (root speed 0.92 m/s at this size): played for its own speed, a 6.5 m/s crawler
+            // would run it 17 times over. 4.5 gives about 3.5 times: a fast, readable shuffle (the feet slide).
+            RunClipSpeed = 4.5f,
+            AcidMaterial = true,
+            // Row 1, the spitter: a sickly green over the atlas (the tint takes the material's white colour's place).
+            KindTints = new[] { new Color(0f, 0f, 0f, 0f), new Color(0.62f, 0.85f, 0.3f, 1f) },
+            KindEmission = new[] { Color.black, new Color(0.05f, 0.1f, 0f, 1f) }
+        };
+
+        [MenuItem("Tools/Horde/Bake Regax VAT")]
+        public static void BakeRegaxFromMenu() => Debug.Log(Bake());
+
+        [MenuItem("Tools/Horde/Bake Zombie VAT")]
+        public static void BakeZombieFromMenu() => Debug.Log(BakeZombie());
+
+        /// <summary>Bakes the Regax; returns a short report.</summary>
+        public static string Bake() => Bake(Regax);
+
+        /// <summary>Bakes the zombie; returns a short report.</summary>
+        public static string BakeZombie() => Bake(Zombie);
+
+        private static string Bake(Source src)
+        {
+            var report = new StringBuilder(src.Name).Append(": ");
+            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(src.ModelPath);
             if (prefab == null)
-                return "HordeVatBaker: no " + SOURCE_PATH;
+                return "HordeVatBaker: no " + src.ModelPath;
 
             Scene scene = EditorSceneManager.NewPreviewScene();
             var graph = PlayableGraph.Create("HordeVatBaker");
@@ -49,9 +124,12 @@ namespace Game.Horde.EditorTools
             {
                 var instance = (GameObject)PrefabUtility.InstantiatePrefab(prefab, scene);
                 instance.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
-                var skin = instance.GetComponentInChildren<SkinnedMeshRenderer>();
+                SkinnedMeshRenderer skin = FindSkin(instance, src.SkinName);
+                if (skin == null)
+                    return "HordeVatBaker: no skin " + src.SkinName + " in " + src.ModelPath;
                 var animator = instance.GetComponentInChildren<Animator>();
                 animator.applyRootMotion = false;
+                animator.fireEvents = false;
                 Mesh source = skin.sharedMesh;
 
                 // ---------------------------------------------------------- decimation
@@ -78,10 +156,10 @@ namespace Game.Horde.EditorTools
                 report.AppendLine($"source {source.vertexCount} verts {source.triangles.Length / 3} tris; Mesh LOD {lod} of {lodCount}: {vertexCount} verts {triangles} tris");
 
                 // ---------------------------------------------------------- clips
-                AnimationClip run = LoadClip("Run");
-                AnimationClip attack = LoadClip("RightClawsAttack");
-                AnimationClip idle = LoadClip("IdleBreathe");
-                AnimationClip death = LoadClip("Death");
+                AnimationClip run = src.Run();
+                AnimationClip attack = src.Attack();
+                AnimationClip idle = src.Idle();
+                AnimationClip death = src.Death();
                 if (run == null || attack == null || idle == null || death == null)
                     return "HordeVatBaker: a clip is missing";
 
@@ -103,6 +181,19 @@ namespace Game.Horde.EditorTools
 
                 void Sample(AnimationClip clip, float time)
                 {
+                    // A humanoid clip does not move the bones through a manually evaluated graph in edit mode
+                    // (the zombie stayed in its bind pose); SampleAnimation does.
+                    if (clip.humanMotion)
+                    {
+                        instance.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
+                        clip.SampleAnimation(instance, time);
+                        instance.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
+                        skin.BakeMesh(baked, true);
+                        baked.GetVertices(vertices);
+                        baked.GetNormals(normals);
+                        return;
+                    }
+
                     var playable = AnimationClipPlayable.Create(graph, clip);
                     playable.SetApplyFootIK(false);
                     output.SetSourcePlayable(playable);
@@ -115,19 +206,57 @@ namespace Game.Horde.EditorTools
                     playable.Destroy();
                 }
 
-                // World space of the baked skin (BakeMesh with scale gives the renderer's space minus its TRS).
-                Vector3 ToModel(Vector3 p) => skin.transform.rotation * p + skin.transform.position;
+                // Model scale: the height of the idle pose to src.Height (1 when the source keeps its size).
+                float scale = 1f;
+                if (src.Height > 0f)
+                {
+                    Sample(idle, 0f);
+                    float top = float.MinValue;
+                    float bottom = float.MaxValue;
+                    for (int v = 0; v < vertexCount; v++)
+                    {
+                        float y = (skin.transform.rotation * vertices[used[v]] + skin.transform.position).y;
+                        top = Mathf.Max(top, y);
+                        bottom = Mathf.Min(bottom, Mathf.Min(y, 0f));
+                    }
+
+                    scale = src.Height / Mathf.Max(top - bottom, 0.01f);
+                    report.AppendLine($"authored height {top - bottom:F2} m, scale {scale:F3}");
+                }
+
+                // World space of the baked skin (BakeMesh with scale gives the renderer's space minus its TRS), then the model scale.
+                Vector3 ToModel(Vector3 p) => (skin.transform.rotation * p + skin.transform.position) * scale;
                 Vector3 ToModelDir(Vector3 n) => (skin.transform.rotation * n).normalized;
+
+                // A humanoid clip carries its root motion in the pose (the walk strides ~1.4 m forward a loop): the
+                // hips' start and their straight drift over the loop are taken off, so the monster stays on its spot.
+                Transform hips = animator.isHuman ? animator.GetBoneTransform(HumanBodyBones.Hips) : null;
+                Vector3 HipsXZ(AnimationClip clip, float time)
+                {
+                    Sample(clip, time);
+                    Vector3 h = hips.position;
+                    return new Vector3(h.x, 0f, h.z);
+                }
 
                 int row = 0;
                 void BakeClip(AnimationClip clip, int count)
                 {
+                    Vector3 start = Vector3.zero;
+                    Vector3 drift = Vector3.zero;
+                    if (clip.humanMotion && hips != null)
+                    {
+                        start = HipsXZ(clip, 0f);
+                        drift = (HipsXZ(clip, clip.length) - start) / clip.length;
+                    }
+
                     for (int f = 0; f < count; f++, row++)
                     {
-                        Sample(clip, f / FRAME_RATE);
+                        float time = f / FRAME_RATE;
+                        Sample(clip, time);
+                        Vector3 offset = (start + drift * time) * scale;
                         for (int v = 0; v < vertexCount; v++)
                         {
-                            Vector3 p = ToModel(vertices[used[v]]);
+                            Vector3 p = ToModel(vertices[used[v]]) - offset;
                             Vector3 n = ToModelDir(normals[used[v]]);
                             pixels[row * vertexCount + v] = new Color(p.x, p.y, p.z, 1f);
                             pixels[(frames + row) * vertexCount + v] = new Color(n.x, n.y, n.z, 0f);
@@ -148,7 +277,7 @@ namespace Game.Horde.EditorTools
                             firstNormals = new Vector3[vertexCount];
                             for (int v = 0; v < vertexCount; v++)
                             {
-                                firstPositions[v] = ToModel(vertices[used[v]]);
+                                firstPositions[v] = ToModel(vertices[used[v]]) - offset;
                                 firstNormals[v] = ToModelDir(normals[used[v]]);
                             }
                         }
@@ -160,14 +289,30 @@ namespace Game.Horde.EditorTools
                 BakeClip(attack, attackFrames);
                 BakeClip(idle, idleFrames);
 
-                // Corpse: the last frame of Death.
+                // Corpse: the last frame of the death clip. A humanoid fall carries the body ~1.4 m away from where it
+                // stood, and a corpse off the death spot reads as a miss: its middle (XZ) goes on the spot.
                 Sample(death, death.length);
                 var corpsePositions = new Vector3[vertexCount];
                 var corpseNormals = new Vector3[vertexCount];
+                var corpseBounds = new Bounds(ToModel(vertices[used[0]]), Vector3.zero);
                 for (int v = 0; v < vertexCount; v++)
                 {
                     corpsePositions[v] = ToModel(vertices[used[v]]);
                     corpseNormals[v] = ToModelDir(normals[used[v]]);
+                    corpseBounds.Encapsulate(corpsePositions[v]);
+                }
+
+                if (death.humanMotion)
+                {
+                    var middle = new Vector3(corpseBounds.center.x, 0f, corpseBounds.center.z);
+                    for (int v = 0; v < vertexCount; v++)
+                        corpsePositions[v] -= middle;
+                }
+
+                if (src.RunClipSpeed > 0f)
+                {
+                    float rootSpeed = RootSpeed(graph, output, animator, instance.transform, run) * scale;
+                    report.AppendLine($"run clip root speed {rootSpeed:F2} m/s at render scale 1, played for {src.RunClipSpeed:F2}");
                 }
 
                 Object.DestroyImmediate(baked);
@@ -187,38 +332,45 @@ namespace Game.Horde.EditorTools
                     ids[v] = new Vector2(v, 0f);
                 }
 
-                Mesh crowd = BuildMesh("SM_HordeRegax", firstPositions, firstNormals, meshUv, ids, indices);
+                string prefix = OUTPUT_FOLDER + "/";
+                Mesh crowd = BuildMesh("SM_Horde" + src.Name, firstPositions, firstNormals, meshUv, ids, indices);
                 crowd.bounds = bounds;
-                crowd = SaveOrReplace(crowd, OUTPUT_FOLDER + "/SM_HordeRegax.asset");
+                crowd = SaveOrReplace(crowd, prefix + "SM_Horde" + src.Name + ".asset");
 
-                Mesh corpse = BuildMesh("SM_HordeRegax_Corpse", corpsePositions, corpseNormals, meshUv, ids, indices);
-                corpse = SaveOrReplace(corpse, OUTPUT_FOLDER + "/SM_HordeRegax_Corpse.asset");
+                Mesh corpse = BuildMesh("SM_Horde" + src.Name + "_Corpse", corpsePositions, corpseNormals, meshUv, ids, indices);
+                corpse = SaveOrReplace(corpse, prefix + "SM_Horde" + src.Name + "_Corpse.asset");
 
                 var vat = new Texture2D(vertexCount, frames * 2, TextureFormat.RGBAHalf, false, true)
                 {
-                    name = "T_HordeRegax_VAT",
+                    name = "T_Horde" + src.Name + "_VAT",
                     filterMode = FilterMode.Point,
                     wrapMode = TextureWrapMode.Clamp
                 };
                 vat.SetPixels(pixels);
                 vat.Apply(false, false);
-                vat = SaveOrReplace(vat, OUTPUT_FOLDER + "/T_HordeRegax_VAT.asset");
+                vat = SaveOrReplace(vat, prefix + "T_Horde" + src.Name + "_VAT.asset");
                 SetNotReadable(crowd);
                 SetNotReadable(corpse);
                 SetNotReadable(vat);
 
-                Material material = SaveMaterial(vat, frames);
+                Material material = SaveMaterial(src, prefix + "MT_Horde" + src.Name + ".mat", vat, frames, true);
+                Material acid = src.AcidMaterial ? SaveMaterial(src, prefix + "MT_Horde" + src.Name + "_Acid.mat", vat, frames, false) : null;
 
-                var config = AssetDatabase.LoadAssetAtPath<HordeArtConfig>(CONFIG_PATH);
+                var config = AssetDatabase.LoadAssetAtPath<HordeArtConfig>(src.ConfigPath);
                 if (config == null)
                 {
                     config = ScriptableObject.CreateInstance<HordeArtConfig>();
-                    AssetDatabase.CreateAsset(config, CONFIG_PATH);
+                    if (src.KindTints != null)
+                        config.kindTints = src.KindTints;
+                    if (src.KindEmission != null)
+                        config.kindEmission = src.KindEmission;
+                    AssetDatabase.CreateAsset(config, src.ConfigPath);
                 }
 
                 config.mesh = crowd;
                 config.corpseMesh = corpse;
                 config.material = material;
+                config.acidMaterial = acid;
                 config.vat = vat;
                 config.vertexCount = vertexCount;
                 config.frameCount = frames;
@@ -229,9 +381,11 @@ namespace Game.Horde.EditorTools
                 config.triangles = triangles;
                 config.sourceTriangles = source.triangles.Length / 3;
                 config.meshLod = lod;
+                config.bodyScale = src.Height > 0f ? src.Height / REGAX_HEIGHT : 1f;
+                config.runClipSpeed = src.RunClipSpeed;
                 EditorUtility.SetDirty(config);
                 AssetDatabase.SaveAssets();
-                report.Append("saved to ").Append(OUTPUT_FOLDER);
+                report.Append("saved to ").Append(src.ConfigPath);
                 return report.ToString();
             }
             finally
@@ -240,6 +394,39 @@ namespace Game.Horde.EditorTools
                     graph.Destroy();
                 EditorSceneManager.ClosePreviewScene(scene);
             }
+        }
+
+        private static SkinnedMeshRenderer FindSkin(GameObject instance, string name)
+        {
+            foreach (var skin in instance.GetComponentsInChildren<SkinnedMeshRenderer>(true))
+                if (string.IsNullOrEmpty(name) || skin.name == name)
+                    return skin;
+            return null;
+        }
+
+        /// <summary>
+        /// Average horizontal root speed of <paramref name="clip"/> over one loop, m/s of the source model: the clip
+        /// played with root motion on the model's transform.
+        /// </summary>
+        private static float RootSpeed(PlayableGraph graph, AnimationPlayableOutput output, Animator animator, Transform root, AnimationClip clip)
+        {
+            bool rootMotion = animator.applyRootMotion;
+            animator.applyRootMotion = true;
+            var playable = AnimationClipPlayable.Create(graph, clip);
+            playable.SetApplyFootIK(false);
+            output.SetSourcePlayable(playable);
+            root.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
+            playable.SetTime(0);
+            graph.Evaluate();
+            root.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
+            int steps = Mathf.Max(1, Mathf.RoundToInt(clip.length * FRAME_RATE) - 1);
+            for (int i = 0; i < steps; i++)
+                graph.Evaluate(1f / FRAME_RATE);
+            Vector3 moved = root.position;
+            playable.Destroy();
+            animator.applyRootMotion = rootMotion;
+            root.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
+            return new Vector2(moved.x, moved.z).magnitude / (steps / FRAME_RATE);
         }
 
         /// <summary>
@@ -288,9 +475,9 @@ namespace Game.Horde.EditorTools
 
         private static Vector3 ToVector(Color c) => new(c.r, c.g, c.b);
 
-        private static AnimationClip LoadClip(string name)
+        private static AnimationClip LoadFbxClip(string path)
         {
-            foreach (Object asset in AssetDatabase.LoadAllAssetsAtPath(CLIP_PREFIX + name + ".fbx"))
+            foreach (Object asset in AssetDatabase.LoadAllAssetsAtPath(path))
                 if (asset is AnimationClip clip && !clip.name.StartsWith("__preview__"))
                     return clip;
             return null;
@@ -337,9 +524,9 @@ namespace Game.Horde.EditorTools
             so.ApplyModifiedPropertiesWithoutUndo();
         }
 
-        private static Material SaveMaterial(Texture2D vat, int frames)
+        /// <param name="textured">The crowd's material (the albedo); false: the plain one for acid.</param>
+        private static Material SaveMaterial(Source src, string path, Texture2D vat, int frames, bool textured)
         {
-            string path = OUTPUT_FOLDER + "/MT_HordeRegax.mat";
             var material = AssetDatabase.LoadAssetAtPath<Material>(path);
             Shader shader = Shader.Find(SHADER_NAME);
             if (material == null)
@@ -349,13 +536,23 @@ namespace Game.Horde.EditorTools
             }
 
             material.shader = shader;
-            var source = AssetDatabase.LoadAssetAtPath<Material>(SOURCE_MATERIAL_PATH);
-            if (source != null)
+            if (src.SourceMaterialPath != null)
             {
-                if (source.HasProperty("_Color"))
-                    material.SetColor("_Color", source.GetColor("_Color"));
-                if (source.HasProperty("_EmissiveTex"))
-                    material.SetTexture("_EmissionMap", source.GetTexture("_EmissiveTex"));
+                var source = AssetDatabase.LoadAssetAtPath<Material>(src.SourceMaterialPath);
+                if (source != null)
+                {
+                    if (source.HasProperty("_Color"))
+                        material.SetColor("_Color", source.GetColor("_Color"));
+                    if (source.HasProperty("_EmissiveTex"))
+                        material.SetTexture("_EmissionMap", source.GetTexture("_EmissiveTex"));
+                }
+            }
+
+            if (src.AlbedoPath != null)
+            {
+                material.SetColor("_Color", textured ? src.AlbedoColor : Color.white);
+                material.SetTexture("_MainTex", textured ? AssetDatabase.LoadAssetAtPath<Texture2D>(src.AlbedoPath) : null);
+                material.SetColor("_EmissionColor", Color.black);
             }
 
             material.SetTexture("_HordeVat", vat);

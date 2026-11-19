@@ -21,7 +21,7 @@ namespace Game.Tests
     public sealed class MgLookSceneTests
     {
         private const string SCENE = "Assets/Game/Voxels/Scenes/VoxelSandbox.unity";
-        private const string HORDE_ART = "Assets/Game/Horde/Art/RegaxHordeArtConfig.asset";
+        private const string HORDE_ART = "Assets/Game/Horde/Art/ZombieHordeArtConfig.asset";
         private const int SHOT_WIDTH = 1600;
         private const int SHOT_HEIGHT = 900;
 
@@ -118,7 +118,7 @@ namespace Game.Tests
         private static void CreateHorde(int population)
         {
             var art = AssetDatabase.LoadAssetAtPath<HordeArtConfig>(HORDE_ART);
-            Assert.That(art, Is.Not.Null, HORDE_ART + " (Tools/Horde/Bake Regax VAT)");
+            Assert.That(art, Is.Not.Null, HORDE_ART + " (Tools/Horde/Bake Zombie VAT)");
 
             foreach (HordeInstaller old in Object.FindObjectsByType<HordeInstaller>(FindObjectsSortMode.None))
                 Object.Destroy(old.gameObject);

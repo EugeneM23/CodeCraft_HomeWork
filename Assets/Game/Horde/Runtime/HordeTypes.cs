@@ -182,6 +182,11 @@ namespace Game.Horde
         public float RunClipSpeed;
         /// <summary>Seconds a monster spawned with <c>emerge</c> rises out of the ground before it walks.</summary>
         public float EmergeTime;
+        /// <summary>
+        /// Height of the model over the Regax's at the same render scale (<c>HordeArtConfig.bodyScale</c>): the mouth,
+        /// chest, aim point, culling sphere and emerging depth were set for the Regax and follow it.
+        /// </summary>
+        public float BodyScale;
 
         public static HordeSettings Default => new HordeSettings
         {
@@ -200,7 +205,8 @@ namespace Game.Horde
             Health = 100f,
             NearRadius = 15f,
             RunClipSpeed = 5f,
-            EmergeTime = 1f
+            EmergeTime = 1f,
+            BodyScale = 1f
         };
     }
 

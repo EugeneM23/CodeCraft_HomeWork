@@ -603,6 +603,7 @@ namespace Game.Horde
                     Cull = _cull,
                     EmergeTime = settings.EmergeTime,
                     CullSphere = CullSphere,
+                    BodyScale = settings.BodyScale,
                     Marker = RenderMarker
                 }.ScheduleBatch(Capacity, BATCH, contact);
 

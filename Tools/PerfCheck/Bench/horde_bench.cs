@@ -59,10 +59,10 @@ for (int i = 0; i < strikes.Length; i++) { strikeWasOn[i] = (bool)onField.GetVal
 // ---------- Horde ----------
 Game.AIKit.Adapters.HordeBehaviour horde = null;
 GameObject hordeObject = null;
-var art = AssetDatabase.LoadAssetAtPath<Game.Horde.HordeArtConfig>("Assets/Game/Horde/Art/RegaxHordeArtConfig.asset");
+var art = AssetDatabase.LoadAssetAtPath<Game.Horde.HordeArtConfig>("Assets/Game/Horde/Art/ZombieHordeArtConfig.asset");
 if (n > 0)
 {
-    if (art == null) return "ERROR no Assets/Game/Horde/Art/RegaxHordeArtConfig.asset (Tools/Horde/Bake Regax VAT)";
+    if (art == null) return "ERROR no Assets/Game/Horde/Art/ZombieHordeArtConfig.asset (Tools/Horde/Bake Zombie VAT)";
     foreach (var old in UnityEngine.Object.FindObjectsByType<Game.AIKit.Adapters.HordeInstaller>(FindObjectsSortMode.None)) UnityEngine.Object.Destroy(old.gameObject);
     var options = new Game.AIKit.Adapters.HordeOptions { capacity = n, population = n, tankDamageScale = 0f, castShadows = shadows };
     var installer = Game.AIKit.Adapters.HordeSpawn.CreateInScene(art, options);

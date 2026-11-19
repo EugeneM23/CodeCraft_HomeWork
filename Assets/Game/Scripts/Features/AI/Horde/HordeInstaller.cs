@@ -11,7 +11,7 @@ namespace Game.AIKit.Adapters
     /// </summary>
     public sealed class HordeInstaller : MonoEntityInstaller
     {
-        [SerializeField, Tooltip("Baked art: Tools/Horde/Bake Regax VAT writes Assets/Game/Horde/Art/RegaxHordeArtConfig.")]
+        [SerializeField, Tooltip("Baked art: Tools/Horde/Bake Zombie VAT (or Bake Regax VAT) writes Assets/Game/Horde/Art/ZombieHordeArtConfig (RegaxHordeArtConfig).")]
         private HordeArtConfig _art;
 
         [SerializeField]
@@ -33,7 +33,7 @@ namespace Game.AIKit.Adapters
         {
             if (_art == null || _art.mesh == null || _art.material == null)
             {
-                Debug.LogError("HordeInstaller: no baked art (run Tools/Horde/Bake Regax VAT).", this);
+                Debug.LogError("HordeInstaller: no baked art (run Tools/Horde/Bake Zombie VAT).", this);
                 return;
             }
 

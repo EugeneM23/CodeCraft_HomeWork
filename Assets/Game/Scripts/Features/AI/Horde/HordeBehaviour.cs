@@ -170,6 +170,9 @@ namespace Game.AIKit.Adapters
 
         public float EmergeSeconds => _options.emergeTime;
 
+        /// <summary>The art's model height over the Regax's (<see cref="HordeSettings.BodyScale"/>).</summary>
+        private float BodyScale => _art.bodyScale > 0f ? _art.bodyScale : 1f;
+
         public void Init(IEntity entity)
         {
             _entity = entity;
@@ -204,13 +207,14 @@ namespace Game.AIKit.Adapters
                 _renderers[row] = new HordeRenderer(_art.mesh, _art.material, _options.capacity) { CastShadows = _options.castShadows };
                 _renderers[row].SetLook(scale, _art.TintOf(row), _art.EmissionOf(row));
                 _corpses[row] = new HordeCorpses(_art.corpseMesh, _art.material, _options.corpseCapacity, _options.corpseLie,
-                    _options.corpseSink, 1.2f * scale);
+                    _options.corpseSink, 1.2f * scale * BodyScale);
                 _corpses[row].SetLook(scale, _art.TintOf(row), _art.EmissionOf(row));
             }
 
             // Acid: the corpse path of the same shader (a static mesh at a position), a sphere tinted green.
             Mesh acidMesh = _art.acidMesh != null ? _art.acidMesh : Resources.GetBuiltinResource<Mesh>("Sphere.fbx");
-            _acid = new HordeRenderer(acidMesh, _art.material, HordeSimulation.MAX_PROJECTILES, true);
+            Material acidMaterial = _art.acidMaterial != null ? _art.acidMaterial : _art.material;
+            _acid = new HordeRenderer(acidMesh, acidMaterial, HordeSimulation.MAX_PROJECTILES, true);
             _acid.SetLook(_art.acidSize, _art.acidColor, _art.acidEmission);
 
             _level.SetLevelHorde(this);
@@ -466,7 +470,11 @@ namespace Game.AIKit.Adapters
             _gridGeneration = _nav.Generation;
             _groundHeight = LowestGround();
             _flow = new HordeFlowField(_grid);
-            _simulation = new HordeSimulation(_options.capacity, _grid, _flow, _options.ToSettings(), 1, versionBase);
+            HordeSettings settings = _options.ToSettings();
+            settings.BodyScale = BodyScale;
+            if (_art.runClipSpeed > 0f)
+                settings.RunClipSpeed = _art.runClipSpeed;
+            _simulation = new HordeSimulation(_options.capacity, _grid, _flow, settings, 1, versionBase);
             for (int row = 0; row < HordeKinds.COUNT; row++)
                 _simulation.SetKind(row, _options.Kind(row));
             _simulation.SetClips(_art.run, _art.attack, _art.idle);
