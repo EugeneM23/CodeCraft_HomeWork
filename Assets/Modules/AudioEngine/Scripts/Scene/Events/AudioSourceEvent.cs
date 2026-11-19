@@ -39,6 +39,10 @@ namespace AudioEngine
         [SerializeField]
         private AudioMixerGroup output;
 
+        [Tooltip("AudioSource priority, 0 (kept) .. 256 (cut first). -1: by kind and clip length (PriorityFor).")]
+        [SerializeField, Range(-1, 256)]
+        private int priority = -1;
+
         [Title("Audio")]
         [SerializeReference]
         private IClipProvider clip = new ClipConst();
@@ -182,6 +186,8 @@ namespace AudioEngine
         /// <summary>0 most important, 256 least (Unity's AudioSource.priority).</summary>
         private int PriorityFor(AudioClip clip)
         {
+            if (this.priority >= 0)
+                return this.priority;
             if (this.spartialBlend < 0.5f)
                 return 16;
             if (this.loop)

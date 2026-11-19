@@ -33,6 +33,8 @@ namespace Game
 
             DamageInRadius(projectile, point, radius);
             DamageEnemiesWithoutColliders(projectile, point, radius);
+            // The shell's own blast sound (weapons.shell_hit); the generic one for this Exploded is skipped then.
+            GameSignals.RaiseShellExploded(point);
             ExplosionEvents.Raise(point, radius);
 
             // A crater in anything made of voxels: walls, buildings, the tank's skin.

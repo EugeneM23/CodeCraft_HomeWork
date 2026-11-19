@@ -29,6 +29,7 @@ namespace Game.AudioEngine.Adapters
         private const float WHISTLE_FADE = 0.1f;
 
         private readonly Action<Vector3, float> _onExploded;
+        private readonly Action<Vector3> _onShellExploded;
         private readonly Action<Vector3, float> _onMudHit;
         private readonly Action<Vector3, float> _onCrushed;
         private readonly Action _onAirStrikeCalled;
@@ -57,9 +58,13 @@ namespace Game.AudioEngine.Adapters
         private int _airBlastFrame = -1;
         private Vector3 _airBlastPoint;
 
+        private int _shellFrame = -1;
+        private Vector3 _shellPoint;
+
         public GameSignalAudio()
         {
             _onExploded = OnExploded;
+            _onShellExploded = OnShellExploded;
             _onMudHit = OnMudHit;
             _onCrushed = OnCrushed;
             _onAirStrikeCalled = OnAirStrikeCalled;
@@ -80,6 +85,7 @@ namespace Game.AudioEngine.Adapters
 
             _subscribed = true;
             ExplosionEvents.Exploded += _onExploded;
+            GameSignals.ShellExploded += _onShellExploded;
             GameSignals.MudHit += _onMudHit;
             GameSignals.Crushed += _onCrushed;
             GameSignals.AirStrikeCalled += _onAirStrikeCalled;
@@ -100,6 +106,7 @@ namespace Game.AudioEngine.Adapters
 
             _subscribed = false;
             ExplosionEvents.Exploded -= _onExploded;
+            GameSignals.ShellExploded -= _onShellExploded;
             GameSignals.MudHit -= _onMudHit;
             GameSignals.Crushed -= _onCrushed;
             GameSignals.AirStrikeCalled -= _onAirStrikeCalled;
@@ -154,14 +161,27 @@ namespace Game.AudioEngine.Adapters
             }
         }
 
-        // Every blast comes through the AI team's ExplosionEvents, the air bomb too: that one already sounded as the
-        // large explosion from its AirBlasted (raised first, in the same frame and at the same point), so skip it.
+        // Every blast comes through the AI team's ExplosionEvents, the air bomb and the shell too: the bomb already
+        // sounded as the large explosion from its AirBlasted, the shell as weapons.shell_hit from ShellExploded
+        // (both raised first, in the same frame and at the same point), so skip those.
         private void OnExploded(Vector3 point, float radius)
         {
-            if (_airBlastFrame == Time.frameCount && (point - _airBlastPoint).sqrMagnitude < AIR_BLAST_MATCH_SQR)
+            int frame = Time.frameCount;
+            if (_airBlastFrame == frame && (point - _airBlastPoint).sqrMagnitude < AIR_BLAST_MATCH_SQR)
+                return;
+            if (_shellFrame == frame && (point - _shellPoint).sqrMagnitude < AIR_BLAST_MATCH_SQR)
                 return;
 
             GameAudio.Play(AudioKeys.Destruction.EXPLOSION_SMALL, point);
+        }
+
+        // The cannon shell went off where it hit: ground, a wall, a building, an enemy. Machine-gun bullets are not
+        // explosive and never get here.
+        private void OnShellExploded(Vector3 point)
+        {
+            _shellFrame = Time.frameCount;
+            _shellPoint = point;
+            GameAudio.Play(AudioKeys.Weapons.SHELL_HIT, point);
         }
 
         private static void OnMudHit(Vector3 point, float size) =>

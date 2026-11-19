@@ -61,6 +61,29 @@ namespace Game.Tests
         }
 
         [Test]
+        public void Explode_RaisesShellExploded_BeforeExplodedAtTheSamePoint()
+        {
+            var order = new List<string>();
+            Vector3 shellPoint = Vector3.zero;
+            System.Action<Vector3> onShell = point => { order.Add("shell"); shellPoint = point; };
+            System.Action<Vector3, float> onBlast = (_, _) => order.Add("blast");
+            GameSignals.ShellExploded += onShell;
+            ExplosionEvents.Exploded += onBlast;
+            try
+            {
+                Explode(Shell());
+            }
+            finally
+            {
+                GameSignals.ShellExploded -= onShell;
+                ExplosionEvents.Exploded -= onBlast;
+            }
+
+            Assert.That(order, Is.EqualTo(new[] { "shell", "blast" }));
+            Assert.That(shellPoint, Is.EqualTo(Origin));
+        }
+
+        [Test]
         public void IsExplosive_OnlyWithARadius()
         {
             Assert.That(ExplosionUseCase.IsExplosive(Shell()), Is.True);

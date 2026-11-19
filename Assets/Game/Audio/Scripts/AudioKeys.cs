@@ -51,6 +51,7 @@ namespace Game.AudioEngine.Adapters
             public const string IMPACT_GROUND = "weapons.impact_ground";
             public const string IMPACT_VOXEL = "weapons.impact_voxel";
             public const string IMPACT_FLESH = "weapons.impact_flesh";
+            public const string SHELL_HIT = "weapons.shell_hit";
             public const string AIRSTRIKE_CALL = "weapons.airstrike_call";
             public const string AIRSTRIKE_WHISTLE = "weapons.airstrike_whistle";
         }
