@@ -24,5 +24,13 @@ namespace Game.Voxels
             AirBlasted?.Invoke(point, radius, voxels);
 
         public static void RaiseFractured(Vector3 point, float speed) => Fractured?.Invoke(point, speed);
+
+        /// <summary>
+        /// A blast blew a building's windows out (VoxelBody.ShatterGlass): the blast's point, glass voxels broken.
+        /// Once per house per blast. For a glass-break sound (the destruction bank has none yet).
+        /// </summary>
+        public static event Action<Vector3, int> GlassShattered;
+
+        public static void RaiseGlassShattered(Vector3 point, int voxels) => GlassShattered?.Invoke(point, voxels);
     }
 }
