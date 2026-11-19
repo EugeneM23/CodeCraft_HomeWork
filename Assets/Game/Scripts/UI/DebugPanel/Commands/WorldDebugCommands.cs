@@ -121,12 +121,18 @@ namespace Game
             forward.y = 0f;
             forward = forward.sqrMagnitude > 0.01f ? forward.normalized : Vector3.forward;
             Vector3 right = Vector3.Cross(Vector3.up, forward);
+            IEntityWorld<IEntity> world = GameContext.TryGetInstance(out GameContext context)
+                                          && context.TryGetEntityWorld(out IEntityWorld<IEntity> found) ? found : null;
             for (int i = 0; i < ZOMBIES_PER_PRESS; i++)
             {
                 Vector3 at = root.position + forward * 14f + right * ((i - (ZOMBIES_PER_PRESS - 1) * 0.5f) * 2.5f);
                 at = DebugLookup.Ground(at);
                 Quaternion facing = Quaternion.LookRotation(-forward);
-                Object.Instantiate(prefab, at, facing);
+                GameObject zombie = Object.Instantiate(prefab, at, facing);
+                // The level's world collects only the scene's entities on Awake: a spawned one joins it here, so the
+                // enemy filter (targets, kill all) sees it
+                if (world != null && zombie.TryGetComponent(out MonoEntity entity))
+                    world.Add(entity);
             }
         }
 

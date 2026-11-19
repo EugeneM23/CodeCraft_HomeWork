@@ -6,6 +6,7 @@
         "Game.AIKit.Adapters",
         "Game.Horde",
         "Game.Voxels",
+        "GameLoop",
         "Atomic.Elements",
         "Atomic.Entities",
         "UnityEngine.TestRunner",
