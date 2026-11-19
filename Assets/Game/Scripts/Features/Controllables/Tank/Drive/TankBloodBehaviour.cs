@@ -28,8 +28,33 @@ namespace Game
         /// </summary>
         public const int STAINS_PER_STEP = 3;
 
-        /// <summary>Size (m) of the splat a goo drop leaves.</summary>
-        private const float GOO_SPLAT = 0.2f;
+        /// <summary>
+        /// Past <see cref="STAINS_PER_STEP"/>, one more a step for every this many waiting (up to <see cref="MAX_STAINS_PER_STEP"/>):
+        /// a squash fountain landing on the deck in half a second (hundreds of drops) is laid in a few tenths, not lost.
+        /// </summary>
+        private const int BACKLOG_PER_STAIN = 12;
+        private const int MAX_STAINS_PER_STEP = 8;
+
+        /// <summary>
+        /// Time (ms) a step lays stains for at most, past the first: a splat scans the skin round it (~0.2 ms in the editor), and
+        /// the goo of sixty deaths landing on the deck (a thousand drops) must not take the frame. The rest wait.
+        /// </summary>
+        private const double STEP_BUDGET_MS = 1.5;
+        private static readonly System.Diagnostics.Stopwatch s_clock = new();
+
+        /// <summary>A splat this close (m, in the tank's frame) to one still waiting joins it (a bigger splat) instead of queueing.</summary>
+        private const float MERGE_DISTANCE = 0.2f;
+        /// <summary>How many of the newest waiting stains a splat looks at to join.</summary>
+        private const int MERGE_LOOK = 64;
+        private const float MAX_MERGED_RADIUS = 0.2f;
+
+        /// <summary>Squashes (track stains) laid a step at most, and how near (m) two under one track join.</summary>
+        private const int TRACK_STAINS_PER_STEP = 2;
+        private const float TRACK_MERGE_DISTANCE = 1f;
+
+        /// <summary>Size (m) of the splat a goo drop leaves: small, as each costs a scan of the skin round it (drops that land
+        /// close join into bigger ones, MAX_MERGED_RADIUS).</summary>
+        private const float GOO_SPLAT = 0.15f;
 
         /// <summary>Share of the voxels in a stain's sphere that take the blood: a speckled splat, not a ball.</summary>
         private const float PAINT_CHANCE = 0.55f;
@@ -63,6 +88,10 @@ namespace Game
         private readonly List<VoxelBody> _trackParts = new(8);
         private bool _trackPartsFound;
         private bool _boxReady;
+        private int _boxAge;
+
+        /// <summary>Physics steps between remakes of the box (it follows the turret: a tenth of a second is near enough).</summary>
+        private const int BOX_EVERY = 5;
         private Bounds _localBox;
         private int _head;
         private int _count;
@@ -90,7 +119,11 @@ namespace Game
         {
             if (_skin == null || _body == null)
                 return;
-            if (!_boxReady && !TryMakeBox())
+            // The box follows the skin each step: the turret and its gun turn, and a box made once (gun forward) left the rear
+            // deck out when the gun was turned (the user: the tank did not stain everywhere).
+            if ((!_boxReady || ++_boxAge >= BOX_EVERY) && TryMakeBox())
+                _boxAge = 0;
+            if (!_boxReady)
                 return;
 
             using (StainMarker.Auto())
@@ -115,9 +148,19 @@ namespace Game
                         Track = stain.Track, Amount = stain.Amount
                     });
 
-                for (int i = 0; i < STAINS_PER_STEP && _count > 0; i++)
+                int budget = Mathf.Min(MAX_STAINS_PER_STEP, STAINS_PER_STEP + _count / BACKLOG_PER_STAIN);
+                s_clock.Restart();
+                int tracks = 0;
+                for (int i = 0; i < budget && _count > 0; i++)
                 {
+                    if (i > 0 && s_clock.Elapsed.TotalMilliseconds > STEP_BUDGET_MS)
+                        break;
                     LocalStain next = _queue[_head];
+                    // A squash paints a big sphere of the track's parts: TRACK_STAINS_PER_STEP a step, the rest wait their turn.
+                    if (next.Track && tracks >= TRACK_STAINS_PER_STEP)
+                        break;
+                    if (next.Track)
+                        tracks++;
                     _head = (_head + 1) % _queue.Length;
                     _count--;
                     if (next.Track)
@@ -130,6 +173,37 @@ namespace Game
 
         private void Enqueue(in LocalStain stain)
         {
+            // A splat right by one still waiting joins it: a fountain's drops land in clumps, and each costs a skin repaint.
+            if (!stain.Track)
+            {
+                for (int k = 0; k < MERGE_LOOK && k < _count; k++)
+                {
+                    int j = (_head + _count - 1 - k) % _queue.Length;
+                    LocalStain other = _queue[j];
+                    if (other.Track || (other.Local - stain.Local).sqrMagnitude > MERGE_DISTANCE * MERGE_DISTANCE)
+                        continue;
+                    other.Radius = Mathf.Min(MAX_MERGED_RADIUS, Mathf.Max(other.Radius, stain.Radius) * 1.08f);
+                    other.Clots |= stain.Clots;
+                    _queue[j] = other;
+                    return;
+                }
+            }
+            else
+            {
+                // Squashes under one track a metre apart join: the track is as bloody, its parts painted once.
+                for (int k = 0; k < MERGE_LOOK && k < _count; k++)
+                {
+                    int j = (_head + _count - 1 - k) % _queue.Length;
+                    LocalStain other = _queue[j];
+                    if (!other.Track || Mathf.Sign(other.Local.x) != Mathf.Sign(stain.Local.x) ||
+                        (other.Local - stain.Local).sqrMagnitude > TRACK_MERGE_DISTANCE * TRACK_MERGE_DISTANCE)
+                        continue;
+                    other.Amount = Mathf.Min(1f, Mathf.Max(other.Amount, stain.Amount) + 0.1f);
+                    _queue[j] = other;
+                    return;
+                }
+            }
+
             if (_count == _queue.Length)
             {
                 _head = (_head + 1) % _queue.Length;
@@ -173,12 +247,33 @@ namespace Game
         /// <summary>Steps a stain takes toward the tank's middle to find skin under a spot in the air (goo is caught in a box).</summary>
         private const int MARCH_STEPS = 6;
 
+        /// <summary>Steps (of DROP_STEP m) a stain goes down, in the tank's frame, to find the skin under a spot in the air.</summary>
+        private const int DROP_STEPS = 18;
+        private const float DROP_STEP = 0.12f;
+
         /// <summary>
-        /// The blood on the skin at the spot; where the spot is in the air (the caught box is bigger than the skin),
-        /// it goes on toward the tank's middle until it meets skin, as the drop would have flown on.
+        /// The blood on the skin at the spot; where the spot is in the air (the caught box is bigger than the skin), it goes
+        /// on down to the first skin under it, as falling goo would have (the deck, a fender, the rear plate), and only
+        /// where there is none (goo thrown at the side) toward the tank's middle. Going to the middle first put all
+        /// the goo that fell on the deck onto the turret's sides (the user: the tank did not stain everywhere).
         /// </summary>
         private void Lay(Vector3 point, float radius, bool clots)
         {
+            Color32 fall = Blood[Random.Range(0, Blood.Length)];
+            Vector3 down = -_body.transform.up * DROP_STEP;
+            for (int s = 0; s <= DROP_STEPS; s++)
+            {
+                // Painted only where skin is (a cheap look a few voxels down first): a sphere in the air over the deck met the
+                // turret's box and scanned it for nothing at every step (24 ms in a step of a burst of sixty deaths).
+                if (!OnSkin(point + down * s))
+                    continue;
+                // Skin here: laid once, even when it is all blood already (Paint gives 0) - going on down repainted a
+                // soaked deck at every step.
+                LayAt(point + down * s, radius, fall, clots);
+                Laid++;
+                return;
+            }
+
             Vector3 middle = _body.transform.TransformPoint(_localBox.center);
             Vector3 toMiddle = middle - point;
             float distance = toMiddle.magnitude;
@@ -186,12 +281,27 @@ namespace Game
             Color32 colour = Blood[Random.Range(0, Blood.Length)];
             for (int s = 0; s <= MARCH_STEPS; s++)
             {
-                if (LayAt(point + step * s, radius, colour, clots) > 0)
-                {
-                    Laid++;
-                    return;
-                }
+                if (!OnSkin(point + step * s))
+                    continue;
+                LayAt(point + step * s, radius, colour, clots);
+                Laid++;
+                return;
             }
+        }
+
+        /// <summary>Whether skin lies at or a few voxels under a point (VoxelBody.TryGetColor): cheap, no sphere is scanned.</summary>
+        private bool OnSkin(Vector3 point)
+        {
+            IReadOnlyList<VoxelBody> parts = _skin.Bodies;
+            for (int b = 0; b < parts.Count; b++)
+            {
+                VoxelBody part = parts[b];
+                if (part != null && part.IsCreated && part.SolidCount > 0 && part.WorldBounds.Contains(point) &&
+                    part.TryGetColor(point, out _))
+                    return true;
+            }
+
+            return false;
         }
 
         private int LayAt(Vector3 point, float radius, Color32 colour, bool clots)

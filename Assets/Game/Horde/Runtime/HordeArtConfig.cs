@@ -34,6 +34,10 @@ namespace Game.Horde
         [Tooltip("Bounds of every baked frame, model space (feet at y 0).")]
         public Bounds bounds;
 
+        [Tooltip("Skin colours of the parts a torn body throws (VoxelSpray.Chunks: head, torso, arms, legs), sampled from the " +
+                 "material's atlas over the mesh by Tools/Horde/Sample Torn Skins (the crowd mesh is not readable in play). Empty: plain greens.")]
+        public HordeTornSkins tornSkins = new();
+
         [Tooltip("Triangles of the crowd mesh / of the source skin.")]
         public int triangles;
 
@@ -76,5 +80,23 @@ namespace Game.Horde
         public Color TintOf(int kind) => kindTints != null && kind < kindTints.Length ? kindTints[kind] : default;
 
         public Color EmissionOf(int kind) => kindEmission != null && kind < kindEmission.Length ? kindEmission[kind] : Color.black;
+    }
+}
+
+namespace Game.Horde
+{
+    /// <summary>Vertex colours (as the voxel palettes take them) of each part of a torn body, from the zombie's atlas.</summary>
+    [System.Serializable]
+    public sealed class HordeTornSkins
+    {
+        public UnityEngine.Color32[] head = System.Array.Empty<UnityEngine.Color32>();
+        public UnityEngine.Color32[] torso = System.Array.Empty<UnityEngine.Color32>();
+        public UnityEngine.Color32[] arms = System.Array.Empty<UnityEngine.Color32>();
+        public UnityEngine.Color32[] legs = System.Array.Empty<UnityEngine.Color32>();
+
+        public bool IsEmpty => head.Length == 0 && torso.Length == 0 && arms.Length == 0 && legs.Length == 0;
+
+        /// <summary>In the order of VoxelSpray.Chunks' parts: head, torso, left and right arm, left and right leg. Null when empty.</summary>
+        public UnityEngine.Color32[][] ForChunks() => IsEmpty ? null : new[] { head, torso, arms, arms, legs, legs };
     }
 }

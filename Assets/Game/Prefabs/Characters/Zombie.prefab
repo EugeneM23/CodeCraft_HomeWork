@@ -1855,7 +1855,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5655884024937215095, guid: e2c73aa53d2f90a4db53ae5a58c42d97, type: 3}
       propertyPath: _config.voxelSize
-      value: 0.1
+      value: 0.05
       objectReference: {fileID: 0}
     - target: {fileID: 5655884024937215095, guid: e2c73aa53d2f90a4db53ae5a58c42d97, type: 3}
       propertyPath: _config.leftMarker

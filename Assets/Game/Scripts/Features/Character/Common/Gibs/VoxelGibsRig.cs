@@ -35,6 +35,24 @@ namespace Game
             }
         }
 
+        private Game.Voxels.SkinAtlas _atlas;
+        private bool _atlasRead;
+
+        /// <summary>The skin material's texture as voxel colours (SkinAtlas), read the first time; null when it has none.</summary>
+        public Game.Voxels.SkinAtlas Atlas
+        {
+            get
+            {
+                if (!_atlasRead && Skin != null)
+                {
+                    _atlasRead = true;
+                    _atlas = Game.Voxels.SkinAtlas.Of(Game.Voxels.SkinAtlas.TextureOf(Skin.sharedMaterial), Skin.sharedMesh);
+                }
+
+                return _atlas;
+            }
+        }
+
         public static VoxelGibsRig Resolve(SkinnedMeshRenderer skin, Transform skeleton, Renderer[] hide, VoxelGibsConfig config)
         {
             var bones = new Dictionary<string, Transform>();

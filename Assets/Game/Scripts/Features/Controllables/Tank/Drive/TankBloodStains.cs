@@ -10,7 +10,7 @@ namespace Game
     /// </summary>
     public static class TankBloodStains
     {
-        public const int CAPACITY = 128;
+        public const int CAPACITY = 1024;
 
         /// <summary>
         /// One spot of blood to lay: a sphere of skin, and whether wet clots go on as well as the stain; or, with

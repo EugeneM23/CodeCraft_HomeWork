@@ -318,7 +318,9 @@ namespace Game
                 MeatWetness = config.meatWetness,
                 Blood = config.blood.palette,
                 BloodWetness = config.blood.wetness,
-                BloodShare = config.bloodShare
+                BloodShare = config.bloodShare,
+                // A textured skin (the zombie's atlas): the voxels take its colours (the user: the pieces in the zombie's colours).
+                Atlas = config.skinFromTexture ? rig.Atlas : null
             };
 
             VoxelizeMarker.Begin();
@@ -485,7 +487,10 @@ namespace Game
                 Vector3 thrown = new(away.x, 0f, away.z);
                 s_skin[0] = config.skinColor.a > 0f ? config.skinColor : rig.SkinColor;
                 s_skin[1] = Color.Lerp(s_skin[0], Color.black, 0.2f);
-                VoxelSpray.Chunks(feet, death.Body.size.y, thrown.sqrMagnitude > 1e-4f ? thrown.normalized : Vector3.zero, s_skin, GooOf(config));
+                // Each part in the zombie's own colours where its skin has a texture (SkinAtlas.ChunkSkins).
+                SkinAtlas atlas = config.skinFromTexture ? rig.Atlas : null;
+                VoxelSpray.Chunks(feet, death.Body.size.y, thrown.sqrMagnitude > 1e-4f ? thrown.normalized : Vector3.zero, s_skin, GooOf(config),
+                    atlas?.ChunkSkins());
             }
         }
 
