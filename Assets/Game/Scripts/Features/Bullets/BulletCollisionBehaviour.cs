@@ -136,6 +136,12 @@ namespace Game
                     Sparks(collision.GetContact(0).point, collision.GetContact(0).normal);
                     ChipVoxels(collision);
                 }
+                else
+                {
+                    // Flesh bleeds by itself; the slug still glows a moment where it went in.
+                    ContactPoint contact = collision.GetContact(0);
+                    BulletHotSpots.Emit(contact.point, contact.normal);
+                }
             }
             else
             {
@@ -183,9 +189,15 @@ namespace Game
             return true;
         }
 
-        /// <summary>A juicy spray of glowing voxel sparks and a flash of light (VoxelSparks).</summary>
-        private void Sparks(Vector3 point, Vector3 normal) =>
+        /// <summary>
+        /// A juicy spray of glowing voxel sparks and a flash of light (VoxelSparks), and the slug's hot point cooling
+        /// where it struck (BulletHotSpots).
+        /// </summary>
+        private void Sparks(Vector3 point, Vector3 normal)
+        {
             VoxelSparks.Emit(point, normal, _bullet.GetMoveDirection().Value);
+            BulletHotSpots.Emit(point, normal);
+        }
 
         /// <summary>
         /// True when the shell flies on through <paramref name="target"/>: an enemy, and the shell either has a pierce
