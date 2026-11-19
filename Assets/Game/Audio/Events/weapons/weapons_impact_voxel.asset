@@ -70,7 +70,7 @@ MonoBehaviour:
     - rid: 4166356712695005496
       type: {class: FloatConst, ns: AudioEngine, asm: AudioEngine}
       data:
-        value: 2
+        value: 8
     - rid: 4166356712695005497
       type: {class: FloatConst, ns: AudioEngine, asm: AudioEngine}
       data:

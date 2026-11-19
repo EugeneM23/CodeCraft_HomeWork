@@ -15,8 +15,9 @@ namespace Game.AudioEngine.Adapters
     /// </summary>
     public sealed class GameSignalAudio
     {
-        /// <summary>A carve smaller than this (m) is a bullet hole: an impact, not a break.</summary>
-        private const float SMALL_CARVE_RADIUS = 0.6f;
+        /// <summary>A carve smaller than this (m) is a bullet hole: an impact, not a break. The MG's wall hole is
+        /// 0.6 m (BulletCollisionBehaviour.WALL_HOLE_RADIUS); shells and rams carve far more.</summary>
+        private const float SMALL_CARVE_RADIUS = 0.8f;
 
         /// <summary>A carve taking more voxels than this rains debris down a moment later.</summary>
         private const int DEBRIS_VOXELS = 30;
