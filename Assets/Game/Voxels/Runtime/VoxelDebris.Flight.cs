@@ -59,7 +59,7 @@ namespace Game.Voxels
             {
                 Cluster cluster = Clusters[i];
                 float reach = math.max(0.03f, cluster.Radius * 0.6f);
-                QueryParameters query = (cluster.Flags & SPLAT) != 0 ? DropQuery : Query;
+                QueryParameters query = (cluster.Flags & (SPLAT | GOO)) != 0 ? DropQuery : Query;
 
                 if (cluster.Resting != 0)
                 {
@@ -134,6 +134,18 @@ namespace Game.Voxels
                     return;
                 }
 
+                if (touched && (cluster.Flags & GOO) != 0 && (cluster.Flags & SPLAT) == 0)
+                {
+                    // A goo clump sticks whole where it touches: no bounce, no break, it lies at once.
+                    cluster.Position = (float3)hit.point + normal * math.max(0.03f, cluster.Radius * 0.5f);
+                    cluster.Velocity = float3.zero;
+                    cluster.Spin = float3.zero;
+                    cluster.Resting = 1;
+                    cluster.Still = SETTLE_TIME;
+                    Clusters[i] = cluster;
+                    return;
+                }
+
                 if (touched && (cluster.Flags & SPLAT) != 0)
                 {
                     Lay(ref cluster, hit.point, normal, i);
@@ -182,6 +194,23 @@ namespace Game.Voxels
                 else
                 {
                     cluster.Position += cluster.Velocity * DeltaTime;
+                }
+
+                if (cluster.Resting == 0 && (cluster.Flags & GOO) != 0)
+                {
+                    // Sticky goo: a sluggish rise that hangs at the top, then a heavy drop.
+                    if (cluster.Velocity.y > 0f)
+                    {
+                        cluster.Velocity *= math.exp(-GOO_RISE_DRAG * DeltaTime);
+                        gravity *= GOO_RISE_GRAVITY;
+                    }
+                    else
+                    {
+                        float damp = math.exp(-GOO_FALL_DRAG * DeltaTime);
+                        cluster.Velocity.x *= damp;
+                        cluster.Velocity.z *= damp;
+                        gravity *= GOO_FALL_GRAVITY;
+                    }
                 }
 
                 if (cluster.Resting == 0)
@@ -398,6 +427,19 @@ namespace Game.Voxels
                     ? new float3(SPLAT_WIDTH, SPLAT_HEIGHT, SPLAT_WIDTH)
                     : new float3(1f);
                 float3 position = cluster.Position + math.mul(cluster.Rotation, cube.Offset);
+                if ((cluster.Flags & (GOO | LAID)) == GOO && cluster.Count == 1 && cluster.Resting == 0)
+                {
+                    // A flying goo drop draws out along its path, thinner as it lengthens.
+                    float speed = math.length(cluster.Velocity);
+                    if (speed > 0.05f)
+                    {
+                        float stretch = math.min(1f + speed * GOO_STRETCH, GOO_MAX_STRETCH);
+                        float thin = math.rsqrt(stretch);
+                        quaternion along = quaternion.LookRotationSafe(cluster.Velocity / speed, new float3(0f, 1f, 0f));
+                        return float4x4.TRS(position, along, new float3(thin, thin, stretch) * (cube.Size * shrink));
+                    }
+                }
+
                 return float4x4.TRS(position, cluster.Rotation, scale * (cube.Size * shrink));
             }
         }

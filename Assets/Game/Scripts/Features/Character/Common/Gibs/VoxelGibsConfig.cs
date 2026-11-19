@@ -103,6 +103,9 @@ namespace Game
         [Tooltip("Drops out of the killing wound.")]
         public int hitDrops = 300;
 
+        [Tooltip("Launch speed (m/s) of the sticky goo out of the wound and the torn seams (VoxelSpray.Goo).")]
+        public float gooSpeed = 7f;
+
         [Tooltip("How long (s) a torn piece drips as it flies, and how many drops a second.")]
         public float dripTime = 0.6f;
         public float dripRate = 150f;

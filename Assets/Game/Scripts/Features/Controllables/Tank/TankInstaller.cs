@@ -229,6 +229,8 @@ namespace Game
             }
             // Debris and voxel flesh on the ground no longer touch the hull.
             entity.AddBehaviour(new PassThroughLoosePiecesBehaviour());
+            // Voxel flesh the tracks run over bursts into goo (TankSquashBehaviour).
+            entity.AddBehaviour(new TankSquashBehaviour(_rigidbody));
             entity.AddBehaviour<TurretAimBehaviour>();
             entity.AddBehaviour(new TankRecoilBehaviour(_recoilImpulse));
             if (_gunVisual != null)

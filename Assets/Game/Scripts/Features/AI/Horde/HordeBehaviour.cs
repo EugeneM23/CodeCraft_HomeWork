@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Atomic.Elements;
 using Atomic.Entities;
 using Game.Horde;
@@ -34,6 +35,16 @@ namespace Game.AIKit.Adapters
         /// <summary>Spawn cells higher than this over the lowest ground are roofs and rubble, not ground.</summary>
         private const float SPAWN_MAX_HEIGHT = 1f;
 
+        /// <summary>Launch speed (m/s) and drop size (times the blood's) of the goo a death throws.</summary>
+        private const float GOO_SPEED = 6.5f;
+        private const float GOO_SIZE = 3f;
+        private const int GOO_MIN_DROPS = 16;
+
+        /// <summary>The tracks run corpses over above this tank speed (m/s), in a band this high (m) round the hull's bottom.</summary>
+        private const float SQUASH_SPEED = 0.4f;
+        private const float SQUASH_BAND = 0.9f;
+        private const int SQUASH_DROPS = 18;
+
         private static readonly ProfilerMarker TickMarker = new("Horde.Tick");
         private static readonly ProfilerMarker DeathsMarker = new("Horde.Deaths");
 
@@ -63,6 +74,9 @@ namespace Game.AIKit.Adapters
         private IReactiveVariable<int> _damage;
         private TakeDamageArgs _damageArgs;
         private Color32[] _blood;
+        /// <summary>Blood and meat: the goo a death and a squashed corpse throw (VoxelSpray.Goo).</summary>
+        private Color32[] _goo;
+        private readonly List<Vector3> _squashed = new(16);
         private float _bloodSize;
         private Color32[] _acidDrops;
         private IEnemyTargets _registeredTargets;
@@ -173,6 +187,9 @@ namespace Game.AIKit.Adapters
         /// <summary>The art's model height over the Regax's (<see cref="HordeSettings.BodyScale"/>).</summary>
         private float BodyScale => _art.bodyScale > 0f ? _art.bodyScale : 1f;
 
+        /// <summary>The art's body radius and bite reach over the kinds' (<see cref="HordeArtConfig.reachScale"/>).</summary>
+        private float ReachScale => _art.reachScale > 0f ? _art.reachScale : 1f;
+
         public void Init(IEntity entity)
         {
             _entity = entity;
@@ -186,6 +203,7 @@ namespace Game.AIKit.Adapters
             var look = new BloodLook();
             _blood = look.ToVoxels();
             _bloodSize = look.dropSize;
+            _goo = new Color32[] { _blood[0], _blood[_blood.Length - 1], _blood[0], new Color(0.55f, 0.12f, 0.12f), new Color(0.7f, 0.28f, 0.28f) };
             _acidDrops = new Color32[] { _art.acidColor, Color.Lerp(_art.acidColor, Color.black, 0.4f) };
             _random = new Unity.Mathematics.Random(0x5EED1234u);
 
@@ -295,6 +313,7 @@ namespace Game.AIKit.Adapters
                 bool hasTank = ReadTank(out HordeTank tank);
                 SyncCrushSpeed();
                 HandleDeaths();
+                SquashCorpses();
                 ReportElite(deltaTime);
                 HandleShots(deltaTime);
                 DamageTank();
@@ -474,9 +493,18 @@ namespace Game.AIKit.Adapters
             settings.BodyScale = BodyScale;
             if (_art.runClipSpeed > 0f)
                 settings.RunClipSpeed = _art.runClipSpeed;
+            // A bigger model reaches, pushes and is pushed further (HordeArtConfig.reachScale).
+            float reach = ReachScale;
+            settings.Radius *= reach;
+            settings.AttackReach *= reach;
+            settings.SeparationRadius = math.min(settings.SeparationRadius * reach, HordeSimulation.HASH_CELL);
             _simulation = new HordeSimulation(_options.capacity, _grid, _flow, settings, 1, versionBase);
             for (int row = 0; row < HordeKinds.COUNT; row++)
-                _simulation.SetKind(row, _options.Kind(row));
+            {
+                HordeKind kind = _options.Kind(row);
+                kind.Radius *= reach;
+                _simulation.SetKind(row, kind);
+            }
             _simulation.SetClips(_art.run, _art.attack, _art.idle);
             _targets.Simulation = _simulation;
 
@@ -691,6 +719,38 @@ namespace Game.AIKit.Adapters
             EliteStatus.ReportDied();
         }
 
+        /// <summary>
+        /// Corpses under the moving tank's hull burst from under its tracks: gone at once (HordeCorpses.Squash), each a
+        /// short splash of goo thrown out to its side.
+        /// </summary>
+        private void SquashCorpses()
+        {
+            if (_tankTransform == null || _tankBody == null)
+                return;
+            Vector3 velocity = _tankBody.linearVelocity;
+            if (velocity.sqrMagnitude < SQUASH_SPEED * SQUASH_SPEED)
+                return;
+
+            Quaternion rotation = _tankTransform.rotation;
+            Vector3 centre = _tankTransform.TransformPoint(_hullCenter);
+            Vector3 bottom = centre - rotation * new Vector3(0f, _hullHalf.y, 0f);
+            var band = new float3(_hullHalf.x, SQUASH_BAND, _hullHalf.z + 0.3f);
+            Vector3 right = rotation * Vector3.right;
+            float time = GameTicks.Time;
+            for (int k = 0; k < HordeKinds.COUNT; k++)
+            {
+                if (_corpses[k].Count == 0 || _corpses[k].Squash(bottom, rotation, band, 0.4f, time, _squashed) == 0)
+                    continue;
+                for (int i = 0; i < _squashed.Count; i++)
+                {
+                    Vector3 at = _squashed[i] + Vector3.up * 0.3f;
+                    Vector3 side = right * Mathf.Sign(Vector3.Dot(at - centre, right));
+                    VoxelSpray.Goo(at, Vector3.up + side * 0.7f, SQUASH_DROPS, 5.5f, 0.45f, _goo, _bloodSize * GOO_SIZE,
+                        velocity * 0.25f, 0.4f);
+                }
+            }
+        }
+
         private void HandleDeaths()
         {
             NativeArray<HordeDeathEvent> deaths = _simulation.Deaths;
@@ -713,7 +773,8 @@ namespace Game.AIKit.Adapters
                     Vector3 at = (Vector3)death.Position + Vector3.up * 0.6f;
                     if (sprays < _options.bloodPerFrame)
                     {
-                        VoxelSpray.Burst(at, Vector3.up, _options.bloodDrops, 2f, 5f, 0.6f, _blood, _bloodSize);
+                        // Sticky goo lifts out of the body, hangs and drops: big drops, few of them.
+                        VoxelSpray.Goo(at, Vector3.up, Mathf.Max(_options.bloodDrops, GOO_MIN_DROPS), GOO_SPEED, 0.5f, _goo, _bloodSize * GOO_SIZE, default, 0.3f);
                         sprays++;
                     }
 

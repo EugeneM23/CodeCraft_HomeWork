@@ -87,8 +87,25 @@ namespace Game
         /// <summary>The blood palette of each config as voxel colours, made once (the drips keep it and never change it).</summary>
         private static readonly Dictionary<VoxelGibsConfig, Color32[]> BloodByConfig = new();
 
+        /// <summary>The goo of each config (blood and meat) as voxel colours, made once.</summary>
+        private static readonly Dictionary<VoxelGibsConfig, Color32[]> GooByConfig = new();
+
         /// <summary>The seams of each config as the rules take them, made once.</summary>
         private static readonly Dictionary<VoxelGibsConfig, SeamLink[]> LinksByConfig = new();
+
+        /// <summary>
+        /// Pieces of flesh still in their first flight: damped while they rise (a sluggish, sticky lift that hangs at
+        /// the top), let go once they come down (a heavy drop). Taken out when they fall, settle or after a while.
+        /// </summary>
+        private static readonly List<Rigidbody> Flying = new(64);
+        private static readonly List<float> FlyingSince = new(64);
+
+        /// <summary>Linear damping of a piece while it rises, and the longest (s) it is watched.</summary>
+        private const float RISE_DAMPING = 2f;
+        private const float MAX_RISE_TIME = 3f;
+
+        /// <summary>Layers the flesh never touches: the tank drives through it (the tracks burst what they run over).</summary>
+        private const int UNTOUCHED_LAYERS = 1 << PhysicsLayers.Character;
 
         /// <summary>A death on its way: pooled with its buffers.</summary>
         private sealed class Death
@@ -117,6 +134,9 @@ namespace Game
         {
             Held.Clear();
             BloodByConfig.Clear();
+            GooByConfig.Clear();
+            Flying.Clear();
+            FlyingSince.Clear();
             LinksByConfig.Clear();
             Queue.Clear();
             Spare.Clear();
@@ -389,16 +409,34 @@ namespace Game
                 if (warmUp)
                     continue;
 
-                // The seams' drops are shared out by how much of the cut each piece carries.
+                // The seams' drops are shared out by how much of the cut each piece carries: sticky strands of goo
+                // pulled up out of the torn faces, a few at a face.
                 int drops = Mathf.RoundToInt(config.seamDrops * broken * piece.TornCount / (float)torn);
-                for (int i = 0; i < drops; i++)
+                Color32[] goo = GooOf(config);
+                for (int i = 0; i < drops; i += SEAM_STRAND)
                 {
                     VoxelCarcass.TornFace face = piece.Torn[Random.Range(0, piece.TornCount)];
-                    VoxelSpray.Burst(face.Point, face.Normal, 1, 2f, 5f, 0.35f, blood, config.blood.dropSize, velocity);
+                    VoxelSpray.Goo(face.Point, face.Normal * 0.6f + Vector3.up, Mathf.Min(SEAM_STRAND, drops - i), config.gooSpeed * 0.8f,
+                        0.35f, goo, config.blood.dropSize, velocity * 0.4f, 0.05f);
                 }
             }
 
             LaunchMarker.End();
+
+            // The flesh never touches the tank; it rises sluggishly, then drops (UpdateFlying).
+            float now = Time.time;
+            for (int b = 0; death.Corpse != null && b < death.Corpse.BodyCount; b++)
+            {
+                VoxelBody body = death.Corpse.GetBody(b);
+                if (body == null || !body.TryGetComponent(out Rigidbody rigidbody))
+                    continue;
+                rigidbody.excludeLayers = UNTOUCHED_LAYERS;
+                if (warmUp || rigidbody.isKinematic)
+                    continue;
+                rigidbody.linearDamping = RISE_DAMPING;
+                Flying.Add(rigidbody);
+                FlyingSince.Add(now);
+            }
 
             if (warmUp)
                 return;
@@ -407,8 +445,54 @@ namespace Game
             Vector3 wound = death.Body.ClosestPoint(death.Hit.Origin);
             Vector3 away = wound - death.Hit.Origin;
             away = away.sqrMagnitude > 1e-4f ? away.normalized : Vector3.up;
-            VoxelSpray.Burst(wound, away + Vector3.up * 0.5f, config.hitDrops, 2f, 5f, 0.35f, blood, config.blood.dropSize);
+            VoxelSpray.Goo(wound, Vector3.up * 1.6f + away * 0.5f, config.hitDrops, config.gooSpeed, 0.4f, GooOf(config),
+                config.blood.dropSize, default, Mathf.Min(0.35f, death.Body.extents.x));
             BloodMarker.End();
+        }
+
+        /// <summary>Drops in a strand of goo out of a torn seam.</summary>
+        private const int SEAM_STRAND = 6;
+
+        /// <summary>Flying pieces: damped on the way up, let go on the way down (and when they settle or time out).</summary>
+        private static void UpdateFlying()
+        {
+            float now = Time.time;
+            for (int i = Flying.Count - 1; i >= 0; i--)
+            {
+                Rigidbody rigidbody = Flying[i];
+                bool done = rigidbody == null || rigidbody.isKinematic || !rigidbody.gameObject.activeInHierarchy
+                            || rigidbody.linearVelocity.y <= 0f || now - FlyingSince[i] > MAX_RISE_TIME;
+                if (!done)
+                    continue;
+                if (rigidbody != null)
+                    rigidbody.linearDamping = 0f;
+                int last = Flying.Count - 1;
+                Flying[i] = Flying[last];
+                FlyingSince[i] = FlyingSince[last];
+                Flying.RemoveAt(last);
+                FlyingSince.RemoveAt(last);
+            }
+        }
+
+        private static Color32[] GooOf(VoxelGibsConfig config)
+        {
+            if (!GooByConfig.TryGetValue(config, out Color32[] goo))
+            {
+                Color32[] blood = BloodOf(config);
+                Color[] meat = config.meat ?? Array.Empty<Color>();
+                goo = new Color32[blood.Length * 2 + meat.Length];
+                for (int i = 0; i < blood.Length; i++)
+                {
+                    goo[i * 2] = blood[i];
+                    goo[i * 2 + 1] = blood[i];
+                }
+
+                for (int i = 0; i < meat.Length; i++)
+                    goo[blood.Length * 2 + i] = meat[i];
+                GooByConfig.Add(config, goo);
+            }
+
+            return goo;
         }
 
         /// <summary>A death that cannot go on (its body went away): what was made of it goes back to the pool.</summary>
@@ -439,6 +523,9 @@ namespace Game
         /// </summary>
         private static void Step()
         {
+            if (Flying.Count > 0)
+                UpdateFlying();
+
             if (Queue.Count == 0)
             {
                 VoxelCorpses.Prime(PRIME_PER_FRAME);

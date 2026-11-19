@@ -316,6 +316,43 @@ namespace Game.Voxels
         }
 
         /// <summary>
+        /// The pieces of the corpses lying (not those still being built or shown) whose middle is inside the box,
+        /// widened by a part of each piece's own size: each is taken out of its corpse and put away (free for the
+        /// next death). Their bounds go into <paramref name="squashed"/> (for the burst), which is cleared first.
+        /// About 150 bounds checks for 20 corpses; no physics query, nothing allocated.
+        /// </summary>
+        public static int Squash(Vector3 center, Quaternion rotation, Vector3 halfExtents, List<Bounds> squashed)
+        {
+            squashed.Clear();
+            Quaternion inverse = Quaternion.Inverse(rotation);
+            for (int c = 0; c < Lying.Count; c++)
+            {
+                Corpse corpse = Lying[c];
+                if (corpse.Busy)
+                    continue;
+
+                List<VoxelBody> bodies = corpse.Bodies;
+                for (int b = bodies.Count - 1; b >= 0; b--)
+                {
+                    VoxelBody body = bodies[b];
+                    if (body == null || !body.gameObject.activeInHierarchy)
+                        continue;
+                    Bounds bounds = body.WorldBounds;
+                    Vector3 local = inverse * (bounds.center - center);
+                    Vector3 reach = halfExtents + bounds.extents * 0.5f;
+                    if (Mathf.Abs(local.x) > reach.x || Mathf.Abs(local.y) > reach.y || Mathf.Abs(local.z) > reach.z)
+                        continue;
+
+                    squashed.Add(bounds);
+                    RemoveAt(bodies, b);
+                    Put(body, Free);
+                }
+            }
+
+            return squashed.Count;
+        }
+
+        /// <summary>
         /// A corpse put away now, whatever its age (its death went no further, a warm-up): its bodies are free, or
         /// with <paramref name="refill"/> filled again first (they were never built).
         /// </summary>

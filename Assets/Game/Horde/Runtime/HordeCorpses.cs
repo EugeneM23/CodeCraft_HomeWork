@@ -33,6 +33,9 @@ namespace Game.Horde
 
         public int Capacity { get; }
         public int Count => _count;
+
+        /// <summary>Corpses run over (<see cref="Squash"/>) since this ring was made.</summary>
+        public int SquashedTotal { get; private set; }
         public float LieTime { get; }
         public float SinkTime { get; }
         public float SinkDepth { get; }
@@ -91,6 +94,38 @@ namespace Game.Horde
                 _renderer.Upload(_slots, 0, 0, _dirtyCount - first);
             _dirtyStart = -1;
             _dirtyCount = 0;
+        }
+
+        /// <summary>
+        /// Corpses still lying whose position is inside the box (centre, rotation, half extents, widened by
+        /// <paramref name="margin"/>) are gone at once: sunk out of sight (their slot frees in turn). Their positions
+        /// go into <paramref name="squashed"/> (cleared first), for the burst. Nothing allocated.
+        /// </summary>
+        public int Squash(float3 center, quaternion rotation, float3 halfExtents, float margin, float time,
+            System.Collections.Generic.List<Vector3> squashed)
+        {
+            squashed.Clear();
+            quaternion inverse = math.inverse(rotation);
+            float3 reach = halfExtents + margin;
+            float gone = time - LieTime - SinkTime;
+            for (int i = 0; i < _count; i++)
+            {
+                int slot = (_head + i) % Capacity;
+                HordeInstance corpse = _slots[slot];
+                if (time - corpse.Animation.x > LieTime)
+                    continue; // already sinking
+                float3 local = math.mul(inverse, corpse.PositionHeading.xyz - center);
+                if (math.any(math.abs(local) > reach))
+                    continue;
+
+                corpse.Animation.x = gone;
+                _slots[slot] = corpse;
+                _renderer.Upload(_slots, slot, slot, 1);
+                squashed.Add(corpse.PositionHeading.xyz);
+                SquashedTotal++;
+            }
+
+            return squashed.Count;
         }
 
         public void Draw(Bounds worldBounds, float time) => _renderer.Draw(_count, worldBounds, _head, time);
