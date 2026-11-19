@@ -92,6 +92,7 @@ namespace Game
             if (_context.TryGetRun(out IRunService standIn))
             {
                 (standIn as IDisposable)?.Dispose();
+                loop?.Resume(standIn); // a pause the stand-in held must not outlive it
                 _context.DelRun();
             }
             _context.AddRun(_run);

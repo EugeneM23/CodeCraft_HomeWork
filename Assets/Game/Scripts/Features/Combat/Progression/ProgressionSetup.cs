@@ -17,7 +17,11 @@ namespace Game
 
             // The core's RunBootstrap puts the real run in on its own Awake, which can come after this: no stand-in
             // then, or the level's systems would bind to it (perf-ok: once at the context's install).
-            if (!context.HasRun() && Object.FindFirstObjectByType<RunBootstrap>() == null)
+            // In the game (an AppContext with the game catalog) the core's run is always there; the stand-in is only
+            // for a level played without the app. Looking for the RunBootstrap object missed it when its scene came
+            // later, and the stand-in then held the game loop's pause and took the XP.
+            bool coreRun = AppContext.TryGet(out AppContext app) && app.TryGetGameCatalog(out GameCatalog _);
+            if (!context.HasRun() && !coreRun && Object.FindFirstObjectByType<RunBootstrap>() == null)
             {
                 var run = new LocalRunService(context.GetEnemyDeaths());
                 context.AddRun(run);
