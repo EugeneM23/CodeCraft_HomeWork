@@ -179,6 +179,17 @@ namespace AudioEngine
             }
         }
 
+        /// <summary>0 most important, 256 least (Unity's AudioSource.priority).</summary>
+        private int PriorityFor(AudioClip clip)
+        {
+            if (this.spartialBlend < 0.5f)
+                return 16;
+            if (this.loop)
+                return 48;
+            float length = clip != null ? clip.length : 0f;
+            return length >= 1.5f ? 64 : length >= 0.5f ? 128 : 200;
+        }
+
         private void ResetState()
         {
             _audioSource.volume = this.volume?.Value ?? 1;
@@ -193,6 +204,12 @@ namespace AudioEngine
                     _audioSource.Play();
             }
             _audioSource.reverbZoneMix = reverbZoneMix?.Value ?? 1;
+
+            // Who keeps playing when more sounds than the real voices are on (game fix): every source used to sit
+            // at the default 128, so Unity cut whichever it liked — a cannon's tail, the engine — under a burst of
+            // machine-gun shots. Loops and flat (2D: music, UI) sounds first, long one-shots (shots, blasts) next,
+            // short chatter last.
+            _audioSource.priority = PriorityFor(nextClip);
 
             _audioSource.dopplerLevel = this.dopplerLevel.Value;
             _audioSource.spread = this.spread.Value;
