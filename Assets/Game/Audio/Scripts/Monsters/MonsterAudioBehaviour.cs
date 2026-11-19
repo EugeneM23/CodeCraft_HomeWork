@@ -114,7 +114,12 @@ namespace Game.AudioEngine.Adapters
 
         private void OnDamage(TakeDamageArgs args) => GameAudio.Play(AudioKeys.Monsters.HIT, _transform.position);
 
-        private void OnDeath(TakeDamageArgs args) => GameAudio.Play(AudioKeys.Monsters.DEATH, _transform.position);
+        // Where the level reports deaths, RunEventAudio plays them by kind; a second cry here would double it.
+        private void OnDeath(TakeDamageArgs args)
+        {
+            if (!GameAudio.DeathsReported)
+                GameAudio.Play(AudioKeys.Monsters.DEATH, _transform.position);
+        }
 
         private void OnAttack(IEntity weapon) => GameAudio.Play(AudioKeys.Monsters.ATTACK, _transform.position);
     }

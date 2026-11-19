@@ -107,8 +107,14 @@ namespace Game.AudioEngine.Adapters.EditorTools
                 WriteBank(bank);
 
             List<string> uiWithoutClips = WriteUICatalog();
-            WriteMusicCatalog(AudioAssetPaths.MENU_MUSIC, AudioAssetPaths.MENU_MUSIC_CLIPS);
-            WriteMusicCatalog(AudioAssetPaths.BATTLE_MUSIC, AudioAssetPaths.BATTLE_MUSIC_CLIPS);
+            WriteMusicCatalog(AudioAssetPaths.MENU_MUSIC, AudioAssetPaths.MENU_MUSIC_CLIPS, true);
+            WriteMusicCatalog(AudioAssetPaths.BATTLE_MUSIC, AudioAssetPaths.BATTLE_MUSIC_CLIPS, true);
+            // No Music.wav in these: an empty one means "not made yet" and AppAudio falls back on its own.
+            WriteMusicCatalog(AudioAssetPaths.HANGAR_MUSIC, AudioAssetPaths.HANGAR_MUSIC_CLIPS, false);
+            WriteMusicCatalog(AudioAssetPaths.BATTLE_CALM, AudioAssetPaths.BATTLE_CALM_CLIPS, false);
+            WriteMusicCatalog(AudioAssetPaths.BATTLE_HORDE, AudioAssetPaths.BATTLE_HORDE_CLIPS, false);
+            WriteMusicCatalog(AudioAssetPaths.BATTLE_PEAK, AudioAssetPaths.BATTLE_PEAK_CLIPS, false);
+            WriteMusicCatalog(AudioAssetPaths.ELITE_MUSIC, AudioAssetPaths.ELITE_MUSIC_CLIPS, false);
             string preloadResult = WritePreload(preload);
 
             AssetDatabase.SaveAssets();
@@ -144,6 +150,16 @@ namespace Game.AudioEngine.Adapters.EditorTools
 
             written |= AudioClipFolders.EnsureOnDisk(AudioAssetPaths.MENU_MUSIC_CLIPS, "Drop menu and hangar music here.");
             written |= AudioClipFolders.EnsureOnDisk(AudioAssetPaths.BATTLE_MUSIC_CLIPS, "Drop battle music here.");
+            written |= AudioClipFolders.EnsureOnDisk(AudioAssetPaths.HANGAR_MUSIC_CLIPS,
+                "Музыка ангара и выбора главы, играет по кругу. Пусто — звучит музыка меню.");
+            written |= AudioClipFolders.EnsureOnDisk(AudioAssetPaths.BATTLE_CALM_CLIPS,
+                "Слой боя «спокойно»: один клип, звучит весь бой. Три слоя боя одной длины.");
+            written |= AudioClipFolders.EnsureOnDisk(AudioAssetPaths.BATTLE_HORDE_CLIPS,
+                "Слой боя «орда»: один клип той же длины, нарастает с числом врагов.");
+            written |= AudioClipFolders.EnsureOnDisk(AudioAssetPaths.BATTLE_PEAK_CLIPS,
+                "Слой боя «пик»: один клип той же длины, звучит на пике боя.");
+            written |= AudioClipFolders.EnsureOnDisk(AudioAssetPaths.ELITE_MUSIC_CLIPS,
+                "Музыка элиты: заменяет бой, пока элита жива. Пусто — бой уходит в пик.");
             written |= AudioClipFolders.EnsureOnDisk(AudioAssetPaths.UI, null);
             written |= AudioClipFolders.EnsureOnDisk(AudioAssetPaths.MUSIC, null);
 
@@ -320,7 +336,11 @@ namespace Game.AudioEngine.Adapters.EditorTools
             return withoutClips;
         }
 
-        private static void WriteMusicCatalog(string assetPath, string clipFolder)
+        /// <summary>
+        /// Fills the catalog with the clips of its folder. <paramref name="useFallback"/>: an empty catalog gets
+        /// Music.wav; without it an empty folder leaves the catalog empty.
+        /// </summary>
+        private static void WriteMusicCatalog(string assetPath, string clipFolder, bool useFallback)
         {
             MusicCatalog catalog = LoadOrCreate<MusicCatalog>(assetPath);
             SerializedObject serialized = new SerializedObject(catalog);
@@ -333,7 +353,9 @@ namespace Game.AudioEngine.Adapters.EditorTools
                 if (HasAnyClip(array))
                     return;
 
-                AudioClip fallback = AssetDatabase.LoadAssetAtPath<AudioClip>(AudioAssetPaths.FALLBACK_MUSIC);
+                AudioClip fallback = useFallback
+                    ? AssetDatabase.LoadAssetAtPath<AudioClip>(AudioAssetPaths.FALLBACK_MUSIC)
+                    : null;
                 if (fallback != null)
                     clips.Add(fallback);
             }

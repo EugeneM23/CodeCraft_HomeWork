@@ -69,12 +69,12 @@ MonoBehaviour:
     - rid: 4166356712695005559
       type: {class: FloatConst, ns: AudioEngine, asm: AudioEngine}
       data:
-        value: 2
+        value: 12
     - rid: 4166356712695005560
       type: {class: FloatConst, ns: AudioEngine, asm: AudioEngine}
       data:
-        value: 80
+        value: 480
     - rid: 4166356712695005561
       type: {class: ClipConst, ns: AudioEngine, asm: AudioEngine}
       data:
-        clip: {fileID: 8300000, guid: f5354fd5b13a03739a85c86b3ba48fe0, type: 3}
+        clip: {fileID: 8300000, guid: 5afe2a8b8db5aab4ab4c350ee5051cf9, type: 3}

@@ -14,7 +14,8 @@ namespace Game
     /// loading screen on real time (AppTicker ticks the flow): the screen covers, the scenes change, the level layer
     /// goes into the level, the screen goes. One transition at a time: requests while busy are refused (false). A
     /// failed transition is logged and keeps the state. After a transition every pause is let go, so a level never
-    /// starts standing.
+    /// starts standing. A level may be played as a chapter of the game catalog (StartChapter): the chapter is current
+    /// together with its level, survives a restart and is cleared by the return to the menu.
     /// </summary>
     public sealed class GameFlow : IGameFlow, IAppTickable
     {
@@ -25,6 +26,7 @@ namespace Game
         private const double WARM_UP_FRAME_MS = 16d;
 
         private readonly LevelCatalog _catalog;
+        private readonly GameCatalog _gameCatalog;
         private readonly ILevelLoader _loader;
         private readonly ILoadingScreen _screen;
         private readonly IGameLoop _loop;
@@ -36,14 +38,18 @@ namespace Game
         private GameState _from;
         private GameState _target;
         private LevelConfig _targetLevel;
+        private ChapterId _targetChapter;
         private float _coverWait;
 
         /// <param name="screen">May be null: transitions run uncovered.</param>
         /// <param name="loop">May be null; otherwise every pause is let go after a transition.</param>
+        /// <param name="gameCatalog">May be null: no chapters (StartChapter is refused, CurrentChapter stays none).</param>
         public GameFlow(LevelCatalog catalog, ILevelLoader loader, ILoadingScreen screen = null, IGameLoop loop = null,
-            IReadOnlyList<Assembly> warmUp = null)
+            IReadOnlyList<Assembly> warmUp = null, GameCatalog gameCatalog = null)
         {
             _catalog = catalog != null ? catalog : throw new ArgumentNullException(nameof(catalog));
+            // A missing asset is Unity-null: keep a real null
+            _gameCatalog = gameCatalog != null ? gameCatalog : null;
             _loader = loader ?? throw new ArgumentNullException(nameof(loader));
             _screen = screen;
             _loop = loop;
@@ -69,12 +75,21 @@ namespace Game
         public LevelConfig CurrentLevel { get; private set; }
 
         public string CurrentLevelId => CurrentLevel != null ? CurrentLevel.Id : null;
+
+        /// <summary>
+        /// The chapter being played; none outside a level or in a level opened without a chapter. Set together with
+        /// CurrentLevel once the level is loaded, kept by RestartLevel, cleared by the return to the menu.
+        /// </summary>
+        public ChapterId CurrentChapter { get; private set; }
         public string RequestedMenuScreen { get; private set; }
 
         /// <summary>0..1 of the running transition; 0 when none runs.</summary>
         public float LoadingProgress => IsBusy ? _runner.Progress : 0f;
 
         public LevelCatalog Catalog => _catalog;
+
+        /// <summary>The tanks, modules, skills and chapters; null when the flow was made without it.</summary>
+        public GameCatalog GameCatalog => _gameCatalog;
 
         /// <summary>The start from the Boot scene: from black into the main menu.</summary>
         public bool Boot()
@@ -96,18 +111,35 @@ namespace Game
             return false;
         }
 
-        /// <summary>From the menu or a level: the level's scenes replace whatever is open.</summary>
-        public bool OpenLevel(LevelConfig level)
+        /// <summary>
+        /// From the menu or a level: the chapter's level is played as that chapter. Refused (false, logged) when the
+        /// chapter is not in the game catalog or has no level; refused silently while busy or outside menu and level.
+        /// </summary>
+        public bool StartChapter(ChapterId chapter)
         {
-            if (level == null || IsBusy || (State != GameState.MainMenu && State != GameState.Level))
+            ChapterConfig config = _gameCatalog != null ? _gameCatalog.FindChapter(chapter) : null;
+            if (config == null)
+            {
+                string where = _gameCatalog != null ? $"the game catalog '{_gameCatalog.name}'" : "no game catalog";
+                Debug.LogError($"{nameof(GameFlow)}: no chapter '{chapter}' in {where}");
                 return false;
+            }
 
-            _targetLevel = level;
-            return TryBuild(LoadLevelTree, out LoadingOperation tree)
-                   && Go(tree, GameState.Level, level, false, null);
+            if (config.Level == null)
+            {
+                Debug.LogError($"{nameof(GameFlow)}: the chapter '{chapter}' has no level");
+                return false;
+            }
+
+            return OpenLevel(config.Level, chapter);
         }
 
-        public bool RestartLevel() => State == GameState.Level && CurrentLevel != null && OpenLevel(CurrentLevel);
+        /// <summary>From the menu or a level: the level's scenes replace whatever is open. Played without a chapter.</summary>
+        public bool OpenLevel(LevelConfig level) => OpenLevel(level, default);
+
+        /// <summary>The current level again, as the same chapter.</summary>
+        public bool RestartLevel() =>
+            State == GameState.Level && CurrentLevel != null && OpenLevel(CurrentLevel, CurrentChapter);
 
         public bool ReturnToMenu(string screen = null)
         {
@@ -131,27 +163,33 @@ namespace Game
         /// The editor cold start: the scene opened in the editor is loaded and nothing in it has started. The menu is
         /// entered as it is; a level gets its missing scenes and its level layer. Other scenes are left alone.
         /// </summary>
-        public void EnterOpenScene(Scene scene)
+        public void EnterOpenScene(Scene scene) => EnterOpenScene(scene.path);
+
+        /// <summary>
+        /// EnterOpenScene by the scene's path. A level is played as the first chapter of the game catalog that is
+        /// played on it; none when no chapter is.
+        /// </summary>
+        public void EnterOpenScene(string scenePath)
         {
             if (IsBusy || State != GameState.Starting)
                 return;
 
-            if (_catalog.IsMenuScene(scene.path))
+            if (_catalog.IsMenuScene(scenePath))
             {
                 Enter(GameState.MainMenu);
                 return;
             }
 
-            LevelConfig level = _catalog.FindByScene(scene.path);
+            LevelConfig level = _catalog.FindByScene(scenePath);
             if (level == null)
             {
-                Debug.LogWarning($"{nameof(GameFlow)}: '{scene.path}' is neither the menu nor a level of the catalog");
+                Debug.LogWarning($"{nameof(GameFlow)}: '{scenePath}' is neither the menu nor a level of the catalog");
                 return;
             }
 
             _targetLevel = level;
             if (TryBuild(LoadMissingTree, out LoadingOperation tree))
-                Go(tree, GameState.Level, level, true, null);
+                Go(tree, GameState.Level, level, true, null, ChapterOf(level));
         }
 
         public void Tick(float unscaledDeltaTime)
@@ -163,6 +201,32 @@ namespace Game
             _runner.Tick(unscaledDeltaTime);
             if (_runner.IsRunning)
                 _screen?.SetProgress(_runner.Progress);
+        }
+
+        private bool OpenLevel(LevelConfig level, ChapterId chapter)
+        {
+            if (level == null || IsBusy || (State != GameState.MainMenu && State != GameState.Level))
+                return false;
+
+            _targetLevel = level;
+            return TryBuild(LoadLevelTree, out LoadingOperation tree)
+                   && Go(tree, GameState.Level, level, false, null, chapter);
+        }
+
+        // The first chapter of the game catalog played on the level; none without one
+        private ChapterId ChapterOf(LevelConfig level)
+        {
+            if (_gameCatalog == null)
+                return default;
+
+            IReadOnlyList<ChapterConfig> chapters = _gameCatalog.Chapters;
+            for (int i = 0; i < chapters.Count; i++)
+            {
+                if (chapters[i] != null && chapters[i].Level == level)
+                    return chapters[i].Id;
+            }
+
+            return default;
         }
 
         // ---------- The trees: what every transition does ----------
@@ -223,11 +287,12 @@ namespace Game
         }
 
         private bool Go(LoadingOperation tree, GameState target, LevelConfig level, bool instantScreen,
-            string menuScreen)
+            string menuScreen, ChapterId chapter = default)
         {
             _from = State;
             _target = target;
             _targetLevel = level;
+            _targetChapter = chapter;
             _coverWait = 0f;
             RequestedMenuScreen = menuScreen;
 
@@ -255,7 +320,9 @@ namespace Game
             GameState from = _from;
             GameState target = _target;
             LevelConfig level = _targetLevel;
+            ChapterId chapter = _targetChapter;
             _targetLevel = null;
+            _targetChapter = default;
             IsBusy = false;
 
             if (_screen != null)
@@ -268,6 +335,7 @@ namespace Game
             if (result.Succeeded)
             {
                 CurrentLevel = level;
+                CurrentChapter = chapter;
                 ResumeAll();
             }
             else
@@ -284,7 +352,10 @@ namespace Game
         {
             State = state;
             if (state != GameState.Level)
+            {
                 CurrentLevel = null;
+                CurrentChapter = default;
+            }
 
             Raise(StateChanged, state);
         }

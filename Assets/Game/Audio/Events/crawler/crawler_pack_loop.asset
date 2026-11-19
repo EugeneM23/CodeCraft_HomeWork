@@ -1,0 +1,143 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 966df4d6c0dc4ec0b855f32895a79c89, type: 3}
+  m_Name: crawler_pack_loop
+  m_EditorClassIdentifier: AudioEngine::AudioEngine.AudioSourceEvent
+  _poolable: 1
+  duration: 0
+  loop: 1
+  spartialBlend: 0
+  output: {fileID: 3749125731345324096, guid: fcf45067a59444e45a07f67b96ef76a5, type: 2}
+  clip:
+    rid: 4166356731724824689
+  pitch:
+    rid: 4166356731724824698
+  volume:
+    rid: 4166356731724824697
+  reverbZoneMix:
+    rid: 4166356731724824692
+  rolloffMode: 0
+  rolloffCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  minDistance:
+    rid: 4166356731724824699
+  maxDistance:
+    rid: 4166356731724824700
+  dopplerLevel:
+    rid: 4166356731724824701
+  spread:
+    rid: 4166356731724824696
+  behaviours:
+  - fullTime: 1
+    startTime: 0
+    endTime: 0
+    value:
+      rid: 4166356731724824702
+    mute: 0
+  actions: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 4166356731724824689
+      type: {class: ClipConst, ns: AudioEngine, asm: AudioEngine}
+      data:
+        clip: {fileID: 0}
+    - rid: 4166356731724824692
+      type: {class: FloatConst, ns: AudioEngine, asm: AudioEngine}
+      data:
+        value: 1
+    - rid: 4166356731724824696
+      type: {class: FloatConst, ns: AudioEngine, asm: AudioEngine}
+      data:
+        value: 0
+    - rid: 4166356731724824697
+      type: {class: FloatConst, ns: AudioEngine, asm: AudioEngine}
+      data:
+        value: 1
+    - rid: 4166356731724824698
+      type: {class: FloatConst, ns: AudioEngine, asm: AudioEngine}
+      data:
+        value: 1
+    - rid: 4166356731724824699
+      type: {class: FloatConst, ns: AudioEngine, asm: AudioEngine}
+      data:
+        value: 2
+    - rid: 4166356731724824700
+      type: {class: FloatConst, ns: AudioEngine, asm: AudioEngine}
+      data:
+        value: 80
+    - rid: 4166356731724824701
+      type: {class: FloatConst, ns: AudioEngine, asm: AudioEngine}
+      data:
+        value: 0
+    - rid: 4166356731724824702
+      type: {class: AudioEventBehaviour_ParameterCurve, ns: Game.AudioEngine.Adapters, asm: Game.AudioEngine.Adapters}
+      data:
+        _parameter:
+          bank: {fileID: 0}
+          parameterId: 
+          identifier: 
+        _parameterId: crawler.alive
+        _driveVolume: 1
+        _volume:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 0
+            inSlope: 0
+            outSlope: 1
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: 1
+            inSlope: 1
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        _drivePitch: 0
+        _pitch:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4

@@ -32,6 +32,7 @@ namespace Game
             float radius = projectile.GetExplosionRadius();
 
             DamageInRadius(projectile, point, radius);
+            DamageEnemiesWithoutColliders(projectile, point, radius);
             ExplosionEvents.Raise(point, radius);
 
             // A crater in anything made of voxels: walls, buildings, the tank's skin.
@@ -54,6 +55,26 @@ namespace Game
 
             if (projectile.TryGetCameraShakeArgs(out CameraShakeArgs shake))
                 CameraShakeUseCase.ShakePlayerCamera(shake);
+
+            // The ricochet skill: a cannon shell bounces on to the next enemy outside its blast.
+            ShellBounceUseCase.TryBounce(projectile, point, radius, factory);
+        }
+
+        /// <summary>
+        /// The blast's damage to the enemies without colliders (the horde) through the level's EnemyTargets; entity
+        /// enemies already took theirs from <see cref="DamageInRadius"/>. The horde ALSO still takes its own fixed
+        /// damage from <see cref="ExplosionEvents.Exploded"/> (HordeBehaviour) until the AI team drops it.
+        /// </summary>
+        private static void DamageEnemiesWithoutColliders(IEntity projectile, Vector3 point, float radius)
+        {
+            if (!projectile.TryGetDamage(out var damage) || damage.Value <= 0)
+                return;
+            if (!GameContext.TryGetInstance(out GameContext context) ||
+                !context.TryGetEnemyTargets(out IEnemyTargets targets) || targets is not EnemyTargets enemyTargets)
+                return;
+
+            float minFactor = projectile.TryGetExplosionMinDamageFactor(out float min) ? min : 0.25f;
+            enemyTargets.DamageAreaNonPhysical(point, radius, damage.Value, minFactor);
         }
 
         private static void DamageInRadius(IEntity projectile, Vector3 point, float radius)

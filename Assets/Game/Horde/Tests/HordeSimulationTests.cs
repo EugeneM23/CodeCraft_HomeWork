@@ -257,6 +257,92 @@ namespace Game.Horde.Tests
         }
 
         [Test]
+        public void Hit_OnASlotReusedBeforeTheStep_DoesNotLandOnTheNewMonster()
+        {
+            using HordeNavGrid grid = HordeTestGrids.Flat(10, 10);
+            using var field = new HordeFlowField(grid);
+            using var sim = new HordeSimulation(4, grid, field, HordeSettings.Default);
+            int old = sim.Spawn(new float3(2f, 0f, 2f), 0f);
+            int oldVersion = sim.Version(old);
+            sim.Damage(old, oldVersion, 30f);
+
+            Assert.IsTrue(sim.Kill(old));
+            int fresh = sim.Spawn(new float3(5f, 0f, 5f), 0f);
+            Assert.AreEqual(old, fresh, "the free list hands the same slot out again");
+
+            Step(sim, default);
+            Assert.AreEqual(HordeSettings.Default.Health, sim.GetHealth(fresh), "the old monster's hit is dropped");
+
+            sim.Damage(fresh, sim.Version(fresh), 30f);
+            Step(sim, default);
+            Assert.AreEqual(HordeSettings.Default.Health - 30f, sim.GetHealth(fresh), 1e-4f, "its own hit lands");
+        }
+
+        [Test]
+        public void AliveOrUnreported_KeepsTheDeadUntilTheirDeathsAreTaken()
+        {
+            using HordeNavGrid grid = HordeTestGrids.Flat(10, 10);
+            using var field = new HordeFlowField(grid);
+            using var sim = new HordeSimulation(4, grid, field, HordeSettings.Default);
+            int m = sim.Spawn(new float3(2f, 0f, 2f), 0f);
+            sim.Damage(m, sim.Version(m), 1000f);
+            Step(sim, default);
+
+            Assert.AreEqual(0, sim.AliveCount, "the slot is free after Complete");
+            Assert.AreEqual(1, sim.AliveOrUnreported, "but its death is not handed out yet");
+            sim.ClearDeaths();
+            Assert.AreEqual(0, sim.AliveOrUnreported);
+        }
+
+        [Test]
+        public void VersionBase_AHandleOfTheReplacedSimulation_NeverMatchesTheNewOne()
+        {
+            using HordeNavGrid grid = HordeTestGrids.Flat(10, 10);
+            using var field = new HordeFlowField(grid);
+            int slot, version, next;
+            using (var first = new HordeSimulation(4, grid, field, HordeSettings.Default))
+            {
+                slot = first.Spawn(new float3(2f, 0f, 2f), 0f);
+                version = first.Version(slot);
+                first.Clear();
+                next = first.MaxVersion() + 1;
+            }
+
+            using var second = new HordeSimulation(4, grid, field, HordeSettings.Default, 1, next);
+            Assert.AreEqual(slot, second.Spawn(new float3(2f, 0f, 2f), 0f));
+            Assert.IsFalse(second.IsTargetAlive(slot, version), "the old handle is stale");
+            Assert.IsTrue(second.IsTargetAlive(slot, second.Version(slot)));
+            Assert.Greater(second.Version(slot), version);
+        }
+
+        [Test]
+        public void AreaDamage_HasABudgetOfItsOwn_ShovesDoNotCrowdItOut()
+        {
+            using HordeNavGrid grid = HordeTestGrids.Flat(20, 20);
+            using var field = new HordeFlowField(grid);
+            using var sim = new HordeSimulation(4, grid, field, HordeSettings.Default);
+            int m = sim.Spawn(new float3(10f, 0f, 10f), 0f);
+            for (int i = 0; i < 100; i++)
+                sim.AddKnockback(new float3(0f, 0f, 0f), 1f, 1f); // far away: shoves nobody
+            Assert.Greater(sim.DroppedAreas, 0, "the shoves past their budget are counted");
+            int dropped = sim.DroppedAreas;
+
+            sim.AddAreaDamage(new float3(10f, 0.8f, 10f), 3f, 1000f);
+            Assert.AreEqual(dropped, sim.DroppedAreas, "the blast is not dropped");
+            Step(sim, default);
+            Assert.AreEqual(1, sim.Deaths.Length);
+            Assert.AreEqual(m, sim.Deaths[0].Index);
+
+            sim.ClearDeaths();
+            for (int i = 0; i < 70; i++)
+                sim.AddAreaDamage(new float3(0f, 0f, 0f), 1f, 1f);
+            Assert.AreEqual(dropped + 6, sim.DroppedAreas, "64 blasts a step, the rest counted");
+            Step(sim, default);
+            sim.AddAreaDamage(new float3(0f, 0f, 0f), 1f, 1f);
+            Assert.AreEqual(dropped + 6, sim.DroppedAreas, "the budget is per step");
+        }
+
+        [Test]
         public void RenderPrep_CullsByTheFrustum()
         {
             using HordeNavGrid grid = HordeTestGrids.Flat(20, 20);

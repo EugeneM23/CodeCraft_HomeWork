@@ -317,6 +317,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Game::Game.AppInstaller
   _catalog: {fileID: 11400000, guid: 46eac20fceb1c204b8589218fd1488e1, type: 2}
+  _gameCatalog: {fileID: 11400000, guid: 4df8d464719f73642a8d6764982252fd, type: 2}
   _loadingScreen: {fileID: 5683719281420259009}
   _ticker: {fileID: 1935837395770865474}
   _warmUpCode: 1

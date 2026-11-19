@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Unity.Burst;
 using Unity.Collections;
@@ -34,7 +35,10 @@ namespace Game.Voxels
             /// <summary>How many parts of the body the piece holds.</summary>
             public int Parts;
 
+            /// <summary>Where it was torn: the first <see cref="TornCount"/> entries (the whole array from <see cref="Build(in SkinnedVoxelizer.Result, IReadOnlyList{int}, VoxelBodySettings, string)"/>).</summary>
             public TornFace[] Torn;
+
+            public int TornCount;
         }
 
         private struct TornVoxel
@@ -43,18 +47,103 @@ namespace Game.Voxels
             public int3 Direction;
         }
 
+        /// <summary>Pieces handed back by the game once their bodies are on their way (<see cref="Release"/>), with their torn-face buffers.</summary>
+        private static readonly Stack<Piece> PiecePool = new();
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetStatics() => PiecePool.Clear();
+
+        /// <summary>A body of its own for a piece (no corpse pool): on a switched-off GameObject if <paramref name="inactive"/>.</summary>
+        private static VoxelBody NewBody(string name, in VoxelBodySettings settings, bool inactive)
+        {
+            var go = new GameObject(name) { layer = settings.Layer };
+            if (inactive)
+                go.SetActive(false);
+            return go.AddComponent<VoxelBody>();
+        }
+
+        /// <summary>
+        /// A corpse's body for a piece of this size (VoxelCorpses.Take: a free one with as many chunks if it can), named,
+        /// on the piece layer, switched on unless <paramref name="inactive"/>.
+        /// </summary>
+        private static VoxelBody TakeBody(VoxelCorpses.Corpse corpse, int3 size, string name, in VoxelBodySettings settings,
+            bool inactive)
+        {
+            VoxelBody body = VoxelCorpses.Take(corpse, VoxelCorpses.ChunksOf(size, settings.ChunkSize), settings.Settle);
+            GameObject go = body.gameObject;
+            go.name = name;
+            go.layer = settings.Layer;
+            if (!inactive)
+                go.SetActive(true);
+            return body;
+        }
+
+        /// <summary>Makes <paramref name="count"/> pooled pieces ahead (level load), so a death takes them without allocating.</summary>
+        public static void Reserve(int count)
+        {
+            while (PiecePool.Count < count)
+                PiecePool.Push(new Piece { Torn = new TornFace[MAX_TORN] });
+        }
+
+        /// <summary>Hands pieces from <see cref="Build(in SkinnedVoxelizer.Result, IReadOnlyList{int}, VoxelBodySettings, IReadOnlyList{string}, bool, List{Piece}, VoxelCorpses.Corpse)"/> back for the next death; the list is cleared.</summary>
+        public static void Release(List<Piece> pieces)
+        {
+            for (int i = 0; i < pieces.Count; i++)
+            {
+                Piece piece = pieces[i];
+                piece.Body = null;
+                piece.TornCount = 0;
+                PiecePool.Push(piece);
+            }
+
+            pieces.Clear();
+        }
+
         /// <param name="clusterOfPart">Cluster of each part, by part index; any ids below the part count.</param>
         /// <param name="settings">For every body; its Origin and VoxelSize are set here.</param>
         public static List<Piece> Build(in SkinnedVoxelizer.Result grid, IReadOnlyList<int> clusterOfPart,
             VoxelBodySettings settings, string name)
         {
-            var pieces = new List<Piece>();
+            // Cluster ids are below the part count.
+            var names = new string[clusterOfPart?.Count ?? 0];
+            for (int c = 0; c < names.Length; c++)
+                names[c] = $"{name}_{c}";
+
+            var pooled = new List<Piece>();
+            Build(grid, clusterOfPart, settings, names, false, pooled);
+
+            // Pieces of their own, the torn faces cut to length: the pooled ones go back.
+            var pieces = new List<Piece>(pooled.Count);
+            foreach (Piece piece in pooled)
+            {
+                var torn = new TornFace[piece.TornCount];
+                Array.Copy(piece.Torn, torn, torn.Length);
+                pieces.Add(new Piece { Body = piece.Body, Cluster = piece.Cluster, Parts = piece.Parts, Torn = torn, TornCount = torn.Length });
+            }
+
+            Release(pooled);
+            return pieces;
+        }
+
+        /// <summary>
+        /// The pieces of a body, one per cluster, added to <paramref name="into"/> (pooled: hand them back with
+        /// <see cref="Release"/>). Allocates nothing of its own beyond what each new VoxelBody does; with a
+        /// <paramref name="corpse"/> the bodies are the pool's (VoxelCorpses), and nothing at all once it is filled.
+        /// </summary>
+        /// <param name="names">Name of the piece of each cluster, by cluster id (made once by the caller).</param>
+        /// <param name="inactive">The pieces are made switched off: their meshes and colliders are built at the end of
+        /// the frame all the same, and they show when the caller switches them on (and launches them).</param>
+        /// <param name="corpse">The corpse the bodies are taken for (VoxelCorpses.Begin); null — new bodies.</param>
+        public static void Build(in SkinnedVoxelizer.Result grid, IReadOnlyList<int> clusterOfPart,
+            VoxelBodySettings settings, IReadOnlyList<string> names, bool inactive, List<Piece> into,
+            VoxelCorpses.Corpse corpse = null)
+        {
             if (!grid.Voxels.IsCreated || clusterOfPart == null || clusterOfPart.Count == 0)
-                return pieces;
+                return;
 
             int clusters = 0;
-            foreach (int c in clusterOfPart)
-                clusters = math.max(clusters, c + 1);
+            for (int i = 0; i < clusterOfPart.Count; i++)
+                clusters = math.max(clusters, clusterOfPart[i] + 1);
 
             var map = new NativeArray<int>(256, Allocator.TempJob);
             for (int i = 0; i < 256; i++)
@@ -63,6 +152,7 @@ namespace Game.Voxels
             var lo = new NativeArray<int3>(clusters, Allocator.TempJob);
             var hi = new NativeArray<int3>(clusters, Allocator.TempJob);
             new ClusterBoundsJob { Parts = grid.Parts, Map = map, Size = grid.Size, Min = lo, Max = hi }.Run();
+            var torn = new NativeList<TornVoxel>(MAX_TORN * 4, Allocator.TempJob);
 
             for (int c = 0; c < clusters; c++)
             {
@@ -70,54 +160,66 @@ namespace Game.Voxels
                     continue;
 
                 int3 size = hi[c] - lo[c] + 1;
-                var target = new NativeArray<byte>(size.x * size.y * size.z, Allocator.Persistent);
-                var torn = new NativeList<TornVoxel>(MAX_TORN * 4, Allocator.TempJob);
+                string name = c < names.Count ? names[c] : NAME_FALLBACK;
+                // A corpse's body brings its own arrays when they are the right length (VoxelBody.TakeVoxels, cleared).
+                VoxelBody body = corpse != null ? TakeBody(corpse, size, name, settings, inactive) : NewBody(name, settings, inactive);
+                NativeArray<byte> target = corpse != null
+                    ? body.TakeVoxels(size.x * size.y * size.z)
+                    : new NativeArray<byte>(size.x * size.y * size.z, Allocator.Persistent);
+                NativeArray<Color32> palette;
+                if (corpse != null)
+                {
+                    palette = body.TakePalette(grid.Palette.Length);
+                    palette.CopyFrom(grid.Palette);
+                }
+                else
+                    palette = new NativeArray<Color32>(grid.Palette, Allocator.Persistent);
+
+                torn.Clear();
                 new ExtractClusterJob
                 {
                     Voxels = grid.Voxels, Parts = grid.Parts, Map = map, Size = grid.Size,
                     Cluster = c, Min = lo[c], TargetSize = size, Target = target, Torn = torn
                 }.Run();
 
-                var go = new GameObject($"{name}_{c}") { layer = settings.Layer };
-                go.transform.SetPositionAndRotation(grid.Position, grid.Rotation);
+                Transform space = body.transform;
+                space.SetPositionAndRotation(grid.Position, grid.Rotation);
 
                 VoxelBodySettings own = settings;
                 own.VoxelSize = grid.VoxelSize;
                 own.Origin = grid.Origin + (float3)lo[c] * grid.VoxelSize;
 
-                VoxelBody body = go.AddComponent<VoxelBody>();
-                body.Init(size, target, new NativeArray<Color32>(grid.Palette, Allocator.Persistent), own);
+                body.Init(size, target, palette, own);
 
-                pieces.Add(new Piece
-                {
-                    Body = body,
-                    Cluster = c,
-                    Parts = CountParts(clusterOfPart, c),
-                    Torn = Faces(go.transform, grid, torn)
-                });
-                torn.Dispose();
+                Piece piece = PiecePool.Count > 0 ? PiecePool.Pop() : new Piece { Torn = new TornFace[MAX_TORN] };
+                piece.Body = body;
+                piece.Cluster = c;
+                piece.Parts = CountParts(clusterOfPart, c);
+                piece.TornCount = Faces(space, grid, torn, piece.Torn);
+                into.Add(piece);
             }
 
+            torn.Dispose();
             map.Dispose();
             lo.Dispose();
             hi.Dispose();
-            return pieces;
         }
+
+        private const string NAME_FALLBACK = "Flesh";
 
         private static int CountParts(IReadOnlyList<int> clusterOfPart, int cluster)
         {
             int count = 0;
-            foreach (int c in clusterOfPart)
-                if (c == cluster)
+            for (int i = 0; i < clusterOfPart.Count; i++)
+                if (clusterOfPart[i] == cluster)
                     count++;
             return count;
         }
 
         /// <summary>At most MAX_TORN faces, picked evenly along the list so the whole cut bleeds.</summary>
-        private static TornFace[] Faces(Transform space, in SkinnedVoxelizer.Result grid, NativeList<TornVoxel> torn)
+        private static int Faces(Transform space, in SkinnedVoxelizer.Result grid, NativeList<TornVoxel> torn, TornFace[] faces)
         {
-            int count = math.min(torn.Length, MAX_TORN);
-            var faces = new TornFace[count];
+            int count = math.min(torn.Length, math.min(MAX_TORN, faces.Length));
             int stride = torn.Length > MAX_TORN ? torn.Length / MAX_TORN : 1;
             for (int i = 0; i < count; i++)
             {
@@ -130,7 +232,7 @@ namespace Game.Voxels
                 };
             }
 
-            return faces;
+            return count;
         }
 
         [BurstCompile]

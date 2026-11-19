@@ -30,3 +30,23 @@ MonoBehaviour:
     clip: {fileID: 0}
   - id: defeat
     clip: {fileID: 0}
+  - id: close
+    clip: {fileID: 0}
+  - id: install
+    clip: {fileID: 0}
+  - id: upgrade
+    clip: {fileID: 0}
+  - id: marks_tick
+    clip: {fileID: 0}
+  - id: samples_tick
+    clip: {fileID: 0}
+  - id: pause_on
+    clip: {fileID: 0}
+  - id: pause_off
+    clip: {fileID: 0}
+  - id: level_up
+    clip: {fileID: 0}
+  - id: skill_choice
+    clip: {fileID: 0}
+  - id: skill_taken
+    clip: {fileID: 0}

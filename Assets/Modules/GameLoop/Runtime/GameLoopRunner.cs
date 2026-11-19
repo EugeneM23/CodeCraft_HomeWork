@@ -60,7 +60,10 @@ namespace Ticking
         {
             Loop.ResumeAll();
             foreach (IPauseListener freezer in _freezers)
+            {
                 Loop.Remove(freezer);
+                (freezer as System.IDisposable)?.Dispose();
+            }
 
             _freezers.Clear();
         }

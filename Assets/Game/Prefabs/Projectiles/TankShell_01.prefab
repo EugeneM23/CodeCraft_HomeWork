@@ -297,7 +297,7 @@ MonoBehaviour:
   _box: {fileID: 6890300350592190774}
   _boxRenderer: {fileID: 7677746915184867322}
   _trail: {fileID: 5464100229135694645}
-  _size: {x: 0.1, y: 0.1, z: 0.36}
+  _size: {x: 0.1, y: 0.1, z: 1.08}
   _glowColor: {r: 1, g: 0.55, b: 0.18, a: 1}
   _glowIntensity: 8
   _trailOn: 1
@@ -331,7 +331,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.1, y: 0.1, z: 0.36}
+  m_LocalScale: {x: 0.1, y: 0.1, z: 1.08}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 6552921870138226402}

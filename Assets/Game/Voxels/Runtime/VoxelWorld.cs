@@ -71,13 +71,16 @@ namespace Game.Voxels
         /// <summary>Cooks in flight.</summary>
         private readonly List<BakeBatch> _bakes = new();
 
+        /// <summary>A cook in flight. Pooled with its lists (see s_bakePool): a remesh every few frames made garbage.</summary>
         private sealed class BakeBatch
         {
             public NativeArray<EntityId> Ids;
-            public Mesh[] Meshes;
-            public VoxelBody.Chunk[] Chunks;
+            public readonly List<Mesh> Meshes = new(BAKES_CAPACITY);
+            public readonly List<VoxelBody.Chunk> Chunks = new(BAKES_CAPACITY);
             public JobHandle Handle;
         }
+
+        private readonly Stack<BakeBatch> _bakePool = new();
 
         public Material ChunkMaterial { get; private set; }
 
@@ -133,6 +136,7 @@ namespace Game.Voxels
             s_bodies.Clear();
             s_structures.Clear();
             s_queuedFrames.Clear();
+            s_splits.Clear();
             s_bakeMeshes.Clear();
             s_bakeChunks.Clear();
             s_quitting = false;
@@ -220,12 +224,10 @@ namespace Game.Voxels
             if (s_bakeMeshes.Count == 0)
                 return;
 
-            var batch = new BakeBatch
-            {
-                Ids = new NativeArray<EntityId>(s_bakeMeshes.Count, Allocator.Persistent),
-                Meshes = s_bakeMeshes.ToArray(),
-                Chunks = s_bakeChunks.ToArray()
-            };
+            BakeBatch batch = _bakePool.Count > 0 ? _bakePool.Pop() : new BakeBatch();
+            batch.Ids = new NativeArray<EntityId>(s_bakeMeshes.Count, Allocator.Persistent);
+            batch.Meshes.AddRange(s_bakeMeshes);
+            batch.Chunks.AddRange(s_bakeChunks);
             for (int i = 0; i < batch.Ids.Length; i++)
                 batch.Ids[i] = batch.Meshes[i].GetEntityId();
             batch.Handle = new BakeMeshesJob { MeshIds = batch.Ids }.Schedule(batch.Ids.Length, 1);
@@ -253,7 +255,7 @@ namespace Game.Voxels
 
                 batch.Handle.Complete();
                 batch.Ids.Dispose();
-                for (int i = 0; i < batch.Chunks.Length; i++)
+                for (int i = 0; i < batch.Chunks.Count; i++)
                 {
                     VoxelBody.Chunk chunk = batch.Chunks[i];
                     chunk.Cooking = false;
@@ -265,6 +267,9 @@ namespace Game.Voxels
 
                 _bakes.RemoveAt(b);
                 b--;
+                batch.Meshes.Clear();
+                batch.Chunks.Clear();
+                _bakePool.Push(batch);
             }
         }
 
@@ -281,6 +286,7 @@ namespace Game.Voxels
             s_instance = this;
             ChunkMaterial = LoadMaterial(CHUNK_MATERIAL, false);
             Debris = new VoxelDebris(LoadMaterial(DEBRIS_MATERIAL, true), 24000, VoxelDebris.LYING_DEFAULT);
+            VoxelBody.Prewarm();
             SetEarlyHook(true);
         }
 
@@ -322,6 +328,9 @@ namespace Game.Voxels
         /// <summary>Buildings waiting for a load solve this frame (see VoxelBody.SolveStructure).</summary>
         private static readonly List<VoxelBody> s_structures = new(64);
 
+        /// <summary>A carve this small (voxels, all bodies) is a bullet's: the buildings round it are solved after a while.</summary>
+        private const int MINOR_CARVE_VOXELS = 600;
+
         /// <summary>How far past a crater's radius (m) a building is looked at again: the ground under it may be gone.</summary>
         private const float STRUCTURE_REACH = 1.5f;
 
@@ -331,6 +340,24 @@ namespace Game.Voxels
                 return;
             s_structures.Add(body);
             s_queuedFrames.Add(Time.frameCount);
+        }
+
+        /// <summary>Bodies bitten this frame that look for broken-off pieces at its end (VoxelBody.DeferSplit).</summary>
+        private static readonly List<VoxelBody> s_splits = new(64);
+
+        internal static void QueueSplit(VoxelBody body) => s_splits.Add(body);
+
+        /// <summary>
+        /// The splits asked for this frame, before the load solve and the rebuild: the pieces that broke off
+        /// get their colliders in this frame's rebuild, as from a Split right at the carve.
+        /// </summary>
+        private static void RunSplits()
+        {
+            // A split can carve no further, so nothing joins the list while it runs.
+            for (int i = 0; i < s_splits.Count; i++)
+                if (s_splits[i] != null)
+                    s_splits[i].RunDeferredSplit();
+            s_splits.Clear();
         }
 
         /// <summary>The frame each queued building was queued in (parallel to s_structures).</summary>
@@ -352,11 +379,15 @@ namespace Game.Voxels
             if (voxels <= 0)
                 return;
             float reach = radius + STRUCTURE_REACH;
+            // A bullet's hole waits for the burst (VoxelBody.MINOR_SOLVE_DELAY), as the bitten body's own solve does.
+            float delay = voxels <= MINOR_CARVE_VOXELS ? VoxelBody.MINOR_SOLVE_DELAY : 0f;
             for (int i = 0; i < s_bodies.Count; i++)
             {
                 VoxelBody body = s_bodies[i];
                 if (body != null && body.HasStrength && body.IsStatic && body.WorldBounds.SqrDistance(point) <= reach * reach)
-                    body.MarkStructureDirty(point, reach);
+                {
+                    body.MarkStructureDirty(point, reach, delay);
+                }
             }
         }
 
@@ -388,7 +419,7 @@ namespace Game.Voxels
                     continue;
                 }
 
-                if (s_queuedFrames[i] < frame)
+                if (s_queuedFrames[i] < frame && s_structures[i].StructureSolveDue)
                 {
                     pick = i;
                     break;
@@ -433,6 +464,7 @@ namespace Game.Voxels
 
         public void VoxelLateUpdate(float deltaTime)
         {
+            RunSplits();
             SolveStructures();
             RebuildDirty();
             if (Debris != null)
@@ -548,6 +580,25 @@ namespace Game.Voxels
             }
 
             return applied;
+        }
+
+        /// <summary>A body going back to a pool (VoxelBody.Recycle): its remeshes still running are waited for and dropped.</summary>
+        internal static void DropJobsOf(VoxelBody body)
+        {
+            s_splits.Remove(body);
+            UnqueueStructure(body);
+            if (s_instance == null)
+                return;
+
+            List<VoxelBody.ChunkJob> jobs = s_instance._asyncJobs;
+            for (int i = jobs.Count - 1; i >= 0; i--)
+            {
+                if (jobs[i].Body != body)
+                    continue;
+                jobs[i].Handle.Complete();
+                jobs[i].Dispose();
+                jobs.RemoveAt(i);
+            }
         }
 
         private void OnApplicationQuit() => s_quitting = true;

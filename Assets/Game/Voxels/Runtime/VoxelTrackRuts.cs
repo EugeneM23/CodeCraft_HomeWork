@@ -123,6 +123,12 @@ namespace Game.Voxels
         private float _roostClodDebt;
         private float _spinDigDebt;
 
+        /// <summary>Speed scale of the rooster tail: √1.8, so the earth flies 80 % farther.</summary>
+        private const float ROOST_REACH = 1.342f;
+
+        /// <summary>Share of the rooster tail's clods that are big lumps (3–4 voxels across).</summary>
+        private const float BIG_CLOD_SHARE = 0.2f;
+
         /// <summary>Slowest the tracks run (m/s) and still churn mud up.</summary>
         private const float MIN_TRACK_SPEED = 0.4f;
 
@@ -192,6 +198,9 @@ namespace Game.Voxels
 
         public void VoxelLateUpdate(float deltaTime)
         {
+            using var marker = RutsMarker.Auto();
+            // As soon as the skin exists (one flag check after that).
+            ReserveStains();
             Vector3 velocity = _body.linearVelocity;
             Vector3 planar = new Vector3(velocity.x, 0f, velocity.z);
             float speed = planar.magnitude;
@@ -422,11 +431,37 @@ namespace Game.Voxels
             }
         }
 
+        private static readonly Unity.Profiling.ProfilerMarker RutsMarker = new("Voxels.Ruts");
+
+        private bool _stainsReserved;
+
+        /// <summary>
+        /// The skin's stain buffers (VoxelBody.ReserveStains) and the running gear (FindRunningGear),
+        /// made once the skin is built — at the start, before a fight — not in the frame of the first mud.
+        /// </summary>
+        private void ReserveStains()
+        {
+            if (_stainsReserved || _skin == null || _skin.Bodies.Count == 0)
+                return;
+            _stainsReserved = true;
+            IReadOnlyList<VoxelBody> bodies = _skin.Bodies;
+            for (int i = 0; i < bodies.Count; i++)
+                if (bodies[i] != null)
+                    bodies[i].ReserveStains();
+
+            // The running gear and its colour block too: found at the first mud they were ~24 KB of
+            // garbage in that frame (every renderer of the tank, a name string for each).
+            _block ??= new MaterialPropertyBlock();
+            FindRunningGear();
+        }
+
         /// <summary>Mud splashed onto the lower hull and the wheels.</summary>
         private void Splash(float travelled)
         {
             if (_skin == null || _skin.Bodies.Count == 0 || _wheelList.Count == 0)
                 return;
+
+            ReserveStains();
 
             _splashDebt += travelled * _splashesPerMetre;
             while (_splashDebt >= 1f)
@@ -507,9 +542,9 @@ namespace Game.Voxels
                 }
 
                 Vector3 from = RoostPoint(direction, out Vector3 outward);
-                Vector3 velocity = carried + back * Random.Range(_roostBack.x, _roostBack.y) * WheelSpin +
+                Vector3 velocity = (carried + back * Random.Range(_roostBack.x, _roostBack.y) * WheelSpin +
                                    Vector3.up * Random.Range(_roostUp.x, _roostUp.y) * Mathf.Lerp(0.5f, 1f, WheelSpin) +
-                                   outward * Random.Range(-1f, 3f) + Random.insideUnitSphere * 1.2f;
+                                   outward * Random.Range(-1f, 3f) + Random.insideUnitSphere * 1.2f) * ROOST_REACH;
 
                 // On grass the tracks tear up turf: green bits among the earth.
                 Color32 colour = onGrass >= 0.5f && Random.value < 0.4f ? _grassColour : earth;
@@ -521,20 +556,24 @@ namespace Game.Voxels
             while (_roostClodDebt >= 1f)
             {
                 _roostClodDebt -= 1f;
-                if (!debris.HasRoom(8))
+                // Now and then a big lump among the small clods.
+                bool big = Random.value < BIG_CLOD_SHARE;
+                if (!debris.HasRoom(big ? 64 : 8))
                 {
                     _roostClodDebt = 0f;
                     break;
                 }
 
                 Vector3 from = RoostPoint(direction, out Vector3 outward);
-                Vector3 velocity = carried + back * Random.Range(_roostBack.x, _roostBack.y) * 0.8f * WheelSpin +
-                                   Vector3.up * Random.Range(_roostUp.x, _roostUp.y) * 0.8f + outward * Random.Range(0f, 1.2f);
+                Vector3 velocity = (carried + back * Random.Range(_roostBack.x, _roostBack.y) * 0.8f * WheelSpin +
+                                   Vector3.up * Random.Range(_roostUp.x, _roostUp.y) * 0.8f + outward * Random.Range(0f, 1.2f)) * ROOST_REACH;
                 int clod = debris.BeginCluster(from, velocity, 8f);
                 if (clod < 0)
                     break;
 
-                var size = new Vector3Int(Random.Range(1, 3), Random.Range(1, 3), Random.Range(1, 3));
+                var size = big
+                    ? new Vector3Int(Random.Range(3, 5), Random.Range(2, 4), Random.Range(3, 5))
+                    : new Vector3Int(Random.Range(1, 3), Random.Range(1, 3), Random.Range(1, 3));
                 Color32 colour = Shade(onGrass >= 0.5f && Random.value < 0.3f ? _grassColour : earth);
                 for (int x = 0; x < size.x; x++)
                 for (int y = 0; y < size.y; y++)

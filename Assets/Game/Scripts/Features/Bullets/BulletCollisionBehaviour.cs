@@ -4,14 +4,46 @@ using UnityEngine;
 
 namespace Game
 {
-    public class BulletCollisionBehaviour : IEntityInit, IEntityDispose
+    public class BulletCollisionBehaviour : IEntityInit, IEntityEnable, IEntityDispose
     {
         /// <summary>Radius (m) of the bite a bullet takes out of voxels: one or two 10 cm voxels.</summary>
         private const float VOXEL_CHIP_RADIUS = 0.13f;
 
+        /// <summary>How deep (m) a bullet's tunnel through a wall goes; bites every this much / 3.</summary>
+        private const float WALL_TUNNEL_DEPTH = 0.9f;
+
+        /// <summary>Radius (m) of the hole a plain bullet bores through a wall (tough walls, armour, shrink it).</summary>
+        private const float WALL_HOLE_RADIUS = 0.6f;
+
+        /// <summary>Most chips one bullet bite throws: a hole, not a cloud of crumbs.</summary>
+        private const int BULLET_DEBRIS = 40;
+
+        /// <summary>Voxel bodies tougher than this (lower toughness: armour) are not bored through.</summary>
+        private const float ARMOUR_TOUGHNESS = 0.7f;
+
+        /// <summary>How hard (m/s) a plain bullet's hit flings the chips it knocks out.</summary>
+        private const float CHIP_FORCE = 14f;
+
+        private const int SPARKS = 0;
+
+        /// <summary>Walls one bullet goes through before it stops in the next.</summary>
+        private const int MAX_WALL_PIERCES = 3;
+
+        private static readonly Color32[] SparkColors =
+        {
+            new(255, 214, 90, 255), new(255, 160, 40, 255), new(255, 240, 170, 255)
+        };
+
+        private int _wallPierces;
+
         private CollisionEventReceiver _collisionEventReceiver;
         private IEntity _bullet;
         private GameFactory _gameFactory;
+        private Collider _own;
+        private Rigidbody _body;
+
+        /// <summary>The enemy a piercing shell last went through: its other colliders let the shell by for free.</summary>
+        private IEntity _pierced;
 
         public void Init(IEntity entity)
         {
@@ -19,6 +51,17 @@ namespace Game
             _collisionEventReceiver = entity.GetCollisionReceiver();
             _bullet = entity;
             _collisionEventReceiver.OnEntered += OnCollision;
+
+            GameObject go = entity.GetGameObject();
+            _own = go.GetComponent<Collider>();
+            _body = go.GetComponent<Rigidbody>();
+        }
+
+        /// <summary>Rented from the pool: a new shot has pierced nothing yet.</summary>
+        public void Enable(IEntity entity)
+        {
+            _pierced = null;
+            _wallPierces = 0;
         }
 
         public void Dispose(IEntity entity) => _collisionEventReceiver.OnEntered -= OnCollision;
@@ -33,6 +76,10 @@ namespace Game
 
             collision.gameObject.TryGetComponent(out IEntity target);
 
+            // The armour-piercing shell goes through enemies while it has pierce left, dealing its damage.
+            if (target != null && TryPierce(target, collision.collider))
+                return;
+
             // Mud swallows a hit: nothing bounces off it, it only gets a dent.
             bool mud = MudImpactUseCase.IsMud(collision.collider);
 
@@ -42,6 +89,11 @@ namespace Game
             // Voxels take every hit: a shell digs into voxel ground or brick instead of skipping
             // off it, the way it went off on the ground the cursor pointed at.
             bool voxel = VoxelDamage.IsVoxel(collision.collider);
+            bool explosive = ExplosionUseCase.IsExplosive(_bullet);
+
+            // A plain bullet (the machine gun, the turrets) goes through voxel walls: it tunnels on, chips flying.
+            if (voxel && !explosive && TryPierceWall(collision))
+                return;
 
             if (!mud && !voxel && BulletHitUseCase.ShouldTryRicochet(_bullet, target) && TryRicochet(collision))
                 return;
@@ -60,22 +112,112 @@ namespace Game
                 // A person shows the hit with blood; a tank's armour showed nothing at all.
                 if (BulletHitUseCase.ShowsHitOnTarget(target))
                 {
-                    SpawnUseCase.SpawnCollisionHit(collision, _gameFactory, _bullet);
+                    // On a vehicle's steel: sparks, not the particle burst.
+                    Sparks(collision.GetContact(0).point, collision.GetContact(0).normal);
                     ChipVoxels(collision);
                 }
             }
             else
             {
-                SpawnUseCase.SpawnCollisionHit(collision, _gameFactory, _bullet);
+                // A plain bullet's hit is voxel: sparks and chips, no particle burst.
+                if (explosive)
+                    SpawnUseCase.SpawnCollisionHit(collision, _gameFactory, _bullet);
+                else
+                    Sparks(collision.GetContact(0).point, collision.GetContact(0).normal);
                 ChipVoxels(collision);
             }
 
             SpawnUseCase.UnSpawnEntity(_gameFactory, _bullet);
         }
 
+        /// <summary>
+        /// The bullet bores through a voxel wall (not the ground) and flies on: bites along its path, sparks at the
+        /// hole, the wall's collider let by. False when it has gone through its last wall or this is the ground.
+        /// </summary>
+        private bool TryPierceWall(Collision collision)
+        {
+            if (_wallPierces >= MAX_WALL_PIERCES)
+                return false;
+
+            VoxelBody body = collision.collider.GetComponentInParent<VoxelBody>();
+            // Not the ground, and not armour: a tank's steel (toughness well under brick's 1) stops the bullet.
+            if (body == null || body.IsTerrain || body.Toughness < ARMOUR_TOUGHNESS)
+                return false;
+
+            _wallPierces++;
+            ContactPoint contact = collision.GetContact(0);
+            Vector3 direction = _bullet.GetMoveDirection().Value;
+            Vector3 along = direction.sqrMagnitude > 1e-6f ? direction.normalized : -contact.normal;
+            // One round hole at the entry (three bites along the path read as three small holes).
+            VoxelDamage.Punch(contact.point, along, WALL_HOLE_RADIUS, CHIP_FORCE, BULLET_DEBRIS, body);
+            Sparks(contact.point, contact.normal);
+
+            if (_own != null)
+                Physics.IgnoreCollision(_own, collision.collider, true);
+            if (_body != null && !_body.isKinematic)
+            {
+                _body.linearVelocity = Vector3.zero;
+                _body.angularVelocity = Vector3.zero;
+            }
+
+            return true;
+        }
+
+        /// <summary>A juicy spray of glowing voxel sparks and a flash of light (VoxelSparks).</summary>
+        private void Sparks(Vector3 point, Vector3 normal) =>
+            VoxelSparks.Emit(point, normal, _bullet.GetMoveDirection().Value);
+
+        /// <summary>
+        /// True when the shell flies on through <paramref name="target"/>: an enemy, and the shell either has a pierce
+        /// left (used up here, with the hit) or just went through this same enemy (another of its colliders). The
+        /// pair is ignored from now on, so the sweep and the solver let the shell by; the pool's deactivation
+        /// forgets the pair again.
+        /// </summary>
+        private bool TryPierce(IEntity target, Collider collider)
+        {
+            if (!target.HasEnemyTag() || !target.HasDamageableTag())
+                return false;
+
+            if (!ReferenceEquals(target, _pierced))
+            {
+                if (!BulletShotUseCase.TryPierce(_bullet))
+                    return false;
+                _pierced = target;
+                DamageUseCase.TakeDamage(target, new TakeDamageArgs(_bullet));
+            }
+
+            if (_own != null && collider != null)
+                Physics.IgnoreCollision(_own, collider, true);
+
+            // The solver has already pushed the dynamic body off the enemy: the shell flies by its transform.
+            if (_body != null && !_body.isKinematic)
+            {
+                _body.linearVelocity = Vector3.zero;
+                _body.angularVelocity = Vector3.zero;
+            }
+
+            return true;
+        }
+
         /// <summary>A bullet bites a small hole out of a voxel wall, or out of a vehicle's voxel skin.</summary>
-        private void ChipVoxels(Collision collision) =>
-            VoxelDamage.Impact(collision.GetContact(0).point, _bullet.GetMoveDirection().Value, VOXEL_CHIP_RADIUS);
+        private void ChipVoxels(Collision collision)
+        {
+            Vector3 point = collision.GetContact(0).point;
+            Vector3 direction = _bullet.GetMoveDirection().Value;
+            if (ExplosionUseCase.IsExplosive(_bullet))
+            {
+                VoxelDamage.Impact(point, direction, VOXEL_CHIP_RADIUS, 2.5f, VoxelDamage.BLAST_DEBRIS);
+                return;
+            }
+
+            // A plain bullet stopped by armour still punches a hole the size of the one it bores through a wall,
+            // chips flying in through it; on the ground it only chips.
+            VoxelBody body = collision.collider.GetComponentInParent<VoxelBody>();
+            if (body != null && !body.IsTerrain)
+                VoxelDamage.Punch(point, direction, WALL_HOLE_RADIUS, CHIP_FORCE, BULLET_DEBRIS, body);
+            else
+                VoxelDamage.Impact(point, direction, VOXEL_CHIP_RADIUS, CHIP_FORCE, BULLET_DEBRIS);
+        }
 
         /// <summary>True when the bullet flies on: it bounced off the surface, or already flies away from it.</summary>
         private bool TryRicochet(Collision collision)

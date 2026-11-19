@@ -17,6 +17,16 @@ namespace Game
 
         [Tooltip("Lower-run links, front to rear: one more than there are road wheels on this side.")]
         public Transform[] Links;
+
+        [Tooltip("Radius (m) of the wheel at Front: it turns with the track. 0 — it does not turn.")]
+        public float FrontRadius;
+
+        [Tooltip("Radius (m) of the wheel at Rear: it turns with the track. 0 — it does not turn.")]
+        public float RearRadius;
+
+        [Tooltip("The whole track as a loop of links (children of one transform, its space the hull's): " +
+                 "round Front, over the top, round Rear and under the wheels; they run with the ground. Empty — none.")]
+        public Transform[] Treads;
     }
 
     /// <summary>
@@ -88,6 +98,8 @@ namespace Game
 
             _leftWheels = Side(wheels, -1);
             _rightWheels = Side(wheels, 1);
+            _leftLoop = new TreadLoop(_leftWheels.Length);
+            _rightLoop = new TreadLoop(_rightWheels.Length);
 
             Transform anyLink = _left?.Links is { Length: > 0 } ? _left.Links[0] : null;
             _linkSection = anyLink != null ? new Vector2(anyLink.localScale.x, anyLink.localScale.y) : new Vector2(0.4f, 0.05f);
@@ -140,6 +152,15 @@ namespace Game
             LayLinks(_left, _leftWheels, up);
             LayLinks(_right, _rightWheels, up);
 
+            // Each side's track runs as far as its ground goes by (and further on full spin): the sprocket and
+            // idler turn with it and the tread loop moves round by it.
+            _leftRun += SideSpeed(_leftWheels, -1, speed, slip, yawRate) * deltaTime;
+            _rightRun += SideSpeed(_rightWheels, 1, speed, slip, yawRate) * deltaTime;
+            TurnEnds(_left, _leftRun);
+            TurnEnds(_right, _rightRun);
+            LayTreads(_left, _leftWheels, _leftRun, _leftLoop);
+            LayTreads(_right, _rightWheels, _rightRun, _rightLoop);
+
             // Interpolation may still carry the hull a frame after the body falls asleep: settled only
             // once a whole frame went by with it standing where it was.
             _hull.GetPositionAndRotation(out Vector3 hullPosition, out Quaternion hullRotation);
@@ -147,6 +168,133 @@ namespace Game
                        hullPosition.Equals(_hullPosition) && hullRotation.Equals(_hullRotation);
             _hullPosition = hullPosition;
             _hullRotation = hullRotation;
+        }
+
+        // ---------------------------------------------------------------- sprocket, idler and the tread loop
+
+        /// <summary>Points on an arc round the sprocket or the idler.</summary>
+        private const int ARC_STEPS = 8;
+
+        private float _leftRun;
+        private float _rightRun;
+        private TreadLoop _leftLoop;
+        private TreadLoop _rightLoop;
+
+        /// <summary>One side's loop path, rebuilt every frame into arrays made once.</summary>
+        private sealed class TreadLoop
+        {
+            public readonly Vector3[] Points;
+            public readonly float[] Along;
+            public int Count;
+
+            public TreadLoop(int wheels)
+            {
+                int capacity = 2 * (ARC_STEPS + 1) + wheels + 1;
+                Points = new Vector3[capacity];
+                Along = new float[capacity];
+            }
+
+            public void Clear() => Count = 0;
+
+            public void Add(Vector3 p)
+            {
+                if (Count < Points.Length)
+                    Points[Count++] = p;
+            }
+        }
+
+        /// <summary>How fast one side's track runs along the hull (m/s), as its wheels are spun.</summary>
+        private float SideSpeed(TankWheel[] wheels, int side, float speed, float slip, float yawRate)
+        {
+            float halfTrack = wheels.Length > 0 ? Mathf.Abs(wheels[0].Mount.localPosition.x) : 0f;
+            return speed + slip - side * yawRate * halfTrack;
+        }
+
+        private static void TurnEnds(TankTrackRig rig, float run)
+        {
+            if (rig == null)
+                return;
+            if (rig.Front != null && rig.FrontRadius > 0f)
+                rig.Front.localRotation = Quaternion.Euler(Mathf.Repeat(run / rig.FrontRadius * Mathf.Rad2Deg, 360f), 0f, 0f);
+            if (rig.Rear != null && rig.RearRadius > 0f)
+                rig.Rear.localRotation = Quaternion.Euler(Mathf.Repeat(run / rig.RearRadius * Mathf.Rad2Deg, 360f), 0f, 0f);
+        }
+
+        /// <summary>
+        /// Lays the tread loop: from the top of the sprocket back over the top to the idler, round the idler,
+        /// forward under the wheels (where they stand on their springs), round the sprocket and up to the start.
+        /// The links sit evenly along it, shifted back by how far the track has run: on the ground they stand
+        /// still while the tank goes over them.
+        /// </summary>
+        private void LayTreads(TankTrackRig rig, TankWheel[] wheels, float run, TreadLoop loop)
+        {
+            if (rig == null || rig.Treads == null || rig.Treads.Length == 0 || rig.Front == null || rig.Rear == null)
+                return;
+
+            Transform space = rig.Treads[0].parent;
+            float half = rig.Treads[0].localScale.y * 0.5f;
+            float frontR = Mathf.Max(rig.FrontRadius, 0.05f) + half;
+            float rearR = Mathf.Max(rig.RearRadius, 0.05f) + half;
+            Vector3 front = space.InverseTransformPoint(rig.Front.position);
+            Vector3 rear = space.InverseTransformPoint(rig.Rear.position);
+            Vector3 down = space.InverseTransformDirection(-_hull.up);
+            float under = _suspension.WheelRadius - half;
+
+            loop.Clear();
+            for (int k = 0; k <= ARC_STEPS; k++)
+            {
+                // Round the idler, from its top backward to its bottom.
+                float a = Mathf.PI * k / ARC_STEPS;
+                if (k == 0)
+                    loop.Add(front + new Vector3(0f, frontR, 0f));
+                loop.Add(rear + new Vector3(0f, Mathf.Cos(a), -Mathf.Sin(a)) * rearR);
+            }
+
+            for (int i = wheels.Length - 1; i >= 0; i--)
+                loop.Add(space.InverseTransformPoint(wheels[i].Visual.position) + down * under);
+
+            for (int k = 0; k < ARC_STEPS; k++)
+            {
+                // Round the sprocket, from its bottom forward and up (the top is the loop's first point).
+                float a = Mathf.PI * k / ARC_STEPS;
+                loop.Add(front + new Vector3(0f, -Mathf.Cos(a), Mathf.Sin(a)) * frontR);
+            }
+
+            int n = loop.Count;
+            float length = 0f;
+            for (int i = 0; i < n; i++)
+            {
+                loop.Along[i] = length;
+                length += Vector3.Distance(loop.Points[i], loop.Points[(i + 1) % n]);
+            }
+
+            if (length < 1e-3f)
+                return;
+
+            int links = rig.Treads.Length;
+            float pitch = length / links;
+            // On top the loop runs backward; a tank going forward moves its top run forward, so the shift is negative.
+            float start = Mathf.Repeat(-run, length);
+            int segment = 0;
+            for (int i = 0; i < links; i++)
+            {
+                float s = Mathf.Repeat(start + i * pitch, length);
+                // Links go round in order, so the segment search walks on (and wraps once).
+                int guard = 0;
+                while (guard++ < 2 * n && !(s >= loop.Along[segment] && s < (segment + 1 < n ? loop.Along[segment + 1] : length)))
+                    segment = (segment + 1) % n;
+
+                Vector3 a = loop.Points[segment];
+                Vector3 b = loop.Points[(segment + 1) % n];
+                float span = (segment + 1 < n ? loop.Along[segment + 1] : length) - loop.Along[segment];
+                float t = span > 1e-5f ? (s - loop.Along[segment]) / span : 0f;
+                Vector3 tangent = b - a;
+                if (tangent.sqrMagnitude < 1e-8f)
+                    continue;
+                tangent.Normalize();
+                Vector3 outward = Vector3.Cross(Vector3.right, tangent);
+                rig.Treads[i].SetLocalPositionAndRotation(Vector3.Lerp(a, b, t), Quaternion.LookRotation(tangent, outward));
+            }
         }
 
         private void LayLinks(TankTrackRig rig, TankWheel[] wheels, Vector3 up)

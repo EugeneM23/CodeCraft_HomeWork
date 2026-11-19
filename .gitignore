@@ -91,3 +91,13 @@ fmod_editor.log
 
 # Rider workspace of this checkout
 /.idea/
+
+# SCI-FI UI Pack Pro: only Common, Components and the Cyan (V2) set are in git; the Blue (V1) set and the Photoshop sources stay local
+/Assets/SCI-FI UI Pack Pro/SCI-FI UI Pack_V1 Pro(Blue)/
+/Assets/SCI-FI UI Pack Pro/SCI-FI UI Pack_V1 Pro(Blue).meta
+/Assets/SCI-FI UI Pack Pro/SCI-FI UI Pack_V2 Pro(Cyan)/Editable PSD Files/
+/Assets/SCI-FI UI Pack Pro/SCI-FI UI Pack_V2 Pro(Cyan)/Editable PSD Files.meta
+
+# Kawaii Tanks pack (user-local); only the Firefly parts we use live in Assets/Game/Art/Tanks/Firefly
+/Assets/Kawaii_Tanks_Project (Free)/
+/Assets/Kawaii_Tanks_Project (Free).meta

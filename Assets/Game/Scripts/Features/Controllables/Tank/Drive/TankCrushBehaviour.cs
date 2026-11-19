@@ -90,6 +90,9 @@ namespace Game
         private readonly TankCrushConfig _config;
 
         private IEntity _crusher;
+
+        /// <summary>The crusher's blow, one for every crush: the same source and factor each time, so none is made per kill.</summary>
+        private TakeDamageArgs _crush;
         private Color32[] _blood;
         private VoxelizedModel _skin;
         private IValue<Vector2> _input;
@@ -103,6 +106,27 @@ namespace Game
             _receiver = receiver;
             _body = body;
             _config = config;
+            _minSpeed = config.minSpeed;
+        }
+
+        private float _minSpeed;
+        private float _widthFactor = 1f;
+
+        /// <summary>
+        /// Slowest (m/s) the tank closes on an enemy and still crushes it. Starts at
+        /// <see cref="TankCrushConfig.minSpeed"/>; the loadout (tracks) sets it.
+        /// </summary>
+        public float MinSpeed
+        {
+            get => _minSpeed;
+            set => _minSpeed = Mathf.Max(0f, value);
+        }
+
+        /// <summary>Multiplier of the width of the box swept ahead for enemies to crush; the loadout (tracks) sets it.</summary>
+        public float WidthFactor
+        {
+            get => _widthFactor;
+            set => _widthFactor = Mathf.Max(0.1f, value);
         }
 
         public void Init(IEntity entity)
@@ -111,6 +135,7 @@ namespace Game
             _crusher = new Entity();
             _crusher.AddTransform(_body.transform);
             _crusher.AddDamage(new ReactiveInt(CRUSH_DAMAGE));
+            _crush = new TakeDamageArgs(_crusher);
 
             _blood = _config.blood.ToVoxels();
             _skin = _body.GetComponent<VoxelizedModel>();
@@ -151,7 +176,7 @@ namespace Game
             Transform frame = _hull.transform;
             float forward = Vector3.Dot(_body.linearVelocity, frame.forward);
             float speed = Mathf.Abs(forward);
-            if (speed < _config.minSpeed)
+            if (speed < _minSpeed)
                 return;
 
             // The hull's box, stretched forward (or back, reversing) over this step's travel and a
@@ -164,6 +189,7 @@ namespace Game
                              - frame.up * (BELOW * 0.5f);
             half.z += lead * 0.5f;
             half.y += BELOW * 0.5f;
+            half.x *= _widthFactor;
 
             int count = Physics.OverlapBoxNonAlloc(centre, half, Hits, frame.rotation, 1 << PhysicsLayers.Enemy,
                 QueryTriggerInteraction.Ignore);
@@ -239,14 +265,14 @@ namespace Game
         private void TryCrush(Collision collision, ContactPoint contact, float speed)
         {
             GameObject other = collision.rigidbody != null ? collision.rigidbody.gameObject : collision.gameObject;
-            if (speed >= _config.minSpeed && TryGetVictim(other, out IEntity victim))
+            if (speed >= _minSpeed && TryGetVictim(other, out IEntity victim))
                 Crush(victim, contact.point, speed);
         }
 
         private void Crush(IEntity victim, Vector3 point, float speed)
         {
             KillMarker.Begin();
-            DamageUseCase.TakeDamage(victim, new TakeDamageArgs(_crusher));
+            DamageUseCase.TakeDamage(victim, _crush);
             KillMarker.End();
             if (IsAlive(victim))
                 return;
@@ -268,13 +294,23 @@ namespace Game
             return contact;
         }
 
-        /// <summary>A living enemy: the body a touched collider belongs to.</summary>
+        /// <summary>
+        /// A living enemy: the body a touched collider belongs to. One with a crush mark (the elite) only once its
+        /// health is down to the mark (CrushRuleUseCase); the speed is checked by the callers.
+        /// </summary>
         private static bool TryGetVictim(GameObject other, out IEntity victim)
         {
             if (!other.TryGetEntity(out victim) && !other.FindEntityInParent(out victim))
                 return false;
 
-            return victim.HasEnemyTag() && victim.HasDamageableTag() && IsAlive(victim);
+            if (!victim.HasEnemyTag() || !victim.HasDamageableTag() ||
+                !victim.TryGetHealth(out Health health) || health.IsEmpty())
+                return false;
+
+            float mark = victim.TryGetCrushBelowHealth(out IValue<float> crushBelow)
+                ? crushBelow.Value
+                : CrushRuleUseCase.NO_MARK;
+            return CrushRuleUseCase.IsCrushable(health.GetPercent(), mark);
         }
 
         // A dead body has been disposed (DeathBehaviour), or at least has no health left.

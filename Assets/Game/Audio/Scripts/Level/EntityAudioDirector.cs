@@ -62,9 +62,17 @@ namespace Game.AudioEngine.Adapters
                 tank.AddBehaviour(new TankWeaponsAudioBehaviour());
         }
 
+        /// <summary>
+        /// Enemies that sound through their own calls instead of <see cref="MonsterAudioBehaviour"/>: the elite
+        /// Regax plays through <see cref="GameAudio.Elite"/>. Set by the team that owns them; null keeps every enemy.
+        /// </summary>
+        public static Predicate<IEntity> HasOwnSounds { get; set; }
+
         private static void AttachMonster(IEntity monster)
         {
             if (monster.HasBehaviour<MonsterAudioBehaviour>() || !monster.HasTransform())
+                return;
+            if (HasOwnSounds != null && HasOwnSounds(monster))
                 return;
 
             monster.AddBehaviour(new MonsterAudioBehaviour());
