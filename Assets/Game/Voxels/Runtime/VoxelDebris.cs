@@ -110,6 +110,7 @@ namespace Game.Voxels
 
         /// <summary>Goo that flew into the stain box (<see cref="SetStainBox"/>): where it hit, read with <see cref="TakeStainHits"/>.</summary>
         private NativeQueue<float3> _stainHits;
+        private readonly System.Collections.Generic.List<Vector3> _stainReady = new(64);
         private bool _stainOn;
         private float3 _stainCenter;
         private quaternion _stainRotation;
@@ -274,19 +275,15 @@ namespace Game.Voxels
 
         public void ClearStainBox() => _stainOn = false;
 
-        /// <summary>Where goo came into the stain box since the last call (the step before last at the latest), into <paramref name="into"/>.</summary>
+        /// <summary>
+        /// Where goo came into the stain box in the steps completed since the last call, into <paramref name="into"/>. It never
+        /// waits for the running step (that would stall the main thread on the workers): what it caught comes the next time.
+        /// </summary>
         public int TakeStainHits(System.Collections.Generic.List<Vector3> into)
         {
-            Complete();
-            int count = 0;
-            if (!_stainHits.IsCreated)
-                return 0;
-            while (_stainHits.TryDequeue(out float3 hit))
-            {
-                into.Add(hit);
-                count++;
-            }
-
+            int count = _stainReady.Count;
+            into.AddRange(_stainReady);
+            _stainReady.Clear();
             return count;
         }
 
@@ -331,6 +328,10 @@ namespace Game.Voxels
             _stepping = false;
             using (s_completeMarker.Auto())
                 _step.Complete();
+
+            // The step is done: the goo it caught is handed over now, so readers never wait on a running step.
+            while (_stainHits.IsCreated && _stainHits.TryDequeue(out float3 hit))
+                _stainReady.Add(hit);
         }
 
         public VoxelDebris(Material material, int capacity, int lyingCapacity = LYING_DEFAULT, int cellCapacity = MAX_CELLS)
