@@ -406,6 +406,11 @@ namespace Game
             LaunchMarker.Begin();
 
             GibRules.Throw(config.speeds, death.Hit, out float speed, out float lift, out float spin);
+            // A shell's kill carries the pieces and most of the goo on the way it flew (VoxelSpray.ShotGoo, SHOT_PUSH).
+            Vector3 shot = death.Hit.Direction;
+            Vector3 flatShot = new(shot.x, 0f, shot.z);
+            bool along = flatShot.sqrMagnitude > 1e-4f;
+            Vector3 push = along ? flatShot.normalized * VoxelSpray.SHOT_PUSH : Vector3.zero;
             Color32[] blood = BloodOf(config);
             SeamLink[] links = LinksOf(config);
             int[] cluster = death.Cluster;
@@ -427,7 +432,8 @@ namespace Game
                     continue;
 
                 piece.Body.gameObject.SetActive(true);
-                Vector3 velocity = GibRules.ClusterVelocity(piece.Body.WorldBounds.center, death.Hit.Origin, speed, lift, config.speeds);
+                Vector3 velocity = GibRules.ClusterVelocity(piece.Body.WorldBounds.center, death.Hit.Origin, speed, lift, config.speeds) +
+                                   push * Random.Range(0.6f, 1f);
                 piece.Body.Launch(VoxelSpray.Lifted(velocity), GibRules.ClusterSpin(spin, piece.Parts));
                 piece.Body.SplitLoose();
                 if (piece.Body == null || piece.TornCount == 0)
@@ -475,8 +481,13 @@ namespace Game
             Vector3 wound = death.Body.ClosestPoint(death.Hit.Origin);
             Vector3 away = wound - death.Hit.Origin;
             away = away.sqrMagnitude > 1e-4f ? away.normalized : Vector3.up;
-            VoxelSpray.Goo(wound, Vector3.up * 1.6f + away * 0.5f, config.hitDrops, config.gooSpeed, 0.4f, GooOf(config),
-                config.blood.dropSize, default, Mathf.Min(0.35f, death.Body.extents.x));
+            // With no way known the goo goes up.
+            if (along)
+                VoxelSpray.ShotGoo(wound, shot, config.hitDrops, config.gooSpeed, 0.4f, GooOf(config),
+                    config.blood.dropSize, default, Mathf.Min(0.35f, death.Body.extents.x));
+            else
+                VoxelSpray.Goo(wound, Vector3.up * 1.6f + away * 0.5f, config.hitDrops, config.gooSpeed, 0.4f, GooOf(config),
+                    config.blood.dropSize, default, Mathf.Min(0.35f, death.Body.extents.x));
             BloodMarker.End();
 
             // A shell's kill tears the body into big pieces (the user): head, torso, arms and legs as clumps of flesh. The
@@ -484,13 +495,13 @@ namespace Game
             if (config.shellTearsLimbs && death.Hit.Blast)
             {
                 Vector3 feet = new(death.Body.center.x, death.Body.min.y, death.Body.center.z);
-                Vector3 thrown = new(away.x, 0f, away.z);
+                Vector3 thrown = along ? flatShot : new Vector3(away.x, 0f, away.z);
                 s_skin[0] = config.skinColor.a > 0f ? config.skinColor : rig.SkinColor;
                 s_skin[1] = Color.Lerp(s_skin[0], Color.black, 0.2f);
                 // Each part in the zombie's own colours where its skin has a texture (SkinAtlas.ChunkSkins).
                 SkinAtlas atlas = config.skinFromTexture ? rig.Atlas : null;
                 VoxelSpray.Chunks(feet, death.Body.size.y, thrown.sqrMagnitude > 1e-4f ? thrown.normalized : Vector3.zero, s_skin, GooOf(config),
-                    atlas?.ChunkSkins());
+                    atlas?.ChunkSkins(), along ? VoxelSpray.SHOT_PUSH : 0f);
             }
         }
 

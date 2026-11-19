@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace Game
 {
     /// <summary>
@@ -7,6 +9,6 @@ namespace Game
     public interface IEnemyTearable
     {
         /// <summary>The enemy at the slot, if the damage queued now kills it, is torn apart.</summary>
-        void Tear(int index, int version);
+        void Tear(int index, int version, Vector3 direction);
     }
 }
