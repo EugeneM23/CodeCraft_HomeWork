@@ -57,6 +57,17 @@ namespace Game.EditorTools
 
         /// <summary>Rebuilds the prefab from Tank_01 (in a preview scene: the open scene is not touched).</summary>
         [MenuItem("Tools/UI/Build Hangar Stage")]
+        /// <summary>The pose of that name in the stage prefab as it is now, if there is one: kept over the computed one.</summary>
+        private static void KeepPose(Transform pose, string name)
+        {
+            GameObject existing = AssetDatabase.LoadAssetAtPath<GameObject>(PrefabPath);
+            Transform old = existing != null ? existing.transform.Find(name) : null;
+            if (old == null)
+                return;
+            pose.localPosition = old.localPosition;
+            pose.localRotation = old.localRotation;
+        }
+
         public static GameObject BuildPrefab()
         {
             Scene scene = EditorSceneManager.NewPreviewScene();
@@ -120,6 +131,9 @@ namespace Game.EditorTools
             Frame(menuPose, bounds.center, radius, bounds.extents.y, 22f, 8f, new Vector2(0.64f, 0.38f), new Vector2(0.5f, 0.42f));
             // Hangar: the tank between the slot and stat panels (0.24..0.74 of the width), above the modules strip.
             Frame(hangarPose, bounds.center, radius, bounds.extents.y, -28f, 13f, new Vector2(0.49f, 0.6f), new Vector2(0.44f, 0.5f));
+            // Framings set by hand in the prefab (the user's camera) outlive a rebuild.
+            KeepPose(menuPose, "MenuPose");
+            KeepPose(hangarPose, "HangarPose");
             Camera camera = CreateCamera(root.transform);
             camera.transform.SetPositionAndRotation(menuPose.position, menuPose.rotation);
 
