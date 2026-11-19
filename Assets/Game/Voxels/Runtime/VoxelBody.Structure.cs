@@ -1,3 +1,4 @@
+using Unity.Burst;
 using Unity.Collections;
 using Unity.Jobs;
 using Unity.Mathematics;
@@ -53,6 +54,46 @@ namespace Game.Voxels
 
         /// <summary>Whether this body works out its load (it has a strength table).</summary>
         public bool HasStrength => _strength.IsCreated;
+
+        /// <summary>Per palette entry: a bite's radius is divided by this for a voxel of it (1 — an ordinary one). Owned.</summary>
+        private NativeArray<float> _hardness;
+
+        /// <summary>
+        /// A blast bites a building only this far (m) as it would anything else; past it, by
+        /// <see cref="BUILDING_BITE_SHARE"/> of the rest. A shell's 1.6 m crater is 0.76 m in a wall,
+        /// a bomb's 2 m one 0.88 m; a bullet's 0.3 m hole is the same (user, 2026-11-19: a house
+        /// should not come down so quickly from a tank's shells).
+        /// </summary>
+        public const float BUILDING_BITE_KNEE = 0.4f;
+
+        public const float BUILDING_BITE_SHARE = 0.3f;
+
+        /// <summary>The radius a bite of <paramref name="worldRadius"/> takes out of this body (smaller in a building).</summary>
+        public float BiteRadius(float worldRadius) =>
+            !HasStrength || worldRadius <= BUILDING_BITE_KNEE
+                ? worldRadius
+                : BUILDING_BITE_KNEE + (worldRadius - BUILDING_BITE_KNEE) * BUILDING_BITE_SHARE;
+
+        /// <summary>
+        /// Gives the body its hardness, one entry per palette index: a bite's radius is divided by it
+        /// for a voxel of that entry — a building's load-bearing piers and beams take several times
+        /// the hits of the walls between them. The body owns and disposes it; pieces get a copy.
+        /// </summary>
+        public void SetHardness(NativeArray<float> hardness)
+        {
+            if (_hardness.IsCreated)
+                _hardness.Dispose();
+            _hardness = hardness;
+        }
+
+        /// <summary>Whether the voxel's palette entry is harder than ordinary (a load-bearing one).</summary>
+        public bool IsHard(byte material) => _hardness.IsCreated && material != 0 && _hardness[material] > 1f;
+
+        /// <summary>The voxel at a grid point (0 — empty or outside), for tests.</summary>
+        public byte VoxelAt(int3 p) => _voxels.IsCreated && VoxelMath.Inside(p, Size) ? _voxels[VoxelMath.Index(p, Size)] : (byte)0;
+
+        private NativeArray<float> CopyHardness() =>
+            _hardness.IsCreated ? new NativeArray<float>(_hardness, Allocator.Persistent) : default;
 
         /// <summary>
         /// Gives the body its strength table, one entry per palette index (see <see cref="VoxelLoad"/>);
@@ -421,10 +462,9 @@ namespace Game.Voxels
                 dropped += piece.Count;
 
                 Vector3 middle = transform.TransformPoint(Origin + ((float3)(piece.Min + piece.Max) * 0.5f + 0.5f) * VoxelSize);
-                if (piece.Cell < 0)
+                // A crushed piece, or a scrap too small to be rubble of its own, goes to crumbs where it was.
+                if (piece.Cell < 0 || piece.Count < RUBBLE_BODY_MIN)
                     Crush(labels, i + 1, piece);
-                else if (piece.Count <= CRUMBLE_MAX)
-                    Crumble(labels, i + 1, piece, middle, 0f);
                 else
                     Detach(labels, i + 1, piece, middle, 0f);
                 MarkDirty(piece.Min, piece.Max);
@@ -445,6 +485,7 @@ namespace Game.Voxels
         private static readonly Unity.Profiling.ProfilerMarker BlocksMarker = new("Voxels.Structure.Blocks");
         private static readonly Unity.Profiling.ProfilerMarker LoadMarker = new("Voxels.Structure.Load");
         private static readonly Unity.Profiling.ProfilerMarker DropMarker = new("Voxels.Structure.DropIslands");
+        private static readonly Unity.Profiling.ProfilerMarker RubbleMarker = new("Voxels.Rubble.BreakUp");
 
         /// <summary>
         /// The block a hit at block b presses on: b, or the nearest one with mass under or beside it
@@ -526,6 +567,71 @@ namespace Game.Voxels
         }
 
         /// <summary>
+        /// A building's scrap smaller than this (voxels, about half a tonne of brick) breaking off goes
+        /// to crumbs where it was, not as a body: it neither hangs in the air nor lies about as a lump.
+        /// </summary>
+        internal const int RUBBLE_BODY_MIN = 250;
+
+        /// <summary>Rubble that has come to rest goes to crumbs and dust when it is this small (voxels)...</summary>
+        internal const int RUBBLE_DISSOLVE_MAX = 2500;
+
+        /// <summary>...otherwise it breaks up all through first, into pieces of about this many voxels...</summary>
+        private const int RUBBLE_REST_PIECE = 600;
+
+        /// <summary>
+        /// ...up to this size (voxels, about 22 t of brick). A bigger one is a whole storey or house that came down
+        /// (it breaks where it lands hard, VoxelImpactFracture): broken all at once at rest, its dozens of
+        /// pieces shove each other about.
+        /// </summary>
+        internal const int RUBBLE_BREAK_MAX = 12000;
+
+        /// <summary>Most crumbs a dissolving piece throws (they land, lie and sink, VoxelDebris); the rest is dust.</summary>
+        private const int RUBBLE_CRUMBS = 260;
+
+        /// <summary>Speed (m/s) its crumbs slump out with.</summary>
+        private const float RUBBLE_SLUMP = 1.2f;
+
+        /// <summary>Most voxels of resting rubble breaking up or dissolving in one frame (a collapse settles over a few).</summary>
+        private const int RUBBLE_FRAME_VOXELS = 8000;
+
+        private static int s_rubbleFrame = -1;
+        private static int s_rubbleVoxels;
+
+        /// <summary>
+        /// A building's piece that has come to rest (VoxelImpactFracture): a small one goes to crumbs,
+        /// which lie and sink, and dust; a bigger one breaks up all through, and its pieces do the same
+        /// when they come to rest. No lumps of house are left lying about. False when it is too big
+        /// (RUBBLE_BREAK_MAX) or the frame had no room for it (it tries again later).
+        /// </summary>
+        internal bool BreakUpRubble()
+        {
+            if (!HasStrength || !_voxels.IsCreated || !IsLoose || SolidCount == 0 || SolidCount > RUBBLE_BREAK_MAX)
+                return false;
+            if (Time.frameCount != s_rubbleFrame)
+            {
+                s_rubbleFrame = Time.frameCount;
+                s_rubbleVoxels = 0;
+            }
+
+            if (s_rubbleVoxels > 0 && s_rubbleVoxels + SolidCount > RUBBLE_FRAME_VOXELS)
+                return false;
+            s_rubbleVoxels += SolidCount;
+            using var marker = RubbleMarker.Auto();
+
+            Vector3 middle = WorldBounds.center;
+            if (SolidCount > RUBBLE_DISSOLVE_MAX)
+                return Fracture(middle, math.clamp(SolidCount / RUBBLE_REST_PIECE, 2, 48), 0.2f, true);
+
+            var removed = new NativeList<RemovedVoxel>(SolidCount, Allocator.TempJob);
+            new GatherSolidJob { Voxels = _voxels, Size = Size, Removed = removed }.Run();
+            SolidCount = 0;
+            ThrowDebris(removed, middle + Vector3.up * 0.3f, RUBBLE_SLUMP, Vector3.zero, RUBBLE_CRUMBS);
+            removed.Dispose();
+            Destroy(gameObject);
+            return true;
+        }
+
+        /// <summary>
         /// Fracture cells along the body's weak joints (see SeamCellsJob), one per voxel, for a
         /// body with a strength table; the caller disposes them.
         /// </summary>
@@ -593,6 +699,8 @@ namespace Game.Voxels
                 _scale.Dispose();
             if (_strength.IsCreated)
                 _strength.Dispose();
+            if (_hardness.IsCreated)
+                _hardness.Dispose();
             if (_structureDirty)
                 VoxelWorld.UnqueueStructure(this);
             _structureDirty = false;
@@ -604,5 +712,26 @@ namespace Game.Voxels
         /// <summary>A copy of the strength table for a piece breaking off, or none.</summary>
         private NativeArray<float3> CopyStrength() =>
             _strength.IsCreated ? new NativeArray<float3>(_strength, Allocator.Persistent) : default;
+    }
+
+    /// <summary>Every solid voxel of a grid, taken out and listed (a piece of rubble going to crumbs).</summary>
+    [BurstCompile]
+    internal struct GatherSolidJob : IJob
+    {
+        public NativeArray<byte> Voxels;
+        public int3 Size;
+        public NativeList<RemovedVoxel> Removed;
+
+        public void Execute()
+        {
+            for (int i = 0; i < Voxels.Length; i++)
+            {
+                byte material = Voxels[i];
+                if (material == 0)
+                    continue;
+                Voxels[i] = 0;
+                Removed.Add(new RemovedVoxel { Position = VoxelMath.Coord(i, Size), Material = material });
+            }
+        }
     }
 }

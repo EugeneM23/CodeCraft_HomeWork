@@ -384,6 +384,13 @@ namespace Game.Voxels
         public uint Seed;
         public NativeList<RemovedVoxel> Removed;
 
+        /// <summary>
+        /// Per palette entry: the bite's radius is divided by this for a voxel of it (a building's
+        /// load-bearing piers and beams, VoxelBody.SetHardness). Read only with <see cref="UseHardness"/>.
+        /// </summary>
+        [ReadOnly] public NativeArray<float> Hardness;
+        public bool UseHardness;
+
         public void Execute()
         {
             float3 reach = new float3(Radius, Radius / math.max(1e-3f, Squash), Radius);
@@ -402,6 +409,8 @@ namespace Game.Voxels
                     continue;
 
                 float r = Radius * (1f - Roughness * VoxelMath.Hash01(p, Seed));
+                if (UseHardness)
+                    r /= Hardness[material];
                 if (math.lengthsq(((float3)p + 0.5f - Center) * scale) > r * r)
                     continue;
 

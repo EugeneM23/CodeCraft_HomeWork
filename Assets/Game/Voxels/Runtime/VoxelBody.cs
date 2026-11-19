@@ -764,10 +764,13 @@ namespace Game.Voxels
         /// </summary>
         /// <param name="force">Speed (m/s) the debris and loose pieces leave the blast with.</param>
         /// <param name="debrisBudget">Most debris cubes this carve may throw.</param>
-        public int CarveSphere(Vector3 worldCenter, float worldRadius, float force, int debrisBudget)
+        /// <param name="fullBite">An air bomb: a building takes the whole bite, not the smaller one a shell's
+        /// gets (BiteRadius); only its skeleton's hardness holds it back.</param>
+        public int CarveSphere(Vector3 worldCenter, float worldRadius, float force, int debrisBudget, bool fullBite = false)
         {
-            int taken = Carve(worldCenter, worldRadius * Toughness, _settings.CraterDepth, 0.25f, true, debrisBudget,
-                worldCenter, force, Vector3.zero);
+            float radius = worldRadius * Toughness;
+            int taken = Carve(worldCenter, fullBite ? radius : BiteRadius(radius), _settings.CraterDepth, 0.25f, true,
+                debrisBudget, worldCenter, force, Vector3.zero);
 
             // A settled piece a blast reaches is thrown again; a bullet only chips it. It goes as a
             // fresh piece does, after this carve's rebuild; a second blast this frame finds it loose.
@@ -1010,14 +1013,18 @@ namespace Game.Voxels
         /// Scoops a small bite out without looking for loose pieces (a track's rut): what it takes
         /// is thrown along <paramref name="throwVelocity"/> as clods.
         /// </summary>
+        /// <remarks>A scoop, not a blast: it takes a building's load-bearing voxels as readily as the rest.</remarks>
         public int Dig(Vector3 worldCenter, float worldRadius, Vector3 throwVelocity, int debrisBudget) =>
-            Carve(worldCenter, worldRadius, 1f, 0.1f, false, debrisBudget, worldCenter, 0f, throwVelocity);
+            Carve(worldCenter, worldRadius, 1f, 0.1f, false, debrisBudget, worldCenter, 0f, throwVelocity, 0f, false);
 
+        /// <param name="hard">A building's load-bearing voxels take a smaller bite (SetHardness); false for a scoop (Dig).</param>
         private int Carve(Vector3 worldCenter, float worldRadius, float depth, float roughness, bool split,
-            int debrisBudget, Vector3 blastCenter, float force, Vector3 throwVelocity, float debrisLife = 0f)
+            int debrisBudget, Vector3 blastCenter, float force, Vector3 throwVelocity, float debrisLife = 0f,
+            bool hard = true)
         {
             if (!_voxels.IsCreated || SolidCount == 0)
                 return 0;
+            using var marker = CarveMarker.Auto();
 
             float scale = Mathf.Max(0.0001f, Mathf.Abs(transform.lossyScale.x));
             float3 local = transform.InverseTransformPoint(worldCenter);
@@ -1026,6 +1033,9 @@ namespace Game.Voxels
             float3 reach = new float3(radius, radius * depth, radius);
 
             var removed = new NativeList<RemovedVoxel>(256, Allocator.TempJob);
+            // Only a building has hardness (its piers and beams); the job wants an array either way.
+            hard &= _hardness.IsCreated;
+            NativeArray<float> hardness = hard ? _hardness : new NativeArray<float>(1, Allocator.TempJob);
             new CarveSphereJob
             {
                 Voxels = _voxels,
@@ -1035,8 +1045,12 @@ namespace Game.Voxels
                 Squash = 1f / math.max(0.05f, depth),
                 Roughness = roughness,
                 Seed = _seed++,
-                Removed = removed
+                Removed = removed,
+                Hardness = hardness,
+                UseHardness = hard
             }.Run();
+            if (!hard)
+                hardness.Dispose();
 
             int taken = AfterCarve(removed, center, reach, split, blastCenter, force, throwVelocity, debrisBudget,
                 debrisLife);
@@ -1174,6 +1188,10 @@ namespace Game.Voxels
         private static readonly Unity.Profiling.ProfilerMarker ApplyChunkMarker = new("Voxels.ApplyChunk");
         private static readonly Unity.Profiling.ProfilerMarker BoxesMarker = new("Voxels.ApplyBoxes");
         private static readonly Unity.Profiling.ProfilerMarker CreateChunkMarker = new("Voxels.CreateChunk");
+        private static readonly Unity.Profiling.ProfilerMarker FractureMarker = new("Voxels.Fracture");
+        private static readonly Unity.Profiling.ProfilerMarker SplitMarker = new("Voxels.Split");
+        private static readonly Unity.Profiling.ProfilerMarker LocalSplitMarker = new("Voxels.LocalSplit");
+        private static readonly Unity.Profiling.ProfilerMarker CarveMarker = new("Voxels.Carve");
 
         private const string PIECE_NAME = "VoxelPiece";
         private const string CHUNK_NAME = "Chunk";
@@ -1251,6 +1269,7 @@ namespace Game.Voxels
         /// </summary>
         private void LocalSplit(int regions, Vector3 blastCenter, float force)
         {
+            using var marker = LocalSplitMarker.Auto();
             var lo = new NativeArray<int3>(regions, Allocator.TempJob);
             var hi = new NativeArray<int3>(regions, Allocator.TempJob);
             for (int i = 0; i < regions; i++)
@@ -1275,7 +1294,10 @@ namespace Game.Voxels
                 if (piece.Grounded)
                     continue;
                 any = true;
-                if (piece.Count <= CRUMBLE_MAX)
+                // A building's small scrap goes to crumbs where it hung, not as a lump of its own.
+                if (HasStrength && piece.Count > CRUMBLE_MAX && piece.Count < RUBBLE_BODY_MIN)
+                    Crush(labels, i + 1, piece);
+                else if (piece.Count <= CRUMBLE_MAX)
                     Crumble(labels, i + 1, piece, blastCenter, force);
                 else
                     Detach(labels, i + 1, piece, blastCenter, force);
@@ -1300,6 +1322,7 @@ namespace Game.Voxels
         /// </summary>
         private void Split(Vector3 blastCenter, float force)
         {
+            using var marker = SplitMarker.Auto();
             int count = _voxels.Length;
             var labels = new NativeArray<int>(count, Allocator.TempJob);
             var queue = new NativeArray<int>(count, Allocator.TempJob, NativeArrayOptions.UninitializedMemory);
@@ -1326,7 +1349,9 @@ namespace Game.Voxels
                 if (stays)
                     continue;
 
-                if (piece.Count <= CRUMBLE_MAX)
+                if (HasStrength && piece.Count > CRUMBLE_MAX && piece.Count < RUBBLE_BODY_MIN)
+                    Crush(labels, i + 1, piece);
+                else if (piece.Count <= CRUMBLE_MAX)
                     Crumble(labels, i + 1, piece, blastCenter, force);
                 else
                     Detach(labels, i + 1, piece, blastCenter, force);
@@ -1424,6 +1449,8 @@ namespace Game.Voxels
             body.Init(size, grid, palette, settings);
             if (HasStrength)
                 body.SetStrength(CopyStrength());
+            if (_hardness.IsCreated)
+                body.SetHardness(CopyHardness());
             body.Generation = Generation + 1;
 
             // The piece goes on at the speed its own middle had, not the blast's point: a spinning
@@ -1446,6 +1473,7 @@ namespace Game.Voxels
         {
             if (!_voxels.IsCreated || !IsLoose || SolidCount <= CRUMBLE_MAX || cells < 2)
                 return false;
+            using var marker = FractureMarker.Auto();
 
             float3 impact = ((float3)transform.InverseTransformPoint(worldPoint) - Origin) / VoxelSize;
             impact = math.clamp(impact, 0f, (float3)Size - 0.01f);
