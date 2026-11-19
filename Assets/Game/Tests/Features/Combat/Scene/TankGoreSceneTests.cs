@@ -98,6 +98,77 @@ namespace Game.Tests
 
         [UnityTest]
         [Timeout(120000)]
+        public IEnumerator ABloodyTrack_LeavesPrintsOnMud_InTheRut()
+        {
+            yield return Load();
+            var ruts = _tank.GetComponent<VoxelTrackRuts>();
+            Assert.That(((IEntity)_tank.GetComponent<MonoEntity>()).TryGetDriveInput(out _drive), "the tank has DriveInput");
+            VoxelTerrainSettings terrain = VoxelTerrainSettings.Active;
+            Assert.That(terrain, Is.Not.Null, "the sandbox's terrain");
+
+            // Somewhere with 10 m of mud ahead (both tracks), the tank set down there facing along it.
+            var body = _tank.GetComponent<Rigidbody>();
+            Transform frame = body.transform;
+            bool found = false;
+            Vector3 start = default;
+            for (int k = 0; k < 400 && !found; k++)
+            {
+                Vector3 q = frame.position + frame.right * ((k % 20 - 10) * 1.5f) + frame.forward * ((k / 20 - 10) * 1.5f);
+                found = true;
+                for (int f = -3; f <= 12 && found; f++)
+                for (int w = -1; w <= 1 && found; w++)
+                    found = terrain.SoilAt(q + frame.forward * f + frame.right * (w * 1.1f)) == TerrainSoil.Mud;
+                start = q;
+            }
+
+            Assert.IsTrue(found, "the sandbox has a stretch of mud");
+            if (Physics.Raycast(start + Vector3.up * 20f, Vector3.down, out RaycastHit ground, 40f, ~(1 << 9)))
+                start.y = ground.point.y + 0.15f;
+            body.position = start;
+            frame.position = start;
+            body.linearVelocity = Vector3.zero;
+            for (int i = 0; i < 30; i++)
+                yield return new WaitForFixedUpdate();
+
+            // The right track bloody (a squash under it), then 3 s of driving through the mud.
+            ruts.AddTrackBlood(frame.position + frame.right, 1f);
+            Vector3 from = frame.position;
+            _throttle = new Vector2(0f, 0.8f);
+            Application.onBeforeRender += WriteDrive;
+            for (int i = 0; i < 150; i++)
+                yield return new WaitForFixedUpdate();
+            _throttle = Vector2.zero;
+            for (int i = 0; i < 30; i++)
+                yield return new WaitForFixedUpdate();
+            Vector3 to = frame.position;
+            Assert.That(Vector3.Distance(from, to), Is.GreaterThan(3f), "the tank drove on");
+
+            // Along the right track's line behind the tank: blood in the ground (the rut's floor).
+            Vector3 right = frame.right * 0.8f;
+            int bloody = 0, looked = 0;
+            for (int s = 0; s < 24; s++)
+            {
+                Vector3 p = Vector3.Lerp(from, to, 0.1f + 0.6f * s / 23f) + right;
+                if (!Physics.Raycast(p + Vector3.up * 5f, Vector3.down, out RaycastHit hit, 10f, ~(1 << 9)))
+                    continue;
+                VoxelBody voxels = hit.collider.GetComponentInParent<VoxelBody>();
+                if (voxels == null || !voxels.IsStatic)
+                    continue;
+                looked++;
+                bool blood = false;
+                for (int o = -2; o <= 2 && !blood; o++)
+                    blood = voxels.TryGetBlood(hit.point + frame.right * (o * 0.08f) - Vector3.up * 0.03f, out _, out _);
+                if (blood)
+                    bloody++;
+            }
+
+            Debug.Log($"[TankGoreTest] mud prints: {bloody}/{looked} spots along the right track, blood left {ruts.TrackBlood(1):F2}");
+            Assert.That(looked, Is.GreaterThan(10), "the line behind the tank is ground");
+            Assert.That(bloody, Is.GreaterThanOrEqualTo(looked / 4), "bloody prints on the mud, in the rut");
+        }
+
+        [UnityTest]
+        [Timeout(120000)]
         public IEnumerator GooComingDownOnTheTank_StainsItEverywhere()
         {
             yield return Load();

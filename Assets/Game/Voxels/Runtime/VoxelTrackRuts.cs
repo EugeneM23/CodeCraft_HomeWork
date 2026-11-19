@@ -425,7 +425,8 @@ namespace Game.Voxels
         public float TrackBlood(int side) => _trackBlood[side];
 
         /// <summary>The rearmost wheel of a bloody track presses a red print where it rolls; the more blood, the denser.</summary>
-        private void PrintBlood(int wheel, VoxelBody ground, Vector3 point)
+        /// <param name="inRut">On mud, in a rut: wider (up its walls) and a step fresher, or the dark wet mud swallows it.</param>
+        private void PrintBlood(int wheel, VoxelBody ground, Vector3 point, bool inRut = false)
         {
             int side = wheel == _printWheel[0] ? 0 : wheel == _printWheel[1] ? 1 : -1;
             if (side < 0 || _trackBlood[side] < 0.02f)
@@ -433,7 +434,11 @@ namespace Game.Voxels
             float chance = Mathf.Min(0.85f, _trackBlood[side] * 1.6f);
             // Soaked in like any blood (it stays, the tracks churn it further), a little churned already: the fresher the
             // blood on the track, the redder the print.
-            ground.PaintBlood(point - Vector3.up * 0.04f, _bloodPrintRadius, Random.Range(0, 2), _trackBlood[side] > 0.5f ? 1 : 2, chance);
+            int level = _trackBlood[side] > 0.5f ? 1 : 2;
+            if (inRut)
+                ground.PaintBlood(point, _bloodPrintRadius * 1.4f, Random.Range(0, 2), level - 1, Mathf.Min(0.95f, chance + 0.15f));
+            else
+                ground.PaintBlood(point - Vector3.up * 0.04f, _bloodPrintRadius, Random.Range(0, 2), level, chance);
         }
 
         /// <summary>A bite under one wheel, once it has rolled far enough since the last.</summary>
@@ -442,7 +447,9 @@ namespace Game.Voxels
             Transform wheel = _wheelList[i];
             Vector3 position = wheel.position;
 
-            if (!Physics.Raycast(position, Vector3.down, out RaycastHit hit, _wheelRadius + 0.25f, ~(1 << 2),
+            // As deep as a rut: the rear wheels run in the rut the front ones dug (in mud), and a reach of a quarter metre
+            // missed its floor - no bite there, so no bloody print on mud (the user).
+            if (!Physics.Raycast(position, Vector3.down, out RaycastHit hit, _wheelRadius + 0.25f + _maxDepth, ~(1 << 2),
                     QueryTriggerInteraction.Ignore))
                 return;
 
@@ -482,6 +489,7 @@ namespace Game.Voxels
 
             // Blood in the ground: the track churns it into the earth and takes some along (the prints lay it further on); what
             // the tracks throw from here (crumbs, the rooster tail) carries its red, and a rut dug here throws it with the clods.
+            int soakedShade = -1, soakedLevel = 0;
             int blood = ground.Churn(hit.point - Vector3.up * 0.04f, _dryBiteRadius, CHURN_CHANCE, out int fresh);
             if (blood > 0)
             {
@@ -494,6 +502,8 @@ namespace Game.Voxels
                 }
                 if (ground.TryGetBlood(hit.point - Vector3.up * 0.04f, out int shade, out int level))
                 {
+                    soakedShade = shade;
+                    soakedLevel = level;
                     Color32 churned = VoxelBlood.Colour(shade, level + 1);
                     if (mud)
                         _mud = churned;
@@ -502,7 +512,9 @@ namespace Game.Voxels
                 }
             }
 
-            if (_trackBlood[0] > 0f || _trackBlood[1] > 0f)
+            // In mud the print goes on after the rut is dug (below), on its floor: laid first, the bite dug it away with the
+            // surface (the user: no bloody prints on mud).
+            if ((_trackBlood[0] > 0f || _trackBlood[1] > 0f) && !mud)
                 PrintBlood(i, ground, hit.point);
 
             // Grass and dry ground give no rut: the track only presses it flat, and the trodden
@@ -521,12 +533,24 @@ namespace Game.Voxels
             // height there, or the top of flat ground.
             float surface = terrain != null ? terrain.HeightAt(hit.point) : ground.WorldBounds.max.y;
             if (surface - hit.point.y > _maxDepth)
+            {
+                if (_trackBlood[0] > 0f || _trackBlood[1] > 0f)
+                    PrintBlood(i, ground, hit.point, true);
                 return;
+            }
 
             // Thrown back off the track and up: the faster it runs, the further they fly.
             Vector3 side = Vector3.Cross(Vector3.up, moving) * Random.Range(-0.5f, 0.5f);
             Vector3 throwBack = -moving * (0.4f + speed * 0.3f) + Vector3.up * (1.2f + speed * 0.12f) + side;
             ground.Dig(hit.point + Vector3.down * 0.04f, _biteRadius, throwBack, _clodsPerBite);
+
+            // The rut's floor: the blood that was dug out mixes into it (a step more churned, the rest flew with the clods),
+            // and a bloody track prints on it.
+            Vector3 floor = hit.point + Vector3.down * (0.04f + _biteRadius * 0.85f);
+            if (soakedShade >= 0)
+                ground.PaintBlood(floor, _biteRadius * 0.8f, soakedShade, soakedLevel + 1, 0.6f);
+            if (_trackBlood[0] > 0f || _trackBlood[1] > 0f)
+                PrintBlood(i, ground, floor + Vector3.up * 0.04f, true);
         }
 
         /// <summary>What lies under a moving road wheel is crushed: a sphere per wheel, run in the debris step.</summary>
