@@ -155,7 +155,7 @@ namespace Game.Voxels
         private readonly float[] _trackBlood = new float[2];
         /// <summary>The rearmost road wheel of each side: it lays the bloody print (every wheel of a side runs the same line).</summary>
         private readonly int[] _printWheel = { -1, -1 };
-        private static readonly Color32[] BloodPrint = { new(92, 6, 5, 255), new(64, 4, 3, 255) };
+        private static readonly Color32[] BloodPrint = { new(72, 5, 4, 255), new(50, 3, 2, 255) };
         private static readonly Color BloodBelt = new(0.32f, 0.02f, 0.015f, 1f);
         private MaterialPropertyBlock _block;
         private float _gearDebt;
