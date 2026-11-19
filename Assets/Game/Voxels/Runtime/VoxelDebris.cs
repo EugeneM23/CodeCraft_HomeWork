@@ -247,7 +247,7 @@ namespace Game.Voxels
         /// <summary>A drop of blood: one cube that flies, spreads into a tile where it lands and lies there for good. -1 when full.</summary>
         public int Drop(Vector3 position, Vector3 velocity, Color32 color, float size)
         {
-            int cluster = BeginCluster(position, velocity, 0f);
+            int cluster = BeginGoreCluster(position, velocity, 0f);
             if (cluster < 0)
                 return -1;
 
@@ -369,18 +369,50 @@ namespace Game.Voxels
             CreateCells(material, cellCapacity);
         }
 
+        /// <summary>
+        /// Share of the flying store that dirt (anything but gore: earth, crumbs, dust, rubble) may fill; gore (blood drops,
+        /// goo: <see cref="Drop"/>, <see cref="GooDrop"/>, <see cref="BeginGoreCluster"/>) may fill all of it, so the mud a
+        /// tank churns up can never crowd the blood out. 1 (the default) makes no difference between them.
+        /// </summary>
+        public float DirtShare { get; set; } = 1f;
+
+        /// <summary>Clumps of gore and of dirt refused for want of room since the store was made (benchmarks, the debug panel).</summary>
+        public int RefusedGore { get; private set; }
+        public int RefusedDirt { get; private set; }
+
+        private int DirtCapacity => (int)(_capacity * math.saturate(DirtShare));
+
+        /// <summary>Room for this many more cubes of dirt (within <see cref="DirtShare"/>).</summary>
         public bool HasRoom(int cubes)
+        {
+            Complete();
+            return _cubes.IsCreated && _cubes.Length + cubes <= DirtCapacity;
+        }
+
+        /// <summary>Room for this many more cubes of gore (the whole store).</summary>
+        public bool HasGoreRoom(int cubes)
         {
             Complete();
             return _cubes.IsCreated && _cubes.Length + cubes <= _capacity;
         }
 
-        /// <summary>Starts a clump flying; cubes are added to it with <see cref="AddCube"/>. -1 when full.</summary>
-        public int BeginCluster(Vector3 center, Vector3 velocity, float spin = 4f)
+        /// <summary>Starts a clump of dirt flying; cubes are added to it with <see cref="AddCube"/>. -1 when full (past <see cref="DirtShare"/>).</summary>
+        public int BeginCluster(Vector3 center, Vector3 velocity, float spin = 4f) => Begin(center, velocity, spin, false);
+
+        /// <summary>Starts a clump of gore (goo, blood) flying: it may take the share of the store dirt may not. -1 when full.</summary>
+        public int BeginGoreCluster(Vector3 center, Vector3 velocity, float spin = 4f) => Begin(center, velocity, spin, true);
+
+        private int Begin(Vector3 center, Vector3 velocity, float spin, bool gore)
         {
             Complete();
-            if (!_clusters.IsCreated || _clusters.Length >= _capacity || _cubes.Length >= _capacity)
+            if (!_clusters.IsCreated || _clusters.Length >= _capacity || _cubes.Length >= (gore ? _capacity : DirtCapacity))
+            {
+                if (gore)
+                    RefusedGore++;
+                else
+                    RefusedDirt++;
                 return -1;
+            }
 
             _clusters.Add(new Cluster
             {

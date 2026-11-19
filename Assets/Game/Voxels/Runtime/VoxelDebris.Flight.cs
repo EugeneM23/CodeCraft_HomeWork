@@ -375,8 +375,23 @@ namespace Game.Voxels
                     slot = state.Count++;
                 else
                 {
+                    // Dirt goes before gore: a few slots ahead are looked at for dirt to overwrite.
                     slot = state.Overwrite;
-                    state.Overwrite = (state.Overwrite + 1) % capacity;
+                    if ((Lying[slot].Flags & GORE) != 0 && (settledCluster.Flags & (GOO | SPLAT)) == 0)
+                    {
+                        for (int probe = 1; probe < GORE_PROBE; probe++)
+                        {
+                            int next = (state.Overwrite + probe) % capacity;
+                            if ((Lying[next].Flags & GORE) == 0)
+                            {
+                                slot = next;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (slot == state.Overwrite)
+                        state.Overwrite = (state.Overwrite + 1) % capacity;
 
                     // The cube overwritten may have been sinking: it is not any more, and no longer counts.
                     LyingCube old = Lying[slot];
@@ -404,7 +419,7 @@ namespace Game.Voxels
                     Group = group,
                     Born = Time,
                     SinkTime = SINK_TIME,
-                    Flags = (settledCluster.Flags & LAID) | PENDING,
+                    Flags = (settledCluster.Flags & LAID) | PENDING | ((settledCluster.Flags & (GOO | SPLAT)) != 0 ? GORE : 0),
                     Anchor = anchor,
                     Cell = cell
                 };

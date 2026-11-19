@@ -85,6 +85,12 @@ namespace Game.Voxels
 
         private float _gearCleanDebt;
 
+        [Header("Blood on the tracks")]
+        [Tooltip("Metres a track runs until the blood of a squash (AddTrackBlood) has worn off it: its prints fade over this.")]
+        [SerializeField] private float _bloodWearDistance = 15f;
+        [Tooltip("Half the width (m) of the bloody print a track leaves.")]
+        [SerializeField] private float _bloodPrintRadius = 0.24f;
+
         [Header("Shaken like a wet dog (Shudder)")]
         [Tooltip("How hard (m/s) the mud and blood fly straight out off the tank when it shudders.")]
         [SerializeField] private float _shudderKick = 4.5f;
@@ -132,11 +138,25 @@ namespace Game.Voxels
         /// <summary>Slowest the tracks run (m/s) and still churn mud up.</summary>
         private const float MIN_TRACK_SPEED = 0.4f;
 
+        /// <summary>
+        /// Share of the small crumbs (the side spray, the rooster tail's single cubes) actually thrown: they were most of the
+        /// flying debris and starved the blood of room (the user: three times the blood, far fewer crumbs). The clods stay.
+        /// </summary>
+        private const float CRUMB_SCALE = 0.4f;
+
         private static readonly int ColorId = Shader.PropertyToID("_Color");
 
         private readonly List<VoxelBody> _gear = new();
         private readonly List<Renderer> _belt = new();
         private readonly List<Color> _beltColours = new();
+        /// <summary>Side of each belt renderer: 0 left, 1 right (of the tank's own x).</summary>
+        private readonly List<int> _beltSide = new();
+        /// <summary>Blood on each track (0 left, 1 right): 1 fresh from a squash, worn to 0 over <see cref="_bloodWearDistance"/>.</summary>
+        private readonly float[] _trackBlood = new float[2];
+        /// <summary>The rearmost road wheel of each side: it lays the bloody print (every wheel of a side runs the same line).</summary>
+        private readonly int[] _printWheel = { -1, -1 };
+        private static readonly Color32[] BloodPrint = { new(92, 6, 5, 255), new(64, 4, 3, 255) };
+        private static readonly Color BloodBelt = new(0.32f, 0.02f, 0.015f, 1f);
         private MaterialPropertyBlock _block;
         private float _gearDebt;
         private float _crumbDebt;
@@ -183,6 +203,14 @@ namespace Game.Voxels
                 _wheelList.Add(child);
                 _lastBite.Add(child.position);
                 _lastWheel.Add(child.position);
+            }
+
+            for (int i = 0; i < _wheelList.Count; i++)
+            {
+                Vector3 local = transform.InverseTransformPoint(_wheelList[i].position);
+                int side = local.x >= 0f ? 1 : 0;
+                if (_printWheel[side] < 0 || local.z < transform.InverseTransformPoint(_wheelList[_printWheel[side]].position).z)
+                    _printWheel[side] = i;
             }
         }
 
@@ -244,6 +272,15 @@ namespace Game.Voxels
             // The wheels bob on the springs even standing still: that is not driving.
             if (travelled < MIN_TRACK_SPEED * deltaTime)
                 return;
+
+            // Blood on a track wears off as it runs: its prints fade with it.
+            if (_trackBlood[0] > 0f || _trackBlood[1] > 0f)
+            {
+                for (int s = 0; s < 2; s++)
+                    _trackBlood[s] = Mathf.Max(0f, _trackBlood[s] - travelled / Mathf.Max(0.1f, _bloodWearDistance));
+                TintBelt();
+            }
+
             if (!_onMud || travelled > 2f)
                 return;
 
@@ -325,6 +362,37 @@ namespace Game.Voxels
             }
         }
 
+        /// <summary>
+        /// Blood on a track (a body part burst under it, TankBloodBehaviour): its belt reddens and it leaves bloody prints
+        /// on any ground, cobbles too, strong for a few metres and fading as the blood wears off over
+        /// <see cref="_bloodWearDistance"/>. Only the track on the side of <paramref name="worldPoint"/> takes it.
+        /// </summary>
+        public void AddTrackBlood(Vector3 worldPoint, float amount)
+        {
+            int side = transform.InverseTransformPoint(worldPoint).x >= 0f ? 1 : 0;
+            _trackBlood[side] = Mathf.Clamp01(_trackBlood[side] + amount);
+            if (_block == null)
+            {
+                _block = new MaterialPropertyBlock();
+                FindRunningGear();
+            }
+
+            TintBelt();
+        }
+
+        /// <summary>Blood on a track: 0 left, 1 right (0..1).</summary>
+        public float TrackBlood(int side) => _trackBlood[side];
+
+        /// <summary>The rearmost wheel of a bloody track presses a red print where it rolls; the more blood, the denser.</summary>
+        private void PrintBlood(int wheel, VoxelBody ground, Vector3 point)
+        {
+            int side = wheel == _printWheel[0] ? 0 : wheel == _printWheel[1] ? 1 : -1;
+            if (side < 0 || _trackBlood[side] < 0.02f)
+                return;
+            float chance = Mathf.Min(0.85f, _trackBlood[side] * 1.6f);
+            ground.Paint(point - Vector3.up * 0.04f, _bloodPrintRadius, BloodPrint[Random.Range(0, BloodPrint.Length)], chance);
+        }
+
         /// <summary>A bite under one wheel, once it has rolled far enough since the last.</summary>
         private void Bite(int i, Vector3 moving, float speed)
         {
@@ -368,6 +436,9 @@ namespace Game.Voxels
             if ((position - _lastBite[i]).sqrMagnitude < _spacing * _spacing)
                 return;
             _lastBite[i] = position;
+
+            if (_trackBlood[0] > 0f || _trackBlood[1] > 0f)
+                PrintBlood(i, ground, hit.point);
 
             // Grass and dry ground give no rut: the track only presses it flat, and the trodden
             // surface takes the brown of the earth beneath. Nothing is dug out.
@@ -531,7 +602,7 @@ namespace Game.Voxels
             Vector3 carried = _body.linearVelocity * 0.6f;
             Color32 earth = inMud >= 0.5f ? _mud : _dust;
 
-            _roostDebt += _roostPerSecond * WheelSpin * deltaTime;
+            _roostDebt += _roostPerSecond * CRUMB_SCALE * WheelSpin * deltaTime;
             while (_roostDebt >= 1f)
             {
                 _roostDebt -= 1f;
@@ -648,7 +719,7 @@ namespace Game.Voxels
             if (debris == null || _wheelList.Count == 0)
                 return;
 
-            _crumbDebt += travelled * _crumbsPerMetre;
+            _crumbDebt += travelled * _crumbsPerMetre * CRUMB_SCALE;
             while (_crumbDebt >= 1f)
             {
                 _crumbDebt -= 1f;
@@ -780,6 +851,7 @@ namespace Game.Voxels
                 Renderer belt = _belt[i];
                 belt.GetPropertyBlock(_block);
                 Color colour = Color.Lerp(_beltColours[i], mud, _beltMud * 0.85f);
+                colour = Color.Lerp(colour, BloodBelt.gamma, _trackBlood[_beltSide[i]] * 0.9f);
                 colour.a = 1f;
                 _block.SetColor(ColorId, colour);
                 belt.SetPropertyBlock(_block);
@@ -792,6 +864,7 @@ namespace Game.Voxels
             _gear.Clear();
             _belt.Clear();
             _beltColours.Clear();
+            _beltSide.Clear();
 
             if (_skin != null)
             {
@@ -813,6 +886,7 @@ namespace Game.Voxels
                     continue;
                 _belt.Add(renderer);
                 _beltColours.Add(material.GetColor(ColorId));
+                _beltSide.Add(transform.InverseTransformPoint(renderer.bounds.center).x >= 0f ? 1 : 0);
             }
         }
 

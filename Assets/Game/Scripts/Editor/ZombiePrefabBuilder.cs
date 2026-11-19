@@ -255,11 +255,12 @@ namespace Game.EditorTools
             config.FindPropertyRelative("leftMarker").stringValue = "Shoulder_L";
             config.FindPropertyRelative("skinColor").colorValue = SkinColor;
 
-            // Fewer, bigger voxels (the user): 10 cm instead of the Regax's 5 cm, boxes of two (20 cm); fewer, bigger drops.
+            // Fewer, bigger voxels (the user): 10 cm instead of the Regax's 5 cm, boxes of two (20 cm); big drops, three
+            // times as many as at first (the user: the blood's budget x3; the debris store keeps 40 % for gore).
             config.FindPropertyRelative("voxelSize").floatValue = 0.1f;
             config.FindPropertyRelative("colliderCell").intValue = 2;
-            config.FindPropertyRelative("seamDrops").intValue = 60;
-            config.FindPropertyRelative("hitDrops").intValue = 70;
+            config.FindPropertyRelative("seamDrops").intValue = 180;
+            config.FindPropertyRelative("hitDrops").intValue = 210;
             config.FindPropertyRelative("gooSpeed").floatValue = 7.5f;
             // The heavy drop after the sluggish rise lands at ~8 m/s: the parts keep whole (for the tracks to burst).
             config.FindPropertyRelative("fractureSpeed").floatValue = 12f;

@@ -8,9 +8,10 @@ namespace Game
     /// <summary>
     /// The tank gets bloody exactly where the gore hits it, on its voxel skin (VoxelizedModel), the way
     /// TankCrushBehaviour stains it: the death goo of zombies (VoxelSpray.Goo) that flies into the hull is caught
-    /// by the debris step (VoxelDebris.SetStainBox: goo never collides with the tank) and splats there; a body part
-    /// burst under a track (TankSquashBehaviour, the horde's corpses) bloodies the track, road wheels and lower hull
-    /// round it, and up the side when it was big (TankBloodStains.Squash).
+    /// by the debris step (VoxelDebris.SetStainBox: goo never collides with the tank) and splats there. A body part
+    /// burst under a track (TankSquashBehaviour, the horde's corpses) bloodies that track only (the user): its voxel
+    /// track parts round the spot, its belt (VoxelTrackRuts.AddTrackBlood), which then leaves bloody prints that fade
+    /// over some 15 m of driving.
     ///
     /// The stains are taken into the tank's frame as they come (so they land where they hit as it drives on) and laid
     /// <see cref="STAINS_PER_STEP"/> a physics step: a burst of sixty deaths spreads its blood over a few tenths of a
@@ -48,6 +49,8 @@ namespace Game
             public Vector3 Local;
             public float Radius;
             public bool Clots;
+            public bool Track;
+            public float Amount;
         }
 
         private readonly Rigidbody _body;
@@ -55,6 +58,10 @@ namespace Game
         private readonly List<Vector3> _hits = new(64);
         private readonly List<VoxelBody> _near = new(16);
         private VoxelizedModel _skin;
+        private VoxelTrackRuts _ruts;
+        /// <summary>The skin's track parts (their parent named Track*): the only ones a squash bloodies. Found at the first.</summary>
+        private readonly List<VoxelBody> _trackParts = new(8);
+        private bool _trackPartsFound;
         private bool _boxReady;
         private Bounds _localBox;
         private int _head;
@@ -68,6 +75,7 @@ namespace Game
         public void Init(IEntity entity)
         {
             _skin = _body != null ? _body.GetComponent<VoxelizedModel>() : null;
+            _ruts = _body != null ? _body.GetComponent<VoxelTrackRuts>() : null;
             TankBloodStains.Clear();
         }
 
@@ -101,14 +109,21 @@ namespace Game
 
                 // Into the tank's frame as they come: they land where they hit.
                 while (TankBloodStains.TryTake(out TankBloodStains.Stain stain))
-                    Enqueue(new LocalStain { Local = frame.InverseTransformPoint(stain.Point), Radius = stain.Radius, Clots = stain.Clots });
+                    Enqueue(new LocalStain
+                    {
+                        Local = frame.InverseTransformPoint(stain.Point), Radius = stain.Radius, Clots = stain.Clots,
+                        Track = stain.Track, Amount = stain.Amount
+                    });
 
                 for (int i = 0; i < STAINS_PER_STEP && _count > 0; i++)
                 {
                     LocalStain next = _queue[_head];
                     _head = (_head + 1) % _queue.Length;
                     _count--;
-                    Lay(frame.TransformPoint(next.Local), next.Radius, next.Clots);
+                    if (next.Track)
+                        LayOnTrack(frame.TransformPoint(next.Local), next.Radius, next.Amount);
+                    else
+                        Lay(frame.TransformPoint(next.Local), next.Radius, next.Clots);
                 }
             }
         }
@@ -123,6 +138,36 @@ namespace Game
 
             _queue[(_head + _count) % _queue.Length] = stain;
             _count++;
+        }
+
+        /// <summary>A squash under a track: that track's voxel parts round the spot, and its belt and prints.</summary>
+        private void LayOnTrack(Vector3 point, float radius, float amount)
+        {
+            if (_ruts != null)
+                _ruts.AddTrackBlood(point, amount);
+
+            if (!_trackPartsFound)
+            {
+                _trackPartsFound = true;
+                IReadOnlyList<VoxelBody> parts = _skin.Bodies;
+                for (int b = 0; b < parts.Count; b++)
+                {
+                    VoxelBody part = parts[b];
+                    Transform parent = part != null ? part.transform.parent : null;
+                    if (parent != null && parent.name.StartsWith("Track"))
+                        _trackParts.Add(part);
+                }
+            }
+
+            Color32 colour = Blood[Random.Range(0, Blood.Length)];
+            for (int i = 0; i < _trackParts.Count; i++)
+            {
+                VoxelBody part = _trackParts[i];
+                if (part != null && part.IsCreated && part.WorldBounds.SqrDistance(point) <= radius * radius)
+                    part.Paint(point, radius, colour, PAINT_CHANCE);
+            }
+
+            Laid++;
         }
 
         /// <summary>Steps a stain takes toward the tank's middle to find skin under a spot in the air (goo is caught in a box).</summary>

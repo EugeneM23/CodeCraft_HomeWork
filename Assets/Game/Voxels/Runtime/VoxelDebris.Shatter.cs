@@ -15,7 +15,7 @@ namespace Game.Voxels
         /// About this share of a breaking clump, on the side that hit, falls off as single crumbs
         /// (what CRUMB_DEPTH comes to).
         /// </summary>
-        private const float CRUMB_SHARE = 0.18f;
+        private const float CRUMB_SHARE = 0.09f;
         /// <summary>
         /// A cube is a crumb when it lies deeper than this share of the clump's reach (from its centre,
         /// towards the side that hit), less a jitter of up to a cube: the cap past half the radius is
@@ -29,9 +29,9 @@ namespace Game.Voxels
         /// <summary>Dust falls at 0.3 g: a share of the debris gravity, which is GRAVITY_SCALE times g.</summary>
         private const float DUST_GRAVITY = 0.3f / GRAVITY_SCALE;
         /// <summary>Most dust cubes one break knocks out.</summary>
-        private const int MAX_DUST = 12;
+        private const int MAX_DUST = 5;
         /// <summary>Fewest dust cubes a puff has.</summary>
-        private const int MIN_DUST = 6;
+        private const int MIN_DUST = 3;
         /// <summary>Dust is lightened this far towards white (shared by the break and ThrowEarth).</summary>
         private const float DUST_LIGHTEN = 0.2f;
         private const float DUST_SIZE_MIN = 0.04f;

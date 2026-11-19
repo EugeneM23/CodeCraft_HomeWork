@@ -78,9 +78,9 @@ namespace Game.Voxels
                 Vector3 heading = (aim + Random.insideUnitSphere * spread).normalized;
                 Vector3 centre = at + Random.insideUnitSphere * radius;
                 int cubes = Random.Range(4, 8);
-                if (!debris.HasRoom(cubes))
+                if (!debris.HasGoreRoom(cubes))
                     break;
-                int cluster = debris.BeginCluster(centre, inherit + heading * (speed * Random.Range(0.55f, 0.85f)), 1f);
+                int cluster = debris.BeginGoreCluster(centre, inherit + heading * (speed * Random.Range(0.55f, 0.85f)), 1f);
                 if (cluster < 0)
                     break;
                 for (int k = 0; k < cubes; k++)

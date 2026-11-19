@@ -28,6 +28,12 @@ namespace Game.Voxels
         /// until a build of its cell clears the flag.
         /// </summary>
         private const int PENDING = 64;
+        /// <summary>Gore (a blood drop, goo): an overwrite of a full store passes it over for dirt, and eviction takes it later.</summary>
+        private const int GORE = 128;
+        /// <summary>Slots an overwrite looks ahead for dirt before it overwrites gore.</summary>
+        private const int GORE_PROBE = 16;
+        /// <summary>Eviction score of gore against dirt: it lies about three times as long.</summary>
+        private const float GORE_SCORE = 0.35f;
 
         /// <summary>How long (s) a crushed cube takes to sink.</summary>
         private const float CRUSH_SINK_TIME = 0.4f;
@@ -41,7 +47,7 @@ namespace Game.Voxels
         /// </summary>
         private const int BLAST_RESERVE = 8;
         /// <summary>Most crumbs one crushed piece throws in a step.</summary>
-        private const int MAX_CRUSH_CRUMBS = 6;
+        private const int MAX_CRUSH_CRUMBS = 3;
         /// <summary>Share of a crushed piece that flies back as crumbs.</summary>
         private const float CRUSH_CRUMB_SHARE = 1f / 3f;
         private const float CRUMB_LIFE = 10f;
@@ -228,7 +234,8 @@ namespace Game.Voxels
             }
 
             private float Score(in LyingCube cube) =>
-                (Time - cube.Born) / EVICT_AGE + math.distance(cube.Position, ViewPoint) / EVICT_DISTANCE;
+                ((Time - cube.Born) / EVICT_AGE + math.distance(cube.Position, ViewPoint) / EVICT_DISTANCE) *
+                ((cube.Flags & GORE) != 0 ? GORE_SCORE : 1f);
         }
 
         /// <summary>Cube counts of the lying pieces (cubes that lay down together): for tests and debugging.</summary>

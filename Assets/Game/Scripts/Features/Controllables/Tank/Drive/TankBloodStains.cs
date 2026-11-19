@@ -12,12 +12,17 @@ namespace Game
     {
         public const int CAPACITY = 128;
 
-        /// <summary>One spot of blood to lay: a sphere of skin, and whether wet clots go on as well as the stain.</summary>
+        /// <summary>
+        /// One spot of blood to lay: a sphere of skin, and whether wet clots go on as well as the stain; or, with
+        /// <see cref="Track"/>, a squash under the track on that side: only that track takes it (<see cref="Amount"/>).
+        /// </summary>
         public struct Stain
         {
             public Vector3 Point;
             public float Radius;
             public bool Clots;
+            public bool Track;
+            public float Amount;
         }
 
         private static readonly Stain[] Ring = new Stain[CAPACITY];
@@ -40,28 +45,12 @@ namespace Game
         public static void Splat(Vector3 point, float radius) => Add(new Stain { Point = point, Radius = radius, Clots = false });
 
         /// <summary>
-        /// A body part burst under a track at <paramref name="ground"/> (where it lay), <paramref name="side"/> the way out
-        /// from the tank's middle: the track, road wheels and lower hull round it take blood, and with
-        /// <paramref name="heaviness"/> (0..1, the part's size) it splatters up the side.
+        /// A body part burst under a track at <paramref name="ground"/> (where it lay): only that track gets bloody (the
+        /// user: the tracks, nothing else), its belt reddens and it leaves bloody prints for a while (VoxelTrackRuts).
+        /// <paramref name="heaviness"/> (0..1, the part's size) is how much blood it takes.
         /// </summary>
-        public static void Squash(Vector3 ground, Vector3 side, float heaviness)
-        {
-            heaviness = Mathf.Clamp01(heaviness);
-            int under = 2 + Mathf.RoundToInt(heaviness * 2f);
-            for (int i = 0; i < under; i++)
-            {
-                Vector2 jitter = Random.insideUnitCircle * 0.5f;
-                Vector3 at = ground + new Vector3(jitter.x, Random.Range(0.05f, 0.7f), jitter.y);
-                Add(new Stain { Point = at, Radius = 0.45f, Clots = i == 0 });
-            }
-
-            int up = Mathf.RoundToInt(heaviness * 2f);
-            for (int i = 0; i < up; i++)
-            {
-                Vector3 at = ground + side * Random.Range(0.1f, 0.4f) + Vector3.up * Random.Range(0.5f, 0.6f + heaviness);
-                Add(new Stain { Point = at, Radius = 0.25f, Clots = false });
-            }
-        }
+        public static void Squash(Vector3 ground, float heaviness) =>
+            Add(new Stain { Point = ground, Radius = 0.6f, Track = true, Amount = 0.5f + 0.5f * Mathf.Clamp01(heaviness) });
 
         public static void Add(in Stain stain)
         {

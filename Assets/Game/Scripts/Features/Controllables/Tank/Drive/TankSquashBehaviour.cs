@@ -27,8 +27,8 @@ namespace Game
 
         /// <summary>Drops of goo per m³ of a squashed piece, and the fewest and most a piece gives.</summary>
         private const float DROPS_PER_VOLUME = 60f;
-        private const int MIN_DROPS = 14;
-        private const int MAX_DROPS = 30;
+        private const int MIN_DROPS = 42;
+        private const int MAX_DROPS = 90;
 
         private const float GOO_SPEED = 6f;
         private const float GOO_SIZE = 0.1f;
@@ -84,8 +84,8 @@ namespace Game
                     int drops = Mathf.Clamp(Mathf.RoundToInt(size.x * size.y * size.z * DROPS_PER_VOLUME), MIN_DROPS, MAX_DROPS);
                     VoxelSpray.Goo(piece.center, Vector3.up + side * 0.7f, drops, GOO_SPEED, 0.45f, Goo, GOO_SIZE,
                         velocity * INHERIT, Mathf.Min(0.3f, piece.extents.magnitude * 0.5f));
-                    // The track, road wheels and lower hull round it take the blood; a big part splatters up the side.
-                    TankBloodStains.Squash(new Vector3(piece.center.x, piece.min.y, piece.center.z), side,
+                    // Only the track that ran over it gets bloody, and leaves red prints for a while.
+                    TankBloodStains.Squash(new Vector3(piece.center.x, piece.min.y, piece.center.z),
                         size.x * size.y * size.z / HEAVY_VOLUME);
                 }
             }

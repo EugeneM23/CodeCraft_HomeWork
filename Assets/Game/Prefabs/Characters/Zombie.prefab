@@ -1843,11 +1843,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5655884024937215095, guid: e2c73aa53d2f90a4db53ae5a58c42d97, type: 3}
       propertyPath: _config.hitDrops
-      value: 70
+      value: 210
       objectReference: {fileID: 0}
     - target: {fileID: 5655884024937215095, guid: e2c73aa53d2f90a4db53ae5a58c42d97, type: 3}
       propertyPath: _config.seamDrops
-      value: 60
+      value: 180
       objectReference: {fileID: 0}
     - target: {fileID: 5655884024937215095, guid: e2c73aa53d2f90a4db53ae5a58c42d97, type: 3}
       propertyPath: _config.spineFrom

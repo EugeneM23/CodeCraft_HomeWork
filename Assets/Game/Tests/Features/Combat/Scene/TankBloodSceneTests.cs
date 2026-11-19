@@ -12,7 +12,7 @@ namespace Game.Tests
 {
     /// <summary>
     /// The tank's skin takes blood where gore hits it (TankBloodBehaviour), in VoxelSandbox: death goo thrown onto the
-    /// hull is caught by the debris step and splats there, and a body part burst by a track bloodies the track.
+    /// hull is caught by the debris step and splats there, and a body part burst under a track bloodies that track only.
     /// </summary>
     public sealed class TankBloodSceneTests
     {
@@ -22,7 +22,7 @@ namespace Game.Tests
 
         [UnityTest]
         [Timeout(120000)]
-        public IEnumerator GooOnTheHull_AndASquashUnderATrack_BloodyTheSkin()
+        public IEnumerator GooOnTheHull_StainsTheSkin_AndASquash_BloodiesThatTrackOnly()
         {
             LogAssert.ignoreFailingMessages = true;
             yield return EditorSceneManager.LoadSceneAsyncInPlayMode(SCENE, new LoadSceneParameters(LoadSceneMode.Single));
@@ -51,15 +51,18 @@ namespace Game.Tests
             int fromGoo = blood.Laid - before;
             Assert.That(fromGoo, Is.GreaterThan(0), "goo that hit the hull stained it");
 
-            // A big part burst under the right track: the track and the lower hull round it.
+            // A big part burst under the right track: that track only takes the blood (its belt, then its prints).
             Transform frame = tank.transform;
-            Vector3 underTrack = frame.position + frame.right * 1.0f;
+            var ruts = tank.GetComponent<VoxelTrackRuts>();
+            Assert.That(ruts, Is.Not.Null, "the tank has VoxelTrackRuts");
             before = blood.Laid;
-            TankBloodStains.Squash(underTrack, frame.right, 1f);
-            for (int i = 0; i < 20; i++)
+            TankBloodStains.Squash(frame.position + frame.right * 1.0f, 1f);
+            for (int i = 0; i < 5; i++)
                 yield return new WaitForFixedUpdate();
-            Assert.That(blood.Laid - before, Is.GreaterThan(2), "the squash bloodied the running gear");
-            Debug.Log($"[TankBloodTest] goo stains {fromGoo}, squash stains {blood.Laid - before}");
+            Assert.That(blood.Laid - before, Is.GreaterThanOrEqualTo(1), "the squash was laid");
+            Assert.That(ruts.TrackBlood(1), Is.GreaterThan(0.5f), "the right track is bloody");
+            Assert.That(ruts.TrackBlood(0), Is.EqualTo(0f), "the left one is not");
+            Debug.Log($"[TankBloodTest] goo stains {fromGoo}, right track blood {ruts.TrackBlood(1):F2}");
         }
     }
 }

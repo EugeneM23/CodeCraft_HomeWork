@@ -38,12 +38,12 @@ namespace Game.AIKit.Adapters
         /// <summary>Launch speed (m/s) and drop size (times the blood's) of the goo a death throws.</summary>
         private const float GOO_SPEED = 6.5f;
         private const float GOO_SIZE = 3f;
-        private const int GOO_MIN_DROPS = 16;
+        private const int GOO_MIN_DROPS = 48;
 
         /// <summary>The tracks run corpses over above this tank speed (m/s), in a band this high (m) round the hull's bottom.</summary>
         private const float SQUASH_SPEED = 0.4f;
         private const float SQUASH_BAND = 0.9f;
-        private const int SQUASH_DROPS = 18;
+        private const int SQUASH_DROPS = 54;
 
         private static readonly ProfilerMarker TickMarker = new("Horde.Tick");
         private static readonly ProfilerMarker DeathsMarker = new("Horde.Deaths");
@@ -77,6 +77,10 @@ namespace Game.AIKit.Adapters
         /// <summary>Blood and meat: the goo a death and a squashed corpse throw (VoxelSpray.Goo).</summary>
         private Color32[] _goo;
         private readonly List<Vector3> _squashed = new(16);
+        /// <summary>Deaths whose goo waits for a later frame (bloodPerFrame a frame): a ring.</summary>
+        private readonly Vector3[] _gooQueue = new Vector3[128];
+        private int _gooHead;
+        private int _gooCount;
         private float _bloodSize;
         private Color32[] _acidDrops;
         private IEnemyTargets _registeredTargets;
@@ -747,13 +751,41 @@ namespace Game.AIKit.Adapters
                     Vector3 side = right * Mathf.Sign(Vector3.Dot(at - centre, right));
                     VoxelSpray.Goo(at, Vector3.up + side * 0.7f, SQUASH_DROPS, 5.5f, 0.45f, _goo, _bloodSize * GOO_SIZE,
                         velocity * 0.25f, 0.4f);
-                    TankBloodStains.Squash(_squashed[i], side, 0.5f);
+                    TankBloodStains.Squash(_squashed[i], 0.6f);
                 }
             }
         }
 
+        /// <summary>Sticky goo lifts out of a body, hangs and drops: big drops (VoxelSpray.Goo).</summary>
+        private void Goo(Vector3 at) =>
+            VoxelSpray.Goo(at, Vector3.up, Mathf.Max(_options.bloodDrops, GOO_MIN_DROPS), GOO_SPEED, 0.5f, _goo, _bloodSize * GOO_SIZE, default, 0.3f);
+
+        /// <summary>A death's goo for a later frame (the oldest gives way when the ring is full).</summary>
+        private void QueueGoo(Vector3 at)
+        {
+            if (_gooCount == _gooQueue.Length)
+            {
+                _gooHead = (_gooHead + 1) % _gooQueue.Length;
+                _gooCount--;
+            }
+
+            _gooQueue[(_gooHead + _gooCount) % _gooQueue.Length] = at;
+            _gooCount++;
+        }
+
         private void HandleDeaths()
         {
+            // Goo of the last frames' deaths past the budget comes first: a burst of sixty spreads its goo over frames,
+            // but every death gets it.
+            int sprays = 0;
+            while (_gooCount > 0 && sprays < _options.bloodPerFrame)
+            {
+                Goo(_gooQueue[_gooHead]);
+                _gooHead = (_gooHead + 1) % _gooQueue.Length;
+                _gooCount--;
+                sprays++;
+            }
+
             NativeArray<HordeDeathEvent> deaths = _simulation.Deaths;
             if (deaths.Length == 0)
                 return;
@@ -765,7 +797,6 @@ namespace Game.AIKit.Adapters
                 if (context != null)
                     context.TryGetEnemyDeaths(out feed);
                 float time = GameTicks.Time;
-                int sprays = 0;
                 for (int i = 0; i < deaths.Length; i++)
                 {
                     HordeDeathEvent death = deaths[i];
@@ -774,9 +805,12 @@ namespace Game.AIKit.Adapters
                     Vector3 at = (Vector3)death.Position + Vector3.up * 0.6f;
                     if (sprays < _options.bloodPerFrame)
                     {
-                        // Sticky goo lifts out of the body, hangs and drops: big drops, few of them.
-                        VoxelSpray.Goo(at, Vector3.up, Mathf.Max(_options.bloodDrops, GOO_MIN_DROPS), GOO_SPEED, 0.5f, _goo, _bloodSize * GOO_SIZE, default, 0.3f);
+                        Goo(at);
                         sprays++;
+                    }
+                    else
+                    {
+                        QueueGoo(at);
                     }
 
                     _killed.Invoke(at);
