@@ -60,13 +60,14 @@ namespace Game.Voxels
 
         /// <summary>
         /// A blast bites a building only this far (m) as it would anything else; past it, by
-        /// <see cref="BUILDING_BITE_SHARE"/> of the rest. A shell's 1.6 m crater is 0.76 m in a wall,
-        /// a bomb's 2 m one 0.88 m; a bullet's 0.3 m hole is the same (user, 2026-11-19: a house
-        /// should not come down so quickly from a tank's shells).
+        /// <see cref="BUILDING_BITE_SHARE"/> of the rest. A shell's 1.6 m crater is 1.19 m in a wall, an air
+        /// bomb's 2 m one 1.46 m; a bullet's 0.3 m hole is the same (user, 2026-11-19: a house should not come
+        /// down so quickly from a tank's shells; 2026-11-20: about three times harder than before the skeleton,
+        /// not fifteen — at 0.3 a shell's bite was 0.76 m and a bomb's was whole).
         /// </summary>
         public const float BUILDING_BITE_KNEE = 0.4f;
 
-        public const float BUILDING_BITE_SHARE = 0.3f;
+        public const float BUILDING_BITE_SHARE = 0.66f;
 
         /// <summary>The radius a bite of <paramref name="worldRadius"/> takes out of this body (smaller in a building).</summary>
         public float BiteRadius(float worldRadius) =>

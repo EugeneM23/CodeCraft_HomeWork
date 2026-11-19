@@ -764,8 +764,8 @@ namespace Game.Voxels
         /// </summary>
         /// <param name="force">Speed (m/s) the debris and loose pieces leave the blast with.</param>
         /// <param name="debrisBudget">Most debris cubes this carve may throw.</param>
-        /// <param name="fullBite">An air bomb: a building takes the whole bite, not the smaller one a shell's
-        /// gets (BiteRadius); only its skeleton's hardness holds it back.</param>
+        /// <param name="fullBite">Not a blast (a storey landing on the one below): a building takes the whole bite,
+        /// not the smaller one a shell's or a bomb's gets (BiteRadius); only its skeleton's hardness holds it back.</param>
         public int CarveSphere(Vector3 worldCenter, float worldRadius, float force, int debrisBudget, bool fullBite = false)
         {
             float radius = worldRadius * Toughness;
@@ -1016,6 +1016,49 @@ namespace Game.Voxels
         /// <remarks>A scoop, not a blast: it takes a building's load-bearing voxels as readily as the rest.</remarks>
         public int Dig(Vector3 worldCenter, float worldRadius, Vector3 throwVelocity, int debrisBudget) =>
             Carve(worldCenter, worldRadius, 1f, 0.1f, false, debrisBudget, worldCenter, 0f, throwVelocity, 0f, false);
+
+        /// <summary>How far (m) the faces of a bow's hole wander in and out: ragged, not cut.</summary>
+        private const float RAM_ROUGHNESS = 0.06f;
+
+        /// <summary>
+        /// A vehicle's bow breaking through (VoxelRammer, VoxelDamage.Ram): a box the bow's shape taken out
+        /// (<paramref name="worldHalf"/> along the box's own axes, turned by <paramref name="worldRotation"/>), its
+        /// debris thrown on along <paramref name="throwVelocity"/>. A building's skeleton (SetHardness) is spared
+        /// unless <paramref name="skeleton"/>: a ram near top speed takes piers and corners as it takes the walls.
+        /// </summary>
+        /// <returns>How many voxels were knocked out.</returns>
+        public int RamBox(Vector3 worldCenter, Quaternion worldRotation, Vector3 worldHalf, Vector3 throwVelocity,
+            bool skeleton, int debrisBudget)
+        {
+            if (!_voxels.IsCreated || SolidCount == 0)
+                return 0;
+            using var marker = CarveMarker.Auto();
+
+            float edge = VoxelSize * Mathf.Max(0.0001f, Mathf.Abs(transform.lossyScale.x));
+            float3 center = ((float3)transform.InverseTransformPoint(worldCenter) - Origin) / VoxelSize;
+            quaternion local = Quaternion.Inverse(transform.rotation) * worldRotation;
+            float3 half = (float3)worldHalf / edge;
+
+            var removed = new NativeList<RemovedVoxel>(1024, Allocator.TempJob);
+            bool spare = !skeleton && _hardness.IsCreated;
+            NativeArray<float> table = spare ? _hardness : new NativeArray<float>(1, Allocator.TempJob);
+            new CarveBoxJob
+            {
+                Voxels = _voxels, Size = Size, Center = center, Inverse = math.inverse(local), Half = half,
+                Roughness = RAM_ROUGHNESS / edge, Seed = _seed++, Hardness = table, SpareHard = spare, Removed = removed
+            }.Run();
+            if (!spare)
+                table.Dispose();
+
+            int taken = AfterCarve(removed, center, new float3(math.length(half)), true, worldCenter, 0f, throwVelocity,
+                debrisBudget, 0f);
+            removed.Dispose();
+            // The bow is a few physics steps behind its hole: the colliders must be gone by the end of this frame, not
+            // after an async remesh a few frames on (RebuildsAsync), or it runs into walls that are no longer there.
+            if (taken > 0)
+                RebuildNow();
+            return taken;
+        }
 
         /// <param name="hard">A building's load-bearing voxels take a smaller bite (SetHardness); false for a scoop (Dig).</param>
         private int Carve(Vector3 worldCenter, float worldRadius, float depth, float roughness, bool split,

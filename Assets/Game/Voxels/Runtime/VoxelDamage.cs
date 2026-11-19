@@ -120,14 +120,51 @@ namespace Game.Voxels
                 total += body.CarveCrater(point, radius, slope, force, debris, life);
             }
 
-            // A house takes a 2 m bite from a 4 m crater, as it did from the old 3.4 m one: the whole of it, not
-            // the smaller bite a shell takes (VoxelBody.BiteRadius). Its skeleton stands (VoxelBody.SetHardness).
+            // A house takes a 2 m bite from a 4 m crater, as it did from the old 3.4 m one, made smaller in a building as
+            // a shell's is (VoxelBody.BiteRadius: 1.46 m). Its skeleton stands longer still (VoxelBody.SetHardness).
             foreach (VoxelBody body in Hit)
                 if (body != null && !body.IsTerrain && body.IsCreated)
-                    total += body.CarveSphere(point, radius * 0.5f, force, BLAST_DEBRIS / Mathf.Max(1, Hit.Count), true);
+                    total += body.CarveSphere(point, radius * 0.5f, force, BLAST_DEBRIS / Mathf.Max(1, Hit.Count));
 
             VoxelSignals.RaiseAirBlasted(point, radius, total);
             Hit.Clear();
+            return total;
+        }
+
+        /// <summary>
+        /// A vehicle's bow breaking through walls (VoxelRammer): a box the bow's shape (<paramref name="half"/> along
+        /// its own axes, turned by <paramref name="rotation"/>) taken out of every body in reach but the ground and the
+        /// vehicle's own (under <paramref name="ignore"/>). The debris goes on along <paramref name="throwVelocity"/>;
+        /// a building's skeleton is spared unless <paramref name="skeleton"/> (VoxelBody.RamBox). One Carved signal:
+        /// the sound of the wall going.
+        /// </summary>
+        /// <returns>How many voxels were knocked out.</returns>
+        public static int Ram(Vector3 centre, Quaternion rotation, Vector3 half, Vector3 throwVelocity, bool skeleton,
+            Transform ignore, int debris)
+        {
+            IReadOnlyList<VoxelBody> bodies = VoxelWorld.Bodies;
+            if (bodies.Count == 0)
+                return 0;
+
+            float radius = half.magnitude;
+            var reach = new Bounds(centre, Vector3.one * (radius * 2f));
+            Hit.Clear();
+            for (int i = 0; i < bodies.Count; i++)
+            {
+                VoxelBody body = bodies[i];
+                if (body != null && body.IsCreated && body.SolidCount > 0 && !body.IsTerrain &&
+                    (ignore == null || !body.transform.IsChildOf(ignore)) && body.WorldBounds.Intersects(reach))
+                    Hit.Add(body);
+            }
+
+            int total = 0;
+            for (int i = 0; i < Hit.Count; i++)
+                if (Hit[i] != null)
+                    total += Hit[i].RamBox(centre, rotation, half, throwVelocity, skeleton, debris / Hit.Count);
+
+            Hit.Clear();
+            if (total > 0)
+                VoxelSignals.RaiseCarved(centre, radius, total);
             return total;
         }
 
