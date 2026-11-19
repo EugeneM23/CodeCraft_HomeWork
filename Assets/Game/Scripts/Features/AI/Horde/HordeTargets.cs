@@ -12,7 +12,7 @@ namespace Game.AIKit.Adapters
     /// <see cref="IsAlive"/> until then, and its death (corpse, events) comes with that step. Positions are aim points,
     /// the middle of the body. Linear scans over the used slots, no allocations.
     /// </summary>
-    public sealed class HordeTargets : IEnemyTargetSource, IEnemyTargetRingQuery
+    public sealed class HordeTargets : IEnemyTargetSource, IEnemyTargetRingQuery, IEnemyTearable
     {
         /// <summary>Middle of the body over the feet at render scale 1 (the Regax model), m.</summary>
         public const float BODY_HEIGHT = 1.3f;
@@ -140,6 +140,8 @@ namespace Game.AIKit.Adapters
 
         public void Damage(int index, int version, float damage, Vector3 hitPoint) =>
             _simulation?.Damage(index, version, damage);
+
+        public void Tear(int index, int version) => _simulation?.Tear(index, version);
 
         public void DamageArea(Vector3 center, float radius, float damage, float minFactor) =>
             _simulation?.AddAreaDamage(center, radius, damage, minFactor);

@@ -1902,6 +1902,10 @@ PrefabInstance:
       value: 0.25
       objectReference: {fileID: 0}
     - target: {fileID: 5655884024937215095, guid: e2c73aa53d2f90a4db53ae5a58c42d97, type: 3}
+      propertyPath: _config.shellTearsLimbs
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5655884024937215095, guid: e2c73aa53d2f90a4db53ae5a58c42d97, type: 3}
       propertyPath: _config.speeds.maxSpeed
       value: 3.5
       objectReference: {fileID: 0}

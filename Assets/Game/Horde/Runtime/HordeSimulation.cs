@@ -67,6 +67,8 @@ namespace Game.Horde
         private NativeArray<float2> _velocity;
         private NativeArray<float> _heading;
         private NativeArray<float> _health;
+        /// <summary>Per slot: 1 when a shell's direct hit marked it (<see cref="Tear"/>): its death tears it apart.</summary>
+        private NativeArray<byte> _torn;
         private NativeArray<HordeState> _state;
         private NativeArray<float> _animTime;
         private NativeArray<float> _speedScale;
@@ -147,6 +149,7 @@ namespace Game.Horde
             _velocity = new NativeArray<float2>(capacity, Allocator.Persistent);
             _heading = new NativeArray<float>(capacity, Allocator.Persistent);
             _health = new NativeArray<float>(capacity, Allocator.Persistent);
+            _torn = new NativeArray<byte>(capacity, Allocator.Persistent);
             _state = new NativeArray<HordeState>(capacity, Allocator.Persistent);
             _animTime = new NativeArray<float>(capacity, Allocator.Persistent);
             _speedScale = new NativeArray<float>(capacity, Allocator.Persistent);
@@ -325,6 +328,7 @@ namespace Game.Horde
             _velocity[i] = float2.zero;
             _heading[i] = heading;
             _health[i] = row.Health * healthScale;
+            _torn[i] = 0;
             _maxHealth[i] = _health[i];
             _state[i] = emerge ? HordeState.Emerging : HordeState.Walk;
             _stateTime[i] = emerge ? s.EmergeTime : 0f;
@@ -453,6 +457,19 @@ namespace Game.Horde
         /// Direct damage to one monster, landing in the next step (a death of <see cref="HordeDeathCause.Damaged"/>
         /// when its health runs out). Ignored when the slot's generation is no longer <paramref name="version"/>.
         /// </summary>
+        /// <summary>
+        /// The monster, if the damage queued with it kills it, is torn apart (a shell's direct hit): its death reads
+        /// <see cref="IsTorn"/>. A slot given to a new monster starts whole.
+        /// </summary>
+        public void Tear(int index, int version)
+        {
+            if (IsTargetAlive(index, version))
+                _torn[index] = 1;
+        }
+
+        /// <summary>Whether the monster that died in this slot was torn apart (read with its death).</summary>
+        public bool IsTorn(int index) => index >= 0 && index < _torn.Length && _torn[index] != 0;
+
         public void Damage(int index, int version, float damage)
         {
             if (damage <= 0f || !IsTargetAlive(index, version) || _hits.Length >= MAX_HITS)
@@ -668,6 +685,7 @@ namespace Game.Horde
             if (_velocity.IsCreated) _velocity.Dispose();
             if (_heading.IsCreated) _heading.Dispose();
             if (_health.IsCreated) _health.Dispose();
+            if (_torn.IsCreated) _torn.Dispose();
             if (_state.IsCreated) _state.Dispose();
             if (_animTime.IsCreated) _animTime.Dispose();
             if (_speedScale.IsCreated) _speedScale.Dispose();

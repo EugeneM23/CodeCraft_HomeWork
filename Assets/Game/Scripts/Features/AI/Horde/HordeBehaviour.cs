@@ -756,6 +756,25 @@ namespace Game.AIKit.Adapters
             }
         }
 
+        /// <summary>Skin of a torn body's chunks: the zombie's greens.</summary>
+        private static readonly Color32[] TornSkin =
+        {
+            new Color(0.46f, 0.6f, 0.28f), new Color(0.36f, 0.5f, 0.22f), new Color(0.55f, 0.62f, 0.3f)
+        };
+
+        /// <summary>
+        /// A monster a shell hit and killed is torn into head, torso, arms and legs (VoxelSpray.Chunks), thrown away from the
+        /// tank, instead of lying whole: the user's bigger pieces. Its goo still comes (HandleDeaths).
+        /// </summary>
+        private void TearApart(float3 position, int row)
+        {
+            float height = HordeTargets.BODY_HEIGHT * 2f * _options.Kind(row).RenderScale * BodyScale;
+            Vector3 at = position;
+            Vector3 away = _tankTransform != null ? at - _tankTransform.position : Vector3.zero;
+            away.y = 0f;
+            VoxelSpray.Chunks(at, height, away.sqrMagnitude > 1e-4f ? away.normalized : Vector3.zero, TornSkin, _goo);
+        }
+
         /// <summary>Sticky goo lifts out of a body, hangs and drops: big drops (VoxelSpray.Goo).</summary>
         private void Goo(Vector3 at) =>
             VoxelSpray.Goo(at, Vector3.up, Mathf.Max(_options.bloodDrops, GOO_MIN_DROPS), GOO_SPEED, 0.5f, _goo, _bloodSize * GOO_SIZE, default, 0.3f);
@@ -801,7 +820,10 @@ namespace Game.AIKit.Adapters
                 {
                     HordeDeathEvent death = deaths[i];
                     int row = math.clamp(death.Kind, 0, HordeKinds.COUNT - 1);
-                    _corpses[row].Add(death.Position, death.Heading, time);
+                    if (_simulation.IsTorn(death.Index))
+                        TearApart(death.Position, row); // a shell's direct hit: big chunks, no whole corpse
+                    else
+                        _corpses[row].Add(death.Position, death.Heading, time);
                     Vector3 at = (Vector3)death.Position + Vector3.up * 0.6f;
                     if (sprays < _options.bloodPerFrame)
                     {

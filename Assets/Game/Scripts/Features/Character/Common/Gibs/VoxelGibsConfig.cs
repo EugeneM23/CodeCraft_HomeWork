@@ -63,6 +63,9 @@ namespace Game
             new() { name = "Torso_R", side = -1, bones = Torso }
         };
 
+        [Tooltip("A shell's kill (a blast hit) tears the body at every seam but between parts named alike before the '_' (Torso_L and Torso_R): head, arms, legs and torso fly as big pieces, whatever the seams would roll. Off: the seams roll as for any hit.")]
+        public bool shellTearsLimbs;
+
         public SeamSpec[] seams =
         {
             new() { a = 5, b = 6, hold = 0.5f },

@@ -28,6 +28,9 @@ namespace Game
 
         void Damage(in EnemyRef target, float damage, Vector3 hitPoint);
 
+        /// <summary>The target, if damage queued now kills it, is torn apart (a shell's direct hit) rather than falling whole.</summary>
+        void Tear(in EnemyRef target);
+
         void DamageArea(Vector3 center, float radius, float damage, float minFactor);
     }
 }

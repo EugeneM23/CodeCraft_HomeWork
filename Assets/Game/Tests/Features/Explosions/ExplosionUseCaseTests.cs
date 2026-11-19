@@ -16,10 +16,20 @@ namespace Game.Tests
         private const int Damage = 100;
 
         private readonly List<GameObject> _objects = new();
+        private bool _areaWas;
+
+        /// <summary>The damage pass is the shell's area damage: on for these tests (it is off in the game for now).</summary>
+        [SetUp]
+        public void SetUp()
+        {
+            _areaWas = CombatConfig.Load().Weapons.shellAreaDamage;
+            CombatConfig.Load().Weapons.shellAreaDamage = true;
+        }
 
         [TearDown]
         public void TearDown()
         {
+            CombatConfig.Load().Weapons.shellAreaDamage = _areaWas;
             foreach (GameObject gameObject in _objects)
                 if (gameObject != null)
                     Object.DestroyImmediate(gameObject);
@@ -119,6 +129,19 @@ namespace Game.Tests
             Explode(Shell(minDamageFactor: null));
 
             Assert.That(withDefault.GetCurrent(), Is.EqualTo(1000 - 53));
+        }
+
+        [Test]
+        public void AreaDamageOff_TheBlastHurtsNoOne()
+        {
+            CombatConfig.Load().Weapons.shellAreaDamage = false;
+            var hits = new List<TakeDamageArgs>();
+            Health health = Target(Vector3.zero, hits);
+
+            Explode(Shell());
+
+            Assert.That(health.GetCurrent(), Is.EqualTo(1000), "only the enemy a shell hits takes its damage (BulletCollisionBehaviour)");
+            Assert.That(hits, Is.Empty);
         }
 
         [Test]

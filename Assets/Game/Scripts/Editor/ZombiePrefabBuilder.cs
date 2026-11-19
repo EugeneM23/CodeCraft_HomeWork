@@ -254,6 +254,8 @@ namespace Game.EditorTools
             config.FindPropertyRelative("spineTo").stringValue = "Spine_03";
             config.FindPropertyRelative("leftMarker").stringValue = "Shoulder_L";
             config.FindPropertyRelative("skinColor").colorValue = SkinColor;
+            // A shell's kill tears it into head, arms, legs and torso (the user: bigger pieces).
+            config.FindPropertyRelative("shellTearsLimbs").boolValue = true;
 
             // Fewer, bigger voxels (the user): 10 cm instead of the Regax's 5 cm, boxes of two (20 cm); big drops, three
             // times as many as at first (the user: the blood's budget x3; the debris store keeps 40 % for gore).

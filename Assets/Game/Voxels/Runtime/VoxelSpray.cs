@@ -92,5 +92,65 @@ namespace Game.Voxels
 
             return spawned;
         }
+
+        /// <summary>One body part of <see cref="Chunks"/>: its size in cubes and where its middle sits (share of the body's height, sideways in cubes).</summary>
+        private static readonly (int x, int y, int z, float height, float side)[] Parts =
+        {
+            (3, 3, 3, 0.9f, 0f),   // head
+            (4, 6, 3, 0.6f, 0f),   // torso
+            (2, 5, 2, 0.62f, -3.5f), // arms
+            (2, 5, 2, 0.62f, 3.5f),
+            (2, 6, 2, 0.22f, -1.2f), // legs
+            (2, 6, 2, 0.22f, 1.2f)
+        };
+
+        /// <summary>
+        /// A body torn apart by a shell (the user: bigger pieces): head, torso, two arms and two legs as clumps of cubes of
+        /// <paramref name="height"/>/24 each, skin outside and meat within, thrown up and out from the body like the
+        /// sticky goo (VoxelDebris.SetGoo): a sluggish rise, a heavy drop, and they lie whole where they land. About 190
+        /// cubes of the gore share of the store.
+        /// </summary>
+        /// <param name="at">The feet of the body.</param>
+        /// <param name="away">Which way the hit threw it (horizontal; zero: no way in particular).</param>
+        /// <returns>Chunks thrown.</returns>
+        public static int Chunks(Vector3 at, float height, Vector3 away, IReadOnlyList<Color32> skin, IReadOnlyList<Color32> meat)
+        {
+            VoxelWorld world = VoxelWorld.Instance;
+            VoxelDebris debris = world != null ? world.Debris : null;
+            if (debris == null || skin == null || skin.Count == 0 || meat == null || meat.Count == 0 || height <= 0f)
+                return 0;
+
+            float cube = height / 24f;
+            Vector3 side = Vector3.Cross(Vector3.up, away.sqrMagnitude > 1e-4f ? away.normalized : Vector3.forward);
+            int thrown = 0;
+            for (int p = 0; p < Parts.Length; p++)
+            {
+                (int x, int y, int z, float h, float s) = Parts[p];
+                if (!debris.HasGoreRoom(x * y * z))
+                    break;
+                Vector3 middle = at + Vector3.up * (height * h) + side * (s * cube);
+                Vector3 out_ = (middle - (at + Vector3.up * height * 0.6f));
+                out_.y = 0f;
+                Vector3 velocity = Vector3.up * Random.Range(4f, 6.5f) + out_.normalized * Random.Range(1f, 2.5f) +
+                                   away * Random.Range(1f, 2f) + Random.insideUnitSphere * 0.6f;
+                int cluster = debris.BeginGoreCluster(middle, velocity, 3f);
+                if (cluster < 0)
+                    break;
+                for (int i = 0; i < x; i++)
+                for (int j = 0; j < y; j++)
+                for (int k = 0; k < z; k++)
+                {
+                    bool surface = i == 0 || j == 0 || k == 0 || i == x - 1 || j == y - 1 || k == z - 1;
+                    Color32 colour = surface && Random.value > 0.2f ? skin[Random.Range(0, skin.Count)] : meat[Random.Range(0, meat.Count)];
+                    Vector3 offset = new Vector3(i - (x - 1) * 0.5f, j - (y - 1) * 0.5f, k - (z - 1) * 0.5f) * cube;
+                    debris.AddCube(cluster, middle + offset, cube, colour);
+                }
+
+                debris.SetGoo(cluster);
+                thrown++;
+            }
+
+            return thrown;
+        }
     }
 }

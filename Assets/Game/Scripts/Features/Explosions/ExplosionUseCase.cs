@@ -27,12 +27,22 @@ namespace Game
 
         public static bool IsExplosive(IEntity projectile) => projectile.HasExplosionRadius();
 
+        /// <summary>
+        /// Whether a shell's blast damages what is round it (WeaponSettings.shellAreaDamage). Off, the shell has dealt its
+        /// damage to the enemy it hit (BulletCollisionBehaviour, BulletEnemyHitUseCase) and the blast only digs, pushes,
+        /// flashes and shakes.
+        /// </summary>
+        public static bool AreaDamage => CombatConfig.Load().Weapons.shellAreaDamage;
+
         public static void Explode(IEntity projectile, Vector3 point, Collider hit, GameFactory factory)
         {
             float radius = projectile.GetExplosionRadius();
 
-            DamageInRadius(projectile, point, radius);
-            DamageEnemiesWithoutColliders(projectile, point, radius);
+            if (AreaDamage)
+            {
+                DamageInRadius(projectile, point, radius);
+                DamageEnemiesWithoutColliders(projectile, point, radius);
+            }
             // The shell's own blast sound (weapons.shell_hit); the generic one for this Exploded is skipped then.
             GameSignals.RaiseShellExploded(point);
             ExplosionEvents.Raise(point, radius);
