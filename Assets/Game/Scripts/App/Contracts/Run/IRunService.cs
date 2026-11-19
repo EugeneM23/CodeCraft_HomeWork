@@ -173,6 +173,14 @@ namespace Game
         /// <summary>Menu: the skill picked from <see cref="SkillOffer"/>; the next pending level-up, if any, offers again.</summary>
         bool ChooseSkill(SkillId skill);
 
+        /// <summary>
+        /// Debug panel: puts a skill of the catalog at a level 0..<see cref="SkillConfig.MAX_LEVEL"/> at once, without
+        /// an offer or a level-up, and raises <see cref="SkillChanged"/> as a pick does (level 0 takes the skill away).
+        /// Slot limits are not checked. False when the run is not running, the skill is unknown or the level is the same.
+        /// The default implementation (stand-ins) does nothing.
+        /// </summary>
+        bool SetSkillLevel(SkillId skill, int level) => false;
+
         /// <summary>Combat: Defeat when the tank dies; menu: Abandoned from the pause. Victory is the core's own.</summary>
         bool EndRun(RunOutcome outcome);
 

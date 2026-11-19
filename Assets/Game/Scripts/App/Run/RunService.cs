@@ -255,7 +255,7 @@ namespace Game
             if (!IsRunning || !_offer.Contains(skill))
                 return false;
 
-            int level = GetSkillLevel(skill) + 1;
+            int level = Math.Min(GetSkillLevel(skill) + 1, SkillConfig.MAX_LEVEL); // the debug panel may have maxed it
             if (level == 1)
             {
                 _skills.Add(skill);
@@ -280,6 +280,47 @@ namespace Game
                     LetPauseGo();
             }
 
+            return true;
+        }
+
+        public bool SetSkillLevel(SkillId skill, int level)
+        {
+            if (!IsRunning || skill.IsNone)
+                return false;
+
+            SkillConfig config = _catalog.FindSkill(skill);
+            if (config == null)
+                return false;
+
+            level = Math.Clamp(level, 0, SkillConfig.MAX_LEVEL);
+            int old = GetSkillLevel(skill);
+            if (level == old)
+                return false;
+
+            bool weapon = config.Group == SkillGroup.Weapon;
+            if (old == 0)
+            {
+                _skills.Add(skill);
+                if (weapon)
+                    _weaponsTaken++;
+                else
+                    _upgradesTaken++;
+            }
+            else if (level == 0)
+            {
+                _skills.Remove(skill);
+                if (weapon)
+                    _weaponsTaken--;
+                else
+                    _upgradesTaken--;
+            }
+
+            if (level == 0)
+                _skillLevels.Remove(skill);
+            else
+                _skillLevels[skill] = level;
+
+            SkillChanged?.Invoke(skill, level);
             return true;
         }
 
