@@ -36,7 +36,12 @@ namespace Game
                 ExplosionUseCase.Explode(bullet, point, null, factory);
             }
             else
+            {
                 targets.Damage(target, damage, point);
+                // A plain bullet's hot point cools where it struck the monster, as on any other hit.
+                Vector3 back = bullet.TryGetMoveDirection(out var direction) ? -direction.Value : Vector3.up;
+                BulletHotSpots.Emit(point, back);
+            }
 
             SpawnUseCase.UnSpawnEntity(factory, bullet);
             return true;

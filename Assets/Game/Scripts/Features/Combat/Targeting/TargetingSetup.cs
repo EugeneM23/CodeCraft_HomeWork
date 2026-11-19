@@ -85,6 +85,8 @@ namespace Game
                 }
 
                 mg.Value.AddBehaviour(new AutoGunBehaviour(tank, targets, settings, s_mgRig, casings));
+                // Voxel fire and a few sparks at its muzzle on every round.
+                mg.Value.AddBehaviour(new MuzzleFireBehaviour(false));
 
                 // The auto gun turns to targets on every side: its bullets fly through the tank's own hull, as the
                 // turrets' do. The cannon has none: it fires along its barrel, from a muzzle outside the hull.

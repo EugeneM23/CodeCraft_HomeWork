@@ -36,24 +36,30 @@ namespace Game
         private Material _material;
         private MaterialPropertyBlock _block;
 
+        /// <summary>Sparks in the air now (tests, the debug panel).</summary>
+        public static int Alive => s_instance == null ? 0 : s_instance._count;
+
         /// <summary>
         /// Sparks off a hit at <paramref name="point"/> on a surface facing <paramref name="normal"/>, struck along
-        /// <paramref name="direction"/>.
+        /// <paramref name="direction"/>. <paramref name="power"/> above 1 throws them faster and lets them burn longer and
+        /// thicker (an HE shell's hit).
         /// </summary>
-        public static void Emit(Vector3 point, Vector3 normal, Vector3 direction, int count = 26)
+        public static void Emit(Vector3 point, Vector3 normal, Vector3 direction, int count = 26, float power = 1f)
         {
             if (s_instance == null)
             {
                 var go = new GameObject("<VoxelSparks>");
                 s_instance = go.AddComponent<VoxelSparks>();
+                s_instance.Init();
             }
-            s_instance.Spray(point, normal, direction, count);
+            s_instance.Spray(point, normal, direction, count, Mathf.Max(0.1f, power));
         }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void ResetStatic() => s_instance = null;
 
-        private void Awake()
+        /// <summary>Called right after AddComponent, not Awake: Awake does not run in edit mode (tests).</summary>
+        private void Init()
         {
             for (int i = 0; i < LIGHTS; i++)
             {
@@ -70,7 +76,7 @@ namespace Game
             }
         }
 
-        private void Spray(Vector3 point, Vector3 normal, Vector3 direction, int count)
+        private void Spray(Vector3 point, Vector3 normal, Vector3 direction, int count, float power)
         {
             Vector3 n = normal.sqrMagnitude > 1e-6f ? normal.normalized : Vector3.up;
             Vector3 d = direction.sqrMagnitude > 1e-6f ? direction.normalized : -n;
@@ -84,10 +90,10 @@ namespace Game
                 if (Vector3.Dot(heading, n) < 0.05f)
                     heading = (heading + n * 0.6f).normalized;
                 _position[i] = at;
-                _velocity[i] = heading * Random.Range(5f, 17f);
+                _velocity[i] = heading * (Random.Range(5f, 17f) * power);
                 _age[i] = 0f;
-                _life[i] = Random.Range(0.18f, 0.55f);
-                _size[i] = Random.Range(0.025f, 0.05f);
+                _life[i] = Random.Range(0.18f, 0.55f) * power;
+                _size[i] = Random.Range(0.025f, 0.05f) * Mathf.Sqrt(power);
             }
 
             Light light = _lights[_nextLight];

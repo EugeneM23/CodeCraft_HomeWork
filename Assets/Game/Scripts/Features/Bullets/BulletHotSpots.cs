@@ -7,7 +7,8 @@ namespace Game
     /// A plain bullet's hit leaves a hot point for a moment, like the slug cooling where it struck: a small HDR voxel
     /// (Bloom catches it) and a short-range point light, white-orange to dull red to out over <see cref="LIFE"/>
     /// seconds. One shared object, made on the first hit. Spots and lights are fixed rings: under constant fire the
-    /// oldest is reused, so nothing is allocated per hit and at most <see cref="LIGHTS"/> lights burn at once.
+    /// oldest is reused, so nothing is allocated per hit and at most <see cref="LIGHTS"/> lights burn at once. The
+    /// machine gun's muzzle flicker (<see cref="Flicker"/>) takes its lights from the same ring.
     /// </summary>
     public sealed class BulletHotSpots : MonoBehaviour
     {
@@ -24,6 +25,8 @@ namespace Game
         private const float LIGHT_RANGE = 1.8f;
         private const float LIGHT_INTENSITY = 4f;
         private const float GLOW = 12f;
+        private const float FLICKER_LIFE = 0.06f;
+        private const float FLICKER_INTENSITY = 6f;
 
         private static readonly int InstanceColorId = Shader.PropertyToID("_InstColor");
         private static readonly Color WhiteHot = new(1f, 0.82f, 0.55f);
@@ -34,10 +37,13 @@ namespace Game
         private readonly Vector3[] _position = new Vector3[MAX];
         private readonly Quaternion[] _rotation = new Quaternion[MAX];
         private readonly float[] _age = new float[MAX];
+        private readonly float[] _scale = new float[MAX];
         private readonly Matrix4x4[] _matrices = new Matrix4x4[MAX];
         private readonly Vector4[] _colors = new Vector4[MAX];
         private readonly Light[] _lights = new Light[LIGHTS];
         private readonly float[] _lightAge = new float[LIGHTS];
+        private readonly float[] _lightLife = new float[LIGHTS];
+        private readonly float[] _lightPeak = new float[LIGHTS];
         private int _next;
         private int _nextLight;
         private Mesh _mesh;
@@ -53,18 +59,40 @@ namespace Game
         /// <summary>Hot-spot lights burning now (tests, the debug panel).</summary>
         public static int ActiveLights => s_instance == null ? 0 : s_instance.CountLights();
 
-        /// <summary>A bullet struck at <paramref name="point"/> on a surface facing <paramref name="normal"/>.</summary>
-        public static void Emit(Vector3 point, Vector3 normal)
+        /// <summary>
+        /// A bullet struck at <paramref name="point"/> on a surface facing <paramref name="normal"/>.
+        /// <paramref name="power"/> scales the point's size and its light's brightness and reach (an HE shell's hit: 1.6).
+        /// </summary>
+        public static void Emit(Vector3 point, Vector3 normal, float power = 1f)
         {
             if (!Enabled)
                 return;
-            if (s_instance == null)
+            Instance.Add(point, normal, Mathf.Max(0.1f, power));
+        }
+
+        /// <summary>
+        /// A gun's muzzle flickered at <paramref name="point"/> (the machine gun, every round): a brief warm light from
+        /// the same ring as the hot points, so all of them together stay under <see cref="LIGHTS"/>.
+        /// </summary>
+        public static void Flicker(Vector3 point)
+        {
+            if (!Enabled)
+                return;
+            Instance.Ignite(point, FLICKER_LIFE, FLICKER_INTENSITY, LIGHT_RANGE);
+        }
+
+        private static BulletHotSpots Instance
+        {
+            get
             {
-                var go = new GameObject("<BulletHotSpots>");
-                s_instance = go.AddComponent<BulletHotSpots>();
-                s_instance.Init();
+                if (s_instance == null)
+                {
+                    var go = new GameObject("<BulletHotSpots>");
+                    s_instance = go.AddComponent<BulletHotSpots>();
+                    s_instance.Init();
+                }
+                return s_instance;
             }
-            s_instance.Add(point, normal);
         }
 
         /// <summary>
@@ -105,24 +133,34 @@ namespace Game
                 l.enabled = false;
                 _lights[i] = l;
                 _lightAge[i] = LIFE;
+                _lightLife[i] = LIFE;
             }
         }
 
-        private void Add(Vector3 point, Vector3 normal)
+        private void Add(Vector3 point, Vector3 normal, float power)
         {
             Vector3 n = normal.sqrMagnitude > 1e-6f ? normal.normalized : Vector3.up;
             // Half sunk into the surface: a glowing voxel in the hole, not a cube stuck on the wall.
-            _position[_next] = point + n * (SIZE * 0.15f);
+            _position[_next] = point + n * (SIZE * power * 0.15f);
             _rotation[_next] = Quaternion.LookRotation(n);
             _age[_next] = 0f;
+            _scale[_next] = power;
             _next = (_next + 1) % MAX;
 
+            Ignite(point + n * (0.2f * power), LIFE, LIGHT_INTENSITY * power, LIGHT_RANGE * power);
+        }
+
+        /// <summary>The next light of the ring, burning at <paramref name="peak"/> and cooling out over <paramref name="life"/> s.</summary>
+        private void Ignite(Vector3 at, float life, float peak, float range)
+        {
             Light light = _lights[_nextLight];
             _lightAge[_nextLight] = 0f;
-            light.transform.position = point + n * 0.2f;
-            Color c = Cooling(0f);
-            light.color = c;
-            light.intensity = LIGHT_INTENSITY;
+            _lightLife[_nextLight] = life;
+            _lightPeak[_nextLight] = peak;
+            light.transform.position = at;
+            light.range = range;
+            light.color = Cooling(0f);
+            light.intensity = peak;
             light.enabled = true;
             _nextLight = (_nextLight + 1) % LIGHTS;
         }
@@ -135,17 +173,17 @@ namespace Game
 
             for (int i = 0; i < LIGHTS; i++)
             {
-                if (_lightAge[i] >= LIFE)
+                if (_lightAge[i] >= _lightLife[i])
                     continue;
                 _lightAge[i] += dt;
-                if (_lightAge[i] >= LIFE)
+                if (_lightAge[i] >= _lightLife[i])
                 {
                     _lights[i].enabled = false;
                     continue;
                 }
-                Color c = Cooling(_lightAge[i] / LIFE);
+                Color c = Cooling(_lightAge[i] / _lightLife[i]);
                 _lights[i].color = c;
-                _lights[i].intensity = LIGHT_INTENSITY * c.a;
+                _lights[i].intensity = _lightPeak[i] * c.a;
             }
 
             int n = 0;
@@ -158,7 +196,7 @@ namespace Game
                     continue;
                 float t = _age[i] / LIFE;
                 Color c = Cooling(t);
-                float size = SIZE * (1f - 0.35f * t);
+                float size = SIZE * _scale[i] * (1f - 0.35f * t);
                 _matrices[n] = Matrix4x4.TRS(_position[i], _rotation[i], new Vector3(size, size, size));
                 // Bright enough to bloom while hot, a dim red ember at the end.
                 float glow = Mathf.Lerp(0.6f, GLOW, c.a);
