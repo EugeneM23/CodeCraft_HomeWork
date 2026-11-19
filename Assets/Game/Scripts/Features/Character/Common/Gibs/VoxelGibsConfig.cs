@@ -91,6 +91,9 @@ namespace Game
         [Tooltip("How far each skin voxel's shade strays from the skin material's colour.")]
         [Range(0f, 0.3f)] public float skinNoise = 0.08f;
 
+        [Tooltip("Colour of the skin voxels; alpha 0 takes the skin material's colour (a textured skin, like the zombie's atlas, has none worth taking).")]
+        public Color skinColor = new(0f, 0f, 0f, 0f);
+
         public BloodLook blood = new();
 
         [Header("Bleeding")]
