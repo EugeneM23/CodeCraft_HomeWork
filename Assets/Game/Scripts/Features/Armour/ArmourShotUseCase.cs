@@ -35,8 +35,9 @@ namespace Game
         /// <param name="hits">Gets the events in order (cleared first).</param>
         /// <param name="path">Gets the path's corners: the start, every hit, the end (cleared first).</param>
         /// <param name="mask">Layers the shell strikes.</param>
+        /// <param name="explosive">A high-explosive shell: it never glances off and bursts on the first thing it strikes.</param>
         public static void Trace(Vector3 from, Vector3 direction, in ArmourShell shell, float roll, List<ArmourHit> hits,
-            List<Vector3> path, int mask = ~0)
+            List<Vector3> path, int mask = ~0, bool explosive = false)
         {
             hits.Clear();
             path.Clear();
@@ -103,11 +104,15 @@ namespace Game
 
                 float angle = ArmourMath.ImpactAngle(dir, normal);
                 ArmourRules rules = armour.Rules;
+                if (explosive)
+                    rules.ricochetAngle = float.MaxValue;
                 ArmourResult result = ArmourMath.Resolve(pen, shell.calibre, nominal, angle, kind, rules);
                 record.Zone = zone;
                 record.Kind = kind;
                 record.Result = result;
                 hits.Add(record);
+                if (explosive)
+                    return;
 
                 switch (result.Outcome)
                 {

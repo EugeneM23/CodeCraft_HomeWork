@@ -505,11 +505,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Game::Game.TankArmourLab
   _camera: {fileID: 1926296258}
-  _shell:
-    penetration: 125
-    calibre: 88
-    speed: 800
-    spread: 0.08
+  _kind: 1
   _reload: 0.35
   _tracerSpeed: 70
   _holeRadius: 0.26

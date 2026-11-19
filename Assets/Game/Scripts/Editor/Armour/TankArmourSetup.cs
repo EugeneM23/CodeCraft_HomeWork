@@ -25,6 +25,19 @@ namespace Game.EditorTools
             Debug.Log("[Armour] set up: " + CONFIG);
         }
 
+        public const string AMMO = "Assets/Game/Resources/TankAmmoConfig.asset";
+
+        /// <summary>The cannon's shell types asset in Resources (made once with the code defaults, then tuned by hand).</summary>
+        [MenuItem("Tools/Combat/Create Tank Ammo Config")]
+        public static void CreateAmmo()
+        {
+            if (AssetDatabase.LoadAssetAtPath<TankAmmoConfig>(AMMO) != null)
+                return;
+            AssetDatabase.CreateAsset(ScriptableObject.CreateInstance<TankAmmoConfig>(), AMMO);
+            AssetDatabase.SaveAssets();
+            Debug.Log("[Armour] ammo config: " + AMMO);
+        }
+
         /// <summary>Puts the default zones back into the layout asset (the hand tuning is lost).</summary>
         [MenuItem("Tools/Combat/Reset Tank Armour Layout")]
         public static void ResetLayout()

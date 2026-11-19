@@ -105,10 +105,22 @@ namespace Game
                 TickCooldownBar(_mgCooldown, _mgFill, _mgText, ref _mgTenths);
         }
 
+        // The cannon's shell type in its label (ПУШКА · ОФ / ББ), switched by Q (AmmoUseCase).
+        private IEntity _gunWeapon;
+        private UiLocalizedText _gunLabel;
+        private int _shownAmmo = -1;
+
         private void TickGun()
         {
             bool ready = _gunCooldown.IsExpired();
             TickCooldownBar(_gunCooldown, _gunFill, _gunText, ref _gunTenths);
+
+            int ammo = (int)AmmoUseCase.Loaded(_gunWeapon);
+            if (ammo != _shownAmmo && _gunLabel != null)
+            {
+                _shownAmmo = ammo;
+                _gunLabel.Key = ammo == (int)ShellKind.ArmourPiercing ? "hud.gun_ap" : "hud.gun_he";
+            }
 
             if (!ready)
                 SetFill(_reloadArc, 1f - Remaining(_gunCooldown));
@@ -243,6 +255,7 @@ namespace Game
             _boostSubscription = default;
             SetAmmo(null);
             _gunCooldown = null;
+            _gunWeapon = null;
             _mgCooldown = null;
         }
 
@@ -264,6 +277,10 @@ namespace Game
         private void HandleWeaponChanged(IEntity weapon)
         {
             _gunCooldown = null;
+            _gunWeapon = weapon;
+            _shownAmmo = -1;
+            if (_gunLabel == null && _gunGroup != null)
+                _gunLabel = _gunGroup.GetComponentInChildren<UiLocalizedText>(true);
             if (weapon != null)
                 weapon.TryGetWeaponCooldown(out _gunCooldown);
 
