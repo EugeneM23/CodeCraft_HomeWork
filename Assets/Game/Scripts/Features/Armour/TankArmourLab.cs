@@ -17,7 +17,8 @@ namespace Game
     {
         [SerializeField] private Camera _camera;
 
-        [SerializeField] private ArmourShell _shell = new(125f, 88f, 800f, 0.08f);
+        [Tooltip("The shell type loaded (Q switches): its numbers come from TankAmmoConfig, as the player tank's.")]
+        [SerializeField] private ShellKind _kind = ShellKind.ArmourPiercing;
 
         [Tooltip("Seconds between shells.")]
         [SerializeField] private float _reload = 0.35f;
@@ -46,6 +47,7 @@ namespace Game
             public float Played;
             public int Next;
             public Transform Tracer;
+            public ShellKind Kind;
         }
 
         private struct Marker
@@ -67,10 +69,19 @@ namespace Game
         private GUIStyle _markerStyle;
         private int _shotNumber;
 
-        public ArmourShell Shell
+        /// <summary>The loaded type's armour numbers (TankAmmoConfig).</summary>
+        public ArmourShell Shell => ShellOf(_kind);
+
+        public ShellKind Kind
         {
-            get => _shell;
-            set => _shell = value;
+            get => _kind;
+            set => _kind = value;
+        }
+
+        public static ArmourShell ShellOf(ShellKind kind)
+        {
+            ShellAmmo ammo = TankAmmoConfig.Load().Get(kind);
+            return new ArmourShell(ammo.penetration, ammo.calibre, ammo.speed, 0.08f);
         }
 
         /// <summary>The readout's lines, newest last.</summary>
@@ -106,6 +117,8 @@ namespace Game
 
             if (keyboard != null && keyboard.bKey.wasPressedThisFrame)
                 ToggleMap();
+            if (AmmoInput.SwitchPressed())
+                _kind = AmmoUseCase.Next(_kind);
 
             Play(Time.deltaTime);
         }
@@ -114,7 +127,9 @@ namespace Game
         public void Fire(Vector3 from, Vector3 direction)
         {
             Shot shot = _free.Count > 0 ? Take() : new Shot();
-            ArmourShotUseCase.Trace(from, direction, _shell, Random.Range(-1f, 1f), shot.Hits, shot.Path);
+            shot.Kind = _kind;
+            ArmourShotUseCase.Trace(from, direction, ShellOf(_kind), Random.Range(-1f, 1f), shot.Hits, shot.Path,
+                explosive: _kind == ShellKind.HighExplosive);
             shot.Length = 0f;
             for (int i = 1; i < shot.Path.Count; i++)
                 shot.Length += Vector3.Distance(shot.Path[i - 1], shot.Path[i]);
@@ -140,14 +155,14 @@ namespace Game
                 Shot shot = _shots[s];
                 shot.Played += _tracerSpeed * dt;
                 while (shot.Next < shot.Hits.Count && shot.Hits[shot.Next].Distance <= shot.Played)
-                    Apply(shot.Hits[shot.Next++]);
+                    Apply(shot.Kind, shot.Hits[shot.Next++]);
 
                 if (shot.Tracer != null)
                     Place(shot);
                 if (shot.Played < shot.Length)
                     continue;
                 while (shot.Next < shot.Hits.Count)
-                    Apply(shot.Hits[shot.Next++]);
+                    Apply(shot.Kind, shot.Hits[shot.Next++]);
                 if (shot.Tracer != null)
                     Destroy(shot.Tracer.gameObject);
                 shot.Tracer = null;
@@ -182,8 +197,12 @@ namespace Game
         }
 
         /// <summary>One event of a shell: its effects on the tank, a line and a marker.</summary>
-        private void Apply(in ArmourHit hit)
+        private void Apply(ShellKind kind, in ArmourHit hit)
         {
+            // A high-explosive shell bursts on the first thing it strikes, whatever its armour did to it.
+            if (kind == ShellKind.HighExplosive)
+                Burst(hit);
+
             if (hit.IsTerrain)
             {
                 VoxelSparks.Emit(hit.Point, hit.Normal, hit.Direction, 12);
@@ -229,7 +248,7 @@ namespace Game
             }
 
             hit.Armour.Report(hit);
-            string line = Line(hit);
+            string line = Line(kind, hit);
             _log.Add(line);
             while (_log.Count > _lines)
                 _log.RemoveAt(0);
@@ -239,6 +258,20 @@ namespace Game
                 Point = hit.Point, Text = ArmourMath.Label(r.Outcome), Color = ColorOf(r.Outcome), Until = Time.time + 5f
             });
         }
+
+        /// <summary>The readout line with the shell type first: «[ББ] ВЛД: …».</summary>
+        public static string Line(ShellKind kind, in ArmourHit hit) => $"[{TankAmmoConfig.Load().Get(kind).shortName}] {Line(hit)}";
+
+        /// <summary>A high-explosive burst: the shell's blast crater and smoke, as the cannon's own (ExplosionUseCase).</summary>
+        private static void Burst(in ArmourHit hit)
+        {
+            float radius = AmmoUseCase.DEFAULT_RADIUS * TankAmmoConfig.Load().Get(ShellKind.HighExplosive).radiusFactor;
+            VoxelDamage.Blast(hit.Point, radius * HE_CRATER_SHARE, 9f);
+            VoxelSmoke.Blast(hit.Point, radius * 0.7f);
+        }
+
+        /// <summary>The share of the blast radius a burst carves (ExplosionUseCase.VOXEL_CRATER_SHARE).</summary>
+        private const float HE_CRATER_SHARE = 0.32f;
 
         /// <summary>The readout line of a hit: zone, nominal and effective mm, angle, penetration, the outcome.</summary>
         public static string Line(in ArmourHit hit)
@@ -347,9 +380,10 @@ namespace Game
             _style ??= new GUIStyle(GUI.skin.label) { fontSize = 15, richText = true };
             _markerStyle ??= new GUIStyle(GUI.skin.label) { fontSize = 15, fontStyle = FontStyle.Bold, alignment = TextAnchor.MiddleCenter };
 
-            GUI.Label(new Rect(16, 60, 900, 60),
-                $"ЛКМ — бронебойный ({_shell.calibre:0} мм, пробитие {_shell.penetration:0} мм ±{_shell.spread * 100f:0}%)   " +
-                "Shift+ЛКМ — пулемёт   B — карта брони", _style);
+            ShellAmmo ammo = TankAmmoConfig.Load().Get(_kind);
+            GUI.Label(new Rect(16, 60, 1000, 60),
+                $"ЛКМ — снаряд: <b>{ammo.fullName}</b> ({ammo.calibre:0} мм, пробитие {ammo.penetration:0} мм ±8%)   " +
+                "Q — сменить снаряд   Shift+ЛКМ — пулемёт   B — карта брони", _style);
 
             float y = Screen.height - 24f * (_log.Count + 1) - 12f;
             GUI.color = new Color(0f, 0f, 0f, 0.55f);

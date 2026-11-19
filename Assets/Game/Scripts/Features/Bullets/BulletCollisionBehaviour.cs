@@ -62,7 +62,11 @@ namespace Game
         {
             _pierced = null;
             _wallPierces = 0;
+            _armour = ShellArmourUseCase.State.Fresh;
         }
+
+        /// <summary>An armour-piercing shell's way through a tank's armour (ShellArmourUseCase).</summary>
+        private ShellArmourUseCase.State _armour = ShellArmourUseCase.State.Fresh;
 
         public void Dispose(IEntity entity) => _collisionEventReceiver.OnEntered -= OnCollision;
 
@@ -80,6 +84,10 @@ namespace Game
             if (target != null && TryPierce(target, collision.collider))
                 return;
 
+            // An armour-piercing shell on a tank's armour: ricochet, stuck, or through it (TankArmour zones).
+            if (TryArmour(collision))
+                return;
+
             // Mud swallows a hit: nothing bounces off it, it only gets a dent.
             bool mud = MudImpactUseCase.IsMud(collision.collider);
 
@@ -95,7 +103,14 @@ namespace Game
             if (voxel && !explosive && TryPierceWall(collision))
                 return;
 
-            if (!mud && !voxel && BulletHitUseCase.ShouldTryRicochet(_bullet, target) && TryRicochet(collision))
+            // A cannon shell of a type (AmmoUseCase) glances off any surface by its angle, voxel ground and walls
+            // too: a ricochet by its type's rule, with a scrape. Other projectiles keep the prefab's rule off solids.
+            if (AmmoUseCase.IsShell(_bullet))
+            {
+                if (!mud && (target == null || !target.HasDamageableTag()) && TryShellRicochet(collision))
+                    return;
+            }
+            else if (!mud && !voxel && BulletHitUseCase.ShouldTryRicochet(_bullet, target) && TryRicochet(collision))
                 return;
 
             // A blast marks the mud itself (ExplosionUseCase); a plain bullet leaves a dent here.
@@ -222,6 +237,52 @@ namespace Game
                 VoxelDamage.Punch(point, direction, WALL_HOLE_RADIUS, CHIP_FORCE, BULLET_DEBRIS, body);
             else
                 VoxelDamage.Impact(point, direction, VOXEL_CHIP_RADIUS, CHIP_FORCE, BULLET_DEBRIS);
+        }
+
+        /// <summary>A typed shell's ricochet by angle off any surface: true when it flies on.</summary>
+        private bool TryShellRicochet(Collision collision)
+        {
+            ContactPoint contact = collision.GetContact(0);
+            Vector3 direction = _bullet.GetMoveDirection().Value;
+            if (RicochetUseCase.IsMovingAway(direction, contact.normal))
+                return true;
+            Vector3 normal = AmmoUseCase.SurfaceNormal(collision.collider, contact.point, direction, contact.normal);
+            if (!AmmoUseCase.ShouldRicochet(_bullet, direction, normal))
+                return false;
+            AmmoUseCase.Ricochet(_bullet, contact.point, normal, collision.collider);
+            StopSolverPush();
+            return true;
+        }
+
+        /// <summary>An armour-piercing shell on a tank's armour: true when it is dealt with here.</summary>
+        private bool TryArmour(Collision collision)
+        {
+            ContactPoint contact = collision.GetContact(0);
+            switch (ShellArmourUseCase.Resolve(_bullet, collision.collider, contact.point, contact.normal, ref _armour))
+            {
+                case ShellArmourUseCase.Step.Ricocheted:
+                    StopSolverPush();
+                    return true;
+                case ShellArmourUseCase.Step.PassedOn:
+                    if (_own != null)
+                        Physics.IgnoreCollision(_own, collision.collider, true);
+                    StopSolverPush();
+                    return true;
+                case ShellArmourUseCase.Step.Stopped:
+                    SpawnUseCase.UnSpawnEntity(_gameFactory, _bullet);
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        /// <summary>The shell flies by its transform: the solver's push off what it touched is dropped.</summary>
+        private void StopSolverPush()
+        {
+            if (_body == null || _body.isKinematic)
+                return;
+            _body.linearVelocity = Vector3.zero;
+            _body.angularVelocity = Vector3.zero;
         }
 
         /// <summary>True when the bullet flies on: it bounced off the surface, or already flies away from it.</summary>

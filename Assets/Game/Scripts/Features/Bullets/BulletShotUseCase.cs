@@ -42,6 +42,9 @@ namespace Game
                 holder.Value = weapon;
             else
                 bullet.AddBulletWeapon(new Variable<IEntity>(weapon));
+
+            // The cannon's shell type: speed, damage, blast radius, ricochet rule, glow (HE / AP).
+            AmmoUseCase.Prepare(bullet, weapon);
         }
 
         /// <summary>Enemies the bullet may still pass through.</summary>

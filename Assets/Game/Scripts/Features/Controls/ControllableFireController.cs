@@ -29,6 +29,7 @@ namespace Game
         private IExpression<bool> _secondaryCondition;
         private IAction _secondaryAction;
         private Transform _cannonFirePoint;
+        private IEntity _cannon;
 
         public void Init(IPlayerContext context)
         {
@@ -52,6 +53,7 @@ namespace Game
             _secondaryCondition = null;
             _secondaryAction = null;
             _cannonFirePoint = null;
+            _cannon = null;
             CombatFocus.Clear();
 
             if (character == null || !character.HasVehicleTag())
@@ -64,13 +66,21 @@ namespace Game
             character.TryGetSecondaryFireCondition(out _secondaryCondition);
             character.TryGetSecondaryFireAction(out _secondaryAction);
             if (character.TryGetWeapon(out IReactiveVariable<IEntity> cannon) && cannon.Value != null)
+            {
                 cannon.Value.TryGetFirePoint(out _cannonFirePoint);
+                _cannon = cannon.Value;
+                AmmoUseCase.GetOrAdd(_cannon);
+            }
         }
 
         public void LateTick(IPlayerContext context, float deltaTime)
         {
             if (_input == null)
                 return;
+
+            // Q: the other shell type (HE ↔ AP) into the cannon.
+            if (_cannon != null && AmmoInput.SwitchPressed())
+                AmmoUseCase.Switch(_cannon);
 
             if (_input.FireMain && !TankStunUseCase.IsStunned(_character))
                 Fire(_mainCondition, _mainAction);

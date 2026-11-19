@@ -44,6 +44,13 @@ namespace Game
 
         private void OnValidate() => Apply();
 
+        /// <summary>Glows in another colour from now on (the cannon's shell types: AmmoUseCase).</summary>
+        public void SetColor(Color color)
+        {
+            _glowColor = color;
+            Apply();
+        }
+
         private void Apply()
         {
             if (_box != null)
