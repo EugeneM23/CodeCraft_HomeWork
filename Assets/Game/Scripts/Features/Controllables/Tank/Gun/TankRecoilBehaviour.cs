@@ -7,8 +7,8 @@ namespace Game
     /// <summary>
     /// The cannon kicks the hull: an impulse back along the barrel, at the muzzle. Applied there,
     /// high above the centre of mass, it rocks the hull on its springs — nose up when firing ahead,
-    /// leaning away when firing to the side. The drive takes the backward slide out again within a
-    /// couple of steps; the rocking it leaves to the springs.
+    /// leaning away when firing to the side. Only the rocking stays: the level push is cancelled at the
+    /// centre of mass, so a shot never slows the tank down.
     /// </summary>
     public sealed class TankRecoilBehaviour : IEntityInit, IEntityDispose
     {
@@ -47,7 +47,13 @@ namespace Game
             if (_firePoint == null || _body == null || _body.isKinematic)
                 return;
 
-            _body.AddForceAtPosition(-_firePoint.forward * _impulse, _firePoint.position, ForceMode.Impulse);
+            Vector3 kick = -_firePoint.forward * _impulse;
+            _body.AddForceAtPosition(kick, _firePoint.position, ForceMode.Impulse);
+
+            // The kick rocks the hull (the torque of it, at the muzzle) but does not brake or shove the tank: its
+            // level part is given back at the centre of mass, so the speed the tank had stays.
+            Vector3 level = new(kick.x, 0f, kick.z);
+            _body.AddForce(-level, ForceMode.Impulse);
         }
     }
 }
