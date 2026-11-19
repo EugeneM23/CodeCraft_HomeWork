@@ -91,7 +91,7 @@ namespace Game
         [Tooltip("Brightness of the fire-coloured cubes: above 1 they bloom.")]
         public float HotGlow = 4f;
         [Tooltip("How opaque a cube of smoke is at its thickest.")]
-        [Range(0f, 1f)] public float Opacity = 0.096f; // 20% clearer than 0.12
+        [Range(0f, 1f)] public float Opacity = 0.048f; // was 0.12: 20% clearer, then half again
         [Tooltip("Share of its life a cube keeps its full opacity before thinning out.")]
         [Range(0f, 1f)] public float FadeStart = 0.3f;
 
