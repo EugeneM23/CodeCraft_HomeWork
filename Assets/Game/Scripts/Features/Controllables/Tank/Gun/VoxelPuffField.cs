@@ -190,10 +190,12 @@ namespace Game
                         Vector3 closest = Closest(cut.From, cut.To, p);
                         Vector3 away = p - closest;
                         float d = away.magnitude;
-                        if (d < cut.Radius)
+                        // The cube's own half edge too: its faces, not just its centre, clear the hole.
+                        float rim = cut.Radius + half;
+                        if (d < rim)
                         {
                             Vector3 dir = d > 1e-4f ? away / d : Random.onUnitSphere;
-                            p = closest + dir * cut.Radius;
+                            p = closest + dir * rim;
                             v += dir * cut.Push;
                         }
                     }
