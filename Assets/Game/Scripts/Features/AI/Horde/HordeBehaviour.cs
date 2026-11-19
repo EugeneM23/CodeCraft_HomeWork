@@ -81,6 +81,8 @@ namespace Game.AIKit.Adapters
         private readonly List<Vector3> _squashed = new(16);
         /// <summary>Deaths whose goo waits for a later frame (bloodPerFrame a frame): a ring.</summary>
         private readonly Vector3[] _gooQueue = new Vector3[128];
+        /// <summary>Which way the shell that tore each queued death flew (zero: none): its goo is thrown on that way.</summary>
+        private readonly Vector3[] _gooShot = new Vector3[128];
         private int _gooHead;
         private int _gooCount;
         private float _bloodSize;
@@ -794,21 +796,28 @@ namespace Game.AIKit.Adapters
         /// A monster a shell hit and killed is torn into head, torso, arms and legs (VoxelSpray.Chunks), thrown away from the
         /// tank, instead of lying whole: the user's bigger pieces. Its goo still comes (HandleDeaths).
         /// </summary>
-        private void TearApart(float3 position, int row)
+        private void TearApart(float3 position, int row, Vector3 shot)
         {
             float height = HordeTargets.BODY_HEIGHT * 2f * _options.Kind(row).RenderScale * BodyScale;
             Vector3 at = position;
-            Vector3 away = _tankTransform != null ? at - _tankTransform.position : Vector3.zero;
+            // On the way the shell flew when it is known (VoxelSpray.SHOT_PUSH), else away from the tank.
+            Vector3 flat = new(shot.x, 0f, shot.z);
+            bool along = flat.sqrMagnitude > 1e-4f;
+            Vector3 away = along ? flat : _tankTransform != null ? at - _tankTransform.position : Vector3.zero;
             away.y = 0f;
-            VoxelSpray.Chunks(at, height, away.sqrMagnitude > 1e-4f ? away.normalized : Vector3.zero, TornSkin, _goo, _tornSkins);
+            VoxelSpray.Chunks(at, height, away.sqrMagnitude > 1e-4f ? away.normalized : Vector3.zero, TornSkin, _goo, _tornSkins,
+                along ? VoxelSpray.SHOT_PUSH : 0f);
         }
 
-        /// <summary>Sticky goo lifts out of a body, hangs and drops: big drops (VoxelSpray.Goo).</summary>
-        private void Goo(Vector3 at) =>
-            VoxelSpray.Goo(at, Vector3.up, Mathf.Max(_options.bloodDrops, GOO_MIN_DROPS), GOO_SPEED, 0.5f, _goo, _bloodSize * GOO_SIZE, default, 0.3f);
+        /// <summary>
+        /// Sticky goo lifts out of a body, hangs and drops: big drops (VoxelSpray.Goo). A shell's kill throws most of it on
+        /// the way the shell flew (VoxelSpray.ShotGoo; <paramref name="shot"/> zero: all of it up).
+        /// </summary>
+        private void Goo(Vector3 at, Vector3 shot) =>
+            VoxelSpray.ShotGoo(at, shot, Mathf.Max(_options.bloodDrops, GOO_MIN_DROPS), GOO_SPEED, 0.5f, _goo, _bloodSize * GOO_SIZE, default, 0.3f);
 
         /// <summary>A death's goo for a later frame (the oldest gives way when the ring is full).</summary>
-        private void QueueGoo(Vector3 at)
+        private void QueueGoo(Vector3 at, Vector3 shot)
         {
             if (_gooCount == _gooQueue.Length)
             {
@@ -817,6 +826,7 @@ namespace Game.AIKit.Adapters
             }
 
             _gooQueue[(_gooHead + _gooCount) % _gooQueue.Length] = at;
+            _gooShot[(_gooHead + _gooCount) % _gooQueue.Length] = shot;
             _gooCount++;
         }
 
@@ -827,7 +837,7 @@ namespace Game.AIKit.Adapters
             int sprays = 0;
             while (_gooCount > 0 && sprays < _options.bloodPerFrame)
             {
-                Goo(_gooQueue[_gooHead]);
+                Goo(_gooQueue[_gooHead], _gooShot[_gooHead]);
                 _gooHead = (_gooHead + 1) % _gooQueue.Length;
                 _gooCount--;
                 sprays++;
@@ -848,19 +858,20 @@ namespace Game.AIKit.Adapters
                 {
                     HordeDeathEvent death = deaths[i];
                     int row = math.clamp(death.Kind, 0, HordeKinds.COUNT - 1);
+                    Vector3 shot = _simulation.TornDirection(death.Index);
                     if (_simulation.IsTorn(death.Index))
-                        TearApart(death.Position, row); // a shell's direct hit: big chunks, no whole corpse
+                        TearApart(death.Position, row, shot); // a shell's direct hit: big chunks, no whole corpse
                     else
                         _corpses[row].Add(death.Position, death.Heading, time);
                     Vector3 at = (Vector3)death.Position + Vector3.up * 0.6f;
                     if (sprays < _options.bloodPerFrame)
                     {
-                        Goo(at);
+                        Goo(at, shot);
                         sprays++;
                     }
                     else
                     {
-                        QueueGoo(at);
+                        QueueGoo(at, shot);
                     }
 
                     _killed.Invoke(at);

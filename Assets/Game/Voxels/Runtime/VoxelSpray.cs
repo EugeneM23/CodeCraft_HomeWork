@@ -110,6 +110,59 @@ namespace Game.Voxels
             return spawned;
         }
 
+        /// <summary>Share of a shot's goo (<see cref="ShotGoo"/>) thrown on along the shot.</summary>
+        public const float SHOT_MAIN = 0.6f;
+
+        /// <summary>Share of a shot's goo splashed out to the sides, half each way.</summary>
+        public const float SHOT_SIDES = 0.15f;
+
+        /// <summary>
+        /// Launch speed of the spray along the shot, times the goo's own speed: at <see cref="SHOT_ELEVATION"/> its
+        /// farthest drops come down about twice as far along the shot as the upward goo rises (the user: twice as far).
+        /// </summary>
+        public const float SHOT_REACH = 1.35f;
+
+        /// <summary>The spray along the shot rises at this slope (about 25°): it arcs, it does not skim the ground.</summary>
+        public const float SHOT_ELEVATION = 0.47f;
+
+        /// <summary>How wide the spray along the shot opens: a cone, narrow at the wound, broad where it lands.</summary>
+        public const float SHOT_CONE = 0.32f;
+
+        /// <summary>Extra speed (m/s) a shot gives the torn body parts along its way (<see cref="Chunks"/>' push).</summary>
+        public const float SHOT_PUSH = 2.5f;
+
+        /// <summary>
+        /// The goo of a body a shell hit (<see cref="Goo"/>), thrown the way the shell flew: most of it on along the shot
+        /// in a widening cone that arcs and lands about twice as far as the upward goo rises, a smaller share straight
+        /// up as ever, and a little splashed out to the sides. With no way along the ground (<paramref name="shot"/> zero
+        /// or straight down: a bomb, a squash) it is the plain upward <see cref="Goo"/>. The same drops in all.
+        /// </summary>
+        /// <param name="shot">Which way the shell flew (only its part along the ground counts).</param>
+        /// <param name="speed">The goo's own launch speed, m/s: the upward share flies at it.</param>
+        /// <param name="spread">The upward share's spread, as <see cref="Goo"/>'s.</param>
+        public static int ShotGoo(Vector3 at, Vector3 shot, int drops, float speed, float spread,
+            IReadOnlyList<Color32> colors, float size, Vector3 inherit = default, float radius = 0.2f)
+        {
+            Vector3 flat = new(shot.x, 0f, shot.z);
+            if (flat.sqrMagnitude < 0.04f * shot.sqrMagnitude || flat.sqrMagnitude < 1e-6f)
+                return Goo(at, Vector3.up, drops, speed, spread, colors, size, inherit, radius);
+
+            flat.Normalize();
+            Vector3 side = Vector3.Cross(Vector3.up, flat);
+            int main = Mathf.RoundToInt(drops * SHOT_MAIN);
+            int sides = Mathf.RoundToInt(drops * SHOT_SIDES);
+            int up = Mathf.Max(1, drops - main - sides);
+            int left = sides / 2;
+
+            int spawned = Goo(at, Vector3.up, up, speed, spread, colors, size, inherit, radius);
+            spawned += Goo(at, flat + Vector3.up * SHOT_ELEVATION, main, speed * SHOT_REACH, SHOT_CONE, colors, size, inherit, radius);
+            if (left > 0)
+                spawned += Goo(at, side + Vector3.up * 0.8f, left, speed * 0.55f, 0.35f, colors, size, inherit, radius);
+            if (sides - left > 0)
+                spawned += Goo(at, -side + Vector3.up * 0.8f, sides - left, speed * 0.55f, 0.35f, colors, size, inherit, radius);
+            return spawned;
+        }
+
         /// <summary>One body part of <see cref="Chunks"/>: its size in cubes and where its middle sits (share of the body's height, sideways in cubes).</summary>
         private static readonly (int x, int y, int z, float height, float side)[] Parts =
         {
@@ -138,8 +191,12 @@ namespace Game.Voxels
         /// zombie's own colours, its face on the head, its shirt on the torso, its trousers on the legs. A part with none
         /// takes <paramref name="skin"/>.
         /// </param>
+        /// <param name="push">
+        /// Extra speed (m/s) along <paramref name="away"/>: a shell's shot carries the pieces on its way (<see cref="SHOT_PUSH"/>),
+        /// less far than the blood (<see cref="ShotGoo"/>).
+        /// </param>
         public static int Chunks(Vector3 at, float height, Vector3 away, IReadOnlyList<Color32> skin, IReadOnlyList<Color32> meat,
-            IReadOnlyList<Color32>[] partSkin)
+            IReadOnlyList<Color32>[] partSkin, float push = 0f)
         {
             VoxelWorld world = VoxelWorld.Instance;
             VoxelDebris debris = world != null ? world.Debris : null;
@@ -161,7 +218,7 @@ namespace Game.Voxels
                 Vector3 out_ = (middle - (at + Vector3.up * height * 0.6f));
                 out_.y = 0f;
                 Vector3 velocity = Vector3.up * Random.Range(4f, 6.5f) + out_.normalized * Random.Range(1f, 2.5f) +
-                                   away * Random.Range(1f, 2f) + Random.insideUnitSphere * 0.6f;
+                                   away * (Random.Range(1f, 2f) + push * Random.Range(0.7f, 1.2f)) + Random.insideUnitSphere * 0.6f;
                 int cluster = debris.BeginGoreCluster(middle, Lifted(velocity), 3f);
                 if (cluster < 0)
                     break;

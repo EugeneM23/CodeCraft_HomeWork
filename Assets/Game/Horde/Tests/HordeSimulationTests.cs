@@ -26,6 +26,29 @@ namespace Game.Horde.Tests
         }
 
         [Test]
+        public void Tear_KeepsTheWayTheShellFlew_ForThatDeathOnly()
+        {
+            using HordeNavGrid grid = HordeTestGrids.Flat(20, 20);
+            using var field = new HordeFlowField(grid);
+            using var sim = new HordeSimulation(8, grid, field, HordeSettings.Default);
+            int torn = sim.Spawn(new float3(5f, 0f, 5f), 0f);
+            int shot = sim.Spawn(new float3(15f, 0f, 15f), 0f);
+            Step(sim, default);
+
+            var way = new float3(0.6f, -0.2f, 0.77f);
+            sim.Tear(torn, sim.Version(torn), way);
+            sim.Damage(torn, sim.Version(torn), 1e6f);
+            sim.Damage(shot, sim.Version(shot), 1e6f);
+            Step(sim, default);
+
+            Assert.AreEqual(2, sim.Deaths.Length);
+            Assert.IsTrue(sim.IsTorn(torn));
+            Assert.AreEqual(way, sim.TornDirection(torn), "its goo and pieces go the shell's way");
+            Assert.IsFalse(sim.IsTorn(shot));
+            Assert.AreEqual(float3.zero, sim.TornDirection(shot), "a plain death has no way: its goo goes up");
+        }
+
+        [Test]
         public void Separation_PushesOverlappingMonstersApart()
         {
             using HordeNavGrid grid = HordeTestGrids.Flat(20, 20);

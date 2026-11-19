@@ -225,6 +225,17 @@ namespace Game.Voxels
                 sizes.Add(_clusters[i].Count);
         }
 
+        /// <summary>Where the clusters still simulated are (flying or settling): for tests and debugging.</summary>
+        public void GetClusterPositions(System.Collections.Generic.List<Vector3> positions)
+        {
+            Complete();
+            positions.Clear();
+            if (!_clusters.IsCreated)
+                return;
+            for (int i = 0; i < _clusters.Length; i++)
+                positions.Add(_clusters[i].Position);
+        }
+
         /// <summary>Single flying cubes of about this colour (±0.02 per channel): for tests.</summary>
         public int CountCrumbsOfColour(Color color)
         {

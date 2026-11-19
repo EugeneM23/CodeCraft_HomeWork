@@ -29,7 +29,8 @@ namespace Game
                 // if that kills it, it is torn apart rather than falling whole.
                 if (!ExplosionUseCase.AreaDamage)
                 {
-                    targets.Tear(target);
+                    Vector3 shot = bullet.TryGetMoveDirection(out var flew) ? flew.Value : Vector3.zero;
+                    targets.Tear(target, shot);
                     targets.Damage(target, damage, point);
                 }
 

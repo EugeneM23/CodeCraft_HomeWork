@@ -69,6 +69,9 @@ namespace Game.Horde
         private NativeArray<float> _health;
         /// <summary>Per slot: 1 when a shell's direct hit marked it (<see cref="Tear"/>): its death tears it apart.</summary>
         private NativeArray<byte> _torn;
+
+        /// <summary>Which way the shell that tore a slot's monster flew (zero: no way known).</summary>
+        private NativeArray<float3> _tornDirection;
         private NativeArray<HordeState> _state;
         private NativeArray<float> _animTime;
         private NativeArray<float> _speedScale;
@@ -150,6 +153,7 @@ namespace Game.Horde
             _heading = new NativeArray<float>(capacity, Allocator.Persistent);
             _health = new NativeArray<float>(capacity, Allocator.Persistent);
             _torn = new NativeArray<byte>(capacity, Allocator.Persistent);
+            _tornDirection = new NativeArray<float3>(capacity, Allocator.Persistent);
             _state = new NativeArray<HordeState>(capacity, Allocator.Persistent);
             _animTime = new NativeArray<float>(capacity, Allocator.Persistent);
             _speedScale = new NativeArray<float>(capacity, Allocator.Persistent);
@@ -329,6 +333,7 @@ namespace Game.Horde
             _heading[i] = heading;
             _health[i] = row.Health * healthScale;
             _torn[i] = 0;
+            _tornDirection[i] = float3.zero;
             _maxHealth[i] = _health[i];
             _state[i] = emerge ? HordeState.Emerging : HordeState.Walk;
             _stateTime[i] = emerge ? s.EmergeTime : 0f;
@@ -461,11 +466,20 @@ namespace Game.Horde
         /// The monster, if the damage queued with it kills it, is torn apart (a shell's direct hit): its death reads
         /// <see cref="IsTorn"/>. A slot given to a new monster starts whole.
         /// </summary>
-        public void Tear(int index, int version)
+        public void Tear(int index, int version) => Tear(index, version, float3.zero);
+
+        /// <param name="direction">Which way the shell flew: the body's goo and pieces are thrown on that way (<see cref="TornDirection"/>).</param>
+        public void Tear(int index, int version, float3 direction)
         {
-            if (IsTargetAlive(index, version))
-                _torn[index] = 1;
+            if (!IsTargetAlive(index, version))
+                return;
+            _torn[index] = 1;
+            _tornDirection[index] = direction;
         }
+
+        /// <summary>Which way the shell that tore the monster in this slot flew (zero: none known, or not torn).</summary>
+        public float3 TornDirection(int index) =>
+            index >= 0 && index < _tornDirection.Length && _torn[index] != 0 ? _tornDirection[index] : float3.zero;
 
         /// <summary>Whether the monster that died in this slot was torn apart (read with its death).</summary>
         public bool IsTorn(int index) => index >= 0 && index < _torn.Length && _torn[index] != 0;
@@ -686,6 +700,7 @@ namespace Game.Horde
             if (_heading.IsCreated) _heading.Dispose();
             if (_health.IsCreated) _health.Dispose();
             if (_torn.IsCreated) _torn.Dispose();
+            if (_tornDirection.IsCreated) _tornDirection.Dispose();
             if (_state.IsCreated) _state.Dispose();
             if (_animTime.IsCreated) _animTime.Dispose();
             if (_speedScale.IsCreated) _speedScale.Dispose();

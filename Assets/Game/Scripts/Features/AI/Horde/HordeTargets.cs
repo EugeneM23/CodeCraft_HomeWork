@@ -141,7 +141,7 @@ namespace Game.AIKit.Adapters
         public void Damage(int index, int version, float damage, Vector3 hitPoint) =>
             _simulation?.Damage(index, version, damage);
 
-        public void Tear(int index, int version) => _simulation?.Tear(index, version);
+        public void Tear(int index, int version, Vector3 direction) => _simulation?.Tear(index, version, (float3)direction);
 
         public void DamageArea(Vector3 center, float radius, float damage, float minFactor) =>
             _simulation?.AddAreaDamage(center, radius, damage, minFactor);

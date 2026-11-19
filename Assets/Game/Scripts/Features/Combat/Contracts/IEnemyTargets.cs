@@ -29,7 +29,8 @@ namespace Game
         void Damage(in EnemyRef target, float damage, Vector3 hitPoint);
 
         /// <summary>The target, if damage queued now kills it, is torn apart (a shell's direct hit) rather than falling whole.</summary>
-        void Tear(in EnemyRef target);
+        /// <param name="direction">Which way the shell flew: the body's goo and pieces are thrown on that way (zero: none).</param>
+        void Tear(in EnemyRef target, Vector3 direction);
 
         void DamageArea(Vector3 center, float radius, float damage, float minFactor);
     }

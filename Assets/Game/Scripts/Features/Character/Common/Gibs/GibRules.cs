@@ -34,12 +34,19 @@ namespace Game
         /// <summary>1 at a blast's centre, 0 at its edge.</summary>
         public readonly float BlastShare;
 
-        public KillingHit(Vector3 origin, float damage, bool blast, float blastShare)
+        /// <summary>
+        /// Which way the shell that killed flew (zero: none known, or no shell): its goo and pieces are thrown on that way
+        /// (VoxelSpray.ShotGoo).
+        /// </summary>
+        public readonly Vector3 Direction;
+
+        public KillingHit(Vector3 origin, float damage, bool blast, float blastShare, Vector3 direction = default)
         {
             Origin = origin;
             Damage = damage;
             Blast = blast;
             BlastShare = blastShare;
+            Direction = direction;
         }
     }
 
@@ -96,6 +103,7 @@ namespace Game
             float damage = 0f;
             bool blast = false;
             float blastShare = 1f;
+            Vector3 direction = Vector3.zero;
 
             if (hit?.source != null)
             {
@@ -112,10 +120,13 @@ namespace Game
                 {
                     float minFactor = hit.source.TryGetExplosionMinDamageFactor(out float min) ? min : 0.25f;
                     blastShare = Mathf.InverseLerp(minFactor, 1f, hit.damageFactor);
+                    // The way the shell flew, read now: the shell goes back to its pool after the hit.
+                    if (hit.source.TryGetMoveDirection(out var move))
+                        direction = move.Value;
                 }
             }
 
-            return new KillingHit(origin, damage, blast, blastShare);
+            return new KillingHit(origin, damage, blast, blastShare, direction);
         }
 
         public static bool TryGetPosition(IEntity source, out Vector3 position)
