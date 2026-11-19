@@ -9,7 +9,14 @@ namespace Game
     /// </summary>
     public static class GameSignals
     {
-        // Blasts are not here: every one comes through ExplosionEvents.Exploded (shells and the air strike).
+        // Blasts as such come through ExplosionEvents.Exploded (shells and the air strike); ShellExploded only tells
+        // the shell's blast apart, raised just before its Exploded at the same point.
+
+        /// <summary>
+        /// An explosive projectile (the tank's cannon shell) went off: its point. Raised right before the same
+        /// blast's ExplosionEvents.Exploded.
+        /// </summary>
+        public static event Action<Vector3> ShellExploded;
 
         /// <summary>Something struck mud: point, size of the hit (m) — a bullet is small, a blast is its radius.</summary>
         public static event Action<Vector3, float> MudHit;
@@ -27,6 +34,8 @@ namespace Game
         public static event Action<Vector3> XpPicked;
 
         public static void RaiseXpPicked(Vector3 point) => XpPicked?.Invoke(point);
+
+        public static void RaiseShellExploded(Vector3 point) => ShellExploded?.Invoke(point);
 
         public static void RaiseMudHit(Vector3 point, float size) => MudHit?.Invoke(point, size);
 

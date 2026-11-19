@@ -94,12 +94,16 @@ namespace Game.AudioEngine.Adapters
             new(AudioKeys.Weapons.IMPACT_GROUND, FX, true, maxFrequency: 0.05f),
             new(AudioKeys.Weapons.IMPACT_VOXEL, FX, true, maxFrequency: 0.05f),
             new(AudioKeys.Weapons.IMPACT_FLESH, FX, true, maxFrequency: 0.05f, defaultClips: "Common/BulletDamage.wav"),
+            // The cannon shell going off where it hit; a burst of hits (ricochet skill) is thinned to one per 0.08 s.
+            new(AudioKeys.Weapons.SHELL_HIT, FX, true, maxFrequency: 0.08f),
             new(AudioKeys.Weapons.AIRSTRIKE_CALL, FX, false, maxFrequency: 0.5f, defaultClips: "Common/Alarm.wav"),
             // Looped: the whistle lasts until GameSignalAudio stops it when the bomb explodes, not until the clip ends.
             new(AudioKeys.Weapons.AIRSTRIKE_WHISTLE, FX, true, loop: true),
 
             // Destruction.
-            new(AudioKeys.Destruction.EXPLOSION_SMALL, FX, true, maxFrequency: 0.05f, defaultClips: "etfx_explosion_magic.wav"),
+            // Blasts that are neither a shell (weapons.shell_hit) nor the air bomb (explosion_large): the same clip.
+            new(AudioKeys.Destruction.EXPLOSION_SMALL, FX, true, maxFrequency: 0.05f,
+                defaultClips: "Clips/weapons/shell_hit/tiger_explosion.ogg"),
             new(AudioKeys.Destruction.EXPLOSION_LARGE, FX, true, defaultClips: "etfx_explosion_laser.wav"),
             new(AudioKeys.Destruction.VOXEL_BREAK, FX, true, maxFrequency: 0.05f),
             new(AudioKeys.Destruction.VOXEL_FRACTURE, FX, true, maxFrequency: 0.1f),

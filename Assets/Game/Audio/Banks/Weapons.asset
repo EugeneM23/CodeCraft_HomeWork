@@ -31,6 +31,8 @@ MonoBehaviour:
     value: {fileID: 11400000, guid: dc9ea0cb3a040bc4a83996797c25e896, type: 2}
   - identifier: airstrike_whistle
     value: {fileID: 11400000, guid: a73dfc77c80329841b667e7b3dca5660, type: 2}
+  - identifier: shell_hit
+    value: {fileID: 11400000, guid: dff7fe1220ef43e44b30829f280ac82c, type: 2}
   boolParameters: []
   intParameters: []
   floatParameters: []
