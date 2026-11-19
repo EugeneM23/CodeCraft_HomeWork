@@ -47,7 +47,7 @@ namespace Game.Voxels.Tests
             _debris.GetClusterSizes(sizes);
             Assert.That(sizes.Count, Is.GreaterThan(1), "it hit at 12 m/s and broke");
             // A hit harder than DUST_SPEED adds one puff of 6-12 dust cubes; none of the clump's own is lost.
-            Assert.That(Sum(sizes) + _debris.LyingCount, Is.InRange(125 + 3, 125 + 5), "no cube lost, only a puff of dust added (3-5 cubes)");
+            Assert.That(Sum(sizes) + _debris.LyingCount, Is.InRange(125 + 2, 125 + 3), "no cube lost, only a puff of dust added (2-3 cubes)");
         }
 
         [TestCase(300, 15f, 8)]
@@ -73,8 +73,8 @@ namespace Game.Voxels.Tests
             }
             int dust = cubes + _debris.LyingCount - 343;
             Assert.That(pieces, Is.InRange(6, 8), "pieces");
-            Assert.That(crumbs - dust, Is.InRange(343 * 10 / 100, 343 * 30 / 100), "crumbs: 15-20% of the clump, give or take");
-            Assert.That(dust, Is.InRange(3, 5), "one small puff of dust (extra, not taken from the clump; cut to 3-5 to leave room for blood)");
+            Assert.That(crumbs - dust, Is.InRange(343 * 3 / 100, 343 * 15 / 100), "crumbs: 5-10% of the clump, give or take (cut for the carpet of tiny crumbs)");
+            Assert.That(dust, Is.InRange(2, 3), "one small puff of dust (extra, not taken from the clump; cut to 2-3 to leave room for blood)");
         }
 
         [Test]
@@ -100,7 +100,7 @@ namespace Game.Voxels.Tests
         }
 
         [Test]
-        public void BigClump_AfterSettling_LeavesPiecesAndAQuarterCrumbs()
+        public void BigClump_AfterSettling_LeavesPiecesAndAnEighthCrumbs()
         {
             Clump(new Vector3(0f, 1.2f, 0f), new Vector3(0f, -15f, 0f), 7, Color.gray);
             Run(4f);
@@ -121,11 +121,11 @@ namespace Game.Voxels.Tests
             Assert.AreEqual(343, Sum(flying) + _debris.LyingCount, "no cube lost, and the dust has gone");
             Assert.That(pieces, Is.InRange(8, 24), "pieces stay pieces: the cascade stops");
             Assert.That(biggest, Is.LessThanOrEqualTo(60), "the biggest piece");
-            Assert.That(crumbs, Is.InRange(343 * 15 / 100, 343 * 40 / 100), "crumbs: about a quarter of the clump");
+            Assert.That(crumbs, Is.InRange(343 * 6 / 100, 343 * 22 / 100), "crumbs: about an eighth of the clump (was a quarter: cut for the carpet of tiny crumbs)");
         }
 
         [Test]
-        public void SmallClump_FallsIntoCrumbs()
+        public void SmallDirtClump_LandsWhole()
         {
             int clump = _debris.BeginCluster(new Vector3(0f, 0.5f, 0f), new Vector3(0f, -8f, 0f), 0f);
             for (int i = 0; i < 5; i++)
@@ -133,8 +133,11 @@ namespace Game.Voxels.Tests
             Run(0.15f);
             var sizes = new List<int>();
             _debris.GetClusterSizes(sizes);
-            foreach (int n in sizes)
-                Assert.AreEqual(1, n, "under MIN_PIECE cubes there are no pieces, only crumbs");
+            var lying = new List<int>();
+            _debris.GetLyingGroupSizes(lying);
+            sizes.AddRange(lying);
+            CollectionAssert.AreEqual(new[] { 5 }, sizes,
+                "under MIN_PIECE cubes dirt does not fall into crumbs (the carpet of tiny crumbs round a crater)");
         }
 
         [Test]

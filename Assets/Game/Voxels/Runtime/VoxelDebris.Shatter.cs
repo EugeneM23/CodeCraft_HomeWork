@@ -15,13 +15,14 @@ namespace Game.Voxels
         /// About this share of a breaking clump, on the side that hit, falls off as single crumbs
         /// (what CRUMB_DEPTH comes to).
         /// </summary>
-        private const float CRUMB_SHARE = 0.09f;
+        private const float CRUMB_SHARE = 0.05f;
         /// <summary>
         /// A cube is a crumb when it lies deeper than this share of the clump's reach (from its centre,
-        /// towards the side that hit), less a jitter of up to a cube: the cap past half the radius is
-        /// about 16 % of a ball, and the jitter brings it to about CRUMB_SHARE.
+        /// towards the side that hit), less a jitter of up to a cube: the cap past 0.6 of the radius is
+        /// about 10 % of a ball, and the jitter brings it to about CRUMB_SHARE. Cut from half the radius (twice as many
+        /// crumbs) for the carpet of tiny crumbs round a crater (the user).
         /// </summary>
-        private const float CRUMB_DEPTH = 0.5f;
+        private const float CRUMB_DEPTH = 0.6f;
         /// <summary>Impact speed (m/s) at which a clump breaks into as many pieces as its size allows.</summary>
         private const float FULL_IMPACT = 15f;
         /// <summary>A break harder than this (m/s) knocks out a puff of dust.</summary>
@@ -29,9 +30,9 @@ namespace Game.Voxels
         /// <summary>Dust falls at 0.3 g: a share of the debris gravity, which is GRAVITY_SCALE times g.</summary>
         private const float DUST_GRAVITY = 0.3f / GRAVITY_SCALE;
         /// <summary>Most dust cubes one break knocks out.</summary>
-        private const int MAX_DUST = 5;
+        private const int MAX_DUST = 3;
         /// <summary>Fewest dust cubes a puff has.</summary>
-        private const int MIN_DUST = 3;
+        private const int MIN_DUST = 2;
         /// <summary>Dust is lightened this far towards white (shared by the break and ThrowEarth).</summary>
         private const float DUST_LIGHTEN = 0.2f;
         private const float DUST_SIZE_MIN = 0.04f;
@@ -57,9 +58,13 @@ namespace Game.Voxels
         /// <summary>Most pieces a piece breaks into on its second landing.</summary>
         private const int MAX_REBREAK_PARTS = 3;
 
-        /// <summary>Whether a clump may break on a hard landing at all (by its generation and size).</summary>
+        /// <summary>
+        /// Whether a clump may break on a hard landing at all (by its generation and size). A dirt clump under MIN_PIECE
+        /// cubes lands whole: falling into crumbs, such clumps were most of the carpet of tiny crumbs round a crater (the user).
+        /// </summary>
         private static bool CanBreak(in Cluster cluster) =>
-            cluster.Generation == 0 || (cluster.Generation < MAX_GENERATION && cluster.Count >= MIN_REBREAK);
+            (cluster.Count >= MIN_PIECE || (cluster.Flags & (GOO | SPLAT)) != 0) &&
+            (cluster.Generation == 0 || (cluster.Generation < MAX_GENERATION && cluster.Count >= MIN_REBREAK));
 
         /// <summary>
         /// How many pieces a clump of <paramref name="cubes"/> breaks into when it hits at
@@ -76,7 +81,7 @@ namespace Game.Voxels
         /// fall off as single crumbs, fanning out along the ground; the rest breaks by Voronoi into
         /// <see cref="PartsFor"/> pieces (seed cubes picked at random, every cube to the nearest,
         /// with a little jitter so the break is ragged), which hop up and apart so they land again
-        /// and break once more. A clump under MIN_PIECE cubes falls into crumbs only. A hard hit
+        /// and break once more. A clump under MIN_PIECE cubes (gore only: dirt that small lands whole, see CanBreak) falls into crumbs only. A hard hit
         /// also knocks out a puff of dust: a few new small cubes that drift and shrink away.
         /// New clusters go to the end of the list; the parent is left with no life for the compact pass.
         /// </summary>

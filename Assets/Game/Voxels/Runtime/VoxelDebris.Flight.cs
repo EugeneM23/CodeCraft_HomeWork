@@ -419,7 +419,8 @@ namespace Game.Voxels
                     Group = group,
                     Born = Time,
                     SinkTime = SINK_TIME,
-                    Flags = (settledCluster.Flags & LAID) | PENDING | ((settledCluster.Flags & (GOO | SPLAT)) != 0 ? GORE : 0),
+                    Flags = (settledCluster.Flags & LAID) | PENDING | ((settledCluster.Flags & (GOO | SPLAT)) != 0 ? GORE
+                        : settledCluster.Count == 1 ? CRUMB : 0),
                     Anchor = anchor,
                     Cell = cell
                 };

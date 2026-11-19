@@ -135,6 +135,8 @@ namespace Game.Voxels
         private NativeList<LyingQuery> _queriesInFlight;
         /// <summary>Debris time (s): the sum of the steps; when a cube lay down.</summary>
         private float _time;
+        /// <summary>When (VoxelDebris time) CrumbAgeJob next runs.</summary>
+        private float _nextCrumbAge;
         private uint _seed = 1;
 
         /// <summary>The frame's step, still running on workers (see <see cref="Complete"/>).</summary>
@@ -590,6 +592,19 @@ namespace Game.Voxels
                     State = _lyingState,
                     Hits = _queryHits
                 }.Schedule(math.min(seen.Count, _lyingCubes.Length), 256, handle);
+            }
+
+            // The old lying crumbs sink, once a second (after the queries: a cube a query hit is left to LyingJob).
+            if (seen.Count > 0 && _time >= _nextCrumbAge)
+            {
+                _nextCrumbAge = _time + CRUMB_AGE_PERIOD;
+                handle = new CrumbAgeJob
+                {
+                    Lying = _lyingCubes,
+                    Cells = _cells,
+                    State = _lyingState,
+                    Time = _time
+                }.Schedule(handle);
             }
 
             handle = new LyingJob

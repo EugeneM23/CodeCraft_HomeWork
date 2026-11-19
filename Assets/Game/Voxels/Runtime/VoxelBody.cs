@@ -31,10 +31,14 @@ namespace Game.Voxels
         private const int STRUCTURE_BODY_MIN = 250;
 
         /// <summary>Edge, in voxels, of the cells a carve's spray is grouped into clumps by.</summary>
-        private const int CLUMP = 3;
+        private const int CLUMP = 4;
 
-        /// <summary>Share of the spray that flies as single crumbs rather than in clumps.</summary>
-        private const float CRUMB_SHARE = 0.2f;
+        /// <summary>
+        /// Share of the spray that flies as single crumbs rather than in clumps: few (the user: a carpet of thousands of tiny
+        /// crumbs round a crater), and those few <see cref="CRUMB_SIZE"/> times a voxel, chunky.
+        /// </summary>
+        private const float CRUMB_SHARE = 0.06f;
+        private const float CRUMB_SIZE = 1.5f;
 
         /// <summary>Clumps one throw makes at most, about: a bomb's fountain is ~2600 cubes in 3³ cells.</summary>
         private const int CLUMPS_CAPACITY = 1024;
@@ -962,7 +966,7 @@ namespace Game.Voxels
                 if (Random.value < CRUMB_SHARE)
                 {
                     Keep(debris, debris.Spawn(position, inherited + Fling(position, center, force, throwVelocity, 0.6f),
-                        _palette[voxel.Material], size));
+                        _palette[voxel.Material], size * CRUMB_SIZE));
                     continue;
                 }
 
