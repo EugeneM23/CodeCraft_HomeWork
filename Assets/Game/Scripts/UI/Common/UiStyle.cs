@@ -4,29 +4,31 @@ namespace Game
 {
     /// <summary>
     /// The one look of every screen: colours and sizes. Prefab builders read it when they build the
-    /// screens; screens read the state colours (good, bad, disabled) at run time. The palette follows the
-    /// SCI-FI UI Pack Pro's cyan set (its frames and buttons carry their own colours; these tint texts,
-    /// bars and the plain shapes between them).
+    /// screens; screens read the state colours (good, bad, disabled) at run time. Dark graphite with an orange
+    /// accent; the SCI-FI UI Pack Pro's frames and buttons are drawn from grey copies tinted with FrameTint
+    /// (graphite) or Accent (orange).
     /// </summary>
     public static class UiStyle
     {
-        public static readonly Color Background = new(0.004f, 0.07f, 0.09f, 1f);
-        public static readonly Color Panel = new(0.0f, 0.1f, 0.13f, 0.85f);
-        public static readonly Color PanelLight = new(0.02f, 0.17f, 0.21f, 0.92f);
-        public static readonly Color Dim = new(0f, 0.02f, 0.04f, 0.72f);
-        public static readonly Color Text = new(0.9f, 0.97f, 1f, 1f);
-        public static readonly Color TextMuted = new(0.52f, 0.7f, 0.76f, 1f);
-        public static readonly Color Accent = new(0f, 0.894f, 1f, 1f);
-        public static readonly Color AccentText = new(0.01f, 0.1f, 0.13f, 1f);
-        public static readonly Color Button = new(0.03f, 0.2f, 0.25f, 1f);
-        public static readonly Color ButtonHover = new(0.05f, 0.3f, 0.36f, 1f);
-        public static readonly Color ButtonPressed = new(0.02f, 0.12f, 0.15f, 1f);
-        public static readonly Color Disabled = new(0.3f, 0.36f, 0.38f, 0.6f);
-        public static readonly Color Good = new(0.3f, 0.95f, 0.55f, 1f);
-        public static readonly Color Bad = new(1f, 0.32f, 0.3f, 1f);
-        public static readonly Color Health = new(0.3f, 0.92f, 0.5f, 1f);
-        /// <summary>Second highlight next to the cyan accent (samples, the armour slot): the pack's purple.</summary>
-        public static readonly Color Armor = new(0.66f, 0.5f, 1f, 1f);
+        public static readonly Color Background = new(0.075f, 0.072f, 0.07f, 1f);
+        public static readonly Color Panel = new(0.11f, 0.105f, 0.1f, 0.88f);
+        public static readonly Color PanelLight = new(0.17f, 0.16f, 0.15f, 0.93f);
+        public static readonly Color Dim = new(0.02f, 0.018f, 0.016f, 0.72f);
+        public static readonly Color Text = new(0.93f, 0.91f, 0.87f, 1f);
+        public static readonly Color TextMuted = new(0.62f, 0.6f, 0.57f, 1f);
+        public static readonly Color Accent = new(1f, 0.55f, 0.12f, 1f);
+        public static readonly Color AccentText = new(0.12f, 0.07f, 0.02f, 1f);
+        /// <summary>Tint of the pack's grey frames, panels and secondary buttons: graphite with a warm edge.</summary>
+        public static readonly Color FrameTint = new(0.6f, 0.57f, 0.54f, 1f);
+        public static readonly Color Button = new(0.2f, 0.19f, 0.18f, 1f);
+        public static readonly Color ButtonHover = new(0.3f, 0.26f, 0.21f, 1f);
+        public static readonly Color ButtonPressed = new(0.13f, 0.12f, 0.11f, 1f);
+        public static readonly Color Disabled = new(0.36f, 0.35f, 0.34f, 0.6f);
+        public static readonly Color Good = new(0.4f, 0.88f, 0.42f, 1f);
+        public static readonly Color Bad = new(1f, 0.32f, 0.28f, 1f);
+        public static readonly Color Health = new(0.38f, 0.86f, 0.4f, 1f);
+        /// <summary>Second highlight next to the orange accent (samples, the armour slot): a cool blue-grey.</summary>
+        public static readonly Color Armor = new(0.55f, 0.72f, 0.95f, 1f);
 
         public const float REFERENCE_WIDTH = 1920f;
         public const float REFERENCE_HEIGHT = 1080f;

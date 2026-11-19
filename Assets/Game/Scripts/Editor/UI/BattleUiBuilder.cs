@@ -297,8 +297,8 @@ namespace Game.EditorTools
 
             RectTransform xp = HudRow("Experience", panel.transform, 26);
             TMP_Text level = HudText("Level", xp, UiStyle.FONT_BODY, 90, true, UiStyle.Accent);
-            Image xpFill = UiFactory.Bar("XpBar", xp, Color.white, new Vector2(250, 14), UiPackSprites.ProgressBack,
-                UiPackSprites.ProgressFill, Color.white); // the pack's cyan progress bar
+            Image xpFill = UiFactory.Bar("XpBar", xp, UiStyle.Accent, new Vector2(250, 14), UiPackSprites.ProgressBack,
+                UiPackSprites.ProgressFill, UiStyle.FrameTint); // the pack's progress bar, orange fill on graphite
             UiFactory.Size(xpFill.transform.parent.GetComponent<Image>(), 14, 250);
             TMP_Text xpText = HudText("XpValue", xp, UiStyle.FONT_SMALL, 90, false, UiStyle.TextMuted);
 

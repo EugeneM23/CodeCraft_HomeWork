@@ -14,10 +14,12 @@ namespace Game.EditorTools
             UiDataBuilder.Build();
             UiIconSetBuilder.Ensure();
             MenuUiBuilder.Build();
+            HangarStageBuilder.BuildPrefab(); // the stage prefab follows the palette too (Create only builds a missing one)
             MenuUiBuilder.BuildScene();
             BattleUiBuilder.Build();
             UiDataBuilder.AddBattleUiToLevelLayer();
             AppPrefabUiBuilder.Build();
+            LoadingScreenBuilder.Build();
 
             // The fonts are dynamic: glyphs are added when text is drawn. Saved empty, they don't put
             // megabytes of atlas into every commit.

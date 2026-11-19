@@ -99,6 +99,20 @@ namespace Game.EditorTools
 
         private static readonly Dictionary<string, Sprite> Cache = new();
 
+        // Drawn orange (UiStyle.Accent); every other pack sprite is graphite (UiStyle.FrameTint).
+        private static readonly HashSet<string> AccentPaths = new()
+        {
+            ButtonAccent.Normal, ButtonAccent.Pressed, TabSelected.Path, ProgressFill.Path, SliderFill.Path,
+            SliderHandle.Path, CheckOn.Path, FieldSelected.Path, LevelPlate.Path, IconFrameLarge.Path, GateArrow.Path
+        };
+
+        /// <summary>
+        /// The colour a pack sprite is drawn with when the caller gives none: its grey copy tinted orange for the
+        /// accents, graphite for the rest (the pack's own cyan is gone, see UiPackNeutralizer).
+        /// </summary>
+        public static Color DefaultTint(string path) =>
+            path != null && AccentPaths.Contains(path) ? UiStyle.Accent : UiStyle.FrameTint;
+
         /// <summary>The sprite at the path (cached); null with a warning when the pack is not there.</summary>
         public static Sprite Get(string path)
         {
@@ -107,7 +121,10 @@ namespace Game.EditorTools
             if (Cache.TryGetValue(path, out Sprite sprite) && sprite != null)
                 return sprite;
 
-            sprite = AssetDatabase.LoadAssetAtPath<Sprite>(path);
+            // The pack's cyan art is drawn from its grey copy (Image colours tint it: graphite and orange);
+            // the white icons are neutral already.
+            string drawn = path.StartsWith(WHITE_ICONS) || path.StartsWith(ICONS000) ? path : UiPackNeutralizer.Ensure(path);
+            sprite = AssetDatabase.LoadAssetAtPath<Sprite>(drawn);
             if (sprite == null)
                 Debug.LogWarning($"{nameof(UiPackSprites)}: no sprite at {path}");
             Cache[path] = sprite;

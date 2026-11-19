@@ -252,12 +252,12 @@ namespace Game.EditorTools
             key.shadows = LightShadows.Soft;
             key.shadowStrength = 0.85f;
 
-            // Rim: from behind, cool, outlines the turret against the dark wall.
-            Light rim = NewLight("RimLight", lights, LightType.Directional, new Color(0.7f, 0.8f, 1f), 0.45f);
+            // Rim: from behind, warm orange like the UI accent, outlines the turret against the dark wall.
+            Light rim = NewLight("RimLight", lights, LightType.Directional, new Color(1f, 0.62f, 0.3f), 0.55f);
             rim.transform.rotation = Quaternion.Euler(24f, -150f, 0f);
 
             // Top: a pool of light on the turntable, limited range, no shadows.
-            Light top = NewLight("TopLight", lights, LightType.Spot, new Color(1f, 0.92f, 0.8f), 14f);
+            Light top = NewLight("TopLight", lights, LightType.Spot, new Color(1f, 0.82f, 0.6f), 14f);
             top.transform.SetPositionAndRotation(new Vector3(0f, tank.max.y + 4.5f, 0f), Quaternion.Euler(90f, 0f, 0f));
             top.range = tank.max.y + 7f;
             top.spotAngle = 70f;
