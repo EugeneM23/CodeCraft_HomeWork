@@ -6,7 +6,7 @@ using UnityEngine.UI;
 namespace Game.EditorTools
 {
     /// <summary>
-    /// Rebuilds the core's loading screen (App prefab → LoadingScreen) in the menus' look: the dark cyan background,
+    /// Rebuilds the core's loading screen (App prefab → LoadingScreen) in the menus' look: the dark graphite background,
     /// a «ЗАГРУЗКА» title between the pack's title lines, the pack's progress bar (a filled image the screen drives)
     /// and a muted hint. Only the screen's children change; its CanvasGroup and the LoadingScreen component stay.
     /// </summary>
@@ -41,7 +41,7 @@ namespace Game.EditorTools
                 UiFactory.Stretch(background.rectTransform);
                 background.raycastTarget = true;
 
-                Image vignette = UiFactory.Frame("Frame", t, UiPackSprites.Panel, new Color(1f, 1f, 1f, 0.35f));
+                Image vignette = UiFactory.Frame("Frame", t, UiPackSprites.Panel, new Color(UiStyle.FrameTint.r, UiStyle.FrameTint.g, UiStyle.FrameTint.b, 0.35f));
                 UiFactory.Stretch(vignette.rectTransform, 60f, 60f, 60f, 60f);
                 vignette.raycastTarget = false;
 

@@ -10,7 +10,7 @@ namespace Game.EditorTools
 {
     /// <summary>
     /// Building blocks for the screen prefab builders: every panel, text, button and control in the
-    /// one UiStyle, drawn with the SCI-FI UI Pack Pro's cyan sprites (UiPackSprites). Builders compose these,
+    /// one UiStyle, drawn with grey copies of the SCI-FI UI Pack Pro sprites (UiPackSprites, UiPackNeutralizer). Builders compose these,
     /// wire the screen's serialized fields with SetField and save the prefab with SavePrefab.
     /// </summary>
     public static class UiFactory
@@ -170,7 +170,7 @@ namespace Game.EditorTools
         /// <summary>An image drawn with a pack sprite (9-sliced when the sprite has borders), tinted (white keeps its colours).</summary>
         public static Image Frame(string name, Transform parent, UiPackSprites.Skin skin, Color? tint = null)
         {
-            Image image = Panel(name, parent, tint ?? Color.white);
+            Image image = Panel(name, parent, Color.white);
             Skin(image, skin, tint);
             return image;
         }
@@ -185,7 +185,8 @@ namespace Game.EditorTools
             image.type = sprite != null && sprite.border != Vector4.zero ? Image.Type.Sliced : Image.Type.Simple;
             image.fillCenter = true;
             image.pixelsPerUnitMultiplier = skin.Ppu;
-            image.color = tint ?? Color.white;
+            // The pack's art is drawn from grey copies: graphite or orange unless the caller tints it.
+            image.color = tint ?? UiPackSprites.DefaultTint(skin.Path);
         }
 
         public static TextMeshProUGUI Text(string name, Transform parent, string text, float size = UiStyle.FONT_BODY,
@@ -204,7 +205,7 @@ namespace Game.EditorTools
             return label;
         }
 
-        /// <summary>A button with a centred label child named "Label". Accent: the screen's main action (bright cyan).</summary>
+        /// <summary>A button with a centred label child named "Label". Accent: the screen's main action (orange).</summary>
         public static Button Button(string name, Transform parent, string label, bool accent = false,
             float fontSize = UiStyle.FONT_BODY)
         {
