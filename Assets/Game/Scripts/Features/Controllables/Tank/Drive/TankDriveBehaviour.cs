@@ -35,6 +35,12 @@ namespace Game
     /// </summary>
     public sealed class TankDriveBehaviour : IEntityInit, IEntityFixedTick
     {
+        /// <summary>How far (m/s) the wanted speed may stay above the speed the hull makes against an obstacle.</summary>
+        private const float STALL_MARGIN = 2f;
+
+        /// <summary>Most the tracks pull along the hull (m/s²): enough to climb out of a crater or onto a ramp.</summary>
+        private const float TRACTION = 16f;
+
         private readonly float _acceleration;
         private readonly float _braking;
         private readonly float _turnAcceleration;
@@ -116,9 +122,16 @@ namespace Game
             Vector3 forward = Vector3.ProjectOnPlane(_body.rotation * Vector3.forward, ground);
             forward = forward.sqrMagnitude > 1e-6f ? forward.normalized : _body.rotation * Vector3.forward;
 
+            // A speed the hull is not making (nosed into a ramp, a crater wall) is dropped to what it makes plus a
+            // margin: the tracks keep pulling against the obstacle instead of starting from rest every step,
+            // which left a tank in a crater pushing with almost nothing and stuck for good.
+            // Reared up past 35° (nosed up a house wall) the margin fades out by 50°: tanks climb ramps and craters,
+            // not walls.
             float actual = Vector3.Dot(_body.linearVelocity, forward);
+            float pitch = Vector3.Angle(_body.rotation * Vector3.up, Vector3.up);
+            float margin = STALL_MARGIN * Mathf.InverseLerp(50f, 35f, pitch);
             if (Mathf.Abs(actual) < Mathf.Abs(_speed))
-                _speed = actual;
+                _speed = actual + Mathf.Clamp(_speed - actual, -margin, margin);
 
             // Shift: a stronger engine, not a shove. Whatever the stick asks for comes quicker and goes
             // further — the speed and the turn rate both, and how fast each is reached — so a boosted
@@ -155,6 +168,13 @@ namespace Game
                     change += side * (Mathf.Clamp(lateral, -hold, hold) - lateral);
                 }
             }
+
+            // The tracks' pull along the hull is an engine's, not a wall's: capped at TRACTION. Normal driving
+            // asks far less; against an obstacle the margin above asks a lot, and this is what it gets.
+            float pull = Vector3.Dot(change, forward);
+            float maxPull = TRACTION * grip * deltaTime;
+            if (Mathf.Abs(pull) > maxPull)
+                change -= forward * (pull - Mathf.Clamp(pull, -maxPull, maxPull));
 
             Vector3 push = change * (_body.mass / deltaTime);
             _body.AddForceAtPosition(push, _suspension.ContactCentre, ForceMode.Force);
