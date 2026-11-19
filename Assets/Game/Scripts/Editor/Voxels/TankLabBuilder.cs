@@ -97,6 +97,8 @@ namespace Game.EditorTools
             so.FindProperty("_camera").objectReferenceValue = camera;
             so.FindProperty("_focus").objectReferenceValue = focus;
             so.ApplyModifiedPropertiesWithoutUndo();
+            // The armour stand: left mouse fires armour-piercing shells (TankArmourLab).
+            TankArmourSetup.AddStand(lab);
 
             EditorSceneManager.SaveScene(scene, SCENE);
             AssetDatabase.SaveAssets();

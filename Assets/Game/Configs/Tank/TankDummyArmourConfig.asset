@@ -1,0 +1,154 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b1c4fa6bef32f2489ac95a53b4619da, type: 3}
+  m_Name: TankDummyArmourConfig
+  m_EditorClassIdentifier: Game::Game.TankArmourConfig
+  _rules:
+    ricochetAngle: 70
+    overmatch: 3
+    normalisation: 5
+    ricochetKeep: 0.6
+  _zones:
+  - name: "\u042D\u043A\u0438\u043F\u0430\u0436"
+    part: Crewman
+    facing: 63
+    boxMin: {x: 0, y: 0, z: 0}
+    boxMax: {x: 1, y: 1, z: 1}
+    thickness: 0
+    kind: 2
+  - name: "\u0414\u0432\u0438\u0433\u0430\u0442\u0435\u043B\u044C"
+    part: Inside
+    facing: 63
+    boxMin: {x: 0, y: 0, z: 0}
+    boxMax: {x: 1, y: 1, z: 0.3}
+    thickness: 0
+    kind: 2
+  - name: "\u041E\u0440\u0433\u0430\u043D\u044B \u0443\u043F\u0440\u0430\u0432\u043B\u0435\u043D\u0438\u044F"
+    part: Inside
+    facing: 63
+    boxMin: {x: 0, y: 0, z: 0.8}
+    boxMax: {x: 1, y: 1, z: 1}
+    thickness: 0
+    kind: 2
+  - name: "\u0411\u043E\u0435\u0432\u043E\u0435 \u043E\u0442\u0434\u0435\u043B\u0435\u043D\u0438\u0435"
+    part: Inside
+    facing: 63
+    boxMin: {x: 0, y: 0, z: 0}
+    boxMax: {x: 1, y: 1, z: 1}
+    thickness: 0
+    kind: 2
+  - name: "\u041C\u0430\u0441\u043A\u0430 \u043E\u0440\u0443\u0434\u0438\u044F"
+    part: Gun
+    facing: 63
+    boxMin: {x: 0, y: 0, z: 0}
+    boxMax: {x: 1, y: 1, z: 1}
+    thickness: 150
+    kind: 0
+  - name: "\u041B\u043E\u0431 \u0431\u0430\u0448\u043D\u0438"
+    part: TurretVisual
+    facing: 1
+    boxMin: {x: 0, y: 0, z: 0}
+    boxMax: {x: 1, y: 1, z: 1}
+    thickness: 120
+    kind: 0
+  - name: "\u041A\u0440\u044B\u0448\u0430 \u0431\u0430\u0448\u043D\u0438"
+    part: TurretVisual
+    facing: 48
+    boxMin: {x: 0, y: 0, z: 0}
+    boxMax: {x: 1, y: 1, z: 1}
+    thickness: 25
+    kind: 0
+  - name: "\u0411\u043E\u0440\u0442 \u0431\u0430\u0448\u043D\u0438"
+    part: TurretVisual
+    facing: 12
+    boxMin: {x: 0, y: 0, z: 0}
+    boxMax: {x: 1, y: 1, z: 1}
+    thickness: 80
+    kind: 0
+  - name: "\u041A\u043E\u0440\u043C\u0430 \u0431\u0430\u0448\u043D\u0438"
+    part: TurretVisual
+    facing: 2
+    boxMin: {x: 0, y: 0, z: 0}
+    boxMax: {x: 1, y: 1, z: 1}
+    thickness: 80
+    kind: 0
+  - name: "\u0413\u0443\u0441\u0435\u043D\u0438\u0446\u0430"
+    part: Track?_*
+    facing: 63
+    boxMin: {x: 0, y: 0, z: 0}
+    boxMax: {x: 1, y: 1, z: 1}
+    thickness: 20
+    kind: 1
+  - name: "\u041A\u0430\u0442\u043E\u043A"
+    part: Wheel_*
+    facing: 63
+    boxMin: {x: 0, y: 0, z: 0}
+    boxMax: {x: 1, y: 1, z: 1}
+    thickness: 20
+    kind: 1
+  - name: "\u041D\u041B\u0414"
+    part: HullVisual
+    facing: 1
+    boxMin: {x: 0, y: 0, z: 0}
+    boxMax: {x: 1, y: 0.5, z: 1}
+    thickness: 70
+    kind: 0
+  - name: "\u0412\u041B\u0414"
+    part: HullVisual
+    facing: 1
+    boxMin: {x: 0, y: 0, z: 0}
+    boxMax: {x: 1, y: 1, z: 1}
+    thickness: 110
+    kind: 0
+  - name: "\u041B\u043E\u0431\u043E\u0432\u043E\u0439 \u0441\u043A\u043E\u0441"
+    part: HullVisual
+    facing: 16
+    boxMin: {x: 0, y: 0, z: 0.84}
+    boxMax: {x: 1, y: 1, z: 1}
+    thickness: 60
+    kind: 0
+  - name: "\u041A\u0440\u044B\u0448\u0430 \u043A\u043E\u0440\u043F\u0443\u0441\u0430"
+    part: HullVisual
+    facing: 16
+    boxMin: {x: 0, y: 0, z: 0}
+    boxMax: {x: 1, y: 1, z: 1}
+    thickness: 25
+    kind: 0
+  - name: "\u0414\u043D\u0438\u0449\u0435"
+    part: HullVisual
+    facing: 32
+    boxMin: {x: 0, y: 0, z: 0}
+    boxMax: {x: 1, y: 1, z: 1}
+    thickness: 25
+    kind: 0
+  - name: "\u041D\u0438\u0436\u043D\u0438\u0439 \u0431\u043E\u0440\u0442"
+    part: HullVisual
+    facing: 12
+    boxMin: {x: 0, y: 0, z: 0}
+    boxMax: {x: 1, y: 0.5, z: 1}
+    thickness: 60
+    kind: 0
+  - name: "\u0411\u043E\u0440\u0442 \u043A\u043E\u0440\u043F\u0443\u0441\u0430"
+    part: HullVisual
+    facing: 12
+    boxMin: {x: 0, y: 0, z: 0}
+    boxMax: {x: 1, y: 1, z: 1}
+    thickness: 80
+    kind: 0
+  - name: "\u041A\u043E\u0440\u043C\u0430 \u043A\u043E\u0440\u043F\u0443\u0441\u0430"
+    part: HullVisual
+    facing: 2
+    boxMin: {x: 0, y: 0, z: 0}
+    boxMax: {x: 1, y: 1, z: 1}
+    thickness: 70
+    kind: 0
+  _fallback: 40
