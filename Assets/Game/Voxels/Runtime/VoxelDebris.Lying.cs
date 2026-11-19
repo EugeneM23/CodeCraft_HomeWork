@@ -34,6 +34,22 @@ namespace Game.Voxels
         private const int GORE_PROBE = 16;
         /// <summary>Eviction score of gore against dirt: it lies about three times as long.</summary>
         private const float GORE_SCORE = 0.35f;
+        /// <summary>
+        /// A single dirt cube that lay down alone (a crumb, not a piece of a clump, not gore): the user saw a carpet of
+        /// thousands of them round a crater. Eviction takes them first (<see cref="CRUMB_SCORE"/>), and CrumbAgeJob sinks
+        /// them after <see cref="CRUMB_AGE"/> seconds anyway, long before the goo and the clods.
+        /// </summary>
+        private const int CRUMB = 256;
+        /// <summary>Eviction score of a crumb against a clod's cube: it goes about three times sooner.</summary>
+        private const float CRUMB_SCORE = 3f;
+        /// <summary>Age (s) past which a lying crumb sinks by itself.</summary>
+        private const float CRUMB_AGE = 20f;
+        /// <summary>How long (s) an aged crumb takes to sink (0.6-1.4 times this: a round does not finish in one frame).</summary>
+        private const float CRUMB_SINK_TIME = 0.8f;
+        /// <summary>How often (s) CrumbAgeJob looks for old crumbs.</summary>
+        private const float CRUMB_AGE_PERIOD = 1f;
+        /// <summary>Most crumbs one CrumbAgeJob round sinks: the cells they leave are rebuilt over a few rounds, not at once.</summary>
+        private const int CRUMB_AGE_ROUND = 600;
 
         /// <summary>How long (s) a crushed cube takes to sink.</summary>
         private const float CRUSH_SINK_TIME = 0.4f;
@@ -235,7 +251,43 @@ namespace Game.Voxels
 
             private float Score(in LyingCube cube) =>
                 ((Time - cube.Born) / EVICT_AGE + math.distance(cube.Position, ViewPoint) / EVICT_DISTANCE) *
-                ((cube.Flags & GORE) != 0 ? GORE_SCORE : 1f);
+                ((cube.Flags & GORE) != 0 ? GORE_SCORE : (cube.Flags & CRUMB) != 0 ? CRUMB_SCORE : 1f);
+        }
+
+        /// <summary>
+        /// Sinks the lying crumbs (<see cref="CRUMB"/>) older than <see cref="CRUMB_AGE"/>, at most
+        /// <see cref="CRUMB_AGE_ROUND"/> a round: run every <see cref="CRUMB_AGE_PERIOD"/> seconds before LyingJob,
+        /// which then takes them down like any sinking cube.
+        /// </summary>
+        [BurstCompile]
+        private struct CrumbAgeJob : IJob
+        {
+            public NativeArray<LyingCube> Lying;
+            public NativeArray<LyingCell> Cells;
+            public NativeReference<LyingState> State;
+            public float Time;
+
+            public void Execute()
+            {
+                LyingState state = State.Value;
+                int count = state.Count;
+                int marked = 0;
+                for (int i = 0; i < count && marked < CRUMB_AGE_ROUND; i++)
+                {
+                    LyingCube cube = Lying[i];
+                    if ((cube.Flags & (CRUMB | HIT)) != CRUMB || cube.Sinking != 0f || Time - cube.Born < CRUMB_AGE)
+                        continue;
+                    cube.Sinking = 1e-4f;
+                    uint h = math.hash(new uint2((uint)i, 0x85ebca6bu));
+                    cube.SinkTime = CRUMB_SINK_TIME * (0.6f + 0.8f * ((h & 0xffffu) / 65535f));
+                    Lying[i] = cube;
+                    LeaveMesh(Cells, cube.Cell);
+                    marked++;
+                }
+
+                state.Sinking += marked;
+                State.Value = state;
+            }
         }
 
         /// <summary>Cube counts of the lying pieces (cubes that lay down together): for tests and debugging.</summary>

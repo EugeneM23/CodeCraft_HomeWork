@@ -55,6 +55,28 @@ namespace Game.Voxels.Tests
         }
 
         [Test]
+        public void LoneCrumb_SinksAfterAWhile_TheClumpStays()
+        {
+            int clump = _debris.BeginCluster(new Vector3(0f, 0.3f, 0f), Vector3.zero, 0f);
+            for (int i = 0; i < 8; i++)
+                _debris.AddCube(clump, new Vector3(i * 0.2f, 0.3f, 0f), 0.2f, Color.gray);
+            _debris.SetLife(clump, 5f);
+            for (int c = 0; c < 3; c++)
+            {
+                int crumb = _debris.BeginCluster(new Vector3(3f + c, 0.3f, 0f), Vector3.zero, 0f);
+                _debris.AddCube(crumb, new Vector3(3f + c, 0.3f, 0f), 0.1f, Color.gray);
+                _debris.SetLife(crumb, 5f);
+            }
+
+            Run(3f);
+            Assert.AreEqual(11, _debris.LyingCount, "the clump and the crumbs lie");
+
+            // CRUMB_AGE (20 s), the next round (1 s) and the sink (under 1.2 s).
+            Run(24f);
+            Assert.AreEqual(8, _debris.LyingCount, "the lone crumbs sank, the clump's cubes still lie");
+        }
+
+        [Test]
         public void Dust_NeverLies()
         {
             // A hard hit makes dust; after 3 s only crumbs and pieces lie, no dust-sized cubes.

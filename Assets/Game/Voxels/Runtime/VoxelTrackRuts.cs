@@ -141,8 +141,10 @@ namespace Game.Voxels
         /// <summary>
         /// Share of the small crumbs (the side spray, the rooster tail's single cubes) actually thrown: they were most of the
         /// flying debris and starved the blood of room (the user: three times the blood, far fewer crumbs). The clods stay.
+        /// Cut again for the carpet of tiny crumbs they left lying (the user); the few left are CRUMB_SIZE times bigger.
         /// </summary>
-        private const float CRUMB_SCALE = 0.4f;
+        private const float CRUMB_SCALE = 0.3f;
+        private const float CRUMB_SIZE = 1.5f;
 
         private static readonly int ColorId = Shader.PropertyToID("_Color");
 
@@ -739,7 +741,7 @@ namespace Game.Voxels
                                    moving * (speed * Random.Range(0.1f, 0.35f)) +
                                    transform.forward * Random.Range(-0.6f, 0.6f);
 
-                debris.Spawn(from, velocity, Shade(colour), Random.Range(_crumbSize.x, _crumbSize.y));
+                debris.Spawn(from, velocity, Shade(colour), Random.Range(_crumbSize.x, _crumbSize.y) * CRUMB_SIZE);
             }
         }
 

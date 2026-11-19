@@ -43,7 +43,7 @@ namespace Game.Voxels.Tests
             int clumps = 0, singles = 0;
             foreach (int n in sizes) { if (n > 1) clumps++; else singles++; }
             Assert.AreEqual(4, clumps, "Spread 1 → 4 clumps");
-            Assert.That(singles, Is.GreaterThanOrEqualTo(15), "18 % crumbs (+ dust)");
+            Assert.That(singles, Is.InRange(6, 14), "5 % crumbs (cut for the carpet of tiny crumbs) + 2-4 dust");
         }
 
         [Test]

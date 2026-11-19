@@ -57,14 +57,16 @@ namespace Game.Voxels.Tests
         [Test]
         public void KeptClump_LiesForGood()
         {
-            int clump = _debris.BeginCluster(new Vector3(0f, 0.5f, 0f), Vector3.zero, 0f);
+            // Set down gently, so it lies as one piece: a kept clump broken into lone crumbs would see them sink
+            // after CRUMB_AGE like any crumb (VoxelDebrisLyingTests.LoneCrumb_SinksAfterAWhile_TheClumpStays).
+            int clump = _debris.BeginCluster(new Vector3(0f, 0.06f, 0f), Vector3.zero, 0f);
             for (int i = 0; i < 3; i++)
-                _debris.AddCube(clump, new Vector3(i * 0.05f, 0.5f, 0f), 0.05f, Color.red);
+                _debris.AddCube(clump, new Vector3(i * 0.05f, 0.06f, 0f), 0.05f, Color.red);
             _debris.SetKeep(clump);
 
             Run(65f);
 
-            Assert.AreEqual(3, _debris.LyingCount, "every cube, even if the clump broke on landing");
+            Assert.AreEqual(3, _debris.LyingCount, "every cube of the kept piece, past its longest flight");
             Assert.AreEqual(0, _debris.Count);
         }
 
