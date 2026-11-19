@@ -38,7 +38,7 @@ namespace Game
         // Voxels below a hit the chunk's colour is looked for.
         private const int COLOR_DEPTH = 24;
         // The chunk's colour when the ground has none to give where it was hit: plain earth.
-        private static readonly Color32 s_earth = new(110, 80, 52, 255);
+        private static readonly Color32 EarthColor = new(110, 80, 52, 255);
         // How far (m) off the slope the chunk starts: clear of the notch's floor.
         private const float THROW_OFF = 0.3f;
 
@@ -217,8 +217,7 @@ namespace Game
             if (impact <= 0f)
                 return;
             if (_driver != null && _driver.Value != null && config.ShakeStrength > 0f)
-                // perf-ok: once per impact (at most one per ImpactCooldown), not per step
-                CameraShakeUseCase.ShakePlayerCamera(new CameraShakeArgs(config.ShakeDuration, config.ShakeStrength * impact));
+                CameraShakeUseCase.ShakePlayerCamera(new CameraShakeArgs(config.ShakeDuration, config.ShakeStrength * impact)); // perf-ok: once per impact (at most one per ImpactCooldown), not per step
             TankPloughEvents.RaisePloughed(hit.point, impact);
         }
 
@@ -293,7 +292,7 @@ namespace Game
 
                 // The colours before the digs take them: turf on top, the earth under it at the notch's floor.
                 float voxel = ground.VoxelSize * Mathf.Abs(ground.transform.lossyScale.x);
-                Color32 top = ColorAt(ground, point, hitNormal, voxel, s_earth);
+                Color32 top = ColorAt(ground, point, hitNormal, voxel, EarthColor);
                 Color32 body = ColorAt(ground, centre, Vector3.zero, voxel, top);
 
                 int dug = _earth.Dig(ground, centre, radius) +

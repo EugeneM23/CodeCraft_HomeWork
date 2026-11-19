@@ -32,7 +32,12 @@ namespace Game.Voxels.Tests
         private const string SCENE = "Assets/Game/Voxels/Scenes/VoxelSandbox.unity";
         private const string OUT = "Logs/CraterPlough";
         private const float RIM = 4f;
-        private const float RUN_UP = 14f;
+        // Start to the near rim. Full gas with Shift takes the tank to ~13 m/s here, the entry speed the
+        // presets were tuned and approved at (the drive's acceleration was halved after that: 14 m gave 10.6 m/s).
+        private const float RUN_UP = 21f;
+        // How far on from the start the runway must be level, and clear of anything but ground.
+        private const float LEVEL_TO = RUN_UP + 2f * RIM + 6f;
+        private const float CLEAR_TO = RUN_UP + 2f * RIM + 9f;
         private const int GROUND = 1 << PhysicsLayers.Ground;
         // Past the far rim: how far on the nose-up pitch is looked at.
         private const float PAST_RIM = 3f;
@@ -425,8 +430,8 @@ namespace Game.Voxels.Tests
         }
 
         /// <summary>
-        /// A straight run along ±X or ±Z, nearest the origin: level from its start to 28 m on, and nothing
-        /// but ground in a box 6 m wide and 3 m high from 1 m behind it to 31 m on. Room for a run-up,
+        /// A straight run along ±X or ±Z, nearest the origin: level from its start to LEVEL_TO m on, and nothing
+        /// but ground in a box 6 m wide and 3 m high from 1 m behind it to CLEAR_TO m on. Room for a run-up,
         /// the crater and the way out.
         /// </summary>
         private static bool TryFindRunway(out Vector3 start, out Vector3 forward)
@@ -436,18 +441,19 @@ namespace Game.Voxels.Tests
             Vector3[] ways = { Vector3.right, Vector3.left, Vector3.forward, Vector3.back };
             float best = float.MaxValue;
             const int notGround = ~GROUND;
+            const float halfLength = (CLEAR_TO + 1f) * 0.5f;
             for (float x = -30f; x <= 30f; x += 3f)
             for (float z = -30f; z <= 30f; z += 3f)
             foreach (Vector3 way in ways)
             {
                 var from = new Vector3(x, 0f, z);
-                Vector3 centre = from + way * 15f + Vector3.up * 2f;
-                if (Physics.CheckBox(centre, new Vector3(3f, 1.5f, 16f), Quaternion.LookRotation(way), notGround,
+                Vector3 centre = from + way * (halfLength - 1f) + Vector3.up * 2f;
+                if (Physics.CheckBox(centre, new Vector3(3f, 1.5f, halfLength), Quaternion.LookRotation(way), notGround,
                         QueryTriggerInteraction.Ignore))
                     continue;
                 if (!Physics.Raycast(from + Vector3.up * 5f, Vector3.down, out RaycastHit hit, 10f, GROUND))
                     continue;
-                if (!Physics.Raycast(from + way * 28f + Vector3.up * 5f, Vector3.down, out RaycastHit end, 10f, GROUND) ||
+                if (!Physics.Raycast(from + way * LEVEL_TO + Vector3.up * 5f, Vector3.down, out RaycastHit end, 10f, GROUND) ||
                     Mathf.Abs(end.point.y - hit.point.y) > 0.5f)
                     continue;
                 if (from.sqrMagnitude < best)
