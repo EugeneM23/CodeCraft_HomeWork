@@ -49,6 +49,9 @@ namespace Game.Horde
         [Tooltip("Walking speed the run clip was authored for at render scale 1, m/s; 0 keeps the horde options' own (5).")]
         public float runClipSpeed;
 
+        [Tooltip("Body radius (hull reach, crush box, separation) and bite reach over the kinds' own: a bigger model than the one the kinds were tuned on reaches further. Regax: 1.")]
+        public float reachScale = 1f;
+
         [Header("Kinds")]
         [Tooltip("Tint per kind row (0 Crawler, 1 Spitter...); alpha 0 or a missing row keeps the material's colour. The scale comes from the kind table.")]
         public Color[] kindTints = { new(0f, 0f, 0f, 0f), new(0.32f, 0.3f, 0.04f, 1f) };

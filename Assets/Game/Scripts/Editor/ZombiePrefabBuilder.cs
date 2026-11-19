@@ -24,19 +24,23 @@ namespace Game.EditorTools
         private const string REGAX_PREFAB = "Assets/Game/Prefabs/Characters/Regax.prefab";
         private const string MODEL = "Assets/Game/Models/Zombie/SK_Zombie_Characters.fbx";
         private const string SKIN = "SM_Chr_Zombie_Male_01";
-        private const string ALBEDO = "Assets/Game/Textures/Zombie/T_Zombie_03_A.png";
+        /// <summary>The vivid atlas (Tools/Zombie/Make Vivid Atlas, Game.Horde.EditorTools.ZombieAtlas).</summary>
+        private const string ALBEDO = "Assets/Game/Textures/Zombie/T_Zombie_03_A_Vivid.png";
         private const string MATERIAL = "Assets/Game/Materials/Zombie/MT_Zombie.mat";
         private const string BASE_CONTROLLER = "Assets/Game/Animations/Rapax/AC_Rapax.controller";
         private const string CONTROLLER = "Assets/Game/Animations/Zombie/AC_Zombie.overrideController";
         private const string CLIPS = "Assets/Game/Animations/Zombie/";
 
-        /// <summary>Height of the zombie, m: the horde's crawler (render scale 0.4 of the 4.75 m bake).</summary>
-        private const float HEIGHT = 1.9f;
+        /// <summary>Height of the zombie, m: the horde's crawler (render scale 0.4 of the 7.125 m bake), half as big again as the first 1.9 m.</summary>
+        private const float HEIGHT = 2.85f;
 
-        private const float COLLIDER_RADIUS = 0.35f;
+        private const float COLLIDER_RADIUS = 0.5f;
+
+        /// <summary>Reach (m) of the bite (Regax_Hand's damage radius, 0.9 on the Regax), grown with the body.</summary>
+        private const float BITE_RADIUS = 1.35f;
 
         /// <summary>Grey-green of the atlas' skin, for the skin voxels of the voxel death.</summary>
-        private static readonly Color SkinColor = new(0.42f, 0.47f, 0.4f, 1f);
+        private static readonly Color SkinColor = new(0.36f, 0.56f, 0.26f, 1f);
 
         [MenuItem("Tools/Zombie/Build Zombie Prefab")]
         public static void BuildFromMenu() => Debug.Log(Build());
@@ -115,10 +119,14 @@ namespace Game.EditorTools
                     if (animController == null)
                         continue;
                     animController.objectReferenceValue = controller;
+                    // The bite reaches as far as the bigger body's arms.
+                    SerializedProperty damageRadius = serialized.FindProperty("_damageRadius");
+                    if (damageRadius != null)
+                        damageRadius.floatValue = BITE_RADIUS;
                     serialized.ApplyModifiedPropertiesWithoutUndo();
                 }
 
-                // ---------------------------------------------------------- colliders to the 1.9 m body
+                // ---------------------------------------------------------- colliders to the body
                 foreach (CapsuleCollider capsule in root.GetComponentsInChildren<CapsuleCollider>(true))
                 {
                     capsule.radius = COLLIDER_RADIUS;
@@ -246,6 +254,26 @@ namespace Game.EditorTools
             config.FindPropertyRelative("spineTo").stringValue = "Spine_03";
             config.FindPropertyRelative("leftMarker").stringValue = "Shoulder_L";
             config.FindPropertyRelative("skinColor").colorValue = SkinColor;
+
+            // Fewer, bigger voxels (the user): 10 cm instead of the Regax's 5 cm, boxes of two (20 cm); fewer, bigger drops.
+            config.FindPropertyRelative("voxelSize").floatValue = 0.1f;
+            config.FindPropertyRelative("colliderCell").intValue = 2;
+            config.FindPropertyRelative("seamDrops").intValue = 60;
+            config.FindPropertyRelative("hitDrops").intValue = 70;
+            config.FindPropertyRelative("gooSpeed").floatValue = 7.5f;
+            // The heavy drop after the sluggish rise lands at ~8 m/s: the parts keep whole (for the tracks to burst).
+            config.FindPropertyRelative("fractureSpeed").floatValue = 12f;
+            config.FindPropertyRelative("blood").FindPropertyRelative("dropSize").floatValue = 0.08f;
+
+            // Sticky, not peas: the pieces go up more than out, scatter and spin little (VoxelGibs damps the rise).
+            SerializedProperty speeds = config.FindPropertyRelative("speeds");
+            speeds.FindPropertyRelative("minSpeed").floatValue = 2f;
+            speeds.FindPropertyRelative("maxSpeed").floatValue = 3.5f;
+            speeds.FindPropertyRelative("lift").floatValue = 1.2f;
+            speeds.FindPropertyRelative("scatter").floatValue = 0.25f;
+            speeds.FindPropertyRelative("spin").floatValue = 1.2f;
+            speeds.FindPropertyRelative("blastLift").floatValue = 1.4f;
+            speeds.FindPropertyRelative("blastSpin").floatValue = 2f;
 
             // Same order as the Regax's (the seams name the parts by index).
             var parts = new (string name, string[] bones, int side)[]

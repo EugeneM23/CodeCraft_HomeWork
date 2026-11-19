@@ -1,7 +1,7 @@
 // Death benchmark (Docs/Rules/Performance.md: the event frame of a Regax death; perf debt item 3 of
 // Docs/Reports/2026-11-18-perf-fix.md). Run in Play, in VoxelSandbox (fresh Play, >= 10 s in), with one call:
 //   unity cmd --project-path <worktree> script eval --file Tools/PerfCheck/Bench/death_bench.cs
-// It returns at once and kills plain Regax (not Regax_Elite*) one at a time, 1.2 s apart, cycling shot / blast / crush:
+// It returns at once and kills plain Regax or zombies (Zombie.prefab; not Regax_Elite*) one at a time, 1.2 s apart, cycling shot / blast / crush:
 //   shot  - DamageUseCase.TakeDamage from a source 3 m off towards the tank (Damage 100), as a bullet;
 //   blast - the same from a shell (ExplosionRadius 5, Damage 150, factor 0.8), then VoxelDamage.Blast as ExplosionUseCase;
 //   crush - TankCrushBehaviour.Crush on the tank (its own killer, blood fans and stains).
@@ -86,10 +86,10 @@ var killMarkers = new Dictionary<string, ProfilerMarker> { ["shot"] = new Profil
 // ---------- Victims ----------
 var victims = new List<GameObject>();
 foreach (var go in UnityEngine.SceneManagement.SceneManager.GetActiveScene().GetRootGameObjects())
-    if (go.name.StartsWith("Regax") && !go.name.StartsWith("Regax_Elite") && go.activeInHierarchy && go.GetComponent<MonoEntity>() != null)
+    if ((go.name.StartsWith("Regax") || go.name.StartsWith("Zombie")) && !go.name.StartsWith("Regax_Elite") && go.activeInHierarchy && go.GetComponent<MonoEntity>() != null)
         victims.Add(go);
 victims.Sort((a, b) => (a.transform.position - tank.position).sqrMagnitude.CompareTo((b.transform.position - tank.position).sqrMagnitude));
-if (victims.Count == 0) return "ERROR no Regax in the scene";
+if (victims.Count == 0) return "ERROR no Regax or zombie in the scene";
 kills = Math.Min(kills, victims.Count);
 
 var killerGo = new GameObject("DeathBenchKiller");

@@ -1799,39 +1799,31 @@ PrefabInstance:
       objectReference: {fileID: 4626495345892481648}
     - target: {fileID: 2067401628454472326, guid: e2c73aa53d2f90a4db53ae5a58c42d97, type: 3}
       propertyPath: m_LocalScale.x
-      value: 1.0615115
+      value: 1.5922672
       objectReference: {fileID: 0}
     - target: {fileID: 2067401628454472326, guid: e2c73aa53d2f90a4db53ae5a58c42d97, type: 3}
       propertyPath: m_LocalScale.y
-      value: 1.0615115
+      value: 1.5922672
       objectReference: {fileID: 0}
     - target: {fileID: 2067401628454472326, guid: e2c73aa53d2f90a4db53ae5a58c42d97, type: 3}
       propertyPath: m_LocalScale.z
-      value: 1.0615115
+      value: 1.5922672
       objectReference: {fileID: 0}
     - target: {fileID: 3086355768028857389, guid: e2c73aa53d2f90a4db53ae5a58c42d97, type: 3}
       propertyPath: m_Height
-      value: 1.9
-      objectReference: {fileID: 0}
-    - target: {fileID: 3086355768028857389, guid: e2c73aa53d2f90a4db53ae5a58c42d97, type: 3}
-      propertyPath: m_Radius
-      value: 0.35
+      value: 2.85
       objectReference: {fileID: 0}
     - target: {fileID: 3086355768028857389, guid: e2c73aa53d2f90a4db53ae5a58c42d97, type: 3}
       propertyPath: m_Center.y
-      value: 0.95
+      value: 1.425
       objectReference: {fileID: 0}
     - target: {fileID: 4918008619899490482, guid: e2c73aa53d2f90a4db53ae5a58c42d97, type: 3}
       propertyPath: m_Height
-      value: 1.9
-      objectReference: {fileID: 0}
-    - target: {fileID: 4918008619899490482, guid: e2c73aa53d2f90a4db53ae5a58c42d97, type: 3}
-      propertyPath: m_Radius
-      value: 0.35
+      value: 2.85
       objectReference: {fileID: 0}
     - target: {fileID: 4918008619899490482, guid: e2c73aa53d2f90a4db53ae5a58c42d97, type: 3}
       propertyPath: m_Center.y
-      value: 0.95
+      value: 1.425
       objectReference: {fileID: 0}
     - target: {fileID: 5331188433194752158, guid: e2c73aa53d2f90a4db53ae5a58c42d97, type: 3}
       propertyPath: _groundPoint
@@ -1846,8 +1838,24 @@ PrefabInstance:
       value: Spine_03
       objectReference: {fileID: 0}
     - target: {fileID: 5655884024937215095, guid: e2c73aa53d2f90a4db53ae5a58c42d97, type: 3}
+      propertyPath: _config.gooSpeed
+      value: 7.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5655884024937215095, guid: e2c73aa53d2f90a4db53ae5a58c42d97, type: 3}
+      propertyPath: _config.hitDrops
+      value: 70
+      objectReference: {fileID: 0}
+    - target: {fileID: 5655884024937215095, guid: e2c73aa53d2f90a4db53ae5a58c42d97, type: 3}
+      propertyPath: _config.seamDrops
+      value: 60
+      objectReference: {fileID: 0}
+    - target: {fileID: 5655884024937215095, guid: e2c73aa53d2f90a4db53ae5a58c42d97, type: 3}
       propertyPath: _config.spineFrom
       value: Hips
+      objectReference: {fileID: 0}
+    - target: {fileID: 5655884024937215095, guid: e2c73aa53d2f90a4db53ae5a58c42d97, type: 3}
+      propertyPath: _config.voxelSize
+      value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 5655884024937215095, guid: e2c73aa53d2f90a4db53ae5a58c42d97, type: 3}
       propertyPath: _config.leftMarker
@@ -1859,20 +1867,56 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5655884024937215095, guid: e2c73aa53d2f90a4db53ae5a58c42d97, type: 3}
       propertyPath: _config.skinColor.b
-      value: 0.4
+      value: 0.26
       objectReference: {fileID: 0}
     - target: {fileID: 5655884024937215095, guid: e2c73aa53d2f90a4db53ae5a58c42d97, type: 3}
       propertyPath: _config.skinColor.g
-      value: 0.47
+      value: 0.56
       objectReference: {fileID: 0}
     - target: {fileID: 5655884024937215095, guid: e2c73aa53d2f90a4db53ae5a58c42d97, type: 3}
       propertyPath: _config.skinColor.r
-      value: 0.42
+      value: 0.36
+      objectReference: {fileID: 0}
+    - target: {fileID: 5655884024937215095, guid: e2c73aa53d2f90a4db53ae5a58c42d97, type: 3}
+      propertyPath: _config.speeds.lift
+      value: 1.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5655884024937215095, guid: e2c73aa53d2f90a4db53ae5a58c42d97, type: 3}
+      propertyPath: _config.speeds.spin
+      value: 1.2
       objectReference: {fileID: 0}
     - target: {fileID: 5655884024937215095, guid: e2c73aa53d2f90a4db53ae5a58c42d97, type: 3}
       propertyPath: '_hide.Array.data[0]'
       value: 
       objectReference: {fileID: 1851439700355993719}
+    - target: {fileID: 5655884024937215095, guid: e2c73aa53d2f90a4db53ae5a58c42d97, type: 3}
+      propertyPath: _config.fractureSpeed
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 5655884024937215095, guid: e2c73aa53d2f90a4db53ae5a58c42d97, type: 3}
+      propertyPath: _config.blood.dropSize
+      value: 0.08
+      objectReference: {fileID: 0}
+    - target: {fileID: 5655884024937215095, guid: e2c73aa53d2f90a4db53ae5a58c42d97, type: 3}
+      propertyPath: _config.speeds.scatter
+      value: 0.25
+      objectReference: {fileID: 0}
+    - target: {fileID: 5655884024937215095, guid: e2c73aa53d2f90a4db53ae5a58c42d97, type: 3}
+      propertyPath: _config.speeds.maxSpeed
+      value: 3.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5655884024937215095, guid: e2c73aa53d2f90a4db53ae5a58c42d97, type: 3}
+      propertyPath: _config.speeds.minSpeed
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5655884024937215095, guid: e2c73aa53d2f90a4db53ae5a58c42d97, type: 3}
+      propertyPath: _config.speeds.blastLift
+      value: 1.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 5655884024937215095, guid: e2c73aa53d2f90a4db53ae5a58c42d97, type: 3}
+      propertyPath: _config.speeds.blastSpin
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 5655884024937215095, guid: e2c73aa53d2f90a4db53ae5a58c42d97, type: 3}
       propertyPath: _config.parts.Array.data[0].bones.Array.size
       value: 3
@@ -2033,6 +2077,10 @@ PrefabInstance:
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 22100000, guid: cacf1303b2c16d64cb127e2723264d93, type: 2}
+    - target: {fileID: 8938987125168004657, guid: e2c73aa53d2f90a4db53ae5a58c42d97, type: 3}
+      propertyPath: _damageRadius
+      value: 1.35
+      objectReference: {fileID: 0}
     - target: {fileID: 8938987125168004657, guid: e2c73aa53d2f90a4db53ae5a58c42d97, type: 3}
       propertyPath: _animController
       value: 

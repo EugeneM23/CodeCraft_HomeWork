@@ -74,6 +74,21 @@ namespace Game.Voxels
         private const int LAID = 4;
         /// <summary>A puff of dust: drifts down slowly, stops where it touches, never lies; shrinks and goes.</summary>
         private const int DUST = 8;
+        /// <summary>
+        /// Sticky goo (a creature's death): rises sluggishly (drag, light gravity), hangs at the top, drops heavily,
+        /// sticks where it lands (no bounce, no break); a single drop stretches along its flight.
+        /// </summary>
+        private const int GOO = 16;
+
+        /// <summary>Goo going up: velocity damped this much per second, gravity times this.</summary>
+        private const float GOO_RISE_DRAG = 2.2f;
+        private const float GOO_RISE_GRAVITY = 0.45f;
+        /// <summary>Goo coming down: sideways damping per second, gravity times this (a heavy drop).</summary>
+        private const float GOO_FALL_DRAG = 1.2f;
+        private const float GOO_FALL_GRAVITY = 1.15f;
+        /// <summary>A flying goo drop is this much longer per m/s of speed (and thinner to keep its volume), up to GOO_MAX_STRETCH.</summary>
+        private const float GOO_STRETCH = 0.14f;
+        private const float GOO_MAX_STRETCH = 2.6f;
 
         /// <summary>Marks a clump in the compact pass whose cubes move to the lying store.</summary>
         private const int SETTLED = -2;
@@ -234,6 +249,36 @@ namespace Game.Voxels
             _clusters[cluster] = c;
             AddCube(cluster, position, size, color);
             return cluster;
+        }
+
+        /// <summary>A drop of goo: rises slowly, falls heavily, stretched in flight, a tile where it lands. -1 when full.</summary>
+        public int GooDrop(Vector3 position, Vector3 velocity, Color32 color, float size)
+        {
+            int cluster = Drop(position, velocity, color, size);
+            if (cluster >= 0)
+            {
+                Cluster c = _clusters[cluster];
+                c.Flags |= GOO;
+                _clusters[cluster] = c;
+            }
+
+            return cluster;
+        }
+
+        /// <summary>
+        /// Marks a clump begun this frame as goo: it flies like <see cref="GooDrop"/> and sticks whole where it lands
+        /// (it does not break or bounce), then lies for good.
+        /// </summary>
+        public void SetGoo(int cluster)
+        {
+            Complete();
+            if (cluster < 0 || cluster >= _clusters.Length)
+                return;
+            SetKeep(cluster);
+            Cluster c = _clusters[cluster];
+            c.Flags |= GOO;
+            c.Spin *= 0.25f;
+            _clusters[cluster] = c;
         }
 
         /// <summary>

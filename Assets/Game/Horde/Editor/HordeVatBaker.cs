@@ -58,6 +58,8 @@ namespace Game.Horde.EditorTools
             /// the horde options' own. The clip's measured root speed is reported beside it.
             /// </summary>
             public float RunClipSpeed;
+            /// <summary>Body radius and bite reach over the kinds' (<see cref="HordeArtConfig.reachScale"/>).</summary>
+            public float ReachScale = 1f;
             /// <summary>Make a plain acid material apart from the textured crowd one.</summary>
             public bool AcidMaterial;
             public Color[] KindTints;
@@ -86,13 +88,16 @@ namespace Game.Horde.EditorTools
             Idle = () => AssetDatabase.LoadAssetAtPath<AnimationClip>(ZOMBIE_CLIPS + "Zombie_Idle.anim"),
             Death = () => AssetDatabase.LoadAssetAtPath<AnimationClip>(ZOMBIE_CLIPS + "Zombie_Death_Handgun.anim"),
             ConfigPath = ZOMBIE_CONFIG_PATH,
-            // The crawler's render scale is 0.4 in the levels: 0.4 × 4.75 = a 1.9 m zombie, readable from the tank's camera.
-            Height = 4.75f,
-            AlbedoPath = "Assets/Game/Textures/Zombie/T_Zombie_03_A.png",
-            AlbedoColor = new Color(1.3f, 1.3f, 1.3f, 1f),
-            // The walk is a slow shamble (root speed 0.92 m/s at this size): played for its own speed, a 6.5 m/s crawler
-            // would run it 17 times over. 4.5 gives about 3.5 times: a fast, readable shuffle (the feet slide).
-            RunClipSpeed = 4.5f,
+            // The crawler's render scale is 0.4 in the levels: 0.4 × 7.125 = a 2.85 m zombie (the user: half as big again as
+            // the first 1.9 m), readable from the tank's camera. Its radius and bite reach grow with it (the kinds were
+            // tuned on a 1.9 m one).
+            Height = 7.125f,
+            ReachScale = 1.5f,
+            AlbedoPath = ZombieAtlas.VIVID,
+            AlbedoColor = new Color(1.1f, 1.1f, 1.1f, 1f),
+            // The walk is a slow shamble (root speed ~1.4 m/s at this size): played for its own speed, a 6.5 m/s crawler
+            // would run it 11 times over. 6.75 gives about 2.4 times: a fast, readable shuffle (the feet slide).
+            RunClipSpeed = 6.75f,
             AcidMaterial = true,
             // Row 1, the spitter: a sickly green over the atlas (the tint takes the material's white colour's place).
             KindTints = new[] { new Color(0f, 0f, 0f, 0f), new Color(0.62f, 0.85f, 0.3f, 1f) },
@@ -109,7 +114,12 @@ namespace Game.Horde.EditorTools
         public static string Bake() => Bake(Regax);
 
         /// <summary>Bakes the zombie; returns a short report.</summary>
-        public static string BakeZombie() => Bake(Zombie);
+        public static string BakeZombie()
+        {
+            if (AssetDatabase.LoadAssetAtPath<Texture2D>(ZombieAtlas.VIVID) == null)
+                ZombieAtlas.Make();
+            return Bake(Zombie);
+        }
 
         private static string Bake(Source src)
         {
@@ -383,6 +393,7 @@ namespace Game.Horde.EditorTools
                 config.meshLod = lod;
                 config.bodyScale = src.Height > 0f ? src.Height / REGAX_HEIGHT : 1f;
                 config.runClipSpeed = src.RunClipSpeed;
+                config.reachScale = src.ReachScale;
                 EditorUtility.SetDirty(config);
                 AssetDatabase.SaveAssets();
                 report.Append("saved to ").Append(src.ConfigPath);
