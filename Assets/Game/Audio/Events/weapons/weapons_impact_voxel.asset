@@ -17,8 +17,9 @@ MonoBehaviour:
   loop: 0
   spartialBlend: 1
   output: {fileID: 3749125731345324096, guid: fcf45067a59444e45a07f67b96ef76a5, type: 2}
+  priority: -1
   clip:
-    rid: 4166356712695005486
+    rid: 4166356767584813127
   pitch:
     rid: 4166356712695005495
   volume:
@@ -45,10 +46,6 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: 4166356712695005486
-      type: {class: ClipConst, ns: AudioEngine, asm: AudioEngine}
-      data:
-        clip: {fileID: 0}
     - rid: 4166356712695005489
       type: {class: FloatConst, ns: AudioEngine, asm: AudioEngine}
       data:
@@ -78,3 +75,7 @@ MonoBehaviour:
       type: {class: FloatConst, ns: AudioEngine, asm: AudioEngine}
       data:
         value: 80
+    - rid: 4166356767584813127
+      type: {class: ClipConst, ns: AudioEngine, asm: AudioEngine}
+      data:
+        clip: {fileID: 8300000, guid: 3273a0ea35b1eb1488a3e136e23a077c, type: 3}
