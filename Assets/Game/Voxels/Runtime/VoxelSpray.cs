@@ -129,7 +129,10 @@ namespace Game.Voxels
         public const float SHOT_CONE = 0.32f;
 
         /// <summary>Extra speed (m/s) a shot gives the torn body parts along its way (<see cref="Chunks"/>' push).</summary>
-        public const float SHOT_PUSH = 2.5f;
+        public const float SHOT_PUSH = 5f; // was 2.5: the user doubled a shell's throw
+
+        /// <summary>A shell's hit throws its whole spray (along, up, sides) this much faster than other goo.</summary>
+        public const float SHOT_FORCE = 2f;
 
         /// <summary>
         /// The goo of a body a shell hit (<see cref="Goo"/>), thrown the way the shell flew: most of it on along the shot
@@ -148,6 +151,7 @@ namespace Game.Voxels
                 return Goo(at, Vector3.up, drops, speed, spread, colors, size, inherit, radius);
 
             flat.Normalize();
+            speed *= SHOT_FORCE;
             Vector3 side = Vector3.Cross(Vector3.up, flat);
             int main = Mathf.RoundToInt(drops * SHOT_MAIN);
             int sides = Mathf.RoundToInt(drops * SHOT_SIDES);
