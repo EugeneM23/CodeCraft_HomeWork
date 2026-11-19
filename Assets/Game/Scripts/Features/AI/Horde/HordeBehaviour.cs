@@ -63,6 +63,8 @@ namespace Game.AIKit.Adapters
         private HordeFlowField _flow;
         private HordeSimulation _simulation;
         private HordeRenderer _acid;
+        /// <summary>Monsters on the tank (HordeRiders.cs).</summary>
+        private HordeRiders _riders;
 
         private IEntity _entity;
         private IEntity _level;
@@ -132,6 +134,9 @@ namespace Game.AIKit.Adapters
         public HordeSimulation Simulation => _simulation;
         public HordeNavGrid Grid => _grid;
         public HordeFlowField FlowField => _flow;
+
+        /// <summary>Monsters leaping onto, riding and falling off the tank (null before Init).</summary>
+        public HordeRiders Riders => _riders;
 
         /// <summary>Corpses of the kind row <paramref name="row"/>.</summary>
         public HordeCorpses CorpsesOf(int row) => _corpses[row];
@@ -238,6 +243,7 @@ namespace Game.AIKit.Adapters
             Material acidMaterial = _art.acidMaterial != null ? _art.acidMaterial : _art.material;
             _acid = new HordeRenderer(acidMesh, acidMaterial, HordeSimulation.MAX_PROJECTILES, true);
             _acid.SetLook(_art.acidSize, _art.acidColor, _art.acidEmission);
+            _riders = new HordeRiders(_options.riders, _art, _options, BodyScale);
 
             _level.SetLevelHorde(this);
             ExplosionEvents.Exploded += OnExploded;
@@ -268,6 +274,8 @@ namespace Game.AIKit.Adapters
 
             _acid?.Dispose();
             _acid = null;
+            _riders?.Dispose();
+            _riders = null;
             _simulation = null;
             _flow = null;
             _grid = null;
@@ -289,6 +297,7 @@ namespace Game.AIKit.Adapters
             }
 
             _acid.Draw(_acidDrawn, _worldBounds);
+            _riders?.DrawPaused(_worldBounds);
         }
 
         /// <summary>
@@ -316,6 +325,7 @@ namespace Game.AIKit.Adapters
                 RegisterTargets();
                 bool hasTank = ReadTank(out HordeTank tank);
                 SyncCrushSpeed();
+                _riders?.Tick(_simulation, _grid, deltaTime); // before the deaths: it moves its dead off the hull
                 HandleDeaths();
                 SquashCorpses();
                 ReportElite(deltaTime);
@@ -420,6 +430,7 @@ namespace Game.AIKit.Adapters
                 BindGrid(); // a new grid (a new arena elsewhere): a fresh flow field and simulation
             else
                 _simulation.Clear();
+            _riders?.Clear();
             for (int k = 0; k < HordeKinds.COUNT; k++)
             {
                 _corpses[k].Clear();
@@ -576,6 +587,7 @@ namespace Game.AIKit.Adapters
             _acid.Upload(shots, 0, 0, shots.Length);
             _acidDrawn = shots.Length;
             _acid.Draw(_acidDrawn, _worldBounds);
+            _riders?.Draw(_worldBounds);
         }
 
         private bool ReadTank(out HordeTank tank)
@@ -620,6 +632,7 @@ namespace Game.AIKit.Adapters
             _tank = tank;
             _tankTransform = null;
             _tankBody = null;
+            _riders?.Bind(null, null, null, default, default); // the old tank's riders fall off
             if (tank == null)
                 return;
 
@@ -654,6 +667,7 @@ namespace Game.AIKit.Adapters
                 local = new Bounds(Vector3.up, new Vector3(3.5f, 2f, 6.5f));
             _hullCenter = local.center;
             _hullHalf = local.extents;
+            _riders?.Bind(tank, _tankTransform, _tankBody, _hullCenter, _hullHalf);
         }
 
         private bool Encapsulate(ref Bounds local, bool any, Transform from, Bounds bounds)
@@ -880,7 +894,8 @@ namespace Game.AIKit.Adapters
         /// <summary>The bite and acid damage of the step goes into the tank's health by whole points, one hit a frame at most.</summary>
         private void DamageTank()
         {
-            _damageOwed += _simulation.StepDamage * _options.tankDamageScale;
+            float riders = _riders != null ? _riders.TakeDamage() : 0f;
+            _damageOwed += (_simulation.StepDamage + riders) * _options.tankDamageScale;
             if (_damageOwed < 1f || _tank == null)
             {
                 if (_tank == null)
