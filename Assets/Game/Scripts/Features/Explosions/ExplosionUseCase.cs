@@ -25,6 +25,9 @@ namespace Game
         /// <summary>Share of the damage radius blown clear of voxel smoke: the tank shell (5 m) clears 3.5 m.</summary>
         private const float VOXEL_SMOKE_SHARE = 0.7f;
 
+        /// <summary>An HE shell's blast against a house's skeleton: its hardness counts this many times less.</summary>
+        private const float HE_SKELETON_DAMAGE = 2f;
+
         public static bool IsExplosive(IEntity projectile) => projectile.HasExplosionRadius();
 
         /// <summary>
@@ -53,8 +56,18 @@ namespace Game
             if (ShellHitSparksUseCase.IsHighExplosive(projectile))
                 ShellHitSparksUseCase.Emit(point, normal);
 
-            // A crater in anything made of voxels: walls, buildings, the tank's skin.
-            VoxelDamage.Blast(point, radius * VOXEL_CRATER_SHARE, VOXEL_BLAST_SPEED);
+            // A crater in anything made of voxels: walls, buildings, the tank's skin. An HE shell hits a house's
+            // skeleton (piers, beams) twice as hard as anything else does.
+            bool he = AmmoUseCase.IsShell(projectile) && AmmoUseCase.KindOf(projectile) == ShellKind.HighExplosive;
+            VoxelBody.SkeletonDamage = he ? HE_SKELETON_DAMAGE : 1f;
+            try
+            {
+                VoxelDamage.Blast(point, radius * VOXEL_CRATER_SHARE, VOXEL_BLAST_SPEED);
+            }
+            finally
+            {
+                VoxelBody.SkeletonDamage = 1f;
+            }
 
             // The blast blows voxel smoke away round it, the way an HE grenade clears a CS2 smoke.
             VoxelSmoke.Blast(point, radius * VOXEL_SMOKE_SHARE);

@@ -1060,6 +1060,13 @@ namespace Game.Voxels
             return taken;
         }
 
+        /// <summary>
+        /// How hard the bites made now hit a building's skeleton: its hardness is divided by this (never below 1).
+        /// 1 normally; the caller sets it round one blast and puts it back (ExplosionUseCase: 2 for an HE shell).
+        /// Main thread only, like every carve.
+        /// </summary>
+        public static float SkeletonDamage = 1f;
+
         /// <param name="hard">A building's load-bearing voxels take a smaller bite (SetHardness); false for a scoop (Dig).</param>
         private int Carve(Vector3 worldCenter, float worldRadius, float depth, float roughness, bool split,
             int debrisBudget, Vector3 blastCenter, float force, Vector3 throwVelocity, float debrisLife = 0f,
@@ -1090,7 +1097,8 @@ namespace Game.Voxels
                 Seed = _seed++,
                 Removed = removed,
                 Hardness = hardness,
-                UseHardness = hard
+                UseHardness = hard,
+                SkeletonDamage = SkeletonDamage
             }.Run();
             if (!hard)
                 hardness.Dispose();

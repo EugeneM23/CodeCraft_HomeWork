@@ -391,9 +391,14 @@ namespace Game.Voxels
         [ReadOnly] public NativeArray<float> Hardness;
         public bool UseHardness;
 
+        /// <summary>How hard this bite hits the skeleton: its hardness is divided by this (never below 1).
+        /// 1 — as set; an HE shell's blast uses 2 (VoxelBody.SkeletonDamage).</summary>
+        public float SkeletonDamage;
+
         public void Execute()
         {
             float3 reach = new float3(Radius, Radius / math.max(1e-3f, Squash), Radius);
+            float skeleton = math.max(1f, SkeletonDamage);
             int3 lo = math.max(0, (int3)math.floor(Center - reach));
             int3 hi = math.min(Size - 1, (int3)math.floor(Center + reach));
             float3 scale = new float3(1f, Squash, 1f);
@@ -410,7 +415,7 @@ namespace Game.Voxels
 
                 float r = Radius * (1f - Roughness * VoxelMath.Hash01(p, Seed));
                 if (UseHardness)
-                    r /= Hardness[material];
+                    r /= math.max(1f, Hardness[material] / skeleton);
                 if (math.lengthsq(((float3)p + 0.5f - Center) * scale) > r * r)
                     continue;
 
