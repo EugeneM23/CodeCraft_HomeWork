@@ -47,7 +47,7 @@ namespace Game.Tests
             Assert.That(animator.avatar != null && animator.avatar.isHuman, Is.True, "a humanoid avatar");
             Assert.That(animator.runtimeAnimatorController.name, Is.EqualTo("AC_Zombie"), "the weapon switched to the zombie's controller");
             Assert.That(skin.sharedMaterial.shader.name, Is.EqualTo("Universal Render Pipeline/Lit"), "no pink: URP");
-            Assert.That(skin.bounds.size.y, Is.InRange(1.5f, 2.2f), "about 1.9 m tall");
+            Assert.That(skin.bounds.size.y, Is.InRange(2.4f, 3.4f), "about 2.85 m tall");
 
             var entity = zombie.GetComponent<MonoEntity>();
             IEntity source = new Entity();
@@ -69,6 +69,9 @@ namespace Game.Tests
             int flesh = Object.FindObjectsByType<VoxelBody>(FindObjectsSortMode.None).Count(b => b.name.Contains(VoxelGibs.NAME)) - before;
             Assert.That(skin.enabled, Is.False, "the skin gave way to the flesh");
             Assert.That(flesh, Is.GreaterThanOrEqualTo(2), "the body broke into voxel pieces");
+            foreach (VoxelBody piece in Object.FindObjectsByType<VoxelBody>(FindObjectsSortMode.None))
+                if (piece.name.Contains(VoxelGibs.NAME) && piece.TryGetComponent(out Rigidbody body))
+                    Assert.That(body.excludeLayers.value & (1 << PhysicsLayers.Character), Is.Not.Zero, "the flesh never touches the tank");
             Debug.Log($"[ZombieTest] flesh pieces {flesh}, height {skin.bounds.size.y:F2} m");
         }
     }
