@@ -140,6 +140,25 @@ namespace Game.Tests
         }
 
         [Test]
+        public void ArmourPiercing_GoesThroughHouseWalls_HighExplosiveDoesNot()
+        {
+            ShellAmmo ap = TankAmmoConfig.Load().Get(ShellKind.ArmourPiercing);
+            ShellAmmo he = TankAmmoConfig.Load().Get(ShellKind.HighExplosive);
+            Assert.That(ap.CanPassWalls, Is.True);
+            Assert.That(he.CanPassWalls, Is.False);
+
+            // A 20 cm outer wall: a fresh shell goes through both outer walls and a couple of inner ones.
+            var outer = new ShellHouseUseCase.Wall { Thickness = 0.2f, Depth = 0.2f, Through = true, Solid = true };
+            float wall = ShellHouseUseCase.Cost(outer, ap);
+            Assert.That(ap.penetration / wall, Is.InRange(4f, 6f), "walls a fresh shell goes through");
+            // A 20 cm pier stops it.
+            var pier = new ShellHouseUseCase.Wall { Thickness = 0.2f, Hard = 0.2f, Depth = 0.2f, Through = true, Solid = true };
+            Assert.That(ShellHouseUseCase.Cost(pier, ap), Is.GreaterThan(ap.penetration * 1.08f));
+            // A little wider hole than the 0.4 m the small burst dug in a house (5 m × 0.25 × 0.32), but not a crater.
+            Assert.That(ap.houseHole, Is.InRange(0.5f, 0.6f));
+        }
+
+        [Test]
         public void SurfaceNormal_OfATiltedSlab_IsItsSlope()
         {
             _go = GameObject.CreatePrimitive(PrimitiveType.Cube);
