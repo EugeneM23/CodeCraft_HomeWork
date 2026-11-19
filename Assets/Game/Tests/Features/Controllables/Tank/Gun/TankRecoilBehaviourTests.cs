@@ -45,13 +45,14 @@ namespace Game.Tests
         public void TearDown() => Object.DestroyImmediate(_hull);
 
         [Test]
-        public void Shot_KicksTheHullBackAlongTheBarrel()
+        public void Shot_DoesNotSlowTheTank()
         {
+            // The kick only rocks the hull: its level push is given back at the centre of mass.
             _cannon.GetFireEvent().Invoke();
 
             Vector3 force = _body.GetAccumulatedForce();
-            Assert.That(force.magnitude, Is.GreaterThan(0f));
-            Assert.That(Vector3.Angle(force, -_firePoint.forward), Is.LessThan(0.1f));
+            // The kick itself is thousands of newtons per step: half a newton left over is rounding.
+            Assert.That(new Vector3(force.x, 0f, force.z).magnitude, Is.LessThan(0.5f));
         }
 
         [Test]
