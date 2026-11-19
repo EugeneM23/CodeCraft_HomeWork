@@ -331,12 +331,16 @@ namespace Game.Voxels
                     return;
 
                 LyingCube cube = Lying[i];
-                if (cube.Sinking > 0f || (cube.Flags & LAID) != 0)
+                if (cube.Sinking > 0f)
                     return;
+                // A tile of blood stays under a crush or a blow; only the ground going from under it (Loosen) takes it, or it hung in the air.
+                bool laid = (cube.Flags & LAID) != 0;
 
                 for (int q = 0; q < Queries.Length; q++)
                 {
                     LyingQuery query = Queries[q];
+                    if (laid && query.Kind != QUERY_LOOSEN)
+                        continue;
                     // Written so that a NaN distance or radius never counts as inside.
                     if (!(math.distancesq(cube.Position, query.Center) <= query.Radius * query.Radius))
                         continue;
@@ -416,7 +420,7 @@ namespace Game.Voxels
 
                         bool gone = query.Kind == QUERY_CRUSH
                             ? Crumble(cube, query, ref groupCrumbs, ref random)
-                            : Wake(cube, query, ref groupCluster, ref random);
+                            : (cube.Flags & LAID) == 0 && Wake(cube, query, ref groupCluster, ref random);
                         if (gone)
                         {
                             Remove(i, ref count, ref state);
@@ -426,7 +430,7 @@ namespace Game.Voxels
                         // A crushed cube that stays, or a woken one with no room to fly: it sinks,
                         // drawn instanced, out of its cell's mesh.
                         cube.Sinking = 1e-4f;
-                        cube.SinkTime = query.Kind == QUERY_CRUSH ? CRUSH_SINK_TIME : SINK_TIME;
+                        cube.SinkTime = query.Kind == QUERY_CRUSH || (cube.Flags & LAID) != 0 ? CRUSH_SINK_TIME : SINK_TIME;
                         state.Sinking++;
                         LeaveMesh(Cells, cube.Cell);
                     }

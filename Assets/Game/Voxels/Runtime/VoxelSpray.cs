@@ -6,6 +6,23 @@ namespace Game.Voxels
     /// <summary>A fan of drops (VoxelDebris.Drop): blood out of a wound or a torn seam.</summary>
     public static class VoxelSpray
     {
+        /// <summary>
+        /// Up-speed of everything gore throws (drops, goo, body parts) is this many times what the callers ask: gore flies
+        /// 20 % higher (the user), as the height of a throw goes with the square of its up-speed.
+        /// </summary>
+        public const float LIFT = 1.0954451f;
+
+        /// <summary>Body parts (<see cref="Chunks"/>) and the blobs of goo are this many times bigger (the user: 25 %).</summary>
+        public const float PIECE_SCALE = 1.25f;
+
+        /// <summary>A gore velocity with its up-speed raised by <see cref="LIFT"/> (a downward one is left as it is).</summary>
+        public static Vector3 Lifted(Vector3 velocity)
+        {
+            if (velocity.y > 0f)
+                velocity.y *= LIFT;
+            return velocity;
+        }
+
         /// <param name="spread">How far a drop strays from <paramref name="direction"/>: 0 — none, 1 — a wide cone.</param>
         /// <param name="inherit">Velocity of what bleeds, added to every drop.</param>
         /// <returns>How many drops flew (fewer when the debris store is full).</returns>
@@ -24,7 +41,7 @@ namespace Game.Voxels
                 Vector3 heading = (aim + Random.insideUnitSphere * spread).normalized;
                 Vector3 velocity = inherit + heading * Random.Range(minSpeed, maxSpeed);
                 Color32 color = colors[Random.Range(0, colors.Count)];
-                if (debris.Drop(at, velocity, color, size * Random.Range(0.8f, 1.2f)) < 0)
+                if (debris.Drop(at, Lifted(velocity), color, size * Random.Range(0.8f, 1.2f)) < 0)
                     break;
                 spawned++;
             }
@@ -66,7 +83,7 @@ namespace Game.Voxels
                     float t = perStrand > 1 ? k / (perStrand - 1f) : 0f;
                     Vector3 velocity = inherit + heading * (top * Mathf.Lerp(1f, 0.4f, t));
                     Color32 c = Random.value < 0.3f ? colors[Random.Range(0, colors.Count)] : color;
-                    if (debris.GooDrop(start + heading * (0.03f * k), velocity, c, size * Random.Range(0.8f, 1.3f)) < 0)
+                    if (debris.GooDrop(start + heading * (0.03f * k), Lifted(velocity), c, size * Random.Range(0.8f, 1.3f)) < 0)
                         return spawned;
                     spawned++;
                 }
@@ -80,11 +97,11 @@ namespace Game.Voxels
                 int cubes = Random.Range(4, 8);
                 if (!debris.HasGoreRoom(cubes))
                     break;
-                int cluster = debris.BeginGoreCluster(centre, inherit + heading * (speed * Random.Range(0.55f, 0.85f)), 1f);
+                int cluster = debris.BeginGoreCluster(centre, Lifted(inherit + heading * (speed * Random.Range(0.55f, 0.85f))), 1f);
                 if (cluster < 0)
                     break;
                 for (int k = 0; k < cubes; k++)
-                    debris.AddCube(cluster, centre + Random.insideUnitSphere * (size * 1.1f), size * Random.Range(0.9f, 1.3f),
+                    debris.AddCube(cluster, centre + Random.insideUnitSphere * (size * 1.1f * PIECE_SCALE), size * PIECE_SCALE * Random.Range(0.9f, 1.3f),
                         colors[Random.Range(0, colors.Count)]);
                 debris.SetGoo(cluster);
                 spawned++;
@@ -120,7 +137,7 @@ namespace Game.Voxels
             if (debris == null || skin == null || skin.Count == 0 || meat == null || meat.Count == 0 || height <= 0f)
                 return 0;
 
-            float cube = height / 24f;
+            float cube = height / 24f * PIECE_SCALE;
             Vector3 side = Vector3.Cross(Vector3.up, away.sqrMagnitude > 1e-4f ? away.normalized : Vector3.forward);
             int thrown = 0;
             for (int p = 0; p < Parts.Length; p++)
@@ -133,7 +150,7 @@ namespace Game.Voxels
                 out_.y = 0f;
                 Vector3 velocity = Vector3.up * Random.Range(4f, 6.5f) + out_.normalized * Random.Range(1f, 2.5f) +
                                    away * Random.Range(1f, 2f) + Random.insideUnitSphere * 0.6f;
-                int cluster = debris.BeginGoreCluster(middle, velocity, 3f);
+                int cluster = debris.BeginGoreCluster(middle, Lifted(velocity), 3f);
                 if (cluster < 0)
                     break;
                 for (int i = 0; i < x; i++)
@@ -146,7 +163,7 @@ namespace Game.Voxels
                     debris.AddCube(cluster, middle + offset, cube, colour);
                 }
 
-                debris.SetGoo(cluster);
+                debris.SetGoo(cluster, true);
                 thrown++;
             }
 

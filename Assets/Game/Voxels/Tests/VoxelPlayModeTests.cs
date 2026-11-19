@@ -42,6 +42,34 @@ namespace Game.Voxels.Tests
         }
 
         [UnityTest]
+        public IEnumerator Blood_SoaksIn_NoPrintCoversIt_AndChurningLeavesItRedBrown()
+        {
+            VoxelBody body = SpawnStructure(VoxelStructure.Shape.Wall, new Vector3Int(40, 20, 3), Vector3.zero);
+            yield return null;
+            Assert.IsTrue(body.IsStatic);
+
+            Bounds bounds = body.WorldBounds;
+            Vector3 top = new Vector3(bounds.center.x, bounds.max.y - body.VoxelSize * 0.5f, bounds.center.z);
+            Assert.That(body.PaintBlood(top, 0.15f, 0, 0, 1f), Is.GreaterThan(0), "the blood soaks into the voxels");
+            Assert.IsTrue(body.TryGetBlood(top, out int shade, out int level));
+            Assert.AreEqual(0, shade);
+            Assert.AreEqual(0, level, "fresh");
+            Assert.IsTrue(body.TryGetColor(top, out Color32 colour) && VoxelBlood.IsBlood(colour));
+
+            Assert.AreEqual(0, body.Paint(top, 0.15f, new Color(0.5f, 0.45f, 0.4f), 1f, true), "a dusty print does not cover the blood");
+            Assert.IsTrue(body.TryGetBlood(top, out _, out _));
+
+            Assert.That(body.Churn(top, 0.15f, 1f, out int fresh), Is.GreaterThan(0));
+            Assert.That(fresh, Is.GreaterThan(0), "fresh blood for the track to pick up");
+            for (int i = 0; i < 10; i++)
+                body.Churn(top, 0.15f, 1f, out fresh);
+            Assert.AreEqual(0, fresh, "churned, it is fresh no more");
+            Assert.IsTrue(body.TryGetBlood(top, out _, out level));
+            Assert.AreEqual(VoxelBlood.LEVELS - 1, level, "churned as far as it goes, and there it stays");
+            Assert.IsTrue(body.TryGetColor(top, out colour) && VoxelBlood.IsBlood(colour), "still red-brown");
+        }
+
+        [UnityTest]
         public IEnumerator Blast_TakesVoxelsOutAndThrowsDebris()
         {
             VoxelBody body = SpawnStructure(VoxelStructure.Shape.Wall, new Vector3Int(40, 20, 3), Vector3.zero);
