@@ -1,3 +1,4 @@
+using Atomic.Elements;
 using Atomic.Entities;
 using UnityEngine;
 
@@ -22,8 +23,9 @@ namespace Game
         /// <summary>Share of its swing the gun keeps when it bounces off the cradle stop.</summary>
         private const float BOUNCE = 0.4f;
 
-        /// <summary>Most acceleration (m/s²) the gun feels: a driven start or stop, not a shot's kick or a crash.</summary>
-        private const float MAX_ACCELERATION = 6f;
+        /// <summary>Most acceleration (m/s²) the gun feels: a driven start or stop, not a shot's kick or a crash
+        /// (the shot gets its own flip, <see cref="_shotKick"/>).</summary>
+        private const float MAX_ACCELERATION = 9f;
 
         /// <summary>Most angular acceleration (rad/s²) of the hull's pitch the gun feels.</summary>
         private const float MAX_PITCH_ACCELERATION = 12f;
@@ -38,8 +40,10 @@ namespace Game
         private readonly float _inertia;
         private readonly float _heave;
         private readonly float _surge;
+        private readonly float _shotKick;
 
         private Rigidbody _body;
+        private IEvent _fireEvent;
         private Quaternion _rest;
         private Vector3 _lastVelocity;
         private float _lastFixedTime;
@@ -58,9 +62,11 @@ namespace Game
         /// <param name="inertia">Share of the hull's change of pitch the gun lags behind (0 — none, 1 — all).</param>
         /// <param name="heave">Barrel tip per vertical jolt (rad per m/s² of the trunnion's acceleration).</param>
         /// <param name="surge">Nod per m/s² along the barrel (rad): up when speeding up, down when braking.</param>
+        /// <param name="shotKick">Muzzle flip: upward swing speed (degrees/s) each shot gives the gun.</param>
         public TankGunSwayBehaviour(Transform gun, float limit, float frequency, float dampingRatio, float inertia,
-            float heave, float surge)
+            float heave, float surge, float shotKick = 0f)
         {
+            _shotKick = shotKick * Mathf.Deg2Rad;
             _gun = gun;
             _limit = limit * Mathf.Deg2Rad;
             float w = 2f * Mathf.PI * frequency;
@@ -98,10 +104,19 @@ namespace Game
             if (_body != null)
                 _lastVelocity = _body.linearVelocity;
             _lastFixedTime = Time.fixedTime;
+
+            if (_shotKick > 0f && entity.TryGetWeapon(out IReactiveVariable<IEntity> weapon) && weapon.Value != null &&
+                weapon.Value.TryGetFireEvent(out _fireEvent))
+                _fireEvent.Subscribe(OnFire);
         }
+
+        // The shot flips the muzzle up; the spring brings it back in a few swings.
+        private void OnFire() => _rate += _shotKick;
 
         public void Dispose(IEntity entity)
         {
+            _fireEvent?.Unsubscribe(OnFire);
+            _fireEvent = null;
             if (_gun != null)
                 _gun.localRotation = _rest;
         }

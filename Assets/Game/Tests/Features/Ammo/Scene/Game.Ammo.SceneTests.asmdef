@@ -1,0 +1,26 @@
+{
+    "name": "Game.Ammo.SceneTests",
+    "rootNamespace": "Game.Tests",
+    "references": [
+        "Game",
+        "Game.Voxels",
+        "Atomic.Elements",
+        "Atomic.Entities",
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS",
+        "UNITY_EDITOR"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

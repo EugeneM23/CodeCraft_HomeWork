@@ -162,6 +162,8 @@ namespace Game
             ["hud.health"] = "ПРОЧНОСТЬ",
             ["hud.armor"] = "БРОНЯ",
             ["hud.gun"] = "ПУШКА",
+            ["hud.gun_he"] = "ПУШКА · ОФ",
+            ["hud.gun_ap"] = "ПУШКА · ББ",
             ["hud.machine_gun"] = "МГ",
             ["hud.boost"] = "ФОРСАЖ",
             ["hud.ready"] = "ГОТОВО",

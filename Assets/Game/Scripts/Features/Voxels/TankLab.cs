@@ -66,8 +66,11 @@ namespace Game
         private int _bulletCount;
         private readonly RaycastHit[] _hits = new RaycastHit[8];
 
+        private TankArmourLab _armourLab;
+
         private void Awake()
         {
+            _armourLab = GetComponent<TankArmourLab>();
             ReadNumbers();
             _table.rotation = Quaternion.Euler(0f, _startYaw, 0f);
             Respawn();
@@ -133,7 +136,9 @@ namespace Game
             Place();
 
             Ray ray = _camera.ScreenPointToRay(mouse.position.ReadValue());
-            if (mouse.leftButton.isPressed && Time.time >= _nextShot)
+            // With the armour stand on (TankArmourLab) the left button fires its shells; the machine gun takes Shift.
+            bool gun = _armourLab == null || !_armourLab.isActiveAndEnabled || (keyboard != null && keyboard.shiftKey.isPressed);
+            if (gun && mouse.leftButton.isPressed && Time.time >= _nextShot)
             {
                 _nextShot = Time.time + _fireInterval;
                 Fire(ray);
@@ -255,7 +260,11 @@ namespace Game
 
         private void OnGUI()
         {
-            GUI.Label(new Rect(16, 16, 520, 120),
+            if (_armourLab != null && _armourLab.isActiveAndEnabled)
+                GUI.Label(new Rect(16, 16, 620, 120),
+                    "Space — фугасный снаряд   R — новая мишень\nПКМ + мышь — облёт камерой вокруг танка   колесо — ближе/дальше");
+            else
+                GUI.Label(new Rect(16, 16, 520, 120),
                 "ЛКМ — пулемёт   Space — снаряд пушки   R — новая мишень\nПКМ + мышь — облёт камерой вокруг танка   колесо — ближе/дальше");
         }
     }

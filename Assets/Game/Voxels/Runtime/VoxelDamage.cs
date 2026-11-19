@@ -120,10 +120,11 @@ namespace Game.Voxels
                 total += body.CarveCrater(point, radius, slope, force, debris, life);
             }
 
-            // A house takes a 2 m bite from a 4 m crater, as it did from the old 3.4 m one.
+            // A house takes a 2 m bite from a 4 m crater, as it did from the old 3.4 m one: the whole of it, not
+            // the smaller bite a shell takes (VoxelBody.BiteRadius). Its skeleton stands (VoxelBody.SetHardness).
             foreach (VoxelBody body in Hit)
                 if (body != null && !body.IsTerrain && body.IsCreated)
-                    total += body.CarveSphere(point, radius * 0.5f, force, BLAST_DEBRIS / Mathf.Max(1, Hit.Count));
+                    total += body.CarveSphere(point, radius * 0.5f, force, BLAST_DEBRIS / Mathf.Max(1, Hit.Count), true);
 
             VoxelSignals.RaiseAirBlasted(point, radius, total);
             Hit.Clear();

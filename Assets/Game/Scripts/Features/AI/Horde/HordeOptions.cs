@@ -72,6 +72,9 @@ namespace Game.AIKit.Adapters
 
         public int acidSplashDrops = 6;
 
+        [Tooltip("Monsters that leap onto the tank and ride it (HordeRiders).")]
+        public HordeRiderOptions riders = new();
+
         /// <summary>
         /// Simulation tuning from these options (the kinds are set apart, <see cref="Kind"/>). No crush threshold: the
         /// horde takes the player's vehicle's every frame (<see cref="HordeBehaviour.CrushSpeedOf"/>).

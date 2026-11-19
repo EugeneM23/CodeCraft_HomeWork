@@ -71,6 +71,8 @@ namespace Game
         [SerializeField, Min(0f)] private float _gunSwayHeave = 0.004f;
         [Tooltip("Nod per m/s² along the barrel (rad): up when speeding up, down when braking.")]
         [SerializeField, Min(0f)] private float _gunSwaySurge = 0.015f;
+        [Tooltip("Muzzle flip on a shot: the gun's upward swing speed (degrees/s) the kick gives it.")]
+        [SerializeField, Min(0f)] private float _gunSwayShotKick = 60f;
         [Tooltip("Pooled burst (HitEffectInstaller) put at the cannon's muzzle on every shot: flash, flame, smoke.")]
         [SerializeField] private MonoEntity _muzzleSmoke;
         [Tooltip("Smoke still trickling out of the barrel after a shot; restarted on every shot.")]
@@ -242,7 +244,7 @@ namespace Game
                 // The gun nods on its trunnion with the hull's rocking (visual only; the fire point stays level).
                 if (_gunSwayLimit > 0f)
                     entity.AddBehaviour(new TankGunSwayBehaviour(_gunVisual, _gunSwayLimit, _gunSwayFrequency,
-                        _gunSwayDamping, _gunSwayInertia, _gunSwayHeave, _gunSwaySurge));
+                        _gunSwayDamping, _gunSwayInertia, _gunSwayHeave, _gunSwaySurge, _gunSwayShotKick));
             }
             entity.AddBehaviour(new TankMuzzleSmokeBehaviour(gameContext, _muzzleSmoke, _muzzleWisp, _voxelMuzzleSmoke));
             entity.AddBehaviour(new TankVoxelMuzzleSmokeBehaviour(_voxelMuzzleSmoke));

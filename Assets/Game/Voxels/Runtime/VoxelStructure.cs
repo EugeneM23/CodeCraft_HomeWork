@@ -280,6 +280,13 @@ namespace Game.Voxels
                     grass ? 0.14f : plain ? 0.02f : weathered ? 0.13f : 0.07f, Wetness(material));
             }
 
+            // A building's load-bearing voxels look the same as the rest: their slots copy the shades.
+            if (HasSkeleton)
+                for (int k = 0; k < BEARING_MATERIALS; k++)
+                for (int v = 0; v < MeshVoxelizer.VARIANTS; v++)
+                    palette[BEARING_FIRST + k * MeshVoxelizer.VARIANTS + v] =
+                        palette[1 + (int)BearingMaterial(k) * MeshVoxelizer.VARIANTS + v];
+
             // Ground under a VoxelTerrainSettings follows its hills; on its own it lies flat.
             VoxelTerrainSettings terrain = _shape == Shape.Ground ? GetComponentInParent<VoxelTerrainSettings>() : null;
             Vector4[] padList = terrain != null ? terrain.Pads : null;
@@ -367,8 +374,93 @@ namespace Game.Voxels
             if (_shape is Shape.Wall or Shape.House or Shape.Tower or Shape.Victorian)
             {
                 _body.SetStrength(BuildStrength(pending.Materials));
+                if (HasSkeleton)
+                    _body.SetHardness(BuildHardness());
                 _body.DesignStructure();
             }
+        }
+
+        // ---------------------------------------------------------------- skeleton
+
+        /// <summary>
+        /// A house, a town house or a tower has a skeleton: its corners and the piers between its
+        /// windows, a ring beam round every upper floor and under the eaves, the edges of its floors and the
+        /// chimney stacks. They are their own materials in look and in the load solve, but much harder to
+        /// bite (BEARING_HARDNESS): bombed, the walls between them fall out and the skeleton stands, as
+        /// bombed towns did (user, 2026-11-19).
+        /// </summary>
+        private bool HasSkeleton => _shape is Shape.House or Shape.Tower or Shape.Victorian;
+
+        /// <summary>How many materials have a load-bearing copy (see BearingMaterial).</summary>
+        private const int BEARING_MATERIALS = 14;
+
+        /// <summary>The first palette slot of the load-bearing copies: after every material's shades.</summary>
+        private const int BEARING_FIRST = 1 + ((int)Material.CobbleDark + 1) * MeshVoxelizer.VARIANTS;
+
+        /// <summary>A load-bearing voxel's material carries this flag out of the shape functions (see Pick).</summary>
+        private const int BEARING = 1 << 16;
+
+        /// <summary>
+        /// A load-bearing joint bears this many times the press and the bend of the same material in a wall
+        /// between them: 1. What keeps the skeleton is that it is not bitten away; stronger in the load solve, it
+        /// held a corner out over a 2.5 m crater (×2 press) or a 2.5 m cantilever (×1.5 bend), where a house must
+        /// lose its corner (user, 2026-11-17: the ground under a house holds it up).
+        /// </summary>
+        private const float BEARING_PRESS = 2f;
+
+        private const float BEARING_BEND = 1f;
+
+        /// <summary>A bite is this many times smaller in a load-bearing voxel: about 1/27 of the volume.</summary>
+        private const float BEARING_HARDNESS = 3f;
+
+        /// <summary>The k-th material that has a load-bearing copy.</summary>
+        private static Material BearingMaterial(int k) => k switch
+        {
+            0 => Material.BrickRed,
+            1 => Material.BrickYellow,
+            2 => Material.Stucco,
+            3 => Material.Trim,
+            4 => Material.Stone,
+            5 => Material.Panel,
+            6 => Material.Wallpaper1,
+            7 => Material.Wallpaper2,
+            8 => Material.Wallpaper3,
+            9 => Material.Furniture,
+            10 => Material.FloorWood,
+            11 => Material.Concrete,
+            12 => Material.Brick,
+            _ => Material.Mortar
+        };
+
+        /// <summary>The load-bearing copy of a material (its k), or −1: glass, frames and doors bear nothing.</summary>
+        private static int BearingSlot(int material) => material switch
+        {
+            (int)Material.BrickRed => 0,
+            (int)Material.BrickYellow => 1,
+            (int)Material.Stucco => 2,
+            (int)Material.Trim => 3,
+            (int)Material.Stone => 4,
+            (int)Material.Panel => 5,
+            (int)Material.Wallpaper1 => 6,
+            (int)Material.Wallpaper2 => 7,
+            (int)Material.Wallpaper3 => 8,
+            (int)Material.Furniture => 9,
+            (int)Material.FloorWood => 10,
+            (int)Material.Concrete => 11,
+            (int)Material.Brick => 12,
+            (int)Material.Mortar => 13,
+            _ => -1
+        };
+
+        /// <summary>Per palette entry: 1, or BEARING_HARDNESS for the load-bearing copies.</summary>
+        private static NativeArray<float> BuildHardness()
+        {
+            var hardness = new NativeArray<float>(256, Allocator.Persistent);
+            for (int i = 0; i < 256; i++)
+                hardness[i] = 1f;
+            for (int i = 0; i < BEARING_MATERIALS * MeshVoxelizer.VARIANTS; i++)
+                hardness[BEARING_FIRST + i] = BEARING_HARDNESS;
+            return hardness;
         }
 
         /// <summary>
@@ -411,6 +503,12 @@ namespace Game.Voxels
                 if (index < 256)
                     strength[index] = Strength((Material)m) * new float3(TOUGHER, TOUGHER, 1f);
             }
+
+            // The skeleton's copies: the same group (no seam between a pier and the wall beside it), BEARING_PRESS and _BEND.
+            var bearing = new float3(TOUGHER * BEARING_PRESS, TOUGHER * BEARING_BEND, 1f);
+            for (int k = 0; k < BEARING_MATERIALS; k++)
+            for (int v = 0; v < MeshVoxelizer.VARIANTS; v++)
+                strength[BEARING_FIRST + k * MeshVoxelizer.VARIANTS + v] = Strength(BearingMaterial(k)) * bearing;
 
             return strength;
         }
@@ -892,6 +990,52 @@ namespace Game.Voxels
             private const int DOOR_HALF = 4;
             private static int DoorTop => V_PLINTH + 20;
 
+            // ---------------------------------------------------------------- skeleton
+
+            /// <summary>Marks a voxel load-bearing (nothing for EMPTY).</summary>
+            private static int Bear(int material) => material >= 0 ? material | BEARING : material;
+
+            /// <summary>Height (voxels) of a ring beam: the course a floor rests on, and the top of the wall.</summary>
+            private const int BEAM = 4;
+
+            /// <summary>Width (voxels) of a pier between windows, and of a corner.</summary>
+            private const int PIER = 5;
+
+            /// <summary>How far (voxels) in from the wall a floor's edge bears.</summary>
+            private const int FLOOR_EDGE = 4;
+
+            /// <summary>
+            /// Whether a town house's wall voxel is in its skeleton: a beam at every upper floor and
+            /// under the eaves, the corners, the piers midway between the windows of the front and
+            /// back, and on the sides the pier under each chimney stack. Not the plinth: it stands on
+            /// the ground, and a crater under a corner must still take it (user, 2026-11-17).
+            /// </summary>
+            private static bool VictorianBearing(bool side, int u, int length, int z, int z0, int z1, int y, int wallTop)
+            {
+                if (y < V_PLINTH)
+                    return false;
+                if (y >= wallTop - BEAM || (y >= V_PLINTH + V_FLOOR && (y - V_PLINTH) % V_FLOOR < BEAM))
+                    return true;
+                if (u < PIER - 1 || u >= length - (PIER - 1))
+                    return true;
+                if (side)
+                {
+                    int chimney = ChimneyZ(z0, z1);
+                    return z >= chimney && z < chimney + CHIMNEY_DEPTH;
+                }
+
+                // Three bays: the piers stand at a third and two thirds of the front.
+                for (int k = 1; k < 3; k++)
+                    if (math.abs(u - length * k / 3) <= PIER / 2)
+                        return true;
+                return false;
+            }
+
+            /// <summary>The first z of a chimney stack (Roof), and how deep it is.</summary>
+            private static int ChimneyZ(int z0, int z1) => (int)((z0 + z1) * 0.5f) - 4;
+
+            private const int CHIMNEY_DEPTH = 6;
+
             /// <summary>
             /// A village house of about 1900, its walls within the grid: 3 voxels left at the sides
             /// and back for the trim and eaves to jut into, 6 at the front for the steps and bay.
@@ -914,13 +1058,19 @@ namespace Game.Voxels
                     int dF = p.z - z0, dB = z1 - 1 - p.z, dL = p.x - x0, dR = x1 - 1 - p.x;
                     int d = math.min(math.min(dF, dB), math.min(dL, dR));
                     if (d >= 2)
-                        return Interior(p, x0, x1, z0, z1, floors, wallTop);
+                    {
+                        // Every upper floor's edge along the walls bears.
+                        int inside = Interior(p, x0, x1, z0, z1, floors, wallTop);
+                        bool floor = p.y > V_PLINTH && ((p.y - V_PLINTH) % V_FLOOR == 0 || p.y == wallTop);
+                        return floor && d < 2 + FLOOR_EDGE ? Bear(inside) : inside;
+                    }
 
-                    if (d == dF)
-                        return Facade(0, p.x - x0, x1 - x0, p.y, d, wallTop);
-                    if (d == dB)
-                        return Facade(1, p.x - x0, x1 - x0, p.y, d, wallTop);
-                    return Facade(d == dL ? 2 : 3, p.z - z0, z1 - z0, p.y, d, wallTop);
+                    bool side = d != dF && d != dB;
+                    int u = side ? p.z - z0 : p.x - x0;
+                    int length = side ? z1 - z0 : x1 - x0;
+                    int face = d == dF ? 0 : d == dB ? 1 : d == dL ? 2 : 3;
+                    int wall = Facade(face, u, length, p.y, d, wallTop);
+                    return VictorianBearing(side, u, length, p.z, z0, z1, p.y, wallTop) ? Bear(wall) : wall;
                 }
 
                 if (inX && p.z < z0)
@@ -1337,15 +1487,16 @@ namespace Game.Voxels
                 float top = eaves + half - math.abs(p.z + 0.5f - zc);
                 int ridge = (int)(eaves + half);
 
-                int cz0 = (int)zc - 4, cz1 = (int)zc + 2, chimneyTop = ridge + 8;
+                // The chimney stacks stand on the side piers (VictorianBearing): they bear, and stand when the roof goes.
+                int cz0 = ChimneyZ(z0, z1), cz1 = cz0 + CHIMNEY_DEPTH, chimneyTop = ridge + 8;
                 bool left = p.x >= x0 + 1 && p.x < x0 + 7;
                 bool right = p.x >= x1 - 7 && p.x < x1 - 1;
                 if ((left || right) && p.z >= cz0 && p.z < cz1 && p.y < chimneyTop)
-                    return WallMaterial == (int)Material.Stucco ? (int)Material.BrickRed : WallMaterial;
+                    return Bear(WallMaterial == (int)Material.Stucco ? (int)Material.BrickRed : WallMaterial);
                 bool capLeft = p.x >= x0 && p.x < x0 + 8;
                 bool capRight = p.x >= x1 - 8 && p.x < x1;
                 if ((capLeft || capRight) && p.z >= cz0 - 1 && p.z < cz1 + 1 && p.y >= chimneyTop && p.y < chimneyTop + 2)
-                    return (int)Material.Trim;
+                    return Bear((int)Material.Trim);
                 if (p.y >= chimneyTop + 2 && p.y < chimneyTop + 5 && p.z >= cz0 + 2 && p.z < cz0 + 4)
                 {
                     int lx = capLeft ? p.x - (x0 + 1) : p.x - (x1 - 7);
@@ -1375,9 +1526,8 @@ namespace Game.Voxels
                         return r2 > 6f || math.abs(w.x) < 0.6f || math.abs(w.y) < 0.6f ? (int)Material.Frame : (int)Material.Glass;
                     }
 
-                    if (r2 < 20f && (p.x == x0 || p.x == x1 - 1))
-                        return (int)Material.Trim;
-                    return WallMaterial;
+                    int gableWall = r2 < 20f && (p.x == x0 || p.x == x1 - 1) ? (int)Material.Trim : WallMaterial;
+                    return p.z >= cz0 && p.z < cz1 ? Bear(gableWall) : gableWall;
                 }
 
                 if (p.y == eaves && p.x >= x0 && p.x < x1 && p.z >= z0 && p.z < z1)
@@ -1416,11 +1566,18 @@ namespace Game.Voxels
                 {
                     if (p.y < roof + 2)
                         return (int)Material.Roof;
-                    return shell ? (int)Material.Concrete : -1;
+                    return shell ? Bear((int)Material.Concrete) : -1;
                 }
 
                 if (!shell)
-                    return p.y == middle || p.y == middle + 1 ? (int)Material.Concrete : -1;
+                {
+                    // The floor slab between the storeys; its edge along the walls bears.
+                    if (p.y != middle && p.y != middle + 1)
+                        return -1;
+                    bool edge = p.x < wall + FLOOR_EDGE || p.x >= s.x - wall - FLOOR_EDGE ||
+                                p.z < wall + FLOOR_EDGE || p.z >= s.z - wall - FLOOR_EDGE;
+                    return edge ? Bear((int)Material.Concrete) : (int)Material.Concrete;
+                }
 
                 // Door in the front wall (z = 0 side).
                 int doorHalf = math.max(3, s.x / 10);
@@ -1430,10 +1587,26 @@ namespace Game.Voxels
                 if (Window(p, 6, middle - 6) || Window(p, middle + 6, roof - 6))
                     return -1;
 
-                if (p.y == middle || p.y == middle + 1)
-                    return (int)Material.Concrete;
+                int material = p.y == middle || p.y == middle + 1 ? (int)Material.Concrete : (int)Material.Brick;
+                return HouseBearing(p, middle, roof) ? Bear(material) : material;
+            }
 
-                return (int)Material.Brick;
+            /// <summary>
+            /// Whether a house's wall voxel is in its skeleton: the corners, the piers between the
+            /// windows (see Window), a beam round the floor between the storeys and the top of the wall.
+            /// </summary>
+            private bool HouseBearing(int3 p, int middle, int roof)
+            {
+                if (math.abs(p.y - middle) <= BEAM / 2 || p.y >= roof - BEAM / 2)
+                    return true;
+                bool across = p.x < 2 || p.x >= Size.x - 2;
+                int along = across ? p.z : p.x;
+                int span = across ? Size.z : Size.x;
+                if (along < PIER || along >= span - PIER)
+                    return true;
+                // Windows run (along − 5) % 14 in [3, 10): the wall between two is a pier.
+                int local = (along - 5) % 14;
+                return local >= 11 || local < 2;
             }
 
             /// <summary>A hollow square tower with slit windows and a crown.</summary>
@@ -1452,18 +1625,21 @@ namespace Game.Voxels
                     bool merlon = ((p.x + p.z) / 4) % 2 == 0;
                     if (!shell)
                         return p.y == s.y - 4 ? (int)Material.Wood : -1;
-                    return p.y < s.y - 2 || merlon ? (int)Material.Concrete : -1;
+                    return p.y < s.y - 2 || merlon ? Bear((int)Material.Concrete) : -1;
                 }
 
                 if (!shell)
                     return p.y % 16 == 0 ? (int)Material.Wood : -1;
 
                 int along = p.x < wall || p.x >= s.x - wall ? p.z : p.x;
-                int mid = (p.x < wall || p.x >= s.x - wall ? s.z : s.x) / 2;
+                int span = p.x < wall || p.x >= s.x - wall ? s.z : s.x;
+                int mid = span / 2;
                 if (p.y > 4 && p.y % 16 > 5 && p.y % 16 < 13 && math.abs(along - mid) < 2)
                     return -1;
 
-                return (int)Material.Brick;
+                // The skeleton: the corners and a ring beam at every floor over the ground one (each 16 voxels).
+                bool bearing = along < PIER || along >= span - PIER || (p.y >= 16 && p.y % 16 < BEAM - 1);
+                return bearing ? Bear((int)Material.Brick) : (int)Material.Brick;
             }
 
             private bool Window(int3 p, int bottom, int top)
@@ -1484,6 +1660,10 @@ namespace Game.Voxels
             /// </summary>
             private byte Pick(int material, int3 p)
             {
+                // A load-bearing voxel (BEARING) takes its material's hard copy, when it has one.
+                bool bearing = (material & BEARING) != 0;
+                material &= ~BEARING;
+
                 // A street stone comes with its shade (bits 8+, 1-based): one shade per stone.
                 int forced = material >> 8;
                 material &= 0xFF;
@@ -1536,7 +1716,11 @@ namespace Game.Voxels
                     else if (streak > 0.05f)
                         variant = math.max(0, variant - 1);
                 }
-                return (byte)(1 + material * MeshVoxelizer.VARIANTS + variant);
+
+                int slot = bearing ? BearingSlot(material) : -1;
+                return slot >= 0
+                    ? (byte)(BEARING_FIRST + slot * MeshVoxelizer.VARIANTS + variant)
+                    : (byte)(1 + material * MeshVoxelizer.VARIANTS + variant);
             }
         }
     }
