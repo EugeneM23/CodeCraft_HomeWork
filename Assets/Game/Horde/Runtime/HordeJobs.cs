@@ -758,6 +758,28 @@ namespace Game.Horde
             return math.all(cell == end);
         }
 
+        /// <summary>
+        /// Nothing on the grid stands above the straight line from <paramref name="from"/> to <paramref name="to"/>
+        /// (sampled every cell; the end cells are left out: the shooter's own and the target's).
+        /// </summary>
+        public bool LineOfSight(float3 from, float3 to)
+        {
+            float2 d = to.xz - from.xz;
+            int steps = math.min((int)math.ceil(math.length(d) / CellSize), 256);
+            for (int s = 1; s < steps - 1; s++)
+            {
+                float t = (float)s / steps;
+                int2 cell = CellOf(from.xz + d * t);
+                if (!InBounds(cell))
+                    continue;
+                float h = HeightOf(cell);
+                if (!math.isnan(h) && h > math.lerp(from.y, to.y, t))
+                    return false;
+            }
+
+            return true;
+        }
+
         private float Sample(int2 cell, float h0)
         {
             if (!InBounds(cell))
@@ -806,8 +828,7 @@ namespace Game.Horde
 
             for (int i = 0; i < Position.Length; i++)
             {
-                HordeState s = State[i];
-                if (s != HordeState.Walk && s != HordeState.Attack)
+                if (!HordeStates.IsLive(State[i]))
                 {
                     CellIndex[i] = -1;
                     continue;
@@ -839,10 +860,13 @@ namespace Game.Horde
     }
 
     /// <summary>
-    /// Per monster: the wish (flow field toward the tank, straight at it when close, slower near the
-    /// hull) plus separation from neighbours in the hash cells within the separation radius; velocity eases toward it, the
-    /// heading turns at a bounded rate. The move obeys the grid step rule (sliding along a blocked
+    /// Per monster: the wish plus separation from neighbours in the hash cells within the separation radius; velocity
+    /// eases toward it, the heading turns at a bounded rate. The move obeys the grid step rule (sliding along a blocked
     /// axis), and the feet go to the surface height. Writes <c>NextPosition</c>.
+    /// Melee wish: the flow field toward the tank, straight at it when close, slower near the hull. Ranged wish: away
+    /// from the tank inside <see cref="HordeKind.BackOff"/>; standing within <see cref="HordeKind.StopDistance"/> with the hull
+    /// in sight; else in with the crowd over the flow field.
+    /// Emerging monsters stand.
     /// </summary>
     [BurstCompile(CompileSynchronously = true)]
     internal struct HordeSteerJob : IJobParallelForBatch
@@ -850,10 +874,14 @@ namespace Game.Horde
         private const float DIRECT_RANGE = 3f;
         private const float GOLDEN_ANGLE = 2.39996323f;
         private const float ANIM_WRAP = 600f;
+        /// <summary>Mouth height over the feet at render scale 1 (the line of sight starts there).</summary>
+        private const float MOUTH = 2f;
 
         [ReadOnly] public NativeArray<float3> Position;
         [ReadOnly] public NativeArray<HordeState> State;
         [ReadOnly] public NativeArray<float> SpeedScale;
+        [ReadOnly] public NativeArray<byte> Kind;
+        [ReadOnly] public NativeArray<HordeKind> Kinds;
         [ReadOnly] public NativeArray<int> CellStart;
         [ReadOnly] public NativeArray<int> Sorted;
         [WriteOnly] public NativeArray<float3> NextPosition;
@@ -887,27 +915,39 @@ namespace Game.Horde
                 if (state != HordeState.Walk && state != HordeState.Attack)
                 {
                     NextPosition[i] = p;
+                    if (state == HordeState.Emerging)
+                    {
+                        Velocity[i] = float2.zero;
+                        AnimTime[i] += DeltaTime;
+                    }
+
                     continue;
                 }
 
+                HordeKind kind = Kinds[Kind[i]];
                 float2 xz = p.xz;
                 int2 cell = Grid.CellOf(xz);
 
-                // Wish: the field, or straight at the tank when close or off the field.
                 float2 wish = float2.zero;
                 float2 toTank = float2.zero;
                 if (Tank.Present)
                 {
                     toTank = Tank.Center.xz - xz;
-                    float hull = HordeHull.Distance(Tank, HordeHull.ToLocal(Tank, inverse, p));
-                    float2 dir = Grid.FlowOf(cell);
-                    if (math.lengthsq(dir) < 0.25f || hull < DIRECT_RANGE)
-                        dir = math.normalizesafe(toTank);
-                    float slow = math.saturate((hull - Settings.AttackReach) / math.max(Settings.SlowRadius, 0.01f));
-                    float speed = Settings.Speed * SpeedScale[i] * math.lerp(0.3f, 1f, slow);
-                    if (state == HordeState.Attack)
-                        speed = math.min(speed, 0.4f);
-                    wish = dir * speed;
+                    float speed = kind.Speed * SpeedScale[i];
+                    if (kind.Tactic == HordeTactic.Ranged)
+                        wish = RangedWish(p, cell, toTank, kind, speed);
+                    else
+                    {
+                        float hull = HordeHull.Distance(Tank, HordeHull.ToLocal(Tank, inverse, p));
+                        float2 dir = Grid.FlowOf(cell);
+                        if (math.lengthsq(dir) < 0.25f || hull < DIRECT_RANGE)
+                            dir = math.normalizesafe(toTank);
+                        float slow = math.saturate((hull - Settings.AttackReach) / math.max(Settings.SlowRadius, 0.01f));
+                        speed *= math.lerp(0.3f, 1f, slow);
+                        if (state == HordeState.Attack)
+                            speed = math.min(speed, 0.4f);
+                        wish = dir * speed;
+                    }
                 }
 
                 // Separation.
@@ -992,20 +1032,37 @@ namespace Game.Horde
                 Velocity[i] = v;
                 Heading[i] = heading;
 
-                float rate = state == HordeState.Attack ? 1f : math.length(v) / math.max(Settings.RunClipSpeed, 0.1f);
+                float rate = state == HordeState.Attack ? 1f : math.length(v) / math.max(Settings.RunClipSpeed * kind.RenderScale, 0.1f);
                 float t = AnimTime[i] + DeltaTime * rate;
                 AnimTime[i] = t > ANIM_WRAP ? t - ANIM_WRAP : t;
             }
 
             Marker.End();
         }
+
+        private float2 RangedWish(float3 p, int2 cell, float2 toTank, in HordeKind kind, float speed)
+        {
+            float d = math.length(toTank);
+            if (d < 1e-3f)
+                return float2.zero;
+            if (d < kind.BackOff)
+                return -toTank / d * speed;
+            // In range and the hull in sight: it stands and shoots. Otherwise it walks in with the crowd.
+            if (d <= kind.StopDistance && Grid.LineOfSight(p + new float3(0f, MOUTH * kind.RenderScale, 0f), Tank.Center))
+                return float2.zero;
+            float2 dir = Grid.FlowOf(cell);
+            if (math.lengthsq(dir) < 0.25f)
+                dir = toTank / d;
+            return dir * speed;
+        }
     }
 
     /// <summary>
-    /// Per monster after the move: blasts of this step (area damage), then the tank. Under the hull of
-    /// a tank faster than the crush speed (the box swept along this step's move, leading side only):
-    /// crushed. Touching the hull: pushed out of it where the grid lets it go, and attacking (damage of
-    /// this step into <c>AttackDamage</c>). Deaths go to the queue.
+    /// Per monster after the move: direct hits and blasts of this step, then the tank. Under the hull of a tank at or
+    /// above the crush speed (the box swept along this step's move, leading side only): crushed, if its kind is.
+    /// Touching the hull: pushed out of it where the grid lets it go, and attacking (bite damage of this step into
+    /// <c>AttackDamage</c>). Emerging monsters count down and take damage and crushes, nothing else. Ranged monsters
+    /// fire a shot when their interval is up, the hull is in range and in sight. Deaths go to the queue.
     /// </summary>
     [BurstCompile(CompileSynchronously = true)]
     internal struct HordeContactJob : IJobParallelForBatch
@@ -1014,14 +1071,24 @@ namespace Game.Horde
         private const float BELOW_HULL = 1.2f;
         /// <summary>Blasts measure from this height over the feet.</summary>
         private const float CHEST = 0.8f;
+        /// <summary>Mouth height over the feet at render scale 1 (the shot starts there).</summary>
+        private const float MOUTH = 2f;
+
 
         public NativeArray<float3> Position;
         public NativeArray<HordeState> State;
         public NativeArray<float> Health;
+        public NativeArray<float> StateTime;
+        public NativeArray<float> Cooldown;
+        [ReadOnly] public NativeArray<float> MaxHealth;
         [WriteOnly] public NativeArray<float> AttackDamage;
         [ReadOnly] public NativeArray<float> Heading;
+        [ReadOnly] public NativeArray<byte> Kind;
+        [ReadOnly] public NativeArray<float> DamageScale;
+        [ReadOnly] public NativeArray<HordeKind> Kinds;
         [ReadOnly] public NativeArray<HordeAreaDamage> Areas;
         public NativeQueue<HordeDeathEvent>.ParallelWriter Deaths;
+        public NativeQueue<HordeShot>.ParallelWriter Shots;
         public HordeGridView Grid;
         public HordeSettings Settings;
         public HordeTank Tank;
@@ -1033,26 +1100,49 @@ namespace Game.Horde
             Marker.Begin();
             quaternion inverse = math.inverse(Tank.Rotation);
             float2 flatVelocity = Tank.Velocity.xz;
-            bool crushing = math.length(flatVelocity) > Settings.CrushSpeed;
+            bool crushing = math.length(flatVelocity) >= Settings.CrushSpeed;
             float2 localVelocity = math.rotate(inverse, new float3(flatVelocity.x, 0f, flatVelocity.y)).xz;
             float2 sweep = localVelocity * DeltaTime;
-            float r = Settings.Radius;
 
             for (int i = startIndex; i < startIndex + count; i++)
             {
                 AttackDamage[i] = 0f;
                 HordeState state = State[i];
-                if (state != HordeState.Walk && state != HordeState.Attack)
+                if (!HordeStates.IsLive(state))
                     continue;
 
+                HordeKind kind = Kinds[Kind[i]];
+                float r = kind.Radius;
                 float3 p = Position[i];
                 float hp = Health[i];
+                if (hp <= 0f)
+                {
+                    Die(i, p, HordeDeathCause.Damaged);
+                    continue;
+                }
+
+                float2 shove = float2.zero;
                 for (int a = 0; a < Areas.Length; a++)
                 {
                     HordeAreaDamage area = Areas[a];
-                    float dist = math.distance(p + new float3(0f, CHEST, 0f), area.Center);
-                    if (dist < area.Radius)
-                        hp -= area.Damage * (1f - 0.5f * dist / area.Radius);
+                    float dist = math.distance(p + new float3(0f, CHEST * kind.RenderScale, 0f), area.Center);
+                    if (dist >= area.Radius + r)
+                        continue;
+                    float edge = math.saturate(dist / area.Radius);
+                    hp -= area.Damage * math.lerp(1f, area.MinFactor, edge);
+                    if (area.Push > 0f)
+                        shove += math.normalizesafe(p.xz - area.Center.xz, new float2(0f, 1f)) * (area.Push * (1f - edge));
+                }
+
+                if (math.lengthsq(shove) > 1e-4f)
+                {
+                    float2 to = p.xz + shove;
+                    if (Grid.CanTravel(p.xz, to))
+                    {
+                        float y = Grid.HeightAt(to);
+                        p = new float3(to.x, math.isnan(y) ? p.y : y, to.y);
+                        Position[i] = p;
+                    }
                 }
 
                 Health[i] = hp;
@@ -1062,50 +1152,104 @@ namespace Game.Horde
                     continue;
                 }
 
-                state = HordeState.Walk;
+                bool emerging = state == HordeState.Emerging;
+                if (emerging)
+                {
+                    float left = StateTime[i] - DeltaTime;
+                    StateTime[i] = math.max(left, 0f);
+                    if (left <= 0f)
+                    {
+                        state = HordeState.Walk;
+                        emerging = false;
+                    }
+                }
+                else
+                {
+                    state = HordeState.Walk;
+                }
+
                 if (Tank.Present)
                 {
                     float3 local = HordeHull.ToLocal(Tank, inverse, p);
                     float2 q = math.abs(local.xz) - Tank.HalfExtents.xz;
                     bool level = local.y < Tank.HalfExtents.y && local.y > -Tank.HalfExtents.y - BELOW_HULL;
-                    if (level && crushing && InCrushZone(local.xz, q, sweep, localVelocity, r, Tank.HalfExtents.xz))
+                    bool crushable = kind.Crushable && (kind.CrushBelowHealth <= 0f || hp <= kind.CrushBelowHealth * MaxHealth[i]);
+                    if (level && crushing && crushable && InCrushZone(local.xz, q, sweep, localVelocity, r, Tank.HalfExtents.xz))
                     {
                         Die(i, p, HordeDeathCause.Crushed);
                         continue;
                     }
 
-                    if (level && q.x < r && q.y < r)
+                    if (!emerging)
                     {
-                        // Overlaps the hull: out along the shallower side, else the other one, if the grid lets it
-                        // go there (not up on a roof, not into a wall); else it stays where it is.
-                        float penX = r - q.x;
-                        float penZ = r - q.y;
-                        float3 alongX = local;
-                        alongX.x += math.select(-penX, penX, local.x >= 0f);
-                        float3 alongZ = local;
-                        alongZ.z += math.select(-penZ, penZ, local.z >= 0f);
-                        float3 first = penX < penZ ? alongX : alongZ;
-                        float3 second = penX < penZ ? alongZ : alongX;
-                        float2 to = (math.rotate(Tank.Rotation, first) + Tank.Center).xz;
-                        if (!Grid.CanTravel(p.xz, to))
-                            to = (math.rotate(Tank.Rotation, second) + Tank.Center).xz;
-                        if (Grid.CanTravel(p.xz, to))
+                        if (level && q.x < r && q.y < r)
                         {
-                            float y = Grid.HeightAt(to);
-                            Position[i] = new float3(to.x, math.isnan(y) ? p.y : y, to.y);
-                        }
+                            // Overlaps the hull: out along the shallower side, else the other one, if the grid lets it
+                            // go there (not up on a roof, not into a wall); else it stays where it is.
+                            float penX = r - q.x;
+                            float penZ = r - q.y;
+                            float3 alongX = local;
+                            alongX.x += math.select(-penX, penX, local.x >= 0f);
+                            float3 alongZ = local;
+                            alongZ.z += math.select(-penZ, penZ, local.z >= 0f);
+                            float3 first = penX < penZ ? alongX : alongZ;
+                            float3 second = penX < penZ ? alongZ : alongX;
+                            float2 to = (math.rotate(Tank.Rotation, first) + Tank.Center).xz;
+                            if (!Grid.CanTravel(p.xz, to))
+                                to = (math.rotate(Tank.Rotation, second) + Tank.Center).xz;
+                            if (Grid.CanTravel(p.xz, to))
+                            {
+                                float y = Grid.HeightAt(to);
+                                p = new float3(to.x, math.isnan(y) ? p.y : y, to.y);
+                                Position[i] = p;
+                            }
 
-                        state = HordeState.Attack;
-                    }
-                    else if (level && math.length(math.max(q, 0f)) < r + Settings.AttackReach)
-                    {
-                        state = HordeState.Attack;
+                            state = HordeState.Attack;
+                        }
+                        else if (level && math.length(math.max(q, 0f)) < r + Settings.AttackReach)
+                        {
+                            state = HordeState.Attack;
+                        }
                     }
                 }
 
+                if (!emerging && kind.Tactic == HordeTactic.Ranged && kind.ShotInterval > 0f)
+                {
+                    float cd = Cooldown[i] - DeltaTime;
+                    if (cd <= 0f)
+                    {
+                        cd = 0f;
+                        float3 mouth = p + new float3(0f, MOUTH * kind.RenderScale, 0f);
+                        if (Tank.Present && math.distance(mouth.xz, Tank.Center.xz) <= kind.ShotRange
+                            && Grid.LineOfSight(mouth, Tank.Center))
+                        {
+                            Shots.Enqueue(new HordeShot
+                            {
+                                Origin = mouth, Target = Tank.Center, Damage = kind.ShotDamage * DamageScale[i], Speed = kind.ShotSpeed
+                            });
+                            cd = kind.ShotInterval;
+                        }
+                    }
+
+                    Cooldown[i] = cd;
+                }
+
                 State[i] = state;
-                if (state == HordeState.Attack)
-                    AttackDamage[i] = Settings.AttackDps * DeltaTime;
+                float damage = state == HordeState.Attack ? kind.BiteDps * DeltaTime : 0f;
+                if (kind.Tactic == HordeTactic.Melee && kind.HitInterval > 0f)
+                {
+                    // Blows: the first one lands at contact, then one every HitInterval while it stays at the hull.
+                    float cd = math.max(Cooldown[i] - DeltaTime, 0f);
+                    if (state == HordeState.Attack && cd <= 0f)
+                    {
+                        damage += kind.HitDamage;
+                        cd = kind.HitInterval;
+                    }
+
+                    Cooldown[i] = cd;
+                }
+
+                AttackDamage[i] = damage * DamageScale[i];
             }
 
             Marker.End();
@@ -1135,11 +1279,119 @@ namespace Game.Horde
         private void Die(int i, float3 p, HordeDeathCause cause)
         {
             State[i] = HordeState.Dying;
-            Deaths.Enqueue(new HordeDeathEvent { Index = i, Position = p, Heading = Heading[i], Cause = cause });
+            Deaths.Enqueue(new HordeDeathEvent { Index = i, Position = p, Heading = Heading[i], Cause = cause, Kind = Kind[i] });
         }
     }
 
-    /// <summary>Totals of the step: [0] attack damage, [1] live monsters within the near radius of the tank.</summary>
+    /// <summary>
+    /// The shots in flight: ballistic move, a hit inside the hull box (padded) is damage to the tank (summed into
+    /// <c>Totals[2]</c>), a hit on the grid's ground or a wall ends it. Then the shots fired this step join (their arc
+    /// reaches the hull's centre where it is now), and every shot goes to the instance list. Events: fired, hit tank,
+    /// hit ground.
+    /// </summary>
+    [BurstCompile(CompileSynchronously = true)]
+    internal struct HordeProjectileJob : IJob
+    {
+        public const float GRAVITY = 9.81f;
+        /// <summary>A shot is gone after this many seconds (a hole in the ground under it).</summary>
+        public const float MAX_AGE = 5f;
+
+        public NativeArray<HordeProjectile> Projectiles;
+        public NativeArray<int> Count;
+        public NativeQueue<HordeShot> Fired;
+        public NativeList<HordeInstance> Instances;
+        public NativeList<HordeShotEvent> Events;
+        public NativeArray<float> Totals;
+        public HordeGridView Grid;
+        public HordeTank Tank;
+        public float HitPad;
+        public float DeltaTime;
+        public ProfilerMarker Marker;
+
+        public void Execute()
+        {
+            Marker.Begin();
+            Instances.Clear();
+            Events.Clear();
+            quaternion inverse = math.inverse(Tank.Rotation);
+            float damage = 0f;
+            int n = Count[0];
+            int i = 0;
+            while (i < n)
+            {
+                HordeProjectile shot = Projectiles[i];
+                shot.Velocity.y -= GRAVITY * DeltaTime;
+                shot.Position += shot.Velocity * DeltaTime;
+                shot.Age += DeltaTime;
+
+                bool gone = false;
+                if (Tank.Present)
+                {
+                    float3 local = math.abs(math.rotate(inverse, shot.Position - Tank.Center));
+                    if (math.all(local <= Tank.HalfExtents + HitPad))
+                    {
+                        damage += shot.Damage;
+                        Events.Add(new HordeShotEvent { Position = shot.Position, Type = HordeShotEventType.HitTank });
+                        gone = true;
+                    }
+                }
+
+                if (!gone)
+                {
+                    float h = Grid.HeightAt(shot.Position.xz);
+                    if ((!math.isnan(h) && shot.Position.y <= h) || shot.Age > MAX_AGE)
+                    {
+                        Events.Add(new HordeShotEvent
+                        {
+                            Position = new float3(shot.Position.x, math.isnan(h) ? shot.Position.y : h, shot.Position.z),
+                            Type = HordeShotEventType.HitGround
+                        });
+                        gone = true;
+                    }
+                }
+
+                if (gone)
+                {
+                    Projectiles[i] = Projectiles[n - 1];
+                    n--;
+                    continue;
+                }
+
+                Projectiles[i] = shot;
+                i++;
+            }
+
+            while (Fired.TryDequeue(out HordeShot fired))
+            {
+                if (n >= Projectiles.Length)
+                    continue;
+                float3 d = fired.Target - fired.Origin;
+                float flight = math.max(math.length(d.xz) / math.max(fired.Speed, 0.1f), 0.2f);
+                float3 velocity = new float3(d.x / flight, (d.y + 0.5f * GRAVITY * flight * flight) / flight, d.z / flight);
+                Projectiles[n++] = new HordeProjectile { Position = fired.Origin, Velocity = velocity, Damage = fired.Damage };
+                Events.Add(new HordeShotEvent { Position = fired.Origin, Type = HordeShotEventType.Fired });
+            }
+
+            for (int k = 0; k < n; k++)
+            {
+                HordeProjectile shot = Projectiles[k];
+                Instances.Add(new HordeInstance
+                {
+                    PositionHeading = new float4(shot.Position, math.atan2(shot.Velocity.x, shot.Velocity.z)),
+                    Animation = new float4(0f, 0f, 0f, 0f)
+                });
+            }
+
+            Count[0] = n;
+            Totals[2] = damage;
+            Marker.End();
+        }
+    }
+
+    /// <summary>
+    /// Totals of the step: [0] bite damage, [1] live monsters within the near radius of the tank, [3] biting monsters,
+    /// [4..6] the biter nearest to the hull's centre ([2] is the shots' damage, written by <see cref="HordeProjectileJob"/>).
+    /// </summary>
     [BurstCompile(CompileSynchronously = true)]
     internal struct HordeTotalsJob : IJob
     {
@@ -1154,25 +1406,46 @@ namespace Game.Horde
         {
             float damage = 0f;
             int near = 0;
+            int biters = 0;
+            float nearest = float.MaxValue;
+            float3 biter = float3.zero;
             float nearSq = NearRadius * NearRadius;
             for (int i = 0; i < State.Length; i++)
             {
                 HordeState s = State[i];
-                if (s != HordeState.Walk && s != HordeState.Attack)
+                if (!HordeStates.IsLive(s))
                     continue;
-                damage += AttackDamage[i];
-                if (Tank.Present && math.distancesq(Position[i].xz, Tank.Center.xz) < nearSq)
+                float bite = AttackDamage[i];
+                damage += bite;
+                if (!Tank.Present)
+                    continue;
+                float d2 = math.distancesq(Position[i].xz, Tank.Center.xz);
+                if (d2 < nearSq)
                     near++;
+                if (bite > 0f)
+                {
+                    biters++;
+                    if (d2 < nearest)
+                    {
+                        nearest = d2;
+                        biter = Position[i];
+                    }
+                }
             }
 
             Totals[0] = damage;
             Totals[1] = near;
+            Totals[3] = biters;
+            Totals[4] = biter.x;
+            Totals[5] = biter.y;
+            Totals[6] = biter.z;
         }
     }
 
     /// <summary>
-    /// Live monsters inside the camera frustum into the instance list: position, heading and the
-    /// two VAT rows to blend (attack clip at the hull, idle when standing, run otherwise).
+    /// Live monsters inside the camera frustum into the instance list: position, heading, the two VAT rows to blend
+    /// (attack clip at the hull, idle when standing or emerging, run otherwise) and the kind in <c>Animation.w</c>.
+    /// An emerging monster is drawn sunk into the ground by what is left of its rise.
     /// </summary>
     [BurstCompile(CompileSynchronously = true)]
     internal struct HordeRenderJob : IJobParallelForBatch
@@ -1184,13 +1457,17 @@ namespace Game.Horde
         [ReadOnly] public NativeArray<float> Heading;
         [ReadOnly] public NativeArray<float> AnimTime;
         [ReadOnly] public NativeArray<float2> Velocity;
+        [ReadOnly] public NativeArray<float> StateTime;
+        [ReadOnly] public NativeArray<byte> Kind;
+        [ReadOnly] public NativeArray<HordeKind> Kinds;
         [ReadOnly] public NativeArray<float4> Planes;
         public NativeList<HordeInstance>.ParallelWriter Instances;
         public HordeClip Run;
         public HordeClip Attack;
         public HordeClip Idle;
         public bool Cull;
-        /// <summary>Height of the bounding sphere centre over the feet, and its radius.</summary>
+        public float EmergeTime;
+        /// <summary>Height of the bounding sphere centre over the feet, and its radius (at render scale 1).</summary>
         public float2 CullSphere;
         public ProfilerMarker Marker;
 
@@ -1201,18 +1478,21 @@ namespace Game.Horde
             for (int i = startIndex; i < startIndex + count; i++)
             {
                 HordeState state = State[i];
-                if (state != HordeState.Walk && state != HordeState.Attack)
+                if (!HordeStates.IsLive(state))
                     continue;
 
+                byte kindIndex = Kind[i];
+                HordeKind kind = Kinds[kindIndex];
                 float3 p = Position[i];
                 if (Cull)
                 {
-                    float3 c = p + new float3(0f, CullSphere.x, 0f);
+                    float3 c = p + new float3(0f, CullSphere.x * kind.RenderScale, 0f);
+                    float radius = CullSphere.y * kind.RenderScale;
                     bool visible = true;
                     for (int k = 0; k < Planes.Length; k++)
                     {
                         float4 plane = Planes[k];
-                        if (math.dot(plane.xyz, c) + plane.w < -CullSphere.y)
+                        if (math.dot(plane.xyz, c) + plane.w < -radius)
                         {
                             visible = false;
                             break;
@@ -1223,13 +1503,16 @@ namespace Game.Horde
                         continue;
                 }
 
+                if (state == HordeState.Emerging)
+                    p.y -= kind.EmergeDepth * math.saturate(StateTime[i] / math.max(EmergeTime, 0.01f));
+
                 HordeClip clip = state == HordeState.Attack ? Attack
-                    : math.lengthsq(Velocity[i]) < IDLE_SPEED_SQ ? Idle : Run;
+                    : state == HordeState.Emerging || math.lengthsq(Velocity[i]) < IDLE_SPEED_SQ ? Idle : Run;
                 float3 frame = clip.Sample(AnimTime[i]);
                 batch.AddNoResize(new HordeInstance
                 {
                     PositionHeading = new float4(p, Heading[i]),
-                    Animation = new float4(frame, 0f)
+                    Animation = new float4(frame, kindIndex)
                 });
             }
 
@@ -1237,6 +1520,42 @@ namespace Game.Horde
                 Instances.AddRangeNoResize(batch); // one reservation per batch, not one per monster
             batch.Dispose();
             Marker.End();
+        }
+    }
+
+    /// <summary>Sorts the visible instances by kind (<c>Animation.w</c>): kind k is <c>Start[k]</c>..+<c>Counts[k]</c> of <c>Sorted</c>.</summary>
+    [BurstCompile(CompileSynchronously = true)]
+    internal struct HordePartitionJob : IJob
+    {
+        [ReadOnly] public NativeList<HordeInstance> Unsorted;
+        public NativeList<HordeInstance> Sorted;
+        public NativeArray<int> Starts;
+        public NativeArray<int> Counts;
+
+        public void Execute()
+        {
+            int kinds = Counts.Length;
+            for (int k = 0; k < kinds; k++)
+                Counts[k] = 0;
+            for (int i = 0; i < Unsorted.Length; i++)
+                Counts[math.clamp((int)Unsorted[i].Animation.w, 0, kinds - 1)]++;
+            int start = 0;
+            for (int k = 0; k < kinds; k++)
+            {
+                Starts[k] = start;
+                start += Counts[k];
+            }
+
+            Sorted.ResizeUninitialized(Unsorted.Length);
+            for (int k = 0; k < kinds; k++)
+                Counts[k] = 0;
+            for (int i = 0; i < Unsorted.Length; i++)
+            {
+                HordeInstance instance = Unsorted[i];
+                int k = math.clamp((int)instance.Animation.w, 0, kinds - 1);
+                Sorted[Starts[k] + Counts[k]] = instance;
+                Counts[k]++;
+            }
         }
     }
 }

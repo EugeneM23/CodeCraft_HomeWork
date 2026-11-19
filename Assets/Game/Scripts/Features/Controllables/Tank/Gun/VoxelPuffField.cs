@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Game.Voxels;
+using Unity.Profiling;
 using UnityEngine;
 
 namespace Game
@@ -22,7 +23,7 @@ namespace Game
         private const float SKIN = 0.08f;
 
         /// <summary>Speed (m/s) a cube is thrown out of a tunnel or a hull with.</summary>
-        private const float CUT_PUSH = 3f;
+        private const float CUT_PUSH = 0.8f; // a hole, not a shove: only the cubes in the tunnel move, and just to its rim
         private const float HULL_PUSH = 1.5f;
         private const float BLAST_PUSH = 9f;
 
@@ -38,9 +39,23 @@ namespace Game
             public Vector3 To;
             public float Radius;
             public int Frame;
+            public object Source;
+            public float Push;
+        }
+
+        private struct LiveHull
+        {
+            public Hull Hull;
+            public Vector3 Min;
+            public Vector3 Max;
         }
 
         private static readonly List<Hull> s_hulls = new();
+
+        // Scratch of one Apply (see ApplyCubes); grown once, never shrunk.
+        private static readonly List<LiveHull> s_liveHulls = new();
+        private static readonly List<Vector3> s_cutMin = new();
+        private static readonly List<Vector3> s_cutMax = new();
         private static readonly List<Segment> s_cuts = new();
         private static readonly List<Segment> s_blasts = new();
 
@@ -57,11 +72,19 @@ namespace Game
                     s_hulls.RemoveAt(i);
         }
 
-        /// <summary>A shot flew from <paramref name="from"/> to <paramref name="to"/>: the smoke parts round it.</summary>
-        public static void Cut(Vector3 from, Vector3 to, float radius)
+        /// <summary>
+        /// A shot flew from <paramref name="from"/> to <paramref name="to"/>: the smoke parts round it.
+        /// <paramref name="source"/> is the weapon that fired it: the smoke of that very shot lets it through.
+        /// </summary>
+        /// <param name="push">Speed (m/s) the smoke is thrown out of the tunnel with; 0 — the default.</param>
+        public static void Cut(Vector3 from, Vector3 to, float radius, object source = null, float push = 0f)
         {
             Prune();
-            s_cuts.Add(new Segment { From = from, To = to, Radius = radius, Frame = Time.frameCount });
+            s_cuts.Add(new Segment
+            {
+                From = from, To = to, Radius = radius, Frame = Time.frameCount, Source = source,
+                Push = push > 0f ? push : CUT_PUSH
+            });
         }
 
         /// <summary>A blast: the smoke within <paramref name="radius"/> is blown away from it.</summary>
@@ -85,16 +108,50 @@ namespace Game
         /// <summary>
         /// Moves and redirects the cubes [0, count) by what is round them: hulls, walls, cuts, blasts.
         /// A cube whose <paramref name="busy"/> entry is above 0 moves on its own and is left alone.
+        /// A cube whose <paramref name="shot"/> entry equals <paramref name="ownShot"/> is the smoke of
+        /// <paramref name="source"/>'s latest shot: that weapon's own shell flies through it without parting it.
         /// </summary>
         public static void Apply(Vector3[] position, Vector3[] velocity, float[] size, int count, float deltaTime,
-            bool walls, bool hulls, float[] busy = null)
+            bool walls, bool hulls, float[] busy = null, object source = null, int[] shot = null, int ownShot = 0)
         {
             if (count == 0 || deltaTime <= 0f)
                 return;
 
+            using (ApplyMarker.Auto())
+                ApplyCubes(position, velocity, size, count, deltaTime, walls, hulls, busy, source, shot, ownShot);
+        }
+
+        private static readonly ProfilerMarker ApplyMarker = new("Smoke.PuffField");
+
+        private static void ApplyCubes(Vector3[] position, Vector3[] velocity, float[] size, int count, float deltaTime,
+            bool walls, bool hulls, float[] busy, object source, int[] shot, int ownShot)
+        {
             int frame = Time.frameCount;
             Prune();
             bool events = s_cuts.Count > 0 || s_blasts.Count > 0;
+
+            // Once a call, not once a cube: the hulls that are on, with their world boxes, and each cut's box. A cube
+            // outside a box is out of its reach (the exact test below is the same as before, only skipped then).
+            s_liveHulls.Clear();
+            if (hulls)
+                for (int h = 0; h < s_hulls.Count; h++)
+                {
+                    BoxCollider box = s_hulls[h].Box;
+                    if (box == null || !box.enabled || !box.gameObject.activeInHierarchy)
+                        continue;
+                    Bounds b = box.bounds;
+                    s_liveHulls.Add(new LiveHull { Hull = s_hulls[h], Min = b.min, Max = b.max });
+                }
+
+            s_cutMin.Clear();
+            s_cutMax.Clear();
+            for (int c = 0; c < s_cuts.Count; c++)
+            {
+                Segment cut = s_cuts[c];
+                Vector3 r = new(cut.Radius, cut.Radius, cut.Radius);
+                s_cutMin.Add(Vector3.Min(cut.From, cut.To) - r);
+                s_cutMax.Add(Vector3.Max(cut.From, cut.To) + r);
+            }
 
             for (int i = 0; i < count; i++)
             {
@@ -105,16 +162,31 @@ namespace Game
                 Vector3 v = velocity[i];
                 float half = size != null ? size[i] * 0.5f : 0.1f;
 
-                if (hulls)
+                // The hull's own pad is (half + SKIN) along each of its axes; turned, that reaches up to √3 times as
+                // far along a world axis.
+                float pad = (half + SKIN) * 1.75f;
+                for (int h = 0; h < s_liveHulls.Count; h++)
                 {
-                    for (int h = 0; h < s_hulls.Count; h++)
-                        PushOutOfHull(s_hulls[h], ref p, ref v, half);
+                    LiveHull live = s_liveHulls[h];
+                    if (p.x < live.Min.x - pad || p.y < live.Min.y - pad || p.z < live.Min.z - pad ||
+                        p.x > live.Max.x + pad || p.y > live.Max.y + pad || p.z > live.Max.z + pad)
+                        continue;
+                    PushOutOfHull(live.Hull, ref p, ref v, half);
                 }
 
                 if (events)
                 {
-                    foreach (Segment cut in s_cuts)
+                    bool own = source != null && shot != null && shot[i] == ownShot;
+                    for (int c = 0; c < s_cuts.Count; c++)
                     {
+                        Vector3 lo = s_cutMin[c], hi = s_cutMax[c];
+                        if (p.x < lo.x || p.y < lo.y || p.z < lo.z || p.x > hi.x || p.y > hi.y || p.z > hi.z)
+                            continue;
+
+                        Segment cut = s_cuts[c];
+                        if (own && ReferenceEquals(cut.Source, source))
+                            continue;
+
                         Vector3 closest = Closest(cut.From, cut.To, p);
                         Vector3 away = p - closest;
                         float d = away.magnitude;
@@ -122,7 +194,7 @@ namespace Game
                         {
                             Vector3 dir = d > 1e-4f ? away / d : Random.onUnitSphere;
                             p = closest + dir * cut.Radius;
-                            v += dir * CUT_PUSH;
+                            v += dir * cut.Push;
                         }
                     }
 

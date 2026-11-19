@@ -59,6 +59,18 @@ namespace Game
         [SerializeField] private float _gunHoldTime = 0.12f;
         [Tooltip("Seconds the recuperator takes to run the barrel back into battery.")]
         [SerializeField] private float _gunReturnTime = 0.8f;
+        [Tooltip("Most the visible gun nods on its trunnion (degrees) as the hull rocks.")]
+        [SerializeField, Min(0f)] private float _gunSwayLimit = 12f;
+        [Tooltip("The gun's own swing on the trunnion (Hz).")]
+        [SerializeField, Min(0.1f)] private float _gunSwayFrequency = 1.4f;
+        [Tooltip("How fast the swing dies: 1 — no overshoot.")]
+        [SerializeField, Range(0f, 1.5f)] private float _gunSwayDamping = 0.14f;
+        [Tooltip("Share of the hull's change of pitch the gun lags behind (0 — none, 1 — all).")]
+        [SerializeField, Range(0f, 1f)] private float _gunSwayInertia = 0.35f;
+        [Tooltip("Barrel tip per vertical jolt (rad per m/s² of the trunnion's acceleration).")]
+        [SerializeField, Min(0f)] private float _gunSwayHeave = 0.004f;
+        [Tooltip("Nod per m/s² along the barrel (rad): up when speeding up, down when braking.")]
+        [SerializeField, Min(0f)] private float _gunSwaySurge = 0.015f;
         [Tooltip("Pooled burst (HitEffectInstaller) put at the cannon's muzzle on every shot: flash, flame, smoke.")]
         [SerializeField] private MonoEntity _muzzleSmoke;
         [Tooltip("Smoke still trickling out of the barrel after a shot; restarted on every shot.")]
@@ -74,7 +86,7 @@ namespace Game
         [SerializeField] private Transform _cameraPoint;
         [Tooltip("Camera offset multiplier while driving: 1.1 sits the camera a tenth further out.")]
         [SerializeField] private float _cameraDistance = 1.1f;
-        [SerializeField] private int _health = 400;
+        [SerializeField] private int _health = 1000;
 
         [Header("Suspension")]
         [Tooltip("Where each road wheel's spring hangs from, on the hull. The ray starts here.")]
@@ -166,7 +178,8 @@ namespace Game
             entity.AddTurretPivot(_turretPivot);
             if (_turretVisual != null)
                 entity.AddTurretVisual(_turretVisual);
-            entity.AddTurretRotationSpeed(new Const<float>(_turretSpeed));
+            // A variable, not a constant: the loadout (LoadoutApplyUseCase) sets it.
+            entity.AddTurretRotationSpeed(new ReactiveFloat(_turretSpeed));
 
             // Combat: the cannon is a weapon entity of its own; the tank fires it only while
             // somebody drives it and the hull is intact.
@@ -219,8 +232,14 @@ namespace Game
             entity.AddBehaviour<TurretAimBehaviour>();
             entity.AddBehaviour(new TankRecoilBehaviour(_recoilImpulse));
             if (_gunVisual != null)
+            {
                 entity.AddBehaviour(new GunRecoilBehaviour(_gunVisual, _gunRecoilDistance, _gunKickTime, _gunHoldTime,
                     _gunReturnTime));
+                // The gun nods on its trunnion with the hull's rocking (visual only; the fire point stays level).
+                if (_gunSwayLimit > 0f)
+                    entity.AddBehaviour(new TankGunSwayBehaviour(_gunVisual, _gunSwayLimit, _gunSwayFrequency,
+                        _gunSwayDamping, _gunSwayInertia, _gunSwayHeave, _gunSwaySurge));
+            }
             entity.AddBehaviour(new TankMuzzleSmokeBehaviour(gameContext, _muzzleSmoke, _muzzleWisp, _voxelMuzzleSmoke));
             entity.AddBehaviour(new TankVoxelMuzzleSmokeBehaviour(_voxelMuzzleSmoke));
             if (_hullCollider != null)

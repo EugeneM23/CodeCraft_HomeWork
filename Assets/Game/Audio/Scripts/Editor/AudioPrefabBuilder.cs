@@ -9,7 +9,8 @@ namespace Game.AudioEngine.Adapters.EditorTools
 {
     /// <summary>
     /// Tools/Audio/Build Prefabs: Resources/GameAudio (AudioSystem with the six banks + GameAudio) and
-    /// Prefabs/AppAudio (AppAudio with its UI sound player, music player and stinger source). Idempotent: an
+    /// Prefabs/AppAudio (AppAudio with its UI sound player, music player, stinger source and the three battle
+    /// layer sources). Idempotent: an
     /// existing prefab is opened, completed and rewired, never recreated, so its file ids stay put.
     /// </summary>
     public static class AudioPrefabBuilder
@@ -20,6 +21,9 @@ namespace Game.AudioEngine.Adapters.EditorTools
         private const string UI_PLAYER_CHILD = "UISoundPlayer";
         private const string MUSIC_PLAYER_CHILD = "MusicPlayer";
         private const string STINGER_CHILD = "Stinger";
+        private const string CALM_CHILD = "BattleCalm";
+        private const string HORDE_CHILD = "BattleHorde";
+        private const string PEAK_CHILD = "BattlePeak";
 
         [MenuItem(MENU, priority = 3)]
         public static void BuildFromMenu() => Build();
@@ -120,6 +124,11 @@ namespace Game.AudioEngine.Adapters.EditorTools
             AudioSource stingerSource = Ensure<AudioSource>(stingerChild);
             Configure(stingerSource, musicGroup);
 
+            // The battle layers loop on their own sources; LayeredMusic sets the same again at runtime.
+            AudioSource calmSource = EnsureLayerSource(root, CALM_CHILD, musicGroup);
+            AudioSource hordeSource = EnsureLayerSource(root, HORDE_CHILD, musicGroup);
+            AudioSource peakSource = EnsureLayerSource(root, PEAK_CHILD, musicGroup);
+
             SerializedObject serialized = new SerializedObject(appAudio);
             serialized.FindProperty("_mixer").objectReferenceValue = mixer;
             serialized.FindProperty("_uiSoundPlayer").objectReferenceValue = uiPlayer;
@@ -134,7 +143,28 @@ namespace Game.AudioEngine.Adapters.EditorTools
                 AssetDatabase.LoadAssetAtPath<MusicCatalog>(AudioAssetPaths.MENU_MUSIC);
             serialized.FindProperty("_battleMusic").objectReferenceValue =
                 AssetDatabase.LoadAssetAtPath<MusicCatalog>(AudioAssetPaths.BATTLE_MUSIC);
+            serialized.FindProperty("_hangarMusic").objectReferenceValue =
+                AssetDatabase.LoadAssetAtPath<MusicCatalog>(AudioAssetPaths.HANGAR_MUSIC);
+            serialized.FindProperty("_eliteMusic").objectReferenceValue =
+                AssetDatabase.LoadAssetAtPath<MusicCatalog>(AudioAssetPaths.ELITE_MUSIC);
+            serialized.FindProperty("_battleCalm").objectReferenceValue =
+                AssetDatabase.LoadAssetAtPath<MusicCatalog>(AudioAssetPaths.BATTLE_CALM);
+            serialized.FindProperty("_battleHorde").objectReferenceValue =
+                AssetDatabase.LoadAssetAtPath<MusicCatalog>(AudioAssetPaths.BATTLE_HORDE);
+            serialized.FindProperty("_battlePeak").objectReferenceValue =
+                AssetDatabase.LoadAssetAtPath<MusicCatalog>(AudioAssetPaths.BATTLE_PEAK);
+            serialized.FindProperty("_calmSource").objectReferenceValue = calmSource;
+            serialized.FindProperty("_hordeSource").objectReferenceValue = hordeSource;
+            serialized.FindProperty("_peakSource").objectReferenceValue = peakSource;
             serialized.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        private static AudioSource EnsureLayerSource(GameObject root, string name, AudioMixerGroup musicGroup)
+        {
+            AudioSource source = Ensure<AudioSource>(EnsureChild(root, name));
+            Configure(source, musicGroup);
+            source.loop = true;
+            return source;
         }
 
         /// <summary>A 2D source that plays only when told to and keeps playing through AudioListener.pause.</summary>

@@ -7,9 +7,14 @@
         "Atomic.Entities",
         "UnityEngine.UI",
         "Game.Voxels",
+        "Game.Voxels.Editor",
+        "Unity.Collections",
+        "Unity.Mathematics",
         "Unity.TextMeshPro",
         "Unity.InputSystem",
-        "ScreenStack"
+        "ScreenStack",
+        "Unity.RenderPipelines.Core.Runtime",
+        "Unity.RenderPipelines.Universal.Runtime"
     ],
     "includePlatforms": [
         "Editor"

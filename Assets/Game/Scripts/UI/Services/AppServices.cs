@@ -73,7 +73,7 @@ namespace Game
             get
             {
                 if (s_progress != null) return s_progress;
-                if (AppContext.TryGet(out AppContext app) && app.TryGetProgress(out PlayerProgress progress)) return progress;
+                if (AppContext.TryGet(out AppContext app) && app.TryGetProgress(out IPlayerProgress progress)) return progress;
                 return s_stubProgress ??= new JsonPlayerProgress();
             }
             set => s_progress = value;

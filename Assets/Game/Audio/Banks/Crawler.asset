@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 71c59311ed514f81aa536eb0ff91b011, type: 3}
+  m_Name: Crawler
+  m_EditorClassIdentifier: AudioEngine::AudioEngine.AudioBank
+  identifier: crawler
+  codeGenPath: Assets/Game/Audio/Banks
+  eventParameters:
+  - identifier: pack_loop
+    value: {fileID: 11400000, guid: e8e75295d9c348948a50c521f81231ab, type: 2}
+  - identifier: bite
+    value: {fileID: 11400000, guid: 11b4e890531c81b4c801a82bb8b8fa74, type: 2}
+  - identifier: death
+    value: {fileID: 11400000, guid: 2211788fdf660a849831c5113a3a614a, type: 2}
+  boolParameters: []
+  intParameters: []
+  floatParameters:
+  - identifier: alive
+    value: 0
+  callbacks: []

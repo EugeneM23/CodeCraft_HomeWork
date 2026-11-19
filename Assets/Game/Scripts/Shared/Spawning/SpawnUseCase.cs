@@ -30,8 +30,17 @@ namespace Game
             bulletTransform.SetPositionAndRotation(firePoint.position, GetSpreadRotation(weapon, firePoint));
             bullet.GetMoveDirection().Value = bulletTransform.forward;
 
-            // A pooled bullet keeps the bounces of its previous flight.
-            if (bullet.HasRicochetCount())
+            // The body too: an interpolated body is drawn from its own pose, so a re-rented bullet showed up for a
+            // frame where its last flight ended and streaked its trail from there, not from the muzzle.
+            if (bullet.TryGetRiggedBody(out Rigidbody body) && body != null)
+            {
+                body.position = bulletTransform.position;
+                body.rotation = bulletTransform.rotation;
+            }
+
+            // A pooled bullet keeps the bounces of its previous flight. RicochetCount is a plain int key: every
+            // write boxes a new one (20 B a shot), so it is reset only when the last flight bounced.
+            if (bullet.HasRicochetCount() && bullet.GetRicochetCount() != 0)
                 bullet.SetRicochetCount(0);
 
             PassThroughShooter(bullet, weapon);

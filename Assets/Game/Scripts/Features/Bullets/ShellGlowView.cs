@@ -5,7 +5,8 @@ namespace Game
     /// <summary>
     /// Experiment: the tank shell as a glowing box, like a voxel slug. The box is an unlit HDR
     /// colour (brighter than 1, so Bloom picks it up); its trail takes the same colour. Every field
-    /// applies live in the inspector, in Play too.
+    /// applies live in the inspector, in Play too. The machine gun's bullet (Bullet_02) wears it too:
+    /// a thin long yellow bar. Its size is in the box's parent's space (Bullet_02's root is scaled 0.61).
     /// </summary>
     [ExecuteAlways]
     public sealed class ShellGlowView : MonoBehaviour
@@ -32,7 +33,14 @@ namespace Game
 
         private MaterialPropertyBlock _block;
 
-        private void OnEnable() => Apply();
+        private void OnEnable()
+        {
+            Apply();
+
+            // Rented again from the pool: the trail must not streak from where the last flight ended.
+            if (_trail != null && Application.isPlaying)
+                _trail.Clear();
+        }
 
         private void OnValidate() => Apply();
 

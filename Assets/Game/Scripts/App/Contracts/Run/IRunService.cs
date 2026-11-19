@@ -52,10 +52,23 @@ namespace Game
         event Action<bool> ShutterChanged;
 
         /// <summary>
-        /// A new level (the level number). An offer of skills is ready; the core has paused the game loop and resumes
-        /// it after the last ChooseSkill of the queue. The menu shows the cards.
+        /// A new level (the level number), for the sounds and the HUD. With a skill screen listening to SkillOffered the
+        /// game loop is paused until its ChooseSkill; without one the skill is already being taken at once.
         /// </summary>
         event Action<int> LevelUp;
+
+        /// <summary>
+        /// The skill screen's event: an offer of up to 3 skills waits for <see cref="ChooseSkill"/>. Subscribe only if
+        /// you show the cards and call ChooseSkill. While anyone listens, a level-up pauses the game loop and waits for the
+        /// choice; with nobody listening (no skill screen in the level — the sandbox) the run takes a skill from the
+        /// offer at once, nothing pauses, and LevelUp and SkillChanged still fire. The default implementation (for
+        /// stand-ins of this interface) never raises it.
+        /// </summary>
+        event Action<IReadOnlyList<SkillId>> SkillOffered
+        {
+            add { }
+            remove { }
+        }
 
         /// <summary>A skill was taken or levelled up (the skill, its new level 1..5).</summary>
         event Action<SkillId, int> SkillChanged;

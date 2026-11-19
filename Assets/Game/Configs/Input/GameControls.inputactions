@@ -13,7 +13,8 @@
                 { "name": "ResetCamera", "type": "Button", "id": "6a1d0000-0000-4000-8000-000000000106", "expectedControlType": "Button", "processors": "", "interactions": "", "initialStateCheck": false },
                 { "name": "Pause", "type": "Button", "id": "6a1d0000-0000-4000-8000-000000000107", "expectedControlType": "Button", "processors": "", "interactions": "", "initialStateCheck": false },
                 { "name": "ToggleHints", "type": "Button", "id": "6a1d0000-0000-4000-8000-000000000108", "expectedControlType": "Button", "processors": "", "interactions": "", "initialStateCheck": false },
-                { "name": "ToggleDebug", "type": "Button", "id": "6a1d0000-0000-4000-8000-000000000109", "expectedControlType": "Button", "processors": "", "interactions": "", "initialStateCheck": false }
+                { "name": "ToggleDebug", "type": "Button", "id": "6a1d0000-0000-4000-8000-000000000109", "expectedControlType": "Button", "processors": "", "interactions": "", "initialStateCheck": false },
+                { "name": "Special", "type": "Button", "id": "6a1d0000-0000-4000-8000-00000000010a", "expectedControlType": "Button", "processors": "", "interactions": "", "initialStateCheck": false }
             ],
             "bindings": [
                 { "name": "WASD", "id": "6a1d0000-0000-4000-8000-000000001001", "path": "2DVector(mode=1)", "interactions": "", "processors": "", "groups": "", "action": "Drive", "isComposite": true, "isPartOfComposite": false },
@@ -34,7 +35,8 @@
                 { "name": "", "id": "6a1d0000-0000-4000-8000-000000001015", "path": "<Mouse>/middleButton", "interactions": "", "processors": "", "groups": "", "action": "ResetCamera", "isComposite": false, "isPartOfComposite": false },
                 { "name": "", "id": "6a1d0000-0000-4000-8000-000000001016", "path": "<Keyboard>/escape", "interactions": "", "processors": "", "groups": "", "action": "Pause", "isComposite": false, "isPartOfComposite": false },
                 { "name": "", "id": "6a1d0000-0000-4000-8000-000000001017", "path": "<Keyboard>/f1", "interactions": "", "processors": "", "groups": "", "action": "ToggleHints", "isComposite": false, "isPartOfComposite": false },
-                { "name": "", "id": "6a1d0000-0000-4000-8000-000000001018", "path": "<Keyboard>/f3", "interactions": "", "processors": "", "groups": "", "action": "ToggleDebug", "isComposite": false, "isPartOfComposite": false }
+                { "name": "", "id": "6a1d0000-0000-4000-8000-000000001018", "path": "<Keyboard>/f3", "interactions": "", "processors": "", "groups": "", "action": "ToggleDebug", "isComposite": false, "isPartOfComposite": false },
+                { "name": "", "id": "6a1d0000-0000-4000-8000-00000000101a", "path": "<Keyboard>/e", "interactions": "", "processors": "", "groups": "", "action": "Special", "isComposite": false, "isPartOfComposite": false }
             ]
         },
         {

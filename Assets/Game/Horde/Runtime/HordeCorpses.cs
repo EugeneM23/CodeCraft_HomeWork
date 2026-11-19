@@ -43,6 +43,9 @@ namespace Game.Horde
             set => _renderer.CastShadows = value;
         }
 
+        /// <summary>Model scale and tint of this ring's corpses (see <see cref="HordeRenderer.SetLook"/>).</summary>
+        public void SetLook(float scale, Color tint, Color emission) => _renderer.SetLook(scale, tint, emission);
+
         /// <summary>A corpse at <paramref name="position"/> facing <paramref name="heading"/>, born at <paramref name="time"/>.</summary>
         public void Add(float3 position, float heading, float time)
         {

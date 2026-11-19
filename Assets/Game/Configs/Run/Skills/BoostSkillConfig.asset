@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b017694063b77145bb3bc348252243e, type: 3}
+  m_Name: BoostSkillConfig
+  m_EditorClassIdentifier: Game::Game.SkillConfig
+  _id:
+    _value: boost
+  _group: 2
+  _displayName: "\u0424\u043E\u0440\u0441\u0430\u0436"
+  _description: "\u0421\u043A\u043E\u0440\u043E\u0441\u0442\u044C \u043D\u0430 Shift
+    +15 %."
+  _perLevel: +10 %.
+  _icon: {fileID: 0}
+  _inPool: 0

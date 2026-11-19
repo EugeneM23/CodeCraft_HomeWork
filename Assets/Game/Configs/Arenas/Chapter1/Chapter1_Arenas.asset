@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ee42d05e60932540967a7f98cc08b4f, type: 3}
+  m_Name: Chapter1_Arenas
+  m_EditorClassIdentifier: Game::Game.Arenas.ArenaChapter
+  _id:
+    _value: outskirts
+  _arenas:
+  - {fileID: 11400000, guid: f1d90673ccf613348bc6f6d770bc0e2f, type: 2}
+  - {fileID: 11400000, guid: 2725ed96919946f4db120e1079df65c8, type: 2}
+  - {fileID: 11400000, guid: 1263225bf72d8c345b7afd7b0e58e254, type: 2}
+  - {fileID: 11400000, guid: a94bc25f125af1242bfb0654ea859a93, type: 2}
+  - {fileID: 11400000, guid: 9940547e92a4252408739d88e67bf4b2, type: 2}

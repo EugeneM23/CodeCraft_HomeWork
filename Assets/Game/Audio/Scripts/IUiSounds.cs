@@ -11,5 +11,8 @@ namespace Game.AudioEngine.Adapters
         void Error();
         void Victory();
         void Defeat();
+
+        /// <summary>Any key of the UI catalog (<see cref="AudioKeys.UI"/>); a key without a clip stays silent.</summary>
+        void Play(string key);
     }
 }

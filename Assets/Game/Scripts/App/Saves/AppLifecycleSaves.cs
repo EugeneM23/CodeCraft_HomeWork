@@ -11,9 +11,9 @@ namespace Game
     public sealed class AppLifecycleSaves : MonoBehaviour
     {
         private SettingsStore _settings;
-        private PlayerProgress _progress;
+        private MetaProgress _progress;
 
-        public void Bind(SettingsStore settings, PlayerProgress progress)
+        public void Bind(SettingsStore settings, MetaProgress progress)
         {
             _settings = settings;
             _progress = progress;

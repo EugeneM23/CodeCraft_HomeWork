@@ -37,6 +37,9 @@ namespace Game
                 context.AddBehaviour(new CombatPoolPrewarm(_prewarmPerFrame, _prewarmFrameBudgetMs, _prewarmMaxPerPrefab));
 
             context.AddEnemyFilter(new EntityFilter(_entityWorld, static entity => entity.HasEnemyTag()));
+
+            // Combat systems of milestone 1: enemy targets, experience, skills, modules, smoke (Features/Combat).
+            context.AddBehaviour(new CombatBehaviour());
         }
     }
 }

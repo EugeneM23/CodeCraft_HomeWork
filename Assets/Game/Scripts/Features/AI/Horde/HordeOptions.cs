@@ -11,10 +11,10 @@ namespace Game.AIKit.Adapters
         [Tooltip("Monster slots: the most that can live at once.")]
         public int capacity = 8192;
 
-        [Tooltip("Monsters kept alive from the start; the dead are replaced far from the tank. 0: no respawn.")]
+        [Tooltip("Crawlers kept alive from the start; the dead are replaced far from the tank. 0: no respawn (an arena's director spawns).")]
         public int population;
 
-        [Tooltip("New monsters appear at least this far from the tank, m.")]
+        [Tooltip("New monsters of the population appear at least this far from the tank, m.")]
         public float spawnDistance = 15f;
 
         [Tooltip("Spawns per frame at most (keeps a big wave from stalling one frame).")]
@@ -30,23 +30,34 @@ namespace Game.AIKit.Adapters
 
         public float rayLength = 30f;
 
-        [Tooltip("Walking speed, m/s (each monster ± 20 %).")]
-        public float speed = 4.5f;
+        [Tooltip("Kind row 0: the Crawler (GDD §5).")]
+        public HordeKindOptions crawler = HordeKindOptions.From(HordeKind.Crawler);
 
-        [Tooltip("Damage per second of one monster clawing the hull; 0 makes the tank immune.")]
-        public float attackDps = 2f;
+        [Tooltip("Kind row 1: the Spitter (GDD §5).")]
+        public HordeKindOptions spitter = HordeKindOptions.From(HordeKind.Spitter);
 
-        [Tooltip("Tank speed above which it crushes the monsters under the hull, m/s.")]
+        [Tooltip("Kind row 2: the big Regax of arena 5 (EliteRegax).")]
+        public HordeKindOptions brute = HordeKindOptions.From(HordeKind.Brute);
+
+        [Tooltip("Neighbours closer than this push each other apart, m: small keeps the crowd a dense mass round the hull.")]
+        public float separation = 0.9f;
+
+        [Tooltip("Scale of every monster's damage to the tank: bites and acid (0 makes the tank immune: benchmarks).")]
+        public float tankDamageScale = 1f;
+
+        [Tooltip("Horizontal tank speed from which the hull crushes the monsters under it, m/s (GDD §4).")]
         public float crushSpeed = 1.5f;
 
-        public float health = 100f;
+        [Tooltip("Seconds a monster takes to climb out of its burrow.")]
+        public float emergeTime = 1f;
 
-        [Tooltip("Damage of a blast at its centre (half at its edge).")]
-        public float explosionDamage = 200f;
+        [Tooltip("Knockback of a blast (ExplosionEvents.Exploded) at its centre, m. Blast damage comes from the weapons (the target source).")]
+        public float explosionPush = 1.5f;
 
         [Tooltip("Crowd casts shadows. Off by default: see the horde measurement.")]
         public bool castShadows;
 
+        [Tooltip("Corpses per kind lying at once (a ring: the oldest goes first).")]
         public int corpseCapacity = 512;
 
         [Tooltip("Corpses lie this long, then sink, s.")]
@@ -59,15 +70,27 @@ namespace Game.AIKit.Adapters
 
         public int bloodDrops = 10;
 
-        /// <summary>Simulation tuning from these options.</summary>
+        [Tooltip("Acid hits on the ground per frame that get a small splash.")]
+        public int acidSplashPerFrame = 2;
+
+        public int acidSplashDrops = 6;
+
+        /// <summary>Simulation tuning from these options (the kinds are set apart, <see cref="Kind"/>).</summary>
         public HordeSettings ToSettings()
         {
             HordeSettings s = HordeSettings.Default;
-            s.Speed = speed;
-            s.AttackDps = attackDps;
+            HordeKind crawlerKind = crawler.ToKind();
+            s.Speed = crawlerKind.Speed;
+            s.Health = crawlerKind.Health;
+            s.Radius = crawlerKind.Radius;
+            s.AttackDps = crawlerKind.BiteDps;
             s.CrushSpeed = crushSpeed;
-            s.Health = health;
+            s.EmergeTime = emergeTime;
+            s.SeparationRadius = separation;
             return s;
         }
+
+        /// <summary>The kind table's row <paramref name="row"/> (<see cref="HordeKinds"/>).</summary>
+        public HordeKind Kind(int row) => (row == HordeKinds.SPITTER ? spitter : row == HordeKinds.BRUTE ? brute : crawler).ToKind();
     }
 }

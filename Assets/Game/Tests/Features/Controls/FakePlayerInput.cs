@@ -14,5 +14,6 @@ namespace Game.Tests
         public bool ResetLookPressed { get; set; }
         public bool FreeCursorPressed { get; set; }
         public bool HoldCursorPressed { get; set; }
+        public bool SpecialPressed { get; set; }
     }
 }

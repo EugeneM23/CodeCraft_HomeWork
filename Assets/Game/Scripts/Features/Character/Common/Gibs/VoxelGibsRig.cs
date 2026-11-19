@@ -16,6 +16,15 @@ namespace Game
         public Transform SpineTo;
         public Transform LeftMarker;
 
+        /// <summary>The bone segments of <see cref="Parts"/>, found once (SkinnedVoxelizer.Begin reads only their positions).</summary>
+        public SkinnedVoxelizer.Skeleton Segments;
+
+        /// <summary>What poses the skin: held still while the flesh is made (VoxelGibs), so the pose shown is the one voxelized.</summary>
+        public Animator Animator;
+
+        /// <summary>Name of the piece of each cluster id: made once, not per death.</summary>
+        public string[] PieceNames;
+
         /// <summary>The skin material's colour: Regax's M_Rapax 1 is a plain Standard with no texture.</summary>
         public Color SkinColor
         {
@@ -64,8 +73,22 @@ namespace Game
                 Parts = parts,
                 SpineFrom = Find(config.spineFrom),
                 SpineTo = Find(config.spineTo),
-                LeftMarker = Find(config.leftMarker)
+                LeftMarker = Find(config.leftMarker),
+                Segments = SkinnedVoxelizer.Skeleton.Of(parts),
+                Animator = skin != null && skin.GetComponentInParent<Animator>() is { } animator
+                    ? animator
+                    : skeleton.GetComponentInParent<Animator>(),
+                PieceNames = Names(skin != null ? skin.name : skeleton.name, parts.Length)
             };
+        }
+
+        /// <summary>One name per cluster id (a cluster is named by one of its parts' index, so below the part count).</summary>
+        private static string[] Names(string body, int parts)
+        {
+            var names = new string[System.Math.Max(1, parts)];
+            for (int c = 0; c < names.Length; c++)
+                names[c] = $"{body}_{VoxelGibs.NAME}_{c}";
+            return names;
         }
 
         /// <summary>

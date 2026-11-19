@@ -22,7 +22,11 @@ namespace Game.Voxels
         /// <returns>How many voxels were taken out.</returns>
         /// <param name="ignore">Bodies under this transform are spared (a vehicle ramming with its own skin).</param>
         /// <param name="terrain">False: the ground is spared (a ram bites walls, not the earth under them).</param>
-        public static int Blast(Vector3 point, float radius, float force, Transform ignore = null, bool terrain = true)
+        public static int Blast(Vector3 point, float radius, float force, Transform ignore = null, bool terrain = true) =>
+            Blast(point, radius, force, ignore, terrain, BLAST_DEBRIS);
+
+        /// <param name="debris">Most debris cubes the bite throws, shared by the bodies it reaches.</param>
+        public static int Blast(Vector3 point, float radius, float force, Transform ignore, bool terrain, int debris)
         {
             IReadOnlyList<VoxelBody> bodies = VoxelWorld.Bodies;
             if (bodies.Count == 0 || radius <= 0f)
@@ -46,7 +50,7 @@ namespace Game.Voxels
             if (Hit.Count == 0)
                 return 0;
 
-            int budget = BLAST_DEBRIS / Hit.Count;
+            int budget = debris / Hit.Count;
             int total = 0;
             foreach (VoxelBody body in Hit)
                 if (body != null)
@@ -129,10 +133,35 @@ namespace Game.Voxels
         /// <summary>
         /// A bullet chips a small bite just under the surface it struck.
         /// </summary>
-        public static int Impact(Vector3 point, Vector3 direction, float radius, float force = 2.5f)
+        /// <summary>
+        /// A bullet punches through a plate: the bite is centred a little in front of the surface, so its
+        /// chips are thrown away from that centre — in, along the shot, through the hole — and the hole opens
+        /// right where it struck.
+        /// </summary>
+        /// <param name="body">Only this body is bitten (what the bullet struck): a crewman behind intact armour is
+        /// not hurt by a bite that reaches him through it. Null — every body in reach, as a blast.</param>
+        public static int Punch(Vector3 point, Vector3 direction, float radius, float force, int debris,
+            VoxelBody body = null)
         {
+            Vector3 along = direction.sqrMagnitude > 0.0001f ? direction.normalized : Vector3.zero;
+            // 5 cm out: tough armour shrinks the bite to about half its radius, which still reaches well through.
+            Vector3 centre = point - along * Mathf.Min(radius * 0.3f, 0.05f);
+            if (body == null)
+                return Blast(centre, radius, force, null, true, debris);
+            if (!body.IsCreated || body.SolidCount == 0)
+                return 0;
+            int taken = body.CarveSphere(centre, radius, force, debris);
+            VoxelSignals.RaiseCarved(centre, radius, taken);
+            return taken;
+        }
+
+        public static int Impact(Vector3 point, Vector3 direction, float radius, float force = 2.5f,
+            int debris = BLAST_DEBRIS)
+        {
+            // Centred just under the surface it struck: half the radius in put a big bite behind thin armour, so
+            // the hole opened past where the bullet hit.
             Vector3 inward = direction.sqrMagnitude > 0.0001f ? direction.normalized : Vector3.zero;
-            return Blast(point + inward * (radius * 0.5f), radius, force);
+            return Blast(point + inward * Mathf.Min(radius * 0.5f, 0.04f), radius, force, null, true, debris);
         }
     }
 }

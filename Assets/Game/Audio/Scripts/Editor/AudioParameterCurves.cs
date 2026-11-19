@@ -42,6 +42,10 @@ namespace Game.AudioEngine.Adapters.EditorTools
             new(AudioKeys.Tank.TURRET_LOOP, AudioKeys.Tank.TURRET, 1f, 1f, 0f, 1f),
             // One-shot: a light graze is a quiet, higher thud, a full dig a loud, deep one.
             new(AudioKeys.Tank.PLOUGH, AudioKeys.Tank.PLOUGH_STRENGTH, 1.15f, 0.85f, 0.35f, 1f),
+            // One-shots: a streak of crushes climbs an octave, pickups climb an octave in 12 semitone steps.
+            new(AudioKeys.Tank.CRUSH_STREAK, AudioKeys.Tank.CRUSH_STREAK_LEVEL, 1f, 2f, 0.6f, 1f),
+            new(AudioKeys.Run.XP_PICKUP, AudioKeys.Run.XP_STREAK, 1f, 2f, 1f, 1f),
+            new(AudioKeys.Crawler.PACK_LOOP, AudioKeys.Crawler.ALIVE, 1f, 1f, 0f, 1f),
             new(AudioKeys.World.RAIN_LOOP, AudioKeys.World.RAIN, 1f, 1f, 0f, 1f),
             new(AudioKeys.Horde.CROWD_LOOP, AudioKeys.Horde.DENSITY, 1f, 1f, 0f, 1f),
         };

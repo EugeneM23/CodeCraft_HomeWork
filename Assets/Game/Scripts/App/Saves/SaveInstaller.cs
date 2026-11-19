@@ -6,8 +6,10 @@ namespace Game
 {
     /// <summary>
     /// Settings and progress of the app: loads both from disk, applies the graphics, puts the services into the context
-    /// and starts the autosave on the AppTicker. Stands after AppInstaller in the installer list (it needs AppTicker
-    /// and, if present, GameFlow).
+    /// and starts the autosave on the AppTicker. The progress is one <see cref="MetaProgress"/> under two keys:
+    /// MetaProgress (IMetaProgress, the run and the new screens) and Progress (the legacy IPlayerProgress of the old
+    /// menu). Stands after AppInstaller in the installer list (it needs the GameCatalog, AppTicker and, if present,
+    /// GameFlow).
     /// </summary>
     public sealed class SaveInstaller : MonoEntityInstaller<AppContext>
     {
@@ -18,9 +20,10 @@ namespace Game
         private AppLifecycleSaves _lifecycle;
 
         private SettingsStore _settings;
-        private PlayerProgress _progress;
+        private MetaProgress _progress;
         private ProgressAutosave _autosave;
         private AppTicker _ticker;
+        private GameCatalog _fallbackCatalog;
 
         public override void Install(AppContext context)
         {
@@ -31,10 +34,19 @@ namespace Game
             _settings.Load();
             _settings.Apply();
 
-            _progress = new PlayerProgress(SaveStores.Progress(), SaveStores.GameVersion);
+            if (!context.TryGetGameCatalog(out GameCatalog catalog) || catalog == null)
+            {
+                Debug.LogError("SaveInstaller: no GameCatalog in the context, the progress has an empty catalog " +
+                               "(nothing owned or for sale). Put AppInstaller with its catalog before SaveInstaller.", this);
+                _fallbackCatalog = ScriptableObject.CreateInstance<GameCatalog>();
+                catalog = _fallbackCatalog;
+            }
+
+            _progress = new MetaProgress(SaveStores.Progress(), SaveStores.GameVersion, catalog);
             _progress.Load();
 
             context.AddSettings(_settings);
+            context.AddMetaProgress(_progress);
             context.AddProgress(_progress);
 
             context.TryGetGameFlow(out GameFlow flow);
@@ -72,9 +84,16 @@ namespace Game
                 _lifecycle.Bind(null, null);
 
             context.DelSettings();
+            context.DelMetaProgress();
             context.DelProgress();
             _settings = null;
             _progress = null;
+
+            if (_fallbackCatalog != null)
+            {
+                Destroy(_fallbackCatalog);
+                _fallbackCatalog = null;
+            }
         }
     }
 }

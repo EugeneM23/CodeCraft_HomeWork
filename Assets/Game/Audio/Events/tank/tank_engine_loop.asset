@@ -54,7 +54,7 @@ MonoBehaviour:
     - rid: 4166356712695005780
       type: {class: ClipConst, ns: AudioEngine, asm: AudioEngine}
       data:
-        clip: {fileID: 0}
+        clip: {fileID: 8300000, guid: 4a80133638ed68b41b2742a73016c471, type: 3}
     - rid: 4166356712695005783
       type: {class: FloatConst, ns: AudioEngine, asm: AudioEngine}
       data:
