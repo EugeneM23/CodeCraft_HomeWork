@@ -225,7 +225,6 @@ namespace Game.Horde.Tests
             using var field = new HordeFlowField(grid);
             var center = new float3(20f, 0.8f, 20f);
             float threshold = HordeSettings.Default.CrushSpeed;
-            Assert.AreEqual(1.5f, threshold, "GDD §4");
 
             using HordeSimulation slow = Make(grid, field);
             slow.Spawn(new float3(20.2f, 0f, 20.5f), 0f, CRAWLER);

@@ -169,7 +169,10 @@ namespace Game.Horde
         public float AttackReach;
         /// <summary>Damage per second of one attacking monster.</summary>
         public float AttackDps;
-        /// <summary>Tank speed above which a monster inside the hull box is crushed.</summary>
+        /// <summary>
+        /// Tank speed above which a monster inside the hull box is crushed. The default is for the simulation alone (its
+        /// tests); the game sets the player's vehicle's own threshold every frame (HordeBehaviour.CrushSpeedOf).
+        /// </summary>
         public float CrushSpeed;
         /// <summary>Health of a fresh monster.</summary>
         public float Health;

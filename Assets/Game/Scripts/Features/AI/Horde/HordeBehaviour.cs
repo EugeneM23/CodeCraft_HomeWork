@@ -142,22 +142,24 @@ namespace Game.AIKit.Adapters
         }
 
         /// <summary>
-        /// Horizontal tank speed from which the hull crushes the monsters under it, m/s (default 1.5): a parameter, the
-        /// tank's own value can be plugged in here. Takes effect from the next step.
+        /// No speed reaches it: the threshold while the player's vehicle does not crush (or there is none). Finite, so
+        /// the step's comparison holds under any Burst float mode.
         /// </summary>
-        public float CrushSpeed
-        {
-            get => _options.crushSpeed;
-            set
-            {
-                _options.crushSpeed = value;
-                if (_simulation == null)
-                    return;
-                HordeSettings settings = _simulation.Settings;
-                settings.CrushSpeed = value;
-                _simulation.Settings = settings;
-            }
-        }
+        public const float NO_CRUSH = float.MaxValue;
+
+        /// <summary>
+        /// Horizontal tank speed from which the hull crushes the monsters under it, m/s, as the simulation uses it: the
+        /// player's vehicle's own threshold (<see cref="CrushSpeedOf"/>), read every frame.
+        /// </summary>
+        public float CrushSpeed => _simulation != null ? _simulation.Settings.CrushSpeed : NO_CRUSH;
+
+        /// <summary>
+        /// The crush threshold of <paramref name="vehicle"/>: its <see cref="TankCrushBehaviour.MinSpeed"/>, which the
+        /// loadout (tracks) sets, so the horde is crushed at the same speed as the entity enemies. A vehicle without
+        /// it, or none, crushes nothing (<see cref="NO_CRUSH"/>). Allocates nothing.
+        /// </summary>
+        public static float CrushSpeedOf(IEntity vehicle) =>
+            vehicle != null && vehicle.TryGetBehaviour(out TankCrushBehaviour crush) ? crush.MinSpeed : NO_CRUSH;
 
         /// <summary>
         /// Live monsters, the asked-for ones not yet in the crowd and the dead whose deaths are not handed out yet
@@ -287,6 +289,7 @@ namespace Game.AIKit.Adapters
                     ResetForArena(); // the level grid was rebuilt for a new arena
                 RegisterTargets();
                 bool hasTank = ReadTank(out HordeTank tank);
+                SyncCrushSpeed();
                 HandleDeaths();
                 ReportElite(deltaTime);
                 HandleShots(deltaTime);
@@ -555,6 +558,20 @@ namespace Game.AIKit.Adapters
             tank.HalfExtents = _hullHalf;
             tank.Velocity = _tankBody != null ? _tankBody.linearVelocity : Vector3.zero;
             return true;
+        }
+
+        /// <summary>
+        /// The next step crushes at the player's vehicle's threshold (<see cref="CrushSpeedOf"/>): read every frame, as
+        /// the loadout may change it mid-run; a simulation made for a new arena starts at <see cref="NO_CRUSH"/>.
+        /// </summary>
+        private void SyncCrushSpeed()
+        {
+            float speed = CrushSpeedOf(_tank);
+            HordeSettings settings = _simulation.Settings;
+            if (settings.CrushSpeed == speed)
+                return;
+            settings.CrushSpeed = speed;
+            _simulation.Settings = settings;
         }
 
         /// <summary>The player's vehicle changed: find its transform, body and hull box (an event, may allocate).</summary>
