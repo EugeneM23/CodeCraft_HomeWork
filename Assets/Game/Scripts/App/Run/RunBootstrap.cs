@@ -28,17 +28,29 @@ namespace Game
         private Action<RunResult> _onRunEnded;
         private bool _looped;
         private bool _ownsDeaths;
+        private bool _waiting;
+        private bool _started;
+        private float _waited;
 
         /// <summary>The run of this level; null without the GameContext or the catalog.</summary>
         public RunService Run => _run;
 
         private void Awake()
         {
+            // The level's GameContext may sit in another scene of the level that wakes later (the sandbox loads its
+            // gameplay scene first): the run then waits for it (Update) instead of giving up. Without a run the
+            // level has no levels-up and no skills at all — the stand-in is not made in the game any more.
             if (!GameContext.TryGetInstance(out _context))
             {
-                Debug.LogWarning($"{nameof(RunBootstrap)}: no GameContext in the scene, the run is off", this);
+                _waiting = true;
                 return;
             }
+
+            Setup();
+        }
+
+        private void Setup()
+        {
 
             // Combat may have installed first: it adds the deaths feed and a stand-in run when the level has none.
             // The feed is kept (its listeners are already on it); the stand-in gives way to the real run below.
@@ -111,10 +123,13 @@ namespace Game
             _looped = false;
         }
 
-        private void Start()
+        private void Start() => StartRun();
+
+        private void StartRun()
         {
-            if (_run == null)
+            if (_run == null || _started)
                 return;
+            _started = true;
 
             ChapterId chapter = PickChapter();
             if (chapter.IsNone)
@@ -130,6 +145,9 @@ namespace Game
 
         private void Update() // perf-ok: ticks itself without the game loop (tests, sandbox); one flag check with it
         {
+            if (_waiting)
+                WaitForContext();
+
             if (!_looped)
                 OnUpdate(Time.deltaTime);
         }
@@ -156,6 +174,25 @@ namespace Game
             _run = null;
             _deaths = null;
             _context = null;
+        }
+
+        // The level's other scene has woken: the run is set up and started now. Gives up after a few seconds.
+        private void WaitForContext()
+        {
+            if (GameContext.TryGetInstance(out _context))
+            {
+                _waiting = false;
+                Setup();
+                StartRun();
+                return;
+            }
+
+            _waited += Time.unscaledDeltaTime;
+            if (_waited > 5f)
+            {
+                _waiting = false;
+                Debug.LogWarning($"{nameof(RunBootstrap)}: no GameContext in the level, the run is off", this);
+            }
         }
 
         // The game flow's chapter if it is in the catalog, otherwise the catalog's first
