@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f57d8cdb5df60804b801494150ccd659, type: 3}
+  m_Name: EngineStandardModuleConfig
+  m_EditorClassIdentifier: Game::Game.ModuleConfig
+  _id:
+    _value: engine_standard
+  _slot: 3
+  _displayName: 
+  _description: 
+  _standard: 1
+  _priceMarks: 0
+  _priceSamples: 0
+  _level2:
+    marks: 300
+    samples: 0
+  _level3:
+    marks: 600
+    samples: 5
+  _inShop: 0
+  _levelCap: 3
+  _unlockHint: 

@@ -1,0 +1,153 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d602a44fc8f94d646b91a55b48f74d82, type: 3}
+  m_Name: HangarStubConfig
+  m_EditorClassIdentifier: Game::Game.HangarStubConfig
+  catalog: {fileID: 11400000, guid: 78b3f80a10c75664e9012e69e588bbc6, type: 2}
+  startTank: tiger
+  startMarks: 1500
+  startSamples: 10
+  cannonDamage: 150
+  cannonReload: 2
+  moduleStats:
+  - moduleId: gun_88_he
+    bonus:
+      health: 0
+      speed: 0
+      cannonDamage: 0
+      cannonReload: 0
+    percent:
+      health: 0
+      speed: 0
+      cannonDamage: 0
+      cannonReload: 0
+    levelPercent:
+      health: 0
+      speed: 0
+      cannonDamage: 15
+      cannonReload: -15
+  - moduleId: gun_ap
+    bonus:
+      health: 0
+      speed: 0
+      cannonDamage: 100
+      cannonReload: -0.4
+    percent:
+      health: 0
+      speed: 0
+      cannonDamage: 0
+      cannonReload: 0
+    levelPercent:
+      health: 0
+      speed: 0
+      cannonDamage: 15
+      cannonReload: -15
+  - moduleId: gun_howitzer
+    bonus:
+      health: 0
+      speed: 0
+      cannonDamage: 150
+      cannonReload: 1
+    percent:
+      health: 0
+      speed: 0
+      cannonDamage: 0
+      cannonReload: 0
+    levelPercent:
+      health: 0
+      speed: 0
+      cannonDamage: 15
+      cannonReload: -15
+  - moduleId: armor_standard
+    bonus:
+      health: 0
+      speed: 0
+      cannonDamage: 0
+      cannonReload: 0
+    percent:
+      health: 0
+      speed: 0
+      cannonDamage: 0
+      cannonReload: 0
+    levelPercent:
+      health: 15
+      speed: 0
+      cannonDamage: 0
+      cannonReload: 0
+  - moduleId: armor_skirts
+    bonus:
+      health: 0
+      speed: 0
+      cannonDamage: 0
+      cannonReload: 0
+    percent:
+      health: 40
+      speed: -8
+      cannonDamage: 0
+      cannonReload: 0
+    levelPercent:
+      health: 15
+      speed: 0
+      cannonDamage: 0
+      cannonReload: 0
+  - moduleId: engine_standard
+    bonus:
+      health: 0
+      speed: 0
+      cannonDamage: 0
+      cannonReload: 0
+    percent:
+      health: 0
+      speed: 0
+      cannonDamage: 0
+      cannonReload: 0
+    levelPercent:
+      health: 0
+      speed: 15
+      cannonDamage: 0
+      cannonReload: 0
+  - moduleId: engine_boosted
+    bonus:
+      health: 0
+      speed: 0
+      cannonDamage: 0
+      cannonReload: 0
+    percent:
+      health: 0
+      speed: 20
+      cannonDamage: 0
+      cannonReload: 0
+    levelPercent:
+      health: 0
+      speed: 15
+      cannonDamage: 0
+      cannonReload: 0
+  - moduleId: tracks_standard
+    bonus:
+      health: 0
+      speed: 0
+      cannonDamage: 0
+      cannonReload: 0
+    percent:
+      health: 0
+      speed: 0
+      cannonDamage: 0
+      cannonReload: 0
+    levelPercent:
+      health: 0
+      speed: 5
+      cannonDamage: 0
+      cannonReload: 0
+  recommendedTanks:
+  - tiger
+  - hound
+  - fortress

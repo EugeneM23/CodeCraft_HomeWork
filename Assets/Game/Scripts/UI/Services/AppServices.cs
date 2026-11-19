@@ -19,6 +19,12 @@ namespace Game
         private static IAudioVolumes s_audio;
         private static IUiSounds s_uiSounds;
         private static IGameInput s_input;
+        private static IRunHudSource s_runHud;
+        private static RunServiceHudSource s_runAdapter;
+        private static StubRunHudSource s_stubRun;
+        private static IHangarSource s_hangar;
+        private static MetaProgressHangarSource s_hangarAdapter;
+        private static StubHangarSource s_stubHangar;
 
         // Made on first use when there is no app
         private static SceneGameFlow s_stubFlow;
@@ -84,6 +90,68 @@ namespace Game
             set => s_input = value;
         }
 
+        /// <summary>
+        /// The run as the battle UI sees it: the core's IRunService of the open level, else a stub (a scene played
+        /// on its own). Read it from Start, not Awake: the level's GameContext installs the run service in its own
+        /// Awake. The adapter takes the arena service lazily, so it may come later. Released by ReleaseRunHud.
+        /// </summary>
+        public static IRunHudSource RunHud
+        {
+            get
+            {
+                if (s_runHud != null) return s_runHud;
+                if (GameContext.TryGetInstance(out GameContext game) && game.TryGetRun(out IRunService run))
+                {
+                    if (s_runAdapter == null || !ReferenceEquals(s_runAdapter.Run, run))
+                    {
+                        s_runAdapter?.Dispose();
+                        GameCatalog catalog = null;
+                        if (AppContext.TryGet(out AppContext app))
+                            app.TryGetGameCatalog(out catalog);
+                        s_runAdapter = new RunServiceHudSource(run, catalog, game);
+                    }
+                    return s_runAdapter;
+                }
+                return s_stubRun ??= new StubRunHudSource();
+            }
+            set => s_runHud = value;
+        }
+
+        /// <summary>
+        /// The battle UI of a level is going: disposes and forgets the run adapter so it does not outlive its
+        /// level (events of the old run, the old GameContext). Only when the given source is still the current
+        /// adapter: a newer level's adapter is left alone. The stub and a value set explicitly are kept.
+        /// </summary>
+        public static void ReleaseRunHud(IRunHudSource source)
+        {
+            if (s_runAdapter == null || !ReferenceEquals(s_runAdapter, source))
+                return;
+
+            s_runAdapter.Dispose();
+            s_runAdapter = null;
+        }
+
+        /// <summary>The progress as the menus see it: the core's IMetaProgress and GameCatalog, else a stub (no app).</summary>
+        public static IHangarSource Hangar
+        {
+            get
+            {
+                if (s_hangar != null) return s_hangar;
+                if (AppContext.TryGet(out AppContext app) && app.TryGetMetaProgress(out IMetaProgress meta) &&
+                    app.TryGetGameCatalog(out GameCatalog catalog))
+                {
+                    if (s_hangarAdapter == null || !ReferenceEquals(s_hangarAdapter.Meta, meta))
+                    {
+                        s_hangarAdapter?.Dispose();
+                        s_hangarAdapter = new MetaProgressHangarSource(meta, catalog);
+                    }
+                    return s_hangarAdapter;
+                }
+                return s_stubHangar ??= new StubHangarSource();
+            }
+            set => s_hangar = value;
+        }
+
         public static IAudioVolumes Audio { get => s_audio ??= new ListenerAudioVolumes(); set => s_audio = value; }
         public static IUiSounds UiSounds { get => s_uiSounds ??= new SilentUiSounds(); set => s_uiSounds = value; }
 
@@ -133,6 +201,14 @@ namespace Game
             s_audio = null;
             s_uiSounds = null;
             s_input = null;
+            s_runHud = null;
+            s_runAdapter?.Dispose();
+            s_runAdapter = null;
+            s_stubRun = null;
+            s_hangar = null;
+            s_hangarAdapter?.Dispose();
+            s_hangarAdapter = null;
+            s_stubHangar = null;
             s_stubFlow = null;
             s_stubPause = null;
             s_stubSettings = null;

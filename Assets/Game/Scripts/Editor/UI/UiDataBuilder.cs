@@ -5,17 +5,20 @@ using UnityEngine;
 namespace Game.EditorTools
 {
     /// <summary>
-    /// Creates or updates the placeholder data of the menus: in Assets/Game/Configs/UI the design fields of the
-    /// levels (LevelDesignConfig), tank modules (2–3 per slot, 3 levels each) and the shop catalog; in the core's
-    /// Assets/Game/Configs/Levels a placeholder second level (quarry) added to the core catalog. Idempotent:
-    /// existing assets keep their GUIDs and get the values below. Game design replaces the numbers later.
+    /// Creates or updates the placeholder data of the menus: in Assets/Game/Configs/UI nothing of its own any
+    /// more (the old level assets are deleted); in Configs/UI/Catalog a placeholder of the core's
+    /// catalog (GameCatalog with the 15 modules, the Tiger, 3 chapters and the 5 arenas of chapter 1, GDD §6, §7,
+    /// §10) until the core ships its own asset; in Configs/UI/Resources the HangarStubConfig StubHangarSource
+    /// reads; in the core's Assets/Game/Configs/Levels a placeholder second level (quarry) added to the core
+    /// catalog. Idempotent: existing assets keep their GUIDs and get the values below.
     /// </summary>
     public static class UiDataBuilder
     {
         public const string FOLDER = "Assets/Game/Configs/UI";
-        public const string MODULE_FOLDER = FOLDER + "/Modules";
-        public const string LEVEL_DESIGN_PATH = FOLDER + "/LevelDesignConfig.asset";
-        public const string SHOP_CATALOG_PATH = FOLDER + "/ShopCatalogConfig.asset";
+        public const string CATALOG_FOLDER = FOLDER + "/Catalog";
+        public const string RESOURCES_FOLDER = FOLDER + "/Resources";
+        public const string GAME_CATALOG_PATH = CATALOG_FOLDER + "/PlaceholderGameCatalog.asset";
+        public const string HANGAR_STUB_PATH = RESOURCES_FOLDER + "/" + HangarStubConfig.RESOURCE_PATH + ".asset";
         public const string LEVEL_FOLDER = "Assets/Game/Configs/Levels";
         public const string LEVEL_CATALOG_PATH = LEVEL_FOLDER + "/LevelCatalogConfig.asset";
 
@@ -29,25 +32,33 @@ namespace Game.EditorTools
         {
             FOLDER + "/SandboxLevelConfig.asset",
             FOLDER + "/QuarryLevelConfig.asset",
-            FOLDER + "/LevelCatalogConfig.asset"
+            FOLDER + "/LevelCatalogConfig.asset",
+            FOLDER + "/LevelDesignConfig.asset" // design fields of the kill-goal levels, replaced by the run
+        };
+
+        // The shop data of the level-based prototype (TankModuleConfig, ShopCatalogConfig: types deleted)
+        private static readonly string[] OldShopAssets =
+        {
+            FOLDER + "/ShopCatalogConfig.asset",
+            FOLDER + "/Modules"
         };
 
         [MenuItem("Tools/UI/Build Placeholder Data")]
         public static void Build()
         {
             UiFactory.EnsureFolder(FOLDER);
-            UiFactory.EnsureFolder(MODULE_FOLDER);
+            UiFactory.EnsureFolder(CATALOG_FOLDER);
+            UiFactory.EnsureFolder(RESOURCES_FOLDER);
 
             BuildLevels();
-            BuildShop();
+            BuildHangar();
 
             AssetDatabase.SaveAssets();
             Debug.Log($"UI placeholder data built in {FOLDER}");
         }
 
         public static LevelCatalog LoadLevelCatalog() => AssetDatabase.LoadAssetAtPath<LevelCatalog>(LEVEL_CATALOG_PATH);
-        public static LevelDesignConfig LoadLevelDesign() => AssetDatabase.LoadAssetAtPath<LevelDesignConfig>(LEVEL_DESIGN_PATH);
-        public static ShopCatalogConfig LoadShopCatalog() => AssetDatabase.LoadAssetAtPath<ShopCatalogConfig>(SHOP_CATALOG_PATH);
+        public static HangarStubConfig LoadHangarStub() => AssetDatabase.LoadAssetAtPath<HangarStubConfig>(HANGAR_STUB_PATH);
 
         /// <summary>
         /// Puts the BattleUi prefab into the core catalog's level layer when it is not there yet. Called after
@@ -80,15 +91,6 @@ namespace Game.EditorTools
             foreach (string oldAsset in OldLevelAssets)
                 if (!string.IsNullOrEmpty(AssetDatabase.AssetPathToGUID(oldAsset, AssetPathToGUIDOptions.OnlyExistingAssets)))
                     AssetDatabase.DeleteAsset(oldAsset);
-
-            LevelDesignConfig design = LoadOrCreate<LevelDesignConfig>(LEVEL_DESIGN_PATH);
-            design.levels = new List<LevelDesignData>
-            {
-                new() { levelId = SANDBOX_LEVEL_ID, displayName = "Песочница",
-                    description = "Разрушаемый городок, Regax прячутся в домах. Разнесите укрытия и зачистите улицы.", difficulty = 1, killTarget = 10, reward = 300 },
-                new() { levelId = QUARRY_LEVEL_ID, difficulty = 2, killTarget = 20, reward = 600 }
-            };
-            EditorUtility.SetDirty(design);
 
             LevelCatalog catalog = LoadLevelCatalog();
             LevelConfig sandbox = AssetDatabase.LoadAssetAtPath<LevelConfig>(SANDBOX_LEVEL_PATH);
@@ -160,87 +162,136 @@ namespace Game.EditorTools
             return false;
         }
 
-        // ---------- Shop ----------
+        // ---------- Hangar (STUB catalog and stub data) ----------
 
-        private static void BuildShop()
+        private static void BuildHangar()
         {
-            List<TankModuleConfig> modules = new()
+            foreach (string oldAsset in OldShopAssets)
+                if (!string.IsNullOrEmpty(AssetDatabase.AssetPathToGUID(oldAsset, AssetPathToGUIDOptions.OnlyExistingAssets)))
+                    AssetDatabase.DeleteAsset(oldAsset);
+
+            UiFactory.EnsureFolder(CATALOG_FOLDER + "/Modules");
+            UiFactory.EnsureFolder(CATALOG_FOLDER + "/Arenas");
+
+            ModuleConfig.Cost standard2 = new(300, 0), standard3 = new(600, 5);
+            ModuleConfig.Cost cheap2 = new(600, 0), cheap3 = new(1200, 5);
+            ModuleConfig.Cost dear2 = new(1250, 0), dear3 = new(2500, 10);
+
+            // GDD §6: a standard module per slot, owned from the start; milestone 1 sells gun_ap and the skirts (screens)
+            List<ModuleConfig> modules = new()
             {
-                // Gun
-                Module("CannonT1", "cannon_t1", TankSlot.Gun, "Пушка Т-1", "Штатное орудие: надёжное, без изысков.", 300,
-                    Stats(), 400, Stats(damage: 10), 700, Stats(damage: 15, reload: -0.2f)),
-                Module("CannonT2", "cannon_t2", TankSlot.Gun, "Пушка Т-2", "Длинный ствол: больше урона, дольше перезарядка.", 1200,
-                    Stats(damage: 30, reload: 0.3f), 500, Stats(damage: 10), 900, Stats(damage: 15, reload: -0.2f)),
-                Module("CannonT3", "cannon_t3", TankSlot.Gun, "Тяжёлая пушка", "Сносит дом с одного выстрела, но перезаряжается медленно.", 2500,
-                    Stats(damage: 70, reload: 0.8f), 800, Stats(damage: 15), 1200, Stats(damage: 20, reload: -0.3f)),
-
-                // Machine gun
-                Module("MachineGunT1", "mg_t1", TankSlot.MachineGun, "Пулемёт ПМ-1", "Штатный пулемёт против мелких Regax.", 300,
-                    Stats(), 300, Stats(fireRate: 1), 500, Stats(fireRate: 1.5f)),
-                Module("MachineGunT2", "mg_t2", TankSlot.MachineGun, "Спаренный пулемёт", "Два ствола — вдвое плотнее огонь.", 1100,
-                    Stats(fireRate: 4), 450, Stats(fireRate: 1), 700, Stats(fireRate: 2)),
-
-                // Hull
-                Module("HullT1", "hull_t1", TankSlot.Hull, "Лёгкий корпус", "Штатный корпус.", 300,
-                    Stats(), 400, Stats(health: 30), 600, Stats(health: 50)),
-                Module("HullT2", "hull_t2", TankSlot.Hull, "Средний корпус", "Больше прочности ценой скорости.", 1500,
-                    Stats(health: 150, speed: -1), 600, Stats(health: 40), 900, Stats(health: 60)),
-
-                // Engine
-                Module("EngineT1", "engine_t1", TankSlot.Engine, "Двигатель Д-1", "Штатный двигатель.", 300,
-                    Stats(), 350, Stats(speed: 0.5f), 550, Stats(speed: 1)),
-                Module("EngineT2", "engine_t2", TankSlot.Engine, "Двигатель Д-2Ф", "Форсированный двигатель.", 1300,
-                    Stats(speed: 3), 500, Stats(speed: 0.5f), 800, Stats(speed: 1)),
-
-                // Tracks
-                Module("TracksT1", "tracks_t1", TankSlot.Tracks, "Стальные гусеницы", "Штатные гусеницы.", 300,
-                    Stats(), 300, Stats(speed: 0.5f), 500, Stats(health: 20)),
-                Module("TracksT2", "tracks_t2", TankSlot.Tracks, "Широкие гусеницы", "Держат завалы и щебень.", 900,
-                    Stats(speed: 1, health: 30), 400, Stats(speed: 0.5f), 650, Stats(health: 30)),
-
-                // Armor
-                Module("ArmorT1", "armor_t1", TankSlot.Armor, "Катаная броня", "Штатная броня.", 300,
-                    Stats(), 400, Stats(armor: 5), 600, Stats(armor: 8)),
-                Module("ArmorT2", "armor_t2", TankSlot.Armor, "Композитная броня", "Крепче, но тяжелее.", 1600,
-                    Stats(armor: 20, speed: -0.5f), 600, Stats(armor: 6), 900, Stats(armor: 10)),
-                Module("ArmorT3", "armor_t3", TankSlot.Armor, "Динамическая защита", "Лучшая броня в магазине.", 2400,
-                    Stats(armor: 35, speed: -1), 800, Stats(armor: 8), 1200, Stats(armor: 12))
+                Module(ModuleIds.Gun88He, ModuleSlot.Gun, true, 0, standard2, standard3, false),
+                Module(ModuleIds.GunArmorPiercing, ModuleSlot.Gun, false, 1200, cheap2, cheap3, true),
+                Module(ModuleIds.GunHowitzer, ModuleSlot.Gun, false, 2500, dear2, dear3, false),
+                Module(ModuleIds.MachineGun, ModuleSlot.MachineGun, true, 0, standard2, standard3, false),
+                Module(ModuleIds.MachineGunTwin, ModuleSlot.MachineGun, false, 1200, cheap2, cheap3, false),
+                Module(ModuleIds.ArmorStandard, ModuleSlot.Armor, true, 0, standard2, standard3, false),
+                Module(ModuleIds.ArmorSkirts, ModuleSlot.Armor, false, 1200, cheap2, cheap3, true),
+                Module(ModuleIds.ArmorDozer, ModuleSlot.Armor, false, 2500, dear2, dear3, false),
+                Module(ModuleIds.EngineStandard, ModuleSlot.Engine, true, 0, standard2, standard3, false),
+                Module(ModuleIds.EngineBoosted, ModuleSlot.Engine, false, 2500, dear2, dear3, false),
+                Module(ModuleIds.TracksStandard, ModuleSlot.Tracks, true, 0, standard2, standard3, false),
+                Module(ModuleIds.TracksWide, ModuleSlot.Tracks, false, 1200, cheap2, cheap3, false),
+                Module(ModuleIds.SpecialSmoke, ModuleSlot.Special, true, 0, standard2, standard3, false),
+                Module(ModuleIds.SpecialRepair, ModuleSlot.Special, false, 1200, cheap2, cheap3, false),
+                Module(ModuleIds.SpecialShockwave, ModuleSlot.Special, false, 2500, dear2, dear3, false)
             };
 
-            ShopCatalogConfig catalog = LoadOrCreate<ShopCatalogConfig>(SHOP_CATALOG_PATH);
-            catalog.baseStats = new TankStats { health = 300, armor = 10, speed = 8, damage = 60, reload = 3f, fireRate = 6 };
-            catalog.startCredits = 1000;
-            catalog.modules = modules;
-            catalog.startModules = new List<TankModuleConfig>();
-            HashSet<TankSlot> started = new();
-            foreach (TankModuleConfig module in modules)
-                if (started.Add(module.slot))
-                    catalog.startModules.Add(module);
+            TankConfig tiger = LoadOrCreate<TankConfig>($"{CATALOG_FOLDER}/TigerTankConfig.asset");
+            tiger.Configure(TankIds.Tiger, true, 4, 6, ModuleIds.Gun88He, ModuleIds.MachineGun, ModuleIds.ArmorStandard,
+                ModuleIds.EngineStandard, ModuleIds.TracksStandard, ModuleIds.SpecialSmoke);
+            EditorUtility.SetDirty(tiger);
+
+            // STUB: every chapter plays the core catalog's first level until the arenas have their own
+            LevelCatalog levels = LoadLevelCatalog();
+            LevelConfig level = levels != null ? levels.Find(SANDBOX_LEVEL_ID) ?? levels.FirstLevel : null;
+            ArenaConfig[] arenas =
+            {
+                Arena("outskirts_1", ArenaKind.Horde), Arena("outskirts_2", ArenaKind.Horde),
+                Arena("outskirts_3", ArenaKind.Horde), Arena("outskirts_4", ArenaKind.Horde),
+                Arena("outskirts_5", ArenaKind.Elite)
+            };
+            ChapterConfig outskirts = Chapter("Outskirts", ChapterIds.Outskirts, level, 1f, 1f, 1000, 10, null, arenas);
+            ChapterConfig town = Chapter("Town", ChapterIds.Town, level, 1.6f, 1.5f, 2000, 15, outskirts);
+            ChapterConfig quarry = Chapter("Quarry", ChapterIds.Quarry, level, 2.4f, 2f, 3000, 20, town);
+
+            GameCatalog catalog = LoadOrCreate<GameCatalog>(GAME_CATALOG_PATH);
+            catalog.Configure(new[] { tiger }, modules, new List<SkillConfig>(), new[] { outskirts, town, quarry });
             EditorUtility.SetDirty(catalog);
+
+            HangarStubConfig stub = LoadOrCreate<HangarStubConfig>(HANGAR_STUB_PATH);
+            stub.catalog = catalog;
+            stub.startTank = TankIds.Tiger.Value;
+            stub.startMarks = 1500;
+            stub.startSamples = 10;
+            stub.cannonDamage = 150f;
+            stub.cannonReload = 2f;
+            stub.recommendedTanks = new List<string> { TankIds.Tiger.Value, TankIds.Hound.Value, TankIds.Fortress.Value };
+            HangarTankStats gunLevel = new(0, 0, 15, -15);
+            HangarTankStats healthLevel = new(15, 0, 0, 0);
+            HangarTankStats speedLevel = new(0, 15, 0, 0);
+            stub.moduleStats = new List<HangarModuleStats>
+            {
+                Stats(ModuleIds.Gun88He, default, default, gunLevel),
+                Stats(ModuleIds.GunArmorPiercing, new HangarTankStats(0, 0, 100, -0.4f), default, gunLevel),
+                Stats(ModuleIds.GunHowitzer, new HangarTankStats(0, 0, 150, 1f), default, gunLevel),
+                Stats(ModuleIds.ArmorStandard, default, default, healthLevel),
+                Stats(ModuleIds.ArmorSkirts, default, new HangarTankStats(40, -8, 0, 0), healthLevel),
+                Stats(ModuleIds.EngineStandard, default, default, speedLevel),
+                Stats(ModuleIds.EngineBoosted, default, new HangarTankStats(0, 20, 0, 0), speedLevel),
+                Stats(ModuleIds.TracksStandard, default, default, new HangarTankStats(0, 5, 0, 0))
+            };
+            EditorUtility.SetDirty(stub);
         }
 
-        private static TankModuleConfig Module(string name, string id, TankSlot slot, string displayName,
-            string description, int price, TankStats level1, int price2, TankStats level2, int price3, TankStats level3)
+        private static ModuleConfig Module(ModuleId id, ModuleSlot slot, bool standard, int price, ModuleConfig.Cost level2,
+            ModuleConfig.Cost level3, bool inShop)
         {
-            TankModuleConfig module = LoadOrCreate<TankModuleConfig>($"{MODULE_FOLDER}/{name}TankModuleConfig.asset");
-            module.id = id;
-            module.slot = slot;
-            module.displayName = displayName;
-            module.description = description;
-            module.price = price;
-            module.levels = new List<TankModuleConfig.Level>
-            {
-                new() { price = 0, bonus = level1 },
-                new() { price = price2, bonus = level2 },
-                new() { price = price3, bonus = level3 }
-            };
+            ModuleConfig module = LoadOrCreate<ModuleConfig>($"{CATALOG_FOLDER}/Modules/{Pascal(id.Value)}ModuleConfig.asset");
+            module.Configure(id, slot, standard, price, 0, level2, level3, inShop, ModuleConfig.MAX_LEVEL);
             EditorUtility.SetDirty(module);
             return module;
         }
 
-        private static TankStats Stats(float health = 0, float armor = 0, float speed = 0, float damage = 0,
-            float reload = 0, float fireRate = 0) =>
-            new() { health = health, armor = armor, speed = speed, damage = damage, reload = reload, fireRate = fireRate };
+        private static ArenaConfig Arena(string id, ArenaKind kind)
+        {
+            ArenaConfig arena = LoadOrCreate<ArenaConfig>($"{CATALOG_FOLDER}/Arenas/{Pascal(id)}ArenaConfig.asset");
+            arena.Configure(new ArenaId(id), kind);
+            EditorUtility.SetDirty(arena);
+            return arena;
+        }
+
+        private static ChapterConfig Chapter(string name, ChapterId id, LevelConfig level, float enemies, float rewards,
+            int firstMarks, int firstSamples, ChapterConfig required, params ArenaConfig[] arenas)
+        {
+            ChapterConfig chapter = LoadOrCreate<ChapterConfig>($"{CATALOG_FOLDER}/{name}ChapterConfig.asset");
+            chapter.Configure(id, level, enemies, rewards, firstMarks, firstSamples, required, arenas);
+            EditorUtility.SetDirty(chapter);
+            return chapter;
+        }
+
+        private static HangarModuleStats Stats(ModuleId id, HangarTankStats bonus, HangarTankStats percent,
+            HangarTankStats levelPercent) =>
+            new() { moduleId = id.Value, bonus = bonus, percent = percent, levelPercent = levelPercent };
+
+        // gun_88_he → Gun88He
+        private static string Pascal(string id)
+        {
+            System.Text.StringBuilder name = new();
+            bool upper = true;
+            foreach (char c in id)
+            {
+                if (c == '_')
+                {
+                    upper = true;
+                    continue;
+                }
+
+                name.Append(upper ? char.ToUpperInvariant(c) : c);
+                upper = false;
+            }
+            return name.ToString();
+        }
 
         private static T LoadOrCreate<T>(string path) where T : ScriptableObject
         {

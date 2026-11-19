@@ -8,7 +8,7 @@ namespace Game
     /// to TMP_Text.SetText only ({0:1} there means one decimal); the others go to string.Format.
     /// A new language: a dictionary with the same keys and a case in For; screens stay as they are.
     /// </summary>
-    public static class UiStringTable
+    public static partial class UiStringTable
     {
         public static readonly IReadOnlyDictionary<string, string> Russian = new Dictionary<string, string>
         {
@@ -203,6 +203,18 @@ namespace Game
             ["results.to_hangar"] = "В ангар",
             ["results.next"] = "Следующий уровень",
         };
+
+        // Screens of milestone 1 keep their texts in their own parts of this class (UiStringTable.Run.cs,
+        // UiStringTable.Hangar.cs): each adds its keys to the language dictionaries here.
+        static UiStringTable()
+        {
+            var russian = (Dictionary<string, string>)Russian;
+            AddRunRussian(russian);
+            AddHangarRussian(russian);
+        }
+
+        static partial void AddRunRussian(Dictionary<string, string> table);
+        static partial void AddHangarRussian(Dictionary<string, string> table);
 
         /// <summary>The table of the language; Russian for any language without one yet.</summary>
         public static IReadOnlyDictionary<string, string> For(UiLanguage language)

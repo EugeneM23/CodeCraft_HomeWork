@@ -501,6 +501,36 @@ namespace Game
                     ""interactions"": """",
                     ""initialStateCheck"": false,
                     ""priority"": 0
+                },
+                {
+                    ""name"": ""Choose1"",
+                    ""type"": ""Button"",
+                    ""id"": ""6a1d0000-0000-4000-8000-000000000209"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
+                },
+                {
+                    ""name"": ""Choose2"",
+                    ""type"": ""Button"",
+                    ""id"": ""6a1d0000-0000-4000-8000-00000000020a"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
+                },
+                {
+                    ""name"": ""Choose3"",
+                    ""type"": ""Button"",
+                    ""id"": ""6a1d0000-0000-4000-8000-00000000020b"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
                 }
             ],
             ""bindings"": [
@@ -635,6 +665,39 @@ namespace Game
                     ""action"": ""ScrollWheel"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""6a1d0000-0000-4000-8000-000000002018"",
+                    ""path"": ""<Keyboard>/1"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Choose1"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""6a1d0000-0000-4000-8000-000000002019"",
+                    ""path"": ""<Keyboard>/2"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Choose2"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""6a1d0000-0000-4000-8000-00000000201a"",
+                    ""path"": ""<Keyboard>/3"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Choose3"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -755,6 +818,9 @@ namespace Game
             m_UI_RightClick = m_UI.FindAction("RightClick", throwIfNotFound: true);
             m_UI_MiddleClick = m_UI.FindAction("MiddleClick", throwIfNotFound: true);
             m_UI_ScrollWheel = m_UI.FindAction("ScrollWheel", throwIfNotFound: true);
+            m_UI_Choose1 = m_UI.FindAction("Choose1", throwIfNotFound: true);
+            m_UI_Choose2 = m_UI.FindAction("Choose2", throwIfNotFound: true);
+            m_UI_Choose3 = m_UI.FindAction("Choose3", throwIfNotFound: true);
             // Sandbox
             m_Sandbox = asset.FindActionMap("Sandbox", throwIfNotFound: true);
             m_Sandbox_AirStrike = m_Sandbox.FindAction("AirStrike", throwIfNotFound: true);
@@ -1046,6 +1112,9 @@ namespace Game
         private readonly InputAction m_UI_RightClick;
         private readonly InputAction m_UI_MiddleClick;
         private readonly InputAction m_UI_ScrollWheel;
+        private readonly InputAction m_UI_Choose1;
+        private readonly InputAction m_UI_Choose2;
+        private readonly InputAction m_UI_Choose3;
         /// <summary>
         /// Provides access to input actions defined in input action map "UI".
         /// </summary>
@@ -1089,6 +1158,18 @@ namespace Game
             /// Provides access to the underlying input action "UI/ScrollWheel".
             /// </summary>
             public InputAction @ScrollWheel => m_Wrapper.m_UI_ScrollWheel;
+            /// <summary>
+            /// Provides access to the underlying input action "UI/Choose1".
+            /// </summary>
+            public InputAction @Choose1 => m_Wrapper.m_UI_Choose1;
+            /// <summary>
+            /// Provides access to the underlying input action "UI/Choose2".
+            /// </summary>
+            public InputAction @Choose2 => m_Wrapper.m_UI_Choose2;
+            /// <summary>
+            /// Provides access to the underlying input action "UI/Choose3".
+            /// </summary>
+            public InputAction @Choose3 => m_Wrapper.m_UI_Choose3;
             /// <summary>
             /// Provides access to the underlying input action map instance.
             /// </summary>
@@ -1139,6 +1220,15 @@ namespace Game
                 @ScrollWheel.started += instance.OnScrollWheel;
                 @ScrollWheel.performed += instance.OnScrollWheel;
                 @ScrollWheel.canceled += instance.OnScrollWheel;
+                @Choose1.started += instance.OnChoose1;
+                @Choose1.performed += instance.OnChoose1;
+                @Choose1.canceled += instance.OnChoose1;
+                @Choose2.started += instance.OnChoose2;
+                @Choose2.performed += instance.OnChoose2;
+                @Choose2.canceled += instance.OnChoose2;
+                @Choose3.started += instance.OnChoose3;
+                @Choose3.performed += instance.OnChoose3;
+                @Choose3.canceled += instance.OnChoose3;
             }
 
             /// <summary>
@@ -1174,6 +1264,15 @@ namespace Game
                 @ScrollWheel.started -= instance.OnScrollWheel;
                 @ScrollWheel.performed -= instance.OnScrollWheel;
                 @ScrollWheel.canceled -= instance.OnScrollWheel;
+                @Choose1.started -= instance.OnChoose1;
+                @Choose1.performed -= instance.OnChoose1;
+                @Choose1.canceled -= instance.OnChoose1;
+                @Choose2.started -= instance.OnChoose2;
+                @Choose2.performed -= instance.OnChoose2;
+                @Choose2.canceled -= instance.OnChoose2;
+                @Choose3.started -= instance.OnChoose3;
+                @Choose3.performed -= instance.OnChoose3;
+                @Choose3.canceled -= instance.OnChoose3;
             }
 
             /// <summary>
@@ -1477,6 +1576,27 @@ namespace Game
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnScrollWheel(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "Choose1" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnChoose1(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "Choose2" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnChoose2(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "Choose3" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnChoose3(InputAction.CallbackContext context);
         }
         /// <summary>
         /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Sandbox" which allows adding and removing callbacks.

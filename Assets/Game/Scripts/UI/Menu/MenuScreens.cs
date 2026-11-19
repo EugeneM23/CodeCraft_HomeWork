@@ -7,6 +7,6 @@ namespace Game
     public static class MenuScreens
     {
         public const string HANGAR = "Hangar";
-        public const string LEVEL_SELECT = "LevelSelect";
+        public const string CHAPTER_SELECT = "ChapterSelect";
     }
 }

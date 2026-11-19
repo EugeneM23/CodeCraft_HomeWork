@@ -50,7 +50,10 @@
                 { "name": "Click", "type": "PassThrough", "id": "6a1d0000-0000-4000-8000-000000000205", "expectedControlType": "Button", "processors": "", "interactions": "", "initialStateCheck": true },
                 { "name": "RightClick", "type": "PassThrough", "id": "6a1d0000-0000-4000-8000-000000000206", "expectedControlType": "Button", "processors": "", "interactions": "", "initialStateCheck": false },
                 { "name": "MiddleClick", "type": "PassThrough", "id": "6a1d0000-0000-4000-8000-000000000207", "expectedControlType": "Button", "processors": "", "interactions": "", "initialStateCheck": false },
-                { "name": "ScrollWheel", "type": "PassThrough", "id": "6a1d0000-0000-4000-8000-000000000208", "expectedControlType": "Vector2", "processors": "", "interactions": "", "initialStateCheck": false }
+                { "name": "ScrollWheel", "type": "PassThrough", "id": "6a1d0000-0000-4000-8000-000000000208", "expectedControlType": "Vector2", "processors": "", "interactions": "", "initialStateCheck": false },
+                { "name": "Choose1", "type": "Button", "id": "6a1d0000-0000-4000-8000-000000000209", "expectedControlType": "Button", "processors": "", "interactions": "", "initialStateCheck": false },
+                { "name": "Choose2", "type": "Button", "id": "6a1d0000-0000-4000-8000-00000000020a", "expectedControlType": "Button", "processors": "", "interactions": "", "initialStateCheck": false },
+                { "name": "Choose3", "type": "Button", "id": "6a1d0000-0000-4000-8000-00000000020b", "expectedControlType": "Button", "processors": "", "interactions": "", "initialStateCheck": false }
             ],
             "bindings": [
                 { "name": "Arrows", "id": "6a1d0000-0000-4000-8000-000000002001", "path": "2DVector", "interactions": "", "processors": "", "groups": "", "action": "Navigate", "isComposite": true, "isPartOfComposite": false },
@@ -64,7 +67,10 @@
                 { "name": "", "id": "6a1d0000-0000-4000-8000-000000002014", "path": "<Mouse>/leftButton", "interactions": "", "processors": "", "groups": "", "action": "Click", "isComposite": false, "isPartOfComposite": false },
                 { "name": "", "id": "6a1d0000-0000-4000-8000-000000002015", "path": "<Mouse>/rightButton", "interactions": "", "processors": "", "groups": "", "action": "RightClick", "isComposite": false, "isPartOfComposite": false },
                 { "name": "", "id": "6a1d0000-0000-4000-8000-000000002016", "path": "<Mouse>/middleButton", "interactions": "", "processors": "", "groups": "", "action": "MiddleClick", "isComposite": false, "isPartOfComposite": false },
-                { "name": "", "id": "6a1d0000-0000-4000-8000-000000002017", "path": "<Mouse>/scroll", "interactions": "", "processors": "", "groups": "", "action": "ScrollWheel", "isComposite": false, "isPartOfComposite": false }
+                { "name": "", "id": "6a1d0000-0000-4000-8000-000000002017", "path": "<Mouse>/scroll", "interactions": "", "processors": "", "groups": "", "action": "ScrollWheel", "isComposite": false, "isPartOfComposite": false },
+                { "name": "", "id": "6a1d0000-0000-4000-8000-000000002018", "path": "<Keyboard>/1", "interactions": "", "processors": "", "groups": "", "action": "Choose1", "isComposite": false, "isPartOfComposite": false },
+                { "name": "", "id": "6a1d0000-0000-4000-8000-000000002019", "path": "<Keyboard>/2", "interactions": "", "processors": "", "groups": "", "action": "Choose2", "isComposite": false, "isPartOfComposite": false },
+                { "name": "", "id": "6a1d0000-0000-4000-8000-00000000201a", "path": "<Keyboard>/3", "interactions": "", "processors": "", "groups": "", "action": "Choose3", "isComposite": false, "isPartOfComposite": false }
             ]
         },
         {

@@ -4,43 +4,54 @@ using UnityEngine;
 namespace Game
 {
     /// <summary>
-    /// The top strip of the menu screens: the screen title and the player's credits. The credits text is
-    /// rewritten only when the balance changes.
+    /// The top strip of the menu screens: the screen title, marks and samples (IHangarSource). The numbers are
+    /// rewritten only when they change.
     /// </summary>
     public sealed class CurrencyBar : MonoBehaviour
     {
         [SerializeField] private TMP_Text _title;
-        [SerializeField] private TMP_Text _credits;
+        [SerializeField] private TMP_Text _marks;
+        [SerializeField] private TMP_Text _samples;
 
-        private IPlayerProgress _progress;
-        private string _creditsFormat;
-        private int _shownCredits = int.MinValue;
+        private IHangarSource _source;
+        private string _marksFormat;
+        private string _samplesFormat;
+        private int _shownMarks = int.MinValue;
+        private int _shownSamples = int.MinValue;
 
         /// <summary>The screen title: a static label (UiLocalizedText), its key set by the prefab builder.</summary>
         public TMP_Text TitleText => _title;
 
         private void Awake()
         {
-            _progress = AppServices.Progress;
-            _creditsFormat = UiStrings.Get("common.credits_format");
+            _source = AppServices.Hangar;
+            _marksFormat = UiStrings.Get("hangar.marks_format");
+            _samplesFormat = UiStrings.Get("hangar.samples_format");
         }
 
         private void OnEnable()
         {
-            _progress.Changed += Refresh;
+            _source.Changed += Refresh;
             Refresh();
         }
 
-        private void OnDisable() => _progress.Changed -= Refresh;
+        private void OnDisable() => _source.Changed -= Refresh;
 
         private void Refresh()
         {
-            int credits = _progress.Credits;
-            if (credits == _shownCredits)
-                return;
+            int marks = _source.Marks;
+            if (marks != _shownMarks)
+            {
+                _shownMarks = marks;
+                _marks.SetText(_marksFormat, marks);
+            }
 
-            _shownCredits = credits;
-            _credits.SetText(_creditsFormat, credits);
+            int samples = _source.Samples;
+            if (samples != _shownSamples)
+            {
+                _shownSamples = samples;
+                _samples.SetText(_samplesFormat, samples);
+            }
         }
     }
 }

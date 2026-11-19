@@ -7,23 +7,24 @@ using UnityEngine.InputSystem;
 namespace Game
 {
     /// <summary>
-    /// The battle HUD, root of the battle stack. The tank's bars and crosshair are TankHudView's; here are
-    /// the battle counters (IBattleStats), the key hints (current bindings, fade out after a while, F1)
-    /// and the debug block (F3: FPS and the voxel world's numbers, formerly VoxelDemoHud). Text is
-    /// refreshed at most 4 times a second or on change, numbers through SetText: no allocations per frame.
+    /// The battle HUD, root of the battle stack. The tank's bars and crosshair are TankHudView's, the run's
+    /// counters, skills, special, elite, gate and crush streak are RunHudView's; here are the key hints
+    /// (current bindings, fade out after a while, F1) and the debug block (F3: FPS and the voxel world's
+    /// numbers). Text is refreshed at most 4 times a second or on change, numbers through SetText: no
+    /// allocations per frame.
     /// </summary>
     public sealed class HudScreen : UIScreen
     {
         private const float REFRESH_INTERVAL = 0.25f;
         private const float HINTS_SHOWN_FOR = 15f;
+        private const float ARENA_HINTS_SHOWN_FOR = 8f;
         private const float HINTS_FADE = 1f;
         private const float FRAME_SMOOTHING = 0.05f;
+        // By name: the combat team adds Tank/Special (E); until then its hint shows "-".
+        private const string SPECIAL_ACTION = "Tank/Special";
 
         [SerializeField] private TankHudView _tank;
-
-        [Header("Battle counters")]
-        [SerializeField] private TMP_Text _killsText;
-        [SerializeField] private TMP_Text _timeText;
+        [SerializeField] private RunHudView _run;
 
         [Header("Hints")]
         [SerializeField] private CanvasGroup _hints;
@@ -37,40 +38,29 @@ namespace Game
         [SerializeField] private TMP_Text _remeshText;
         [SerializeField] private TMP_Text _smokeText;
 
-        private IBattleStats _stats;
         private GameControls _controls;
         private Action<InputAction.CallbackContext> _onToggleHints;
         private Action<InputAction.CallbackContext> _onToggleDebug;
+        private Action<ArenaHint> _onArenaStarted;
 
         private float _nextRefresh;
-        private int _shownKills = -1;
-        private int _shownTarget = -1;
-        private int _shownSeconds = -1;
         private float _frameMs = 16f;
 
         private bool _hintsVisible;
         private bool _hintsPinned;
         private float _hintsShownAt;
+        private float _hintsShownFor;
 
         // Formats from UiStrings, fetched once in Awake (TMP SetText formats: {0:1} = one decimal)
         private string _hintsFormat;
-        private string _killsTargetFormat;
-        private string _killsFormat;
-        private string _timeFormat;
         private string _fpsFormat;
         private string _voxelsFormat;
         private string _debrisFormat;
         private string _remeshFormat;
         private string _smokeFormat;
 
-        /// <summary>The battle counters shown top-left; null hides them.</summary>
-        public void SetStats(IBattleStats stats)
-        {
-            _stats = stats;
-            _killsText.gameObject.SetActive(stats != null);
-            _timeText.gameObject.SetActive(stats != null);
-            _shownKills = _shownTarget = _shownSeconds = -1;
-        }
+        /// <summary>The run whose counters the HUD shows.</summary>
+        public void SetRun(IRunHudSource run) => _run.Bind(run);
 
         /// <summary>
         /// Rebuilds the hint lines from the current bindings (they may have been changed in the settings) and
@@ -79,11 +69,13 @@ namespace Game
         public void RefreshHints()
         {
             GameControls.TankActions tank = Controls.Tank;
+            InputAction special = Controls.asset.FindAction(SPECIAL_ACTION, throwIfNotFound: false);
             _hintsText.text = string.Format(_hintsFormat,
                 KeyNameUseCase.OfAction(tank.FireMain),
                 KeyNameUseCase.OfAction(tank.FireSecondary),
                 KeyNameUseCase.OfAction(tank.Boost),
                 KeyNameUseCase.OfBinding(tank.Drive, 0),
+                special != null ? KeyNameUseCase.OfAction(special) : KeyNameUseCase.EMPTY,
                 KeyNameUseCase.OfAction(tank.Pause),
                 KeyNameUseCase.OfAction(tank.ToggleHints));
         }
@@ -92,10 +84,7 @@ namespace Game
 
         private void Awake()
         {
-            _hintsFormat = UiStrings.Get("hud.hints_format");
-            _killsTargetFormat = UiStrings.Get("hud.kills_target_format");
-            _killsFormat = UiStrings.Get("hud.kills_format");
-            _timeFormat = UiStrings.Get("hud.time_format");
+            _hintsFormat = UiStrings.Get("run.hud_hints_format");
             _fpsFormat = UiStrings.Get("hud.debug_fps_format");
             _voxelsFormat = UiStrings.Get("hud.debug_voxels_format");
             _debrisFormat = UiStrings.Get("hud.debug_debris_format");
@@ -104,23 +93,27 @@ namespace Game
 
             _onToggleHints = HandleToggleHints;
             _onToggleDebug = HandleToggleDebug;
+            _onArenaStarted = HandleArenaStarted;
             _debug.SetActive(false);
         }
 
-        // The stack shows the HUD when the battle starts (the object is off until then): fresh hints.
+        // The stack shows the HUD when the battle starts (the object is off until then): fresh hint texts. They
+        // show by themselves on an arena with the Controls hint, or with F1.
         private void OnEnable()
         {
             Controls.Tank.ToggleHints.performed += _onToggleHints;
             Controls.Tank.ToggleDebug.performed += _onToggleDebug;
+            _run.ArenaStarted += _onArenaStarted;
             _nextRefresh = 0f;
             RefreshHints();
-            ShowHints(false);
+            HideHints();
         }
 
         private void OnDisable()
         {
             Controls.Tank.ToggleHints.performed -= _onToggleHints;
             Controls.Tank.ToggleDebug.performed -= _onToggleDebug;
+            _run.ArenaStarted -= _onArenaStarted;
         }
 
         protected override void Update() // perf-ok: ticks during pause (hud)
@@ -130,43 +123,15 @@ namespace Game
             float now = Time.unscaledTime;
             _frameMs = Mathf.Lerp(_frameMs, Time.unscaledDeltaTime * 1000f, FRAME_SMOOTHING);
             _tank.Tick();
+            _run.Tick(now);
             TickHints(now);
 
             if (now < _nextRefresh)
                 return;
 
             _nextRefresh = now + REFRESH_INTERVAL;
-            RefreshStats();
             if (_debug.activeSelf)
                 RefreshDebug();
-        }
-
-        // ---------- Counters ----------
-
-        private void RefreshStats()
-        {
-            if (_stats == null)
-                return;
-
-            int kills = _stats.Kills;
-            int target = _stats.KillTarget;
-            if (kills != _shownKills || target != _shownTarget)
-            {
-                _shownKills = kills;
-                _shownTarget = target;
-                if (target > 0)
-                    _killsText.SetText(_killsTargetFormat, kills, target);
-                else
-                    _killsText.SetText(_killsFormat, kills);
-            }
-
-            int seconds = ClockTextUseCase.ShownSeconds(_stats.ElapsedTime);
-            if (seconds != _shownSeconds)
-            {
-                _shownSeconds = seconds;
-                ClockTextUseCase.Split(seconds, out int minutes, out int rest);
-                _timeText.SetText(_timeFormat, minutes, rest);
-            }
         }
 
         // ---------- Hints ----------
@@ -176,14 +141,21 @@ namespace Game
             if (_hintsVisible)
                 HideHints();
             else
-                ShowHints(true);
+                ShowHints(true, HINTS_SHOWN_FOR);
         }
 
-        /// <summary>Pinned (asked for with F1): stays until F1 again; otherwise fades out after a while.</summary>
-        private void ShowHints(bool pinned)
+        private void HandleArenaStarted(ArenaHint hints)
+        {
+            if ((hints & ArenaHint.Controls) != 0)
+                ShowHints(false, ARENA_HINTS_SHOWN_FOR);
+        }
+
+        /// <summary>Pinned (asked for with F1): stays until F1 again; otherwise fades out after shownFor seconds.</summary>
+        private void ShowHints(bool pinned, float shownFor)
         {
             _hintsVisible = true;
             _hintsPinned = pinned;
+            _hintsShownFor = shownFor;
             _hintsShownAt = Time.unscaledTime;
             _hints.alpha = 1f;
             _hints.gameObject.SetActive(true);
@@ -200,7 +172,7 @@ namespace Game
             if (!_hintsVisible || _hintsPinned)
                 return;
 
-            float fade = (now - _hintsShownAt - HINTS_SHOWN_FOR) / HINTS_FADE;
+            float fade = (now - _hintsShownAt - _hintsShownFor) / HINTS_FADE;
             if (fade <= 0f)
                 return;
 

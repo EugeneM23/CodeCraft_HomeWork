@@ -6,11 +6,12 @@ namespace Game.EditorTools
 {
     /// <summary>
     /// Builds the settings screen inside a canvas and wires its fields; MenuUiBuilder and BattleUiBuilder embed
-    /// it in their prefabs (no prefab of its own). A centred panel: title, tabs, the tab's rows, bottom buttons.
+    /// it in their prefabs (no prefab of its own). A centred pack window: title plate, tabs, the tab's rows, bottom
+    /// buttons.
     /// </summary>
     public static class SettingsScreenBuilder
     {
-        private static readonly Vector2 PanelSize = new(1100, 760);
+        private static readonly Vector2 PanelSize = new(1120, 800);
         private const float TAB_WIDTH = 240f;
         private const float LABEL_SHARE = 4f;
         private const float CONTROL_SHARE = 6f;
@@ -22,13 +23,11 @@ namespace Game.EditorTools
         {
             SettingsScreen screen = UiFactory.Screen<SettingsScreen>("SettingsScreen", parent, dim: true);
 
-            Image panel = UiFactory.Panel("Panel", screen.transform, UiStyle.Panel);
+            // The pack's window, the title on its plate
+            Image panel = UiFactory.Window("Panel", screen.transform);
             UiFactory.Place(panel.rectTransform, new Vector2(0.5f, 0.5f), Vector2.zero, PanelSize);
-            UiFactory.Vertical(panel.rectTransform, UiStyle.SPACING, (int)UiStyle.PADDING);
-
-            TextMeshProUGUI title = UiFactory.LocalizedText("Title", panel.transform, "settings.title", UiStyle.FONT_TITLE,
-                TextAlignmentOptions.Center, bold: true);
-            UiFactory.Size(title, 56);
+            UiFactory.WindowLayout(panel.rectTransform, UiStyle.SPACING, true);
+            UiFactory.LocalizedWindowTitle(panel, "settings.title");
 
             // Tabs
             RectTransform tabs = UiFactory.Rect("Tabs", panel.transform);
@@ -169,8 +168,10 @@ namespace Game.EditorTools
 
         private static RebindRow BuildRowTemplate(RectTransform list)
         {
-            Image row = UiFactory.Panel("RowTemplate", list, UiStyle.PanelLight);
+            // RebindRow flashes this frame's tint toward the accent
+            Image row = UiFactory.Frame("RowTemplate", list, UiPackSprites.Row);
             UiFactory.Horizontal(row.rectTransform, UiStyle.SPACING, 4, TextAnchor.MiddleLeft, expandHeight: false);
+            row.GetComponent<HorizontalLayoutGroup>().padding = new RectOffset(16, 6, 4, 4);
             UiFactory.Size(row, UiStyle.BUTTON_HEIGHT + 8);
             RebindRow rebind = row.gameObject.AddComponent<RebindRow>();
 
@@ -195,7 +196,9 @@ namespace Game.EditorTools
 
         private static Button TabButton(RectTransform row, string name, string key)
         {
+            // The pack's tab; SettingsScreen marks the active one by its label's colour
             Button button = UiFactory.LocalizedButton(name, row, key);
+            UiFactory.ApplyTintSkin(button, UiPackSprites.Tab.AsSkin);
             UiFactory.Size(button, UiStyle.BUTTON_HEIGHT, TAB_WIDTH);
             Label(button).color = UiStyle.TextMuted;
             return button;

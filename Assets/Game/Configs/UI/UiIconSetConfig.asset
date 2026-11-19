@@ -1,0 +1,81 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e08764b979f6ab94e99795491c1147b9, type: 3}
+  m_Name: UiIconSetConfig
+  m_EditorClassIdentifier: Game::Game.UiIconSetConfig
+  _skills:
+  - id: turret
+    sprite: {fileID: 21300000, guid: 9e34d3eabdf58bc498232bc6a12cf1ce, type: 3}
+  - id: side_flamers
+    sprite: {fileID: 21300000, guid: b9ed1157e47350849a4469c0372cee94, type: 3}
+  - id: mortar
+    sprite: {fileID: 21300000, guid: cd721a31a6f13dc4ca34ed02da770ace, type: 3}
+  - id: rockets
+    sprite: {fileID: 21300000, guid: 37c7faa38711a6044bf12b84912e0dd5, type: 3}
+  - id: rear_mines
+    sprite: {fileID: 21300000, guid: e8cfafe9591c9b2409f3f71b63212f36, type: 3}
+  - id: air_strike
+    sprite: {fileID: 21300000, guid: 3f129cabb35ab4d45bd2fa4880196b4b, type: 3}
+  - id: ricochet
+    sprite: {fileID: 21300000, guid: 67f11e788b9d89b41b789201f7254509, type: 3}
+  - id: double_shot
+    sprite: {fileID: 21300000, guid: 11e40dd8122b5a14282c0f6900aef54c, type: 3}
+  - id: piercing
+    sprite: {fileID: 21300000, guid: 9175634cb85ec4f4c9b9630f1883bdb6, type: 3}
+  - id: big_caliber
+    sprite: {fileID: 21300000, guid: ba23bc7dabcd5e342a50aa57c482e496, type: 3}
+  - id: rate_of_fire
+    sprite: {fileID: 21300000, guid: db7e2dc1a8334d94482fe0e0a13d9287, type: 3}
+  - id: shrapnel
+    sprite: {fileID: 21300000, guid: 2c6681b6993fb3d4f808d9a03529682f, type: 3}
+  - id: track_spikes
+    sprite: {fileID: 21300000, guid: 155929a4f2db1354fa17e65dc2fd461c, type: 3}
+  - id: armor
+    sprite: {fileID: 21300000, guid: e7ce837574cb7ef48883710e912c3718, type: 3}
+  - id: regeneration
+    sprite: {fileID: 21300000, guid: 8144acae632f40449aa9f42c8ccc8074, type: 3}
+  - id: magnet
+    sprite: {fileID: 21300000, guid: 9a6189c894559c546a8fc639ae5d57b6, type: 3}
+  - id: boost
+    sprite: {fileID: 21300000, guid: 1ff5d6fba10b2b544ac75fe449d694cb, type: 3}
+  - id: shake
+    sprite: {fileID: 21300000, guid: d737cdde835ca9a4baa9b19745e12be9, type: 3}
+  - id: luck
+    sprite: {fileID: 21300000, guid: df7474daad255e043a59778fa495adbf, type: 3}
+  _slots:
+  - id: Gun
+    sprite: {fileID: 21300000, guid: 9e406253d198e3144bfc5127c13048a1, type: 3}
+  - id: MachineGun
+    sprite: {fileID: 21300000, guid: 89c94b010a5928f4a9b03d41d3a4d4c1, type: 3}
+  - id: Armor
+    sprite: {fileID: 21300000, guid: e7ce837574cb7ef48883710e912c3718, type: 3}
+  - id: Engine
+    sprite: {fileID: 21300000, guid: 1ff5d6fba10b2b544ac75fe449d694cb, type: 3}
+  - id: Tracks
+    sprite: {fileID: 21300000, guid: 9e8685da8eab2e440aa989ce0e12eb99, type: 3}
+  - id: Special
+    sprite: {fileID: 21300000, guid: 4fa83e931ac3a3c468c2e1e9d20c3ab7, type: 3}
+  _modules:
+  - id: gun_howitzer
+    sprite: {fileID: 21300000, guid: cd721a31a6f13dc4ca34ed02da770ace, type: 3}
+  - id: gun_88_he
+    sprite: {fileID: 21300000, guid: e8cfafe9591c9b2409f3f71b63212f36, type: 3}
+  - id: armor_dozer
+    sprite: {fileID: 21300000, guid: d59646037ab90d544b36716b5f97a3ca, type: 3}
+  - id: engine_boosted
+    sprite: {fileID: 21300000, guid: b9ed1157e47350849a4469c0372cee94, type: 3}
+  - id: special_smoke
+    sprite: {fileID: 21300000, guid: 7727f52e047c0ea4ba9789dbd81e9ad7, type: 3}
+  - id: special_repair
+    sprite: {fileID: 21300000, guid: d3f16ebab9d0dc54f8fb385141bd4942, type: 3}
+  - id: special_shockwave
+    sprite: {fileID: 21300000, guid: 7c536c3322895954c95d114305537088, type: 3}

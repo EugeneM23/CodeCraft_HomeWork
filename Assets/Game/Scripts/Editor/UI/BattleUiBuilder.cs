@@ -1,3 +1,4 @@
+using ScreenNavigation;
 using TMPro;
 using UnityEditor;
 using UnityEngine;
@@ -8,10 +9,12 @@ using UnityEngine.UI;
 namespace Game.EditorTools
 {
     /// <summary>
-    /// Builds the BattleUi prefab: a canvas with the HUD, pause, results, the Yes/No dialog and the settings
-    /// screen, SandboxBattleStats, the EventSystem, and BattleFlow on the root wired to all of them. The
-    /// HUD's often-changing parts (bars, crosshair, counters) and the debug block sit under nested canvases
-    /// of their own, so their changes do not rebuild the rest.
+    /// Builds the BattleUi prefab: a canvas with the HUD (tank bars, crosshair, the run's counters, skills,
+    /// special, elite bar, gate pointer, crush streak), the pause with the run's skills, the skill choice, the
+    /// run results, the Yes/No dialog and the settings screen, the EventSystem, and BattleFlow on the root
+    /// wired to all of them. The run itself comes from AppServices.RunHud at run time. The HUD's
+    /// often-changing parts sit under nested canvases of their own, so their changes do not rebuild the rest.
+    /// Layout is anchored to the screen's corners and centre, so it holds from 16:9 to 21:9.
     /// </summary>
     public static class BattleUiBuilder
     {
@@ -22,41 +25,43 @@ namespace Game.EditorTools
         private const float ROW_HEIGHT = 28f;
         private const float LABEL_WIDTH = 140f;
         private const float VALUE_WIDTH = 110f;
+        private const int SKILL_PLACES = SkillOfferUseCase.MAX_WEAPONS + SkillOfferUseCase.MAX_UPGRADES;
+        private const float SKILL_ICON = 48f;
+        private const float SPECIAL_SIZE = 72f;
+        private const string KNOB_SPRITE = "UI/Skin/Knob.psd";
+
+        // The icon set given to every skill icon view of this build
+        private static UiIconSetConfig s_icons;
 
         [MenuItem("Tools/UI/Build Battle UI")]
         public static void Build()
         {
+            s_icons = UiIconSetBuilder.Ensure();
             Canvas canvas = UiFactory.Canvas(PREFAB_NAME, SORTING_ORDER);
             Transform root = canvas.transform;
 
             HudScreen hud = CreateHud(root);
             PauseScreen pause = CreatePause(root);
-            BattleResultsScreen results = CreateResults(root);
+            SkillChoiceScreen choice = CreateSkillChoice(root);
+            RunResultsScreen results = CreateResults(root);
             SettingsScreen settings = SettingsScreenBuilder.Create(root);
             ConfirmDialog dialog = ConfirmDialogBuilder.Create(root);
 
             LevelCatalog catalog = UiDataBuilder.LoadLevelCatalog();
-            LevelDesignConfig design = UiDataBuilder.LoadLevelDesign();
-            if (catalog == null || design == null)
-                Debug.LogWarning($"{nameof(BattleUiBuilder)}: no {UiDataBuilder.LEVEL_CATALOG_PATH} or " +
-                                 $"{UiDataBuilder.LEVEL_DESIGN_PATH} yet (Build UI data first); " +
-                                 "BattleUi is saved without them and plays the scene as a level-less sandbox.");
-
-            SandboxBattleStats stats = canvas.gameObject.AddComponent<SandboxBattleStats>();
-            UiFactory.SetField(stats, "_levelCatalog", catalog);
-            UiFactory.SetField(stats, "_levelDesign", design);
+            if (catalog == null)
+                Debug.LogWarning($"{nameof(BattleUiBuilder)}: no {UiDataBuilder.LEVEL_CATALOG_PATH} yet (Build UI data first); " +
+                                 "BattleUi is saved without it, «Ещё раз» then reloads the open scene only through the core flow.");
 
             CreateEventSystem(root);
 
             BattleFlow flow = canvas.gameObject.AddComponent<BattleFlow>();
             UiFactory.SetField(flow, "_hud", hud);
             UiFactory.SetField(flow, "_pause", pause);
+            UiFactory.SetField(flow, "_skillChoice", choice);
             UiFactory.SetField(flow, "_results", results);
             UiFactory.SetField(flow, "_confirmDialog", dialog);
             UiFactory.SetField(flow, "_settings", settings);
             UiFactory.SetField(flow, "_levelCatalog", catalog);
-            UiFactory.SetField(flow, "_levelDesign", design);
-            UiFactory.SetField(flow, "_battleStats", stats);
 
             GameObject prefab = UiFactory.SavePrefab(canvas.gameObject, PREFAB_NAME);
             Selection.activeObject = prefab;
@@ -72,14 +77,24 @@ namespace Game.EditorTools
 
             // Static part: the hints panel, on the screen's own canvas.
             CanvasGroup hints = CreateHints(screen, out TMP_Text hintsText);
+            CanvasGroup arenaHint = CreateArenaHint(screen, out TMP_Text arenaHintText);
 
-            // Often-changing part: bars, crosshair, counters.
+            // Often-changing part: bars, crosshair, counters, pointer.
             RectTransform dynamic = NestedCanvas("Dynamic", screen);
             TankHudView tank = dynamic.gameObject.AddComponent<TankHudView>();
             CreateHullBars(dynamic, tank);
             CreateWeaponBars(dynamic, tank);
             CreateCrosshair(dynamic, tank);
-            CreateCounters(dynamic, out TMP_Text kills, out TMP_Text time);
+
+            RunHudView run = dynamic.gameObject.AddComponent<RunHudView>();
+            CreateRunCounters(dynamic, run);
+            CreateSkillIcons(dynamic, run);
+            CreateSpecial(dynamic, run);
+            CreateEliteBar(dynamic, run);
+            CreateCrush(dynamic, run);
+            CreateGatePointer(dynamic, run);
+            UiFactory.SetField(run, "_arenaHintGroup", arenaHint);
+            UiFactory.SetField(run, "_arenaHintText", arenaHintText);
 
             // Debug block (F3), hidden by default, on a canvas of its own: it changes 4 times a second.
             RectTransform debug = NestedCanvas("Debug", screen);
@@ -87,8 +102,7 @@ namespace Game.EditorTools
             debug.gameObject.SetActive(false);
 
             UiFactory.SetField(hud, "_tank", tank);
-            UiFactory.SetField(hud, "_killsText", kills);
-            UiFactory.SetField(hud, "_timeText", time);
+            UiFactory.SetField(hud, "_run", run);
             UiFactory.SetField(hud, "_hints", hints);
             UiFactory.SetField(hud, "_hintsText", hintsText);
             UiFactory.SetField(hud, "_debug", debug.gameObject);
@@ -109,7 +123,7 @@ namespace Game.EditorTools
 
         private static CanvasGroup CreateHints(RectTransform parent, out TMP_Text text)
         {
-            Image panel = UiFactory.Panel("Hints", parent, UiStyle.Panel);
+            Image panel = UiFactory.Frame("Hints", parent, UiPackSprites.Panel);
             panel.raycastTarget = false;
             UiFactory.Place(panel.rectTransform, Vector2.zero, new Vector2(UiStyle.PADDING, UiStyle.PADDING + 110f),
                 new Vector2(360, 170));
@@ -127,16 +141,14 @@ namespace Game.EditorTools
         {
             RectTransform group = UiFactory.Rect("Hull", parent);
             UiFactory.Place(group, Vector2.zero, new Vector2(UiStyle.PADDING, UiStyle.PADDING),
-                new Vector2(LABEL_WIDTH + BAR_WIDTH + VALUE_WIDTH + 2 * UiStyle.SPACING, 2 * ROW_HEIGHT + 6));
+                new Vector2(LABEL_WIDTH + BAR_WIDTH + VALUE_WIDTH + 2 * UiStyle.SPACING, ROW_HEIGHT));
             UiFactory.Vertical(group, 6);
 
-            Row(group, "Health", "hud.health", UiStyle.Health, out Image healthFill, out TMP_Text healthText);
-            Row(group, "Armor", "hud.armor", UiStyle.Armor, out Image armorFill, out TMP_Text armorText);
+            // GDD HUD: health only, no armour stat
+            Row(group, "Health", "run.hud_health", UiStyle.Health, out Image healthFill, out TMP_Text healthText);
 
             UiFactory.SetField(tank, "_healthFill", healthFill);
             UiFactory.SetField(tank, "_healthText", healthText);
-            UiFactory.SetField(tank, "_armorFill", armorFill);
-            UiFactory.SetField(tank, "_armorText", armorText);
         }
 
         private static void CreateWeaponBars(RectTransform parent, TankHudView tank)
@@ -155,7 +167,7 @@ namespace Game.EditorTools
             TextMeshProUGUI boostLabel = UiFactory.LocalizedText("Label", boost, "hud.boost", UiStyle.FONT_SMALL, bold: true,
                 color: UiStyle.TextMuted);
             UiFactory.Size(boostLabel, ROW_HEIGHT, LABEL_WIDTH);
-            Image lamp = UiFactory.Panel("Lamp", boost, UiStyle.Disabled);
+            Image lamp = UiFactory.Frame("Lamp", boost, UiPackSprites.BarFill, UiStyle.Disabled); // TankHudView tints it
             lamp.raycastTarget = false;
             UiFactory.Size(lamp, BAR_HEIGHT, 48);
 
@@ -198,7 +210,7 @@ namespace Game.EditorTools
 
             Image arc = UiFactory.Panel("ReloadArc", cross, new Color(UiStyle.Accent.r, UiStyle.Accent.g, UiStyle.Accent.b, 0.35f));
             UiFactory.Stretch(arc.rectTransform);
-            arc.sprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/Knob.psd");
+            arc.sprite = AssetDatabase.GetBuiltinExtraResource<Sprite>(KNOB_SPRITE);
             arc.type = Image.Type.Filled;
             arc.fillMethod = Image.FillMethod.Radial360;
             arc.fillOrigin = (int)Image.Origin360.Top;
@@ -231,26 +243,9 @@ namespace Game.EditorTools
             return line;
         }
 
-        private static void CreateCounters(RectTransform parent, out TMP_Text kills, out TMP_Text time)
-        {
-            RectTransform row = UiFactory.Rect("Counters", parent);
-            UiFactory.Place(row, new Vector2(0, 1), new Vector2(UiStyle.PADDING, -UiStyle.PADDING), new Vector2(560, 40));
-            UiFactory.Horizontal(row, UiStyle.PADDING, 0, TextAnchor.MiddleLeft);
-
-            // HudScreen writes both
-            TextMeshProUGUI killsText = UiFactory.Text("Kills", row, "-", UiStyle.FONT_HEADER, bold: true);
-            killsText.textWrappingMode = TextWrappingModes.NoWrap;
-            UiFactory.Size(killsText, 40, 220);
-            TextMeshProUGUI timeText = UiFactory.Text("Time", row, "-", UiStyle.FONT_HEADER);
-            timeText.textWrappingMode = TextWrappingModes.NoWrap;
-            UiFactory.Size(timeText, 40, 240);
-            kills = killsText;
-            time = timeText;
-        }
-
         private static TMP_Text[] CreateDebug(RectTransform parent)
         {
-            Image panel = UiFactory.Panel("Panel", parent, UiStyle.Panel);
+            Image panel = UiFactory.Frame("Panel", parent, UiPackSprites.Panel);
             panel.raycastTarget = false;
             UiFactory.Place(panel.rectTransform, Vector2.one, new Vector2(-UiStyle.PADDING, -UiStyle.PADDING),
                 new Vector2(560, 5 * 24 + 24));
@@ -268,84 +263,435 @@ namespace Game.EditorTools
             return lines;
         }
 
+        // ---------- HUD: the run ----------
+
+        /// <summary>The arena's hints other than the keys (crush, destroy cover), top centre under the elite bar.</summary>
+        private static CanvasGroup CreateArenaHint(RectTransform parent, out TMP_Text text)
+        {
+            Image panel = UiFactory.Frame("ArenaHint", parent, UiPackSprites.Panel);
+            panel.raycastTarget = false;
+            UiFactory.Place(panel.rectTransform, new Vector2(0.5f, 1), new Vector2(0, -170), new Vector2(760, 84));
+            CanvasGroup group = panel.gameObject.AddComponent<CanvasGroup>();
+            group.blocksRaycasts = false;
+            group.interactable = false;
+
+            text = UiFactory.Text("Text", panel.transform, "-", UiStyle.FONT_BODY, TextAlignmentOptions.Center,
+                bold: true, color: UiStyle.Accent); // RunHudView writes it
+            UiFactory.Stretch(text.rectTransform, 16, 16, 8, 8);
+            panel.gameObject.SetActive(false);
+            return group;
+        }
+
+        private static void CreateRunCounters(RectTransform parent, RunHudView run)
+        {
+            Image panel = UiFactory.Frame("Run", parent, UiPackSprites.Panel);
+            panel.raycastTarget = false;
+            UiFactory.Place(panel.rectTransform, new Vector2(0, 1), new Vector2(UiStyle.PADDING, -UiStyle.PADDING),
+                new Vector2(480, 140));
+            UiFactory.Vertical(panel.rectTransform, 6, 12);
+
+            // RunHudView writes every value
+            RectTransform top = HudRow("Arena", panel.transform, 36);
+            TMP_Text arena = HudText("Arena", top, UiStyle.FONT_HEADER, 240, true, UiStyle.Text);
+            TMP_Text time = HudText("Time", top, UiStyle.FONT_HEADER, 140, false, UiStyle.TextMuted);
+
+            RectTransform xp = HudRow("Experience", panel.transform, 26);
+            TMP_Text level = HudText("Level", xp, UiStyle.FONT_BODY, 90, true, UiStyle.Accent);
+            Image xpFill = UiFactory.Bar("XpBar", xp, Color.white, new Vector2(250, 14), UiPackSprites.ProgressBack,
+                UiPackSprites.ProgressFill, Color.white); // the pack's cyan progress bar
+            UiFactory.Size(xpFill.transform.parent.GetComponent<Image>(), 14, 250);
+            TMP_Text xpText = HudText("XpValue", xp, UiStyle.FONT_SMALL, 90, false, UiStyle.TextMuted);
+
+            RectTransform currency = HudRow("Currency", panel.transform, 28);
+            TMP_Text marks = HudText("Marks", currency, UiStyle.FONT_BODY, 200, true, UiStyle.Accent);
+            TMP_Text samples = HudText("Samples", currency, UiStyle.FONT_BODY, 200, true, UiStyle.Armor);
+
+            UiFactory.SetField(run, "_arenaText", arena);
+            UiFactory.SetField(run, "_timeText", time);
+            UiFactory.SetField(run, "_levelText", level);
+            UiFactory.SetField(run, "_xpFill", xpFill);
+            UiFactory.SetField(run, "_xpText", xpText);
+            UiFactory.SetField(run, "_marksText", marks);
+            UiFactory.SetField(run, "_samplesText", samples);
+        }
+
+        private static RectTransform HudRow(string name, Transform parent, float height)
+        {
+            RectTransform row = UiFactory.Rect(name, parent);
+            UiFactory.Horizontal(row, UiStyle.SPACING, 0, TextAnchor.MiddleLeft, expandHeight: false);
+            UiFactory.Size(row, height);
+            return row;
+        }
+
+        private static TMP_Text HudText(string name, Transform parent, float size, float width, bool bold, Color color)
+        {
+            TextMeshProUGUI text = UiFactory.Text(name, parent, "-", size, bold: bold, color: color);
+            text.textWrappingMode = TextWrappingModes.NoWrap;
+            UiFactory.Size(text, size + 8, width);
+            return text;
+        }
+
+        private static void CreateSkillIcons(RectTransform parent, RunHudView run)
+        {
+            const float spacing = 6f;
+            RectTransform row = UiFactory.Rect("Skills", parent);
+            UiFactory.Place(row, new Vector2(0.5f, 0), new Vector2(0, UiStyle.PADDING),
+                new Vector2(SKILL_PLACES * (SKILL_ICON + spacing), SKILL_ICON));
+            UiFactory.Horizontal(row, spacing, 0, TextAnchor.MiddleCenter, expandHeight: false);
+
+            var icons = new Object[SKILL_PLACES];
+            for (int i = 0; i < SKILL_PLACES; i++)
+            {
+                Image frame = SkillIcon($"Skill{i + 1}", row, SKILL_ICON, out Image symbol, out TMP_Text glyph,
+                    out TMP_Text level);
+                UiFactory.Size(frame, SKILL_ICON, SKILL_ICON);
+                SkillIconView icon = frame.gameObject.AddComponent<SkillIconView>();
+                UiFactory.SetField(icon, "_symbol", symbol);
+                UiFactory.SetField(icon, "_glyph", glyph);
+                UiFactory.SetField(icon, "_level", level);
+                UiFactory.SetField(icon, "_icons", s_icons);
+                icons[i] = icon;
+            }
+            UiFactory.SetArray(run, "_skillIcons", icons);
+        }
+
+        /// <summary>
+        /// A skill icon: the pack's icon frame with the icon set's sprite in it (the glyph when it has none), the
+        /// level on the pack's small plate in the corner.
+        /// </summary>
+        private static Image SkillIcon(string name, Transform parent, float size, out Image symbol, out TMP_Text glyphText,
+            out TMP_Text levelText)
+        {
+            Image frame = UiFactory.IconFrame(name, parent, size, false, out symbol, out TextMeshProUGUI glyph);
+
+            Image levelBack = UiFactory.Frame("Level", frame.transform, UiPackSprites.LevelPlate);
+            levelBack.raycastTarget = false;
+            float plate = Mathf.Round(size * 0.42f);
+            UiFactory.Place(levelBack.rectTransform, new Vector2(1, 0), new Vector2(4f, -4f), new Vector2(plate, plate));
+            TextMeshProUGUI level = UiFactory.Text("Value", levelBack.transform, "1", Mathf.Round(size * 0.28f),
+                TextAlignmentOptions.Center, bold: true);
+            level.textWrappingMode = TextWrappingModes.NoWrap;
+            UiFactory.Stretch(level.rectTransform);
+
+            glyphText = glyph;
+            levelText = level;
+            return frame;
+        }
+
+        private static void CreateSpecial(RectTransform parent, RunHudView run)
+        {
+            // Above the weapon bars, bottom-right: the pack's round skill frame (RunHudView tints it by readiness)
+            // and a round charge fill in it.
+            Image frame = UiFactory.Frame("Special", parent, UiPackSprites.SpecialFrame, UiStyle.Panel);
+            frame.preserveAspect = true;
+            frame.raycastTarget = false;
+            UiFactory.Place(frame.rectTransform, new Vector2(1, 0),
+                new Vector2(-UiStyle.PADDING, UiStyle.PADDING + 3 * ROW_HEIGHT + 12 + UiStyle.SPACING),
+                new Vector2(SPECIAL_SIZE, SPECIAL_SIZE));
+
+            Image fill = UiFactory.Panel("Fill", frame.transform, UiStyle.Accent);
+            UiFactory.Stretch(fill.rectTransform, 10, 10, 10, 10);
+            fill.sprite = AssetDatabase.GetBuiltinExtraResource<Sprite>(KNOB_SPRITE);
+            fill.type = Image.Type.Filled;
+            fill.fillMethod = Image.FillMethod.Radial360;
+            fill.fillOrigin = (int)Image.Origin360.Top;
+            fill.fillClockwise = true;
+            fill.raycastTarget = false;
+
+            TextMeshProUGUI key = UiFactory.LocalizedText("Key", frame.transform, "run.hud_special_key", UiStyle.FONT_HEADER,
+                TextAlignmentOptions.Center, bold: true, color: UiStyle.Text);
+            UiFactory.Stretch(key.rectTransform);
+
+            TextMeshProUGUI label = UiFactory.LocalizedText("Label", frame.transform, "run.hud_special", UiStyle.FONT_SMALL,
+                TextAlignmentOptions.Right, bold: true, color: UiStyle.TextMuted);
+            label.textWrappingMode = TextWrappingModes.NoWrap;
+            UiFactory.Place(label.rectTransform, new Vector2(0, 0.5f), new Vector2(-UiStyle.SPACING - 100f, 0), new Vector2(100, 24));
+
+            UiFactory.SetField(run, "_specialGroup", frame.gameObject);
+            UiFactory.SetField(run, "_specialFill", fill);
+            UiFactory.SetField(run, "_specialFrame", frame);
+        }
+
+        private static void CreateEliteBar(RectTransform parent, RunHudView run)
+        {
+            const float width = 640f;
+            RectTransform group = UiFactory.Rect("Elite", parent);
+            UiFactory.Place(group, new Vector2(0.5f, 1), new Vector2(0, -UiStyle.PADDING), new Vector2(width, 56));
+            UiFactory.Vertical(group, 4, 0, TextAnchor.UpperCenter);
+
+            TextMeshProUGUI label = UiFactory.LocalizedText("Label", group, "run.hud_elite", UiStyle.FONT_SMALL,
+                TextAlignmentOptions.Center, bold: true, color: UiStyle.Bad);
+            UiFactory.Size(label, 24);
+            Image fill = UiFactory.Bar("Bar", group, UiStyle.Bad, new Vector2(width, BAR_HEIGHT));
+            UiFactory.Size(fill.transform.parent.GetComponent<Image>(), BAR_HEIGHT, width);
+
+            UiFactory.SetField(run, "_eliteGroup", group.gameObject);
+            UiFactory.SetField(run, "_eliteFill", fill);
+        }
+
+        private static void CreateCrush(RectTransform parent, RunHudView run)
+        {
+            RectTransform group = UiFactory.Rect("Crush", parent);
+            UiFactory.Place(group, new Vector2(0.5f, 1), new Vector2(0, -100), new Vector2(480, 60));
+            CanvasGroup canvasGroup = group.gameObject.AddComponent<CanvasGroup>();
+            canvasGroup.alpha = 0f;
+            canvasGroup.blocksRaycasts = false;
+            canvasGroup.interactable = false;
+
+            TextMeshProUGUI text = UiFactory.Text("Text", group, "-", UiStyle.FONT_TITLE, TextAlignmentOptions.Center,
+                bold: true, color: UiStyle.Accent); // RunHudView writes it
+            text.textWrappingMode = TextWrappingModes.NoWrap;
+            UiFactory.Stretch(text.rectTransform);
+
+            UiFactory.SetField(run, "_crushGroup", canvasGroup);
+            UiFactory.SetField(run, "_crushText", text);
+        }
+
+        private static void CreateGatePointer(RectTransform parent, RunHudView run)
+        {
+            RectTransform pointer = UiFactory.Rect("GatePointer", parent);
+            UiFactory.Place(pointer, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(96, 96));
+
+            // The pack's cyan chevron, pointing down like the built-in arrow the pointer's rotation expects
+            Image arrow = UiFactory.Frame("Arrow", pointer, UiPackSprites.GateArrow);
+            arrow.type = Image.Type.Simple;
+            arrow.preserveAspect = true;
+            arrow.raycastTarget = false;
+            UiFactory.Place(arrow.rectTransform, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(56, 56));
+
+            TextMeshProUGUI label = UiFactory.LocalizedText("Label", pointer, "run.hud_gate", UiStyle.FONT_SMALL,
+                TextAlignmentOptions.Center, bold: true, color: UiStyle.Accent);
+            label.textWrappingMode = TextWrappingModes.NoWrap;
+            UiFactory.Place(label.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0, -44), new Vector2(140, 24));
+            pointer.gameObject.SetActive(false);
+
+            UiFactory.SetField(run, "_pointerArea", parent);
+            UiFactory.SetField(run, "_gatePointer", pointer);
+            UiFactory.SetField(run, "_gateArrow", arrow.rectTransform);
+        }
+
         // ---------- Pause ----------
 
         private static PauseScreen CreatePause(Transform parent)
         {
             PauseScreen pause = UiFactory.Screen<PauseScreen>("Pause", parent, overlay: true, canGoBack: true, dim: true);
 
-            Image box = UiFactory.Panel("Box", pause.transform, UiStyle.PanelLight);
-            UiFactory.Place(box.rectTransform, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(440, 460));
-            UiFactory.Vertical(box.rectTransform, UiStyle.SPACING, (int)UiStyle.PADDING);
+            // Two pack windows side by side, the titles on their plates
+            Image box = UiFactory.Window("Box", pause.transform);
+            UiFactory.Place(box.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(-250, 0), new Vector2(440, 320));
+            UiFactory.WindowLayout(box.rectTransform, UiStyle.SPACING, true);
+            UiFactory.LocalizedWindowTitle(box, "run.pause_title", 360f);
 
-            TextMeshProUGUI title = UiFactory.LocalizedText("Title", box.transform, "pause.title", UiStyle.FONT_TITLE,
-                TextAlignmentOptions.Center, bold: true);
-            UiFactory.Size(title, 64);
-
-            Button resume = UiFactory.LocalizedButton("Resume", box.transform, "pause.resume", accent: true);
-            Button settings = UiFactory.LocalizedButton("Settings", box.transform, "pause.settings");
-            Button restart = UiFactory.LocalizedButton("Restart", box.transform, "pause.restart");
-            Button menu = UiFactory.LocalizedButton("Menu", box.transform, "pause.menu");
-            Button quit = UiFactory.LocalizedButton("Quit", box.transform, "pause.quit");
+            Button resume = UiFactory.LocalizedButton("Resume", box.transform, "run.pause_resume", accent: true);
+            Button settings = UiFactory.LocalizedButton("Settings", box.transform, "run.pause_settings");
+            Button exit = UiFactory.LocalizedButton("Exit", box.transform, "run.pause_exit");
             resume.GetComponent<UiButtonSounds>().Click = UiSound.Back;
+
+            // The run's skills, right of the buttons
+            Image list = UiFactory.Window("Skills", pause.transform);
+            UiFactory.Place(list.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(250, 0), new Vector2(440, 640));
+            UiFactory.WindowLayout(list.rectTransform, 6, true);
+            UiFactory.LocalizedWindowTitle(list, "run.pause_skills", 360f);
+
+            var rows = new Object[SKILL_PLACES];
+            for (int i = 0; i < SKILL_PLACES; i++)
+                rows[i] = SkillRow($"Skill{i + 1}", list.transform);
+
+            TextMeshProUGUI none = UiFactory.LocalizedText("None", list.transform, "run.pause_no_skills", UiStyle.FONT_BODY,
+                TextAlignmentOptions.Center, color: UiStyle.TextMuted);
+            UiFactory.Size(none, 40);
 
             UiFactory.SetField(pause, "_resume", resume);
             UiFactory.SetField(pause, "_settings", settings);
-            UiFactory.SetField(pause, "_restart", restart);
-            UiFactory.SetField(pause, "_menu", menu);
-            UiFactory.SetField(pause, "_quit", quit);
+            UiFactory.SetField(pause, "_exit", exit);
+            UiFactory.SetArray(pause, "_skillRows", rows);
+            UiFactory.SetField(pause, "_noSkills", none.gameObject);
             UiFactory.SetField(pause, "_firstSelected", resume);
             return pause;
         }
 
-        // ---------- Results ----------
-
-        private static BattleResultsScreen CreateResults(Transform parent)
+        /// <summary>A pause list row: the skill's icon with its level, and its name.</summary>
+        private static SkillIconView SkillRow(string name, Transform parent)
         {
-            BattleResultsScreen results = UiFactory.Screen<BattleResultsScreen>("Results", parent, overlay: false,
+            const float height = 40f;
+            RectTransform row = UiFactory.Rect(name, parent);
+            UiFactory.Horizontal(row, UiStyle.SPACING, 0, TextAnchor.MiddleLeft, expandHeight: false);
+            UiFactory.Size(row, height);
+
+            Image frame = SkillIcon("Icon", row, height, out Image symbol, out TMP_Text glyph, out TMP_Text level);
+            UiFactory.Size(frame, height, height);
+
+            TextMeshProUGUI skillName = UiFactory.Text("Name", row, "-", UiStyle.FONT_BODY); // SkillIconView writes it
+            skillName.textWrappingMode = TextWrappingModes.NoWrap;
+            UiFactory.Size(skillName, height, -1, 1);
+
+            // The row is the pooled place, so hiding hides the whole row.
+            SkillIconView view = row.gameObject.AddComponent<SkillIconView>();
+            UiFactory.SetField(view, "_symbol", symbol);
+            UiFactory.SetField(view, "_glyph", glyph);
+            UiFactory.SetField(view, "_level", level);
+            UiFactory.SetField(view, "_name", skillName);
+            UiFactory.SetField(view, "_icons", s_icons);
+            row.gameObject.SetActive(false);
+            return view;
+        }
+
+        // ---------- Skill choice ----------
+
+        private static SkillChoiceScreen CreateSkillChoice(Transform parent)
+        {
+            const float cardWidth = 360f;
+            const float cardHeight = 480f;
+            const float gap = 24f;
+
+            SkillChoiceScreen choice = UiFactory.Screen<SkillChoiceScreen>("SkillChoice", parent, overlay: true,
                 canGoBack: false, dim: true);
 
-            Image box = UiFactory.Panel("Box", results.transform, UiStyle.PanelLight);
-            UiFactory.Place(box.rectTransform, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(760, 520));
-            UiFactory.Vertical(box.rectTransform, UiStyle.SPACING, (int)UiStyle.PADDING);
+            TextMeshProUGUI title = UiFactory.LocalizedText("Title", choice.transform, "run.choice_title", UiStyle.FONT_TITLE,
+                TextAlignmentOptions.Center, bold: true, color: UiStyle.Accent);
+            title.textWrappingMode = TextWrappingModes.NoWrap;
+            UiFactory.Place(title.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0, cardHeight / 2 + 110), new Vector2(1000, 64));
+            UiFactory.TitleLines(title.rectTransform, 240f); // the pack's lines either side of the title
+            TextMeshProUGUI hint = UiFactory.LocalizedText("Hint", choice.transform, "run.choice_hint", UiStyle.FONT_BODY,
+                TextAlignmentOptions.Center, color: UiStyle.TextMuted);
+            UiFactory.Place(hint.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0, cardHeight / 2 + 56), new Vector2(1000, 36));
 
-            // BattleResultsScreen.Setup writes the texts; the buttons are static.
+            RectTransform row = UiFactory.Rect("Cards", choice.transform);
+            UiFactory.Place(row, new Vector2(0.5f, 0.5f), new Vector2(0, -20),
+                new Vector2(SkillOfferUseCase.OFFER_COUNT * cardWidth + (SkillOfferUseCase.OFFER_COUNT - 1) * gap, cardHeight));
+            UiFactory.Horizontal(row, gap, 0, TextAnchor.MiddleCenter, expandHeight: false);
+
+            var cards = new Object[SkillOfferUseCase.OFFER_COUNT];
+            for (int i = 0; i < cards.Length; i++)
+            {
+                SkillCardView card = SkillCard($"Card{i + 1}", row);
+                UiFactory.Size(card, cardHeight, cardWidth);
+                cards[i] = card;
+            }
+
+            UiFactory.SetArray(choice, "_cards", cards);
+            return choice;
+        }
+
+        private static SkillCardView SkillCard(string name, Transform parent)
+        {
+            const float iconSize = 104f;
+            // The pack's item button (its pressed sprite on hover and selection)
+            Image image = UiFactory.Panel(name, parent, Color.white);
+            Button button = image.gameObject.AddComponent<Button>();
+            button.targetGraphic = image;
+            UiFactory.ApplyButtonSkin(button, UiPackSprites.SkillCard);
+            image.gameObject.AddComponent<SelectOnPointerEnter>();
+            VerticalLayoutGroup layout = UiFactory.Vertical(image.rectTransform, 8, (int)UiStyle.PADDING, TextAnchor.UpperCenter);
+            layout.padding = new RectOffset(32, 32, 30, 30);
+            SkillCardView card = image.gameObject.AddComponent<SkillCardView>();
+
+            // SkillCardView.Setup writes every text
+            TextMeshProUGUI key = UiFactory.Text("Key", image.transform, "-", UiStyle.FONT_SMALL, TextAlignmentOptions.Right,
+                bold: true, color: UiStyle.TextMuted);
+            UiFactory.Size(key, 22);
+
+            RectTransform iconRow = UiFactory.Rect("IconRow", image.transform);
+            UiFactory.Horizontal(iconRow, 0, 0, TextAnchor.MiddleCenter, expandHeight: false);
+            UiFactory.Size(iconRow, iconSize);
+            Image icon = UiFactory.IconFrame("Icon", iconRow, iconSize, true, out Image symbol, out TextMeshProUGUI glyph);
+            UiFactory.Size(icon, iconSize, iconSize);
+
+            TextMeshProUGUI skillName = UiFactory.Text("Name", image.transform, "-", UiStyle.FONT_HEADER,
+                TextAlignmentOptions.Center, bold: true);
+            UiFactory.Size(skillName, 72);
+            TextMeshProUGUI kind = UiFactory.Text("Kind", image.transform, "-", UiStyle.FONT_SMALL,
+                TextAlignmentOptions.Center, color: UiStyle.TextMuted);
+            UiFactory.Size(kind, 22);
+            TextMeshProUGUI level = UiFactory.Text("Level", image.transform, "-", UiStyle.FONT_HEADER,
+                TextAlignmentOptions.Center, bold: true, color: UiStyle.Accent);
+            UiFactory.Size(level, 36);
+            TextMeshProUGUI description = UiFactory.Text("Description", image.transform, "-", UiStyle.FONT_BODY,
+                TextAlignmentOptions.Top);
+            UiFactory.Size(description, 100, -1, -1, 1);
+
+            UiFactory.SetField(card, "_button", button);
+            UiFactory.SetField(card, "_symbol", symbol);
+            UiFactory.SetField(card, "_glyph", glyph);
+            UiFactory.SetField(card, "_icons", s_icons);
+            UiFactory.SetField(card, "_name", skillName);
+            UiFactory.SetField(card, "_kind", kind);
+            UiFactory.SetField(card, "_level", level);
+            UiFactory.SetField(card, "_description", description);
+            UiFactory.SetField(card, "_key", key);
+            return card;
+        }
+
+        // ---------- Results ----------
+
+        private static RunResultsScreen CreateResults(Transform parent)
+        {
+            RunResultsScreen results = UiFactory.Screen<RunResultsScreen>("Results", parent, overlay: false,
+                canGoBack: false, dim: true);
+
+            // The pack's window; the big victory/defeat title stays inside it (the screen colours it)
+            Image box = UiFactory.Window("Box", results.transform);
+            UiFactory.Place(box.rectTransform, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(760, 760));
+            UiFactory.WindowLayout(box.rectTransform, 8, false);
+
+            // RunResultsScreen.Setup writes the values; labels and buttons are static.
             TextMeshProUGUI title = UiFactory.Text("Title", box.transform, "-", UiStyle.FONT_TITLE + 12,
                 TextAlignmentOptions.Center, bold: true);
-            UiFactory.Size(title, 80);
-            TextMeshProUGUI goal = UiFactory.Text("Goal", box.transform, "-", UiStyle.FONT_BODY,
-                TextAlignmentOptions.Center, color: UiStyle.TextMuted);
-            UiFactory.Size(goal, 60);
-            TextMeshProUGUI time = UiFactory.Text("Time", box.transform, "-", UiStyle.FONT_BODY,
+            UiFactory.Size(title, 72);
+            TextMeshProUGUI arena = UiFactory.Text("Arena", box.transform, "-", UiStyle.FONT_HEADER,
                 TextAlignmentOptions.Center);
-            UiFactory.Size(time, 32);
-            TextMeshProUGUI kills = UiFactory.Text("Kills", box.transform, "-", UiStyle.FONT_BODY,
-                TextAlignmentOptions.Center);
-            UiFactory.Size(kills, 32);
-            TextMeshProUGUI reward = UiFactory.Text("Reward", box.transform, "-", UiStyle.FONT_HEADER,
+            UiFactory.Size(arena, 40);
+            TextMeshProUGUI record = UiFactory.LocalizedText("Record", box.transform, "run.results_record", UiStyle.FONT_HEADER,
                 TextAlignmentOptions.Center, bold: true, color: UiStyle.Accent);
-            UiFactory.Size(reward, 48, -1, -1, 1);
+            UiFactory.Size(record, 40);
+
+            TMP_Text time = StatRow(box.transform, "Time", "run.results_time", UiStyle.Text);
+            TMP_Text kills = StatRow(box.transform, "Kills", "run.results_kills", UiStyle.Text);
+            TMP_Text crushes = StatRow(box.transform, "Crushes", "run.results_crushes", UiStyle.Text);
+            TMP_Text elites = StatRow(box.transform, "Elites", "run.results_elites", UiStyle.Text);
+            TMP_Text marks = StatRow(box.transform, "Marks", "run.results_marks", UiStyle.Accent);
+            TMP_Text samples = StatRow(box.transform, "Samples", "run.results_samples", UiStyle.Armor);
+
+            RectTransform spacer = UiFactory.Rect("Spacer", box.transform);
+            UiFactory.Size(spacer, 8, -1, -1, 1);
 
             RectTransform row = UiFactory.Rect("Buttons", box.transform);
             UiFactory.Horizontal(row, UiStyle.SPACING, 0, TextAnchor.MiddleCenter);
             UiFactory.Size(row, UiStyle.BUTTON_HEIGHT);
-            Button again = UiFactory.LocalizedButton("Again", row, "results.again");
-            UiFactory.Size(again, UiStyle.BUTTON_HEIGHT, 210);
-            Button hangar = UiFactory.LocalizedButton("Hangar", row, "results.to_hangar");
-            UiFactory.Size(hangar, UiStyle.BUTTON_HEIGHT, 210);
-            Button next = UiFactory.LocalizedButton("Next", row, "results.next", accent: true);
-            UiFactory.Size(next, UiStyle.BUTTON_HEIGHT, 260);
+            Button again = UiFactory.LocalizedButton("Again", row, "run.results_again");
+            UiFactory.Size(again, UiStyle.BUTTON_HEIGHT, 240);
+            Button hangar = UiFactory.LocalizedButton("Hangar", row, "run.results_to_hangar", accent: true);
+            UiFactory.Size(hangar, UiStyle.BUTTON_HEIGHT, 240);
 
             UiFactory.SetField(results, "_title", title);
-            UiFactory.SetField(results, "_goal", goal);
+            UiFactory.SetField(results, "_arena", arena);
             UiFactory.SetField(results, "_time", time);
             UiFactory.SetField(results, "_kills", kills);
-            UiFactory.SetField(results, "_reward", reward);
-            UiFactory.SetField(results, "_again", again);
+            UiFactory.SetField(results, "_crushes", crushes);
+            UiFactory.SetField(results, "_elites", elites);
+            UiFactory.SetField(results, "_marks", marks);
+            UiFactory.SetField(results, "_samples", samples);
+            UiFactory.SetField(results, "_record", record.gameObject);
             UiFactory.SetField(results, "_hangar", hangar);
-            UiFactory.SetField(results, "_next", next);
-            UiFactory.SetField(results, "_firstSelected", again);
+            UiFactory.SetField(results, "_again", again);
+            UiFactory.SetField(results, "_firstSelected", hangar);
             return results;
+        }
+
+        /// <summary>A results row: label by key on the left, the value (written by the screen) on the right.</summary>
+        private static TMP_Text StatRow(Transform parent, string name, string labelKey, Color valueColor)
+        {
+            RectTransform row = UiFactory.Rect(name, parent);
+            UiFactory.Horizontal(row, UiStyle.SPACING, 0, TextAnchor.MiddleLeft, expandHeight: false);
+            UiFactory.Size(row, 34);
+
+            TextMeshProUGUI label = UiFactory.LocalizedText("Label", row, labelKey, UiStyle.FONT_BODY, color: UiStyle.TextMuted);
+            UiFactory.Size(label, 34, -1, 1);
+            TextMeshProUGUI value = UiFactory.Text("Value", row, "-", UiStyle.FONT_HEADER, TextAlignmentOptions.Right,
+                bold: true, color: valueColor);
+            value.textWrappingMode = TextWrappingModes.NoWrap;
+            UiFactory.Size(value, 34, 220);
+            return value;
         }
 
         // ---------- EventSystem ----------
