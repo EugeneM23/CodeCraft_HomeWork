@@ -691,6 +691,7 @@ namespace Game.Voxels
 
         private void ReleaseStructure()
         {
+            ReleaseGlass();
             if (_cracks.IsCreated)
                 _cracks.Dispose();
             if (_groundHeld.IsCreated)

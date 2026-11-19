@@ -169,6 +169,27 @@ namespace Game.Voxels
         }
 
         /// <summary>
+        /// A blast's shock wave through the windows of every building in reach (VoxelBody.ShatterGlass): all the glass
+        /// within <paramref name="innerRadius"/> of <paramref name="point"/> breaks, fewer panes further off, none past
+        /// <paramref name="outerRadius"/>. Only the glass each house listed when it was built is looked at.
+        /// </summary>
+        /// <returns>How many glass voxels broke, all houses together.</returns>
+        public static int ShatterGlass(Vector3 point, float innerRadius, float outerRadius)
+        {
+            IReadOnlyList<VoxelBody> bodies = VoxelWorld.Bodies;
+            float reach = outerRadius * outerRadius;
+            int total = 0;
+            for (int i = 0; i < bodies.Count; i++)
+            {
+                VoxelBody body = bodies[i];
+                if (body != null && body.GlassCount > 0 && body.WorldBounds.SqrDistance(point) <= reach)
+                    total += body.ShatterGlass(point, innerRadius, outerRadius);
+            }
+
+            return total;
+        }
+
+        /// <summary>
         /// A bullet chips a small bite just under the surface it struck.
         /// </summary>
         /// <summary>

@@ -376,6 +376,9 @@ namespace Game.Voxels
                 _body.SetStrength(BuildStrength(pending.Materials));
                 if (HasSkeleton)
                     _body.SetHardness(BuildHardness());
+                // A town house's panes, listed once: a blast blows them out (VoxelBody.ShatterGlass).
+                if (_shape == Shape.Victorian)
+                    _body.SetGlass(1 + (int)Material.Glass * MeshVoxelizer.VARIANTS, MeshVoxelizer.VARIANTS);
                 _body.DesignStructure();
             }
         }
