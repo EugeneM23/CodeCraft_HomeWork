@@ -75,8 +75,8 @@ namespace Game
         {
             t = Mathf.Clamp01(t);
             Color c = t < 0.35f ? Color.Lerp(WhiteHot, Orange, t / 0.35f) : Color.Lerp(Orange, DullRed, (t - 0.35f) / 0.65f);
-            float k = 1f - t;
-            c.a = k * k;
+            // Smoothstep: holds hot a moment, then cools (half bright at mid-life, out at the end).
+            c.a = 1f - t * t * (3f - 2f * t);
             return c;
         }
 
