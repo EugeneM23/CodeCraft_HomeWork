@@ -252,6 +252,18 @@ namespace Game.Tests
         }
 
         [Test]
+        public void StartChapter_AFlowWithChapters_GetsTheChapter_NotAPlainLevel()
+        {
+            _flow.TakesChapters = true;
+
+            _source.StartChapter(ChapterIds.Outskirts.Value);
+
+            Assert.AreEqual(ChapterIds.Outskirts, _flow.StartedChapter);
+            Assert.IsNull(_flow.Started, "the level comes with the chapter");
+            Assert.AreEqual(1, _meta.SaveCalls);
+        }
+
+        [Test]
         public void NewGame_GoesToTheProgress_AndDisposeStopsChanged()
         {
             int changes = 0;
@@ -284,8 +296,19 @@ namespace Game.Tests
         private sealed class FakeFlow : IGameFlow
         {
             public string Started;
+            public ChapterId StartedChapter;
+            /// <summary>Like the core's GameFlow; false — a stand-in that refuses chapters.</summary>
+            public bool TakesChapters;
 
             public event Action<GameState> StateChanged { add { } remove { } }
+
+            public bool StartChapter(ChapterId chapter)
+            {
+                if (!TakesChapters)
+                    return false;
+                StartedChapter = chapter;
+                return true;
+            }
 
             public GameState State => GameState.MainMenu;
             public bool IsBusy => false;

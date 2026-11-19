@@ -243,10 +243,12 @@ namespace Game
         // ---------- Skill choice ----------
 
         // Over the pause or the current choice (the next level-up is raised from inside ChooseSkill) the offer
-        // waits: HandleStackChanged shows it when the player is back on the HUD.
+        // waits: HandleStackChanged shows it when the player is back on the HUD. Not dropped while the game flow
+        // finishes loading the level: the core holds the game paused until ChooseSkill, so an offer nobody shows
+        // would leave it standing (the cards wait for the load before they take a click).
         private void HandleSkillOffered(IReadOnlyList<SkillOffer> offers)
         {
-            if (_finished || Busy)
+            if (_finished || _run == null)
                 return;
 
             if (_offerQueue.Arrive(offers, OnBareHud))

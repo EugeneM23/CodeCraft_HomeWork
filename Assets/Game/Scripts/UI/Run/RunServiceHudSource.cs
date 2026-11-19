@@ -11,15 +11,43 @@ namespace Game
     /// (gate, hints), the AI's EliteStatus (elite health), the combat team's ISpecialModule (E) on the tank and
     /// the core's GameCatalog (weapon or upgrade). Made by AppServices.RunHud for the run of the open level and
     /// released by AppServices.ReleaseRunHud when the level's battle UI goes.
-    /// Every event is forwarded once; the lists are rebuilt only when a skill changes or a level-up comes.
+    /// Every event is forwarded once; the lists are rebuilt only when a skill changes or an offer comes.
+    /// Skill offers come from the core's IRunService.SkillOffered, and the adapter listens to it only while
+    /// someone (the battle UI's skill choice) listens to its own SkillOffered: the core pauses a level-up and
+    /// waits for ChooseSkill only while it has a listener. With no skill screen (the sandbox) the run takes a
+    /// skill by itself and nothing stands.
     /// The arena service is taken from the GameContext on each use (a key lookup, it may be installed after
     /// this adapter is made); the special module is taken again whenever the player's character changes.
     /// </summary>
     public sealed class RunServiceHudSource : IRunHudSource, IDisposable
     {
         public event Action Changed;
-        public event Action<IReadOnlyList<SkillOffer>> SkillOffered;
         public event Action<RunSummary> RunEnded;
+
+        /// <summary>
+        /// The first listener makes the adapter listen to the core's SkillOffered (a level-up then waits for
+        /// ChooseSkill, the game paused); with the last one gone the run takes its skills by itself again.
+        /// </summary>
+        public event Action<IReadOnlyList<SkillOffer>> SkillOffered
+        {
+            add
+            {
+                if (value == null || _disposed)
+                    return;
+                bool first = _skillOffered == null;
+                _skillOffered += value;
+                if (first)
+                    ListenToOffers(true);
+            }
+            remove
+            {
+                if (value == null || _skillOffered == null)
+                    return;
+                _skillOffered -= value;
+                if (_skillOffered == null)
+                    ListenToOffers(false);
+            }
+        }
 
         private readonly IRunService _run;
         private readonly GameCatalog _catalog;
@@ -27,6 +55,7 @@ namespace Game
         private readonly List<SkillOffer> _offers = new(3);
         private readonly Action<int> _onArenaEvent;
         private readonly Action<int> _onLevelUp;
+        private readonly Action<IReadOnlyList<SkillId>> _onCoreOffer;
         private readonly Action<SkillId, int> _onSkillChanged;
         private readonly Action _onChanged;
         private readonly Action<RunResult> _onRunEnded;
@@ -36,6 +65,9 @@ namespace Game
         private IGameContext _context;
         private Subscription<IEntity> _characterSubscription;
         private ISpecialModule _special;
+        private Action<IReadOnlyList<SkillOffer>> _skillOffered;
+        private bool _listeningToOffers;
+        private bool _disposed;
 
         public IRunService Run => _run;
 
@@ -46,7 +78,8 @@ namespace Game
             _context = context;
 
             _onArenaEvent = _ => RaiseChanged();
-            _onLevelUp = _ => OfferSkills();
+            _onLevelUp = _ => RaiseChanged(); // the level number; the offer comes with SkillOffered
+            _onCoreOffer = HandleCoreOffer;
             _onSkillChanged = (_, _) => RebuildSkills();
             _onChanged = RaiseChanged;
             _onRunEnded = HandleRunEnded;
@@ -70,12 +103,16 @@ namespace Game
                 _characterSubscription = character.Observe(_onCharacterChanged);
 
             RebuildSkills();
-            if (_run.PendingLevelUps > 0)
-                OfferSkills();
         }
 
         public void Dispose()
         {
+            if (_disposed)
+                return;
+
+            _disposed = true;
+            ListenToOffers(false);
+            _skillOffered = null;
             _run.ArenaStarted -= _onArenaEvent;
             _run.ArenaCleared -= _onArenaEvent;
             _run.GateOpened -= _onArenaEvent;
@@ -117,9 +154,21 @@ namespace Game
 
         public IReadOnlyList<RunSkill> Skills => _skills;
 
-        /// <summary>The offer of the pending level-up (the core keeps it until ChooseSkill); empty when none.</summary>
-        public IReadOnlyList<SkillOffer> PendingOffer =>
-            _run.PendingLevelUps > 0 && _offers.Count > 0 ? _offers : Array.Empty<SkillOffer>();
+        /// <summary>
+        /// The offer of the pending level-up (the core keeps it until ChooseSkill); empty when none. Read from the
+        /// core each time, so an offer made before the skill screen subscribed is shown as well.
+        /// </summary>
+        public IReadOnlyList<SkillOffer> PendingOffer
+        {
+            get
+            {
+                if (_run.PendingLevelUps <= 0 || _run.SkillOffer.Count == 0)
+                    return Array.Empty<SkillOffer>();
+
+                BuildOffers(_run.SkillOffer);
+                return _offers;
+            }
+        }
 
         public float Special01
         {
@@ -133,33 +182,46 @@ namespace Game
 
         public void ChooseSkill(int index)
         {
-            if (index < 0 || index >= _offers.Count)
+            if (index < 0 || index >= _offers.Count || _run.SkillOffer.Count == 0)
                 return;
 
-            if (!_run.ChooseSkill((SkillId)_offers[index].Id))
-                return;
-            // The next pending level-up, if any, offers again right away (the core keeps the queue); the battle
-            // UI holds it until the current choice has left the screen.
-            if (_run.PendingLevelUps > 0 && _run.SkillOffer.Count > 0)
-                OfferSkills();
+            // The core raises SkillOffered again from inside ChooseSkill when another level-up is pending; the
+            // battle UI holds that offer until the current choice has left the screen.
+            _run.ChooseSkill(new SkillId(_offers[index].Id));
         }
 
         /// <summary>The core's LeaveToHangar ends the run as Abandoned and goes to the hangar itself.</summary>
         public void ExitToHangar() => _run.LeaveToHangar();
 
-        private void OfferSkills()
+        private void ListenToOffers(bool listen)
+        {
+            if (listen == _listeningToOffers)
+                return;
+
+            _listeningToOffers = listen;
+            if (listen)
+                _run.SkillOffered += _onCoreOffer;
+            else
+                _run.SkillOffered -= _onCoreOffer;
+        }
+
+        // The core has paused the game for this level-up and waits for ChooseSkill.
+        private void HandleCoreOffer(IReadOnlyList<SkillId> offer)
+        {
+            BuildOffers(offer);
+            if (_offers.Count > 0)
+                _skillOffered?.Invoke(_offers);
+            RaiseChanged();
+        }
+
+        private void BuildOffers(IReadOnlyList<SkillId> offer)
         {
             _offers.Clear();
-            IReadOnlyList<SkillId> offer = _run.SkillOffer;
             for (int i = 0; i < offer.Count; i++)
             {
                 int level = _run.GetSkillLevel(offer[i]);
                 _offers.Add(new SkillOffer(offer[i].Value, level, level + 1, IsWeapon(offer[i])));
             }
-
-            if (_offers.Count > 0)
-                SkillOffered?.Invoke(_offers);
-            RaiseChanged();
         }
 
         // Weapons first, then the upgrades, each in the order taken

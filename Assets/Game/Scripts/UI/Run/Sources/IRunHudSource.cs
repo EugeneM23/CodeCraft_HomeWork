@@ -17,7 +17,8 @@ namespace Game
         /// <summary>
         /// A new level: the game is to stand while the player picks one of these (1–3 offers). May be raised from
         /// inside ChooseSkill when another level-up is pending. The list may be reused by the source: it always
-        /// holds the current offer.
+        /// holds the current offer. Subscribe only to show the cards and call ChooseSkill: while anyone listens a
+        /// level-up waits for the choice; with nobody listening the run takes a skill by itself.
         /// </summary>
         event Action<IReadOnlyList<SkillOffer>> SkillOffered;
 

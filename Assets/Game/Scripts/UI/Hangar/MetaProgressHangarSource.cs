@@ -173,8 +173,9 @@ namespace Game
                 return;
             }
 
-            // TODO core: StartChapter. IGameFlow and GameFlow have no StartChapter(ChapterId) yet, so the run does
-            // not learn the chapter: start the chapter's level, else the level catalog's first level.
+            // The chapter goes with its level (StartChapter): the run learns which chapter it plays (rewards,
+            // records). A flow without chapters (the stand-ins) refuses it, and a chapter without a level has
+            // nothing to start: then the chapter's level, else the level catalog's first, as a plain level.
             IGameFlow flow = _flow ?? AppServices.GameFlow;
             LevelConfig level = chapter.Level;
             if (level == null && flow is GameFlow coreFlow && coreFlow.Catalog != null)
@@ -186,6 +187,8 @@ namespace Game
             }
 
             _meta.Save(); // GDD §14: saved on leaving the menu
+            if (chapter.Level != null && flow.StartChapter(chapter.Id))
+                return;
             flow.StartLevel(level.Id);
         }
 
