@@ -56,22 +56,27 @@ namespace Game
             GameSignals.RaiseShellExploded(point);
             ExplosionEvents.Raise(point, radius);
 
+            // The «Мощный фугас» skill of the tank that fired an HE shell (1: none): faster gore and debris, a bigger bite
+            float power = ShellPowerUseCase.Of(projectile);
+
             // An HE shell: a big spray of sparks and a hot point, like a bullet's hit only more.
-            if (ShellHitSparksUseCase.IsHighExplosive(projectile))
+            bool he = ShellHitSparksUseCase.IsHighExplosive(projectile);
+            if (he)
             {
                 if (flesh)
-                    ShellHitSparksUseCase.EmitFlesh(point, normal);
+                    ShellHitSparksUseCase.EmitFlesh(point, normal, power);
                 else
                     ShellHitSparksUseCase.Emit(point, normal);
             }
 
             // A crater in anything made of voxels: walls, buildings, the tank's skin. An HE shell hits a house's
-            // skeleton (piers, beams) twice as hard as anything else does.
-            bool he = AmmoUseCase.IsShell(projectile) && AmmoUseCase.KindOf(projectile) == ShellKind.HighExplosive;
-            VoxelBody.SkeletonDamage = he ? HE_SKELETON_DAMAGE : 1f;
+            // skeleton (piers, beams) twice as hard as anything else does; the skill bites a bigger crater (volume
+            // × power), hits the skeleton harder and throws the debris faster.
+            Bite(radius, he, power, out float crater, out float debrisSpeed, out float skeleton);
+            VoxelBody.SkeletonDamage = skeleton;
             try
             {
-                VoxelDamage.Blast(point, radius * VOXEL_CRATER_SHARE, VOXEL_BLAST_SPEED);
+                VoxelDamage.Blast(point, crater, debrisSpeed);
             }
             finally
             {
@@ -104,6 +109,22 @@ namespace Game
 
             // The ricochet skill: a cannon shell bounces on to the next enemy outside its blast.
             ShellBounceUseCase.TryBounce(projectile, point, radius, factory);
+        }
+
+        /// <summary>
+        /// The crater a blast of <paramref name="radius"/> bites in voxels: its radius, the speed its debris leaves with
+        /// and how hard it hits a house's skeleton. An HE shell's <paramref name="power"/> («Мощный фугас»,
+        /// <see cref="ShellPowerUseCase"/>) scales the bitten volume (the radius by its cube root), the debris speed and the
+        /// skeleton damage; power 1 is the blast without the skill.
+        /// </summary>
+        public static void Bite(float radius, bool he, float power, out float craterRadius, out float debrisSpeed,
+            out float skeletonDamage)
+        {
+            if (!he)
+                power = 1f;
+            craterRadius = radius * VOXEL_CRATER_SHARE * ShellPowerUseCase.BiteRadius(power);
+            debrisSpeed = VOXEL_BLAST_SPEED * power;
+            skeletonDamage = he ? HE_SKELETON_DAMAGE * power : 1f;
         }
 
         /// <summary>

@@ -51,6 +51,12 @@ namespace Game
                 return true;
             }
 
+            if (skill == SkillIds.HighExplosive)
+            {
+                modifiers.HeFactor = table.Value(skill, level, 1f);
+                return true;
+            }
+
             return false;
         }
     }

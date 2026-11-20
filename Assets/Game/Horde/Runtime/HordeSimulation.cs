@@ -72,6 +72,9 @@ namespace Game.Horde
 
         /// <summary>Which way the shell that tore a slot's monster flew (zero: no way known).</summary>
         private NativeArray<float3> _tornDirection;
+
+        /// <summary>How hard the shell that tore a slot's monster throws its pieces and goo (1: as without the HE skill).</summary>
+        private NativeArray<float> _tornPower;
         private NativeArray<HordeState> _state;
         private NativeArray<float> _animTime;
         private NativeArray<float> _speedScale;
@@ -154,6 +157,7 @@ namespace Game.Horde
             _health = new NativeArray<float>(capacity, Allocator.Persistent);
             _torn = new NativeArray<byte>(capacity, Allocator.Persistent);
             _tornDirection = new NativeArray<float3>(capacity, Allocator.Persistent);
+            _tornPower = new NativeArray<float>(capacity, Allocator.Persistent);
             _state = new NativeArray<HordeState>(capacity, Allocator.Persistent);
             _animTime = new NativeArray<float>(capacity, Allocator.Persistent);
             _speedScale = new NativeArray<float>(capacity, Allocator.Persistent);
@@ -334,6 +338,7 @@ namespace Game.Horde
             _health[i] = row.Health * healthScale;
             _torn[i] = 0;
             _tornDirection[i] = float3.zero;
+            _tornPower[i] = 1f;
             _maxHealth[i] = _health[i];
             _state[i] = emerge ? HordeState.Emerging : HordeState.Walk;
             _stateTime[i] = emerge ? s.EmergeTime : 0f;
@@ -469,13 +474,21 @@ namespace Game.Horde
         public void Tear(int index, int version) => Tear(index, version, float3.zero);
 
         /// <param name="direction">Which way the shell flew: the body's goo and pieces are thrown on that way (<see cref="TornDirection"/>).</param>
-        public void Tear(int index, int version, float3 direction)
+        public void Tear(int index, int version, float3 direction) => Tear(index, version, direction, 1f);
+
+        /// <param name="power">How hard the shell throws the torn body's goo and pieces (<see cref="TornPower"/>); 1 — as before.</param>
+        public void Tear(int index, int version, float3 direction, float power)
         {
             if (!IsTargetAlive(index, version))
                 return;
             _torn[index] = 1;
             _tornDirection[index] = direction;
+            _tornPower[index] = power;
         }
+
+        /// <summary>The throw factor of the shell that tore the monster in this slot (1: not torn, or no HE skill).</summary>
+        public float TornPower(int index) =>
+            index >= 0 && index < _tornPower.Length && _torn[index] != 0 ? _tornPower[index] : 1f;
 
         /// <summary>Which way the shell that tore the monster in this slot flew (zero: none known, or not torn).</summary>
         public float3 TornDirection(int index) =>
@@ -701,6 +714,7 @@ namespace Game.Horde
             if (_health.IsCreated) _health.Dispose();
             if (_torn.IsCreated) _torn.Dispose();
             if (_tornDirection.IsCreated) _tornDirection.Dispose();
+            if (_tornPower.IsCreated) _tornPower.Dispose();
             if (_state.IsCreated) _state.Dispose();
             if (_animTime.IsCreated) _animTime.Dispose();
             if (_speedScale.IsCreated) _speedScale.Dispose();

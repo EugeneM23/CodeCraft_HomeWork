@@ -37,6 +37,8 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: db7e2dc1a8334d94482fe0e0a13d9287, type: 3}
   - id: shrapnel
     sprite: {fileID: 21300000, guid: 2c6681b6993fb3d4f808d9a03529682f, type: 3}
+  - id: high_explosive
+    sprite: {fileID: 21300000, guid: ed85cb47d95031848bcbf95240be0f3f, type: 3}
   - id: track_spikes
     sprite: {fileID: 21300000, guid: 155929a4f2db1354fa17e65dc2fd461c, type: 3}
   - id: armor

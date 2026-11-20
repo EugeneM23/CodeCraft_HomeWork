@@ -94,6 +94,11 @@ namespace Game
             table["skill.magnet.glyph"] = "Мг";
             table["skill.magnet.desc"] = "Радиус сбора опыта +50 %";
             table["skill.magnet.desc_up"] = "Радиус сбора опыта ещё +30 %";
+
+            table["skill.high_explosive.name"] = "Мощный фугас";
+            table["skill.high_explosive.glyph"] = "Фг";
+            table["skill.high_explosive.desc"] = "Кровь, ошмётки и обломки от фугаса летят на 30 % дальше, воронка в домах на 30 % больше";
+            table["skill.high_explosive.desc_up"] = "Фугас ещё на 30 % сильнее";
         }
     }
 }

@@ -30,7 +30,7 @@ namespace Game
                 if (!ExplosionUseCase.AreaDamage)
                 {
                     Vector3 shot = bullet.TryGetMoveDirection(out var flew) ? flew.Value : Vector3.zero;
-                    targets.Tear(target, shot);
+                    targets.Tear(target, shot, ShellPowerUseCase.Of(bullet));
                     targets.Damage(target, damage, point);
                 }
 

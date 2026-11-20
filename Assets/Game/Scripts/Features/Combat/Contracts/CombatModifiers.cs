@@ -32,6 +32,12 @@ namespace Game
         /// <summary>Air strike skill level, 0: none.</summary>
         public int AirStrikeLevel;
 
+        /// <summary>
+        /// The «Мощный фугас» skill: how much harder the tank's HE shells throw gore and debris and bite houses (1: as
+        /// without the skill, +0.3 a level). Read per hit by ShellPowerUseCase.
+        /// </summary>
+        public float HeFactor = 1f;
+
         public void RaiseChanged() => Changed?.Invoke();
 
         public void Reset()
@@ -43,6 +49,7 @@ namespace Game
             TurretCount = 0;
             TurretDamageFactor = 1f;
             AirStrikeLevel = 0;
+            HeFactor = 1f;
             RaiseChanged();
         }
     }

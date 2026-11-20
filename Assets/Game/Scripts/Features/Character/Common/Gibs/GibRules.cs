@@ -40,8 +40,16 @@ namespace Game
         /// </summary>
         public readonly Vector3 Direction;
 
-        public KillingHit(Vector3 origin, float damage, bool blast, float blastShare, Vector3 direction = default)
+        /// <summary>
+        /// How hard the killing shell throws the body's goo and pieces: the «Мощный фугас» skill (ShellPowerUseCase),
+        /// 1 — as without it.
+        /// </summary>
+        public readonly float Power;
+
+        public KillingHit(Vector3 origin, float damage, bool blast, float blastShare, Vector3 direction = default,
+            float power = 1f)
         {
+            Power = power;
             Origin = origin;
             Damage = damage;
             Blast = blast;
@@ -104,6 +112,7 @@ namespace Game
             bool blast = false;
             float blastShare = 1f;
             Vector3 direction = Vector3.zero;
+            float power = 1f;
 
             if (hit?.source != null)
             {
@@ -123,10 +132,11 @@ namespace Game
                     // The way the shell flew, read now: the shell goes back to its pool after the hit.
                     if (hit.source.TryGetMoveDirection(out var move))
                         direction = move.Value;
+                    power = ShellPowerUseCase.Of(hit.source);
                 }
             }
 
-            return new KillingHit(origin, damage, blast, blastShare, direction);
+            return new KillingHit(origin, damage, blast, blastShare, direction, power);
         }
 
         public static bool TryGetPosition(IEntity source, out Vector3 position)
@@ -183,6 +193,7 @@ namespace Game
             speed = hit.Blast
                 ? Mathf.Lerp(speeds.blastMinSpeed, speeds.blastMaxSpeed, Mathf.Clamp01(hit.BlastShare))
                 : Mathf.Lerp(speeds.minSpeed, speeds.maxSpeed, Mathf.Clamp01(hit.Damage / speeds.fullSpeedDamage));
+            speed *= hit.Power; // «Мощный фугас»: 1 without it
             lift = hit.Blast ? speeds.blastLift : speeds.lift;
             spin = hit.Blast ? speeds.blastSpin : speeds.spin;
         }
