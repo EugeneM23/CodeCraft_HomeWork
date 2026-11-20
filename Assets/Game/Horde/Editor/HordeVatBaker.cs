@@ -58,6 +58,8 @@ namespace Game.Horde.EditorTools
             /// the horde options' own. The clip's measured root speed is reported beside it.
             /// </summary>
             public float RunClipSpeed;
+            /// <summary>Play the run clip for its own root speed (<see cref="RunClipSpeed"/> is then only the fallback): no foot sliding.</summary>
+            public bool RunAtRootSpeed;
             /// <summary>Body radius and bite reach over the kinds' (<see cref="HordeArtConfig.reachScale"/>).</summary>
             public float ReachScale = 1f;
             /// <summary>Make a plain acid material apart from the textured crowd one.</summary>
@@ -83,7 +85,8 @@ namespace Game.Horde.EditorTools
             Name = "Zombie",
             ModelPath = "Assets/Game/Models/Zombie/SK_Zombie_Characters.fbx",
             SkinName = "SM_Chr_Zombie_Male_01",
-            Run = () => AssetDatabase.LoadAssetAtPath<AnimationClip>(ZOMBIE_CLIPS + "Zombie_Move.anim"),
+            // The user's Mixamo run (a forward lurch, 0.8 s a loop), humanoid on its own avatar, root motion kept in the clip.
+            Run = () => LoadFbxClip(ZOMBIE_CLIPS + "Zombie Running.fbx"),
             Attack = () => AssetDatabase.LoadAssetAtPath<AnimationClip>(ZOMBIE_CLIPS + "Zombie_Attack.anim"),
             Idle = () => AssetDatabase.LoadAssetAtPath<AnimationClip>(ZOMBIE_CLIPS + "Zombie_Idle.anim"),
             Death = () => AssetDatabase.LoadAssetAtPath<AnimationClip>(ZOMBIE_CLIPS + "Zombie_Death_Handgun.anim"),
@@ -95,9 +98,10 @@ namespace Game.Horde.EditorTools
             ReachScale = 1.5f,
             AlbedoPath = ZombieAtlas.VIVID,
             AlbedoColor = new Color(1.1f, 1.1f, 1.1f, 1f),
-            // The walk is a slow shamble (root speed ~1.4 m/s at this size): played for its own speed, a 6.5 m/s crawler
-            // would run it 11 times over. 6.75 gives about 2.4 times: a fast, readable shuffle (the feet slide).
+            // The user: the zombie moves at the run's own root speed, the feet do not slide. The crawler's speed is set to it
+            // (HordeKind.Crawler, the arena's options), and the clip plays at 1x when it moves that fast.
             RunClipSpeed = 6.75f,
+            RunAtRootSpeed = true,
             AcidMaterial = true,
             // Row 1, the spitter: a sickly green over the atlas (the tint takes the material's white colour's place).
             KindTints = new[] { new Color(0f, 0f, 0f, 0f), new Color(0.62f, 0.85f, 0.3f, 1f) },
@@ -319,9 +323,10 @@ namespace Game.Horde.EditorTools
                         corpsePositions[v] -= middle;
                 }
 
+                float rootSpeed = 0f;
                 if (src.RunClipSpeed > 0f)
                 {
-                    float rootSpeed = RootSpeed(graph, output, animator, instance.transform, run) * scale;
+                    rootSpeed = RootSpeed(graph, output, animator, instance.transform, run) * scale;
                     report.AppendLine($"run clip root speed {rootSpeed:F2} m/s at render scale 1, played for {src.RunClipSpeed:F2}");
                 }
 
@@ -392,7 +397,7 @@ namespace Game.Horde.EditorTools
                 config.sourceTriangles = source.triangles.Length / 3;
                 config.meshLod = lod;
                 config.bodyScale = src.Height > 0f ? src.Height / REGAX_HEIGHT : 1f;
-                config.runClipSpeed = src.RunClipSpeed;
+                config.runClipSpeed = src.RunAtRootSpeed && rootSpeed > 0.1f ? rootSpeed : src.RunClipSpeed;
                 config.reachScale = src.ReachScale;
                 EditorUtility.SetDirty(config);
                 AssetDatabase.SaveAssets();
