@@ -604,6 +604,8 @@ namespace Game.Voxels
                 Draw(_matrices, _colors, _alive.Value, ShadowCastingMode.On);
             using (s_drawLyingMarker.Auto())
                 DrawLying();
+            // The goo sheets (VoxelDebris.Sheets): their cubes that let go this frame join the step below as goo drops.
+            TickSheets(math.min(math.max(deltaTime, 0f), 1f / 20f));
 
             if (deltaTime <= 0f)
             {

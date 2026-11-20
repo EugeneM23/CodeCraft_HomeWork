@@ -138,6 +138,9 @@ namespace Game.Voxels
         /// <summary>An HE shell's hit throws the upward and sideways shares of its spray this much faster again.</summary>
         public const float HE_SPLASH = 2f;
 
+        /// <summary>How high (m) a shot's goo sheet (<see cref="ShotGoo"/>'s sheet) rises at power 1.</summary>
+        public const float SHEET_HEIGHT = 1.6f;
+
         /// <summary>The size of a shot spray's upward drops against the rest (the ones that hang in the air).</summary>
         public const float UP_DROP_SIZE = 0.5f;
 
@@ -152,8 +155,12 @@ namespace Game.Voxels
         /// <param name="spread">The upward share's spread, as <see cref="Goo"/>'s.</param>
         /// <param name="splash">The upward and sideways shares fly this much faster (an HE shell: 2); the share along
         /// the shot is not touched.</param>
+        /// <param name="sheet">
+        /// A shell's hit or kill on a body: the middle of the spray rises as one twisting sheet of goo (VoxelDebris.GooSheet,
+        /// <see cref="SHEET_HEIGHT"/> times this: the shell's power) and the upward drops are half as many round it. 0: no sheet.
+        /// </param>
         public static int ShotGoo(Vector3 at, Vector3 shot, int drops, float speed, float spread,
-            IReadOnlyList<Color32> colors, float size, Vector3 inherit = default, float radius = 0.2f, float splash = 1f)
+            IReadOnlyList<Color32> colors, float size, Vector3 inherit = default, float radius = 0.2f, float splash = 1f, float sheet = 0f)
         {
             Vector3 flat = new(shot.x, 0f, shot.z);
             if (flat.sqrMagnitude < 0.04f * shot.sqrMagnitude || flat.sqrMagnitude < 1e-6f)
@@ -165,6 +172,10 @@ namespace Game.Voxels
             int main = Mathf.RoundToInt(drops * SHOT_MAIN);
             int sides = Mathf.RoundToInt(drops * SHOT_SIDES);
             int up = Mathf.Max(1, drops - main - sides);
+            // The middle of the spray as a liquid sheet (the user's splash): round it stay half the upward drops.
+            VoxelWorld world = sheet > 0f ? VoxelWorld.Instance : null;
+            if (world != null && world.Debris != null && world.Debris.GooSheet(at, flat, SHEET_HEIGHT, colors, sheet))
+                up = Mathf.Max(1, up / 2);
             int left = sides / 2;
 
             // The upward share hangs in the air before it falls: its drops are half the size (the same count and spread).
