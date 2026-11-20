@@ -31,6 +31,9 @@ namespace Game.Horde
         public HordeClip attack;
         public HordeClip idle;
 
+        [Tooltip("The crawl row (Zombie Crawl): what the share of crawlers that crawl on the ground plays (count 0: none baked).")]
+        public HordeClip crawl;
+
         [Tooltip("Bounds of every baked frame, model space (feet at y 0).")]
         public Bounds bounds;
 
@@ -52,6 +55,9 @@ namespace Game.Horde
 
         [Tooltip("Walking speed the run clip was authored for at render scale 1, m/s; 0 keeps the horde options' own (5).")]
         public float runClipSpeed;
+
+        [Tooltip("The crawl clip's root speed at render scale 1, m/s: a crawling monster moves at it (× its render scale) with no hand sliding; 0: no crawl row.")]
+        public float crawlClipSpeed;
 
         [Tooltip("Body radius (hull reach, crush box, separation) and bite reach over the kinds' own: a bigger model than the one the kinds were tuned on reaches further. Regax: 1.")]
         public float reachScale = 1f;

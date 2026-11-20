@@ -160,16 +160,24 @@ namespace Game.AIKit.Adapters
             return count;
         }
 
+        /// <summary>
+        /// A crawler on the ground (HordeSimulation.IsCrawling) is this low against one that runs: its aim point and hit
+        /// sphere sit this share of the way up and are this much smaller (shots go lower, cover hides it).
+        /// </summary>
+        public const float CRAWL_HEIGHT = 0.35f;
+
         private float3 Center(int i)
         {
             float scale = _simulation.GetKind(_simulation.GetKindOf(i)).RenderScale * _simulation.Settings.BodyScale;
-            return _simulation.GetTargetPosition(i) + new float3(0f, BODY_HEIGHT * scale, 0f);
+            float height = _simulation.IsCrawling(i) ? CRAWL_HEIGHT : 1f;
+            return _simulation.GetTargetPosition(i) + new float3(0f, BODY_HEIGHT * scale * height, 0f);
         }
 
         private float BodyRadius(int i)
         {
             HordeKind kind = _simulation.GetKind(_simulation.GetKindOf(i));
-            return math.max(kind.Radius, BODY_HEIGHT * 0.8f * kind.RenderScale * _simulation.Settings.BodyScale);
+            float height = _simulation.IsCrawling(i) ? CRAWL_HEIGHT : 1f;
+            return math.max(kind.Radius, BODY_HEIGHT * 0.8f * height * kind.RenderScale * _simulation.Settings.BodyScale);
         }
     }
 }

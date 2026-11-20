@@ -39,7 +39,7 @@ Material:
     m_Floats:
     - _Gloss: 0.6
     - _HordeScale: 1
-    - _HordeVatFrames: 160
+    - _HordeVatFrames: 314
     - _Specular: 0.25
     m_Colors:
     - _Ambient: {r: 0.55, g: 0.58, b: 0.62, a: 1}
