@@ -1,8 +1,9 @@
 using System;
 using AIKit;
+using AIKit.Entities;
 using NUnit.Framework;
 
-namespace Game.AIKit.Adapters.Tests
+namespace AIKit.Entities.Tests
 {
     /// <summary>The level's agent list: an agent leaving during the step (it died) does not make the next one miss its step.</summary>
     public sealed class AIAgentListTests

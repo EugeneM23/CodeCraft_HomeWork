@@ -1,6 +1,6 @@
 using AIKit;
 
-namespace Game.AIKit.Adapters
+namespace AIKit.Entities
 {
     /// <summary>An agent the level steps (its AICharacter is in Manual simulation): the game's side of it and the character.</summary>
     public interface IAIAgent

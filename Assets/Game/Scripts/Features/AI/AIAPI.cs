@@ -41,12 +41,7 @@ namespace Game.AIKit.Adapters
         /// <summary>The level's navigation grid and its path service, shared by the horde and the elites.</summary>
         public static readonly ValueKey<IEntity, LevelNav> LevelNavigation = new(nameof(LevelNavigation));
 
-        /// <summary>
-        /// The agents the level steps (Manual simulation), in a fixed order, and their AIKit world (<c>World</c>: the
-        /// decision budget, the roster and the global blackboard). The world has no key of its own: the generated
-        /// extensions name its type <c>AIKit.IAIWorld</c>, which inside <c>Game.AIKit.Adapters</c> means the wrong namespace.
-        /// </summary>
-        public static readonly ValueKey<IEntity, AIAgentList> WorldAgents = new(nameof(WorldAgents));
+        // The agents the level steps and their AIKit world: AIKit.Atomic's AIAgentAPI.WorldAgentList (AIWorldInstaller).
 
         /// <summary>The player's vehicle as the AI sees it: its transform and its hull.</summary>
         public static readonly ValueKey<IEntity, PlayerTank> PlayerVehicle = new(nameof(PlayerVehicle));
