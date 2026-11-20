@@ -123,12 +123,14 @@ namespace Game
 
             if (ExplosionUseCase.IsExplosive(_bullet))
             {
+                // Flesh or not is read before the damage: a monster the shell kills is a corpse by the blast (no tag,
+                // its collider off), and its blast threw sparks instead of blood.
+                ContactPoint contact = collision.GetContact(0);
+                bool flesh = (target != null && target.HasEnemyTag()) || HitsFlesh(contact.point, collision.collider);
                 // No area damage (WeaponSettings.shellAreaDamage off): the enemy hit takes the shell's damage itself.
                 if (!ExplosionUseCase.AreaDamage && target != null && target.HasDamageableTag())
                     DamageUseCase.TakeDamage(target, new TakeDamageArgs(_bullet));
-                ContactPoint contact = collision.GetContact(0);
-                ExplosionUseCase.Explode(_bullet, contact.point, collision.collider, _gameFactory, contact.normal,
-                    (target != null && target.HasEnemyTag()) || HitsFlesh(contact.point, collision.collider));
+                ExplosionUseCase.Explode(_bullet, contact.point, collision.collider, _gameFactory, contact.normal, flesh);
             }
             else if (target != null && target.HasDamageableTag())
             {
