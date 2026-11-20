@@ -35,7 +35,8 @@ namespace Game
 
         private const int FLESH_BLOOD = 60;
         private const int FLESH_BITS = 14;
-        private const float FLESH_SPEED = 15f; // as far as the sparks reach (5..17 m/s x 1.7, under their drag)
+        // As far back as the sparks fly (8..29 m/s, ~10 m): goo is damped harder than a spark while it rises, so faster.
+        private const float FLESH_SPEED = 22f;
         private const float FLESH_BLOOD_SIZE = 0.07f;
         private const float FLESH_BIT_SIZE = 0.15f;
 
@@ -58,7 +59,7 @@ namespace Game
             Vector3 n = normal.sqrMagnitude > 1e-6f ? normal.normalized : Vector3.up;
             Vector3 fan = (n + Vector3.up * 0.35f).normalized;
             Voxels.VoxelSpray.Goo(point, fan, FLESH_BLOOD, FLESH_SPEED, 0.9f, Blood, FLESH_BLOOD_SIZE, default, 0.2f);
-            Voxels.VoxelSpray.Goo(point, fan, FLESH_BITS, FLESH_SPEED * 0.8f, 0.8f, Flesh, FLESH_BIT_SIZE, default, 0.2f);
+            Voxels.VoxelSpray.Goo(point, fan, FLESH_BITS, FLESH_SPEED * 0.85f, 0.8f, Flesh, FLESH_BIT_SIZE, default, 0.2f);
         }
     }
 }
