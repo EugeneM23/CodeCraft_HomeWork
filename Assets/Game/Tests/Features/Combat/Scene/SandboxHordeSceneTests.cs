@@ -26,6 +26,18 @@ namespace Game.Tests
         private readonly StringBuilder _report = new();
         private Transform _tank;
         private bool _loggedRider;
+        private bool _leapWas;
+
+        // Leaping onto the tank is off in the game for now (HordeRiderOptions.LeapOntoTank); this test keeps the code alive.
+        [SetUp]
+        public void LeapOn()
+        {
+            _leapWas = HordeRiderOptions.LeapOntoTank;
+            HordeRiderOptions.LeapOntoTank = true;
+        }
+
+        [TearDown]
+        public void LeapBack() => HordeRiderOptions.LeapOntoTank = _leapWas;
 
         [UnityTest, Timeout(240000)]
         public IEnumerator SandboxHasLiveZombies_ThatComeLeapOn_AndRespawn()

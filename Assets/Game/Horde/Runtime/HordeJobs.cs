@@ -887,6 +887,8 @@ namespace Game.Horde
         [ReadOnly] public NativeArray<HordeKind> Kinds;
         [ReadOnly] public NativeArray<int> CellStart;
         [ReadOnly] public NativeArray<int> Sorted;
+        [ReadOnly] public NativeArray<int> Slot;
+        [ReadOnly] public NativeArray<float4> Obstacles;
         [WriteOnly] public NativeArray<float3> NextPosition;
         public NativeArray<float2> Velocity;
         public NativeArray<float> Heading;
@@ -897,8 +899,19 @@ namespace Game.Horde
         public float HashCell;
         public HordeSettings Settings;
         public HordeTank Tank;
+        public HordeRing Ring;
+        /// <summary>Two of the biggest bodies of the kind table touch within this, m (the contact's reach).</summary>
+        public float TouchRange;
+        public int ObstacleCount;
         public float DeltaTime;
         public ProfilerMarker Marker;
+
+        /// <summary>Within this far round the ring it heads straight for its place; further, it walks round the ring, m.</summary>
+        private const float RING_DIRECT = 1f;
+        /// <summary>It stands this close to its place, m.</summary>
+        private const float RING_ARRIVE = 0.08f;
+        /// <summary>It slows down over this distance from its place, m.</summary>
+        private const float RING_SLOW = 1f;
 
         public void Execute(int startIndex, int count)
         {
@@ -906,8 +919,9 @@ namespace Game.Horde
             quaternion inverse = math.inverse(Tank.Rotation);
             float radius = Settings.SeparationRadius;
             float radiusSq = radius * radius;
-            // Hash cells round the own one that a neighbour within the radius can be in (1 with the default settings).
-            int rings = math.max(1, (int)math.ceil(radius / HashCell));
+            // Hash cells round the own one that a neighbour within the radius or touching can be in (1 with the
+            // crowd's own kinds; the brute's body reaches a ring further).
+            int rings = math.max(1, (int)math.ceil(math.max(radius, TouchRange) / HashCell));
             float blend = 1f - math.exp(-Settings.Acceleration * DeltaTime);
             float maxTurn = Settings.TurnRate * DeltaTime;
 
@@ -944,25 +958,46 @@ namespace Game.Horde
                         wish = RangedWish(p, cell, toTank, kind, speed);
                     else
                     {
-                        float hull = HordeHull.Distance(Tank, HordeHull.ToLocal(Tank, inverse, p));
-                        float2 dir = Grid.FlowOf(cell);
-                        if (math.lengthsq(dir) < 0.25f || hull < DIRECT_RANGE)
-                            dir = math.normalizesafe(toTank);
-                        float slow = math.saturate((hull - Settings.AttackReach) / math.max(Settings.SlowRadius, 0.01f));
-                        speed *= math.lerp(0.3f, 1f, slow);
-                        if (state == HordeState.Attack)
-                            speed = math.min(speed, 0.4f);
-                        wish = dir * speed;
+                        float3 local = HordeHull.ToLocal(Tank, inverse, p);
+                        float hull = HordeHull.Distance(Tank, local);
+                        int slot = Slot[i];
+                        bool ringed = Ring.Active && kind.Radius <= Ring.MaxRadius;
+                        if (ringed && slot >= 0 && hull < DIRECT_RANGE + Ring.Standoff)
+                            wish = ToRing(local.xz, HordeHullRing.SlotParam(slot, Ring.Count, Ring.Length), Ring.Standoff,
+                                Ring.WaitStandoff, speed);
+                        else if (ringed && slot < 0 && hull < Ring.WaitStandoff + Settings.SlowRadius)
+                        {
+                            // No free place on the ring: it waits a body further out, where it stands now round the hull.
+                            float waitAt = HordeHullRing.Param(local.xz, Ring.Half, Ring.WaitStandoff);
+                            wish = ToRing(local.xz, waitAt, Ring.WaitStandoff, Ring.WaitStandoff, speed);
+                        }
+                        else
+                        {
+                            float2 dir = Grid.FlowOf(cell);
+                            if (math.lengthsq(dir) < 0.25f || hull < DIRECT_RANGE)
+                                dir = math.normalizesafe(toTank);
+                            float slow = math.saturate((hull - Settings.AttackReach) / math.max(Settings.SlowRadius, 0.01f));
+                            speed *= math.lerp(0.3f, 1f, slow);
+                            if (state == HordeState.Attack)
+                                speed = math.min(speed, 0.4f);
+                            wish = dir * speed;
+                        }
                     }
                 }
 
-                // Separation.
+                // Separation (a soft push within the separation radius) and contact (bodies closer than their radii
+                // added are moved apart outright). The own cell first, then ring by ring, so a dense crowd never fills
+                // the neighbour budget with far ones before the near.
                 float2 push = float2.zero;
+                float2 contact = float2.zero;
                 int seen = 0;
                 int2 hashCell = math.clamp((int2)math.floor((xz - HashOrigin) / HashCell), 0, HashSize - 1);
-                for (int dz = -rings; dz <= rings && seen < Settings.MaxNeighbours; dz++)
-                for (int dx = -rings; dx <= rings && seen < Settings.MaxNeighbours; dx++)
+                for (int ring = 0; ring <= rings && seen < Settings.MaxNeighbours; ring++)
+                for (int dz = -ring; dz <= ring && seen < Settings.MaxNeighbours; dz++)
+                for (int dx = -ring; dx <= ring && seen < Settings.MaxNeighbours; dx++)
                 {
+                    if (math.max(math.abs(dx), math.abs(dz)) != ring)
+                        continue;
                     int2 c = hashCell + new int2(dx, dz);
                     if (math.any(c < 0) || math.any(c >= HashSize))
                         continue;
@@ -975,7 +1010,8 @@ namespace Game.Horde
                             continue;
                         float2 d = xz - Position[j].xz;
                         float d2 = math.lengthsq(d);
-                        if (d2 >= radiusSq)
+                        float touch = kind.Radius + Kinds[Kind[j]].Radius;
+                        if (d2 >= radiusSq && d2 >= touch * touch)
                             continue;
                         if (d2 < 1e-8f)
                         {
@@ -986,9 +1022,27 @@ namespace Game.Horde
                         }
 
                         float dist = math.sqrt(d2);
-                        push += d / dist * (1f - dist / radius);
+                        float2 away = d / dist;
+                        if (dist < radius)
+                            push += away * (1f - dist / radius);
+                        if (dist < touch)
+                            contact += away * ((touch - dist) * 0.5f);
                         seen++;
                     }
+                }
+
+                // Bodies outside the crowd (the sandbox's skinned zombies) do not give way: the monster steps out alone.
+                for (int o = 0; o < ObstacleCount; o++)
+                {
+                    float4 body = Obstacles[o];
+                    float touch = kind.Radius + body.w;
+                    float2 d = xz - body.xz;
+                    float d2 = math.lengthsq(d);
+                    if (body.w <= 0f || d2 >= touch * touch || d2 < 1e-8f)
+                        continue;
+                    float dist = math.sqrt(d2);
+                    contact += d / dist * (touch - dist);
+                    push += d / dist;
                 }
 
                 wish += push * Settings.SeparationStrength;
@@ -1007,8 +1061,14 @@ namespace Game.Horde
                     heading -= math.floor((heading + math.PI) / (2f * math.PI)) * (2f * math.PI);
                 }
 
-                // Move by the grid's step rule.
-                float2 next = xz + v * DeltaTime;
+                // Move by the grid's step rule. The contact correction is capped to half a body a step (a crowd
+                // squeezed hard spreads over a few frames instead of jumping).
+                float2 shift = contact * Settings.ContactStiffness;
+                float shiftLength = math.length(shift);
+                float maxShift = kind.Radius * 0.5f;
+                if (shiftLength > maxShift)
+                    shift *= maxShift / shiftLength;
+                float2 next = xz + v * DeltaTime + shift;
                 int2 nextCell = Grid.CellOf(next);
                 if (!math.all(nextCell == cell) && !Grid.CanEnter(cell, nextCell))
                 {
@@ -1045,6 +1105,21 @@ namespace Game.Horde
             }
 
             Marker.End();
+        }
+
+        /// <summary>
+        /// Wish toward the ring point at arc length <paramref name="target"/> of the ring <paramref name="standoff"/> off
+        /// the hull: round the ring the shorter way while it is far along it, slowing down near the point, zero on it.
+        /// </summary>
+        private float2 ToRing(float2 local, float target, float standoff, float travel, float speed)
+        {
+            float2 aim = HordeHullRing.Approach(local, target, Ring.Half, standoff, travel, RING_DIRECT);
+            float2 to = aim - local;
+            float d = math.length(to);
+            if (d < RING_ARRIVE)
+                return float2.zero;
+            float2 world = math.rotate(Tank.Rotation, new float3(to.x, 0f, to.y)).xz;
+            return math.normalizesafe(world) * (speed * math.saturate(d / RING_SLOW));
         }
 
         private float2 RangedWish(float3 p, int2 cell, float2 toTank, in HordeKind kind, float speed)

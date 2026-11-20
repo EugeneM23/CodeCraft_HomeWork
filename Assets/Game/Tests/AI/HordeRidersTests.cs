@@ -26,9 +26,14 @@ namespace Game.AIKit.Adapters.Tests
         private Rigidbody _body;
         private readonly List<HordeRiderState> _states = new();
 
+        private bool _leapWas;
+
         [SetUp]
         public void SetUp()
         {
+            // Leaping onto the tank is off in the game for now (HordeRiderOptions.LeapOntoTank); these tests keep the code alive.
+            _leapWas = HordeRiderOptions.LeapOntoTank;
+            HordeRiderOptions.LeapOntoTank = true;
             _grid = new HordeNavGrid(HordeNavGridSettings.Cover(new float2(-20f, -20f), new float2(20f, 20f), 0.5f));
             using (var heights = new NativeArray<float>(_grid.CellCount, Allocator.Temp))
                 _grid.SetHeights(heights);
@@ -63,6 +68,7 @@ namespace Game.AIKit.Adapters.Tests
         [TearDown]
         public void TearDown()
         {
+            HordeRiderOptions.LeapOntoTank = _leapWas;
             HordeRiderEvents.StateChanged -= OnState;
             _riders.Dispose();
             _sim.Dispose();

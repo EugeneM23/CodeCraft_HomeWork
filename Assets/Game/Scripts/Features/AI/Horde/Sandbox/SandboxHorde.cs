@@ -21,7 +21,7 @@ namespace Game.AIKit.Adapters
         private static bool s_registered;
         private static int s_groupSize;
 
-        /// <summary>Groups come (on: the user wants walking zombies in the sandbox; riders are off in its config).
+        /// <summary>Groups come (on: the user wants walking zombies in the sandbox; no leaping onto the tank while HordeRiderOptions.LeapOntoTank is off).
         /// Off clears the sandbox horde without deaths.</summary>
         public static bool Enabled { get; set; } = true;
 
