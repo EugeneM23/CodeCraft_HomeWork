@@ -128,7 +128,7 @@ namespace Game
                 ContactPoint contact = collision.GetContact(0);
                 bool flesh = (target != null && target.HasEnemyTag()) || HitsFlesh(contact.point, collision.collider);
                 // No area damage (WeaponSettings.shellAreaDamage off): the enemy hit takes the shell's damage itself.
-                if (!ExplosionUseCase.AreaDamage && target != null && target.HasDamageableTag())
+                if (!ExplosionUseCase.HitsArea(_bullet) && target != null && target.HasDamageableTag())
                     DamageUseCase.TakeDamage(target, new TakeDamageArgs(_bullet));
                 ExplosionUseCase.Explode(_bullet, contact.point, collision.collider, _gameFactory, contact.normal, flesh);
             }
