@@ -28,7 +28,12 @@ namespace Game.Horde
         /// or shoot. The hull dragging over it pops it once it is under the hull (a crush); left lying too long
         /// (<see cref="HordeSettings.KnockLie"/>) it dies there (<see cref="HordeDeathCause.Fell"/>) and stays as a corpse.
         /// </summary>
-        Knocked = 6
+        Knocked = 6,
+        /// <summary>
+        /// Jumping down out of a hole in a house (HouseZombies): born in the opening at its storey's height, it flies on with
+        /// its velocity (outward, StateTime the up speed) under gravity; on the ground it walks. No steering, bite or crush.
+        /// </summary>
+        Dropping = 7
     }
 
     /// <summary>Which states are a live monster (walking, attacking, emerging or riding the tank).</summary>
@@ -36,7 +41,7 @@ namespace Game.Horde
     {
         public static bool IsLive(HordeState state) =>
             state == HordeState.Walk || state == HordeState.Attack || state == HordeState.Emerging || state == HordeState.Riding
-            || state == HordeState.Knocked;
+            || state == HordeState.Knocked || state == HordeState.Dropping;
     }
 
     /// <summary>How a kind fights: at the hull, or from a distance with shots.</summary>

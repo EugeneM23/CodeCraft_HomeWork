@@ -22,7 +22,7 @@ namespace Game.AIKit.Adapters
         public static bool Enabled { get; set; } = true;
 
         /// <summary>Zombies a room holds at the start.</summary>
-        public static int PerRoom { get; set; } = 200;
+        public static int PerRoom { get; set; } = 50;
 
         /// <summary>Zombies a second out of one hole.</summary>
         public const float RATE = 20f;
@@ -36,8 +36,15 @@ namespace Game.AIKit.Adapters
         /// <summary>Holes nearer than this (m) to one of the room's are the same hole.</summary>
         private const float SAME_HOLE = 1.2f;
 
-        /// <summary>A stream is born this far (m) outside the wall, and spread this much along it.</summary>
-        private const float OUTSIDE = 0.6f;
+        /// <summary>
+        /// A zombie is born in the opening this far (m) out from the room's inside face (in the wall's thickness, at the
+        /// outer face), on its storey's floor, and spread this much along it.
+        /// </summary>
+        private const float OUTSIDE = 0.45f;
+
+        /// <summary>Its jump out of the hole: out (m/s) and up (m/s); then it falls (HordeState.Dropping).</summary>
+        private const float JUMP_OUT = 2.5f;
+        private const float JUMP_UP = 2f;
         private const float SPREAD = 0.5f;
 
         private sealed class Room
@@ -53,7 +60,9 @@ namespace Game.AIKit.Adapters
             public Room Room;
             public Vector3 Out;
             public Vector3 Along;
+            public Vector3 Normal;
             public float Carry;
+            public float Last;
         }
 
         private readonly HordeBehaviour _horde;
@@ -61,16 +70,35 @@ namespace Game.AIKit.Adapters
         private readonly List<Hole> _holes = new(32);
         private readonly List<VoxelStructure.Room> _scratch = new(8);
         private readonly System.Action<Vector3, float, int> _onCarved;
+        private readonly System.Action<Vector3, Vector3, int> _onDetached;
         private bool _built;
 
         public HouseZombies(HordeBehaviour horde)
         {
             _horde = horde;
             _onCarved = OnCarved;
+            _onDetached = OnDetached;
             VoxelSignals.Carved += _onCarved;
+            VoxelSignals.Detached += _onDetached;
         }
 
-        public void Dispose() => VoxelSignals.Carved -= _onCarved;
+        public void Dispose()
+        {
+            VoxelSignals.Carved -= _onCarved;
+            VoxelSignals.Detached -= _onDetached;
+        }
+
+        /// <summary>
+        /// A piece broke off a body (a collapse, a split): if it was a piece of a house's outer wall, the gap it leaves is a
+        /// hole into its room, at its height, when it is big enough for a body (wide and high).
+        /// </summary>
+        private void OnDetached(Vector3 middle, Vector3 half, int voxels)
+        {
+            float wide = Mathf.Max(half.x, half.z);
+            if (wide * 2f < MIN_HOLE || half.y * 2f < MIN_HOLE)
+                return;
+            OnCarved(middle, wide, voxels);
+        }
 
         /// <summary>Rooms with zombies left, and zombies left in all of them.</summary>
         public int RoomsLeft { get; private set; }
@@ -109,6 +137,8 @@ namespace Game.AIKit.Adapters
                 if (!TryWall(room, local, radius, out Vector3 normal, out Vector3 onWall))
                     continue;
 
+                // Born in the opening on its storey's floor: it steps out of the hole and drops.
+                onWall.y = room.Inside.min.y;
                 Vector3 outWorld = room.House.TransformPoint(onWall + normal * OUTSIDE);
                 bool known = false;
                 for (int h = 0; h < _holes.Count; h++)
@@ -119,7 +149,9 @@ namespace Game.AIKit.Adapters
                     {
                         Room = room,
                         Out = outWorld,
-                        Along = room.House.TransformDirection(Vector3.Cross(Vector3.up, normal)).normalized
+                        Along = room.House.TransformDirection(Vector3.Cross(Vector3.up, normal)).normalized,
+                        Normal = room.House.TransformDirection(normal).normalized,
+                        Last = Time.time
                     });
             }
         }
@@ -186,11 +218,15 @@ namespace Game.AIKit.Adapters
                 }
 
                 streams++;
-                hole.Carry += RATE * deltaTime;
+                // On the game's clock, not the frame's: the same stream at any frame rate.
+                float now = Time.time;
+                hole.Carry += RATE * Mathf.Max(0f, now - hole.Last);
+                hole.Last = now;
                 while (hole.Carry >= 1f && hole.Room.Stock > 0)
                 {
                     Vector3 at = hole.Out + hole.Along * Random.Range(-SPREAD, SPREAD);
-                    if (!_horde.SpawnWalking(at))
+                    Vector3 jump = hole.Normal * (JUMP_OUT * Random.Range(0.8f, 1.2f)) + Vector3.up * (JUMP_UP * Random.Range(0.8f, 1.2f));
+                    if (!_horde.SpawnDropping(at, jump))
                         break; // the horde is full or its queue is: next tick
                     hole.Carry -= 1f;
                     hole.Room.Stock--;

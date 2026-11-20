@@ -15,6 +15,14 @@ namespace Game.Voxels
         /// <summary>An air bomb dug a crater: point, crater radius (m), voxels taken.</summary>
         public static event Action<Vector3, float, int> AirBlasted;
 
+        /// <summary>
+        /// A piece broke off a body (VoxelBody.Detach: a blast, a collapse, a split): the middle of the gap it leaves (world),
+        /// its half size (m, the body's axes) and its voxels.
+        /// </summary>
+        public static event Action<Vector3, Vector3, int> Detached;
+
+        public static void RaiseDetached(Vector3 middle, Vector3 half, int voxels) => Detached?.Invoke(middle, half, voxels);
+
         /// <summary>A loose piece broke on a hit: contact point, impact speed (m/s).</summary>
         public static event Action<Vector3, float> Fractured;
 

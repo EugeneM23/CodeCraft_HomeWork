@@ -305,6 +305,26 @@ namespace Game.Horde
         /// <summary>The monster in this slot crawls on the ground (slower, low): chosen at its spawn.</summary>
         public bool IsCrawling(int index) => index >= 0 && index < Capacity && _crawl[index] != 0;
 
+        /// <summary>
+        /// A monster that jumps down out of a house (HordeState.Dropping): born at <paramref name="at"/> (its height kept: the
+        /// hole's storey), flying on at <paramref name="outward"/> (horizontal, m/s) and <paramref name="up"/> (m/s) under
+        /// gravity; it runs (no crawl) and walks on landing. The slot, or -1 when full. Between steps.
+        /// </summary>
+        public int SpawnDropping(float3 at, float2 outward, float up, int kind = 0)
+        {
+            int slot = Spawn(at, math.atan2(outward.x, outward.y), kind);
+            if (slot < 0)
+                return -1;
+            _position[slot] = at;
+            _nextPosition[slot] = at;
+            _snapPosition[slot] = at;
+            _state[slot] = HordeState.Dropping;
+            _velocity[slot] = outward;
+            _stateTime[slot] = up;
+            _crawl[slot] = 0;
+            return slot;
+        }
+
         /// <summary>Makes the monster in this slot run, not crawl (a house's stream: runners only). Between steps.</summary>
         public void StopCrawling(int index)
         {
@@ -663,6 +683,7 @@ namespace Game.Horde
                     Health = _health,
                     StateTime = _stateTime,
                     AnimTime = _animTime,
+                    Velocity = _velocity,
                     Cooldown = _cooldown,
                     MaxHealth = _maxHealth,
                     AttackDamage = _attackDamage,

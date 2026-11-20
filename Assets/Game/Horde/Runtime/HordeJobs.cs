@@ -932,7 +932,9 @@ namespace Game.Horde
                 if (state != HordeState.Walk && state != HordeState.Attack)
                 {
                     NextPosition[i] = p;
-                    if (state == HordeState.Emerging || state == HordeState.Riding || state == HordeState.Knocked)
+                    if (state == HordeState.Dropping)
+                        AnimTime[i] += DeltaTime; // its run plays in the air; the contact job moves it
+                    else if (state == HordeState.Emerging || state == HordeState.Riding || state == HordeState.Knocked)
                     {
                         Velocity[i] = float2.zero;
                         AnimTime[i] += DeltaTime;
@@ -1154,6 +1156,12 @@ namespace Game.Horde
         /// <summary>Feet may be this far below the hull box and still be under it.</summary>
         private const float BELOW_HULL = 1.2f;
 
+        /// <summary>Gravity of a monster jumping down out of a house (HordeState.Dropping), m/s².</summary>
+        private const float DROP_GRAVITY = 20f;
+
+        /// <summary>Its velocity: out of the hole and up (the jump); read here.</summary>
+        [ReadOnly] public NativeArray<float2> Velocity;
+
         /// <summary>A knocked-down monster pops once its middle is this share of its radius inside the hull's footprint (hidden under it).</summary>
         private const float COVERED = 0.5f;
 
@@ -1247,6 +1255,31 @@ namespace Game.Horde
                 // A rider is placed from outside (HordeRiders): hits and blasts only, no crush, shove, bite or shot here.
                 if (state == HordeState.Riding)
                     continue;
+
+                if (state == HordeState.Dropping)
+                {
+                    // Out of a house: on with its velocity (Velocity out, StateTime up) under gravity; it walks on landing.
+                    float up = StateTime[i];
+                    float2 flight = Velocity[i];
+                    float3 next = p + new float3(flight.x, up, flight.y) * DeltaTime;
+                    up -= DROP_GRAVITY * DeltaTime;
+                    float ground = Grid.HeightAt(next.xz);
+                    if (math.isnan(ground))
+                        ground = next.y - 1f;
+                    if (up < 0f && next.y <= ground)
+                    {
+                        next.y = ground;
+                        State[i] = HordeState.Walk;
+                        StateTime[i] = 0f;
+                    }
+                    else
+                    {
+                        StateTime[i] = up;
+                    }
+
+                    Position[i] = next;
+                    continue;
+                }
 
                 if (state == HordeState.Knocked)
                 {

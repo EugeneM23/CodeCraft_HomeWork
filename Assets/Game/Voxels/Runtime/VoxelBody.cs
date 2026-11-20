@@ -1456,6 +1456,9 @@ namespace Game.Voxels
             // A piece leaves: the rest's colliders must be right before the piece moves (RebuildsAsync).
             RebuildNow();
             int3 size = piece.Max - piece.Min + 1;
+            // Where the gap it leaves is (HouseZombies: a piece off a house's outer wall opens it).
+            float3 gap = Origin + ((float3)(piece.Min + piece.Max) + 1f) * 0.5f * VoxelSize;
+            VoxelSignals.RaiseDetached(transform.TransformPoint(gap), (float3)size * (0.5f * VoxelSize), piece.Count);
             // A pooled body (PieceFactory) if the game keeps one: its chunks and arrays are reused.
             VoxelBody body = PieceFactory?.Invoke();
             var grid = body != null ? body.TakeVoxels(size.x * size.y * size.z)

@@ -129,6 +129,9 @@ namespace Game.AIKit.Adapters
             public float DamageScale;
             /// <summary>Walks out at once (a house's stream, HouseZombies) rather than climbing out of a burrow.</summary>
             public bool Walking;
+            /// <summary>Jumps down out of a house's hole (HordeState.Dropping): its jump, out (XZ) and up (Y), m/s.</summary>
+            public bool Drop;
+            public Vector3 Jump;
         }
 
         public HordeBehaviour(HordeArtConfig art, HordeOptions options)
@@ -439,6 +442,20 @@ namespace Game.AIKit.Adapters
             return true;
         }
 
+        /// <summary>
+        /// A crawler born in a house's hole at <paramref name="at"/> (its height kept) that jumps out with <paramref name="jump"/>
+        /// (out along XZ, up along Y, m/s) and drops to the ground, then runs (HordeState.Dropping: HouseZombies). False: no room.
+        /// </summary>
+        public bool SpawnDropping(Vector3 at, Vector3 jump)
+        {
+            if (_simulation == null || !HordeKinds.TryGetRow(EnemyKind.Crawler, out int row) || _pendingCount >= MAX_PENDING)
+                return false;
+            if (AliveCount >= _simulation.Capacity)
+                return false;
+            _pending[_pendingCount++] = new Pending { Position = at, Row = row, HealthScale = 1f, DamageScale = 1f, Drop = true, Jump = jump };
+            return true;
+        }
+
         void IArenaHorde.WaveStarted() => _audio.WaveStarted();
 
         /// <summary>A burrow opened at <paramref name="at"/> (its sound).</summary>
@@ -582,6 +599,13 @@ namespace Game.AIKit.Adapters
             for (int n = 0; n < _pendingCount; n++)
             {
                 Pending p = _pending[n];
+                if (p.Drop)
+                {
+                    // Out of a house's hole: its height kept, it jumps and falls (no grid snap: it is up in the wall).
+                    _simulation.SpawnDropping(p.Position, new float2(p.Jump.x, p.Jump.z), p.Jump.y, p.Row);
+                    continue;
+                }
+
                 float3 at = p.Position;
                 float h = _grid.HeightAt(at);
                 if (!float.IsNaN(h))
