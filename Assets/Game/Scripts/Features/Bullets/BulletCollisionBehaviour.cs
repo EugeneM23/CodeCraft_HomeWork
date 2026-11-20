@@ -128,7 +128,7 @@ namespace Game
                     DamageUseCase.TakeDamage(target, new TakeDamageArgs(_bullet));
                 ContactPoint contact = collision.GetContact(0);
                 ExplosionUseCase.Explode(_bullet, contact.point, collision.collider, _gameFactory, contact.normal,
-                    target != null && target.HasEnemyTag());
+                    (target != null && target.HasEnemyTag()) || HitsFlesh(contact.point, collision.collider));
             }
             else if (target != null && target.HasDamageableTag())
             {
@@ -240,6 +240,25 @@ namespace Game
             }
 
             return true;
+        }
+
+        /// <summary>Within this (m) of a monster a shell's burst counts as a hit in flesh.</summary>
+        private const float FLESH_REACH = 1.5f;
+
+        /// <summary>
+        /// A shell going off in a crowd hits flesh even when it struck the ground at a monster's feet or a corpse lying
+        /// there: blood and flesh fly then, not sparks. A corpse's piece, a monster with a collider or a horde monster
+        /// within <see cref="FLESH_REACH"/>.
+        /// </summary>
+        private static bool HitsFlesh(Vector3 point, Collider hit)
+        {
+            if (hit != null && VoxelCorpses.IsCorpseBody(hit.GetComponentInParent<VoxelBody>()))
+                return true;
+            if (Physics.CheckSphere(point, FLESH_REACH, 1 << PhysicsLayers.Enemy, QueryTriggerInteraction.Ignore))
+                return true;
+            return GameContext.TryGetInstance(out GameContext context) &&
+                   context.TryGetEnemyTargets(out IEnemyTargets targets) && targets is EnemyTargets enemies &&
+                   enemies.TryFindNearestBeyond(point, 0f, FLESH_REACH, out _, out _);
         }
 
         /// <summary>A bullet bites a small hole out of a voxel wall, or out of a vehicle's voxel skin.</summary>

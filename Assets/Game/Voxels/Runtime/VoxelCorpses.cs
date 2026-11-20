@@ -59,6 +59,17 @@ namespace Game.Voxels
         /// <summary>The corpses lying, oldest first.</summary>
         private static readonly List<Corpse> Lying = new();
 
+        /// <summary>Whether <paramref name="body"/> is a piece of a lying corpse (a shell striking it hits flesh).</summary>
+        public static bool IsCorpseBody(VoxelBody body)
+        {
+            if (body == null)
+                return false;
+            for (int i = 0; i < Lying.Count; i++)
+                if (Lying[i] != null && Lying[i].Holds(body))
+                    return true;
+            return false;
+        }
+
         private static readonly Stack<Corpse> EmptyCorpses = new();
         private static readonly List<VoxelBody> Free = new();
 

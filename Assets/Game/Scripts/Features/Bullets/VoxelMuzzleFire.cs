@@ -145,9 +145,8 @@ namespace Game
                     Flame(origin, Cone(side * 0.9f + forward * 0.45f, 0.3f) * Random.Range(4f, 9f), carry,
                         Random.Range(0.12f, 0.22f), Random.Range(0.08f, 0.15f));
                 }
-                // Short: they stay near the barrel (~2-4 m), so they never read as sparks off what the shell hit.
                 for (int k = 0; k < 26; k++)
-                    Spark(origin, Cone(forward, 0.4f) * Random.Range(7f, 14f), carry, Random.Range(0.15f, 0.3f),
+                    Spark(origin, Cone(forward, 0.4f) * Random.Range(14f, 32f), carry, Random.Range(0.25f, 0.6f),
                         Random.Range(0.025f, 0.045f));
 
                 Light light = _lights[_nextLight];
