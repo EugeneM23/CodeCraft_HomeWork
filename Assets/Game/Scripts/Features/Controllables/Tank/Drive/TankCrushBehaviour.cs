@@ -336,13 +336,36 @@ namespace Game
                 KillingHit.CrushingUnderHull = true;
                 try
                 {
-                    Kill(body.Entity, body.Position, speed);
+                    KillUnderHull(body.Entity, body.Position, speed, frame.TransformPoint(_hull.center), frame.rotation, half);
                 }
                 finally
                 {
                     KillingHit.CrushingUnderHull = false;
                 }
             }
+        }
+
+        /// <summary>
+        /// A knocked-down body popped under the hull: it dies (its voxel flesh stays out of sight, KillingHit.UnderHull), and
+        /// its blood and bits burst out from under the belly to every side as hard as an HE shell's hit (VoxelSpray.UnderHull):
+        /// from the footprint's edge, flat, so nothing comes up through the hull or lands on it. Only the tracks take blood.
+        /// </summary>
+        private void KillUnderHull(IEntity victim, Vector3 point, float speed, Vector3 hullCenter, Quaternion hullRotation, Vector3 half)
+        {
+            KillMarker.Begin();
+            DamageUseCase.TakeDamage(victim, _crush);
+            KillMarker.End();
+            if (IsAlive(victim))
+                return;
+            GameSignals.RaiseCrushed(point, speed);
+
+            SprayMarker.Begin();
+            Vector3 under = Under(point);
+            VoxelSpray.UnderHull(point, hullCenter, hullRotation, half, under.y - 0.1f, VoxelSpray.UNDER_HULL_DROPS, VoxelSpray.UNDER_HULL_BITS,
+                VoxelSpray.UNDER_HULL_SPEED, _blood, _blood, VoxelSpray.UNDER_HULL_DROP_SIZE, VoxelSpray.UNDER_HULL_BIT_SIZE,
+                _body.linearVelocity * INHERIT);
+            TankBloodStains.Squash(point, 0.6f);
+            SprayMarker.End();
         }
 
         /// <summary>Just above the ground under the contact, where the fans start; the contact itself if no ground is found.</summary>

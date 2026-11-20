@@ -41,6 +41,10 @@ namespace Game
             IEntity source = args?.source;
             if (source == null || _body == null || !GibRules.TryGetPosition(source, out Vector3 from))
                 return;
+            // Popped under a tank's hull: its blood is the burst from under the belly (VoxelSpray.UnderHull), none from
+            // the body itself, which would come up through the hull.
+            if (KillingHit.CrushingUnderHull)
+                return;
 
             int count;
             Vector3 point;

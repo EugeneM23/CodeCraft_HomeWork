@@ -188,6 +188,76 @@ namespace Game.Voxels
             return spawned;
         }
 
+        /// <summary>
+        /// A pop under the hull is as strong as an HE shell's hit on a body (ShellHitSparksUseCase.EmitFlesh): as many
+        /// drops and bits, as big, as fast (28.6 m/s); only flat, out to every side.
+        /// </summary>
+        public const int UNDER_HULL_DROPS = 30;
+        public const int UNDER_HULL_BITS = 14;
+        public const float UNDER_HULL_SPEED = 28.6f;
+        public const float UNDER_HULL_DROP_SIZE = 0.11f;
+        public const float UNDER_HULL_BIT_SIZE = 0.15f;
+
+        /// <summary>Fans of a pop under the hull (<see cref="UnderHull"/>), round the body.</summary>
+        private const int UNDER_HULL_FANS = 10;
+
+        /// <summary>A fan's rise against its speed out: flat, skimming the ground.</summary>
+        private const float UNDER_HULL_LIFT = 0.06f;
+
+        /// <summary>How far past the hull's footprint (m) a fan starts, and how high over the ground: below the belly.</summary>
+        private const float UNDER_HULL_OUT = 0.25f;
+        private const float UNDER_HULL_HEIGHT = 0.12f;
+
+        /// <summary>
+        /// A body popped under a tank's hull (the user: like an HE shell's blast, out from under the belly to every side):
+        /// blood and bits of flesh in flat fans all round, each starting just outside the hull's footprint where its way
+        /// leaves it, a hand over the ground, so nothing comes up through the hull or lands on it; they skim out and splash
+        /// the ground metres round (goo: stretched strands, sticks or soaks in where it lands).
+        /// </summary>
+        /// <param name="at">The body (its feet), under the hull.</param>
+        /// <param name="hullCenter">The hull box's centre, its rotation and half size (its footprint is its XZ).</param>
+        /// <param name="groundY">The ground under the body.</param>
+        /// <returns>Drops and blobs that flew.</returns>
+        public static int UnderHull(Vector3 at, Vector3 hullCenter, Quaternion hullRotation, Vector3 hullHalf, float groundY,
+            int drops, int bits, float speed, IReadOnlyList<Color32> blood, IReadOnlyList<Color32> flesh, float dropSize, float bitSize,
+            Vector3 inherit = default)
+        {
+            Quaternion inverse = Quaternion.Inverse(hullRotation);
+            Vector3 local = inverse * (at - hullCenter);
+            float turn = Random.Range(0f, 360f);
+            int spawned = 0;
+            for (int k = 0; k < UNDER_HULL_FANS; k++)
+            {
+                Vector3 out_ = Quaternion.Euler(0f, turn + (k + Random.Range(-0.3f, 0.3f)) * (360f / UNDER_HULL_FANS), 0f) * Vector3.forward;
+                Vector3 start = FootprintExit(local, inverse * out_, hullHalf, out float travel);
+                start = hullCenter + hullRotation * start;
+                start = new Vector3(start.x, groundY + UNDER_HULL_HEIGHT, start.z) + out_ * UNDER_HULL_OUT;
+                Vector3 way = out_ + Vector3.up * UNDER_HULL_LIFT;
+                int n = drops / UNDER_HULL_FANS + (k < drops % UNDER_HULL_FANS ? 1 : 0);
+                int m = bits / UNDER_HULL_FANS + (k < bits % UNDER_HULL_FANS ? 1 : 0);
+                spawned += Goo(start, way, n, speed * Random.Range(0.85f, 1.1f), 0.08f, blood, dropSize, inherit, 0.05f);
+                if (m > 0 && flesh != null && flesh.Count > 0)
+                    spawned += Goo(start, way, m, speed * 0.85f, 0.1f, flesh, bitSize, inherit, 0.05f);
+            }
+
+            return spawned;
+        }
+
+        /// <summary>
+        /// Where a way out of the hull's footprint from <paramref name="local"/> (hull space) leaves it: the point on the
+        /// footprint's edge along <paramref name="way"/> (hull space, flat). Outside the footprint already: the point itself.
+        /// </summary>
+        private static Vector3 FootprintExit(Vector3 local, Vector3 way, Vector3 half, out float travel)
+        {
+            travel = 0f;
+            if (Mathf.Abs(local.x) >= half.x || Mathf.Abs(local.z) >= half.z)
+                return local;
+            float tx = Mathf.Abs(way.x) > 1e-4f ? ((way.x > 0f ? half.x : -half.x) - local.x) / way.x : float.MaxValue;
+            float tz = Mathf.Abs(way.z) > 1e-4f ? ((way.z > 0f ? half.z : -half.z) - local.z) / way.z : float.MaxValue;
+            travel = Mathf.Max(0f, Mathf.Min(tx, tz));
+            return local + new Vector3(way.x, 0f, way.z) * travel;
+        }
+
         /// <summary>One body part of <see cref="Chunks"/>: its size in cubes and where its middle sits (share of the body's height, sideways in cubes).</summary>
         private static readonly (int x, int y, int z, float height, float side)[] Parts =
         {

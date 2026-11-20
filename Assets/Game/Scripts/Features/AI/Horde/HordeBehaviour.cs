@@ -798,30 +798,21 @@ namespace Game.AIKit.Adapters
             }
         }
 
-        /// <summary>Strands of goo a body popped under the hull throws (eight round it), and their launch speed, m/s.</summary>
-        private const int CRUSH_FANS = 8;
-        private const int CRUSH_DROPS = 7;
-        private const float CRUSH_SPEED = 4.5f;
-
-        /// <summary>A strand's rise against its speed out: low, along the ground from under the tracks.</summary>
-        private const float CRUSH_LIFT = 0.18f;
-
         /// <summary>
-        /// A body popped under the moving hull (<see cref="HordeDeathCause.Crushed"/>): goo squirts out from under the
-        /// tracks to every side, low and flat along the ground (it lands and soaks in as any goo), carried a little by the
-        /// tank; the tracks over it take the blood (TankBloodStains.Squash, as a squashed corpse's).
+        /// A body popped under the moving hull (<see cref="HordeDeathCause.Crushed"/>): blood and bits burst out from under
+        /// the belly to every side as hard as an HE shell's hit (VoxelSpray.UnderHull), flat along the ground, carried a
+        /// little by the tank; the tracks over it take the blood (TankBloodStains.Squash, as a squashed corpse's).
         /// </summary>
         private void CrushSpray(float3 position)
         {
-            Vector3 under = (Vector3)position + Vector3.up * 0.15f;
+            // Out from under the belly to every side, as hard as an HE shell's hit (the user): from the hull's footprint edge,
+            // below the belly, flat; nothing comes up through the hull. Only the tracks over it take blood.
             Vector3 inherit = _tankBody != null ? _tankBody.linearVelocity * 0.25f : Vector3.zero;
-            float turn = UnityEngine.Random.Range(0f, 360f);
-            for (int k = 0; k < CRUSH_FANS; k++)
-            {
-                Vector3 out_ = Quaternion.Euler(0f, turn + k * (360f / CRUSH_FANS), 0f) * Vector3.forward;
-                VoxelSpray.Goo(under, out_ + Vector3.up * CRUSH_LIFT, CRUSH_DROPS, CRUSH_SPEED * UnityEngine.Random.Range(0.7f, 1.2f),
-                    0.15f, _goo, _bloodSize * GOO_SIZE * 0.7f, inherit, 0.2f);
-            }
+            if (_tankTransform != null)
+                VoxelSpray.UnderHull(position, _tankTransform.TransformPoint(_hullCenter), _tankTransform.rotation, _hullHalf,
+                    position.y, VoxelSpray.UNDER_HULL_DROPS, VoxelSpray.UNDER_HULL_BITS, VoxelSpray.UNDER_HULL_SPEED, _goo,
+                    _tornSkins != null && _tornSkins.Length > 1 && _tornSkins[1] != null && _tornSkins[1].Length > 0 ? _tornSkins[1] : TornSkin,
+                    VoxelSpray.UNDER_HULL_DROP_SIZE, VoxelSpray.UNDER_HULL_BIT_SIZE, inherit);
 
             TankBloodStains.Squash(position, 0.6f);
         }
