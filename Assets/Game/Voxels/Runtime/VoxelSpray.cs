@@ -198,8 +198,18 @@ namespace Game.Voxels
         public const float UNDER_HULL_DROP_SIZE = 0.11f;
         public const float UNDER_HULL_BIT_SIZE = 0.15f;
 
-        /// <summary>Fans of a pop under the hull (<see cref="UnderHull"/>), round the body.</summary>
-        private const int UNDER_HULL_FANS = 10;
+        /// <summary>
+        /// The pop's speed against <see cref="UNDER_HULL_SPEED"/>: the user, a third as far (a flat throw from a hand over the
+        /// ground carries about as speed^1.6, so speed × 0.5 lands about a third out).
+        /// </summary>
+        private const float UNDER_HULL_REACH = 0.5f;
+
+        /// <summary>How many jets a pop throws (random each time), the user's splatter: a few long streaks, not even fans.</summary>
+        private const int UNDER_HULL_JETS_MIN = 3;
+        private const int UNDER_HULL_JETS_MAX = 7;
+
+        /// <summary>Share of the drops that stay in a clot round where the body burst (slow, wide).</summary>
+        private const float UNDER_HULL_CLOT = 0.3f;
 
         /// <summary>A fan's rise against its speed out: flat, skimming the ground.</summary>
         private const float UNDER_HULL_LIFT = 0.06f;
@@ -224,23 +234,60 @@ namespace Game.Voxels
         {
             Quaternion inverse = Quaternion.Inverse(hullRotation);
             Vector3 local = inverse * (at - hullCenter);
-            float turn = Random.Range(0f, 360f);
-            int spawned = 0;
-            for (int k = 0; k < UNDER_HULL_FANS; k++)
+            speed *= UNDER_HULL_REACH;
+
+            // A splatter, not a star (the user's pictures): a few jets of random length, most of them bunched to one side
+            // the way a burst squirts, one or two strays the other way, and a clot of slow drops round the burst.
+            int jets = Random.Range(UNDER_HULL_JETS_MIN, UNDER_HULL_JETS_MAX + 1);
+            float main = Random.Range(0f, 360f);
+            float lobe = Random.Range(40f, 140f);
+            int clot = Mathf.RoundToInt(drops * UNDER_HULL_CLOT);
+            int jetDrops = drops - clot;
+            System.Span<float> weight = stackalloc float[UNDER_HULL_JETS_MAX];
+            float total = 0f;
+            for (int k = 0; k < jets; k++)
             {
-                Vector3 out_ = Quaternion.Euler(0f, turn + (k + Random.Range(-0.3f, 0.3f)) * (360f / UNDER_HULL_FANS), 0f) * Vector3.forward;
-                Vector3 start = FootprintExit(local, inverse * out_, hullHalf, out float travel);
-                start = hullCenter + hullRotation * start;
-                start = new Vector3(start.x, groundY + UNDER_HULL_HEIGHT, start.z) + out_ * UNDER_HULL_OUT;
-                Vector3 way = out_ + Vector3.up * UNDER_HULL_LIFT;
-                int n = drops / UNDER_HULL_FANS + (k < drops % UNDER_HULL_FANS ? 1 : 0);
-                int m = bits / UNDER_HULL_FANS + (k < bits % UNDER_HULL_FANS ? 1 : 0);
-                spawned += Goo(start, way, n, speed * Random.Range(0.85f, 1.1f), 0.08f, blood, dropSize, inherit, 0.05f);
+                weight[k] = Random.Range(0.3f, 1.6f);
+                total += weight[k];
+            }
+
+            int spawned = 0;
+            for (int k = 0; k < jets; k++)
+            {
+                bool stray = k > 0 && Random.value < 0.25f;
+                float angle = stray ? main + 180f + Random.Range(-90f, 90f) : main + Random.Range(-0.5f, 0.5f) * lobe;
+                Vector3 out_ = Quaternion.Euler(0f, angle, 0f) * Vector3.forward;
+                Vector3 start = Exit(local, out_);
+                Vector3 way = out_ + Vector3.up * (UNDER_HULL_LIFT * Random.Range(0.5f, 2f));
+
+                // A heavier jet carries more drops and flies further: long streaks next to short spurts.
+                float share = weight[k] / total;
+                int n = Mathf.Max(2, Mathf.RoundToInt(jetDrops * share));
+                float reach = Mathf.Lerp(0.45f, 1.15f, Mathf.InverseLerp(0.3f, 1.6f, weight[k])) * Random.Range(0.85f, 1.15f);
+                spawned += Goo(start, way, n, speed * reach, Random.Range(0.03f, 0.12f), blood,
+                    dropSize * Random.Range(0.8f, 1.3f), inherit, 0.05f);
+
+                int m = Mathf.RoundToInt(bits * share);
                 if (m > 0 && flesh != null && flesh.Count > 0)
-                    spawned += Goo(start, way, m, speed * 0.85f, 0.1f, flesh, bitSize, inherit, 0.05f);
+                    spawned += Goo(start, way, m, speed * reach * Random.Range(0.5f, 0.8f), 0.15f, flesh, bitSize, inherit, 0.05f);
+            }
+
+            // The clot: slow drops in a puddle round the burst, wider on the jets' side.
+            for (int c = 0; c < clot; c += 3)
+            {
+                Vector3 out_ = Quaternion.Euler(0f, main + Random.Range(-120f, 120f), 0f) * Vector3.forward;
+                spawned += Goo(Exit(local, out_), out_ + Vector3.up * UNDER_HULL_LIFT, Mathf.Min(3, clot - c),
+                    speed * Random.Range(0.08f, 0.25f), 0.5f, blood, dropSize * Random.Range(1f, 1.6f), inherit, 0.15f);
             }
 
             return spawned;
+
+            // Where a way out leaves the hull's footprint, a hand over the ground, just outside it.
+            Vector3 Exit(Vector3 bodyLocal, Vector3 dir)
+            {
+                Vector3 p = hullCenter + hullRotation * FootprintExit(bodyLocal, inverse * dir, hullHalf, out _);
+                return new Vector3(p.x, groundY + UNDER_HULL_HEIGHT, p.z) + dir * UNDER_HULL_OUT;
+            }
         }
 
         /// <summary>
