@@ -33,11 +33,11 @@ namespace Game
             BulletHotSpots.Emit(point, n, GLOW_POWER);
         }
 
-        private const int FLESH_BLOOD = 60;
+        private const int FLESH_BLOOD = 30; // fewer, bigger drops (was 60 x 0.07 m)
         private const int FLESH_BITS = 14;
         // As far back as the sparks fly (8..29 m/s, ~10 m): goo is damped harder than a spark while it rises, so faster.
         private const float FLESH_SPEED = 28.6f; // 22 x 1.3: the user asked 30 % further
-        private const float FLESH_BLOOD_SIZE = 0.07f;
+        private const float FLESH_BLOOD_SIZE = 0.11f;
         private const float FLESH_BIT_SIZE = 0.15f;
 
         private static readonly Color32[] Blood =
