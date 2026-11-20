@@ -881,6 +881,8 @@ namespace Game.Horde
         [ReadOnly] public NativeArray<float3> Position;
         [ReadOnly] public NativeArray<HordeState> State;
         [ReadOnly] public NativeArray<float> SpeedScale;
+        /// <summary>Per slot, 1: crawls (HordeSettings.CrawlShare): slower, at the crawl clip's root speed.</summary>
+        [ReadOnly] public NativeArray<byte> Crawling;
         [ReadOnly] public NativeArray<byte> Kind;
         [ReadOnly] public NativeArray<HordeKind> Kinds;
         [ReadOnly] public NativeArray<int> CellStart;
@@ -949,6 +951,9 @@ namespace Game.Horde
                 {
                     toTank = Tank.Center.xz - xz;
                     float speed = kind.Speed * SpeedScale[i];
+                    // A crawler on the ground goes at the crawl clip's root speed against the run's (no hand sliding).
+                    if (Crawling[i] != 0 && Settings.RunClipSpeed > 0.1f)
+                        speed *= Settings.CrawlClipSpeed / Settings.RunClipSpeed;
                     if (kind.Tactic == HordeTactic.Ranged)
                         wish = RangedWish(p, cell, toTank, kind, speed);
                     else
@@ -1095,7 +1100,8 @@ namespace Game.Horde
                 Velocity[i] = v;
                 Heading[i] = heading;
 
-                float rate = state == HordeState.Attack ? 1f : math.length(v) / math.max(Settings.RunClipSpeed * kind.RenderScale, 0.1f);
+                float clipSpeed = Crawling[i] != 0 ? Settings.CrawlClipSpeed : Settings.RunClipSpeed;
+                float rate = state == HordeState.Attack ? 1f : math.length(v) / math.max(clipSpeed * kind.RenderScale, 0.1f);
                 float t = AnimTime[i] + DeltaTime * rate;
                 AnimTime[i] = t > ANIM_WRAP ? t - ANIM_WRAP : t;
             }
@@ -1556,6 +1562,9 @@ namespace Game.Horde
         public HordeClip Run;
         public HordeClip Attack;
         public HordeClip Idle;
+        /// <summary>The crawl row, for the monsters that crawl (<see cref="Crawling"/>): on the ground they play it moving or not.</summary>
+        public HordeClip Crawl;
+        [ReadOnly] public NativeArray<byte> Crawling;
         public bool Cull;
         public float EmergeTime;
         /// <summary>Height of the bounding sphere centre over the feet, and its radius (at render scale 1).</summary>
@@ -1600,7 +1609,9 @@ namespace Game.Horde
                 if (state == HordeState.Emerging)
                     p.y -= kind.EmergeDepth * BodyScale * math.saturate(StateTime[i] / math.max(EmergeTime, 0.01f));
 
+                // A crawler stays down: the crawl clip, frozen where it stopped (its time moves with its speed).
                 HordeClip clip = state == HordeState.Attack ? Attack
+                    : Crawling[i] != 0 && state != HordeState.Emerging ? Crawl
                     : state == HordeState.Emerging || math.lengthsq(Velocity[i]) < IDLE_SPEED_SQ ? Idle : Run;
                 float3 frame = clip.Sample(AnimTime[i]);
                 batch.AddNoResize(new HordeInstance

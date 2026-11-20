@@ -67,6 +67,10 @@ namespace Game.AIKit.Adapters
 
         public int bloodDrops = 10;
 
+        [Tooltip("Share of the crawlers that crawl on the ground instead of running (the art's crawl row; slower and low to hit), chosen at spawn.")]
+        [Range(0f, 1f)]
+        public float crawlShare = 0.3f;
+
         [Tooltip("Acid hits on the ground per frame that get a small splash.")]
         public int acidSplashPerFrame = 2;
 

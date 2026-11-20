@@ -191,6 +191,13 @@ namespace Game.Horde
         public float NearRadius;
         /// <summary>Walking speed the run clip was authored for: the clip plays at speed / this.</summary>
         public float RunClipSpeed;
+        /// <summary>
+        /// Speed the crawl clip was authored for (its root speed at render scale 1): a crawling monster moves at its kind's
+        /// speed × this / <see cref="RunClipSpeed"/>, and plays the clip at speed / this.
+        /// </summary>
+        public float CrawlClipSpeed;
+        /// <summary>Share of the crawlers (kind 0) that crawl on the ground instead of running, chosen at spawn (0: none).</summary>
+        public float CrawlShare;
         /// <summary>Seconds a monster spawned with <c>emerge</c> rises out of the ground before it walks.</summary>
         public float EmergeTime;
         /// <summary>
@@ -231,6 +238,8 @@ namespace Game.Horde
             Health = 100f,
             NearRadius = 15f,
             RunClipSpeed = 5f,
+            CrawlClipSpeed = 2f,
+            CrawlShare = 0f,
             EmergeTime = 1f,
             BodyScale = 1f,
             HullSlots = true,

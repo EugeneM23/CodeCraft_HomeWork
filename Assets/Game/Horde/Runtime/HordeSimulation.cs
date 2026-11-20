@@ -138,6 +138,10 @@ namespace Game.Horde
         private HordeClip _runClip;
         private HordeClip _attackClip;
         private HordeClip _idleClip;
+        private HordeClip _crawlClip;
+
+        /// <summary>Per slot: 1 — this monster crawls on the ground instead of running (<see cref="HordeSettings.CrawlShare"/>).</summary>
+        private NativeArray<byte> _crawl;
 
         /// <param name="versionBase">
         /// First generation of every slot. A simulation that replaces another under the same target source starts above
@@ -164,6 +168,7 @@ namespace Game.Horde
             _heading = new NativeArray<float>(capacity, Allocator.Persistent);
             _health = new NativeArray<float>(capacity, Allocator.Persistent);
             _torn = new NativeArray<byte>(capacity, Allocator.Persistent);
+            _crawl = new NativeArray<byte>(capacity, Allocator.Persistent);
             _tornDirection = new NativeArray<float3>(capacity, Allocator.Persistent);
             _tornPower = new NativeArray<float>(capacity, Allocator.Persistent);
             _state = new NativeArray<HordeState>(capacity, Allocator.Persistent);
@@ -214,7 +219,7 @@ namespace Game.Horde
             _freeCount = capacity;
 
             var still = new HordeClip { start = 0, count = 1, frameRate = 30f, loop = true };
-            _runClip = _attackClip = _idleClip = still;
+            _runClip = _attackClip = _idleClip = _crawlClip = still;
         }
 
         public HordeSettings Settings { get; set; }
@@ -290,6 +295,12 @@ namespace Game.Horde
             _idleClip = idle;
         }
 
+        /// <summary>The crawl clip (a VAT row): what a crawling monster (<see cref="IsCrawling"/>) plays instead of the run.</summary>
+        public void SetCrawlClip(HordeClip crawl) => _crawlClip = crawl;
+
+        /// <summary>The monster in this slot crawls on the ground (slower, low): chosen at its spawn.</summary>
+        public bool IsCrawling(int index) => index >= 0 && index < Capacity && _crawl[index] != 0;
+
         /// <summary>Sets row <paramref name="index"/> of the kind table. A row never set follows <see cref="Settings"/> (<see cref="HordeKind.FromSettings"/>).</summary>
         public void SetKind(int index, in HordeKind kind)
         {
@@ -360,6 +371,8 @@ namespace Game.Horde
             _cooldown[i] = row.ShotInterval * _random.NextFloat(0.3f, 1f);
             _animTime[i] = _random.NextFloat(0f, 10f);
             _speedScale[i] = 1f + _random.NextFloat(-s.SpeedJitter, s.SpeedJitter);
+            // A share of the crawlers (kind 0) crawls instead of running; the other kinds always walk upright.
+            _crawl[i] = (byte)(kind == 0 && s.CrawlShare > 0f && _random.NextFloat() < s.CrawlShare ? 1 : 0);
             _attackDamage[i] = 0f;
             _slot[i] = -1;
             _snapPosition[i] = position;
@@ -607,6 +620,7 @@ namespace Game.Horde
                     Position = _position,
                     State = _state,
                     SpeedScale = _speedScale,
+                    Crawling = _crawl,
                     Kind = _kind,
                     Kinds = _kinds,
                     CellStart = _cellStart,
@@ -693,6 +707,8 @@ namespace Game.Horde
                     Run = _runClip,
                     Attack = _attackClip,
                     Idle = _idleClip,
+                    Crawl = _crawlClip,
+                    Crawling = _crawl,
                     Cull = _cull,
                     EmergeTime = settings.EmergeTime,
                     CullSphere = CullSphere,
@@ -762,6 +778,7 @@ namespace Game.Horde
             if (_heading.IsCreated) _heading.Dispose();
             if (_health.IsCreated) _health.Dispose();
             if (_torn.IsCreated) _torn.Dispose();
+            if (_crawl.IsCreated) _crawl.Dispose();
             if (_tornDirection.IsCreated) _tornDirection.Dispose();
             if (_tornPower.IsCreated) _tornPower.Dispose();
             if (_state.IsCreated) _state.Dispose();
