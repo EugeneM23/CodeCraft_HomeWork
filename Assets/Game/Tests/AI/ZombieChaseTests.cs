@@ -91,6 +91,36 @@ namespace Game.AIKit.Adapters.Tests
         }
 
         [Test]
+        public void OnAPlatformWithDropsAllRound_ItHopsDown_AndBitesTheTank()
+        {
+            // A box 1 m high (more than the grid's 0.6 m step) it stands on, like the sandbox's ramp props: the path
+            // finds no way down, the climb back up is not allowed, but a zombie hops down.
+            _rig.AddTank(new Vector3(9f, 0f, 0f));
+            _rig.Wall(new Vector2(-3f, -3f), new Vector2(3f, 3f), 1f);
+            AITestRig.Zombie zombie = _rig.AddZombie(new Vector3(0f, 1f, 0f));
+            Assert.That(zombie.Transform.position.y, Is.EqualTo(1f).Within(0.05f), "it starts up on the box");
+
+            for (float t = 0f; t < 10f && zombie.Fired == 0; t += DT)
+                _rig.Step(DT);
+
+            Assert.That(zombie.Transform.position.y, Is.LessThan(0.3f), "down on the ground");
+            Assert.That(zombie.Fired, Is.GreaterThan(0), "it got to the tank and bit it");
+        }
+
+        [Test]
+        public void ADropDeeperThanItHopsDown_StillHoldsIt()
+        {
+            EliteMotor motor = new EliteMotor(null);
+            _rig.Wall(new Vector2(-1f, -1f), new Vector2(1f, 1f), 4f);
+            var top = new Vector3(0.6f, 4f, 0f);
+            var below = new Vector3(1.6f, 0f, 0f);
+            Assert.That(EliteMotor.Steppable(_rig.Grid, top, below, ZombieChaseBehaviour.MAX_DROP), Is.False, "4 m: too deep");
+            Assert.That(EliteMotor.Steppable(_rig.Grid, top, below, 5f), Is.True, "within the drop");
+            Assert.That(EliteMotor.Steppable(_rig.Grid, below, top, 5f), Is.False, "never up past the step");
+            Assert.That(motor.MaxDrop, Is.EqualTo(0f), "the elite keeps the grid's rule");
+        }
+
+        [Test]
         public void ADeadZombie_GivesUpItsPlace_AndStops()
         {
             _rig.AddTank(new Vector3(0f, 0f, 0f));
