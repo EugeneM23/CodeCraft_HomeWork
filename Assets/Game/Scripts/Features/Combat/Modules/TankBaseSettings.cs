@@ -39,7 +39,7 @@ namespace Game
         [Min(0.01f)] public float MgInterval = 0.16f;
 
         [Tooltip("Degrees to either side.")]
-        [Min(0f)] public float MgSpread = 2f;
+        [Min(0f)] public float MgSpread = 5f; // was 2: a visible spread (and 0.6 of it up and down, SpawnUseCase)
 
         [Tooltip("Range (m) of the automatic aim.")]
         [Min(0f)] public float MgRange = 18f;

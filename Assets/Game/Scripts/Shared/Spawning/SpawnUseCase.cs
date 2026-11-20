@@ -106,13 +106,24 @@ namespace Game
         // Spread turns the bullet about the world vertical, not the fire point's own up: the
         // weapon tilts with the fire animation, and a tilted axis would send bullets into the
         // floor or over a target's head. A weapon without Spread fires dead straight.
+        /// <summary>The vertical spread as a share of the horizontal one.</summary>
+        private const float VERTICAL_SPREAD = 0.6f;
+
         private static Quaternion GetSpreadRotation(IEntity weapon, Transform firePoint)
         {
             if (!weapon.TryGetSpread(out IValue<float> spread) || spread.Value <= 0f)
                 return firePoint.rotation;
 
             float angle = Random.Range(-spread.Value, spread.Value);
-            return Quaternion.AngleAxis(angle, Vector3.up) * firePoint.rotation;
+            // And up and down, a little less: about the level axis across the shot (not the fire point's own, which
+            // tilts with the fire animation).
+            Vector3 forward = firePoint.forward;
+            Vector3 across = Vector3.Cross(Vector3.up, new Vector3(forward.x, 0f, forward.z));
+            float pitch = Random.Range(-spread.Value, spread.Value) * VERTICAL_SPREAD;
+            Quaternion turn = Quaternion.AngleAxis(angle, Vector3.up);
+            if (across.sqrMagnitude > 1e-6f)
+                turn = Quaternion.AngleAxis(pitch, across.normalized) * turn;
+            return turn * firePoint.rotation;
         }
 
         public static void SpawnShell(GameFactory gameFactory, IEntity weapon, Transform shellPoint, float impulse)

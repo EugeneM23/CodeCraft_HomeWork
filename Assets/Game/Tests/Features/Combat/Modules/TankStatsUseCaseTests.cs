@@ -51,7 +51,7 @@ namespace Game.Tests
             Assert.That(s.CannonPierce, Is.EqualTo(0));
             Assert.That(s.MgDamage, Is.EqualTo(10f).Within(EPS));
             Assert.That(s.MgInterval, Is.EqualTo(0.16f).Within(EPS));
-            Assert.That(s.MgSpread, Is.EqualTo(2f).Within(EPS));
+            Assert.That(s.MgSpread, Is.EqualTo(5f).Within(EPS));
             Assert.That(s.MgRange, Is.EqualTo(18f).Within(EPS));
             Assert.That(s.CrushSpeed, Is.EqualTo(1.5f).Within(EPS));
             Assert.That(s.CrushWidthFactor, Is.EqualTo(1f).Within(EPS));
@@ -107,7 +107,7 @@ namespace Game.Tests
 
             Assert.That(s.MgDamage, Is.EqualTo(damage).Within(EPS));
             Assert.That(s.MgInterval, Is.EqualTo(interval).Within(1e-5f));
-            Assert.That(s.MgSpread, Is.EqualTo(2f).Within(EPS));
+            Assert.That(s.MgSpread, Is.EqualTo(5f).Within(EPS));
             Assert.That(s.MgRange, Is.EqualTo(18f).Within(EPS));
         }
 
