@@ -134,6 +134,9 @@ namespace Game.Voxels
         /// <summary>A shell's hit throws its whole spray (along, up, sides) this much faster than other goo.</summary>
         public const float SHOT_FORCE = 2f;
 
+        /// <summary>An HE shell's hit throws the upward and sideways shares of its spray this much faster again.</summary>
+        public const float HE_SPLASH = 2f;
+
         /// <summary>
         /// The goo of a body a shell hit (<see cref="Goo"/>), thrown the way the shell flew: most of it on along the shot
         /// in a widening cone that arcs and lands about twice as far as the upward goo rises, a smaller share straight
@@ -143,8 +146,10 @@ namespace Game.Voxels
         /// <param name="shot">Which way the shell flew (only its part along the ground counts).</param>
         /// <param name="speed">The goo's own launch speed, m/s: the upward share flies at it.</param>
         /// <param name="spread">The upward share's spread, as <see cref="Goo"/>'s.</param>
+        /// <param name="splash">The upward and sideways shares fly this much faster (an HE shell: 2); the share along
+        /// the shot is not touched.</param>
         public static int ShotGoo(Vector3 at, Vector3 shot, int drops, float speed, float spread,
-            IReadOnlyList<Color32> colors, float size, Vector3 inherit = default, float radius = 0.2f)
+            IReadOnlyList<Color32> colors, float size, Vector3 inherit = default, float radius = 0.2f, float splash = 1f)
         {
             Vector3 flat = new(shot.x, 0f, shot.z);
             if (flat.sqrMagnitude < 0.04f * shot.sqrMagnitude || flat.sqrMagnitude < 1e-6f)
@@ -158,12 +163,12 @@ namespace Game.Voxels
             int up = Mathf.Max(1, drops - main - sides);
             int left = sides / 2;
 
-            int spawned = Goo(at, Vector3.up, up, speed, spread, colors, size, inherit, radius);
+            int spawned = Goo(at, Vector3.up, up, speed * splash, spread, colors, size, inherit, radius);
             spawned += Goo(at, flat + Vector3.up * SHOT_ELEVATION, main, speed * SHOT_REACH, SHOT_CONE, colors, size, inherit, radius);
             if (left > 0)
-                spawned += Goo(at, side + Vector3.up * 0.8f, left, speed * 0.55f, 0.35f, colors, size, inherit, radius);
+                spawned += Goo(at, side + Vector3.up * 0.8f, left, speed * 0.55f * splash, 0.35f, colors, size, inherit, radius);
             if (sides - left > 0)
-                spawned += Goo(at, -side + Vector3.up * 0.8f, sides - left, speed * 0.55f, 0.35f, colors, size, inherit, radius);
+                spawned += Goo(at, -side + Vector3.up * 0.8f, sides - left, speed * 0.55f * splash, 0.35f, colors, size, inherit, radius);
             return spawned;
         }
 

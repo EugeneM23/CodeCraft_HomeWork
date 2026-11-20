@@ -814,7 +814,7 @@ namespace Game.AIKit.Adapters
         /// the way the shell flew (VoxelSpray.ShotGoo; <paramref name="shot"/> zero: all of it up).
         /// </summary>
         private void Goo(Vector3 at, Vector3 shot) =>
-            VoxelSpray.ShotGoo(at, shot, Mathf.Max(_options.bloodDrops, GOO_MIN_DROPS), GOO_SPEED, 0.5f, _goo, _bloodSize * GOO_SIZE, default, 0.3f);
+            VoxelSpray.ShotGoo(at, shot, Mathf.Max(_options.bloodDrops, GOO_MIN_DROPS), GOO_SPEED, 0.5f, _goo, _bloodSize * GOO_SIZE, default, 0.3f, VoxelSpray.HE_SPLASH);
 
         /// <summary>A death's goo for a later frame (the oldest gives way when the ring is full).</summary>
         private void QueueGoo(Vector3 at, Vector3 shot)
