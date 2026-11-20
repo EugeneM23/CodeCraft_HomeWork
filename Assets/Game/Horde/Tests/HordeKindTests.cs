@@ -65,7 +65,7 @@ namespace Game.Horde.Tests
             Step(sim, Tank(center), 2f);
             float crawled = 55f - sim.GetPosition(crawler).z;
             float walked = sim.GetPosition(spitter).x - 5f;
-            Assert.That(crawled, Is.InRange(HordeKind.CRAWLER_SPEED * 2f * 0.7f, HordeKind.CRAWLER_SPEED * 2f * 1.25f), "the crawler runs at its run clip's root speed (2.73 m/s)");
+            Assert.That(crawled, Is.InRange(HordeKind.CRAWLER_SPEED * 2f * 0.7f, HordeKind.CRAWLER_SPEED * 2f * 1.25f), "the crawler runs at its run clip's root speed (3.55 m/s)");
             Assert.That(walked, Is.InRange(4f, 8.5f), "the spitter walks at about 3.5 m/s");
 
             // A crawler at the hull bites 6/s × its damage scale.
