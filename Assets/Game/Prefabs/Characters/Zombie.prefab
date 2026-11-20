@@ -2073,6 +2073,14 @@ PrefabInstance:
       propertyPath: '_config.parts.Array.data[6].bones.Array.data[5]'
       value: Clavicle_R
       objectReference: {fileID: 0}
+    - target: {fileID: 5920280592693971880, guid: e2c73aa53d2f90a4db53ae5a58c42d97, type: 3}
+      propertyPath: sceneInstallers.Array.size
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 5920280592693971880, guid: e2c73aa53d2f90a4db53ae5a58c42d97, type: 3}
+      propertyPath: 'sceneInstallers.Array.data[5]'
+      value: 
+      objectReference: {fileID: 5327035452433305638}
     - target: {fileID: 6430946663580957170, guid: e2c73aa53d2f90a4db53ae5a58c42d97, type: 3}
       propertyPath: m_Avatar
       value: 
@@ -2100,8 +2108,28 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 2067401628454472326, guid: e2c73aa53d2f90a4db53ae5a58c42d97, type: 3}
       insertIndex: -1
       addedObject: {fileID: 7335438073409930660}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1958972971538300470, guid: e2c73aa53d2f90a4db53ae5a58c42d97, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5327035452433305638}
   m_SourcePrefab: {fileID: 100100000, guid: e2c73aa53d2f90a4db53ae5a58c42d97, type: 3}
+--- !u!1 &8803739587559878161 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1958972971538300470, guid: e2c73aa53d2f90a4db53ae5a58c42d97, type: 3}
+  m_PrefabInstance: {fileID: 6990291457599688743}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &5327035452433305638
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8803739587559878161}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27feb44d8d84a72469b16cdfedfa7853, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game.AIKit.Adapters::Game.AIKit.Adapters.ZombieChaseInstaller
 --- !u!4 &9057411583159474849 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2067401628454472326, guid: e2c73aa53d2f90a4db53ae5a58c42d97, type: 3}

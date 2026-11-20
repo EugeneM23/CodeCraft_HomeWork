@@ -49,6 +49,7 @@ namespace Game.Horde
         private static readonly ProfilerMarker CompleteMarker = new("Horde.Complete");
         private static readonly ProfilerMarker HashMarker = new("Horde.Job.Hash");
         private static readonly ProfilerMarker SteerMarker = new("Horde.Job.Steer");
+        private static readonly ProfilerMarker SlotsMarker = new("Horde.Job.Slots");
         private static readonly ProfilerMarker ContactMarker = new("Horde.Job.Contact");
         private static readonly ProfilerMarker ShotsMarker = new("Horde.Job.Shots");
         private static readonly ProfilerMarker RenderMarker = new("Horde.Job.Render");
@@ -84,6 +85,13 @@ namespace Game.Horde
         private NativeArray<float> _stateTime;
         private NativeArray<float> _cooldown;
         private NativeArray<float> _maxHealth;
+        /// <summary>Per monster: its place on the hull ring (<see cref="HordeHullRing"/>), -1 none.</summary>
+        private NativeArray<int> _slot;
+        /// <summary>Per place of the ring: the monster on it, -1 free, -2 taken by a body outside the crowd.</summary>
+        private NativeArray<int> _slotOwner;
+        /// <summary>This step's copy of <see cref="HordeObstacles"/>.</summary>
+        private NativeArray<float4> _obstacles;
+        private int _ringSlots;
         private NativeArray<HordeKind> _kinds;
         private NativeArray<int> _free;
         private NativeArray<int> _cellStart;
@@ -167,6 +175,11 @@ namespace Game.Horde
             _stateTime = new NativeArray<float>(capacity, Allocator.Persistent);
             _cooldown = new NativeArray<float>(capacity, Allocator.Persistent);
             _maxHealth = new NativeArray<float>(capacity, Allocator.Persistent);
+            _slot = new NativeArray<int>(capacity, Allocator.Persistent);
+            for (int i = 0; i < capacity; i++)
+                _slot[i] = -1;
+            _slotOwner = new NativeArray<int>(HordeHullRing.MAX_SLOTS, Allocator.Persistent);
+            _obstacles = new NativeArray<float4>(HordeObstacles.CAPACITY, Allocator.Persistent);
             _kinds = new NativeArray<HordeKind>(MAX_KINDS, Allocator.Persistent);
             _free = new NativeArray<int>(capacity, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
             _cellStart = new NativeArray<int>(hashCells + 1, Allocator.Persistent);
@@ -348,6 +361,7 @@ namespace Game.Horde
             _animTime[i] = _random.NextFloat(0f, 10f);
             _speedScale[i] = 1f + _random.NextFloat(-s.SpeedJitter, s.SpeedJitter);
             _attackDamage[i] = 0f;
+            _slot[i] = -1;
             _snapPosition[i] = position;
             _snapLive[i] = true;
             _highWater = math.max(_highWater, i + 1);
@@ -380,6 +394,7 @@ namespace Game.Horde
                     _version[i]++;
                 _state[i] = HordeState.Free;
                 _snapLive[i] = false;
+                _slot[i] = -1;
             }
 
             for (int i = 0; i < Capacity; i++)
@@ -558,6 +573,35 @@ namespace Game.Horde
                     Marker = HashMarker
                 }.Schedule(dependsOn);
 
+                float touchRange = 0f;
+                for (int k = 0; k < MAX_KINDS; k++)
+                    if (_kindSet[k])
+                        touchRange = math.max(touchRange, 2f * _kinds[k].Radius);
+                touchRange = math.max(touchRange, 2f * settings.Radius);
+
+                HordeRing ring = BuildRing(settings, tank);
+                _ringSlots = ring.Active ? ring.Count : 0;
+                int obstacleCount = math.min(HordeObstacles.HighWater, _obstacles.Length);
+                for (int o = 0; o < obstacleCount; o++)
+                    _obstacles[o] = HordeObstacles.Get(o);
+
+                JobHandle slots = new HordeSlotJob
+                {
+                    Position = _position,
+                    State = _state,
+                    Kind = _kind,
+                    Kinds = _kinds,
+                    Obstacles = _obstacles,
+                    Slot = _slot,
+                    Owner = _slotOwner,
+                    Ring = ring,
+                    Tank = tank,
+                    Settings = settings,
+                    Count = _highWater,
+                    ObstacleCount = obstacleCount,
+                    Marker = SlotsMarker
+                }.Schedule(dependsOn);
+
                 JobHandle steer = new HordeSteerJob
                 {
                     Position = _position,
@@ -567,6 +611,11 @@ namespace Game.Horde
                     Kinds = _kinds,
                     CellStart = _cellStart,
                     Sorted = _sorted,
+                    Slot = _slot,
+                    Obstacles = _obstacles,
+                    Ring = ring,
+                    TouchRange = touchRange,
+                    ObstacleCount = obstacleCount,
                     NextPosition = _nextPosition,
                     Velocity = _velocity,
                     Heading = _heading,
@@ -579,7 +628,7 @@ namespace Game.Horde
                     Tank = tank,
                     DeltaTime = dt,
                     Marker = SteerMarker
-                }.ScheduleBatch(Capacity, BATCH, hash);
+                }.ScheduleBatch(Capacity, BATCH, JobHandle.CombineDependencies(hash, slots));
 
                 JobHandle contact = new HordeContactJob
                 {
@@ -724,6 +773,9 @@ namespace Game.Horde
             if (_stateTime.IsCreated) _stateTime.Dispose();
             if (_cooldown.IsCreated) _cooldown.Dispose();
             if (_maxHealth.IsCreated) _maxHealth.Dispose();
+            if (_slot.IsCreated) _slot.Dispose();
+            if (_slotOwner.IsCreated) _slotOwner.Dispose();
+            if (_obstacles.IsCreated) _obstacles.Dispose();
             if (_kinds.IsCreated) _kinds.Dispose();
             if (_free.IsCreated) _free.Dispose();
             if (_cellStart.IsCreated) _cellStart.Dispose();
@@ -750,6 +802,35 @@ namespace Game.Horde
             if (_snapLive.IsCreated) _snapLive.Dispose();
             if (_version.IsCreated) _version.Dispose();
         }
+
+        /// <summary>
+        /// The attack ring of a step against <paramref name="tank"/>: the crowd's body radius plus half the bite's reach
+        /// off the hull, places <see cref="HordeSettings.SlotSpacing"/> bodies wide, the waiting row one place further out.
+        /// </summary>
+        internal static HordeRing BuildRing(in HordeSettings settings, in HordeTank tank)
+        {
+            if (!settings.HullSlots || !tank.Present || settings.Radius <= 0f)
+                return default;
+            float spacing = 2f * settings.Radius * math.max(settings.SlotSpacing, 1f);
+            float standoff = settings.Radius + settings.AttackReach * 0.5f;
+            float2 half = math.max(tank.HalfExtents.xz, 0.01f);
+            return new HordeRing
+            {
+                Active = true,
+                Half = half,
+                Standoff = standoff,
+                WaitStandoff = standoff + spacing,
+                Length = HordeHullRing.Length(half, standoff),
+                Count = HordeHullRing.SlotCount(half, standoff, spacing),
+                MaxRadius = settings.Radius * 1.5f
+            };
+        }
+
+        /// <summary>Places on the hull ring in the last step (0: no ring).</summary>
+        public int RingSlots => _ringSlots;
+
+        /// <summary>The place on the hull ring the monster in this slot holds after the last step, -1 none (read between steps).</summary>
+        public int GetRingSlot(int index) => index >= 0 && index < _slot.Length ? _slot[index] : -1;
 
         private void Release(int index)
         {

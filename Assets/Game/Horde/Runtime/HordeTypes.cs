@@ -193,6 +193,21 @@ namespace Game.Horde
         /// chest, aim point, culling sphere and emerging depth were set for the Regax and follow it.
         /// </summary>
         public float BodyScale;
+        /// <summary>
+        /// Melee monsters of the crowd's size take places on a ring round the hull (<see cref="HordeHullRing"/>), one body
+        /// each, and stand there to attack; the ones that find no free place wait a body further out. Off: every monster
+        /// presses at the hull's middle (the old crowd).
+        /// </summary>
+        public bool HullSlots;
+        /// <summary>A melee monster takes a place on the ring this close to the hull, m (and gives it up a little further out).</summary>
+        public float SlotRange;
+        /// <summary>Places on the ring are this many bodies (2 × <see cref="Radius"/>) wide.</summary>
+        public float SlotSpacing;
+        /// <summary>
+        /// Share of an overlap of two bodies (their radii added) taken back in one step: bodies do not walk through each
+        /// other, whatever the wish and the separation say.
+        /// </summary>
+        public float ContactStiffness;
 
         public static HordeSettings Default => new HordeSettings
         {
@@ -212,7 +227,11 @@ namespace Game.Horde
             NearRadius = 15f,
             RunClipSpeed = 5f,
             EmergeTime = 1f,
-            BodyScale = 1f
+            BodyScale = 1f,
+            HullSlots = true,
+            SlotRange = 5f,
+            SlotSpacing = 1.1f,
+            ContactStiffness = 0.6f
         };
     }
 

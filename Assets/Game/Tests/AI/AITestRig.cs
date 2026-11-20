@@ -30,6 +30,44 @@ namespace Game.AIKit.Adapters.Tests
         public readonly PlayerTank Tank = new();
         public readonly Entity Level = new("Level");
         public readonly List<Elite> Elites = new();
+        public readonly List<Zombie> Zombies = new();
+
+        /// <summary>A skinned zombie: a plain Atomic walker with <see cref="ZombieChaseBehaviour"/>.</summary>
+        public sealed class Zombie
+        {
+            public GameObject GameObject;
+            public Transform Transform;
+            public Entity Entity;
+            public ZombieChaseBehaviour Behaviour;
+            public IReactiveVariable<Vector3> MoveDirection;
+            public Health Health;
+            public int Fired;
+        }
+
+        /// <summary>A zombie at <paramref name="position"/>, joined to the level.</summary>
+        public Zombie AddZombie(Vector3 position, int health = 60)
+        {
+            var go = new GameObject("Zombie") { layer = PhysicsLayers.Enemy };
+            _objects.Add(go);
+            go.transform.position = position;
+
+            var zombie = new Zombie { GameObject = go, Transform = go.transform };
+            var entity = new Entity("Zombie");
+            entity.AddTransform(go.transform);
+            zombie.MoveDirection = new ReactiveVariable<Vector3>();
+            entity.AddMoveDirection(zombie.MoveDirection);
+            entity.AddRotateDirection(new ReactiveVariable<Vector3>());
+            entity.AddMoveSpeed(new ReactiveFloat(SPEED));
+            zombie.Health = new Health(health, health);
+            entity.AddHealth(zombie.Health);
+            entity.AddFireAction(new InlineAction(() => zombie.Fired++));
+            zombie.Entity = entity;
+
+            zombie.Behaviour = new ZombieChaseBehaviour(Level);
+            zombie.Behaviour.Init(entity);
+            Zombies.Add(zombie);
+            return zombie;
+        }
 
         private readonly List<GameObject> _objects = new();
         private GameObject _tank;
@@ -150,6 +188,15 @@ namespace Game.AIKit.Adapters.Tests
                 elite.Transform.position += elite.MoveDirection.Value * (SPEED * dt);
                 elite.Behaviour.Tick(elite.Entity, dt);
             }
+
+            ZombieRing.Invalidate();                       // EditMode: the frame count stands still
+            for (int i = 0; i < Zombies.Count; i++)
+            {
+                Zombie zombie = Zombies[i];
+                if (!zombie.Health.IsEmpty())
+                    zombie.Transform.position += zombie.MoveDirection.Value * (SPEED * dt);
+                zombie.Behaviour.Tick(zombie.Entity, dt);
+            }
         }
 
         public void Run(float seconds, float dt = 1f / 30f)
@@ -160,6 +207,9 @@ namespace Game.AIKit.Adapters.Tests
 
         public void Dispose()
         {
+            foreach (Zombie zombie in Zombies)
+                zombie.Behaviour.Dispose(zombie.Entity);
+            Zombies.Clear();
             foreach (Elite elite in Elites)
                 elite.Behaviour.Dispose(elite.Entity);
             Elites.Clear();

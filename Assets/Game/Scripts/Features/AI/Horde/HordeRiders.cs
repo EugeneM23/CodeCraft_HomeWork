@@ -287,7 +287,7 @@ namespace Game.AIKit.Adapters
                 if (_scanTimer <= 0f)
                 {
                     _scanTimer = SCAN_INTERVAL;
-                    if (_bound && _options.enabled && _leapTimer <= 0f)
+                    if (_bound && _options.Active && _leapTimer <= 0f)
                         TryLeap(simulation, s, speed, yawRate);
                 }
             }

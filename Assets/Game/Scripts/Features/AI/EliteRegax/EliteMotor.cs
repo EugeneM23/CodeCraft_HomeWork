@@ -41,7 +41,10 @@ namespace Game.AIKit.Adapters
         private static readonly float[] LeapAngles = { 0f, 30f, -30f, 60f, -60f, 90f, -90f };
 
         /// <summary>Half the distance two elites keep between their middles, m.</summary>
-        private const float SEPARATION_RADIUS = 0.75f;
+        public const float SEPARATION_RADIUS = 0.75f;
+
+        /// <summary>Half the distance this body keeps from another (the two halves added).</summary>
+        private readonly float _keepApart;
 
         /// <summary>The elites of the level, which keep apart (a handful: every pair is checked).</summary>
         private static readonly List<EliteMotor> s_motors = new();
@@ -59,7 +62,12 @@ namespace Game.AIKit.Adapters
         private float _t;
         private float _duration;
 
-        public EliteMotor(Transform transform) => _transform = transform;
+        /// <param name="keepApart">Half the distance this body keeps from another: two elites 1.5 m, two skinned zombies 1.1 m.</param>
+        public EliteMotor(Transform transform, float keepApart = SEPARATION_RADIUS)
+        {
+            _transform = transform;
+            _keepApart = keepApart;
+        }
 
         public Transform Transform => _transform;
 
@@ -95,12 +103,12 @@ namespace Game.AIKit.Adapters
         // Two elites never stand in one place: each steps out of the other's way by half of what they overlap
         private void KeepApart(ref Vector3 p)
         {
-            float min = 2f * SEPARATION_RADIUS;
             for (int i = 0; i < s_motors.Count; i++)
             {
                 EliteMotor other = s_motors[i];
                 if (other == this || other._transform == null || !other._hasLast)
                     continue;
+                float min = _keepApart + other._keepApart;
                 Vector3 d = p - other._last;
                 d.y = 0f;
                 float distance = d.magnitude;
