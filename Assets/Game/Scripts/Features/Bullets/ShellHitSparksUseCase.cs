@@ -32,5 +32,33 @@ namespace Game
             VoxelSparks.Emit(point, n, -n, SPARKS, SPARK_POWER);
             BulletHotSpots.Emit(point, n, GLOW_POWER);
         }
+
+        private const int FLESH_BLOOD = 60;
+        private const int FLESH_BITS = 14;
+        private const float FLESH_SPEED = 15f; // as far as the sparks reach (5..17 m/s x 1.7, under their drag)
+        private const float FLESH_BLOOD_SIZE = 0.07f;
+        private const float FLESH_BIT_SIZE = 0.15f;
+
+        private static readonly Color32[] Blood =
+        {
+            Voxels.VoxelBlood.Colour(0, 0), Voxels.VoxelBlood.Colour(1, 0), Voxels.VoxelBlood.Colour(2, 0)
+        };
+
+        private static readonly Color32[] Flesh =
+        {
+            new(120, 32, 28, 255), new(92, 24, 22, 255), new(104, 98, 62, 255), new(82, 86, 50, 255)
+        };
+
+        /// <summary>
+        /// The same burst on a monster: blood and bits of flesh instead of sparks and a hot point, thrown out as far as
+        /// the sparks would fly, fanning out of the body round <paramref name="normal"/> (zero: up).
+        /// </summary>
+        public static void EmitFlesh(Vector3 point, Vector3 normal)
+        {
+            Vector3 n = normal.sqrMagnitude > 1e-6f ? normal.normalized : Vector3.up;
+            Vector3 fan = (n + Vector3.up * 0.35f).normalized;
+            Voxels.VoxelSpray.Goo(point, fan, FLESH_BLOOD, FLESH_SPEED, 0.9f, Blood, FLESH_BLOOD_SIZE, default, 0.2f);
+            Voxels.VoxelSpray.Goo(point, fan, FLESH_BITS, FLESH_SPEED * 0.8f, 0.8f, Flesh, FLESH_BIT_SIZE, default, 0.2f);
+        }
     }
 }

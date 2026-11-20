@@ -38,8 +38,9 @@ namespace Game
         public static bool AreaDamage => CombatConfig.Load().Weapons.shellAreaDamage;
 
         /// <param name="normal">The struck surface's normal where known (zero: up); the HE spark burst fans out of it.</param>
+        /// <param name="flesh">It struck a monster: blood and flesh fly instead of the HE sparks.</param>
         public static void Explode(IEntity projectile, Vector3 point, Collider hit, GameFactory factory,
-            Vector3 normal = default)
+            Vector3 normal = default, bool flesh = false)
         {
             float radius = projectile.GetExplosionRadius();
 
@@ -54,7 +55,12 @@ namespace Game
 
             // An HE shell: a big spray of sparks and a hot point, like a bullet's hit only more.
             if (ShellHitSparksUseCase.IsHighExplosive(projectile))
-                ShellHitSparksUseCase.Emit(point, normal);
+            {
+                if (flesh)
+                    ShellHitSparksUseCase.EmitFlesh(point, normal);
+                else
+                    ShellHitSparksUseCase.Emit(point, normal);
+            }
 
             // A crater in anything made of voxels: walls, buildings, the tank's skin. An HE shell hits a house's
             // skeleton (piers, beams) twice as hard as anything else does.

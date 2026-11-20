@@ -127,7 +127,8 @@ namespace Game
                 if (!ExplosionUseCase.AreaDamage && target != null && target.HasDamageableTag())
                     DamageUseCase.TakeDamage(target, new TakeDamageArgs(_bullet));
                 ContactPoint contact = collision.GetContact(0);
-                ExplosionUseCase.Explode(_bullet, contact.point, collision.collider, _gameFactory, contact.normal);
+                ExplosionUseCase.Explode(_bullet, contact.point, collision.collider, _gameFactory, contact.normal,
+                    target != null && target.HasEnemyTag());
             }
             else if (target != null && target.HasDamageableTag())
             {

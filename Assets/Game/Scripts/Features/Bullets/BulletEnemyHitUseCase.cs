@@ -34,7 +34,8 @@ namespace Game
                     targets.Damage(target, damage, point);
                 }
 
-                ExplosionUseCase.Explode(bullet, point, null, factory);
+                Vector3 back = bullet.TryGetMoveDirection(out var flewIn) ? -flewIn.Value : Vector3.up;
+                ExplosionUseCase.Explode(bullet, point, null, factory, back, true);
             }
             else
             {
