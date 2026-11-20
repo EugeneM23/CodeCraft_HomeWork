@@ -176,9 +176,12 @@ namespace Game.AIKit.Adapters
                 return;
             }
 
-            Vector3 move = _tank.DistanceToHull(p) <= NEAR && _tank.TryGetHullFrame(out Vector3 c, out Vector3 r, out Vector3 f, out _)
-                ? ToPlace(p, c, r, f)
-                : Chase(p, toTank, dt);
+            float gap = _tank.DistanceToHull(p);
+            Vector3 move = gap <= RegaxBiteRunner.REACH && RingSlot >= 0
+                ? Vector3.zero                             // at the hull: it stands and bites, the hull may turn under it
+                : gap <= NEAR && _tank.TryGetHullFrame(out Vector3 c, out Vector3 r, out Vector3 f, out _)
+                    ? ToPlace(p, c, r, f)
+                    : Chase(p, toTank, dt);
 
             move += Separation(p) * SEPARATION_WEIGHT;
             if (move.sqrMagnitude > 1f)

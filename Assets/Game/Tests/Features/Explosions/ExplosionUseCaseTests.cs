@@ -47,7 +47,14 @@ namespace Game.Tests
             return shell;
         }
 
-        private Health Target(Vector3 offset, List<TakeDamageArgs> hits = null)
+        private static IEntity HeShell()
+        {
+            IEntity shell = Shell();
+            shell.AddShellAmmoKind(new Variable<ShellKind>(ShellKind.HighExplosive));
+            return shell;
+        }
+
+        private Health Target(Vector3 offset, List<TakeDamageArgs> hits = null, bool enemy = false)
         {
             MonoEntity target = MonoEntity.Create(new MonoEntity.CreateArgs { name = "Target" });
             _objects.Add(target.gameObject);
@@ -59,6 +66,8 @@ namespace Game.Tests
             if (hits != null)
                 damageTaken.OnEvent += hits.Add;
             target.AddDamageableTag();
+            if (enemy)
+                target.AddEnemyTag();
             target.AddHealth(health);
             target.AddDamageTakenEvent(damageTaken);
             return health;
@@ -142,6 +151,34 @@ namespace Game.Tests
 
             Assert.That(health.GetCurrent(), Is.EqualTo(1000), "only the enemy a shell hits takes its damage (BulletCollisionBehaviour)");
             Assert.That(hits, Is.Empty);
+        }
+
+        [Test]
+        public void AreaDamageOff_AnHeShell_StillHurtsTheEnemiesRound_ButNothingElse()
+        {
+            CombatConfig.Load().Weapons.shellAreaDamage = false;
+            Health enemy = Target(new Vector3(-1f, 0f, 0f), enemy: true);
+            Health friend = Target(new Vector3(1f, 0f, 0f));
+
+            Explode(HeShell());
+
+            Assert.That(enemy.GetCurrent(), Is.LessThan(1000), "the user: HE damages the zombies round its blast");
+            Assert.That(friend.GetCurrent(), Is.EqualTo(1000), "not the tank or anything else that is not an enemy");
+        }
+
+        [Test]
+        public void HitsArea_AnHeShellAlways_AnythingElseOnlyWithTheSwitch()
+        {
+            CombatConfig.Load().Weapons.shellAreaDamage = false;
+            IEntity ap = Shell();
+            ap.AddShellAmmoKind(new Variable<ShellKind>(ShellKind.ArmourPiercing));
+
+            Assert.That(ExplosionUseCase.HitsArea(HeShell()), Is.True);
+            Assert.That(ExplosionUseCase.HitsArea(ap), Is.False);
+            Assert.That(ExplosionUseCase.HitsArea(Shell()), Is.False, "an untyped explosive (a rocket, a bomb)");
+
+            CombatConfig.Load().Weapons.shellAreaDamage = true;
+            Assert.That(ExplosionUseCase.HitsArea(ap), Is.True);
         }
 
         [Test]

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Atomic.Entities;
 using Game.Voxels;
@@ -40,6 +41,14 @@ namespace Game
         /// </summary>
         public static bool AreaDamage => CombatConfig.Load().Weapons.shellAreaDamage;
 
+        /// <summary>
+        /// Whether this projectile's blast damages what is round it: every shell with <see cref="AreaDamage"/> on, and an
+        /// HE shell always (the user), though with the switch off an HE blast only damages enemies, never the player's
+        /// tank or other friendly things. The callers skip the direct hit's own damage then: the blast deals it.
+        /// </summary>
+        public static bool HitsArea(IEntity projectile) =>
+            AreaDamage || ShellHitSparksUseCase.IsHighExplosive(projectile);
+
         /// <param name="normal">The struck surface's normal where known (zero: up); the HE spark burst fans out of it.</param>
         /// <param name="flesh">It struck a monster: blood and flesh fly instead of the HE sparks.</param>
         public static void Explode(IEntity projectile, Vector3 point, Collider hit, GameFactory factory,
@@ -49,7 +58,13 @@ namespace Game
 
             if (AreaDamage)
             {
-                DamageInRadius(projectile, point, radius);
+                DamageInRadius(projectile, point, radius, false);
+                DamageEnemiesWithoutColliders(projectile, point, radius);
+            }
+            else if (HitsArea(projectile))
+            {
+                // An HE shell with the general switch off: the blast takes down the monsters round it, not the tank.
+                DamageInRadius(projectile, point, radius, true);
                 DamageEnemiesWithoutColliders(projectile, point, radius);
             }
             // The shell's own blast sound (weapons.shell_hit); the generic one for this Exploded is skipped then.
@@ -144,11 +159,13 @@ namespace Game
             enemyTargets.DamageAreaNonPhysical(point, radius, damage.Value, minFactor);
         }
 
-        private static void DamageInRadius(IEntity projectile, Vector3 point, float radius)
+        private static readonly Func<IEntity, Collider, bool> EnemiesOnly = (target, _) => target.HasEnemyTag();
+
+        private static void DamageInRadius(IEntity projectile, Vector3 point, float radius, bool enemiesOnly)
         {
             float minFactor = projectile.TryGetExplosionMinDamageFactor(out float min) ? min : 0.25f;
 
-            BlastAreaUseCase.ForEachDamageable(point, radius, null, (target, distanceShare) =>
+            BlastAreaUseCase.ForEachDamageable(point, radius, enemiesOnly ? EnemiesOnly : null, (target, distanceShare) =>
                 DamageUseCase.TakeDamage(target,
                     new TakeDamageArgs(projectile, Mathf.Lerp(1f, minFactor, distanceShare))));
         }

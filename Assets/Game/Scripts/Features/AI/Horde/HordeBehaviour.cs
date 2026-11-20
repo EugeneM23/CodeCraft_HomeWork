@@ -529,6 +529,11 @@ namespace Game.AIKit.Adapters
             {
                 HordeKind kind = _options.Kind(row);
                 kind.Radius *= reach;
+                // The crawler runs at the run clip's own root speed at its size (the skinned zombie's, its feet do not
+                // slide), whatever speed a level's options carry: an inspector or an asset loaded before a size change
+                // keeps an old one (4.86 for the 2.85 m zombie made the 1.6 m one run at twice the skinned one's pace).
+                if (row == HordeKinds.CRAWLER && _art.runClipSpeed > 0f)
+                    kind.Speed = _art.runClipSpeed * kind.RenderScale;
                 _simulation.SetKind(row, kind);
             }
             _simulation.SetClips(_art.run, _art.attack, _art.idle);

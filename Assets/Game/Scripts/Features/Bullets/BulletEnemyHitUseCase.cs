@@ -27,12 +27,11 @@ namespace Game
             {
                 // No area damage (WeaponSettings.shellAreaDamage off): the monster hit takes the shell's damage, and
                 // if that kills it, it is torn apart rather than falling whole.
-                if (!ExplosionUseCase.AreaDamage)
-                {
-                    Vector3 shot = bullet.TryGetMoveDirection(out var flew) ? flew.Value : Vector3.zero;
-                    targets.Tear(target, shot, ShellPowerUseCase.Of(bullet));
+                // With area damage (an HE shell always) the blast deals it; the monster hit is still torn apart.
+                Vector3 shot = bullet.TryGetMoveDirection(out var flew) ? flew.Value : Vector3.zero;
+                targets.Tear(target, shot, ShellPowerUseCase.Of(bullet));
+                if (!ExplosionUseCase.HitsArea(bullet))
                     targets.Damage(target, damage, point);
-                }
 
                 Vector3 back = bullet.TryGetMoveDirection(out var flewIn) ? -flewIn.Value : Vector3.up;
                 ExplosionUseCase.Explode(bullet, point, null, factory, back, true);
