@@ -123,6 +123,23 @@ namespace Game.AIKit.Adapters
             return true;
         }
 
+        /// <summary>
+        /// The hull's box flat on the ground: its middle, its sideways and forward axes (flat, unit) and its half width and
+        /// half length. False — there is no hull or no vehicle.
+        /// </summary>
+        public bool TryGetHullFrame(out Vector3 center, out Vector3 right, out Vector3 forward, out Vector2 half)
+        {
+            if (_hull == null || !IsPresent)
+            {
+                center = right = forward = Vector3.zero;
+                half = Vector2.zero;
+                return false;
+            }
+
+            HullFrame(out center, out right, out forward, out half);
+            return true;
+        }
+
         private void BindRoot(Transform root)
         {
             _root = root;

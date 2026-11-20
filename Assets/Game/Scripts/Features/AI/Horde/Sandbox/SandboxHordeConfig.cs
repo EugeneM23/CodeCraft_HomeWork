@@ -45,6 +45,11 @@ namespace Game.AIKit.Adapters
 
         [Header("Horde")]
         [Tooltip("The sandbox horde: tankDamageScale 0.25 — twenty crawlers with six riders on the hull would kill the 1000-HP Tiger in under ten seconds and end the run.")]
-        public HordeOptions horde = new() { capacity = 256, population = 0, castShadows = false, tankDamageScale = 0.25f };
+        public HordeOptions horde = new()
+        {
+            capacity = 256, population = 0, castShadows = false, tankDamageScale = 0.25f,
+            // No leaping onto the tank for now (the user): they walk up and attack from the ground.
+            riders = new HordeRiderOptions { enabled = false }
+        };
     }
 }
