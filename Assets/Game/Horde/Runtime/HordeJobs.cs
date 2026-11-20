@@ -1272,7 +1272,7 @@ namespace Game.Horde
                     {
                         if (level && q.x < r && q.y < r)
                         {
-                            // Overlaps the hull: at a corner straight out from the hull's middle to the padded box's
+                            // Overlaps the hull: while its middle is outside the bare hull, straight out from the hull's middle to the padded box's
                             // edge (along the shallower side, a pivoting hull's corner would push a monster along its
                             // leading face and carry it round with the tank, as if it were a part of it); elsewhere out
                             // along the shallower side; else the other side, if the grid lets it go there (not up on a
@@ -1288,10 +1288,12 @@ namespace Game.Horde
                             float3 alongZ = local;
                             alongZ.z += math.select(-penZ, penZ, local.z >= 0f);
                             float3 second = penX < penZ ? alongX : alongZ;
-                            // Straight out only at a corner (near both faces), where a pivoting hull catches it;
-                            // deeper in (a monster the hull drove onto), the shortest way out, to the side.
-                            bool corner = q.x > -r && q.y > -r && math.lengthsq(local.xz) > 1e-6f;
-                            float2 to = (math.rotate(Tank.Rotation, corner ? radial : second) + Tank.Center).xz;
+                            // Straight out while its middle is still outside the bare hull (a turning hull's face or
+                            // corner reached it: pushed straight out it keeps its bearing, along the face's normal it
+                            // would ride round with the face like a paddle); with its middle inside (a monster the hull
+                            // drove onto), the shortest way out, to the side.
+                            bool shell = (q.x > 0f || q.y > 0f) && math.lengthsq(local.xz) > 1e-6f;
+                            float2 to = (math.rotate(Tank.Rotation, shell ? radial : second) + Tank.Center).xz;
                             if (!Grid.CanTravel(p.xz, to))
                                 to = (math.rotate(Tank.Rotation, second) + Tank.Center).xz;
                             if (Grid.CanTravel(p.xz, to))
