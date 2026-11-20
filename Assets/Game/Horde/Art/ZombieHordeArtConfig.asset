@@ -17,7 +17,7 @@ MonoBehaviour:
   material: {fileID: 2100000, guid: e9a0140496c3d264d97c5b3f6edee997, type: 2}
   vat: {fileID: 2800000, guid: 6b0538583366f8b4d90c1e7b9d5d86f0, type: 2}
   vertexCount: 3957
-  frameCount: 160
+  frameCount: 314
   run:
     start: 0
     count: 24
@@ -33,9 +33,14 @@ MonoBehaviour:
     count: 61
     frameRate: 30
     loop: 1
+  crawl:
+    start: 160
+    count: 154
+    frameRate: 30
+    loop: 1
   bounds:
-    m_Center: {x: 0.30572248, y: 2.0304554, z: 0.83290017}
-    m_Extent: {x: 1.9410553, y: 2.2396615, z: 2.1503403}
+    m_Center: {x: 0.30572248, y: 2.0304554, z: 1.8907028}
+    m_Extent: {x: 1.9410553, y: 2.2396615, z: 3.208143}
   tornSkins:
     head:
     - serializedVersion: 2
@@ -142,6 +147,7 @@ MonoBehaviour:
   meshLod: 0
   bodyScale: 1.5414664
   runClipSpeed: 6.8336415
+  crawlClipSpeed: 0.96221834
   reachScale: 0.84375
   kindTints:
   - {r: 0, g: 0, b: 0, a: 0}

@@ -44,6 +44,8 @@ namespace Game.Horde.EditorTools
             /// <summary>The skin to bake (a child of the model); empty: the first one.</summary>
             public string SkinName;
             public System.Func<AnimationClip> Run, Attack, Idle, Death;
+            /// <summary>A crawl along the ground (its own row after the idle, played at its root speed); null: none.</summary>
+            public System.Func<AnimationClip> Crawl;
             public string ConfigPath;
             /// <summary>Height of the baked model at render scale 1, m; 0: as authored.</summary>
             public float Height;
@@ -87,6 +89,8 @@ namespace Game.Horde.EditorTools
             SkinName = "SM_Chr_Zombie_Male_01",
             // The user's Mixamo run (a forward lurch, 0.8 s a loop), humanoid on its own avatar, root motion kept in the clip.
             Run = () => LoadFbxClip(ZOMBIE_CLIPS + "Zombie Running.fbx"),
+            // The user's crawl (Zombie Crawl): a share of the crawlers crawls on the ground (HordeOptions.crawlShare).
+            Crawl = () => LoadFbxClip(ZOMBIE_CLIPS + "Zombie Crawl.fbx"),
             Attack = () => AssetDatabase.LoadAssetAtPath<AnimationClip>(ZOMBIE_CLIPS + "Zombie_Attack.anim"),
             Idle = () => AssetDatabase.LoadAssetAtPath<AnimationClip>(ZOMBIE_CLIPS + "Zombie_Idle.anim"),
             Death = () => AssetDatabase.LoadAssetAtPath<AnimationClip>(ZOMBIE_CLIPS + "Zombie_Death_Handgun.anim"),
@@ -175,13 +179,15 @@ namespace Game.Horde.EditorTools
                 AnimationClip attack = src.Attack();
                 AnimationClip idle = src.Idle();
                 AnimationClip death = src.Death();
+                AnimationClip crawl = src.Crawl?.Invoke();
                 if (run == null || attack == null || idle == null || death == null)
                     return "HordeVatBaker: a clip is missing";
 
                 int runFrames = LoopFrames(run);
                 int attackFrames = LoopFrames(attack);
                 int idleFrames = LoopFrames(idle);
-                int frames = runFrames + attackFrames + idleFrames;
+                int crawlFrames = crawl != null ? LoopFrames(crawl) : 0;
+                int frames = runFrames + attackFrames + idleFrames + crawlFrames;
 
                 var output = AnimationPlayableOutput.Create(graph, "Bake", animator);
                 graph.SetTimeUpdateMode(DirectorUpdateMode.Manual);
@@ -254,7 +260,7 @@ namespace Game.Horde.EditorTools
                 }
 
                 int row = 0;
-                void BakeClip(AnimationClip clip, int count)
+                void BakeClip(AnimationClip clip, int count, bool ground = false)
                 {
                     Vector3 start = Vector3.zero;
                     Vector3 drift = Vector3.zero;
@@ -269,6 +275,15 @@ namespace Game.Horde.EditorTools
                         float time = f / FRAME_RATE;
                         Sample(clip, time);
                         Vector3 offset = (start + drift * time) * scale;
+                        if (ground)
+                        {
+                            // On the ground every frame (a crawl): its lowest point at the feet' level, nothing sunk into it.
+                            float low = float.MaxValue;
+                            for (int v = 0; v < vertexCount; v++)
+                                low = Mathf.Min(low, ToModel(vertices[used[v]]).y);
+                            offset.y = low;
+                        }
+
                         for (int v = 0; v < vertexCount; v++)
                         {
                             Vector3 p = ToModel(vertices[used[v]]) - offset;
@@ -303,6 +318,8 @@ namespace Game.Horde.EditorTools
                 Vector3 runDrift = ToVector(pixels[(runFrames - 1) * vertexCount]) - ToVector(pixels[0]);
                 BakeClip(attack, attackFrames);
                 BakeClip(idle, idleFrames);
+                if (crawl != null)
+                    BakeClip(crawl, crawlFrames, true);
 
                 // Corpse: the last frame of the death clip. A humanoid fall carries the body ~1.4 m away from where it
                 // stood, and a corpse off the death spot reads as a miss: its middle (XZ) goes on the spot.
@@ -330,6 +347,10 @@ namespace Game.Horde.EditorTools
                     rootSpeed = RootSpeed(graph, output, animator, instance.transform, run) * scale;
                     report.AppendLine($"run clip root speed {rootSpeed:F2} m/s at render scale 1, played for {src.RunClipSpeed:F2}");
                 }
+
+                float crawlSpeed = crawl != null ? RootSpeed(graph, output, animator, instance.transform, crawl) * scale : 0f;
+                if (crawl != null)
+                    report.AppendLine($"crawl clip root speed {crawlSpeed:F2} m/s at render scale 1, {crawlFrames} frames");
 
                 Object.DestroyImmediate(baked);
                 report.AppendLine($"frames run {runFrames} attack {attackFrames} idle {idleFrames}; VAT {vertexCount}x{frames * 2} RGBAHalf; bounds {bounds.center:F2} size {bounds.size:F2}; run vertex-0 drift {runDrift:F3}");
@@ -393,6 +414,8 @@ namespace Game.Horde.EditorTools
                 config.run = new HordeClip { start = 0, count = runFrames, frameRate = FRAME_RATE, loop = true };
                 config.attack = new HordeClip { start = runFrames, count = attackFrames, frameRate = FRAME_RATE, loop = true };
                 config.idle = new HordeClip { start = runFrames + attackFrames, count = idleFrames, frameRate = FRAME_RATE, loop = true };
+                config.crawl = new HordeClip { start = runFrames + attackFrames + idleFrames, count = crawlFrames, frameRate = FRAME_RATE, loop = true };
+                config.crawlClipSpeed = crawlSpeed;
                 config.bounds = bounds;
                 config.triangles = triangles;
                 config.sourceTriangles = source.triangles.Length / 3;

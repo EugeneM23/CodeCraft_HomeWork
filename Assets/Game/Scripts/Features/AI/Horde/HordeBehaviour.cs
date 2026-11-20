@@ -515,6 +515,10 @@ namespace Game.AIKit.Adapters
             settings.BodyScale = BodyScale;
             if (_art.runClipSpeed > 0f)
                 settings.RunClipSpeed = _art.runClipSpeed;
+            // A share of the crawlers crawls (the art's crawl row, at its root speed); none when the art has no crawl row.
+            bool crawlRow = _art.crawl.count > 0 && _art.crawlClipSpeed > 0f;
+            settings.CrawlClipSpeed = crawlRow ? _art.crawlClipSpeed : settings.RunClipSpeed;
+            settings.CrawlShare = crawlRow ? _options.crawlShare : 0f;
             // A bigger model reaches, pushes and is pushed further (HordeArtConfig.reachScale).
             float reach = ReachScale;
             settings.Radius *= reach;
@@ -528,6 +532,8 @@ namespace Game.AIKit.Adapters
                 _simulation.SetKind(row, kind);
             }
             _simulation.SetClips(_art.run, _art.attack, _art.idle);
+            if (_art.crawl.count > 0)
+                _simulation.SetCrawlClip(_art.crawl);
             _targets.Simulation = _simulation;
 
             HordeNavGridSettings g = _grid.Settings;

@@ -72,6 +72,51 @@ namespace Game.Horde.Tests
         }
 
         [Test]
+        public void Crawlers_AShareOfThemCrawl_AtTheCrawlClipsSpeed_OtherKindsNever()
+        {
+            using HordeNavGrid grid = HordeTestGrids.Flat(60, 60);
+            using var field = new HordeFlowField(grid);
+            HordeSettings settings = HordeSettings.Default;
+            settings.SpeedJitter = 0f;
+            settings.RunClipSpeed = 6f;
+            settings.CrawlClipSpeed = 2f;
+            settings.CrawlShare = 1f;
+            settings.AttackDps = 0f;
+            using var sim = new HordeSimulation(8, grid, field, settings);
+            int crawler = sim.Spawn(new float3(30f, 0f, 55f), 0f);
+            int spitter = sim.Spawn(new float3(5f, 0f, 30f), 0f, 1);
+            Assert.IsTrue(sim.IsCrawling(crawler), "share 1: every crawler crawls");
+            Assert.IsFalse(sim.IsCrawling(spitter), "the other kinds walk upright");
+
+            settings.CrawlShare = 0f;
+            sim.Settings = settings;
+            int runner = sim.Spawn(new float3(55f, 0f, 30f), 0f);
+            Assert.IsFalse(sim.IsCrawling(runner), "share 0: none crawl");
+
+            var center = new float3(30f, 0.8f, 30f);
+            var tank = new HordeTank { Present = true, Center = center, Rotation = quaternion.identity, HalfExtents = new float3(1.5f, 1f, 3f) };
+            Step(sim, tank, 30); // 1.5 s
+            float crawled = 55f - sim.GetPosition(crawler).z;
+            float ran = 55f - sim.GetPosition(runner).x;
+            Assert.That(crawled / ran, Is.EqualTo(2f / 6f).Within(0.08f), "a crawler goes at the crawl clip's speed against the run's");
+        }
+
+        [Test]
+        public void CrawlShare_PicksAboutThatShare()
+        {
+            using HordeNavGrid grid = HordeTestGrids.Flat(40, 40);
+            using var field = new HordeFlowField(grid);
+            HordeSettings settings = HordeSettings.Default;
+            settings.CrawlShare = 0.3f;
+            using var sim = new HordeSimulation(1000, grid, field, settings);
+            int crawling = 0;
+            for (int i = 0; i < 1000; i++)
+                if (sim.IsCrawling(sim.Spawn(new float3(5f + i % 30, 0f, 5f + i / 30 % 30), 0f)))
+                    crawling++;
+            Assert.That(crawling, Is.InRange(240, 360), "about 30 %");
+        }
+
+        [Test]
         public void Separation_PushesOverlappingMonstersApart()
         {
             using HordeNavGrid grid = HordeTestGrids.Flat(20, 20);
