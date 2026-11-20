@@ -28,6 +28,9 @@ namespace Game
         /// <summary>An HE shell's blast against a house's skeleton: its hardness counts this many times less.</summary>
         private const float HE_SKELETON_DAMAGE = 2f;
 
+        /// <summary>The spark particles inside the shell's explosion effect (FX_RocketExplosion).</summary>
+        private const string SPARKS_CHILD = "Sparks";
+
         public static bool IsExplosive(IEntity projectile) => projectile.HasExplosionRadius();
 
         /// <summary>
@@ -82,7 +85,13 @@ namespace Game
             if (projectile.TryGetExplosionVfxPrefab(out MonoEntity vfxPrefab) && vfxPrefab != null)
             {
                 IEntity vfx = factory.Create(vfxPrefab);
-                vfx.GetTransform().SetPositionAndRotation(point, Quaternion.identity);
+                Transform effect = vfx.GetTransform();
+                effect.SetPositionAndRotation(point, Quaternion.identity);
+                // On a monster the blast throws blood and flesh, not sparks: the effect's own spark particles are off
+                // for that burst (the effect is pooled: set every time).
+                Transform sparks = effect.Find(SPARKS_CHILD);
+                if (sparks != null)
+                    sparks.gameObject.SetActive(!flesh);
             }
 
             SpawnCrumbs(projectile, point, hit, factory);
