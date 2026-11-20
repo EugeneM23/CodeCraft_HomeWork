@@ -817,7 +817,7 @@ namespace Game.AIKit.Adapters
         /// </summary>
         /// <param name="power">The tearing shell's «Мощный фугас» factor: the goo flies that much faster (1: none).</param>
         private void Goo(Vector3 at, Vector3 shot, float power) =>
-            VoxelSpray.ShotGoo(at, shot, Mathf.Max(_options.bloodDrops, GOO_MIN_DROPS), GOO_SPEED * power, 0.5f, _goo, _bloodSize * GOO_SIZE, default, 0.3f, VoxelSpray.HE_SPLASH);
+            VoxelSpray.ShotGoo(at, shot, Mathf.Max(_options.bloodDrops, GOO_MIN_DROPS), GOO_SPEED * power, 0.5f, _goo, _bloodSize * GOO_SIZE, default, 0.3f, VoxelSpray.HE_SPLASH, power);
 
         /// <summary>A death's goo for a later frame (the oldest gives way when the ring is full).</summary>
         private void QueueGoo(Vector3 at, Vector3 shot, float power)

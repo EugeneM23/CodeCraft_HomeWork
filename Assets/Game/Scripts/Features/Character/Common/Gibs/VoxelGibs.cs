@@ -486,7 +486,7 @@ namespace Game
             // With no way known the goo goes up.
             if (along)
                 VoxelSpray.ShotGoo(wound, shot, config.hitDrops, config.gooSpeed * power, 0.4f, GooOf(config),
-                    config.blood.dropSize, default, Mathf.Min(0.35f, death.Body.extents.x), VoxelSpray.HE_SPLASH);
+                    config.blood.dropSize, default, Mathf.Min(0.35f, death.Body.extents.x), VoxelSpray.HE_SPLASH, power);
             else
                 VoxelSpray.Goo(wound, Vector3.up * 1.6f + away * 0.5f, config.hitDrops, config.gooSpeed, 0.4f, GooOf(config),
                     config.blood.dropSize, default, Mathf.Min(0.35f, death.Body.extents.x));
