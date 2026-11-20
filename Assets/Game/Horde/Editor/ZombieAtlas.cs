@@ -15,17 +15,9 @@ namespace Game.Horde.EditorTools
         public const string VIVID = "Assets/Game/Textures/Zombie/T_Zombie_03_A_Vivid.png";
 
         /// <summary>Saturation times this plus <see cref="SATURATION_ADD"/>, value times <see cref="BRIGHTNESS"/> (both clamped to 1).</summary>
-        private const float SATURATION = 1.8f;
-        private const float SATURATION_ADD = 0.06f;
-        private const float BRIGHTNESS = 1.2f;
-
-        /// <summary>Hues (0..1) of the yellow-green skin that blended into the grass...</summary>
-        private const float GREEN_FROM = 0.10f;
-        private const float GREEN_TO = 0.48f;
-
-        /// <summary>...mapped onto these: blue to violet.</summary>
-        private const float SKIN_FROM = 0.60f;
-        private const float SKIN_TO = 0.80f;
+        private const float SATURATION = 2.6f; // was 1.8: more colour
+        private const float SATURATION_ADD = 0.12f;
+        private const float BRIGHTNESS = 1.6f; // was 1.2: brighter so they do not melt into the grass
 
         [MenuItem("Tools/Zombie/Make Vivid Atlas")]
         public static void MakeFromMenu() => Debug.Log(Make());
@@ -48,10 +40,6 @@ namespace Game.Horde.EditorTools
                 {
                     Color32 p = pixels[i];
                     Color.RGBToHSV(p, out float h, out float s, out float v);
-                    // Yellow-green skin blended into the grass: those hues turn to a dead blue-violet, which stands out
-                    // on green and brown ground. Reds (wounds) and the rest keep their hue.
-                    if (h >= GREEN_FROM && h <= GREEN_TO)
-                        h = SKIN_FROM + (h - GREEN_FROM) / (GREEN_TO - GREEN_FROM) * (SKIN_TO - SKIN_FROM);
                     s = Mathf.Min(1f, s * SATURATION + (s > 0.02f ? SATURATION_ADD : 0f));
                     v = Mathf.Min(1f, v * BRIGHTNESS);
                     Color32 c = Color.HSVToRGB(h, s, v);
