@@ -26,7 +26,7 @@ namespace Game.AIKit.Adapters
         private const float KEEP_MARGIN = 2f;
 
         /// <summary>Near the hull, a place this far round the ring from its zombie (the tank turned) is given up, m.</summary>
-        private const float SWEPT = 2.5f;
+        private const float SWEPT = 1.2f;
 
         private static readonly bool[] s_held = new bool[256];
 

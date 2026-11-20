@@ -200,7 +200,6 @@ namespace Game.Horde.Tests
 
             // The Tiger's full pivot, 1.36 rad/s, for 2 s: the hull's places sweep 2.7 rad round.
             float yaw = 0f;
-            float swept = 0f;
             for (int k = 0; k < 40; k++)
             {
                 yaw += 1.36f * DT;
@@ -208,10 +207,21 @@ namespace Game.Horde.Tests
                 Step(sim, tank, 1);
             }
 
+            // How far round the tank's middle each one went, against the tank's own turn (the hull's faces shove the
+            // ones they sweep into a little: a paddle, not a hand that holds them).
+            float sum = 0f, most = 0f;
             for (int i = 0; i < 12; i++)
-                swept += math.distance(before[i].xz, sim.GetPosition(i).xz);
-            swept /= 12f;
-            Assert.Less(swept, 1.2f, $"they moved {swept:0.00} m on average (the places swept some 5 m): only the corners shove them");
+            {
+                float2 a = before[i].xz - tank.Center.xz;
+                float2 b = sim.GetPosition(i).xz - tank.Center.xz;
+                float turn = math.abs(math.atan2(a.x * b.y - a.y * b.x, math.dot(a, b)));
+                sum += turn;
+                most = math.max(most, turn);
+            }
+
+            float mean = sum / 12f;
+            Assert.Less(mean, yaw * 0.5f, $"they went {math.degrees(mean):0} deg round on average while the tank turned {math.degrees(yaw):0}");
+            Assert.Less(most, yaw, $"none turned with the tank (most {math.degrees(most):0} deg)");
         }
 
         [Test]

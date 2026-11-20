@@ -49,7 +49,7 @@ namespace Game.AIKit.Adapters
         {
             // No leaping onto the tank for now (the user): the game's one switch, HordeRiderOptions.LeapOntoTank, is off,
             // so they walk up and attack from the ground round the hull. Not set here too: one switch brings it back.
-            capacity = 256, population = 0, castShadows = false, tankDamageScale = 0.25f
+            capacity = 256, population = 0, castShadows = true, tankDamageScale = 0.25f
         };
     }
 }

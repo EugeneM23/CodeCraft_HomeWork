@@ -35,8 +35,8 @@ namespace Game.Horde
         /// <summary>A monster gives its place up this much further out than it takes one, m.</summary>
         private const float KEEP_MARGIN = 2f;
 
-        /// <summary>Near the hull, a place this far round the ring from its monster (the tank turned) is given up, m.</summary>
-        private const float SWEPT = 2.5f;
+        /// <summary>Near the hull, a place this far round the ring from its monster (the tank turned) is given up for the nearest free one, m: it does not run round after a place the hull carries away.</summary>
+        private const float SWEPT = 1.2f;
 
         [ReadOnly] public NativeArray<float3> Position;
         [ReadOnly] public NativeArray<HordeState> State;

@@ -1266,17 +1266,26 @@ namespace Game.Horde
                     {
                         if (level && q.x < r && q.y < r)
                         {
-                            // Overlaps the hull: out along the shallower side, else the other one, if the grid lets it
-                            // go there (not up on a roof, not into a wall); else it stays where it is.
+                            // Overlaps the hull: at a corner straight out from the hull's middle to the padded box's
+                            // edge (along the shallower side, a pivoting hull's corner would push a monster along its
+                            // leading face and carry it round with the tank, as if it were a part of it); elsewhere out
+                            // along the shallower side; else the other side, if the grid lets it go there (not up on a
+                            // roof, not into a wall); else it stays where it is.
                             float penX = r - q.x;
                             float penZ = r - q.y;
+                            float2 padded = Tank.HalfExtents.xz + r;
+                            float2 away = math.abs(local.xz);
+                            float scale = math.min(padded.x / math.max(away.x, 1e-4f), padded.y / math.max(away.y, 1e-4f));
+                            float3 radial = new float3(local.x * scale, local.y, local.z * scale);
                             float3 alongX = local;
                             alongX.x += math.select(-penX, penX, local.x >= 0f);
                             float3 alongZ = local;
                             alongZ.z += math.select(-penZ, penZ, local.z >= 0f);
-                            float3 first = penX < penZ ? alongX : alongZ;
-                            float3 second = penX < penZ ? alongZ : alongX;
-                            float2 to = (math.rotate(Tank.Rotation, first) + Tank.Center).xz;
+                            float3 second = penX < penZ ? alongX : alongZ;
+                            // Straight out only at a corner (near both faces), where a pivoting hull catches it;
+                            // deeper in (a monster the hull drove onto), the shortest way out, to the side.
+                            bool corner = q.x > -r && q.y > -r && math.lengthsq(local.xz) > 1e-6f;
+                            float2 to = (math.rotate(Tank.Rotation, corner ? radial : second) + Tank.Center).xz;
                             if (!Grid.CanTravel(p.xz, to))
                                 to = (math.rotate(Tank.Rotation, second) + Tank.Center).xz;
                             if (Grid.CanTravel(p.xz, to))
