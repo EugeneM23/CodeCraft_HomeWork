@@ -3,15 +3,15 @@ using Atomic.Entities;
 using NUnit.Framework;
 using UnityEngine;
 
-namespace Game.AIKit.Adapters.Tests
+namespace AIKit.Entities.Tests
 {
-    public sealed class AtomicActuatorTests
+    public sealed class EntityActuatorTests
     {
         private GameObject _body;
         private Entity _entity;
         private IReactiveVariable<Vector3> _move;
         private IReactiveVariable<Vector3> _rotate;
-        private AtomicActuator _actuator;
+        private EntityActuator _actuator;
 
         [SetUp]
         public void SetUp()
@@ -19,13 +19,12 @@ namespace Game.AIKit.Adapters.Tests
             _body = new GameObject("Body");
             _body.transform.position = new Vector3(1f, 2f, 3f);
             _entity = new Entity("Walker");
-            _entity.AddTransform(_body.transform);
             _move = new ReactiveVariable<Vector3>();
             _rotate = new ReactiveVariable<Vector3>();
-            _entity.AddMoveDirection(_move);
-            _entity.AddRotateDirection(_rotate);
-            _entity.AddMoveSpeed(new ReactiveFloat(5f));
-            _actuator = new AtomicActuator(_body.transform);
+            _entity.AddAgentMove(_move);
+            _entity.AddAgentFace(_rotate);
+            _entity.AddAgentSpeed(new Const<float>(5f));
+            _actuator = new EntityActuator(_body.transform, new EntityBody { Radius = 0.7f });
             _actuator.Bind(_entity);
         }
 
@@ -94,7 +93,7 @@ namespace Game.AIKit.Adapters.Tests
 
             Assert.That(info.Position, Is.EqualTo(new Vector3(1f, 2f, 3f)));
             Assert.That(info.MaxSpeed, Is.EqualTo(5f));
-            Assert.That(info.Radius, Is.EqualTo(AtomicActuator.BODY_RADIUS));
+            Assert.That(info.Radius, Is.EqualTo(0.7f));
             Assert.That(info.CanJump, Is.False);
             Assert.That(info.IsGrounded, Is.True);
         }
