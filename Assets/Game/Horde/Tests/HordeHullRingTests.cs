@@ -173,6 +173,58 @@ namespace Game.Horde.Tests
         }
 
         [Test]
+        public void TankTurnsOnTheSpot_TheAttackersStandAndBite_TheyAreNotDraggedRound()
+        {
+            using HordeNavGrid grid = HordeTestGrids.Flat(40, 40);
+            using var field = new HordeFlowField(grid);
+            HordeSettings settings = HordeSettings.Default;
+            using var sim = new HordeSimulation(64, grid, field, settings);
+            HordeTank tank = Tank(new float3(20f, 0f, 20f));
+            for (int i = 0; i < 12; i++)
+            {
+                math.sincos(i * 0.52f, out float s, out float c);
+                sim.Spawn(new float3(20f + c * 8f, 0f, 20f + s * 8f), 0f);
+            }
+
+            Step(sim, tank, 300);
+            var before = new float3[12];
+            int attackers = 0;
+            for (int i = 0; i < 12; i++)
+            {
+                before[i] = sim.GetPosition(i);
+                if (sim.GetState(i) == HordeState.Attack)
+                    attackers++;
+            }
+
+            Assert.AreEqual(12, attackers, "all at the hull");
+
+            // The Tiger's full pivot, 1.36 rad/s, for 2 s: the hull's places sweep 2.7 rad round.
+            float yaw = 0f;
+            for (int k = 0; k < 40; k++)
+            {
+                yaw += 1.36f * DT;
+                tank.Rotation = quaternion.RotateY(yaw);
+                Step(sim, tank, 1);
+            }
+
+            // How far round the tank's middle each one went, against the tank's own turn (the hull's faces shove the
+            // ones they sweep into a little: a paddle, not a hand that holds them).
+            float sum = 0f, most = 0f;
+            for (int i = 0; i < 12; i++)
+            {
+                float2 a = before[i].xz - tank.Center.xz;
+                float2 b = sim.GetPosition(i).xz - tank.Center.xz;
+                float turn = math.abs(math.atan2(a.x * b.y - a.y * b.x, math.dot(a, b)));
+                sum += turn;
+                most = math.max(most, turn);
+            }
+
+            float mean = sum / 12f;
+            Assert.Less(mean, yaw * 0.5f, $"they went {math.degrees(mean):0} deg round on average while the tank turned {math.degrees(yaw):0}");
+            Assert.Less(most, yaw, $"none turned with the tank (most {math.degrees(most):0} deg)");
+        }
+
+        [Test]
         public void Crowd_SpawnedInOneHeap_EndsWithNoTwoBodiesInOnePlace()
         {
             using HordeNavGrid grid = HordeTestGrids.Flat(40, 40);

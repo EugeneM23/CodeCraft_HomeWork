@@ -1,8 +1,8 @@
 // Horde crowd and corpses, drawn with Graphics.RenderMeshIndirect (Game.Horde.HordeRenderer).
 // Vertex animation from a baked texture (Tools/Horde/Bake Regax VAT); per-instance data in
 // _HordeInstances. Two SubShaders: URP (the game's pipeline) and Built-in (a fallback, unused while URP is on).
-// Lighting is deliberately simple: one directional light, ambient,
-// a little specular, emission.
+// URP: lit as URP Lit (UniversalFragmentPBR), so the crowd matches the skinned zombies (MT_Zombie).
+// Built-in: one directional light, ambient, a little specular, emission.
 Shader "Game/HordeVAT"
 {
     Properties
@@ -11,8 +11,9 @@ Shader "Game/HordeVAT"
         _MainTex ("Albedo", 2D) = "white" {}
         _EmissionMap ("Emission", 2D) = "black" {}
         _EmissionColor ("Emission Color", Color) = (0, 0, 0, 1)
-        _Gloss ("Gloss", Range(0, 1)) = 0.6
-        _Specular ("Specular", Range(0, 1)) = 0.25
+        _Gloss ("Gloss (Built-in pass)", Range(0, 1)) = 0.6
+        _Specular ("Specular (Built-in pass)", Range(0, 1)) = 0.25
+        _Smoothness ("Smoothness (URP Lit, as MT_Zombie)", Range(0, 1)) = 0.15
         _Ambient ("Ambient (URP pass)", Color) = (0.35, 0.38, 0.42, 1)
         [NoScaleOffset] _HordeVat ("VAT: positions, then normals", 2D) = "black" {}
         _HordeVatFrames ("VAT frames", Float) = 1
@@ -20,8 +21,8 @@ Shader "Game/HordeVAT"
     }
 
     // ------------------------------------------------------------------ URP
-    // Lit by the URP library: the main light with its shadows, ambient from the light probes (SH), fog.
-    // Additional lights are not taken: a crowd of thousands under one sun.
+    // Lit by the URP library as URP Lit: the main light with its shadows, additional lights, probes (SH), SSAO, fog.
+    // A DepthNormals pass feeds screen-space AO.
     SubShader
     {
         Tags { "RenderPipeline" = "UniversalPipeline" "RenderType" = "Opaque" "Queue" = "Geometry" }
@@ -36,6 +37,7 @@ Shader "Game/HordeVAT"
             float4 _Ambient;
             float _Gloss;
             float _Specular;
+            float _Smoothness;
             float4 _MainTex_ST;
         CBUFFER_END
 
@@ -59,6 +61,10 @@ Shader "Game/HordeVAT"
             #pragma target 4.5
             #pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE _MAIN_LIGHT_SHADOWS_SCREEN
             #pragma multi_compile_fragment _ _SHADOWS_SOFT _SHADOWS_SOFT_LOW _SHADOWS_SOFT_MEDIUM _SHADOWS_SOFT_HIGH
+            #pragma multi_compile _ _ADDITIONAL_LIGHTS
+            #pragma multi_compile_fragment _ _ADDITIONAL_LIGHT_SHADOWS
+            #pragma multi_compile_fragment _ _SCREEN_SPACE_OCCLUSION
+            #pragma multi_compile _ _CLUSTER_LIGHT_LOOP
             #pragma multi_compile_fog
 
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
@@ -91,18 +97,36 @@ Shader "Game/HordeVAT"
                 return o;
             }
 
+            // URP's own Lit model (UniversalFragmentPBR), as the skinned zombie's MT_Zombie (URP Lit, metallic 0,
+            // smoothness _Smoothness): the main light and its shadows, the additional lights (Forward+), the light
+            // probes, the reflection, screen-space AO, fog. Only the normal map and the lightmaps are not there.
             half4 Frag(Varyings i) : SV_Target
             {
-                float3 n = normalize(i.normalWS);
-                Light main = GetMainLight(TransformWorldToShadowCoord(i.positionWS));
-                float3 albedo = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, i.uv).rgb * _Color.rgb;
-                float3 lit = main.color * (saturate(dot(n, main.direction)) * main.shadowAttenuation * main.distanceAttenuation);
-                float3 h = normalize(main.direction + GetWorldSpaceNormalizeViewDir(i.positionWS));
-                float spec = pow(saturate(dot(n, h)), exp2(10.0 * _Gloss + 1.0)) * _Specular * main.shadowAttenuation;
-                float3 emission = SAMPLE_TEXTURE2D(_EmissionMap, sampler_EmissionMap, i.uv).rgb * _EmissionColor.rgb;
-                float3 color = albedo * (SampleSH(n) + lit) + spec * main.color + emission;
-                color = MixFog(color, i.fogFactor);
-                return half4(color, 1.0);
+                InputData input = (InputData)0;
+                input.positionWS = i.positionWS;
+                input.normalWS = NormalizeNormalPerPixel(i.normalWS);
+                input.viewDirectionWS = GetWorldSpaceNormalizeViewDir(i.positionWS);
+                input.shadowCoord = TransformWorldToShadowCoord(i.positionWS);
+                input.fogCoord = i.fogFactor;
+                input.vertexLighting = half3(0, 0, 0);
+                input.bakedGI = SampleSH(input.normalWS);
+                input.normalizedScreenSpaceUV = GetNormalizedScreenSpaceUV(i.positionCS);
+                input.shadowMask = half4(1, 1, 1, 1);
+
+                SurfaceData surface = (SurfaceData)0;
+                surface.albedo = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, i.uv).rgb * _Color.rgb;
+                surface.metallic = 0;
+                surface.specular = half3(0, 0, 0);
+                surface.smoothness = _Smoothness;
+                surface.occlusion = 1;
+                surface.emission = SAMPLE_TEXTURE2D(_EmissionMap, sampler_EmissionMap, i.uv).rgb * _EmissionColor.rgb;
+                surface.alpha = 1;
+                surface.normalTS = half3(0, 0, 1);
+
+                half4 color = UniversalFragmentPBR(input, surface);
+                color.rgb = MixFog(color.rgb, input.fogCoord);
+                color.a = 1;
+                return color;
             }
             ENDHLSL
         }
@@ -163,6 +187,50 @@ Shader "Game/HordeVAT"
             }
 
             half4 Frag() : SV_Target { return 0; }
+            ENDHLSL
+        }
+
+        // The normals screen-space AO reads (its source is DepthNormals): without it the crowd's pixels had the
+        // ground's normals behind them.
+        Pass
+        {
+            Name "DepthNormals"
+            Tags { "LightMode" = "DepthNormals" }
+            ZWrite On
+
+            HLSLPROGRAM
+            #pragma vertex Vert
+            #pragma fragment Frag
+            #pragma target 4.5
+            #pragma multi_compile_fragment _ _GBUFFER_NORMALS_OCT
+
+            struct NormalsVaryings
+            {
+                float4 positionCS : SV_POSITION;
+                float3 normalWS : TEXCOORD0;
+            };
+
+            NormalsVaryings Vert(HordeAttributes v, uint instanceId : SV_InstanceID)
+            {
+                NormalsVaryings o;
+                float3 wp;
+                float3 wn;
+                HordeVertex((uint)(v.uv1.x + 0.5), instanceId, v.vertex.xyz, v.normal, wp, wn);
+                o.positionCS = TransformWorldToHClip(wp);
+                o.normalWS = wn;
+                return o;
+            }
+
+            half4 Frag(NormalsVaryings i) : SV_Target
+            {
+                float3 n = NormalizeNormalPerPixel(i.normalWS);
+            #if defined(_GBUFFER_NORMALS_OCT)
+                float2 octahedral = PackNormalOctQuadEncode(n);
+                return half4(PackFloat2To888(saturate(octahedral * 0.5 + 0.5)), 0.0);
+            #else
+                return half4(n, 0.0);
+            #endif
+            }
             ENDHLSL
         }
     }

@@ -11,5 +11,136 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: de1fadf041bb495eaeba84d8ceca087b, type: 3}
   m_Name: SandboxHordeConfig
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: Game.AIKit.Adapters::Game.AIKit.Adapters.SandboxHordeConfig
   art: {fileID: 11400000, guid: a2122e43eab4ee74bb8bd2bdb2a716e2, type: 2}
+  groupSize: 20
+  firstDelay: 3
+  respawnDelay: 12
+  spawnCenter: {x: -16, y: 0, z: 14}
+  spawnRadius: 4.5
+  mapMin: {x: -40, y: -40}
+  mapMax: {x: 40, y: 40}
+  groundBottom: -12
+  groundTop: 16
+  horde:
+    capacity: 256
+    population: 0
+    spawnDistance: 15
+    spawnsPerFrame: 512
+    mapMin: {x: -40, y: -40}
+    mapMax: {x: 40, y: 40}
+    rayTop: 20
+    rayLength: 30
+    crawler:
+      speed: 2.734
+      radius: 0.35
+      health: 20
+      renderScale: 0.4
+      tactic: 0
+      biteDps: 6
+      hitDamage: 0
+      hitInterval: 0
+      shotDamage: 0
+      shotInterval: 0
+      shotRange: 0
+      shotSpeed: 0
+      stopDistance: 0
+      backOff: 0
+      crushable: 1
+      crushBelowHealth: 0
+    spitter:
+      speed: 3.5
+      radius: 0.5
+      health: 50
+      renderScale: 0.7
+      tactic: 1
+      biteDps: 0
+      hitDamage: 0
+      hitInterval: 0
+      shotDamage: 15
+      shotInterval: 3
+      shotRange: 20
+      shotSpeed: 14
+      stopDistance: 17
+      backOff: 9
+      crushable: 1
+      crushBelowHealth: 0
+    brute:
+      speed: 6
+      radius: 1.2
+      health: 1800
+      renderScale: 1
+      tactic: 0
+      biteDps: 0
+      hitDamage: 40
+      hitInterval: 1.2
+      shotDamage: 0
+      shotInterval: 0
+      shotRange: 0
+      shotSpeed: 0
+      stopDistance: 0
+      backOff: 0
+      crushable: 1
+      crushBelowHealth: 0.25
+    separation: 0.9
+    tankDamageScale: 0.25
+    emergeTime: 1
+    explosionPush: 1.5
+    castShadows: 1
+    corpseCapacity: 512
+    corpseLie: 6
+    corpseSink: 3
+    bloodPerFrame: 3
+    bloodDrops: 10
+    acidSplashPerFrame: 2
+    acidSplashDrops: 6
+    riders:
+      enabled: 1
+      kindMask: 1
+      damageScale: 1
+      settings:
+        MaxRiders: 6
+        LeapRange: 2.2
+        LeapChance: 0.9
+        SlowSpeed: 3
+        FastChanceScale: 0.15
+        MaxLeapTankSpeed: 9
+        LeapGap: 0.35
+        LeapSpeed: 6
+        LeapMinTime: 0.35
+        LeapMaxTime: 0.7
+        LeapArc: 1.2
+        ClingTime: 0.35
+        StrikeDamage: 5
+        StrikeInterval: 0.8
+        TurnThreshold: 0.8
+        TurnShake: 2
+        SpeedThreshold: 8
+        SpeedShake: 0.35
+        JoltThreshold: 14
+        JoltShake: 0.25
+        HitShake: 0.45
+        GripRegain: 0.25
+        ThrowOut: 3.5
+        ThrowUp: 3
+        RejumpDelay: 3
+      leapClip:
+        start: 0
+        count: 0
+        frameRate: 0
+        loop: 0
+      clingClip:
+        start: 0
+        count: 0
+        frameRate: 0
+        loop: 0
+      tearClip:
+        start: 0
+        count: 0
+        frameRate: 0
+        loop: 0
+      fallClip:
+        start: 0
+        count: 0
+        frameRate: 0
+        loop: 0
