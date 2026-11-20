@@ -123,8 +123,8 @@ namespace Game.Voxels
         private const float GOO_FALL_DRAG = 1.2f;
         private const float GOO_FALL_GRAVITY = 1.15f;
         /// <summary>A flying goo drop is this much longer per m/s of speed (and thinner to keep its volume), up to GOO_MAX_STRETCH.</summary>
-        private const float GOO_STRETCH = 0.14f;
-        private const float GOO_MAX_STRETCH = 2.6f;
+        private const float GOO_STRETCH = 0.2f;
+        private const float GOO_MAX_STRETCH = 3.6f;
 
         /// <summary>Marks a clump in the compact pass whose cubes move to the lying store.</summary>
         private const int SETTLED = -2;

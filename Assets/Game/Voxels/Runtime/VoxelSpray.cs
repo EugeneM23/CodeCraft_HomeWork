@@ -68,7 +68,8 @@ namespace Game.Voxels
                 return 0;
 
             Vector3 aim = direction.sqrMagnitude > 1e-6f ? direction.normalized : Vector3.up;
-            int strands = Mathf.Max(1, drops / 5);
+            // Long strands, like a sticky splash: about seven drops a strand, stringing out from fast tip to slow tail.
+            int strands = Mathf.Max(1, drops / 7);
             int perStrand = Mathf.Max(1, drops / strands);
             int spawned = 0;
             for (int s = 0; s < strands; s++)
@@ -81,7 +82,7 @@ namespace Game.Voxels
                 {
                     // Along the strand the drops slow down: they rise to different heights and string out between.
                     float t = perStrand > 1 ? k / (perStrand - 1f) : 0f;
-                    Vector3 velocity = inherit + heading * (top * Mathf.Lerp(1f, 0.4f, t));
+                    Vector3 velocity = inherit + heading * (top * Mathf.Lerp(1f, 0.25f, t));
                     Color32 c = Random.value < 0.3f ? colors[Random.Range(0, colors.Count)] : color;
                     if (debris.GooDrop(start + heading * (0.03f * k), Lifted(velocity), c, size * Random.Range(0.8f, 1.3f)) < 0)
                         return spawned;
@@ -137,6 +138,9 @@ namespace Game.Voxels
         /// <summary>An HE shell's hit throws the upward and sideways shares of its spray this much faster again.</summary>
         public const float HE_SPLASH = 2f;
 
+        /// <summary>The size of a shot spray's upward drops against the rest (the ones that hang in the air).</summary>
+        public const float UP_DROP_SIZE = 0.5f;
+
         /// <summary>
         /// The goo of a body a shell hit (<see cref="Goo"/>), thrown the way the shell flew: most of it on along the shot
         /// in a widening cone that arcs and lands about twice as far as the upward goo rises, a smaller share straight
@@ -163,7 +167,8 @@ namespace Game.Voxels
             int up = Mathf.Max(1, drops - main - sides);
             int left = sides / 2;
 
-            int spawned = Goo(at, Vector3.up, up, speed * splash, spread, colors, size, inherit, radius);
+            // The upward share hangs in the air before it falls: its drops are half the size (the same count and spread).
+            int spawned = Goo(at, Vector3.up, up, speed * splash, spread, colors, size * UP_DROP_SIZE, inherit, radius);
             spawned += Goo(at, flat + Vector3.up * SHOT_ELEVATION, main, speed * SHOT_REACH, SHOT_CONE, colors, size, inherit, radius);
             if (left > 0)
                 spawned += Goo(at, side + Vector3.up * 0.8f, left, speed * 0.55f * splash, 0.35f, colors, size, inherit, radius);
