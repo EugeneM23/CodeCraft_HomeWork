@@ -134,6 +134,12 @@ namespace Game
         public int Experience { get; private set; }
         public int ExperienceToNextLevel => ExperienceForLevel(Level);
         public int PendingLevelUps { get; private set; }
+
+        /// <summary>
+        /// A level-up offers skills (pauses for the choice). Off: the level still goes up, with no offer and no pause
+        /// (the user, for now: RunBootstrap.SKILL_OFFERS).
+        /// </summary>
+        public bool OffersSkills { get; set; } = true;
         public IReadOnlyList<SkillId> SkillOffer => _offer;
         public IReadOnlyList<SkillId> Skills => _skills;
         public int Marks { get; private set; }
@@ -242,7 +248,8 @@ namespace Game
             {
                 Experience -= need;
                 Level++;
-                PendingLevelUps++;
+                if (OffersSkills)
+                    PendingLevelUps++;
                 need = ExperienceForLevel(Level);
             }
 

@@ -16,6 +16,9 @@ namespace Game
     {
         private const string HANGAR_SCREEN = "Hangar";
 
+        /// <summary>A level-up offers skills. Off for now (the user): levels still go up, with no choice screen and no pause.</summary>
+        private const bool SKILL_OFFERS = false;
+
         [Tooltip("The run's timers: ready timeout, shutter, lull, orb pull, victory delay, crush streak (GDD §3)")]
         [SerializeField] private RunTimings _timings = RunTimings.Default;
 
@@ -98,7 +101,7 @@ namespace Game
                 leaveToHangar = () => gameFlow.ReturnToMenu(HANGAR_SCREEN);
 
             _run = new RunService(_catalog, _deaths, new System.Random(), _timings, new ArenaServiceBuilder(_context), loop, isCompleted,
-                bestArenaOf, leaveToHangar);
+                bestArenaOf, leaveToHangar) { OffersSkills = SKILL_OFFERS };
             _onRunEnded = OnRunEnded;
             _run.RunEnded += _onRunEnded;
             if (_context.TryGetRun(out IRunService standIn))

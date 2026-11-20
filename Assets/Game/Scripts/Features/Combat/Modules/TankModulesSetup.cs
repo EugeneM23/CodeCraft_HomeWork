@@ -171,7 +171,7 @@ namespace Game
 
         /// <summary>The special module on E for now: an air strike of 10 bombs on the aim point (the user's call),
         /// in place of the smoke launchers.</summary>
-        private const bool AIR_STRIKE_ON_E = true;
+        private const bool AIR_STRIKE_ON_E = false;
 
         /// <summary>The E air strike's recharge, s: none for now (the user's call).</summary>
         private const float BARRAGE_COOLDOWN = 0f;

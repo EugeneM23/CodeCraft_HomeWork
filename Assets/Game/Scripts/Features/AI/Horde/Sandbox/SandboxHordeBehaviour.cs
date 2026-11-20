@@ -71,6 +71,16 @@ namespace Game.AIKit.Adapters
             }
 
             _wasOn = true;
+
+            // The test hotkey (the user): H releases a group (SandboxHordeConfig.groupSize) at once.
+            UnityEngine.InputSystem.Keyboard keyboard = UnityEngine.InputSystem.Keyboard.current;
+            if (keyboard != null && keyboard.hKey.wasPressedThisFrame)
+                SpawnGroup();
+
+            // Groups on their own only with SandboxHorde.AutoGroups (off by default: the crowd comes on H).
+            if (!SandboxHorde.AutoGroups)
+                return;
+
             if (_horde.AliveCount > 0)
             {
                 _timer = _config.respawnDelay;

@@ -13,17 +13,17 @@ MonoBehaviour:
   m_Name: SandboxHordeConfig
   m_EditorClassIdentifier: Game.AIKit.Adapters::Game.AIKit.Adapters.SandboxHordeConfig
   art: {fileID: 11400000, guid: a2122e43eab4ee74bb8bd2bdb2a716e2, type: 2}
-  groupSize: 20
+  groupSize: 4000
   firstDelay: 3
   respawnDelay: 12
   spawnCenter: {x: -16, y: 0, z: 14}
-  spawnRadius: 4.5
+  spawnRadius: 30
   mapMin: {x: -40, y: -40}
   mapMax: {x: 40, y: 40}
   groundBottom: -12
   groundTop: 16
   horde:
-    capacity: 256
+    capacity: 4400
     population: 0
     spawnDistance: 15
     spawnsPerFrame: 512
