@@ -30,7 +30,7 @@ namespace Game.AIKit.Adapters
         private const float FLOW_INTERVAL = 0.2f;
         private const float AUDIO_INTERVAL = 0.25f;
         private const int SPAWN_TRIES = 8;
-        private const int MAX_PENDING = 4096;
+        private const int MAX_PENDING = 32768;
         private const float ELITE_REPORT_INTERVAL = 0.1f;
         /// <summary>Spawn cells higher than this over the lowest ground are roofs and rubble, not ground.</summary>
         private const float SPAWN_MAX_HEIGHT = 1f;

@@ -23,7 +23,7 @@ MonoBehaviour:
   groundBottom: -12
   groundTop: 16
   horde:
-    capacity: 4400
+    capacity: 32768
     population: 0
     spawnDistance: 15
     spawnsPerFrame: 512

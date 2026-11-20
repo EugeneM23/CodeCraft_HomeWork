@@ -33,7 +33,7 @@ namespace Game.AIKit.Adapters
         public static int GroupSize
         {
             get => s_groupSize > 0 ? s_groupSize : s_config != null ? s_config.groupSize : 20;
-            set => s_groupSize = Mathf.Clamp(value, 1, 4000);
+            set => s_groupSize = Mathf.Clamp(value, 1, 32768);
         }
 
         /// <summary>The sandbox horde of the loaded sandbox (null elsewhere).</summary>
@@ -93,6 +93,7 @@ namespace Game.AIKit.Adapters
             if (installer.Behaviour == null)
                 return null;
             installer.gameObject.name = "[SandboxHorde]";
+            installer.gameObject.AddComponent<SandboxHordeCounter>();
             var behaviour = new SandboxHordeBehaviour(s_config, installer.Behaviour);
             installer.GetComponent<MonoEntity>().AddBehaviour(behaviour);
             s_active = behaviour;
@@ -113,7 +114,7 @@ namespace Game.AIKit.Adapters
             DebugEntry auto = DebugPanelRegistry.AddToggle(WorldDebugCommands.ENEMIES, "Группы сами (иначе по H)",
                 () => AutoGroups, v => AutoGroups = v, 11);
             auto.Visible = () => s_active != null;
-            DebugEntry size = DebugPanelRegistry.AddSlider(WorldDebugCommands.ENEMIES, "Размер группы", 5f, 4000f,
+            DebugEntry size = DebugPanelRegistry.AddSlider(WorldDebugCommands.ENEMIES, "Размер группы", 5f, 20000f,
                 () => GroupSize, v => GroupSize = Mathf.RoundToInt(v), 12);
             size.Visible = () => s_active != null;
             DebugEntry buttons = DebugPanelRegistry.AddButtons(WorldDebugCommands.ENEMIES, null, Buttons, Press, 13);
