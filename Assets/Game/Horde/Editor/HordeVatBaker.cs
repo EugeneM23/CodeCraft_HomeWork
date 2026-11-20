@@ -91,11 +91,12 @@ namespace Game.Horde.EditorTools
             Idle = () => AssetDatabase.LoadAssetAtPath<AnimationClip>(ZOMBIE_CLIPS + "Zombie_Idle.anim"),
             Death = () => AssetDatabase.LoadAssetAtPath<AnimationClip>(ZOMBIE_CLIPS + "Zombie_Death_Handgun.anim"),
             ConfigPath = ZOMBIE_CONFIG_PATH,
-            // The crawler's render scale is 0.4 in the levels: 0.4 × 7.125 = a 2.85 m zombie (the user: half as big again as
+            // The crawler's render scale is 0.4 in the levels: 0.4 × 4.008 = a 1.6 m zombie (the user: twice 25 % smaller than the
+            // 2.85 m one, which was half as big again as
             // the first 1.9 m), readable from the tank's camera. Its radius and bite reach grow with it (the kinds were
             // tuned on a 1.9 m one).
-            Height = 7.125f,
-            ReachScale = 1.5f,
+            Height = 4.0078125f,
+            ReachScale = 0.84375f,
             AlbedoPath = ZombieAtlas.VIVID,
             AlbedoColor = new Color(1.1f, 1.1f, 1.1f, 1f),
             // The user: the zombie moves at the run's own root speed, the feet do not slide. The crawler's speed is set to it

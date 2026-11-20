@@ -1799,35 +1799,43 @@ PrefabInstance:
       objectReference: {fileID: 4626495345892481648}
     - target: {fileID: 2067401628454472326, guid: e2c73aa53d2f90a4db53ae5a58c42d97, type: 3}
       propertyPath: m_LocalScale.x
-      value: 1.5922672
+      value: 0.89565027
       objectReference: {fileID: 0}
     - target: {fileID: 2067401628454472326, guid: e2c73aa53d2f90a4db53ae5a58c42d97, type: 3}
       propertyPath: m_LocalScale.y
-      value: 1.5922672
+      value: 0.89565027
       objectReference: {fileID: 0}
     - target: {fileID: 2067401628454472326, guid: e2c73aa53d2f90a4db53ae5a58c42d97, type: 3}
       propertyPath: m_LocalScale.z
-      value: 1.5922672
+      value: 0.89565027
       objectReference: {fileID: 0}
     - target: {fileID: 3086355768028857389, guid: e2c73aa53d2f90a4db53ae5a58c42d97, type: 3}
       propertyPath: m_Height
-      value: 2.85
+      value: 1.6031249
+      objectReference: {fileID: 0}
+    - target: {fileID: 3086355768028857389, guid: e2c73aa53d2f90a4db53ae5a58c42d97, type: 3}
+      propertyPath: m_Radius
+      value: 0.28125
       objectReference: {fileID: 0}
     - target: {fileID: 3086355768028857389, guid: e2c73aa53d2f90a4db53ae5a58c42d97, type: 3}
       propertyPath: m_Center.y
-      value: 1.425
+      value: 0.8015624
       objectReference: {fileID: 0}
     - target: {fileID: 4918008619899490482, guid: e2c73aa53d2f90a4db53ae5a58c42d97, type: 3}
       propertyPath: m_Height
-      value: 2.85
+      value: 1.6031249
+      objectReference: {fileID: 0}
+    - target: {fileID: 4918008619899490482, guid: e2c73aa53d2f90a4db53ae5a58c42d97, type: 3}
+      propertyPath: m_Radius
+      value: 0.28125
       objectReference: {fileID: 0}
     - target: {fileID: 4918008619899490482, guid: e2c73aa53d2f90a4db53ae5a58c42d97, type: 3}
       propertyPath: m_Center.y
-      value: 1.425
+      value: 0.8015624
       objectReference: {fileID: 0}
     - target: {fileID: 5107114153367632572, guid: e2c73aa53d2f90a4db53ae5a58c42d97, type: 3}
       propertyPath: _moveSpeed
-      value: 4.57
+      value: 2.57
       objectReference: {fileID: 0}
     - target: {fileID: 5331188433194752158, guid: e2c73aa53d2f90a4db53ae5a58c42d97, type: 3}
       propertyPath: _groundPoint
@@ -1859,7 +1867,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5655884024937215095, guid: e2c73aa53d2f90a4db53ae5a58c42d97, type: 3}
       propertyPath: _config.voxelSize
-      value: 0.05
+      value: 0.028
       objectReference: {fileID: 0}
     - target: {fileID: 5655884024937215095, guid: e2c73aa53d2f90a4db53ae5a58c42d97, type: 3}
       propertyPath: _config.leftMarker
@@ -1899,7 +1907,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5655884024937215095, guid: e2c73aa53d2f90a4db53ae5a58c42d97, type: 3}
       propertyPath: _config.blood.dropSize
-      value: 0.08
+      value: 0.045
       objectReference: {fileID: 0}
     - target: {fileID: 5655884024937215095, guid: e2c73aa53d2f90a4db53ae5a58c42d97, type: 3}
       propertyPath: _config.speeds.scatter
@@ -2087,7 +2095,7 @@ PrefabInstance:
       objectReference: {fileID: 22100000, guid: cacf1303b2c16d64cb127e2723264d93, type: 2}
     - target: {fileID: 8938987125168004657, guid: e2c73aa53d2f90a4db53ae5a58c42d97, type: 3}
       propertyPath: _damageRadius
-      value: 1.35
+      value: 0.75937504
       objectReference: {fileID: 0}
     - target: {fileID: 8938987125168004657, guid: e2c73aa53d2f90a4db53ae5a58c42d97, type: 3}
       propertyPath: _animController

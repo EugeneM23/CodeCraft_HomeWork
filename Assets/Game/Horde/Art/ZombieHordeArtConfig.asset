@@ -34,8 +34,8 @@ MonoBehaviour:
     frameRate: 30
     loop: 1
   bounds:
-    m_Center: {x: 0.5435066, y: 3.609698, z: 1.4807112}
-    m_Extent: {x: 3.4507651, y: 3.9816198, z: 3.822827}
+    m_Center: {x: 0.30572248, y: 2.0304554, z: 0.83290017}
+    m_Extent: {x: 1.9410553, y: 2.2396615, z: 2.1503403}
   tornSkins:
     head:
     - serializedVersion: 2
@@ -140,9 +140,9 @@ MonoBehaviour:
   triangles: 1862
   sourceTriangles: 1862
   meshLod: 0
-  bodyScale: 2.7403848
-  runClipSpeed: 12.148696
-  reachScale: 1.5
+  bodyScale: 1.5414664
+  runClipSpeed: 6.8336415
+  reachScale: 0.84375
   kindTints:
   - {r: 0, g: 0, b: 0, a: 0}
   - {r: 0.62, g: 0.85, b: 0.3, a: 1}

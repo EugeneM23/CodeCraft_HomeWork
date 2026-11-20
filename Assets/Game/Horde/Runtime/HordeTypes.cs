@@ -80,13 +80,13 @@ namespace Game.Horde
         public float CrushBelowHealth;
 
         /// <summary>The crawler's speed, m/s: the zombie run's root speed at the crawler's size (see <see cref="Crawler"/>).</summary>
-        public const float CRAWLER_SPEED = 4.86f;
+        public const float CRAWLER_SPEED = 2.734f;
 
         /// <summary>The young Regax (GDD §5): small, fast, bites.</summary>
         public static HordeKind Crawler => new()
         {
-            // The zombie's run clip's own root speed at this render scale (ZombieHordeArtConfig.runClipSpeed 12.15 × 0.4):
-            // it plays at 1x, the feet do not slide (the user). Was 6.5 (the old walk played 2.4 times over, sliding).
+            // The zombie's run clip's own root speed at this render scale (ZombieHordeArtConfig.runClipSpeed 6.83 × 0.4, the 1.6 m zombie):
+            // it plays at 1x, the feet do not slide (the user). Was 6.5 (the old walk played 2.4 times over, sliding), then 4.86 for the 2.85 m zombie, 3.645 for the 2.14 m one.
             Speed = CRAWLER_SPEED,
             Radius = 0.35f,
             Health = 20f,
