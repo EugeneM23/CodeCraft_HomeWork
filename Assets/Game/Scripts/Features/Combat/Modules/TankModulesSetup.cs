@@ -173,6 +173,9 @@ namespace Game
         /// in place of the smoke launchers.</summary>
         private const bool AIR_STRIKE_ON_E = true;
 
+        /// <summary>The E air strike's recharge, s: none for now (the user's call).</summary>
+        private const float BARRAGE_COOLDOWN = 0f;
+
         private static AirStrikeBarrageModule s_barrage;
         private static readonly RaycastHit[] AimHits = new RaycastHit[16];
 
@@ -182,8 +185,8 @@ namespace Game
         {
             if (AIR_STRIKE_ON_E)
             {
-                s_barrage ??= new AirStrikeBarrageModule(AimAtPointer, stats.SpecialCooldown);
-                s_barrage.Cooldown = stats.SpecialCooldown;
+                s_barrage ??= new AirStrikeBarrageModule(AimAtPointer, BARRAGE_COOLDOWN);
+                s_barrage.Cooldown = BARRAGE_COOLDOWN;
                 if (tank.HasSpecialModule())
                     tank.SetSpecialModule(s_barrage);
                 else
