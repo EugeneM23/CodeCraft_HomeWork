@@ -127,6 +127,8 @@ namespace Game.AIKit.Adapters
             public int Row;
             public float HealthScale;
             public float DamageScale;
+            /// <summary>Walks out at once (a house's stream, HouseZombies) rather than climbing out of a burrow.</summary>
+            public bool Walking;
         }
 
         public HordeBehaviour(HordeArtConfig art, HordeOptions options)
@@ -423,6 +425,20 @@ namespace Game.AIKit.Adapters
             return true;
         }
 
+        /// <summary>
+        /// A crawler that walks out at <paramref name="at"/> at once, toward the tank (a house's stream:
+        /// HouseZombies), no burrow. False: no room.
+        /// </summary>
+        public bool SpawnWalking(Vector3 at)
+        {
+            if (_simulation == null || !HordeKinds.TryGetRow(EnemyKind.Crawler, out int row) || _pendingCount >= MAX_PENDING)
+                return false;
+            if (AliveCount >= _simulation.Capacity)
+                return false;
+            _pending[_pendingCount++] = new Pending { Position = at, Row = row, HealthScale = 1f, DamageScale = 1f, Walking = true };
+            return true;
+        }
+
         void IArenaHorde.WaveStarted() => _audio.WaveStarted();
 
         /// <summary>A burrow opened at <paramref name="at"/> (its sound).</summary>
@@ -571,7 +587,7 @@ namespace Game.AIKit.Adapters
                 if (!float.IsNaN(h))
                     at.y = h;
                 float2 toTank = tank.Present ? tank.Center.xz - at.xz : new float2(0f, 1f);
-                int slot = _simulation.Spawn(at, math.atan2(toTank.x, toTank.y), p.Row, p.HealthScale, p.DamageScale, true);
+                int slot = _simulation.Spawn(at, math.atan2(toTank.x, toTank.y), p.Row, p.HealthScale, p.DamageScale, !p.Walking);
                 if (slot >= 0 && HordeKinds.IsElite(p.Row))
                 {
                     _eliteCount++;

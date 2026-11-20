@@ -111,6 +111,11 @@ namespace Game.AIKit.Adapters
             DebugEntry toggle = DebugPanelRegistry.AddToggle(WorldDebugCommands.ENEMIES, "Активные зомби в песочнице",
                 () => Enabled, v => Enabled = v, 11);
             toggle.Visible = () => s_active != null;
+            DebugEntry houses = DebugPanelRegistry.AddToggle(WorldDebugCommands.ENEMIES, "Зомби в домах",
+                () => HouseZombies.Enabled, v => HouseZombies.Enabled = v, 11);
+            houses.Visible = () => s_active != null;
+            DebugEntry stock = DebugPanelRegistry.AddInfo(WorldDebugCommands.ENEMIES, HousesStatus, 11);
+            stock.Visible = () => s_active != null;
             DebugEntry auto = DebugPanelRegistry.AddToggle(WorldDebugCommands.ENEMIES, "Группы сами (иначе по H)",
                 () => AutoGroups, v => AutoGroups = v, 11);
             auto.Visible = () => s_active != null;
@@ -119,6 +124,12 @@ namespace Game.AIKit.Adapters
             size.Visible = () => s_active != null;
             DebugEntry buttons = DebugPanelRegistry.AddButtons(WorldDebugCommands.ENEMIES, null, Buttons, Press, 13);
             buttons.Visible = () => s_active != null;
+        }
+
+        private static string HousesStatus()
+        {
+            HouseZombies houses = s_active?.Houses;
+            return houses == null ? "" : $"В домах: {houses.ZombiesLeft} в {houses.RoomsLeft} комнатах (по {HouseZombies.PerRoom}), потоков {houses.Streams}";
         }
 
         private static string Status()

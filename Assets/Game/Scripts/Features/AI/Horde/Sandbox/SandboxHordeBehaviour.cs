@@ -23,6 +23,10 @@ namespace Game.AIKit.Adapters
         private Unity.Mathematics.Random _random = new(0x5A9D80u);
         private float _timer;
         private bool _wasOn = true;
+        private HouseZombies _houses;
+
+        /// <summary>The houses' zombies (HouseZombies): their stocks and streams.</summary>
+        public HouseZombies Houses => _houses;
 
         public SandboxHordeBehaviour(SandboxHordeConfig config, HordeBehaviour horde)
         {
@@ -49,10 +53,15 @@ namespace Game.AIKit.Adapters
         public void Init(IEntity entity)
         {
             _timer = _config.firstDelay;
+            _houses = new HouseZombies(_horde);
             SandboxHorde.SetActive(this);
         }
 
-        public void Dispose(IEntity entity) => SandboxHorde.ClearActive(this);
+        public void Dispose(IEntity entity)
+        {
+            _houses?.Dispose();
+            SandboxHorde.ClearActive(this);
+        }
 
         public void Tick(IEntity entity, float deltaTime)
         {
@@ -71,6 +80,7 @@ namespace Game.AIKit.Adapters
             }
 
             _wasOn = true;
+            _houses?.Tick(deltaTime);
 
             // The test hotkey (the user): H releases a group (SandboxHordeConfig.groupSize) at once.
             UnityEngine.InputSystem.Keyboard keyboard = UnityEngine.InputSystem.Keyboard.current;

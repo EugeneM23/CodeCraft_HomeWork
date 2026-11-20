@@ -93,6 +93,61 @@ namespace Game.Voxels
 
         /// <summary>A house, a Victorian town house or a tower — not a wall, a tree or the ground.</summary>
         public bool IsBuilding => _shape is Shape.House or Shape.Victorian or Shape.Tower;
+
+        /// <summary>A room of a building: its inside (local metres, this transform's space) and which of its walls are outer ones.</summary>
+        public struct Room
+        {
+            public Bounds Inside;
+
+            /// <summary>Outer walls: 1 the -X side, 2 +X, 4 -Z (the front), 8 +Z.</summary>
+            public int Outer;
+        }
+
+        /// <summary>
+        /// The rooms of a building, as the generator lays them out: a Victorian house's two rooms a storey either side of
+        /// its partition (its storeys by the grid's height); any other building one room a floor (3 m), its whole inside.
+        /// Nothing for a wall, a tree or the ground.
+        /// </summary>
+        public void GetRooms(System.Collections.Generic.List<Room> into)
+        {
+            into.Clear();
+            if (!IsBuilding)
+                return;
+            float v = _voxelSize;
+            float ox = -_size.x * 0.5f * v, oz = -_size.z * 0.5f * v;
+            if (_shape == Shape.Victorian)
+            {
+                // The generator's layout (Victorian(), Interior()): walls at 3 / 6 / 3 voxels in, 2 thick; a plinth of 5,
+                // storeys of 28; the partition halfway across.
+                const int side = 3, front = 6, back = 3, plinth = 5, storey = 28;
+                int floors = Mathf.Clamp((_size.y - 50) / storey, 1, 3);
+                int ix0 = side + 2, ix1 = _size.x - side - 2, iz0 = front + 2, iz1 = _size.z - back - 2;
+                int xm = (ix0 + ix1) / 2;
+                for (int s = 0; s < floors; s++)
+                {
+                    float y0 = (plinth + s * storey + 1) * v, y1 = (plinth + (s + 1) * storey) * v;
+                    into.Add(Box(ox + ix0 * v, ox + xm * v, y0, y1, oz + iz0 * v, oz + iz1 * v, 1 | 4 | 8));
+                    into.Add(Box(ox + (xm + 1) * v, ox + ix1 * v, y0, y1, oz + iz0 * v, oz + iz1 * v, 2 | 4 | 8));
+                }
+
+                return;
+            }
+
+            // Any other building: a floor a room, 3 m high, inside walls of 2 voxels.
+            float height = (_size.y - 4) * v;
+            int count = Mathf.Max(1, Mathf.RoundToInt(height / 3f));
+            for (int s = 0; s < count; s++)
+                into.Add(Box(ox + 2 * v, ox + (_size.x - 2) * v, s * height / count + v, (s + 1) * height / count,
+                    oz + 2 * v, oz + (_size.z - 2) * v, 1 | 2 | 4 | 8));
+        }
+
+        private static Room Box(float x0, float x1, float y0, float y1, float z0, float z1, int outer)
+        {
+            var inside = new Bounds();
+            inside.SetMinMax(new Vector3(x0, y0, z0), new Vector3(x1, y1, z1));
+            return new Room { Inside = inside, Outer = outer };
+        }
+
         [Tooltip("Width (X), height (Y) and depth (Z) in voxels.")]
         [SerializeField] private Vector3Int _size = new(60, 44, 50);
         [SerializeField] private float _voxelSize = 0.1f;
