@@ -108,8 +108,9 @@ namespace Game
                 tank.DelBehaviour(s_input);
             s_input = null;
 
-            if (s_smoke != null && tank.TryGetSpecialModule(out ISpecialModule special) &&
-                ReferenceEquals(special, s_smoke))
+            if (tank.TryGetSpecialModule(out ISpecialModule special) &&
+                ((s_smoke != null && ReferenceEquals(special, s_smoke)) ||
+                 (s_barrage != null && ReferenceEquals(special, s_barrage))))
                 tank.DelSpecialModule();
             s_smoke = null;
 
@@ -117,6 +118,37 @@ namespace Game
             s_skirts = null;
 
             s_tank = null;
+        }
+
+        /// <summary>Where the player points: the nearest thing under the pointer (not the tank itself), or the pointer
+        /// on the tank's ground level.</summary>
+        private static bool AimAtPointer(out Vector3 point)
+        {
+            point = default;
+            if (s_context == null || !s_context.TryGetPlayerContext(out PlayerContext player) || player == null ||
+                !player.TryGetPlayerInput(out IPlayerInput input) || input == null)
+                return false;
+            Camera camera = Camera.main;
+            if (camera == null)
+                return false;
+
+            Vector2 screen = CursorUseCase.ScreenPoint(input.Pointer);
+            Transform root = s_tank != null && s_tank.TryGetTransform(out Transform t) ? t : null;
+            Ray ray = camera.ScreenPointToRay(screen);
+            int count = Physics.RaycastNonAlloc(ray, AimHits, 500f, ~0, QueryTriggerInteraction.Ignore);
+            float best = float.MaxValue;
+            for (int i = 0; i < count; i++)
+            {
+                RaycastHit hit = AimHits[i];
+                if (hit.distance >= best || (root != null && hit.transform.IsChildOf(root)))
+                    continue;
+                best = hit.distance;
+                point = hit.point;
+            }
+
+            if (best < float.MaxValue)
+                return true;
+            return CursorUseCase.TryProjectOnPlane(camera, screen, root != null ? root.position.y : 0f, out point);
         }
 
         /// <summary>The selected tank's loadout from the save, its stats; the standard loadout without an app.</summary>
@@ -137,9 +169,28 @@ namespace Game
                 config != null ? config.Modules : null);
         }
 
-        /// <summary>Smoke launchers as the SpecialModule when the loadout has them; none otherwise.</summary>
+        /// <summary>The special module on E for now: an air strike of 10 bombs on the aim point (the user's call),
+        /// in place of the smoke launchers.</summary>
+        private const bool AIR_STRIKE_ON_E = true;
+
+        private static AirStrikeBarrageModule s_barrage;
+        private static readonly RaycastHit[] AimHits = new RaycastHit[16];
+
+        /// <summary>Smoke launchers as the SpecialModule when the loadout has them; none otherwise. With
+        /// <see cref="AIR_STRIKE_ON_E"/>, the air strike barrage instead.</summary>
         private static void UpdateSpecial(IEntity tank, TankCombatStats stats)
         {
+            if (AIR_STRIKE_ON_E)
+            {
+                s_barrage ??= new AirStrikeBarrageModule(AimAtPointer, stats.SpecialCooldown);
+                s_barrage.Cooldown = stats.SpecialCooldown;
+                if (tank.HasSpecialModule())
+                    tank.SetSpecialModule(s_barrage);
+                else
+                    tank.AddSpecialModule(s_barrage);
+                return;
+            }
+
             bool smoke = TankStatsUseCase.Contains(Loadout, ModuleIds.SpecialSmoke);
             if (smoke && s_smoke == null && tank.TryGetTransform(out Transform transform))
             {
