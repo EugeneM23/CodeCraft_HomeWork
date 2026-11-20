@@ -29,3 +29,7 @@
 
 Тесты со временной сценой (`TempScene`) требуют, чтобы открытая сцена не была безымянной несохранённой.
 - `GraphDocumentTests.RenameAndDeleteVariable_TheGraphsOwn_NoCharacterOfTheSceneIsChanged` и `LifeNodeTests.Chat_NoWorldGiven_TheAgentsJoinTheScenesWorld_AndTalk` — Inconclusive в общем прогоне: какой-то тест раньше них оставляет безымянную сцену. По отдельности оба зелёные.
+
+## Своё в этом проекте (не из Platformer-AIKit)
+
+С 2026-11-20 в модуле есть сборка **`AIKit.Atomic`** (`Adapters/Atomic`, пространство имён `AIKit.Entities`) и её тесты (`Tests/Atomic` — EditMode, `Tests/AtomicPlayMode` — PlayMode). Это слой ядра для Atomic: агент на сущности, мир на сущности уровня, тело `EntityBody`. В Platformer-AIKit её нет: при переносе новой версии модуля папки `Adapters/Atomic`, `Tests/Atomic`, `Tests/AtomicPlayMode` не затирать. Ядро она не меняет. Документ — `Docs/AI/AIKit_Atomic.md`.

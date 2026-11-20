@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using AIKit;
+using AIKit.Entities;
 using Atomic.Elements;
 using Atomic.Entities;
 using Game.Horde;
@@ -98,7 +99,7 @@ namespace Game.AIKit.Adapters
             IEntity level = _level ?? LevelAI.Ensure();
             _tank = level.GetPlayerVehicle();
             _nav = level.GetLevelNavigation();
-            _agents = level.GetWorldAgents();
+            _agents = level.GetWorldAgentList();
 
             _motor = new EliteMotor(_transform, KEEP_APART) { MaxDrop = MAX_DROP };
             _motor.Bind(_nav, _tank);

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using AIKit;
+using AIKit.Entities;
 using Atomic.Elements;
 using Atomic.Entities;
 using Game.Horde;
@@ -12,10 +13,11 @@ using Object = UnityEngine.Object;
 namespace Game.AIKit.Adapters.Tests
 {
     /// <summary>
-    /// A level without a scene for the elite's tests: a flat synthetic grid (0.5 m cells over <see cref="HALF"/> m each
-    /// way, searched at once), a level entity with the AIKit world and the player's vehicle, a box "tank" on the
-    /// Character layer, and elites made of plain Atomic entities. <see cref="Step"/> plays one frame the way the game
-    /// does: the level steps the agents, the entity's walk moves the body, the motor puts it on the ground.
+    /// A level without a scene for the AI tests: a flat synthetic grid (0.5 m cells over <see cref="HALF"/> m each way,
+    /// searched at once), a level entity with the AIKit world (AIKit.Atomic's <see cref="AIWorldInstaller"/>) and the
+    /// player's vehicle, a box "tank" on the Character layer, and skinned zombies made of plain Atomic entities.
+    /// <see cref="Step"/> plays one frame the way the game does: the level steps the agents, the entity's walk moves the
+    /// body, the zombie's behaviour (its motor) puts it on the ground.
     /// </summary>
     internal sealed class AITestRig : IDisposable
     {
@@ -29,8 +31,10 @@ namespace Game.AIKit.Adapters.Tests
         public readonly AIAgentList Agents;
         public readonly PlayerTank Tank = new();
         public readonly Entity Level = new("Level");
-        public readonly List<Elite> Elites = new();
         public readonly List<Zombie> Zombies = new();
+
+        private readonly List<GameObject> _objects = new();
+        private GameObject _tank;
 
         /// <summary>A skinned zombie: a plain Atomic walker with <see cref="ZombieChaseBehaviour"/>.</summary>
         public sealed class Zombie
@@ -44,45 +48,6 @@ namespace Game.AIKit.Adapters.Tests
             public int Fired;
         }
 
-        /// <summary>A zombie at <paramref name="position"/>, joined to the level.</summary>
-        public Zombie AddZombie(Vector3 position, int health = 60)
-        {
-            var go = new GameObject("Zombie") { layer = PhysicsLayers.Enemy };
-            _objects.Add(go);
-            go.transform.position = position;
-
-            var zombie = new Zombie { GameObject = go, Transform = go.transform };
-            var entity = new Entity("Zombie");
-            entity.AddTransform(go.transform);
-            zombie.MoveDirection = new ReactiveVariable<Vector3>();
-            entity.AddMoveDirection(zombie.MoveDirection);
-            entity.AddRotateDirection(new ReactiveVariable<Vector3>());
-            entity.AddMoveSpeed(new ReactiveFloat(SPEED));
-            zombie.Health = new Health(health, health);
-            entity.AddHealth(zombie.Health);
-            entity.AddFireAction(new InlineAction(() => zombie.Fired++));
-            zombie.Entity = entity;
-
-            zombie.Behaviour = new ZombieChaseBehaviour(Level);
-            zombie.Behaviour.Init(entity);
-            Zombies.Add(zombie);
-            return zombie;
-        }
-
-        private readonly List<GameObject> _objects = new();
-        private GameObject _tank;
-
-        public sealed class Elite
-        {
-            public GameObject GameObject;
-            public Transform Transform;
-            public Entity Entity;
-            public AICharacter Character;
-            public EliteRegaxBehaviour Behaviour;
-            public IReactiveVariable<Vector3> MoveDirection;
-            public int Fired;
-        }
-
         public AITestRig()
         {
             HordeNavGridSettings settings = HordeNavGridSettings.Cover(new float2(-HALF, -HALF), new float2(HALF, HALF), CELL);
@@ -92,9 +57,8 @@ namespace Game.AIKit.Adapters.Tests
             Nav = new LevelNav(Grid);
             Nav.Paths.Synchronous = true;
             World.Scheduler.MaxDecisionsPerStep = LevelAIInstaller.MAX_DECISIONS_PER_STEP;
-            Agents = new AIAgentList(World);
             Level.AddLevelNavigation(Nav);
-            Level.AddWorldAgents(Agents);
+            Agents = AIWorldInstaller.Install(Level, World);
             Level.AddPlayerVehicle(Tank);
         }
 
@@ -130,65 +94,35 @@ namespace Game.AIKit.Adapters.Tests
 
         public Transform TankTransform => _tank != null ? _tank.transform : null;
 
-        /// <summary>An elite at <paramref name="position"/> facing <paramref name="facing"/>, joined to the level.</summary>
-        public Elite AddElite(Vector3 position, Vector3 facing, AbilityAsset bite = null)
+        /// <summary>A zombie at <paramref name="position"/>, joined to the level.</summary>
+        public Zombie AddZombie(Vector3 position, int health = 60)
         {
-            var go = new GameObject("Elite") { layer = PhysicsLayers.Enemy };
+            var go = new GameObject("Zombie") { layer = PhysicsLayers.Enemy };
             _objects.Add(go);
-            go.transform.SetPositionAndRotation(position, Quaternion.LookRotation(facing));
+            go.transform.position = position;
 
-            var elite = new Elite { GameObject = go, Transform = go.transform };
-            var entity = new Entity("Elite");
+            var zombie = new Zombie { GameObject = go, Transform = go.transform };
+            var entity = new Entity("Zombie");
             entity.AddTransform(go.transform);
-            elite.MoveDirection = new ReactiveVariable<Vector3>();
-            entity.AddMoveDirection(elite.MoveDirection);
+            zombie.MoveDirection = new ReactiveVariable<Vector3>();
+            entity.AddMoveDirection(zombie.MoveDirection);
             entity.AddRotateDirection(new ReactiveVariable<Vector3>());
             entity.AddMoveSpeed(new ReactiveFloat(SPEED));
-            entity.AddFireAction(new InlineAction(() => elite.Fired++));
-            entity.AddDamageTakenEvent(new Atomic.Elements.Event<TakeDamageArgs>());
-            elite.Entity = entity;
+            zombie.Health = new Health(health, health);
+            entity.AddHealth(zombie.Health);
+            entity.AddFireAction(new InlineAction(() => zombie.Fired++));
+            zombie.Entity = entity;
 
-            AICharacter character = go.AddComponent<AICharacter>();
-            character.Simulation = AICharacter.SimulationMode.Manual;
-            character.Body = new EliteRegaxBody();
-            character.SetSeed(11 + Elites.Count);
-            character.SetGraph(EliteBrain.Build(bite ? bite : Bite, Senses));
-            elite.Character = character;
-
-            elite.Behaviour = new EliteRegaxBehaviour(character, null, Level);
-            elite.Behaviour.Init(entity);
-            Elites.Add(elite);
-            return elite;
+            zombie.Behaviour = new ZombieChaseBehaviour(Level);
+            zombie.Behaviour.Init(entity);
+            Zombies.Add(zombie);
+            return zombie;
         }
-
-        private AbilityAsset _bite;
-        private PerceptionProfile _senses;
-
-        public AbilityAsset Bite => _bite ? _bite : _bite = EliteBrain.CreateBite();
-
-        /// <summary>Sees far all round (the tank is found wherever it stands in the rig).</summary>
-        public PerceptionProfile Senses => _senses ? _senses : _senses = PerceptionProfile.Create(p =>
-        {
-            p.FocusRange = 40f;
-            p.FocusHalfAngle = 180f;
-            p.PeripheryRange = 40f;
-            p.PeripheryHalfAngle = 180f;
-            p.BackRange = 40f;
-            p.LoseRange = 50f;
-            p.GainPerSecond = 10f;
-        });
 
         /// <summary>One frame: the level steps the agents, each entity walks (MoveDirection × speed), the motor grounds it.</summary>
         public void Step(float dt)
         {
             Agents.Step(dt);
-            for (int i = 0; i < Elites.Count; i++)
-            {
-                Elite elite = Elites[i];
-                elite.Transform.position += elite.MoveDirection.Value * (SPEED * dt);
-                elite.Behaviour.Tick(elite.Entity, dt);
-            }
-
             ZombieRing.Invalidate();                       // EditMode: the frame count stands still
             for (int i = 0; i < Zombies.Count; i++)
             {
@@ -210,17 +144,10 @@ namespace Game.AIKit.Adapters.Tests
             foreach (Zombie zombie in Zombies)
                 zombie.Behaviour.Dispose(zombie.Entity);
             Zombies.Clear();
-            foreach (Elite elite in Elites)
-                elite.Behaviour.Dispose(elite.Entity);
-            Elites.Clear();
             foreach (GameObject go in _objects)
                 if (go != null)
                     Object.DestroyImmediate(go);
             _objects.Clear();
-            if (_bite)
-                Object.DestroyImmediate(_bite);
-            if (_senses)
-                Object.DestroyImmediate(_senses);
             Nav.Dispose();
             Grid.Dispose();
         }

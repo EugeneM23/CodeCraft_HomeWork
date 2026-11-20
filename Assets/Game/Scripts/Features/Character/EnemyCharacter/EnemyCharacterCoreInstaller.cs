@@ -57,7 +57,7 @@ namespace Game
 
             // No AI here: a plain enemy stands where it is placed. The zombie's brain is
             // ZombieChaseInstaller (Features/AI/Zombie), listed after this one on Zombie.prefab; the
-            // elite's is AIKit (Features/AI/EliteRegax, EliteRegaxInstaller), the horde's is Game.Horde.
+            // horde's is Game.Horde; an AIKit brain goes on with AIKit.Atomic's AIAgentInstaller.
         }
     }
 }

@@ -481,7 +481,7 @@ namespace Game.Voxels.EditorTools
                 regax.transform.SetPositionAndRotation(at, Quaternion.LookRotation(look.sqrMagnitude > 0.01f ? look : Vector3.forward));
             }
 
-            // A plain Regax has no AI (the elite's is AIKit, Regax_Elite): they stand like targets on a shooting range.
+            // A plain Regax has no AI: they stand like targets on a shooting range.
             Debug.Log($"{LOG} {REGAXES} Regaxes in a row from {bestStart} every {REGAX_SPACING} m along {bestStep.normalized}, {bestMud} on mud; standing still.");
         }
 

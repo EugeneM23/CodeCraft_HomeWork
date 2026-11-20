@@ -95,6 +95,7 @@ AIKit/
 │                        графы-пресеты для демо и тестов
 ├── Adapters/NavMesh/       сборка AIKit.NavMesh — 3D на Unity NavMesh (**прототип**: тестов нет, см. «Чего нет»)
 │   ├── NavMeshBody        — тело `AgentBody` на NavMeshAgent: «геймпад», путь и дистанция, глаза (`PhysicsEyes3D`), прыжки по ссылкам (`NavMeshLinkJumper`)
+├── Adapters/Atomic/        сборка AIKit.Atomic (пространство имён AIKit.Entities) — агент на сущности Atomic, см. «Atomic» ниже
 ├── Editor/              сборка AIKit.Editor — визард Setup Agent (шаги IAgentSetupStep), Validate All,
 │                        инспекторы BlackboardValue (константа / переменная) и ResponseCurve (график);
 │                        Graph/ — окно графа (GraphDocument, IGraphCanvas + GraphViewCanvas, NodeLibrary,
@@ -109,7 +110,37 @@ AIKit/
 └── Tests/Editor/        сборка AIKit.Tests (ярус 1) — стенд GraphRig (водит настоящий AICharacter.Step), семантика
 │                        графа, blackboard, utility, умения, пресеты, компоненты, расписание, «правды»
 │                        (аллокации, детерминизм, чистые условия), дымовой перф-тест
+    Tests/Atomic/        сборка AIKit.Atomic.Tests — агент и мир на сущностях без сцены
+    Tests/AtomicPlayMode/ сборка AIKit.Atomic.PlayModeTests — живой агент Atomic: догоняет цель и бьёт её
 ```
+
+## Atomic (сборка AIKit.Atomic)
+
+Ядро AIKit — чистый C# без зависимостей. Сборка `AIKit.Atomic` — его слой для игр на Atomic, как в учебных
+проектах ИИ на Atomic: агент — это сама сущность персонажа, его входы и выходы — значения сущности, жизнью агента
+владеет сущность. Разбор и план — `Docs/AI/AIKit_Atomic.md` проекта. Пространство имён — `AIKit.Entities`: сегмент
+`Atomic` в имени ломает полные имена, которые пишет генератор Atomic.
+
+| Что | Тип |
+|---|---|
+| Ключи (`[EntityExtensionsAPI]`) | `AIAgentAPI`: `AIAgent`, `AgentCharacter`, `AgentMove`, `AgentFace`, `AgentSpeed`, `AgentDecision`, `AgentTarget`, `AgentThinkRequest`, `AgentHitRequest`, `AIHitTaken`; мир — `AIWorldOwner`, `WorldAgentList` |
+| Мир (один на уровень) | `AIWorldInstaller` (компонент или `AIWorldInstaller.Install(entity, world)` из своего инсталлера) + `AIWorldBehaviour` (шаг мира и агентов в тике сущности) + `AIAgentList` |
+| Агент | `AIAgentInstaller` (компонент или `AIAgentInstaller.Install(entity, character, world)`) + `AIAgentBehaviour` |
+| Тело | `EntityBody` (раздел Body у AI Character) + `EntityActuator`: ходьба — в `AgentMove` / `AgentFace` сущности |
+| Удар по сущности | `EntityHitReceiver`: удар контента AIKit → событие `AIHitTaken` сущности |
+| Цели для Senses | `EntityTargetScanner`: кандидаты из коллекции сущностей (мир, фильтр по тегу) без физики |
+| Гизмо | `AIAgentGizmos`: линия к цели и направление ходьбы |
+
+Как собрать агента:
+1. Сущность персонажа (`MonoEntity`) и её инсталлеры ходьбы. Если у игры свои переменные ходьбы, положить их же под
+   ключи агента: `entity.AddAgentMove(entity.GetMoveDirection())` — один объект под двумя ключами.
+2. На тот же объект — `AI Character` с телом `Entity Body` и графом, затем `AI Agent Installer` (после инсталлеров ходьбы).
+3. На уровне — сущность с `AI World Installer`. Агент находит её сам (первая с тегом `AIWorldOwner`) или берёт из
+   поля `World`. Мира нет — агента шагает фиксированный тик его же сущности.
+4. Факты игры для графа — через сущность: `installer.Behaviour.Bind(value, "ИмяПеременной")` копирует значение в
+   переменную графа перед шагом, в котором оно изменилось. Урон игры — `entity.GetAgentHitRequest().Invoke(hit)`;
+   «подумай сейчас» — `GetAgentThinkRequest().Invoke()`.
+5. Вид, звук, HUD читают `AgentDecision` и `AgentTarget` сущности, а не `AICharacter`.
 
 ## Демо-сцена
 

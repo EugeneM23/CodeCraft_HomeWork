@@ -9,6 +9,7 @@
         "Game.Horde",
         "AIKit",
         "AIKit.NavMesh",
+        "AIKit.Atomic",
         "Atomic.Elements",
         "Atomic.Entities",
         "Unity.Mathematics",
