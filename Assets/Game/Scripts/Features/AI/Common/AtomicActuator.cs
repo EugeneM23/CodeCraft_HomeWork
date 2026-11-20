@@ -10,29 +10,21 @@ namespace Game.AIKit.Adapters
     /// AIKit's "virtual gamepad" on an Atomic walker (the values <c>WalkingUseCase</c> gives it): the presses of a step
     /// are buffered and <see cref="Apply"/> writes them once — <c>Move</c> into <c>MoveDirection</c>, <c>Face</c> (or,
     /// without one, the way it walks) into <c>RotateDirection</c>; the entity's own behaviours then move and turn it at
-    /// its <c>MoveSpeed</c> and <c>RotationSpeed</c>. Nothing pressed in a step — it stands. No jumps, no ladders. A leap
-    /// goes to the body's <see cref="EliteMotor"/>, which holds the stick at zero while in the air.
+    /// its <c>MoveSpeed</c> and <c>RotationSpeed</c>. Nothing pressed in a step — it stands. No jumps, no ladders.
     /// </summary>
-    public sealed class AtomicActuator : IAgentActuator, ILeapActuator
+    public sealed class AtomicActuator : IAgentActuator
     {
         public const float BODY_RADIUS = 0.5f;
         public const float BODY_HEIGHT = 4.28f;
 
         private Transform _transform;
-        private readonly EliteMotor _motor;
         private IReactiveVariable<Vector3> _moveDirection;
         private IReactiveVariable<Vector3> _rotateDirection;
         private IReactiveVariable<float> _moveSpeed;
         private Vector3 _move;
         private Vector3 _face;
 
-        public AtomicActuator(Transform transform, EliteMotor motor = null)
-        {
-            _transform = transform;
-            _motor = motor;
-        }
-
-        public EliteMotor Motor => _motor;
+        public AtomicActuator(Transform transform) => _transform = transform;
 
         public bool IsBound => _moveDirection != null;
 
@@ -55,9 +47,9 @@ namespace Game.AIKit.Adapters
                 return new AgentBodyInfo
                 {
                     Position = _transform != null ? _transform.position : Vector3.zero,
-                    Velocity = _motor != null ? _motor.Velocity : Vector3.zero,
+                    Velocity = Vector3.zero,
                     Up = Vector3.up,
-                    IsGrounded = _motor == null || !_motor.IsLeaping,
+                    IsGrounded = true,
                     Forward = forward.sqrMagnitude > 1e-6f ? forward.normalized : Vector3.forward,
                     Radius = BODY_RADIUS,
                     Height = BODY_HEIGHT,
@@ -113,25 +105,9 @@ namespace Game.AIKit.Adapters
             Vector3 face = _face;
             _move = Vector3.zero;
             _face = Vector3.zero;
-            if (_motor != null && _motor.IsLeaping)
-            {
-                Write(Vector3.zero, Vector3.zero);
-                return;
-            }
-
             if (face == Vector3.zero && move.sqrMagnitude > 1e-6f)
                 face = move.normalized;
             Write(move, face);
-        }
-
-        public bool IsLeaping => _motor != null && _motor.IsLeaping;
-
-        public bool TryLeapAway(Vector3 from, float minDistance, float maxDistance, float duration)
-        {
-            if (_motor == null || !_motor.TryLeapAway(from, minDistance, maxDistance, duration))
-                return false;
-            Stop();
-            return true;
         }
 
         // Reactive values tell their watchers (the animator) on every write: written only when they change

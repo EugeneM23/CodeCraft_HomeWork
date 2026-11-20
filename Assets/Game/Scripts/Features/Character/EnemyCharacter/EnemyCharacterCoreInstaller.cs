@@ -55,8 +55,8 @@ namespace Game
             // Attack
             CharacterAttackUseCase.AddHeldWeapon(entity, _weapon);
 
-            // No AI here: a plain enemy stands where it is placed. The elite's brain is AIKit
-            // (Features/AI/EliteRegax, EliteRegaxInstaller), the horde's is Game.Horde.
+            // No AI here: a plain enemy stands where it is placed. The horde's brain is Game.Horde;
+            // an AIKit brain goes on with AIKit.Atomic's AIAgentInstaller.
         }
     }
 }

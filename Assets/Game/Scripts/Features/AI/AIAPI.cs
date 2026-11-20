@@ -58,12 +58,5 @@ namespace Game.AIKit.Adapters
         public static readonly ValueKey<IEntity, IArenaReinforcements> ArenaReinforcements = new(nameof(ArenaReinforcements));
 
         #endregion
-
-        #region Elite Regax
-
-        /// <summary>An elite Regax driven by AIKit.</summary>
-        public static readonly TagKey<IEntity> EliteRegax = new(nameof(EliteRegax));
-
-        #endregion
     }
 }

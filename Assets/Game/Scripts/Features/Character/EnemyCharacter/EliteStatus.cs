@@ -4,7 +4,7 @@ namespace Game
 {
     /// <summary>
     /// The elite on the arena for the HUD (its health bar): whether one is alive, its health 0..1, when it appears and
-    /// when it dies. Set by the elite (EliteRegaxBehaviour); read by the menu team. One elite at a time. Main thread;
+    /// when it dies. Set by the horde's big Regax (HordeBehaviour); read by the menu team. One elite at a time. Main thread;
     /// cleared when Play starts. In the Game assembly so the menu reads it without referencing the AI adapters.
     /// </summary>
     public static class EliteStatus
