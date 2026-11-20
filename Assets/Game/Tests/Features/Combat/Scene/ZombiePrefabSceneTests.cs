@@ -54,6 +54,11 @@ namespace Game.Tests
             source.AddDamage(new ReactiveVariable<int>(10));
             source.AddTransform(zombie.transform);
 
+            // It goes for the tank at once (ZombieChaseBehaviour): AC_Zombie's Idle -> Move blend cannot be cut short,
+            // and a hit taken in it flinches only when the blend is over (0.15 s). The hit comes after it.
+            for (int i = 0; i < 120 && animator.IsInTransition(0); i++)
+                yield return null;
+
             DamageUseCase.TakeDamage(entity, new TakeDamageArgs(source));
             for (int i = 0; i < 10; i++)
                 yield return null;
