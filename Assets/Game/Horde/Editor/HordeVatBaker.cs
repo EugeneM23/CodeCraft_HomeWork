@@ -46,6 +46,8 @@ namespace Game.Horde.EditorTools
             public System.Func<AnimationClip> Run, Attack, Idle, Death;
             /// <summary>A crawl along the ground (its own row after the idle, played at its root speed); null: none.</summary>
             public System.Func<AnimationClip> Crawl;
+            /// <summary>The knockdown (its own row after the crawl, played once); null: none.</summary>
+            public System.Func<AnimationClip> Fall;
             public string ConfigPath;
             /// <summary>Height of the baked model at render scale 1, m; 0: as authored.</summary>
             public float Height;
@@ -91,6 +93,8 @@ namespace Game.Horde.EditorTools
             Run = () => LoadFbxClip(ZOMBIE_CLIPS + "Zombie Running.fbx"),
             // The user's crawl (Zombie Crawl): a share of the crawlers crawls on the ground (HordeOptions.crawlShare).
             Crawl = () => LoadFbxClip(ZOMBIE_CLIPS + "Zombie Crawl.fbx"),
+            // The user's knockdown: a zombie the tank drives into falls back before the hull rolls onto it.
+            Fall = () => LoadFbxClip(ZOMBIE_CLIPS + "Zombie Falling Back Death.fbx"),
             Attack = () => AssetDatabase.LoadAssetAtPath<AnimationClip>(ZOMBIE_CLIPS + "Zombie_Attack.anim"),
             Idle = () => AssetDatabase.LoadAssetAtPath<AnimationClip>(ZOMBIE_CLIPS + "Zombie_Idle.anim"),
             Death = () => AssetDatabase.LoadAssetAtPath<AnimationClip>(ZOMBIE_CLIPS + "Zombie_Death_Handgun.anim"),
@@ -180,6 +184,7 @@ namespace Game.Horde.EditorTools
                 AnimationClip idle = src.Idle();
                 AnimationClip death = src.Death();
                 AnimationClip crawl = src.Crawl?.Invoke();
+                AnimationClip fall = src.Fall?.Invoke();
                 if (run == null || attack == null || idle == null || death == null)
                     return "HordeVatBaker: a clip is missing";
 
@@ -187,7 +192,9 @@ namespace Game.Horde.EditorTools
                 int attackFrames = LoopFrames(attack);
                 int idleFrames = LoopFrames(idle);
                 int crawlFrames = crawl != null ? LoopFrames(crawl) : 0;
-                int frames = runFrames + attackFrames + idleFrames + crawlFrames;
+                // Played once: its last frame is kept (LoopFrames drops it for a loop).
+                int fallFrames = fall != null ? Mathf.Max(1, Mathf.RoundToInt(fall.length * FRAME_RATE) + 1) : 0;
+                int frames = runFrames + attackFrames + idleFrames + crawlFrames + fallFrames;
 
                 var output = AnimationPlayableOutput.Create(graph, "Bake", animator);
                 graph.SetTimeUpdateMode(DirectorUpdateMode.Manual);
@@ -320,6 +327,8 @@ namespace Game.Horde.EditorTools
                 BakeClip(idle, idleFrames);
                 if (crawl != null)
                     BakeClip(crawl, crawlFrames, true);
+                if (fall != null)
+                    BakeClip(fall, fallFrames, true);
 
                 // Corpse: the last frame of the death clip. A humanoid fall carries the body ~1.4 m away from where it
                 // stood, and a corpse off the death spot reads as a miss: its middle (XZ) goes on the spot.
@@ -416,6 +425,7 @@ namespace Game.Horde.EditorTools
                 config.idle = new HordeClip { start = runFrames + attackFrames, count = idleFrames, frameRate = FRAME_RATE, loop = true };
                 config.crawl = new HordeClip { start = runFrames + attackFrames + idleFrames, count = crawlFrames, frameRate = FRAME_RATE, loop = true };
                 config.crawlClipSpeed = crawlSpeed;
+                config.fall = new HordeClip { start = runFrames + attackFrames + idleFrames + crawlFrames, count = fallFrames, frameRate = FRAME_RATE, loop = false };
                 config.bounds = bounds;
                 config.triangles = triangles;
                 config.sourceTriangles = source.triangles.Length / 3;
@@ -569,6 +579,8 @@ namespace Game.Horde.EditorTools
         {
             var material = AssetDatabase.LoadAssetAtPath<Material>(path);
             Shader shader = Shader.Find(SHADER_NAME);
+            // A material that is there keeps its look (its colour is tuned by hand): a re-bake only writes its VAT.
+            bool fresh = material == null;
             if (material == null)
             {
                 material = new Material(shader);
@@ -590,7 +602,8 @@ namespace Game.Horde.EditorTools
 
             if (src.AlbedoPath != null)
             {
-                material.SetColor("_Color", textured ? src.AlbedoColor : Color.white);
+                if (fresh)
+                    material.SetColor("_Color", textured ? src.AlbedoColor : Color.white);
                 material.SetTexture("_MainTex", textured ? AssetDatabase.LoadAssetAtPath<Texture2D>(src.AlbedoPath) : null);
                 material.SetColor("_EmissionColor", Color.black);
             }

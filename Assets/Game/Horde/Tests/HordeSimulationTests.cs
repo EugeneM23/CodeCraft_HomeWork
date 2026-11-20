@@ -188,6 +188,9 @@ namespace Game.Horde.Tests
             // Fast tank over a monster under the hull.
             int victim = sim.Spawn(new float3(10.2f, 0f, 9f), 0f);
             Step(sim, Tank(center, half, new float3(0f, 0f, 6f)));
+            Assert.AreEqual(0, sim.Deaths.Length, "run into, it is knocked down first: no pop yet");
+            Assert.AreEqual(HordeState.Knocked, sim.GetState(victim));
+            Step(sim, Tank(center, half, new float3(0f, 0f, 6f))); // the hull over it: popped
             Assert.AreEqual(1, sim.Deaths.Length, "exactly one crushed");
             Assert.AreEqual(victim, sim.Deaths[0].Index);
             Assert.AreEqual(HordeDeathCause.Crushed, sim.Deaths[0].Cause);
@@ -206,6 +209,53 @@ namespace Game.Horde.Tests
                 sim.Complete();
                 center.z += speed * dt;
             }
+        }
+
+        [Test]
+        public void Knocked_FallsWhereItIs_DoesNotWalkOrBite_AndThenDiesThereAsACorpse()
+        {
+            using HordeNavGrid grid = HordeTestGrids.Flat(30, 30);
+            using var field = new HordeFlowField(grid);
+            HordeSettings settings = HordeSettings.Default;
+            settings.KnockLie = 1f;
+            using var sim = new HordeSimulation(8, grid, field, settings);
+            var center = new float3(15f, 0.8f, 10f);
+            var half = new float3(1.5f, 0.8f, 3f);
+            int victim = sim.Spawn(new float3(15f, 0f, 13.4f), 0f); // just ahead of the front face
+
+            // The tank drives into it for one step, then stops a little short of it.
+            Step(sim, Tank(center, half, new float3(0f, 0f, 6f)));
+            Assert.AreEqual(HordeState.Knocked, sim.GetState(victim), "run into: knocked down");
+            Assert.AreEqual(0f, sim.GetAnimTime(victim), 0.06f, "its fall plays from the start");
+            float3 lying = sim.GetPosition(victim);
+
+            var away = new float3(15f, 0.8f, 6f);
+            Step(sim, Tank(away, half, float3.zero), 10);
+            Assert.AreEqual(HordeState.Knocked, sim.GetState(victim));
+            Assert.Less(math.distance(lying, sim.GetPosition(victim)), 0.01f, "down: it does not walk");
+            Assert.AreEqual(0f, sim.StepDamage, "nor bite");
+
+            Step(sim, Tank(away, half, float3.zero), 12); // past KnockLie
+            Assert.AreEqual(HordeState.Free, sim.GetState(victim));
+            Assert.AreEqual(0, sim.AliveCount, "it died where it lay");
+        }
+
+        [Test]
+        public void Knocked_ShotWhileDown_DiesOfTheShot()
+        {
+            using HordeNavGrid grid = HordeTestGrids.Flat(30, 30);
+            using var field = new HordeFlowField(grid);
+            using var sim = new HordeSimulation(8, grid, field, HordeSettings.Default);
+            var center = new float3(15f, 0.8f, 10f);
+            var half = new float3(1.5f, 0.8f, 3f);
+            int victim = sim.Spawn(new float3(15f, 0f, 13.4f), 0f);
+            Step(sim, Tank(center, half, new float3(0f, 0f, 6f)));
+            Assert.AreEqual(HordeState.Knocked, sim.GetState(victim));
+
+            sim.Damage(victim, sim.Version(victim), 1000f);
+            Step(sim, Tank(new float3(15f, 0.8f, 6f), half, float3.zero));
+            Assert.AreEqual(1, sim.Deaths.Length);
+            Assert.AreEqual(HordeDeathCause.Damaged, sim.Deaths[0].Cause, "a shot is a shot (a shell tears it as ever)");
         }
 
         [Test]

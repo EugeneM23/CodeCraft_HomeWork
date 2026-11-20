@@ -139,6 +139,7 @@ namespace Game.Horde
         private HordeClip _attackClip;
         private HordeClip _idleClip;
         private HordeClip _crawlClip;
+        private HordeClip _fallClip;
 
         /// <summary>Per slot: 1 — this monster crawls on the ground instead of running (<see cref="HordeSettings.CrawlShare"/>).</summary>
         private NativeArray<byte> _crawl;
@@ -219,7 +220,7 @@ namespace Game.Horde
             _freeCount = capacity;
 
             var still = new HordeClip { start = 0, count = 1, frameRate = 30f, loop = true };
-            _runClip = _attackClip = _idleClip = _crawlClip = still;
+            _runClip = _attackClip = _idleClip = _crawlClip = _fallClip = still;
         }
 
         public HordeSettings Settings { get; set; }
@@ -297,6 +298,9 @@ namespace Game.Horde
 
         /// <summary>The crawl clip (a VAT row): what a crawling monster (<see cref="IsCrawling"/>) plays instead of the run.</summary>
         public void SetCrawlClip(HordeClip crawl) => _crawlClip = crawl;
+
+        /// <summary>The fall (a VAT row, not looped): what a knocked-down monster (<see cref="HordeState.Knocked"/>) plays.</summary>
+        public void SetFallClip(HordeClip fall) => _fallClip = fall;
 
         /// <summary>The monster in this slot crawls on the ground (slower, low): chosen at its spawn.</summary>
         public bool IsCrawling(int index) => index >= 0 && index < Capacity && _crawl[index] != 0;
@@ -650,6 +654,7 @@ namespace Game.Horde
                     State = _state,
                     Health = _health,
                     StateTime = _stateTime,
+                    AnimTime = _animTime,
                     Cooldown = _cooldown,
                     MaxHealth = _maxHealth,
                     AttackDamage = _attackDamage,
@@ -709,6 +714,7 @@ namespace Game.Horde
                     Idle = _idleClip,
                     Crawl = _crawlClip,
                     Crawling = _crawl,
+                    Fall = _fallClip,
                     Cull = _cull,
                     EmergeTime = settings.EmergeTime,
                     CullSphere = CullSphere,

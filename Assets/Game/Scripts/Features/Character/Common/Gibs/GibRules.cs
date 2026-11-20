@@ -46,9 +46,22 @@ namespace Game
         /// </summary>
         public readonly float Power;
 
+        /// <summary>
+        /// Popped under the tank's hull (knocked down, then rolled onto: TankCrushBehaviour): the flesh and blood squirt out
+        /// low and sideways from under the tracks, not up like a shell's hit.
+        /// </summary>
+        public readonly bool UnderHull;
+
+        /// <summary>
+        /// Set by TankCrushBehaviour around the blow that pops a knocked-down body under the hull: <see cref="ReadHit"/>
+        /// reads it into the death's <see cref="UnderHull"/> (the death is read at once, in the blow).
+        /// </summary>
+        public static bool CrushingUnderHull;
+
         public KillingHit(Vector3 origin, float damage, bool blast, float blastShare, Vector3 direction = default,
-            float power = 1f)
+            float power = 1f, bool underHull = false)
         {
+            UnderHull = underHull;
             Power = power;
             Origin = origin;
             Damage = damage;
@@ -136,7 +149,7 @@ namespace Game
                 }
             }
 
-            return new KillingHit(origin, damage, blast, blastShare, direction, power);
+            return new KillingHit(origin, damage, blast, blastShare, direction, power, KillingHit.CrushingUnderHull);
         }
 
         public static bool TryGetPosition(IEntity source, out Vector3 position)

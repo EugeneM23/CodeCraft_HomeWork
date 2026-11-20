@@ -22,14 +22,21 @@ namespace Game.Horde
         /// (<see cref="HordeSimulation.SetRidePose"/>), not steered, crushed, shoved or drawn by the step; takes hits and
         /// blasts and dies as usual.
         /// </summary>
-        Riding = 5
+        Riding = 5,
+        /// <summary>
+        /// Knocked down by the tank driving into it (faster than the crush speed): plays the fall, lies, does not steer, bite
+        /// or shoot. The hull dragging over it pops it once it is under the hull (a crush); left lying too long
+        /// (<see cref="HordeSettings.KnockLie"/>) it dies there (<see cref="HordeDeathCause.Fell"/>) and stays as a corpse.
+        /// </summary>
+        Knocked = 6
     }
 
     /// <summary>Which states are a live monster (walking, attacking, emerging or riding the tank).</summary>
     public static class HordeStates
     {
         public static bool IsLive(HordeState state) =>
-            state == HordeState.Walk || state == HordeState.Attack || state == HordeState.Emerging || state == HordeState.Riding;
+            state == HordeState.Walk || state == HordeState.Attack || state == HordeState.Emerging || state == HordeState.Riding
+            || state == HordeState.Knocked;
     }
 
     /// <summary>How a kind fights: at the hull, or from a distance with shots.</summary>
@@ -152,7 +159,9 @@ namespace Game.Horde
         /// <summary>Killed through <see cref="HordeSimulation.Kill"/>.</summary>
         Killed = 3,
         /// <summary>Health used up by direct hits (<see cref="HordeSimulation.Damage"/>).</summary>
-        Damaged = 4
+        Damaged = 4,
+        /// <summary>Knocked down by the tank and left lying (<see cref="HordeState.Knocked"/>): a corpse, no burst.</summary>
+        Fell = 5
     }
 
     /// <summary>Tuning of the horde. Speeds in m/s, angles in radians, damage in health points.</summary>
@@ -185,6 +194,8 @@ namespace Game.Horde
         /// tests); the game sets the player's vehicle's own threshold every frame (HordeBehaviour.CrushSpeedOf).
         /// </summary>
         public float CrushSpeed;
+        /// <summary>Seconds a knocked-down monster (<see cref="HordeState.Knocked"/>) lies before it dies there, if the hull never rolls onto it.</summary>
+        public float KnockLie;
         /// <summary>Health of a fresh monster.</summary>
         public float Health;
         /// <summary>Monsters within this distance of the tank count as "near" (audio density).</summary>
@@ -235,6 +246,7 @@ namespace Game.Horde
             AttackReach = 0.5f,
             AttackDps = 2f,
             CrushSpeed = 1.5f,
+            KnockLie = 3f,
             Health = 100f,
             NearRadius = 15f,
             RunClipSpeed = 5f,

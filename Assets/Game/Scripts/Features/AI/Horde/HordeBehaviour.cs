@@ -534,6 +534,8 @@ namespace Game.AIKit.Adapters
             _simulation.SetClips(_art.run, _art.attack, _art.idle);
             if (_art.crawl.count > 0)
                 _simulation.SetCrawlClip(_art.crawl);
+            if (_art.fall.count > 0)
+                _simulation.SetFallClip(_art.fall);
             _targets.Simulation = _simulation;
 
             HordeNavGridSettings g = _grid.Settings;
@@ -791,6 +793,34 @@ namespace Game.AIKit.Adapters
             }
         }
 
+        /// <summary>Strands of goo a body popped under the hull throws (eight round it), and their launch speed, m/s.</summary>
+        private const int CRUSH_FANS = 8;
+        private const int CRUSH_DROPS = 7;
+        private const float CRUSH_SPEED = 4.5f;
+
+        /// <summary>A strand's rise against its speed out: low, along the ground from under the tracks.</summary>
+        private const float CRUSH_LIFT = 0.18f;
+
+        /// <summary>
+        /// A body popped under the moving hull (<see cref="HordeDeathCause.Crushed"/>): goo squirts out from under the
+        /// tracks to every side, low and flat along the ground (it lands and soaks in as any goo), carried a little by the
+        /// tank; the tracks over it take the blood (TankBloodStains.Squash, as a squashed corpse's).
+        /// </summary>
+        private void CrushSpray(float3 position)
+        {
+            Vector3 under = (Vector3)position + Vector3.up * 0.15f;
+            Vector3 inherit = _tankBody != null ? _tankBody.linearVelocity * 0.25f : Vector3.zero;
+            float turn = UnityEngine.Random.Range(0f, 360f);
+            for (int k = 0; k < CRUSH_FANS; k++)
+            {
+                Vector3 out_ = Quaternion.Euler(0f, turn + k * (360f / CRUSH_FANS), 0f) * Vector3.forward;
+                VoxelSpray.Goo(under, out_ + Vector3.up * CRUSH_LIFT, CRUSH_DROPS, CRUSH_SPEED * UnityEngine.Random.Range(0.7f, 1.2f),
+                    0.15f, _goo, _bloodSize * GOO_SIZE * 0.7f, inherit, 0.2f);
+            }
+
+            TankBloodStains.Squash(position, 0.6f);
+        }
+
         /// <summary>Skin of a torn body's chunks: the zombie's greens.</summary>
         /// <summary>Skin of each part of a torn body (VoxelSpray.Chunks), from the zombie's atlas; null: TornSkin.</summary>
         private Color32[][] _tornSkins;
@@ -870,12 +900,23 @@ namespace Game.AIKit.Adapters
                     int row = math.clamp(death.Kind, 0, HordeKinds.COUNT - 1);
                     Vector3 shot = _simulation.TornDirection(death.Index);
                     float power = _simulation.TornPower(death.Index);
-                    if (_simulation.IsTorn(death.Index))
+                    bool torn = _simulation.IsTorn(death.Index);
+                    if (torn)
                         TearApart(death.Position, row, shot, power); // a shell's direct hit: big chunks, no whole corpse
-                    else
+                    else if (death.Cause != HordeDeathCause.Crushed)
                         _corpses[row].Add(death.Position, death.Heading, time);
                     Vector3 at = (Vector3)death.Position + Vector3.up * 0.6f;
-                    if (sprays < _options.bloodPerFrame)
+                    if (!torn && death.Cause == HordeDeathCause.Crushed)
+                    {
+                        // Popped under the hull (knocked down, then rolled onto): blood out from under the tracks, low and to
+                        // every side, the tracks bloodied; no corpse, no upward pop (that is a shell's).
+                        CrushSpray(death.Position);
+                    }
+                    else if (death.Cause == HordeDeathCause.Fell)
+                    {
+                        // Knocked down and left lying: it just stays there (a corpse), no burst.
+                    }
+                    else if (sprays < _options.bloodPerFrame)
                     {
                         Goo(at, shot, power);
                         sprays++;

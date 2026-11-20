@@ -34,6 +34,9 @@ namespace Game.Horde
         [Tooltip("The crawl row (Zombie Crawl): what the share of crawlers that crawl on the ground plays (count 0: none baked).")]
         public HordeClip crawl;
 
+        [Tooltip("The fall (Zombie Falling Back Death, not looped): what a zombie the tank knocks down plays before the hull rolls onto it (count 0: none baked).")]
+        public HordeClip fall;
+
         [Tooltip("Bounds of every baked frame, model space (feet at y 0).")]
         public Bounds bounds;
 

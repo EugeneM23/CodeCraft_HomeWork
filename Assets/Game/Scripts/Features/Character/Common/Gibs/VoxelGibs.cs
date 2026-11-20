@@ -436,6 +436,8 @@ namespace Game
                 piece.Body.gameObject.SetActive(true);
                 Vector3 velocity = GibRules.ClusterVelocity(piece.Body.WorldBounds.center, death.Hit.Origin, speed, lift, config.speeds) +
                                    push * Random.Range(0.6f, 1f);
+                if (death.Hit.UnderHull)
+                    velocity = UnderHull(velocity);
                 piece.Body.Launch(VoxelSpray.Lifted(velocity), GibRules.ClusterSpin(spin, piece.Parts));
                 piece.Body.SplitLoose();
                 if (piece.Body == null || piece.TornCount == 0)
@@ -454,7 +456,7 @@ namespace Game
                 for (int i = 0; i < drops; i += SEAM_STRAND)
                 {
                     VoxelCarcass.TornFace face = piece.Torn[Random.Range(0, piece.TornCount)];
-                    VoxelSpray.Goo(face.Point, face.Normal * 0.6f + Vector3.up, Mathf.Min(SEAM_STRAND, drops - i), config.gooSpeed * 0.8f,
+                    VoxelSpray.Goo(face.Point, face.Normal * 0.6f + Vector3.up * (death.Hit.UnderHull ? 0.15f : 1f), Mathf.Min(SEAM_STRAND, drops - i), config.gooSpeed * 0.8f,
                         0.35f, goo, config.blood.dropSize, velocity * 0.4f, 0.05f);
                 }
             }
@@ -483,8 +485,19 @@ namespace Game
             Vector3 wound = death.Body.ClosestPoint(death.Hit.Origin);
             Vector3 away = wound - death.Hit.Origin;
             away = away.sqrMagnitude > 1e-4f ? away.normalized : Vector3.up;
-            // With no way known the goo goes up.
-            if (along)
+            // With no way known the goo goes up; popped under the hull it squirts out low, to every side.
+            if (death.Hit.UnderHull)
+            {
+                Vector3 under = new(death.Body.center.x, death.Body.min.y + 0.1f, death.Body.center.z);
+                float turn = Random.Range(0f, 360f);
+                for (int k = 0; k < UNDER_HULL_FANS; k++)
+                {
+                    Vector3 out_ = Quaternion.Euler(0f, turn + k * (360f / UNDER_HULL_FANS), 0f) * Vector3.forward;
+                    VoxelSpray.Goo(under, out_ + Vector3.up * 0.18f, config.hitDrops / UNDER_HULL_FANS, config.gooSpeed * 0.7f, 0.15f,
+                        GooOf(config), config.blood.dropSize, default, 0.15f);
+                }
+            }
+            else if (along)
                 VoxelSpray.ShotGoo(wound, shot, config.hitDrops, config.gooSpeed * power, 0.4f, GooOf(config),
                     config.blood.dropSize, default, Mathf.Min(0.35f, death.Body.extents.x), VoxelSpray.HE_SPLASH, power);
             else
@@ -505,6 +518,21 @@ namespace Game
                 VoxelSpray.Chunks(feet, death.Body.size.y, thrown.sqrMagnitude > 1e-4f ? thrown.normalized : Vector3.zero, s_skin, GooOf(config),
                     atlas?.ChunkSkins(), along ? VoxelSpray.SHOT_PUSH * power : 0f);
             }
+        }
+
+        /// <summary>Strands of goo round a body popped under the hull (KillingHit.UnderHull).</summary>
+        private const int UNDER_HULL_FANS = 8;
+
+        /// <summary>
+        /// A piece of a body popped under the hull: thrown out flat from under the tracks — its speed out kept and spread a
+        /// little more, its rise cut to a hop — not up like a shell's hit.
+        /// </summary>
+        private static Vector3 UnderHull(Vector3 velocity)
+        {
+            var flat = new Vector3(velocity.x, 0f, velocity.z);
+            if (flat.sqrMagnitude < 0.25f)
+                flat = Quaternion.Euler(0f, Random.Range(0f, 360f), 0f) * Vector3.forward * 2f;
+            return flat * 1.3f + Vector3.up * Mathf.Min(Mathf.Max(velocity.y, 0f) * 0.25f, 1.2f);
         }
 
         /// <summary>Drops in a strand of goo out of a torn seam.</summary>

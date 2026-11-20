@@ -932,7 +932,7 @@ namespace Game.Horde
                 if (state != HordeState.Walk && state != HordeState.Attack)
                 {
                     NextPosition[i] = p;
-                    if (state == HordeState.Emerging || state == HordeState.Riding)
+                    if (state == HordeState.Emerging || state == HordeState.Riding || state == HordeState.Knocked)
                     {
                         Velocity[i] = float2.zero;
                         AnimTime[i] += DeltaTime;
@@ -1151,6 +1151,12 @@ namespace Game.Horde
     {
         /// <summary>Feet may be this far below the hull box and still be under it.</summary>
         private const float BELOW_HULL = 1.2f;
+
+        /// <summary>A knocked-down monster pops once its middle is this share of its radius inside the hull's footprint (hidden under it).</summary>
+        private const float COVERED = 0.5f;
+
+        /// <summary>A knocked-down monster the moving hull touches is dragged on by this share of the hull's travel: the hull overtakes it.</summary>
+        private const float KNOCK_DRAG = 0.4f;
         /// <summary>Blasts measure from this height over the feet.</summary>
         private const float CHEST = 0.8f;
         /// <summary>Mouth height over the feet at render scale 1 (the shot starts there).</summary>
@@ -1161,6 +1167,8 @@ namespace Game.Horde
         public NativeArray<HordeState> State;
         public NativeArray<float> Health;
         public NativeArray<float> StateTime;
+        /// <summary>Reset to 0 when a monster is knocked down: the fall plays from its start.</summary>
+        public NativeArray<float> AnimTime;
         public NativeArray<float> Cooldown;
         [ReadOnly] public NativeArray<float> MaxHealth;
         [WriteOnly] public NativeArray<float> AttackDamage;
@@ -1238,6 +1246,44 @@ namespace Game.Horde
                 if (state == HordeState.Riding)
                     continue;
 
+                if (state == HordeState.Knocked)
+                {
+                    // Down: no steering, bite or shot. The hull rolling onto it pops it (a crush, under the tracks); touched
+                    // by the moving hull it is dragged on a little, so the hull overtakes it; left lying it dies there.
+                    float lying = StateTime[i] + DeltaTime;
+                    StateTime[i] = lying;
+                    if (Tank.Present)
+                    {
+                        float3 local = HordeHull.ToLocal(Tank, inverse, p);
+                        float2 q = math.abs(local.xz) - Tank.HalfExtents.xz;
+                        bool level = local.y < Tank.HalfExtents.y && local.y > -Tank.HalfExtents.y - BELOW_HULL;
+                        if (level && q.x < -r * COVERED && q.y < -r * COVERED)
+                        {
+                            Die(i, p, HordeDeathCause.Crushed);
+                            continue;
+                        }
+
+                        if (level && q.x < r && q.y < r && math.lengthsq(sweep) > 1e-8f)
+                        {
+                            float2 to = p.xz + math.rotate(Tank.Rotation, new float3(sweep.x, 0f, sweep.y)).xz * KNOCK_DRAG;
+                            if (Grid.CanTravel(p.xz, to))
+                            {
+                                float y = Grid.HeightAt(to);
+                                p = new float3(to.x, math.isnan(y) ? p.y : y, to.y);
+                                Position[i] = p;
+                            }
+                        }
+                    }
+
+                    if (lying >= Settings.KnockLie)
+                    {
+                        Die(i, p, HordeDeathCause.Fell);
+                        continue;
+                    }
+
+                    continue;
+                }
+
                 bool emerging = state == HordeState.Emerging;
                 if (emerging)
                 {
@@ -1262,7 +1308,10 @@ namespace Game.Horde
                     bool crushable = kind.Crushable && (kind.CrushBelowHealth <= 0f || hp <= kind.CrushBelowHealth * MaxHealth[i]);
                     if (level && crushing && crushable && InCrushZone(local.xz, q, sweep, localVelocity, r, Tank.HalfExtents.xz))
                     {
-                        Die(i, p, HordeDeathCause.Crushed);
+                        // Run into: knocked down (the fall from its start), not popped; the hull rolling onto it does that.
+                        State[i] = HordeState.Knocked;
+                        StateTime[i] = 0f;
+                        AnimTime[i] = 0f;
                         continue;
                     }
 
@@ -1554,6 +1603,8 @@ namespace Game.Horde
         /// <summary>The crawl row, for the monsters that crawl (<see cref="Crawling"/>): on the ground they play it moving or not.</summary>
         public HordeClip Crawl;
         [ReadOnly] public NativeArray<byte> Crawling;
+        /// <summary>The fall (not looped): a knocked-down monster plays it once and lies in its last frame.</summary>
+        public HordeClip Fall;
         public bool Cull;
         public float EmergeTime;
         /// <summary>Height of the bounding sphere centre over the feet, and its radius (at render scale 1).</summary>
@@ -1599,7 +1650,8 @@ namespace Game.Horde
                     p.y -= kind.EmergeDepth * BodyScale * math.saturate(StateTime[i] / math.max(EmergeTime, 0.01f));
 
                 // A crawler stays down: the crawl clip, frozen where it stopped (its time moves with its speed).
-                HordeClip clip = state == HordeState.Attack ? Attack
+                HordeClip clip = state == HordeState.Knocked ? Fall
+                    : state == HordeState.Attack ? Attack
                     : Crawling[i] != 0 && state != HordeState.Emerging ? Crawl
                     : state == HordeState.Emerging || math.lengthsq(Velocity[i]) < IDLE_SPEED_SQ ? Idle : Run;
                 float3 frame = clip.Sample(AnimTime[i]);

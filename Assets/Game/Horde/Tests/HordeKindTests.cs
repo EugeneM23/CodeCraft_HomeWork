@@ -212,8 +212,12 @@ namespace Game.Horde.Tests
             sim.AddAreaDamage(new float3(5f, 0.5f, 5f), 2f, 100f);
 
             Step(sim, Tank(center, new float3(0f, 0f, 4f)), DT);
+            Assert.AreEqual(1, sim.Deaths.Length, "the blast kills the hurt one");
+            Assert.AreEqual(HordeState.Knocked, sim.GetState(under), "the tank knocks the emerging one down");
 
-            Assert.AreEqual(2, sim.Deaths.Length);
+            Step(sim, Tank(center, new float3(0f, 0f, 4f)), DT);
+            Assert.AreEqual(2, sim.Deaths.Length, "then pops it under the hull (the deaths add up)");
+            Assert.AreEqual(HordeDeathCause.Crushed, sim.Deaths[1].Cause);
             Assert.AreEqual(HordeState.Free, sim.GetState(under));
             Assert.AreEqual(HordeState.Free, sim.GetState(hurt));
         }
@@ -234,6 +238,8 @@ namespace Game.Horde.Tests
             using HordeSimulation fast = Make(grid, field);
             fast.Spawn(new float3(20.2f, 0f, 20.5f), 0f, CRAWLER);
             Step(fast, Tank(center, new float3(threshold, 0f, 0f)), DT);
+            Assert.AreEqual(0, fast.Deaths.Length, "at the threshold: knocked down first");
+            Step(fast, Tank(center, new float3(threshold, 0f, 0f)), DT); // the hull over it: popped
             Assert.AreEqual(1, fast.Deaths.Length, "at the threshold: crushed");
             Assert.AreEqual(HordeDeathCause.Crushed, fast.Deaths[0].Cause);
             Assert.AreEqual(CRAWLER, fast.Deaths[0].Kind);
@@ -278,6 +284,8 @@ namespace Game.Horde.Tests
             int b = beaten.Spawn(new float3(20.2f, 0f, 20.5f), 0f, BRUTE);
             beaten.Damage(b, beaten.Version(b), 1400f); // 400 left: under a quarter of 1800
             Step(beaten, fast, DT);
+            Assert.AreEqual(HordeState.Knocked, beaten.GetState(b), "beaten down, it is knocked over");
+            Step(beaten, fast, DT); // the hull over it
             Assert.AreEqual(1, beaten.Deaths.Length);
             Assert.AreEqual(HordeDeathCause.Crushed, beaten.Deaths[0].Cause);
             Assert.AreEqual(BRUTE, beaten.Deaths[0].Kind);

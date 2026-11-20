@@ -101,6 +101,9 @@ namespace Game
         /// <summary>The hull's own box: the biggest solid box collider on the tank's body.</summary>
         private BoxCollider _hull;
 
+        /// <summary>The tank's own colliders: a knocked-down body lets them pass over it (KnockdownBehaviour).</summary>
+        private Collider[] _vehicle;
+
         public TankCrushBehaviour(CollisionContactReceiver receiver, Rigidbody body, TankCrushConfig config)
         {
             _receiver = receiver;
@@ -142,6 +145,7 @@ namespace Game
             _input = entity.TryGetDriveInput(out IReactiveVariable<Vector2> input) ? input : null;
             _maxSpeed = entity.TryGetMoveSpeed(out IReactiveVariable<float> speed) ? speed : null;
             _hull = BiggestBox(_body);
+            _vehicle = _body.GetComponentsInChildren<Collider>(true);
 
             _receiver.OnEntered += OnStruck;
             _receiver.OnStayed += OnPressing;
@@ -172,6 +176,8 @@ namespace Game
 
             if (_hull == null || !_hull.enabled)
                 return;
+
+            CrushTheDown();
 
             Transform frame = _hull.transform;
             float forward = Vector3.Dot(_body.linearVelocity, frame.forward);
@@ -271,6 +277,20 @@ namespace Game
 
         private void Crush(IEntity victim, Vector3 point, float speed)
         {
+            // Run into: a body that can fall is knocked down first (the user); the hull rolling onto it pops it (CrushTheDown).
+            if (victim.TryGetBehaviour(out KnockdownBehaviour knockdown))
+            {
+                if (!knockdown.IsDown)
+                    knockdown.Knock(_vehicle);
+                return;
+            }
+
+            Kill(victim, point, speed);
+        }
+
+        /// <summary>The crush itself: the body dies, the blood bursts from under the tracks and splashes the side it burst on.</summary>
+        private void Kill(IEntity victim, Vector3 point, float speed)
+        {
             KillMarker.Begin();
             DamageUseCase.TakeDamage(victim, _crush);
             KillMarker.End();
@@ -283,6 +303,46 @@ namespace Game
             Spray(under, speed);
             Stain(point, under.y);
             SprayMarker.End();
+        }
+
+        /// <summary>A knocked-down body pops when its middle is this far (m) inside the hull's footprint: under the tank.</summary>
+        private const float COVERED = 0.3f;
+
+        /// <summary>
+        /// The knocked-down bodies (KnockdownBehaviour.Down) the hull is over now: popped from under the tracks, at the
+        /// tank's speed (the blood fans as in a crush), however slowly it rolls onto them.
+        /// </summary>
+        private void CrushTheDown()
+        {
+            List<KnockdownBehaviour> down = KnockdownBehaviour.Down;
+            if (down.Count == 0)
+                return;
+
+            Transform frame = _hull.transform;
+            Vector3 half = Vector3.Scale(_hull.size, frame.lossyScale) * 0.5f;
+            float speed = Mathf.Max(_minSpeed, Vector3.ProjectOnPlane(_body.linearVelocity, Vector3.up).magnitude);
+            for (int i = down.Count - 1; i >= 0; i--)
+            {
+                if (i >= down.Count)
+                    continue;
+                KnockdownBehaviour body = down[i];
+                Vector3 local = frame.InverseTransformPoint(body.Position) - _hull.center;
+                local = Vector3.Scale(local, frame.lossyScale);
+                bool under = Mathf.Abs(local.x) < half.x - COVERED && Mathf.Abs(local.z) < half.z - COVERED &&
+                             local.y < half.y && local.y > -half.y - BELOW - 1f;
+                if (!under || !IsAlive(body.Entity))
+                    continue;
+                // Its voxel death reads this at once (GibRules.ReadHit, KillingHit.UnderHull): flesh and blood out low, from under the tracks.
+                KillingHit.CrushingUnderHull = true;
+                try
+                {
+                    Kill(body.Entity, body.Position, speed);
+                }
+                finally
+                {
+                    KillingHit.CrushingUnderHull = false;
+                }
+            }
         }
 
         /// <summary>Just above the ground under the contact, where the fans start; the contact itself if no ground is found.</summary>
