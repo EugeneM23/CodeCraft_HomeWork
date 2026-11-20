@@ -31,13 +31,19 @@ namespace Game.EditorTools
         private const string CONTROLLER = "Assets/Game/Animations/Zombie/AC_Zombie.overrideController";
         private const string CLIPS = "Assets/Game/Animations/Zombie/";
 
-        /// <summary>Height of the zombie, m: the horde's crawler (render scale 0.4 of the 7.125 m bake), half as big again as the first 1.9 m.</summary>
-        private const float HEIGHT = 2.85f;
+        /// <summary>Height of the zombie, m: the horde's crawler (render scale 0.4 of the 4.008 m bake), twice 25 % under the 2.85 m one (× 0.5625).</summary>
+        private const float HEIGHT = 1.603f;
 
-        private const float COLLIDER_RADIUS = 0.5f;
+        private const float COLLIDER_RADIUS = 0.28f;
 
         /// <summary>Reach (m) of the bite (Regax_Hand's damage radius, 0.9 on the Regax), grown with the body.</summary>
-        private const float BITE_RADIUS = 1.35f;
+        private const float BITE_RADIUS = 0.76f;
+
+        /// <summary>
+        /// Walking speed, m/s: the Zombie Running clip's root speed at this height (4.57 at 2.85 m), so the run plays at 1x
+        /// with no foot sliding.
+        /// </summary>
+        private const float MOVE_SPEED = 2.57f;
 
         /// <summary>Grey-green of the atlas' skin, for the skin voxels of the voxel death.</summary>
         private static readonly Color SkinColor = new(0.36f, 0.56f, 0.26f, 1f);
@@ -126,6 +132,14 @@ namespace Game.EditorTools
                     serialized.ApplyModifiedPropertiesWithoutUndo();
                 }
 
+                // ---------------------------------------------------------- the walk at the run clip's root speed
+                foreach (EnemyCharacterCoreInstaller core in root.GetComponentsInChildren<EnemyCharacterCoreInstaller>(true))
+                {
+                    var serialized = new SerializedObject(core);
+                    serialized.FindProperty("_moveSpeed").floatValue = MOVE_SPEED;
+                    serialized.ApplyModifiedPropertiesWithoutUndo();
+                }
+
                 // ---------------------------------------------------------- colliders to the body
                 foreach (CapsuleCollider capsule in root.GetComponentsInChildren<CapsuleCollider>(true))
                 {
@@ -189,7 +203,9 @@ namespace Game.EditorTools
             {
                 AnimationClip original = overrides[i].Key;
                 string zombie = ZombieClipFor(original.name);
-                AnimationClip clip = zombie != null ? AssetDatabase.LoadAssetAtPath<AnimationClip>(CLIPS + zombie + ".anim") : null;
+                AnimationClip clip = zombie == null ? null
+                    : zombie.EndsWith(".fbx") ? AssetDatabase.LoadAllAssetsAtPath(CLIPS + zombie).OfType<AnimationClip>().FirstOrDefault(c => !c.name.StartsWith("__preview__"))
+                    : AssetDatabase.LoadAssetAtPath<AnimationClip>(CLIPS + zombie + ".anim");
                 if (clip == null)
                     report.Append($"no zombie clip for {original.name}; ");
                 overrides[i] = new KeyValuePair<AnimationClip, AnimationClip>(original, clip);
@@ -212,7 +228,7 @@ namespace Game.EditorTools
             if (name.Contains("hit"))
                 return "Zombie_TakeDamage_01";
             if (name.Contains("run") || name.Contains("walk"))
-                return "Zombie_Move";
+                return "Zombie Running.fbx"; // the user's run, at its root speed (MOVE_SPEED)
             if (name.Contains("idle"))
                 return "Zombie_Idle";
             return null;
@@ -260,14 +276,14 @@ namespace Game.EditorTools
             // 5 cm, as the Regax, boxes of two (10 cm): at 10 cm the low-poly body came to 75 voxels, its torn pieces scraps (the
             // user: voxelize the zombie itself); 525 now, in the colours of its atlas (skinFromTexture). Big drops, three
             // times as many as at first (the user: the blood's budget x3; the debris store keeps 40 % for gore).
-            config.FindPropertyRelative("voxelSize").floatValue = 0.05f;
+            config.FindPropertyRelative("voxelSize").floatValue = 0.028f; // 5 cm at 2.85 m, × 0.5625 with the body: the same voxel count
             config.FindPropertyRelative("colliderCell").intValue = 2;
             config.FindPropertyRelative("seamDrops").intValue = 180;
             config.FindPropertyRelative("hitDrops").intValue = 210;
             config.FindPropertyRelative("gooSpeed").floatValue = 7.5f;
             // The heavy drop after the sluggish rise lands at ~8 m/s: the parts keep whole (for the tracks to burst).
             config.FindPropertyRelative("fractureSpeed").floatValue = 12f;
-            config.FindPropertyRelative("blood").FindPropertyRelative("dropSize").floatValue = 0.08f;
+            config.FindPropertyRelative("blood").FindPropertyRelative("dropSize").floatValue = 0.045f; // 8 cm at 2.85 m, × 0.5625
 
             // Sticky, not peas: the pieces go up more than out, scatter and spin little (VoxelGibs damps the rise).
             SerializedProperty speeds = config.FindPropertyRelative("speeds");

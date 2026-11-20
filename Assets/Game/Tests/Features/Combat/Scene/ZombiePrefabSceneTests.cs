@@ -47,7 +47,7 @@ namespace Game.Tests
             Assert.That(animator.avatar != null && animator.avatar.isHuman, Is.True, "a humanoid avatar");
             Assert.That(animator.runtimeAnimatorController.name, Is.EqualTo("AC_Zombie"), "the weapon switched to the zombie's controller");
             Assert.That(skin.sharedMaterial.shader.name, Is.EqualTo("Universal Render Pipeline/Lit"), "no pink: URP");
-            Assert.That(skin.bounds.size.y, Is.InRange(2.4f, 3.4f), "about 2.85 m tall");
+            Assert.That(skin.bounds.size.y, Is.InRange(1.4f, 1.85f), "about 1.6 m tall");
 
             var entity = zombie.GetComponent<MonoEntity>();
             IEntity source = new Entity();
