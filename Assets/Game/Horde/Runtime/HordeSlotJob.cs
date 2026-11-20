@@ -35,6 +35,9 @@ namespace Game.Horde
         /// <summary>A monster gives its place up this much further out than it takes one, m.</summary>
         private const float KEEP_MARGIN = 2f;
 
+        /// <summary>Near the hull, a place this far round the ring from its monster (the tank turned) is given up, m.</summary>
+        private const float SWEPT = 2.5f;
+
         [ReadOnly] public NativeArray<float3> Position;
         [ReadOnly] public NativeArray<HordeState> State;
         [ReadOnly] public NativeArray<byte> Kind;
@@ -89,14 +92,49 @@ namespace Game.Horde
                 }
             }
 
-            // Keep: a monster still near keeps the place it had.
+            // The places turn with the hull (hull space); the monsters must not. One already at the hull (attacking)
+            // takes the place where it stands now, so a turning tank does not drag it round; it stands and bites.
             float keep = Settings.SlotRange + KEEP_MARGIN;
             for (int i = 0; i < Count; i++)
             {
+                if (Slot[i] < 0 || State[i] != HordeState.Attack || !Eligible(i) || HullDistance(i, inverse) > keep)
+                    continue;
+                float t = HordeHullRing.Param(HordeHull.ToLocal(Tank, inverse, Position[i]).xz, Ring.Half, Ring.Standoff);
+                int here = HordeHullRing.NearestSlot(t, Ring.Count, Ring.Length);
+                int pick = -1;
+                for (int d = 0; d <= 1 && pick < 0; d++)
+                {
+                    int a = ((here + d) % Ring.Count + Ring.Count) % Ring.Count;
+                    int b = ((here - d) % Ring.Count + Ring.Count) % Ring.Count;
+                    if (Owner[a] == -1)
+                        pick = a;
+                    else if (Owner[b] == -1)
+                        pick = b;
+                }
+
+                if (pick < 0 && Slot[i] < Ring.Count && Owner[Slot[i]] == -1)
+                    pick = Slot[i];
+                Slot[i] = pick;
+                if (pick >= 0)
+                    Owner[pick] = i;
+            }
+
+            // Keep: a monster on its way keeps the place it had, unless the hull's turn swept the place far round the
+            // ring from it (then it takes the nearest free one below instead of running round after it).
+            for (int i = 0; i < Count; i++)
+            {
                 int slot = Slot[i];
-                if (slot < 0)
+                if (slot < 0 || State[i] == HordeState.Attack && Owner[slot] == i)
                     continue;
                 if (slot >= Ring.Count || !Eligible(i) || Owner[slot] != -1 || HullDistance(i, inverse) > keep)
+                {
+                    Slot[i] = -1;
+                    continue;
+                }
+
+                float t = HordeHullRing.Param(HordeHull.ToLocal(Tank, inverse, Position[i]).xz, Ring.Half, Ring.Standoff);
+                float along = HordeHullRing.Delta(t, HordeHullRing.SlotParam(slot, Ring.Count, Ring.Length), Ring.Length);
+                if (math.abs(along) > SWEPT && HullDistance(i, inverse) < Ring.WaitStandoff + Settings.SlowRadius)
                 {
                     Slot[i] = -1;
                     continue;

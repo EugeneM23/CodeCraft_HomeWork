@@ -173,6 +173,48 @@ namespace Game.Horde.Tests
         }
 
         [Test]
+        public void TankTurnsOnTheSpot_TheAttackersStandAndBite_TheyAreNotDraggedRound()
+        {
+            using HordeNavGrid grid = HordeTestGrids.Flat(40, 40);
+            using var field = new HordeFlowField(grid);
+            HordeSettings settings = HordeSettings.Default;
+            using var sim = new HordeSimulation(64, grid, field, settings);
+            HordeTank tank = Tank(new float3(20f, 0f, 20f));
+            for (int i = 0; i < 12; i++)
+            {
+                math.sincos(i * 0.52f, out float s, out float c);
+                sim.Spawn(new float3(20f + c * 8f, 0f, 20f + s * 8f), 0f);
+            }
+
+            Step(sim, tank, 300);
+            var before = new float3[12];
+            int attackers = 0;
+            for (int i = 0; i < 12; i++)
+            {
+                before[i] = sim.GetPosition(i);
+                if (sim.GetState(i) == HordeState.Attack)
+                    attackers++;
+            }
+
+            Assert.AreEqual(12, attackers, "all at the hull");
+
+            // The Tiger's full pivot, 1.36 rad/s, for 2 s: the hull's places sweep 2.7 rad round.
+            float yaw = 0f;
+            float swept = 0f;
+            for (int k = 0; k < 40; k++)
+            {
+                yaw += 1.36f * DT;
+                tank.Rotation = quaternion.RotateY(yaw);
+                Step(sim, tank, 1);
+            }
+
+            for (int i = 0; i < 12; i++)
+                swept += math.distance(before[i].xz, sim.GetPosition(i).xz);
+            swept /= 12f;
+            Assert.Less(swept, 1.2f, $"they moved {swept:0.00} m on average (the places swept some 5 m): only the corners shove them");
+        }
+
+        [Test]
         public void Crowd_SpawnedInOneHeap_EndsWithNoTwoBodiesInOnePlace()
         {
             using HordeNavGrid grid = HordeTestGrids.Flat(40, 40);

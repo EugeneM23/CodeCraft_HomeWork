@@ -957,7 +957,9 @@ namespace Game.Horde
                         float hull = HordeHull.Distance(Tank, local);
                         int slot = Slot[i];
                         bool ringed = Ring.Active && kind.Radius <= Ring.MaxRadius;
-                        if (ringed && slot >= 0 && hull < DIRECT_RANGE + Ring.Standoff)
+                        if (ringed && slot >= 0 && state == HordeState.Attack)
+                            wish = float2.zero;   // at the hull: it stands and bites, the hull may turn under it
+                        else if (ringed && slot >= 0 && hull < DIRECT_RANGE + Ring.Standoff)
                             wish = ToRing(local.xz, HordeHullRing.SlotParam(slot, Ring.Count, Ring.Length), Ring.Standoff,
                                 Ring.WaitStandoff, speed);
                         else if (ringed && slot < 0 && hull < Ring.WaitStandoff + Settings.SlowRadius)

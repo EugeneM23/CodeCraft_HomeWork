@@ -25,6 +25,11 @@ namespace Game.AIKit.Adapters
 
         private const float KEEP_MARGIN = 2f;
 
+        /// <summary>Near the hull, a place this far round the ring from its zombie (the tank turned) is given up, m.</summary>
+        private const float SWEPT = 2.5f;
+
+        private static readonly bool[] s_held = new bool[256];
+
         private static readonly List<ZombieChaseBehaviour> s_members = new();
         private static readonly int[] s_owner = new int[HordeHullRing.MAX_SLOTS];
         private static readonly float[] s_hull = new float[256];
@@ -92,14 +97,54 @@ namespace Game.AIKit.Adapters
             for (int m = 0; m < members; m++)
                 s_hull[m] = tank.DistanceToHull(s_members[m].Position);
 
-            // Keep.
+            // The places turn with the hull; the zombies must not. One in bite reach takes the place where it stands now
+            // (it stands and bites while the hull turns under it).
+            var held = s_held;
+            for (int m = 0; m < members; m++)
+            {
+                held[m] = false;
+                ZombieChaseBehaviour z = s_members[m];
+                if (z.RingSlot < 0 || !z.CanHoldPlace || s_hull[m] > RegaxBiteRunner.REACH)
+                    continue;
+                float t = HordeHullRing.Param(ToLocal(z.Position, centre, right, forward), s_half, STANDOFF);
+                int here = HordeHullRing.NearestSlot(t, s_count, s_length);
+                int pick = -1;
+                for (int d = 0; d <= 1 && pick < 0; d++)
+                {
+                    int a = ((here + d) % s_count + s_count) % s_count;
+                    int b = ((here - d) % s_count + s_count) % s_count;
+                    if (s_owner[a] == -1)
+                        pick = a;
+                    else if (s_owner[b] == -1)
+                        pick = b;
+                }
+
+                if (pick < 0 && z.RingSlot < s_count && s_owner[z.RingSlot] == -1)
+                    pick = z.RingSlot;
+                z.RingSlot = pick;
+                if (pick >= 0)
+                {
+                    s_owner[pick] = m;
+                    held[m] = true;
+                }
+            }
+
+            // Keep: one on its way keeps its place, unless the hull's turn swept it far round the ring.
             for (int m = 0; m < members; m++)
             {
                 ZombieChaseBehaviour z = s_members[m];
                 int slot = z.RingSlot;
-                if (slot < 0)
+                if (slot < 0 || held[m])
                     continue;
                 if (slot >= s_count || !z.CanHoldPlace || s_owner[slot] != -1 || s_hull[m] > RANGE + KEEP_MARGIN)
+                {
+                    z.RingSlot = -1;
+                    continue;
+                }
+
+                float t = HordeHullRing.Param(ToLocal(z.Position, centre, right, forward), s_half, STANDOFF);
+                float along = HordeHullRing.Delta(t, HordeHullRing.SlotParam(slot, s_count, s_length), s_length);
+                if (math.abs(along) > SWEPT && s_hull[m] < ZombieChaseBehaviour.NEAR)
                 {
                     z.RingSlot = -1;
                     continue;
