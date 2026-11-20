@@ -395,6 +395,7 @@ namespace Game.Tests
 
         [UnityTest]
         [Timeout(180000)]
+        [Ignore("E is the air strike for now (TankModulesSetup.AIR_STRIKE_ON_E); the smoke launchers are off")]
         public IEnumerator SmokeLaunchers_HideTheTank_ThenReload()
         {
             yield return LoadSandbox();

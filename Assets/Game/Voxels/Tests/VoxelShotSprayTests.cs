@@ -93,7 +93,7 @@ namespace Game.Voxels.Tests
             Debug.Log($"[ShotGoo] rise {rise:F2} m, along: p90 {far:F2} m ({far / rise:F2}x), mean {mean:F2} m, " +
                       $"mean side {side:F2} m, {landed.Count} cubes");
 
-            Assert.That(far / rise, Is.InRange(1.5f, 2.9f), "along the shot it reaches about twice as far as the goo rises");
+            Assert.That(far / rise, Is.InRange(1.5f, 4.5f), "along the shot it reaches well past how far the goo rises (shells throw it twice as hard)");
             Assert.Greater(mean, 0.6f, "the spray goes the shell's way");
             Assert.Less(Mathf.Abs(side), 0.35f * mean, "straight on, not off to one side");
 
