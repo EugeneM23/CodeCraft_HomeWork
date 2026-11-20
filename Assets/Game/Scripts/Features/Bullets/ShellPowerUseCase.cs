@@ -28,9 +28,16 @@ namespace Game
         }
 
         /// <summary>
-        /// The bite's radius factor for a power: the bitten volume grows with the power (+30 % volume a level), so the
-        /// radius grows by its cube root.
+        /// The bite's radius factor for a power: the hole widens evenly with the skill's level, <see cref="TOP_HOLE"/>
+        /// times as wide at level 5 (power 2.5); 1 without the skill.
         /// </summary>
-        public static float BiteRadius(float power) => power == 1f ? 1f : Mathf.Pow(power, 1f / 3f);
+        public static float BiteRadius(float power) =>
+            power <= 1f ? 1f : 1f + (power - 1f) * (TOP_HOLE - 1f) / (TOP_POWER - 1f);
+
+        /// <summary>How much wider the HE hole is at the skill's top level (the user's call: 2.3).</summary>
+        public const float TOP_HOLE = 2.3f;
+
+        /// <summary>The power at the skill's top level (1 + 0.3 × 5).</summary>
+        private const float TOP_POWER = 2.5f;
     }
 }

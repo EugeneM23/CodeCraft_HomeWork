@@ -96,8 +96,7 @@ namespace Game.Tests
             ExplosionUseCase.Bite(5f, true, 1f, out float crater1, out float speed1, out float skeleton1);
             ExplosionUseCase.Bite(5f, true, 2.5f, out float crater5, out float speed5, out float skeleton5);
 
-            float volume = Mathf.Pow(crater5 / crater1, 3f);
-            Assert.AreEqual(2.5f, volume, 1e-3f, "level 5: the bitten volume ×2.5 (+30 % a level)");
+            Assert.AreEqual(ShellPowerUseCase.TOP_HOLE, crater5 / crater1, 1e-3f, "level 5: the hole ×2.3 as wide");
             Assert.AreEqual(2.5f, speed5 / speed1, 1e-4f, "debris ×2.5");
             Assert.AreEqual(2.5f, skeleton5 / skeleton1, 1e-4f, "skeleton damage ×2.5");
         }
