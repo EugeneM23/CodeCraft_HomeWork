@@ -305,6 +305,14 @@ namespace Game.Horde
         /// <summary>The monster in this slot crawls on the ground (slower, low): chosen at its spawn.</summary>
         public bool IsCrawling(int index) => index >= 0 && index < Capacity && _crawl[index] != 0;
 
+        /// <summary>Makes the monster in this slot run, not crawl (a house's stream: runners only). Between steps.</summary>
+        public void StopCrawling(int index)
+        {
+            ThrowIfRunning();
+            if (index >= 0 && index < Capacity)
+                _crawl[index] = 0;
+        }
+
         /// <summary>Sets row <paramref name="index"/> of the kind table. A row never set follows <see cref="Settings"/> (<see cref="HordeKind.FromSettings"/>).</summary>
         public void SetKind(int index, in HordeKind kind)
         {

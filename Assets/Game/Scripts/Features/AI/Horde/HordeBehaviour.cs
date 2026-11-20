@@ -588,6 +588,9 @@ namespace Game.AIKit.Adapters
                     at.y = h;
                 float2 toTank = tank.Present ? tank.Center.xz - at.xz : new float2(0f, 1f);
                 int slot = _simulation.Spawn(at, math.atan2(toTank.x, toTank.y), p.Row, p.HealthScale, p.DamageScale, !p.Walking);
+                // Out of a house they all run (the user): no crawlers in the stream, whatever crawlShare says.
+                if (slot >= 0 && p.Walking)
+                    _simulation.StopCrawling(slot);
                 if (slot >= 0 && HordeKinds.IsElite(p.Row))
                 {
                     _eliteCount++;
