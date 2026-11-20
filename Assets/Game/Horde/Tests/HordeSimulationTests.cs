@@ -49,6 +49,29 @@ namespace Game.Horde.Tests
         }
 
         [Test]
+        public void Tear_KeepsTheShellsPower_ForThatDeathOnly()
+        {
+            using HordeNavGrid grid = HordeTestGrids.Flat(20, 20);
+            using var field = new HordeFlowField(grid);
+            using var sim = new HordeSimulation(8, grid, field, HordeSettings.Default);
+            int strong = sim.Spawn(new float3(5f, 0f, 5f), 0f);
+            int plain = sim.Spawn(new float3(15f, 0f, 15f), 0f);
+            Step(sim, default);
+
+            sim.Tear(strong, sim.Version(strong), new float3(0f, 0f, 1f), 2.5f);
+            sim.Tear(plain, sim.Version(plain), new float3(0f, 0f, 1f));
+            sim.Damage(strong, sim.Version(strong), 1e6f);
+            sim.Damage(plain, sim.Version(plain), 1e6f);
+            Step(sim, default);
+
+            Assert.AreEqual(2.5f, sim.TornPower(strong), "«Мощный фугас» 5: its goo and pieces fly ×2.5");
+            Assert.AreEqual(1f, sim.TornPower(plain), "a tear without power: as before");
+
+            int fresh = sim.Spawn(new float3(5f, 0f, 5f), 0f);
+            Assert.AreEqual(1f, sim.TornPower(fresh), "a new monster in the slot starts whole");
+        }
+
+        [Test]
         public void Separation_PushesOverlappingMonstersApart()
         {
             using HordeNavGrid grid = HordeTestGrids.Flat(20, 20);

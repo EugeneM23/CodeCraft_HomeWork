@@ -383,7 +383,8 @@ namespace Game
                 return SkillGroup.Weapon;
 
             if (skill == SkillIds.Ricochet || skill == SkillIds.DoubleShot || skill == SkillIds.Piercing
-                || skill == SkillIds.BigCaliber || skill == SkillIds.RateOfFire || skill == SkillIds.Shrapnel)
+                || skill == SkillIds.BigCaliber || skill == SkillIds.RateOfFire || skill == SkillIds.Shrapnel
+                || skill == SkillIds.HighExplosive)
                 return SkillGroup.Gun;
 
             return SkillGroup.Tank;

@@ -18,6 +18,7 @@ namespace Game
         public static readonly SkillId BigCaliber = new("big_caliber");
         public static readonly SkillId RateOfFire = new("rate_of_fire");
         public static readonly SkillId Shrapnel = new("shrapnel");
+        public static readonly SkillId HighExplosive = new("high_explosive");
 
         // Tank (upgrades)
         public static readonly SkillId TrackSpikes = new("track_spikes");

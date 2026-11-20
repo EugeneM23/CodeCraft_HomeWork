@@ -54,12 +54,14 @@ namespace Game
         /// The same burst on a monster: blood and bits of flesh instead of sparks and a hot point, thrown out as far as
         /// the sparks would fly, fanning out of the body round <paramref name="normal"/> (zero: up).
         /// </summary>
-        public static void EmitFlesh(Vector3 point, Vector3 normal)
+        /// <param name="power">The «Мощный фугас» skill (<see cref="ShellPowerUseCase"/>): the throw speed's factor, 1 — none.</param>
+        public static void EmitFlesh(Vector3 point, Vector3 normal, float power = 1f)
         {
             Vector3 n = normal.sqrMagnitude > 1e-6f ? normal.normalized : Vector3.up;
             Vector3 fan = (n + Vector3.up * 0.35f).normalized;
-            Voxels.VoxelSpray.Goo(point, fan, FLESH_BLOOD, FLESH_SPEED, 0.9f, Blood, FLESH_BLOOD_SIZE, default, 0.2f);
-            Voxels.VoxelSpray.Goo(point, fan, FLESH_BITS, FLESH_SPEED * 0.85f, 0.8f, Flesh, FLESH_BIT_SIZE, default, 0.2f);
+            float speed = FLESH_SPEED * power;
+            Voxels.VoxelSpray.Goo(point, fan, FLESH_BLOOD, speed, 0.9f, Blood, FLESH_BLOOD_SIZE, default, 0.2f);
+            Voxels.VoxelSpray.Goo(point, fan, FLESH_BITS, speed * 0.85f, 0.8f, Flesh, FLESH_BIT_SIZE, default, 0.2f);
         }
     }
 }

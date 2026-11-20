@@ -85,7 +85,7 @@ namespace Game.Tests
         {
             Assert.AreEqual(3, _catalog.Tanks.Count, "tanks");
             Assert.AreEqual(15, _catalog.Modules.Count, "modules");
-            Assert.AreEqual(20, _catalog.Skills.Count, "skills");
+            Assert.AreEqual(21, _catalog.Skills.Count, "skills: GDD §3's 20 and «Мощный фугас»");
 
             TankConfig tiger = _catalog.FindTank(TankIds.Tiger);
             Assert.IsNotNull(tiger);
@@ -99,7 +99,7 @@ namespace Game.Tests
         }
 
         [Test]
-        public void Milestone1_SellsTwoModules_AndOffersSixSkills()
+        public void Milestone1_SellsTwoModules_AndOffersSevenSkills()
         {
             var inShop = new List<string>();
             foreach (ModuleConfig module in _catalog.Modules)
@@ -119,7 +119,7 @@ namespace Game.Tests
             CollectionAssert.AreEquivalent(new[]
             {
                 SkillIds.Turret.Value, SkillIds.AirStrike.Value, SkillIds.Ricochet.Value, SkillIds.RateOfFire.Value,
-                SkillIds.Armor.Value, SkillIds.Magnet.Value
+                SkillIds.Armor.Value, SkillIds.Magnet.Value, SkillIds.HighExplosive.Value
             }, inPool);
         }
 

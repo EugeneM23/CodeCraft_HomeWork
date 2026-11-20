@@ -27,6 +27,7 @@ namespace Game.EditorTools
             { "big_caliber", "Icons2/Icon_Gun.png" },
             { "rate_of_fire", "Icons2/Icon_Bullet.png" },
             { "shrapnel", "Icons3/Icon_Snow.png" },
+            { "high_explosive", "Icons4/Icon_Skull.png" },
             { "track_spikes", "Icons2/Icon_Boots.png" },
             { "armor", "Icons2/Icon_Shield.png" },
             { "regeneration", "Icons1/ICON_Health.png" },

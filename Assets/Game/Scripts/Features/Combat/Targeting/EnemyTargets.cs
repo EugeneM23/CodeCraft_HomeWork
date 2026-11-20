@@ -240,10 +240,10 @@ namespace Game
                 source.Damage(target.Index, target.Version, damage, hitPoint);
         }
 
-        public void Tear(in EnemyRef target, Vector3 direction)
+        public void Tear(in EnemyRef target, Vector3 direction, float power = 1f)
         {
             if (SourceOf(target) is IEnemyTearable tearable)
-                tearable.Tear(target.Index, target.Version, direction);
+                tearable.Tear(target.Index, target.Version, direction, power);
         }
 
         public void DamageArea(Vector3 center, float radius, float damage, float minFactor) =>

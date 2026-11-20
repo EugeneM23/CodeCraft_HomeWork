@@ -46,7 +46,8 @@ namespace Game.EditorTools
         /// <summary>The run skills of milestone 1 (GDD §10); the other 14 are written but out of the pool.</summary>
         private static readonly SkillId[] Milestone1Skills =
         {
-            SkillIds.Turret, SkillIds.AirStrike, SkillIds.Ricochet, SkillIds.RateOfFire, SkillIds.Armor, SkillIds.Magnet
+            SkillIds.Turret, SkillIds.AirStrike, SkillIds.Ricochet, SkillIds.RateOfFire, SkillIds.Armor, SkillIds.Magnet,
+            SkillIds.HighExplosive
         };
 
         [MenuItem(MENU_PATH, priority = 120)]
@@ -230,6 +231,9 @@ namespace Game.EditorTools
                 "Перезарядка −12 %.", "−8 %."),
             Skill(SkillIds.Shrapnel, SkillGroup.Gun, "Осколки",
                 "Взрыв оставляет 6 осколков по 20 урона.", "+2 осколка."),
+            Skill(SkillIds.HighExplosive, SkillGroup.Gun, "Мощный фугас",
+                "Фугас сильнее: кровь, ошмётки и обломки летят на 30 % дальше, воронка в домах на 30 % больше.",
+                "+30 %."),
 
             Skill(SkillIds.TrackSpikes, SkillGroup.Tank, "Шипы на гусеницах",
                 "30 урона/с всем вплотную к бортам.", "+20 %."),

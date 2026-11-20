@@ -14,7 +14,8 @@ namespace Game
         /// <summary>The skills of milestone 1, the ones combat knows how to apply.</summary>
         public static readonly SkillId[] MilestoneSkills =
         {
-            SkillIds.Turret, SkillIds.AirStrike, SkillIds.Ricochet, SkillIds.RateOfFire, SkillIds.Armor, SkillIds.Magnet
+            SkillIds.Turret, SkillIds.AirStrike, SkillIds.Ricochet, SkillIds.RateOfFire, SkillIds.Armor, SkillIds.Magnet,
+            SkillIds.HighExplosive
         };
 
         private readonly Dictionary<SkillId, float[]> _values = new();
@@ -29,6 +30,8 @@ namespace Game
             _values[SkillIds.RateOfFire] = new[] { 0.88f, 0.80f, 0.72f, 0.64f, 0.56f };
             _values[SkillIds.Armor] = new[] { 1.15f, 1.30f, 1.45f, 1.60f, 1.75f };
             _values[SkillIds.Magnet] = new[] { 1.5f, 1.8f, 2.1f, 2.4f, 2.7f };
+            // «Мощный фугас»: +30 % a level to the HE shell's gore and debris throw and its bite in houses
+            _values[SkillIds.HighExplosive] = new[] { 1.3f, 1.6f, 1.9f, 2.2f, 2.5f };
 
             if (configs == null)
                 return;

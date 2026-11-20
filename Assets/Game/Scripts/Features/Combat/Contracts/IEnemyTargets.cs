@@ -30,7 +30,8 @@ namespace Game
 
         /// <summary>The target, if damage queued now kills it, is torn apart (a shell's direct hit) rather than falling whole.</summary>
         /// <param name="direction">Which way the shell flew: the body's goo and pieces are thrown on that way (zero: none).</param>
-        void Tear(in EnemyRef target, Vector3 direction);
+        /// <param name="power">How hard the shell throws them: the «Мощный фугас» skill (ShellPowerUseCase), 1 — as without it.</param>
+        void Tear(in EnemyRef target, Vector3 direction, float power = 1f);
 
         void DamageArea(Vector3 center, float radius, float damage, float minFactor);
     }

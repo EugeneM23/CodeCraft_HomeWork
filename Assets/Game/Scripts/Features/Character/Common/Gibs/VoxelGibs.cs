@@ -410,7 +410,9 @@ namespace Game
             Vector3 shot = death.Hit.Direction;
             Vector3 flatShot = new(shot.x, 0f, shot.z);
             bool along = flatShot.sqrMagnitude > 1e-4f;
-            Vector3 push = along ? flatShot.normalized * VoxelSpray.SHOT_PUSH : Vector3.zero;
+            // «Мощный фугас» (ShellPowerUseCase): the pieces, the push and the goo all fly faster; 1 without it
+            float power = death.Hit.Power;
+            Vector3 push = along ? flatShot.normalized * (VoxelSpray.SHOT_PUSH * power) : Vector3.zero;
             Color32[] blood = BloodOf(config);
             SeamLink[] links = LinksOf(config);
             int[] cluster = death.Cluster;
@@ -483,7 +485,7 @@ namespace Game
             away = away.sqrMagnitude > 1e-4f ? away.normalized : Vector3.up;
             // With no way known the goo goes up.
             if (along)
-                VoxelSpray.ShotGoo(wound, shot, config.hitDrops, config.gooSpeed, 0.4f, GooOf(config),
+                VoxelSpray.ShotGoo(wound, shot, config.hitDrops, config.gooSpeed * power, 0.4f, GooOf(config),
                     config.blood.dropSize, default, Mathf.Min(0.35f, death.Body.extents.x), VoxelSpray.HE_SPLASH);
             else
                 VoxelSpray.Goo(wound, Vector3.up * 1.6f + away * 0.5f, config.hitDrops, config.gooSpeed, 0.4f, GooOf(config),
@@ -501,7 +503,7 @@ namespace Game
                 // Each part in the zombie's own colours where its skin has a texture (SkinAtlas.ChunkSkins).
                 SkinAtlas atlas = config.skinFromTexture ? rig.Atlas : null;
                 VoxelSpray.Chunks(feet, death.Body.size.y, thrown.sqrMagnitude > 1e-4f ? thrown.normalized : Vector3.zero, s_skin, GooOf(config),
-                    atlas?.ChunkSkins(), along ? VoxelSpray.SHOT_PUSH : 0f);
+                    atlas?.ChunkSkins(), along ? VoxelSpray.SHOT_PUSH * power : 0f);
             }
         }
 
