@@ -61,6 +61,7 @@ namespace AIKit.Entities
 
             var behaviour = new AIAgentBehaviour(character, world);
             entity.AddBehaviour(behaviour);
+            entity.AddBehaviour(new AIAgentGizmos());
             return behaviour;
         }
     }

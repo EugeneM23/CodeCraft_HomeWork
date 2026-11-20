@@ -35,7 +35,7 @@ namespace AIKit.Entities
         /// <summary>The agent's current decision or block by name (empty — none). Written on every change of state.</summary>
         public static readonly ValueKey<IEntity, IReactiveVariable<string>> AgentDecision = new(nameof(AgentDecision));
 
-        /// <summary>What the agent is after (null — nothing). Written after each step when it changes.</summary>
+        /// <summary>What the agent is after: the Brain's target while a decision runs for it, else the one its senses track (null — nothing). Written after each step when it changes.</summary>
         public static readonly ValueKey<IEntity, IReactiveVariable<Transform>> AgentTarget = new(nameof(AgentTarget));
 
         /// <summary>"Think on the next step" (something worth a decision happened); consumed by the agent's step.</summary>

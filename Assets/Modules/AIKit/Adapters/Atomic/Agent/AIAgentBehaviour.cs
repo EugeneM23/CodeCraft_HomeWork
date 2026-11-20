@@ -129,7 +129,8 @@ namespace AIKit.Entities
 
         private void PullOutputs()
         {
-            Transform target = _character.Context?.Target;
+            AgentContext context = _character.Context;
+            Transform target = context == null ? null : context.BrainTarget != null ? context.BrainTarget : context.Target;
             if (_target.Value != target)
                 _target.Value = target;
         }
