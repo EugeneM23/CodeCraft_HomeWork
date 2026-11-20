@@ -81,15 +81,17 @@ namespace Game.Tests
         }
 
         [Test]
-        public void SpawnBullet_Spread_TurnsTheShotLevelWithinTheCone()
+        public void SpawnBullet_Spread_TurnsTheShotWithinTheCone_AndLessUpAndDown()
         {
             Transform firePoint = _firePointObject.transform;
 
             IEntity bullet = SpawnUseCase.SpawnBullet(Weapon(5, spread: 10f), _factory, firePoint);
 
             Vector3 direction = bullet.GetMoveDirection().Value;
-            Assert.That(Vector3.Angle(direction, firePoint.forward), Is.LessThanOrEqualTo(10.01f));
-            Assert.That(direction.y, Is.EqualTo(0f).Within(1e-4f), "about the world vertical, not into the floor");
+            // Sideways up to the spread, up and down up to 0.6 of it (SpawnUseCase.VERTICAL_SPREAD).
+            Assert.That(Vector3.Angle(direction, firePoint.forward), Is.LessThanOrEqualTo(11.7f));
+            float pitch = Mathf.Asin(Mathf.Clamp(direction.y, -1f, 1f)) * Mathf.Rad2Deg;
+            Assert.That(Mathf.Abs(pitch), Is.LessThanOrEqualTo(6.01f), "up and down: at most 0.6 of the spread");
         }
 
         [Test]
