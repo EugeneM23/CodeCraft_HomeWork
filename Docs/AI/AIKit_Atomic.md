@@ -1,6 +1,6 @@
 # AIKit на Atomic: разбор курса, карта модуля и план перехода
 
-Дата: 2026-11-20. Ветка `claude/aikit-atomic-7209e1` от `game/develop` (`c390412f6`). Статус: **фаза 1 — предложение, кода не меняли.** Код пишется только после «да» пользователя.
+Дата: 2026-11-20. Ветка `claude/aikit-atomic-7209e1` от `game/develop` (`c390412f6`). Статус: **сделано (фаза 2, 2026-11-20)** — см. «Что сделано» в конце; ниже — исходное предложение фазы 1.
 
 Задача пользователя: «взять всю документацию по ИИ на атомарном фреймворке и переработать наш плагин, чтобы он был строго на атомарном фреймворке (там, где это необходимо)».
 
@@ -275,3 +275,24 @@ MonoEntity Regax
 ## 8. Источники в репозитории
 
 Копии документов Platformer-AIKit лежат в [Platformer/](Platformer/README.md) (откуда и какой коммит — там же). Гайд по Atomic — `Docs/AtomicGuide/` (инсталлеры — `11`, поведения — `10`, миры и фильтры — `13`, системы и гизмо — `14`, кодогенерация — `15`).
+
+---
+
+## Что сделано (фаза 2, 2026-11-20)
+
+Пользователь одобрил план и разрешил удалить элитного Regax («пока он нам не нужен»). Ветка `claude/aikit-atomic-7209e1`:
+
+| Коммит | Что |
+|---|---|
+| `00fbe92a0` | **Элитный Regax удалён**: `Features/AI/EliteRegax` (инсталлер, поведение, тело, мотор, граф `EliteBrain`, укус, спавн, ноды игры), `Editor/EliteRegaxBuilder`, `Configs/AI/Regax_Elite_{Bite,Brain,Senses}`, `Prefabs/Characters/Regax_Elite.prefab`, тег `EliteRegax` в `AIAPI`, тесты Regax и сценовая сборка тестов. Ни сцена, ни префаб на удалённое не ссылались. Оставлены: `Regax.prefab` (основа `Zombie.prefab`), `EnemyKind.EliteRegax` (большой вид орды), `EliteStatus` (его кормит орда), `VoxelGridNavigator`, `PlayerTankScanner`, `AtomicHitReceiver` |
+| `80e573cd8` | Шаги 1–2: сборка `AIKit.Atomic`, ключи `AIAgentAPI`, мир (`AIAgentList`, `AIWorldBehaviour`, `AIWorldInstaller`) перенесён из игры; `LevelAIInstaller` ставит мир через модуль |
+| `2de852e38` | Шаги 3–4: `AIAgentInstaller`, `AIAgentBehaviour`, `EntityBody` + `EntityActuator` (заменил игровой `AtomicActuator`), `EntityHitReceiver` |
+| `d165307d3` | Шаги 5–6: `Bind<T>` (значение сущности → переменная графа), `EntityTargetScanner`, `AIAgentGizmos`; живой PlayMode-тест вместо сценового теста Regax |
+
+Отличия от плана:
+- **Пространство имён — `AIKit.Entities`, а не `AIKit.Atomic`.** Генератор Atomic видит сборку модуля, но пишет полные имена `Atomic.Entities.IEntity`; внутри пространства `AIKit.Atomic` они разрешаются в `AIKit.Atomic.Entities` и не компилируются. Сборка называется `AIKit.Atomic`.
+- **Агента без мира шагает фиксированный тик его сущности** (`IEntityFixedTick`), а не сам `AICharacter`: входы сущности работают и без мира.
+- Шаг 5 (мост в blackboard) вошёл в поведение агента (`Bind<T>`), отдельного класса нет.
+- Шаг 8 (агент без MonoBehaviour) не делали, как и предлагалось.
+
+Проверки: `AIKit.Tests` + `AIKit.Atomic.Tests` + `Game.AIKit.Adapters.Tests` — 1746 тестов, 1740 зелёных, 3 Inconclusive. Падают 3 — те же, что и до ветки: `AbilityAssetTests.AbilityAsset_AFileOfTheOldFormat…` и два `CanvasUpgradeTests`, они известны по HANDOVER. PlayMode `AtomicAgentPlayModeTests` 1/1: агент Atomic догоняет цель-сущность и бьёт её, показывает `Chase`/`Claw` в `AgentDecision`, уходит из мира при уничтожении. Тест идёт в batchmode.
