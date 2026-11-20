@@ -71,6 +71,12 @@ namespace Game.AIKit.Adapters
 
         public Transform Transform => _transform;
 
+        /// <summary>
+        /// How deep a ledge the body hops down off, m (0: no deeper than the grid's step, the same as it climbs). A
+        /// skinned zombie drops off a ramp's side or a box it stands on; the elite keeps the grid's rule.
+        /// </summary>
+        public float MaxDrop { get; set; }
+
         public bool IsLeaping => _leaping;
 
         /// <summary>The body's speed over the last tick (the leap and the ground's lift included).</summary>
@@ -253,9 +259,24 @@ namespace Game.AIKit.Adapters
             return true;
         }
 
+        // Down off a ledge into the next cell (straight, not across a corner): ground below, no deeper than the drop
+        private static bool CanDrop(HordeNavGrid grid, int2 from, int2 to, float maxDrop)
+        {
+            if (maxDrop <= 0f || !grid.HasGround(from) || !grid.HasGround(to) || math.all(math.abs(to - from) == 1))
+                return false;
+            float drop = grid.HeightOf(from) - grid.HeightOf(to);
+            return drop > 0f && drop <= maxDrop;
+        }
+
         // Every cell the move crosses, half a cell at a time (as the navigator's PathBroken walks a path): a big step
         // (a long frame) must not carry the body through a wall it could not step over
-        private static bool Steppable(HordeNavGrid grid, Vector3 from, Vector3 to)
+        private bool Steppable(HordeNavGrid grid, Vector3 from, Vector3 to) => Steppable(grid, from, to, MaxDrop);
+
+        /// <summary>
+        /// Whether a body walks from <paramref name="from"/> to <paramref name="to"/> over the grid: no step up higher
+        /// than the grid's step, and down no deeper than <paramref name="maxDrop"/> past it (0: the grid's step both ways).
+        /// </summary>
+        public static bool Steppable(HordeNavGrid grid, Vector3 from, Vector3 to, float maxDrop)
         {
             int2 previous = grid.ClampCell(from);
             if (math.all(grid.ClampCell(to) == previous))
@@ -275,7 +296,9 @@ namespace Game.AIKit.Adapters
                 int2 cell = grid.ClampCell(from + delta * ((float)s / samples));
                 if (math.all(cell == previous))
                     continue;
-                if (math.any(math.abs(cell - previous) > 1) || !grid.CanStep(previous, cell))
+                if (math.any(math.abs(cell - previous) > 1))
+                    return false;
+                if (!grid.CanStep(previous, cell) && !CanDrop(grid, previous, cell, maxDrop))
                     return false;
                 previous = cell;
             }

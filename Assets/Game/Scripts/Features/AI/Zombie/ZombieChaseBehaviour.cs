@@ -34,6 +34,9 @@ namespace Game.AIKit.Adapters
         /// <summary>Half the distance two skinned zombies keep between their middles outright (the motor), m: a body and a hand.</summary>
         public const float KEEP_APART = 0.55f;
 
+        /// <summary>It hops down off a ledge this deep, m (a ramp's side, a box it stands on): the grid's step limits only the climb.</summary>
+        public const float MAX_DROP = 2.5f;
+
         /// <summary>Within this of the hull it goes for its place on the ring instead of following the path, m.</summary>
         public const float NEAR = 4f;
 
@@ -97,7 +100,7 @@ namespace Game.AIKit.Adapters
             _nav = level.GetLevelNavigation();
             _agents = level.GetWorldAgents();
 
-            _motor = new EliteMotor(_transform, KEEP_APART);
+            _motor = new EliteMotor(_transform, KEEP_APART) { MaxDrop = MAX_DROP };
             _motor.Bind(_nav, _tank);
             _actuator = new AtomicActuator(_transform, _motor);
             _actuator.Bind(entity);
