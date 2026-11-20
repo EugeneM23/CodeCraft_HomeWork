@@ -1825,6 +1825,10 @@ PrefabInstance:
       propertyPath: m_Center.y
       value: 1.425
       objectReference: {fileID: 0}
+    - target: {fileID: 5107114153367632572, guid: e2c73aa53d2f90a4db53ae5a58c42d97, type: 3}
+      propertyPath: _moveSpeed
+      value: 4.57
+      objectReference: {fileID: 0}
     - target: {fileID: 5331188433194752158, guid: e2c73aa53d2f90a4db53ae5a58c42d97, type: 3}
       propertyPath: _groundPoint
       value: 
