@@ -134,6 +134,11 @@ namespace Game.AIKit.Adapters
             DebugEntry ally = DebugPanelRegistry.AddButton(WorldDebugCommands.ENEMIES, "Свой танк (K)",
                 () => EnemyTankSpawner.Active?.SpawnAlly(), 14);
             ally.Visible = () => EnemyTankSpawner.Active != null;
+            DebugEntry spider = DebugPanelRegistry.AddButton(WorldDebugCommands.ENEMIES, "Паук (P)",
+                () => EnemyTankSpawner.Active?.SpawnSpider(), 15);
+            spider.Visible = () => EnemyTankSpawner.Active != null;
+            DebugEntry noSpiders = DebugPanelRegistry.AddButton(WorldDebugCommands.ENEMIES, "Убрать пауков", SpiderBoss.KillAll, 15);
+            noSpiders.Visible = () => SpiderBoss.Alive > 0;
         }
 
         private static string HousesStatus()

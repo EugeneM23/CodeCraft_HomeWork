@@ -7,12 +7,13 @@ namespace Game.AIKit.Adapters
     /// <summary>
     /// Prototype (the user): J in the sandbox puts an enemy tank — a copy of the player's (SandboxHordeConfig.enemyTank)
     /// driven by <see cref="EnemyTankBrain"/> — on the ground some way off the player, on a random side. «Танки: N» under
-    /// the zombie counter.
+    /// the zombie counter. P — the spider boss (<see cref="SpiderBoss"/>).
     /// </summary>
     public sealed class EnemyTankSpawner : MonoBehaviour
     {
         private const float DISTANCE = 40f;
         private const float ALLY_DISTANCE = 10f;
+        private const float SPIDER_DISTANCE = 25f;
         private const float DROP_HEIGHT = 60f;
         private const float WIDTH = 260f;
         private const float HEIGHT = 34f;
@@ -47,6 +48,8 @@ namespace Game.AIKit.Adapters
             _mapMax = mapMax - Vector2.one * 4f;
             AllyTankBrain.MapMin = _mapMin;
             AllyTankBrain.MapMax = _mapMax;
+            SpiderBoss.MapMin = _mapMin;
+            SpiderBoss.MapMax = _mapMax;
         }
 
         private void Update()
@@ -58,6 +61,8 @@ namespace Game.AIKit.Adapters
                 Spawn();
             if (keyboard.kKey.wasPressedThisFrame)
                 SpawnAlly();
+            if (keyboard.pKey.wasPressedThisFrame)
+                SpawnSpider();
         }
 
         /// <summary>An enemy tank some way off the player, on a random side, facing it.</summary>
@@ -65,6 +70,17 @@ namespace Game.AIKit.Adapters
 
         /// <summary>A friendly tank behind the player (K), following it and shooting at the enemies.</summary>
         public AllyTankBrain SpawnAlly() => Place<AllyTankBrain>("[AllyTank]", ALLY_DISTANCE, false);
+
+        /// <summary>The spider boss (P): on the ground some way off the player, on a random side, facing it.</summary>
+        public SpiderBoss SpawnSpider()
+        {
+            if (!TryFindSpot(SPIDER_DISTANCE, true, out Vector3 at, out Vector3 center))
+            {
+                Debug.LogWarning("EnemyTankSpawner: no ground round the player to put the spider on.");
+                return null;
+            }
+            return SpiderBoss.Spawn(at - Vector3.up * 0.6f, center - at);
+        }
 
         private T Place<T>(string name, float distance, bool randomSide) where T : TankAIBrain
         {
@@ -74,13 +90,30 @@ namespace Game.AIKit.Adapters
                 return null;
             }
 
+            if (!TryFindSpot(distance, randomSide, out Vector3 at, out Vector3 center))
+            {
+                Debug.LogWarning("EnemyTankSpawner: no ground round the player to put a tank on.");
+                return null;
+            }
+
+            Transform player = _player.Transform;
+            Vector3 look = randomSide ? center - at : (player != null ? player.forward : Vector3.forward);
+            look.y = 0f;
+            MonoEntity tank = Instantiate(_prefab, at, Quaternion.LookRotation(look.sqrMagnitude > 0.01f ? look : Vector3.forward));
+            tank.name = name;
+            return tank.gameObject.AddComponent<T>();
+        }
+
+        // A spot round the player, inside the map, 0.6 m over the ground.
+        private bool TryFindSpot(float distance, bool randomSide, out Vector3 at, out Vector3 center)
+        {
             _player.Refresh();
             Transform player = _player.Transform;
-            Vector3 center = player != null ? player.position : Vector3.zero;
+            center = player != null ? player.position : Vector3.zero;
             Vector3 back = player != null ? -player.forward : Vector3.back;
             float behind = Mathf.Atan2(back.z, back.x);
             // Inside the map and over ground: off the map's edge it fell through the void.
-            Vector3 at = default;
+            at = default;
             bool found = false;
             float start = randomSide ? Random.value * Mathf.PI * 2f : behind;
             for (int i = 0; i < 24 && !found; i++)
@@ -99,17 +132,7 @@ namespace Game.AIKit.Adapters
                 found = true;
             }
 
-            if (!found)
-            {
-                Debug.LogWarning("EnemyTankSpawner: no ground round the player to put a tank on.");
-                return null;
-            }
-
-            Vector3 look = randomSide ? center - at : (player != null ? player.forward : Vector3.forward);
-            look.y = 0f;
-            MonoEntity tank = Instantiate(_prefab, at, Quaternion.LookRotation(look.sqrMagnitude > 0.01f ? look : Vector3.forward));
-            tank.name = name;
-            return tank.gameObject.AddComponent<T>();
+            return found;
         }
 
         private void OnGUI()
@@ -140,6 +163,9 @@ namespace Game.AIKit.Adapters
                 Spawn();
             if (GUI.Button(new Rect(x, y + 2f * (HEIGHT + 6f), WIDTH, HEIGHT), "+ Свой танк (K)", _buttonStyle))
                 SpawnAlly();
+            // Row 4: row 3 is the worm's (U) once it is in.
+            if (GUI.Button(new Rect(x, y + 4f * (HEIGHT + 6f), WIDTH, HEIGHT), "+ Паук (P)", _buttonStyle))
+                SpawnSpider();
         }
     }
 }
