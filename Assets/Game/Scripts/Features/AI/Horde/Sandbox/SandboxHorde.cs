@@ -23,8 +23,8 @@ namespace Game.AIKit.Adapters
 
         /// <summary>Groups come (on: the user wants walking zombies in the sandbox; no leaping onto the tank while HordeRiderOptions.LeapOntoTank is off).
         /// Off clears the sandbox horde without deaths.</summary>
-        // Off for now (the user, 2026-11-21): no zombies in the sandbox at all until the panel's toggle turns them on.
-        private const bool ON_AT_START = false;
+        // On (the user, 2026-11-21: back on after a while off); the panel's toggle switches them off.
+        private const bool ON_AT_START = true;
 
         public static bool Enabled { get; set; } = ON_AT_START;
 
@@ -134,6 +134,8 @@ namespace Game.AIKit.Adapters
             DebugEntry ally = DebugPanelRegistry.AddButton(WorldDebugCommands.ENEMIES, "Свой танк (K)",
                 () => EnemyTankSpawner.Active?.SpawnAlly(), 14);
             ally.Visible = () => EnemyTankSpawner.Active != null;
+            DebugEntry worm = DebugPanelRegistry.AddButton(WorldDebugCommands.ENEMIES, "Червь (U)", () => WormPrototype.Spawn(), 14);
+            worm.Visible = () => EnemyTankSpawner.Active != null;
         }
 
         private static string HousesStatus()

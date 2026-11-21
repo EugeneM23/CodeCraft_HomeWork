@@ -17,7 +17,8 @@ namespace Game
         private const int CAP = 320;
         private const int STEM = 160;
         private const int BATCH = 1023;
-        private const float LIFETIME = 12f;
+        private const float LIFETIME = 6f; // the user: gone twice as fast (was 12)
+        private const float CLEARER = 0.75f; // the user: 25 % more see-through
         private const float GRID = 0.1f;
 
         /// <summary>How fast (1/s) the push of a shot or a tank dies down, and how fast its hole heals.</summary>
@@ -300,7 +301,7 @@ namespace Game
                         // Greys as it cools; the higher a billow, the more light it catches.
                         float lit = Mathf.Clamp01((p.y - _origin.y) / (top - _origin.y));
                         c = Color.Lerp(Dark, Light, Mathf.SmoothStep(0f, 1f, t * 0.7f + lit * 0.45f));
-                        float body = _role[i] == ROLE_CAP ? 0.29f : 0.32f; // 20% clearer than the first pass
+                        float body = (_role[i] == ROLE_CAP ? 0.29f : 0.32f) * CLEARER; // 20% clearer than the first pass, then 25 % more
                         alpha = body * (1f - Mathf.SmoothStep(0.45f, 1f, t));
                     }
                     _colors[k] = new Vector4(c.r, c.g, c.b, alpha);

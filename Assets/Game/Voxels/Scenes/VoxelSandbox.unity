@@ -1944,6 +1944,10 @@ MonoBehaviour:
   _turnView: 0
   _tiltWithMouse: 0
   _lookLead: 2
+  _peekRadius: 3
+  _peekPerDegree: 0.08
+  _nodDown: 4
+  _nodUp: 1
   _zoomPerNotch: 0.15
   _zoomMin: 0.4
   _zoomMax: 2

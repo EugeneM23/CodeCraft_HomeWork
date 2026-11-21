@@ -1704,7 +1704,9 @@ namespace Game.Horde
                 batch.AddNoResize(new HordeInstance
                 {
                     PositionHeading = new float4(p, Heading[i]),
-                    Animation = new float4(frame, kindIndex)
+                    // The kind in the whole part (the sort reads (int)w), the monster's own tint seed in the fraction
+                    // (HordeVAT: hue and saturation a little off, the user), kept 0.01..0.99 so 0 still means none.
+                    Animation = new float4(frame, kindIndex + 0.01f + 0.98f * math.frac(i * 0.6180339887f + 0.137f))
                 });
             }
 

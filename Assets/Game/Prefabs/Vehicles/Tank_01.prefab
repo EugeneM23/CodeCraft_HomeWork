@@ -11584,7 +11584,7 @@ MonoBehaviour:
     ParticleBurst: 0
     ParticleWisp: 0
     Cubes: 675
-    Lifetime: 10.2
+    Lifetime: 5.1
     JetLength: 5.4
     RadiusMuzzle: 0.15
     RadiusEnd: 0.84
@@ -11615,9 +11615,9 @@ MonoBehaviour:
     SmokeColor: {r: 0.62, g: 0.62, b: 0.64, a: 1}
     FadeColor: {r: 0.82, g: 0.82, b: 0.84, a: 1}
     HotGlow: 4
-    Opacity: 0.048
+    Opacity: 0.036
     FadeStart: 0.3
-    WispTime: 2.5
+    WispTime: 1.25
     WispRate: 90
     WispSize: 0.14
   _rigidbody: {fileID: 3225291040301079110}

@@ -81,6 +81,9 @@ namespace Game
         /// <summary>Rented from the pool: a new shot has pierced nothing yet.</summary>
         public void Enable(IEntity entity)
         {
+            _seen = false;
+            _falling = false;
+            _started = false;
             _pierced = EnemyRef.None;
             _noContextThisFlight = false;
         }
@@ -98,6 +101,7 @@ namespace Game
 
         private void Move(IEntity entity, float deltaTime)
         {
+            Fall(deltaTime);
             Vector3 from = _transform.position;
             MoveUseCase.MoveSwept(_transform, _body, _own, _direction.Value * _speed.Value * deltaTime);
             Vector3 to = _transform.position;
@@ -181,6 +185,55 @@ namespace Game
 
             _targetsSeen = targets;
             _targets = _factory != null ? targets as EnemyTargets : null;
+        }
+
+        // ---- Out of sight, down (the user): a projectile that has been on screen and flies off it does not go on for
+        // ever over the map; it drops and comes down into the ground (where it bursts or glances as on any hit). One fired
+        // from off screen flies straight until it has been seen.
+
+        private const float FALL_GRAVITY = 300f; // m/s² it is pulled down once it falls
+        private const float VIEW_MARGIN = -0.08f; // the edge counts a little inside the screen: it drops before it is off
+        private const float MAX_STRAIGHT = 18f;    // m it flies straight at most (the user: not far over the map)
+
+        private static Camera s_camera;
+        private bool _seen;
+        private bool _falling;
+        private bool _started;
+        private Vector3 _start;
+
+        private void Fall(float deltaTime)
+        {
+            if (!_started)
+            {
+                _started = true;
+                _start = _transform.position;
+            }
+            if (!_falling && (_transform.position - _start).sqrMagnitude > MAX_STRAIGHT * MAX_STRAIGHT)
+                _falling = true;
+            if (!_falling)
+            {
+                if (s_camera == null)
+                    s_camera = Camera.main; // perf-ok: looked up again only once the cached camera is gone
+                if (s_camera == null)
+                    return;
+                Vector3 view = s_camera.WorldToViewportPoint(_transform.position);
+                bool inside = view.z > 0f && view.x > -VIEW_MARGIN && view.x < 1f + VIEW_MARGIN
+                              && view.y > -VIEW_MARGIN && view.y < 1f + VIEW_MARGIN;
+                if (inside)
+                    _seen = true;
+                else if (_seen)
+                    _falling = true;
+                if (!_falling)
+                    return;
+            }
+
+            if (_direction is not IVariable<Vector3> direction)
+                return;
+            float speed = Mathf.Max(_speed.Value, 1f);
+            Vector3 velocity = direction.Value * speed + Vector3.down * (FALL_GRAVITY * deltaTime);
+            direction.Value = velocity.normalized;
+            // Nose down along its path: the shell model and its trail turn as it falls.
+            _transform.rotation = Quaternion.LookRotation(direction.Value);
         }
 
         private static bool SameEnemy(in EnemyRef a, in EnemyRef b) =>

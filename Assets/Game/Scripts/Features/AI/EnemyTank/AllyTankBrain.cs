@@ -17,7 +17,7 @@ namespace Game.AIKit.Adapters
         private const float SLOW = 12f;         // nearer than this it drives at half throttle, m
         private const float CATCH_UP = 28f;     // further than this it boosts, m
         private const float TOO_CLOSE = 5f;     // backs off the player nearer than this, m
-        private const float FIRE_RANGE = 45f;   // looks for enemies inside this, m
+        private const float FIRE_RANGE = 18f;   // looks for enemies inside this, m (shells fly straight 18 m)
         private const float MIN_RANGE = 6f;     // does not fire at its own nose, m
         private const float AIM_UP = 1.2f;      // aims this high over an enemy's position, m
 

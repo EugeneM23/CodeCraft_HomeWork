@@ -11,9 +11,10 @@ namespace Game.AIKit.Adapters
     /// </summary>
     public sealed class EnemyTankBrain : TankAIBrain
     {
-        private const float FAR = 24f;          // drives up while further than this, m
-        private const float NEAR = 12f;         // backs off while nearer than this, m
-        private const float FIRE_RANGE = 55f;   // shoots inside this, m
+        private const float FAR = 14f;          // drives up while further than this, m
+        private const float NEAR = 7f;          // backs off while nearer than this, m
+        private const float FIRE_RANGE = 18f;   // shoots inside this, m (the user: not from far off)
+        private const float VIEW_MARGIN = 0.05f; // and only once it is this far inside the screen
 
         private LineOfFire _line = LineOfFire.Clear;
 
@@ -60,15 +61,31 @@ namespace Game.AIKit.Adapters
             if (Time.frameCount % 6 == 0)
                 _line = Line(target, Player.Transform);
 
-            if (distance > FAR || (_line == LineOfFire.Blocked && distance > NEAR))
+            // Off screen it comes on in too: it may only shoot from where the player sees it.
+            bool seen = OnScreen();
+            if (distance > FAR || ((_line == LineOfFire.Blocked || !seen) && distance > NEAR))
                 DriveTo(flat, 1f);
             else if (distance < NEAR)
                 DriveTo(flat, -0.7f);
             else
                 Hold(flat);
 
-            if (distance <= FIRE_RANGE)
+            // Only from where the player can see it: a tank off screen does not shoot.
+            if (distance <= FIRE_RANGE && seen)
                 TryFire(target, _line);
+        }
+
+        private static Camera s_camera;
+
+        private bool OnScreen()
+        {
+            if (s_camera == null)
+                s_camera = Camera.main; // perf-ok: looked up again only once the cached camera is gone
+            if (s_camera == null)
+                return true;
+            Vector3 view = s_camera.WorldToViewportPoint(transform.position);
+            return view.z > 0f && view.x > VIEW_MARGIN && view.x < 1f - VIEW_MARGIN
+                   && view.y > VIEW_MARGIN && view.y < 1f - VIEW_MARGIN;
         }
     }
 }

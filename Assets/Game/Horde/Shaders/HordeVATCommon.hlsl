@@ -64,4 +64,43 @@ void HordeVertex(uint vertexId, uint svInstanceId, float3 meshPosition, float3 m
     worldNormal = normalize(float3(c * n.x + s * n.z, n.y, -s * n.x + c * n.z));
 }
 
+// The instance's own tint seed, 0..1 (the user: a crowd of slightly different shades): the fraction of
+// animation.w, under the kind in its whole part (HordeRenderJob). Corpses and spit carry none: 0.5, no shift.
+float HordeTintSeed(uint svInstanceId)
+{
+    if (_HordeCorpse > 0.5)
+        return 0.5;
+    InitIndirectDrawArgs(0);
+    uint id = GetIndirectInstanceID(svInstanceId);
+    float f = frac(_HordeInstances[id].animation.w);
+    return f < 0.005 ? 0.5 : saturate((f - 0.01) / 0.98);
+}
+
+float3 HordeRgbToHsv(float3 c)
+{
+    float4 k = float4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
+    float4 p = c.g < c.b ? float4(c.bg, k.wz) : float4(c.gb, k.xy);
+    float4 q = c.r < p.x ? float4(p.xyw, c.r) : float4(c.r, p.yzx);
+    float d = q.x - min(q.w, q.y);
+    float e = 1.0e-10;
+    return float3(abs(q.z + (q.w - q.y) / (6.0 * d + e)), d / (q.x + e), q.x);
+}
+
+float3 HordeHsvToRgb(float3 c)
+{
+    float3 p = abs(frac(c.xxx + float3(1.0, 2.0 / 3.0, 1.0 / 3.0)) * 6.0 - 3.0);
+    return c.z * lerp(float3(1, 1, 1), saturate(p - 1.0), c.y);
+}
+
+// The albedo shifted by a seed: hue by up to ±hueRange of the wheel, saturation by up to ±satRange of itself.
+float3 HordeTint(float3 albedo, float seed, float hueRange, float satRange)
+{
+    float hueShift = (seed * 2.0 - 1.0) * hueRange;
+    float satScale = 1.0 + (frac(seed * 7.31 + 0.37) * 2.0 - 1.0) * satRange;
+    float3 hsv = HordeRgbToHsv(albedo);
+    hsv.x = frac(hsv.x + hueShift);
+    hsv.y = saturate(hsv.y * satScale);
+    return HordeHsvToRgb(hsv);
+}
+
 #endif

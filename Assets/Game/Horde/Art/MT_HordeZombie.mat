@@ -40,11 +40,13 @@ Material:
     - _Gloss: 0.6
     - _HordeScale: 1
     - _HordeVatFrames: 358
+    - _HueRange: 0
+    - _SatRange: 0.1
     - _Smoothness: 0.15
     - _Specular: 0.25
     m_Colors:
     - _Ambient: {r: 0.55, g: 0.58, b: 0.62, a: 1}
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 0.55, g: 0.9, b: 0.45, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

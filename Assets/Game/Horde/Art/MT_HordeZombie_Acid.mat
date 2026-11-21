@@ -40,6 +40,8 @@ Material:
     - _Gloss: 0.6
     - _HordeScale: 1
     - _HordeVatFrames: 358
+    - _HueRange: 0
+    - _SatRange: 0.1
     - _Specular: 0.25
     m_Colors:
     - _Ambient: {r: 0.34999996, g: 0.37999994, b: 0.41999996, a: 1}

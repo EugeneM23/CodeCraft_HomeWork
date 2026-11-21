@@ -47,6 +47,8 @@ namespace Game.AIKit.Adapters
             _mapMax = mapMax - Vector2.one * 4f;
             AllyTankBrain.MapMin = _mapMin;
             AllyTankBrain.MapMax = _mapMax;
+            WormPrototype.MapMin = _mapMin;
+            WormPrototype.MapMax = _mapMax;
         }
 
         private void Update()
@@ -58,6 +60,8 @@ namespace Game.AIKit.Adapters
                 Spawn();
             if (keyboard.kKey.wasPressedThisFrame)
                 SpawnAlly();
+            if (keyboard.uKey.wasPressedThisFrame)
+                WormPrototype.Spawn();
         }
 
         /// <summary>An enemy tank some way off the player, on a random side, facing it.</summary>
@@ -140,6 +144,8 @@ namespace Game.AIKit.Adapters
                 Spawn();
             if (GUI.Button(new Rect(x, y + 2f * (HEIGHT + 6f), WIDTH, HEIGHT), "+ Свой танк (K)", _buttonStyle))
                 SpawnAlly();
+            if (GUI.Button(new Rect(x, y + 3f * (HEIGHT + 6f), WIDTH, HEIGHT), "+ Червь (U)", _buttonStyle))
+                WormPrototype.Spawn();
         }
     }
 }

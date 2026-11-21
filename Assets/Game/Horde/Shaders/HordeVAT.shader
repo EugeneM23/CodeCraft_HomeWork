@@ -18,6 +18,8 @@ Shader "Game/HordeVAT"
         [NoScaleOffset] _HordeVat ("VAT: positions, then normals", 2D) = "black" {}
         _HordeVatFrames ("VAT frames", Float) = 1
         _HordeScale ("Scale", Float) = 1
+        _HueRange ("Hue range (+- share of the wheel, per zombie)", Range(0, 0.5)) = 0
+        _SatRange ("Saturation range (+- share, per zombie)", Range(0, 1)) = 0.1
     }
 
     // ------------------------------------------------------------------ URP
@@ -39,6 +41,8 @@ Shader "Game/HordeVAT"
             float _Specular;
             float _Smoothness;
             float4 _MainTex_ST;
+            float _HueRange;
+            float _SatRange;
         CBUFFER_END
 
         struct HordeAttributes
@@ -81,11 +85,13 @@ Shader "Game/HordeVAT"
                 float3 normalWS : TEXCOORD1;
                 float3 positionWS : TEXCOORD2;
                 float fogFactor : TEXCOORD3;
+                float tint : TEXCOORD4;
             };
 
             Varyings Vert(HordeAttributes v, uint instanceId : SV_InstanceID)
             {
                 Varyings o;
+                o.tint = HordeTintSeed(instanceId);
                 float3 wp;
                 float3 wn;
                 HordeVertex((uint)(v.uv1.x + 0.5), instanceId, v.vertex.xyz, v.normal, wp, wn);
@@ -114,7 +120,7 @@ Shader "Game/HordeVAT"
                 input.shadowMask = half4(1, 1, 1, 1);
 
                 SurfaceData surface = (SurfaceData)0;
-                surface.albedo = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, i.uv).rgb * _Color.rgb;
+                surface.albedo = HordeTint(SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, i.uv).rgb * _Color.rgb, i.tint, _HueRange, _SatRange);
                 surface.metallic = 0;
                 surface.specular = half3(0, 0, 0);
                 surface.smoothness = _Smoothness;

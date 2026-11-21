@@ -22,7 +22,7 @@ namespace Game
         [Tooltip("Cubes thrown out on a shot.")]
         [Range(0, 3000)] public int Cubes = 675;
         [Tooltip("Seconds a cube lives; each gets 60...100 % of it.")]
-        public float Lifetime = 10.2f;
+        public float Lifetime = 5.1f; // the user: gone twice as fast (was 10.2)
         [Tooltip("How far (m) along the barrel the jet reaches; its fattest blob sits at the end.")]
         public float JetLength = 5.4f;
         [Tooltip("Radius (m) of the jet at the muzzle.")]
@@ -91,13 +91,13 @@ namespace Game
         [Tooltip("Brightness of the fire-coloured cubes: above 1 they bloom.")]
         public float HotGlow = 4f;
         [Tooltip("How opaque a cube of smoke is at its thickest.")]
-        [Range(0f, 1f)] public float Opacity = 0.048f; // was 0.12: 20% clearer, then half again
+        [Range(0f, 1f)] public float Opacity = 0.036f; // was 0.12: 20% clearer, then half again, then 25 % clearer (the user)
         [Tooltip("Share of its life a cube keeps its full opacity before thinning out.")]
         [Range(0f, 1f)] public float FadeStart = 0.3f;
 
         [Header("Wisp")]
         [Tooltip("Seconds smoke still leaks out of the barrel after a shot; 0 for none.")]
-        public float WispTime = 2.5f;
+        public float WispTime = 1.25f; // the user: gone twice as fast (was 2.5)
         [Tooltip("Cubes per second at the start of the wisp; thins to none.")]
         public float WispRate = 90f;
         public float WispSize = 0.14f;

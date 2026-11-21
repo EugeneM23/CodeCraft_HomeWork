@@ -202,7 +202,8 @@ namespace Game
             if (_cameraChild != null)
             {
                 Quaternion toRig = Quaternion.Inverse(_baseRotation);
-                _childOrbit = toRig * _baseOffset + _childRest;
+                // From the tank's middle, where the rig stands now: the scene's pose stays where the user put it.
+                _childOrbit = toRig * (_baseOffset - ToTankMiddle()) + _childRest;
                 _childLead = toRig * _baseFacing;
                 _childRight = toRig * Vector3.Cross(Vector3.up, _baseFacing);
             }
@@ -322,7 +323,9 @@ namespace Game
                 // the camera under it holds the whole distance, so the mouse's swing turns it round the tank at once,
                 // not along the follow's straight easing. The view's middle is ahead of the tank by the lead, the way
                 // the camera faces: more of the side the player looks to is on screen. The wheel changes the radius.
-                _offset.Value = Vector3.zero;
+                // The rig on the tank's middle (the user), not on its camera point a metre ahead of the hull: the circle and
+                // the peek's disc go round the tank itself.
+                _offset.Value = ToTankMiddle() / CameraDistance();
                 _shownPeek = Vector2.Lerp(_shownPeek, _peek, blend);
                 _cameraChild.localPosition = _childOrbit * _shownZoom + _childLead * (_lookLead + _shownPeek.y)
                                              + _childRight * _shownPeek.x;
@@ -438,6 +441,21 @@ namespace Game
             _lookLead = GUI.HorizontalSlider(new Rect(box.x + 150f, box.y + 38f, 590f, 16f), _lookLead, 0f, 8f);
             GUI.Label(new Rect(box.x + 10f, box.y + 54f, 140f, 20f), $"Радиус подсмотра {_peekRadius:F1}");
             _peekRadius = GUI.HorizontalSlider(new Rect(box.x + 150f, box.y + 60f, 590f, 16f), _peekRadius, 0f, 8f);
+        }
+
+        // From the tank's camera point (which the follow keeps the rig on) to the middle of its hull, flat.
+        private Vector3 ToTankMiddle()
+        {
+            IEntity character = _character?.Value;
+            if (character == null || !character.TryGetCameraPoint(out Transform point) || point == null
+                || !character.TryGetTransform(out Transform body) || body == null)
+                return Vector3.zero;
+            Vector3 middle = body.position;
+            if (body.TryGetComponent(out Rigidbody rb))
+                middle = rb.worldCenterOfMass;
+            Vector3 to = middle - point.position;
+            to.y = 0f;
+            return to;
         }
 
         private float CameraDistance()
