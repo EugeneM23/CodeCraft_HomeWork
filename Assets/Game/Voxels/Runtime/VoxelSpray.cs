@@ -90,7 +90,8 @@ namespace Game.Voxels
                 }
             }
 
-            int blobs = Mathf.Max(1, drops / 8);
+            // No blobs (the user): the many-coloured clumps of cubes balling up are gone; only the strands fly.
+            int blobs = GOO_BLOBS ? Mathf.Max(1, drops / 8) : 0;
             for (int b = 0; b < blobs; b++)
             {
                 Vector3 heading = (aim + Random.insideUnitSphere * spread).normalized;
@@ -110,6 +111,9 @@ namespace Game.Voxels
 
             return spawned;
         }
+
+        /// <summary>Clumps of several cubes in the goo (<see cref="Goo"/>): off (the user, the many-coloured balls).</summary>
+        private const bool GOO_BLOBS = false;
 
         /// <summary>Share of a shot's goo (<see cref="ShotGoo"/>) thrown on along the shot.</summary>
         public const float SHOT_MAIN = 0.6f;
@@ -174,12 +178,13 @@ namespace Game.Voxels
             int up = Mathf.Max(1, drops - main - sides);
             // The middle of the spray as a liquid sheet (the user's splash): round it stay half the upward drops.
             VoxelWorld world = sheet > 0f ? VoxelWorld.Instance : null;
+            // With the sheet, it alone goes up (the user): none of the upward drops round it.
             if (world != null && world.Debris != null && world.Debris.GooSheet(at, flat, SHEET_HEIGHT, colors, sheet))
-                up = Mathf.Max(1, up / 2);
+                up = 0;
             int left = sides / 2;
 
             // The upward share hangs in the air before it falls: its drops are half the size (the same count and spread).
-            int spawned = Goo(at, Vector3.up, up, speed * splash, spread, colors, size * UP_DROP_SIZE, inherit, radius);
+            int spawned = up > 0 ? Goo(at, Vector3.up, up, speed * splash, spread, colors, size * UP_DROP_SIZE, inherit, radius) : 0;
             spawned += Goo(at, flat + Vector3.up * SHOT_ELEVATION, main, speed * SHOT_REACH, SHOT_CONE, colors, size, inherit, radius);
             if (left > 0)
                 spawned += Goo(at, side + Vector3.up * 0.8f, left, speed * 0.55f * splash, 0.35f, colors, size, inherit, radius);
