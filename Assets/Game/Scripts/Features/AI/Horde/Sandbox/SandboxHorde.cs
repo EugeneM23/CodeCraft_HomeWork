@@ -136,6 +136,11 @@ namespace Game.AIKit.Adapters
             ally.Visible = () => EnemyTankSpawner.Active != null;
             DebugEntry worm = DebugPanelRegistry.AddButton(WorldDebugCommands.ENEMIES, "Червь (U)", () => WormPrototype.Spawn(), 14);
             worm.Visible = () => EnemyTankSpawner.Active != null;
+            DebugEntry spider = DebugPanelRegistry.AddButton(WorldDebugCommands.ENEMIES, "Паук (P)",
+                () => EnemyTankSpawner.Active?.SpawnSpider(), 15);
+            spider.Visible = () => EnemyTankSpawner.Active != null;
+            DebugEntry noSpiders = DebugPanelRegistry.AddButton(WorldDebugCommands.ENEMIES, "Убрать пауков", SpiderBoss.KillAll, 15);
+            noSpiders.Visible = () => SpiderBoss.Alive > 0;
         }
 
         private static string HousesStatus()
