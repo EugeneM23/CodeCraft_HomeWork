@@ -110,6 +110,15 @@ namespace Game
                 _fireEvent.Subscribe(OnFire);
         }
 
+        /// <summary>
+        /// Degrees the gun is laid up (+) or down (−) on its trunnion, under the sway: the third-person camera's aim
+        /// (TankOrbitCamera) sets it, the way World of Tanks lifts the gun to the reticle. 0 — level.
+        /// </summary>
+        public float Elevation { get; set; }
+
+        private void Apply() =>
+            _gun.localRotation = _rest * Quaternion.Euler(-(_angle * Mathf.Rad2Deg + Elevation), 0f, 0f);
+
         // The shot flips the muzzle up; the spring brings it back in a few swings.
         private void OnFire() => _rate += _shotKick;
 
@@ -133,6 +142,7 @@ namespace Game
                 _lastVelocity = velocity;
                 _lastFixedTime = Time.fixedTime;
                 _hullRate = 0f;
+                Apply(); // the elevation still moves the gun at rest
                 return;
             }
 
@@ -164,7 +174,7 @@ namespace Game
 
             Step(ref _angle, ref _rate, hullAcceleration, _lift, _push, _stiffness, _damping, _inertia, _heave,
                 _surge, _limit, deltaTime);
-            _gun.localRotation = _rest * Quaternion.Euler(-_angle * Mathf.Rad2Deg, 0f, 0f);
+            Apply();
         }
     }
 }

@@ -19,7 +19,10 @@ namespace Game.AIKit.Adapters
     public sealed class HouseZombies
     {
         /// <summary>The debug panel's «Зомби в домах».</summary>
-        public static bool Enabled { get; set; } = true;
+        // Off for now (the user, 2026-11-21): no zombies in the sandbox at all until the panel's toggle turns them on.
+        private const bool ON_AT_START = false;
+
+        public static bool Enabled { get; set; } = ON_AT_START;
 
         /// <summary>Zombies a room holds at the start.</summary>
         public static int PerRoom { get; set; } = 50;

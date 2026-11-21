@@ -23,7 +23,10 @@ namespace Game.AIKit.Adapters
 
         /// <summary>Groups come (on: the user wants walking zombies in the sandbox; no leaping onto the tank while HordeRiderOptions.LeapOntoTank is off).
         /// Off clears the sandbox horde without deaths.</summary>
-        public static bool Enabled { get; set; } = true;
+        // Off for now (the user, 2026-11-21): no zombies in the sandbox at all until the panel's toggle turns them on.
+        private const bool ON_AT_START = false;
+
+        public static bool Enabled { get; set; } = ON_AT_START;
 
         /// <summary>A group comes on its own (first after SandboxHordeConfig.firstDelay, the next after the last is wiped
         /// out). Off by default (the user): a group comes on the H hotkey or the panel's «Группа сейчас».</summary>
@@ -55,7 +58,7 @@ namespace Game.AIKit.Adapters
             s_config = null;
             s_groupSize = 0;
             s_registered = false;
-            Enabled = true;
+            Enabled = ON_AT_START;
             AutoGroups = false;
         }
 
@@ -128,6 +131,9 @@ namespace Game.AIKit.Adapters
             DebugEntry tank = DebugPanelRegistry.AddButton(WorldDebugCommands.ENEMIES, "Вражеский танк (J)",
                 () => EnemyTankSpawner.Active?.Spawn(), 14);
             tank.Visible = () => EnemyTankSpawner.Active != null;
+            DebugEntry ally = DebugPanelRegistry.AddButton(WorldDebugCommands.ENEMIES, "Свой танк (K)",
+                () => EnemyTankSpawner.Active?.SpawnAlly(), 14);
+            ally.Visible = () => EnemyTankSpawner.Active != null;
         }
 
         private static string HousesStatus()

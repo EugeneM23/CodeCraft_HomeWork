@@ -2,6 +2,7 @@ using System.Collections;
 using Atomic.Elements;
 using Atomic.Entities;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace Game
 {
@@ -40,6 +41,7 @@ namespace Game
     /// The game's follow is left to do the following: this only turns its offset (the player
     /// context's CameraOffset) and tilts the rig by the same rotation.
     /// </summary>
+    [DefaultExecutionOrder(9000)] // LateUpdate after the follow (TickableManager), which sets the camera's turn first
     public sealed class VoxelSandboxOrbit : MonoBehaviour
     {
         [Tooltip("Degrees the camera turns per pixel of mouse movement.")]
@@ -62,6 +64,38 @@ namespace Game
                  "and the view turns with it, and looking ahead turns the view up.")]
         [SerializeField] private bool _turnView = false;
 
+        [Tooltip("Off (the user): the mouse only swings the camera round the tank; its height, distance and angle stay as "
+                 + "the scene sets them, and no look ahead. On: mouse up and down tilts it and it looks ahead, as before.")]
+        [SerializeField] private bool _tiltWithMouse = false;
+
+        [Tooltip("Metres the view's middle is ahead of the tank, the way the camera faces: more of that side is on " +
+                 "screen and the tank sits lower. The camera goes round the tank on a circle and the lead turns with it.")]
+        [SerializeField] private float _lookLead = 2f;
+
+        [Tooltip("Metres the mouse can push the view's middle about (off the lead's point) to peek that way; pushed on " +
+                 "past the edge sideways, the camera turns. 0 — the mouse only turns it.")]
+        [SerializeField] private float _peekRadius = 3f;
+        [Tooltip("Metres of peek per degree the mouse would have turned the camera.")]
+        [SerializeField] private float _peekPerDegree = 0.08f;
+        [Tooltip("Degrees the camera turns down when the peek is pushed to the bottom of the screen (to the disc's edge).")]
+        [SerializeField] private float _nodDown = 4f;
+        [Tooltip("Degrees the camera turns up when the peek is pushed to the top of the screen; a gradient in between.")]
+        [SerializeField] private float _nodUp = 1f;
+        private float _debugNod;
+        // Off for now (the user): no nod with the peek.
+        private const bool NOD_ON = false;
+
+        [Header("Zoom (mouse wheel)")]
+        [Tooltip("Share of the distance one wheel notch zooms in or out (0.15 — 15 %).")]
+        [SerializeField] private float _zoomPerNotch = 0.15f;
+        [Tooltip("Nearest, as a share of the scene's distance.")]
+        [SerializeField] private float _zoomMin = 0.4f;
+        [Tooltip("Furthest, as a share of the scene's distance.")]
+        [SerializeField] private float _zoomMax = 2f;
+
+        private float _zoom = 1f;
+        private float _shownZoom = 1f;
+
         [Header("Look ahead (while the cursor is held)")]
         [Tooltip("Metres the camera moves forward, along where it looks.")]
         [SerializeField] private float _lookAhead = 1f;
@@ -75,6 +109,15 @@ namespace Game
         private IReactiveVariable<IEntity> _character;
         private IPlayerInput _input;
         private Transform _rig;
+        // The camera under the rig and its spot there from the scene: the wheel slides it in and out.
+        private Transform _cameraChild;
+        private Vector3 _childRest;
+        private Vector3 _childOrbit;
+        private Vector3 _childLead;
+        private Vector3 _childRight;
+        // Where the view's middle is pushed about the tank (m, camera's right and forward on the ground), and shown eased.
+        private Vector2 _peek;
+        private Vector2 _shownPeek;
         private Vector3 _baseOffset;
         private Quaternion _baseRotation;
         // Where the scene's camera looks, flat on the ground, and its right: the tilt turns about it.
@@ -118,6 +161,12 @@ namespace Game
 
             _offset = player.GetCameraOffset() as IVariable<Vector3>;
             _rig = player.GetCameraRoot();
+            Camera view = Camera.main;
+            if (view != null && view.transform != _rig && view.transform.IsChildOf(_rig))
+            {
+                _cameraChild = view.transform;
+                _childRest = _cameraChild.localPosition;
+            }
             _character = player.GetCharacter();
             player.TryGetPlayerInput(out _input);
             if (_offset == null || _rig == null || _input == null)
@@ -148,6 +197,16 @@ namespace Game
             if (facing.sqrMagnitude > 1e-6f)
                 _baseFacing = facing.normalized;
 
+            // The circle (not tilting): the camera's spot from the tank's camera point, and the step ahead along the
+            // view, both in the rig's frame, so turning the rig turns them round the tank.
+            if (_cameraChild != null)
+            {
+                Quaternion toRig = Quaternion.Inverse(_baseRotation);
+                _childOrbit = toRig * _baseOffset + _childRest;
+                _childLead = toRig * _baseFacing;
+                _childRight = toRig * Vector3.Cross(Vector3.up, _baseFacing);
+            }
+
             // Tilting back must not take the camera over the top of the tank.
             float elevation = Mathf.Atan2(_baseOffset.y, new Vector2(_baseOffset.x, _baseOffset.z).magnitude) * Mathf.Rad2Deg;
             _maxPitch = Mathf.Clamp(Mathf.Min(_tiltBack, 88f - elevation), 0f, _tiltBack);
@@ -157,6 +216,19 @@ namespace Game
 
         private void OnDisable() => Release();
 
+        // The peek's nod (the user): pushed towards the bottom of the screen the camera turns down to it, up to
+        // _nodDown degrees at the disc's edge; towards the top, up by as much as _nodUp; a gradient between, none in the
+        // middle. On top of the turn the follow gave the camera this frame (it writes it whole every frame).
+        private void LateUpdate()
+        {
+            if (!NOD_ON || _offset == null || _tiltWithMouse || _cameraChild == null || _peekRadius <= 0f)
+                return;
+            float t = Mathf.Clamp(_shownPeek.y / _peekRadius, -1f, 1f);
+            float nod = t < 0f ? -t * _nodDown : -t * _nodUp;
+            _cameraChild.localRotation *= Quaternion.Euler(nod, 0f, 0f);
+            _debugNod = nod;
+        }
+
         private void Update()
         {
             if (_offset == null)
@@ -165,7 +237,10 @@ namespace Game
             if (_input.ResetLookPressed)
             {
                 if (Time.unscaledTime - _lastClick < 0.3f)
+                {
                     _yaw = _pitch = 0f;
+                    _peek = Vector2.zero;
+                }
                 _lastClick = Time.unscaledTime;
             }
 
@@ -177,20 +252,41 @@ namespace Game
 
             // Only a held cursor turns the camera: a free one is aiming, or off in another window.
             bool held = Cursor.lockState == CursorLockMode.Locked;
+            // Not tilting (the user): the scene's angle and spot stay, only the swing round the tank is the mouse's.
+            if (!_tiltWithMouse)
+                _pitch = 0f;
             if (held)
             {
                 Vector2 look = _input.Look;
-                _yaw += look.x * _turnSpeed * 10f;
+                if (_tiltWithMouse || _peekRadius <= 0f)
+                    _yaw += look.x * _turnSpeed * 10f;
+                else
+                {
+                    // Peek (the user): the mouse moves the view's middle about the tank within the disc; pushed on past
+                    // its edge sideways, it turns the camera round the tank as before.
+                    float degrees = _turnSpeed * 10f;
+                    Vector2 peek = _peek + look * (degrees * _peekPerDegree);
+                    if (peek.magnitude > _peekRadius)
+                    {
+                        Vector2 inside = peek.normalized * _peekRadius;
+                        float overX = peek.x - inside.x;
+                        _yaw += overX / _peekPerDegree;
+                        peek = inside;
+                    }
+                    _peek = peek;
+                }
                 // Mouse up tilts the camera towards the horizon; mouse down, up over the tank. With the
                 // view not turning, up has nothing to do past the start.
                 float lowest = _turnView ? -_tiltAhead : 0f;
-                _pitch = Mathf.Clamp(_pitch - look.y * _turnSpeed * 10f, lowest, _maxPitch);
+                if (_tiltWithMouse)
+                    _pitch = Mathf.Clamp(_pitch - look.y * _turnSpeed * 10f, lowest, _maxPitch);
             }
 
             float blend = 1f - Mathf.Exp(-_ease * Time.unscaledDeltaTime);
             _shownYaw = Mathf.LerpAngle(_shownYaw, _yaw, blend);
             _shownPitch = Mathf.Lerp(_shownPitch, _pitch, blend);
-            _ahead = Mathf.Lerp(_ahead, held ? 1f : 0f, blend);
+            // No look ahead while not tilting: it moved the camera off the scene's spot.
+            _ahead = Mathf.Lerp(_ahead, held && _tiltWithMouse ? 1f : 0f, blend);
 
             // Swing round the vertical, then tilt about the camera's own right axis: the offset and
             // the rig turn together, so the view stays on the target.
@@ -212,11 +308,136 @@ namespace Game
                              + facing * (_lookAhead * _ahead - _backShift * tiltedBack)
                              + Vector3.up * (_backRise * tiltedBack);
 
+            // The wheel brings the camera in and out along its offset (the user).
+            Mouse mouse = Mouse.current;
+            float wheel = mouse != null ? mouse.scroll.ReadValue().y : 0f;
+            if (Mathf.Abs(wheel) > 0.01f)
+                // By the sign only: the Input System gives ±1 or ±120 a notch depending on the platform and version.
+                _zoom = Mathf.Clamp(_zoom * (wheel > 0f ? 1f - _zoomPerNotch : 1f / (1f - _zoomPerNotch)), _zoomMin, _zoomMax);
+            _shownZoom = Mathf.Lerp(_shownZoom, _zoom, blend);
+
+            if (!_tiltWithMouse && _cameraChild != null)
+            {
+                // On a circle round the tank (the user): the rig stands on the tank's camera point and only follows it;
+                // the camera under it holds the whole distance, so the mouse's swing turns it round the tank at once,
+                // not along the follow's straight easing. The view's middle is ahead of the tank by the lead, the way
+                // the camera faces: more of the side the player looks to is on screen. The wheel changes the radius.
+                _offset.Value = Vector3.zero;
+                _shownPeek = Vector2.Lerp(_shownPeek, _peek, blend);
+                _cameraChild.localPosition = _childOrbit * _shownZoom + _childLead * (_lookLead + _shownPeek.y)
+                                             + _childRight * _shownPeek.x;
+                _rig.rotation = yaw * _baseRotation;
+                DrawDebug();
+                return;
+            }
+
             // The follow scales the offset by the vehicle's CameraDistance; dividing it out here
             // keeps the camera the scene's offset away.
-            _offset.Value = offset / CameraDistance();
+            _offset.Value = offset * (_cameraChild != null ? 1f : _shownZoom) / CameraDistance();
+            if (_cameraChild != null)
+                _cameraChild.localPosition = _childRest;
             float lookTilt = _turnView ? _lookTilt : 0f;
             _rig.rotation = Quaternion.AngleAxis(-lookTilt * _ahead, right) * rig;
+        }
+
+        // ---- Temporary debug (the user): the camera's circle round the tank on the ground, and a lead slider ----
+
+        private const bool DEBUG_CIRCLE = true;
+        private const int CIRCLE_POINTS = 64;
+        private LineRenderer _circle;
+        private LineRenderer _leadLine;
+        private float _debugRadius;
+        private float _debugHeight;
+        private float _debugAhead;
+        private GUIStyle _debugStyle;
+
+        private void DrawDebug()
+        {
+            if (!DEBUG_CIRCLE || _cameraChild == null)
+                return;
+
+            _circle ??= MakeLine("[CameraCircle]", new Color(1f, 0.85f, 0.1f), true);
+            _leadLine ??= MakeLine("[CameraLead]", new Color(0.2f, 1f, 0.9f), false);
+
+            // The circle the camera goes round: on the ground under the rig (the tank's camera point), as wide as the
+            // camera stands from it flat.
+            // The peek shifts the whole circle off the tank; the blue disc is how far it may go, the red ring its middle.
+            Vector3 tank = _rig.position;
+            Vector3 peekWorld = _rig.rotation * (_childRight * _shownPeek.x + _childLead * _shownPeek.y);
+            Vector3 centre = tank + peekWorld;
+            Vector3 eye = _cameraChild.position;
+            Vector3 flat = eye - centre;
+            flat.y = 0f;
+            _debugRadius = flat.magnitude;
+            _debugHeight = eye.y - centre.y;
+            float y = GroundY(centre) + 0.15f;
+            _circle.positionCount = CIRCLE_POINTS;
+            for (int i = 0; i < CIRCLE_POINTS; i++)
+            {
+                float a = i * Mathf.PI * 2f / CIRCLE_POINTS;
+                _circle.SetPosition(i, new Vector3(centre.x + Mathf.Cos(a) * _debugRadius, y, centre.z + Mathf.Sin(a) * _debugRadius));
+            }
+            Ring(ref _peekDisc, "[PeekDisc]", new Color(0.3f, 0.6f, 1f), tank, _peekRadius, y);
+            Ring(ref _peekMiddle, "[PeekMiddle]", new Color(1f, 0.25f, 0.2f), centre, 0.35f, y);
+
+            // Where the view's middle meets the ground: the lead from the tank to it.
+            Vector3 forward = _cameraChild.forward;
+            Vector3 middle = centre;
+            if (forward.y < -0.01f)
+                middle = eye + forward * ((y - eye.y) / forward.y);
+            Vector3 ahead = middle - tank;
+            ahead.y = 0f;
+            _debugAhead = ahead.magnitude;
+            _leadLine.positionCount = 2;
+            _leadLine.SetPosition(0, new Vector3(tank.x, y, tank.z));
+            _leadLine.SetPosition(1, new Vector3(middle.x, y, middle.z));
+        }
+
+        private LineRenderer _peekDisc;
+        private LineRenderer _peekMiddle;
+
+        private void Ring(ref LineRenderer line, string name, Color color, Vector3 centre, float radius, float y)
+        {
+            line ??= MakeLine(name, color, true);
+            line.positionCount = CIRCLE_POINTS;
+            for (int i = 0; i < CIRCLE_POINTS; i++)
+            {
+                float a = i * Mathf.PI * 2f / CIRCLE_POINTS;
+                line.SetPosition(i, new Vector3(centre.x + Mathf.Cos(a) * radius, y, centre.z + Mathf.Sin(a) * radius));
+            }
+        }
+
+        private static float GroundY(Vector3 above) =>
+            Physics.Raycast(above + Vector3.up * 2f, Vector3.down, out RaycastHit hit, 10f, ~0, QueryTriggerInteraction.Ignore)
+                ? hit.point.y
+                : above.y - 1f;
+
+        private LineRenderer MakeLine(string name, Color color, bool loop)
+        {
+            LineRenderer line = new GameObject(name).AddComponent<LineRenderer>();
+            line.transform.SetParent(transform, false);
+            line.loop = loop;
+            line.widthMultiplier = 0.12f;
+            line.useWorldSpace = true;
+            line.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+            line.receiveShadows = false;
+            Shader shader = Shader.Find("Sprites/Default");
+            line.material = new Material(shader != null ? shader : Shader.Find("Universal Render Pipeline/Unlit"));
+            line.startColor = line.endColor = color;
+            return line;
+        }
+
+        private void OnGUI()
+        {
+            if (!DEBUG_CIRCLE || _cameraChild == null || _tiltWithMouse)
+                return;
+            _debugStyle ??= new GUIStyle(GUI.skin.box) { fontSize = 15, alignment = TextAnchor.UpperLeft };
+            Rect box = new(Screen.width * 0.5f - 440f, 8f, 880f, 80f);
+            GUI.Box(box, $"  Камера: радиус {_debugRadius:F1} м, высота {_debugHeight:F1} м, центр кадра впереди {_debugAhead:F1} м, подсмотр {_peek.magnitude:F1}/{_peekRadius:F1} м, наклон {_debugNod:+0.0;-0.0;0}°", _debugStyle);
+            GUI.Label(new Rect(box.x + 10f, box.y + 32f, 140f, 20f), $"Сдвиг вперёд {_lookLead:F1}");
+            _lookLead = GUI.HorizontalSlider(new Rect(box.x + 150f, box.y + 38f, 590f, 16f), _lookLead, 0f, 8f);
+            GUI.Label(new Rect(box.x + 10f, box.y + 54f, 140f, 20f), $"Радиус подсмотра {_peekRadius:F1}");
+            _peekRadius = GUI.HorizontalSlider(new Rect(box.x + 150f, box.y + 60f, 590f, 16f), _peekRadius, 0f, 8f);
         }
 
         private float CameraDistance()

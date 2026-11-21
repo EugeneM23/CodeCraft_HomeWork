@@ -130,6 +130,41 @@ namespace Game
         public MonoEntity Cannon => _cannon;
 
         /// <summary>
+        /// The middle of the turret's own meshes (not the gun's), in the hull's frame: the third-person camera orbits it.
+        /// The turret pivot's spot when there are no meshes.
+        /// </summary>
+        public Vector3 TurretCentreLocal()
+        {
+            Transform turret = _turretVisual != null ? _turretVisual : _turretPivot;
+            if (turret == null)
+                return Vector3.up * 2f;
+            Bounds bounds = default;
+            bool any = false;
+            // The meshes, not the renderers: a renderer switched off (the voxel skin replaces them) has empty bounds.
+            foreach (MeshFilter filter in turret.GetComponentsInChildren<MeshFilter>(true))
+            {
+                if (filter.sharedMesh == null || (_gunVisual != null && filter.transform.IsChildOf(_gunVisual)))
+                    continue;
+                Bounds local = filter.sharedMesh.bounds;
+                Vector3 c = local.center;
+                Vector3 e = local.extents;
+                for (int i = 0; i < 8; i++)
+                {
+                    Vector3 corner = filter.transform.TransformPoint(c + new Vector3(
+                        (i & 1) == 0 ? -e.x : e.x, (i & 2) == 0 ? -e.y : e.y, (i & 4) == 0 ? -e.z : e.z));
+                    if (!any)
+                    {
+                        bounds = new Bounds(corner, Vector3.zero);
+                        any = true;
+                    }
+                    else
+                        bounds.Encapsulate(corner);
+                }
+            }
+            return transform.InverseTransformPoint(any ? bounds.center : turret.position);
+        }
+
+        /// <summary>
         /// Pooled particle burst put at the muzzle on every shot of the cannon, or null while it is switched off
         /// (Muzzle Smoke (voxel) → Particle Burst; the voxel fire and smoke replace it). For CombatPoolPrewarm.
         /// </summary>
