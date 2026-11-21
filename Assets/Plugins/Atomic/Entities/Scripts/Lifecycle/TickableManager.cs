@@ -78,6 +78,13 @@ namespace Atomic.Entities
 
         private static TickableManager CreateInstance()
         {
+#if UNITY_EDITOR
+            // HideAndDontSave outlives Play mode in the editor: the manager of every earlier Play stayed behind, one more
+            // each time. Clear them before making this Play's one.
+            foreach (TickableManager stale in Resources.FindObjectsOfTypeAll<TickableManager>())
+                if (stale != null && !EditorUtility.IsPersistent(stale))
+                    DestroyImmediate(stale.gameObject);
+#endif
             GameObject go = new GameObject(nameof(TickableManager));
             go.hideFlags = HideFlags.HideAndDontSave;
             DontDestroyOnLoad(go);
