@@ -126,7 +126,7 @@ namespace Game
                 // Flesh or not is read before the damage: a monster the shell kills is a corpse by the blast (no tag,
                 // its collider off), and its blast threw sparks instead of blood.
                 ContactPoint contact = collision.GetContact(0);
-                bool flesh = (target != null && target.HasEnemyTag()) || HitsFlesh(contact.point, collision.collider);
+                bool flesh = (target != null && target.HasEnemyTag() && !target.HasVehicleTag()) || HitsFlesh(contact.point, collision.collider);
                 // No area damage (WeaponSettings.shellAreaDamage off): the enemy hit takes the shell's damage itself.
                 if (!ExplosionUseCase.HitsArea(_bullet) && target != null && target.HasDamageableTag())
                     DamageUseCase.TakeDamage(target, new TakeDamageArgs(_bullet));
@@ -214,7 +214,7 @@ namespace Game
         /// </summary>
         private bool TryPierce(IEntity target, Collider collider)
         {
-            if (!target.HasEnemyTag() || !target.HasDamageableTag())
+            if (!target.HasEnemyTag() || !target.HasDamageableTag() || target.HasVehicleTag())
                 return false;
 
             if (!ReferenceEquals(target, _pierced))

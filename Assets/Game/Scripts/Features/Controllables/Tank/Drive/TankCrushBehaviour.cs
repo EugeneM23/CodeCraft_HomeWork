@@ -386,7 +386,7 @@ namespace Game
             if (!other.TryGetEntity(out victim) && !other.FindEntityInParent(out victim))
                 return false;
 
-            if (!victim.HasEnemyTag() || !victim.HasDamageableTag() ||
+            if (!victim.HasEnemyTag() || victim.HasVehicleTag() || !victim.HasDamageableTag() ||
                 !victim.TryGetHealth(out Health health) || health.IsEmpty())
                 return false;
 

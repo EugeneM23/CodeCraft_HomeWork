@@ -18,6 +18,7 @@ MonoBehaviour:
   respawnDelay: 12
   spawnCenter: {x: -16, y: 0, z: 14}
   spawnRadius: 30
+  enemyTank: {fileID: 8103370138306569558, guid: 9aa26aeb48dd5dd4f906bfe34d5f0ba9, type: 3}
   mapMin: {x: -40, y: -40}
   mapMax: {x: 40, y: 40}
   groundBottom: -12
@@ -92,6 +93,7 @@ MonoBehaviour:
     corpseSink: 3
     bloodPerFrame: 3
     bloodDrops: 10
+    crawlShare: 0.3
     acidSplashPerFrame: 2
     acidSplashDrops: 6
     riders:

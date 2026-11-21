@@ -94,6 +94,7 @@ namespace Game.AIKit.Adapters
                 return null;
             installer.gameObject.name = "[SandboxHorde]";
             installer.gameObject.AddComponent<SandboxHordeCounter>();
+            installer.gameObject.AddComponent<EnemyTankSpawner>().Init(s_config.enemyTank, s_config.mapMin, s_config.mapMax);
             var behaviour = new SandboxHordeBehaviour(s_config, installer.Behaviour);
             installer.GetComponent<MonoEntity>().AddBehaviour(behaviour);
             s_active = behaviour;

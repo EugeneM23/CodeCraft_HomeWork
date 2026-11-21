@@ -32,6 +32,10 @@ namespace Game.AIKit.Adapters
         [Tooltip("The group is spread over a disc this wide round the centre, m.")]
         public float spawnRadius = 4.5f;
 
+        [Header("Enemy tank (prototype)")]
+        [Tooltip("J in the sandbox: a copy of this tank, driven by the AI (EnemyTankBrain), comes at the player.")]
+        public Atomic.Entities.MonoEntity enemyTank;
+
         [Header("Level")]
         [Tooltip("XZ corners of the sandbox map: the level grid is kept over all of it (the run's arena would shrink it to the town's middle and leave the tank's start off the grid).")]
         public Vector2 mapMin = new(-40f, -40f);
