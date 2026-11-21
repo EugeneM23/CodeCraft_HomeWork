@@ -20,11 +20,23 @@ namespace Game.AIKit.Adapters
         private MonoEntity _prefab;
         private readonly PlayerTank _player = new();
         private GUIStyle _style;
+        private GUIStyle _buttonStyle;
         private int _shown = -1;
         private string _text = string.Empty;
 
         private Vector2 _mapMin = new(-40f, -40f);
         private Vector2 _mapMax = new(40f, 40f);
+
+        /// <summary>The sandbox's spawner while the sandbox is up (the debug panel's button).</summary>
+        public static EnemyTankSpawner Active { get; private set; }
+
+        private void OnEnable() => Active = this;
+
+        private void OnDisable()
+        {
+            if (Active == this)
+                Active = null;
+        }
 
         public void Init(MonoEntity prefab, Vector2 mapMin, Vector2 mapMax)
         {
@@ -99,7 +111,12 @@ namespace Game.AIKit.Adapters
                 normal = { textColor = Color.white }
             };
 
-            GUI.Box(new Rect(Screen.width - WIDTH - MARGIN, MARGIN + 60f + HEIGHT + 6f, WIDTH, HEIGHT), _text, _style);
+            float y = MARGIN + 60f + HEIGHT + 6f;
+            GUI.Box(new Rect(Screen.width - WIDTH - MARGIN, y, WIDTH, HEIGHT), _text, _style);
+
+            _buttonStyle ??= new GUIStyle(GUI.skin.button) { fontSize = 18, fontStyle = FontStyle.Bold };
+            if (GUI.Button(new Rect(Screen.width - WIDTH - MARGIN, y + HEIGHT + 6f, WIDTH, HEIGHT), "+ Вражеский танк", _buttonStyle))
+                Spawn();
         }
     }
 }

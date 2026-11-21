@@ -125,6 +125,9 @@ namespace Game.AIKit.Adapters
             size.Visible = () => s_active != null;
             DebugEntry buttons = DebugPanelRegistry.AddButtons(WorldDebugCommands.ENEMIES, null, Buttons, Press, 13);
             buttons.Visible = () => s_active != null;
+            DebugEntry tank = DebugPanelRegistry.AddButton(WorldDebugCommands.ENEMIES, "Вражеский танк (J)",
+                () => EnemyTankSpawner.Active?.Spawn(), 14);
+            tank.Visible = () => EnemyTankSpawner.Active != null;
         }
 
         private static string HousesStatus()
