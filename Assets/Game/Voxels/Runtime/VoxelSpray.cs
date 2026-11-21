@@ -211,6 +211,9 @@ namespace Game.Voxels
         /// <summary>Share of the drops that stay in a clot round where the body burst (slow, wide).</summary>
         private const float UNDER_HULL_CLOT = 0.3f;
 
+        /// <summary>Bits of flesh among the crush blood: off (the user, the many-coloured cubes).</summary>
+        private const bool UNDER_HULL_FLESH = false;
+
         /// <summary>A fan's rise against its speed out: flat, skimming the ground.</summary>
         private const float UNDER_HULL_LIFT = 0.06f;
 
@@ -267,7 +270,8 @@ namespace Game.Voxels
                 spawned += Goo(start, way, n, speed * reach, Random.Range(0.03f, 0.12f), blood,
                     dropSize * Random.Range(0.8f, 1.3f), inherit, 0.05f);
 
-                int m = Mathf.RoundToInt(bits * share);
+                // No coloured bits of flesh (the user): only blood, unless UNDER_HULL_FLESH is switched back on.
+                int m = UNDER_HULL_FLESH ? Mathf.RoundToInt(bits * share) : 0;
                 if (m > 0 && flesh != null && flesh.Count > 0)
                     spawned += Goo(start, way, m, speed * reach * Random.Range(0.5f, 0.8f), 0.15f, flesh, bitSize, inherit, 0.05f);
             }

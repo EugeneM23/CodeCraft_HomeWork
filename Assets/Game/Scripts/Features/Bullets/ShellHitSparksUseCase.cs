@@ -35,6 +35,8 @@ namespace Game
 
         private const int FLESH_BLOOD = 30; // fewer, bigger drops (was 60 x 0.07 m)
         private const int FLESH_BITS = 14;
+        /// <summary>The bits of flesh among the blood: off (the user, the many-coloured cubes).</summary>
+        private const bool FLESH_BITS_ON = false;
         // As far back as the sparks fly (8..29 m/s, ~10 m): goo is damped harder than a spark while it rises, so faster.
         private const float FLESH_SPEED = 28.6f; // 22 x 1.3: the user asked 30 % further
         private const float FLESH_BLOOD_SIZE = 0.11f;
@@ -61,7 +63,9 @@ namespace Game
             Vector3 fan = (n + Vector3.up * 0.35f).normalized;
             float speed = FLESH_SPEED * power;
             Voxels.VoxelSpray.Goo(point, fan, FLESH_BLOOD, speed, 0.9f, Blood, FLESH_BLOOD_SIZE, default, 0.2f);
-            Voxels.VoxelSpray.Goo(point, fan, FLESH_BITS, speed * 0.85f, 0.8f, Flesh, FLESH_BIT_SIZE, default, 0.2f);
+            // No coloured bits of flesh any more (the user): only blood.
+            if (FLESH_BITS_ON)
+                Voxels.VoxelSpray.Goo(point, fan, FLESH_BITS, speed * 0.85f, 0.8f, Flesh, FLESH_BIT_SIZE, default, 0.2f);
         }
     }
 }
